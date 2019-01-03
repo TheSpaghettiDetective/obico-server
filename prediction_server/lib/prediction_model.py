@@ -50,8 +50,6 @@ class METADATA(Structure):
 
 
 hasGPU = False
-print(__file__)
-print(os.path.realpath(__file__))
 so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model.so")
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
@@ -239,6 +237,7 @@ def load_net(config_path, weight_path, meta_path):
 
 if __name__ == "__main__":
     net_main_1, meta_main_1 = load_net("../model/model.cfg", "../model/model.weights", "../model/model.meta")
+
     import cv2
     custom_image_bgr = cv2.imread(sys.argv[1]) # use: detect(,,imagePath,)
     print(detect(net_main_1, meta_main_1, custom_image_bgr, thresh=0.25))

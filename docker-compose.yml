@@ -1,0 +1,23 @@
+version: '2.1'
+services:
+  ml_api:
+    build:
+        context: ml_api
+    stdin_open: true
+    tty: true
+    ports:
+      - "3333:3333"
+    volumes:
+      - $PWD/ml_api:/app
+
+  web:
+    build:
+        context: web
+    stdin_open: true
+    tty: true
+    ports:
+      - "3334:3334"
+    volumes:
+      - $PWD/web:/app
+    environment:
+      - FLASK_APP=server.py

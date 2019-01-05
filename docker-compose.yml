@@ -21,3 +21,5 @@ services:
       - $PWD/web:/app
     environment:
       - FLASK_APP=server.py
+      - AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
+      - AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}

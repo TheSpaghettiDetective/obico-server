@@ -19,9 +19,7 @@ def predict():
         resp = urllib.request.urlopen(request.args['img'])
         img_array = np.array(bytearray(resp.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
-        print("starting")
         result = detect(net_main, meta_main, img, thresh=0.25)
-        print(result)
         return jsonify(result)
     else:
         return jsonify([])

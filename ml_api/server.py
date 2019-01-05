@@ -13,7 +13,7 @@ app.config['DEBUG'] = True
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
 
-@app.route('/predict', methods=['GET'])
+@app.route('/p', methods=['GET'])
 def predict():
     if 'img' in request.args:
         resp = urllib.request.urlopen(request.args['img'])

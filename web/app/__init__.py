@@ -11,8 +11,8 @@ db = SQLAlchemy(web_app)
 migrate = Migrate(web_app, db)
 
 from app import routes, models
-from app.models import User, Printer
+from app.models import *
 
 @web_app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': User, 'Printer': Printer}
+    return {'db': db, 'User': User, 'Printer': Printer, 'Detection': Detection}

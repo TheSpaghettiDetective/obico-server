@@ -23,3 +23,18 @@ services:
       - FLASK_APP=server.py
       - AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
       - AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}
+    command: bash -c "sleep 100000000000"
+
+  db:
+    image: postgres:10
+    ports:
+      - "6432:5432"
+    environment:
+      - POSTGRES_USER=thespaghettidetective
+      - POSTGRES_PASSWORD=thespaghettidetective
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+
+volumes:
+     db-data:

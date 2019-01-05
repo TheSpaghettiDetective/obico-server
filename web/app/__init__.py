@@ -1,13 +1,18 @@
 from flask import Flask
-from app.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+from app.config import Config
+
+web_app = Flask(__name__)
+web_app.config.from_object(Config)
+web_app.config['DEBUG'] = True
+db = SQLAlchemy(web_app)
+migrate = Migrate(web_app, db)
 
 from app import routes, models
+from app.models import User, Printer
 
-app.run(host='0.0.0.0', port=3334)
+@web_app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User, 'Printer': Printer}

@@ -11,8 +11,7 @@ from app import db, web_app as wa
 @wa.route('/')
 @wa.route('/index')
 def index():
-    user = {'username': 'Miguel'}
-    return render_template('index.html', title='Home', user=user)
+    return render_template('index.html')
 
 
 # APIs

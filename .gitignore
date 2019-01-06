@@ -116,3 +116,8 @@ dmypy.json
 
 # SQlite
 *.sqlite
+
+
+# Javascript
+node_modules
+/web/public

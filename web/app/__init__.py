@@ -4,7 +4,14 @@ from flask_migrate import Migrate
 
 from app.config import Config
 
-web_app = Flask(__name__)
+web_app = Flask(
+        __name__,
+        # Tricks to integrate with webpack
+        template_folder="../public",
+        static_folder="../public",
+        static_url_path=""
+        )
+
 web_app.config.from_object(Config)
 web_app.config['DEBUG'] = True
 db = SQLAlchemy(web_app)

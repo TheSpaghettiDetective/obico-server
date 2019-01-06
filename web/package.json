@@ -6,7 +6,6 @@
   "scripts": {
     "start": "concurrently \"yarn client\" \"yarn server\"",
     "client": "BROWSER=none yarn --cwd client start",
-    "server": "docker-compose up -d web",
     "postinstall": "cd client && npm install && npm run build && cp -a build/. ../public"
   },
   "devDependencies": {

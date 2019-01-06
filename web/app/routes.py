@@ -27,7 +27,7 @@ blob_service = BlockBlobService(account_name=account, account_key=key)
 def detect():
     pic = request.files['pic']
     blob_service.create_blob_from_stream(container, '1.jpg', pic)
-    sas_token = blob_service.generate_blob_shared_access_signature(container,'1.jpg',BlobPermissions.READ,datetime.utcnow() + timedelta(hours=1))
+    sas_token = blob_service.generate_blob_shared_access_signature(container,'1.jpg',BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
     blob_url = blob_service.make_blob_url(container, '1.jpg', sas_token=sas_token)
     resp = requests.get('http://ml_api:3333/p', params={'img': blob_url})
     resp.raise_for_status()
@@ -40,8 +40,9 @@ def detect():
             )
     if current_detection:
         current_detection.score = score
+        current_detection.input_img_url = blob_url
     else:
-        db.session.add(Detection(printer_id=1, score=score))
+        db.session.add(Detection(printer_id=1, input_img_url=blob_url, score=score))
 
     db.session.commit()
 

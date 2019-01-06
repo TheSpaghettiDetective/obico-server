@@ -120,4 +120,16 @@ dmypy.json
 
 # Javascript
 node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 /web/public
+/web/client/build
+
+# Misc
+!.keep
+*.DS_Store
+*.swo
+*.swp
+*.log
+.vscode

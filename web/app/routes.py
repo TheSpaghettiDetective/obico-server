@@ -6,6 +6,7 @@ from azure.storage.blob import BlockBlobService, BlobPermissions
 
 from .detect import next_score
 from .models import *
+from .schemas import *
 from app import db, web_app as wa
 
 @wa.route('/')
@@ -45,3 +46,8 @@ def detect():
     db.session.commit()
 
     return jsonify({'result': blob_url})
+
+@wa.route('/api/detections', methods=['GET'])
+def get_detections():
+    detection = Detection.query.first()
+    return jsonify(DetectionSchema().dump(detection).data)

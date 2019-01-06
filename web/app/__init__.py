@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 
 from app.config import Config
@@ -15,6 +16,7 @@ web_app = Flask(
 web_app.config.from_object(Config)
 web_app.config['DEBUG'] = True
 db = SQLAlchemy(web_app)
+ma = Marshmallow(web_app)
 migrate = Migrate(web_app, db)
 
 from app import routes, models

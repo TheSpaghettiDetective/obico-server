@@ -26,6 +26,7 @@ class Printer(db.Model):
 class Detection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     printer_id = db.Column(db.Integer, db.ForeignKey('printer.id'))
+    printer = db.relationship('Printer', backref='detections')
     input_img_url = db.Column(db.String(1024))
     score = db.Column(db.Float)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())

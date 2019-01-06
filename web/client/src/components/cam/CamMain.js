@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import Gauge from 'react-svg-gauge';
 
 const styles = theme => ({
   paper: {
@@ -35,13 +36,19 @@ class CamComponent extends Component {
 
   render() {
     const { classes } = this.props;
+    if (!this.state.detection) {
+      return <div />;
+    }
+
+    const {input_img_url, score} = this.state.detection;
 
     return (
       <div>
         <Grid container spacing={24} justify='center'>
           <Grid item xs={12} md={6} lg={4}>
             <Paper className={classes.paper}>
-              <img src={_.get(this.state, 'detection.input_img_url')} className={classes.camImg} />
+            <Gauge value={(score*100).toFixed()} width={200} height={160} label="Tangle Index" />
+              <img src={input_img_url} className={classes.camImg} />
             </Paper>
           </Grid>
         </Grid>

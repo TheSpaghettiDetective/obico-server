@@ -6,5 +6,6 @@ def next_score(current_score, detections):
         current_score = 0
 
     sum_score = sum([ d[1] for d in detections ])
-    return sum_score * EWMA_ALPHA + current_score * (1-EWMA_ALPHA)
+    #return sum_score * EWMA_ALPHA + current_score * (1-EWMA_ALPHA)
+    return sum_score
 

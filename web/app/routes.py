@@ -34,9 +34,10 @@ def detect():
 
     current_detection = Detection.query.first()
 
+    det = resp.json()
     score = next_score(
                 current_detection.score if current_detection else None,
-                resp.json()
+                det
             )
     if current_detection:
         current_detection.score = score
@@ -46,7 +47,9 @@ def detect():
 
     db.session.commit()
 
-    return jsonify({'result': blob_url})
+    print(det)
+    print(score)
+    return jsonify({'result': det})
 
 @wa.route('/api/detections', methods=['GET'])
 def get_detections():

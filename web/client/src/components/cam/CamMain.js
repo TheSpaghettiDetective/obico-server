@@ -27,7 +27,7 @@ class CamComponent extends Component {
       .then( detection => {
         this.setState({detection})
       })
-    }, 5000);
+    }, 1000);
   }
 
   componentWillUnmount() {

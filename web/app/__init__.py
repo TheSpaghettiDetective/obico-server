@@ -24,4 +24,4 @@ from app.models import *
 
 @web_app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': User, 'Printer': Printer, 'Detection': Detection}
+    return {'db': db, 'User': User, 'Printer': Printer, 'Print': Print}

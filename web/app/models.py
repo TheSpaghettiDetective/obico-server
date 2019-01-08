@@ -15,7 +15,8 @@ class Printer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     token = db.Column(db.String(128), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='printers')
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now(), onupdate=db.func.now())
 
@@ -23,14 +24,17 @@ class Printer(db.Model):
         return '<Printer {}>'.format(self.name)
 
 
-class Detection(db.Model):
+class Print(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     printer_id = db.Column(db.Integer, db.ForeignKey('printer.id'))
-    printer = db.relationship('Printer', backref='detections')
-    input_img_url = db.Column(db.String(1024))
-    score = db.Column(db.Float)
+    printer = db.relationship('Printer', backref='prints')
+    name = db.Column(db.String(1024), nullable=False)
+    finished_at = db.Column(db.DateTime)
+    current_img_url = db.Column(db.String(1024))
+    current_img_num = db.Column(db.Integer)
+    detection_score = db.Column(db.Float)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now(), onupdate=db.func.now())
 
     def __repr__(self):
-        return '<Detection {}>'.format(self.score)
+        return '<Detection {}>'.format(self.name)

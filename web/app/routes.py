@@ -86,4 +86,16 @@ def get_prints():
     prints = db.session.query(Print).filter(Print.printer_id == 2, Print.finished_at == None).all()
     return jsonify(PrintSchema(many=True).dump(prints).data)
 
+@wa.route('/api/printers', methods=['GET'])
+def get_printers():
+    printers = db.session.query(Printer).all()
+    return jsonify(PrinterSchema(many=True).dump(printers).data)
+
+@wa.route('/api/printers', methods=['POST'])
+def create_printers():
+    printer_data = request.json
+    db.session.add(Printer(printer_data))
+    db.session.commit()
+    return jsonify({'result': 'OK'})
+
 

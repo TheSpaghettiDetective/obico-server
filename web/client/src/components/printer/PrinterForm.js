@@ -1,9 +1,14 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
+import { bindActionCreators } from "redux";
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+
+import { updatePrinter } from '../../actions';
 
 const styles = theme => ({
     container: {
@@ -16,7 +21,26 @@ const styles = theme => ({
 });
 
 class PrinterFormComponent extends Component {
-    state = {}
+    state = {printer: null}
+
+    componentDidMount() {
+        const printerId = this.props.match.params.id;
+        if (printerId.toUpperCase() === 'NEW') {
+            this.setState({ printer: {} });
+        } else {
+            const printer = _.find(this.props.printers, {id: printerId});
+            this.setState({printer});
+        }
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (prevState.printer == null && _.get(nextProps, 'printers')) {
+            return {prin}
+        }
+        if (prevState.wasLoading && !nextProps.loading) {
+            return ({ initLoaded: true, wasLoading: nextProps.loading });
+        }
+        return ({ wasLoading: nextProps.loading });
+    }
 
     handleChange = name => event => {
         this.setState({
@@ -52,7 +76,22 @@ class PrinterFormComponent extends Component {
             </Grid>
         );
     }
+
+    // actions
+
+    updatePrinter = () => {
+            const payload = { printer: this.state.printer };
+            this.props.updatePrinter(payload);
+    }
 }
 
+const mapDispatchToProps = dispatch => {
+    return bindActionCreators(
+        {
+            updatePrinter,
+        },
+        dispatch
+    );
+};
 
-export default withStyles(styles)(PrinterFormComponent);
+export default connect(null, mapDispatchToProps)(withStyles(styles)(PrinterFormComponent));

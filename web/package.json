@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "concurrently": "^4.0.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
   }
 }

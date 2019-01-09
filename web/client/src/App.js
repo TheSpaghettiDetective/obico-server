@@ -13,6 +13,7 @@ import { fetchPrinters } from './actions';
 import Nav from './components/Nav';
 import CamMain from './components/cam/CamMain';
 import PrinterForm from './components/printer/PrinterForm';
+import PrinterList from './components/printer/PrinterList';
 import logo from './logo.svg';
 import './App.css';
 
@@ -30,7 +31,8 @@ class AppComponent extends Component {
                         <Nav>
                             <Switch>
                                 <Route path="/cam" exact component={CamMain} />
-                                <Route path="/printers/new" exact component={PrinterForm} />
+                                <Route path="/printers" exact component={PrinterList} />
+                                <Route path="/printers/:id" exact component={PrinterForm} />
                             </Switch>
                         </Nav>
                     </Router>

@@ -31,7 +31,7 @@ const mainListItems = (
         </ListItemIcon>
         <ListItemText primary="Print View" />
       </ListItem>
-      <ListItem button component={Link} to='/some-url'>
+      <ListItem button component={Link} to='/printers'>
         <ListItemIcon>
           <TableChartIcon />
         </ListItemIcon>

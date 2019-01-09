@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,7 +17,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import VideocamIcon from '@material-ui/icons/Videocam';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import TableChartIcon from '@material-ui/icons/TableChart';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import styles from './NavStyles';
@@ -29,11 +30,11 @@ const mainListItems = (
         </ListItemIcon>
         <ListItemText primary="Print View" />
       </ListItem>
-      <ListItem button>
+      <ListItem button component={Link} to='/some-url'>
         <ListItemIcon>
-          <AccountBoxIcon />
+          <TableChartIcon />
         </ListItemIcon>
-        <ListItemText primary="Profile" />
+        <ListItemText primary="Printers" />
       </ListItem>
       <ListItem button>
         <ListItemIcon>

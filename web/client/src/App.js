@@ -5,9 +5,15 @@ import {
     Switch,
     Route,
 } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware, combineReducers } from "redux";
+import { reducer as form } from 'redux-form';
+import thunk from "redux-thunk";
+import logger from "redux-logger";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+import reducers from "./reducers";
 import Nav from './components/Nav';
 import CamMain from './components/cam/CamMain';
 import logo from './logo.svg';
@@ -15,9 +21,13 @@ import './App.css';
 
 const theme = createMuiTheme();
 
+const initState = {}
+const store = createStore(combineReducers({...reducers, form}), initState, applyMiddleware(thunk, logger));
+
 class App extends Component {
     render() {
         return (
+            <Provider store={store}>
             <MuiThemeProvider theme={theme}>
                 <div style={{display: 'flex'}}>
                     <CssBaseline />
@@ -33,6 +43,7 @@ class App extends Component {
                     </Router>
                 </div>
             </MuiThemeProvider>
+            </Provider>
         )
     }
 }

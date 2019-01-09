@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -59,10 +60,11 @@ class NavMenuComponent extends Component {
       };
 
     render() {
-        const { classes } = this.props;
+        const { classes, children } = this.props;
 
         return (
-            <Fragment>
+            <div className={classes.root}>
+            <CssBaseline />
             <AppBar
             position="absolute"
             className={classNames(classes.appBar, this.state.open && classes.appBarShift)}
@@ -110,7 +112,11 @@ class NavMenuComponent extends Component {
             <Divider />
             <List>{mainListItems}</List>
           </Drawer>
-          </Fragment>
+          <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          {children}
+          </main>
+          </div>
         );
     }
 }

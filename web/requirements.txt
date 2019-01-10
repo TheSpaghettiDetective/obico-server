@@ -1,8 +1,1 @@
-ipdb
-flask==1.0.2
-flask-sqlalchemy==2.3.2
-psycopg2==2.7.6.1
-flask-migrate==2.3.1
-flask-marshmallow==0.9.0
-marshmallow-sqlalchemy==0.15.0
-azure-storage-blob==1.4.0
+django==2.1.5

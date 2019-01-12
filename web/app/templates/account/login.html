@@ -9,30 +9,34 @@
 {% block content %}
 
 <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-8 col-lg-6">
-        <div id="logreg-forms">  
-            <h1 class="text-center">{% trans "Sign In" %}</h1>
-<div class="social-login">
-    <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i class="fab fa-facebook-f"></i> Sign in with Facebook</span> </a>
-    <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i class="fab fa-google-plus-g"></i> Sign in with Google+</span> </a>
-</div>
-<p style="text-align:center"> OR  </p>
+  <div class="col-sm-11 col-md-8 col-lg-6">
+    <div id="logreg-forms">
+      <h1 class="text-center">{% trans "Sign In" %}</h1>
+      <div class="social-login">
+        <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i
+              class="fab fa-facebook-f"></i> Sign in with Facebook</span> </a>
+        <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i
+              class="fab fa-google-plus-g"></i> Sign in with Google+</span> </a>
+      </div>
+      <p style="text-align:center"> OR </p>
 
-<form class="login form-signin" method="POST" action="{% url 'account_login' %}">
-  {% csrf_token %}
-  {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
-  <div class="input-group">
-      {% render_field form.login class="form-control" placeholder="Email address" %}
-    </div>
-    <div class="input-group">
-        {% render_field form.password class="form-control" placeholder="Password" %}
+      <form class="login form-signin" method="POST" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+        <div class="input-group">
+          {% render_field form.login class="form-control" placeholder="Email address" %}
         </div>
-  {% endwith %}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-</form>
-
+        <div class="input-group">
+          {% render_field form.password class="form-control" placeholder="Password" %}
+        </div>
+        {% endwith %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
+        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

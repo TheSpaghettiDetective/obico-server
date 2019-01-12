@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'widget_tweaks',
     'app', # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',

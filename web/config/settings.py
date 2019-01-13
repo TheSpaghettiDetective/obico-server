@@ -158,7 +158,6 @@ REST_FRAMEWORK = {
 }
 
 # Settings for `app` and `api`
-AZURE_STORAGE_ACCOUNT = os.environ.get('AZURE_STORAGE_ACCOUNT')
-AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY')
-AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER') or 'tsd' 
+AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
+AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
 ML_PREFIX = os.environ.get('ML_PREFIX', 'http://ml_api:3333')

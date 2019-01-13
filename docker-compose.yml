@@ -21,8 +21,7 @@ services:
       - $PWD/web:/app
     environment:
       - FLASK_APP=server.py
-      - AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
-      - AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
     command: bash -c "sleep 100000000000"
 
   db:

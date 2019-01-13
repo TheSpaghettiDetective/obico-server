@@ -5,9 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
 import requests
-from azure.storage.blob import BlockBlobService, BlobPermissions
 
 from app.models import *
+from .file_storage import save_file_obj
 
 
 class PrinterPicView(APIView):
@@ -22,16 +22,7 @@ class PrinterPicView(APIView):
             return Response({'result': 'OK'})
 
         pic = request.data['pic'].file
-
-        blob_service = BlockBlobService(
-            account_name=settings.AZURE_STORAGE_ACCOUNT,
-            account_key=settings.AZURE_STORAGE_KEY)
-
-        container = settings.AZURE_STORAGE_CONTAINER
-        obj_name = '{}/1.jpg'.format(printer.id)
-        blob_service.create_blob_from_stream(container, obj_name, pic)
-        sas_token = blob_service.generate_blob_shared_access_signature(container,'1.jpg',BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
-        blob_url = blob_service.make_blob_url(container, obj_name, sas_token=sas_token)
+        blob_url = save_file_obj('{}/1.jpg'.format(printer.id), pic)
         resp = requests.get(settings.ML_PREFIX + '/p', params={'img': blob_url})
         resp.raise_for_status()
 

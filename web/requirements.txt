@@ -4,3 +4,4 @@ django-allauth==0.38.0
 django-widget-tweaks==1.4.3
 djangorestframework==3.9.0
 django-extensions==2.1.4
+azure-storage-blob==1.4.0

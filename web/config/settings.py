@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -156,3 +156,9 @@ AUTH_USER_MODEL = 'app.CustomUser'
 REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': ('api.authentication.PrinterAuthentication', ),
 }
+
+# Settings for `app` and `api`
+AZURE_STORAGE_ACCOUNT = os.environ.get('AZURE_STORAGE_ACCOUNT')
+AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY')
+AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER') or 'tsd' 
+ML_PREFIX = os.environ.get('ML_PREFIX', 'http://ml_api:3333')

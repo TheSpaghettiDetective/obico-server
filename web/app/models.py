@@ -53,3 +53,12 @@ class Printer(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Print(models.Model):
+    name = models.CharField(max_length=200, null=True)
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    current_img_url = models.CharField(max_length=1000, null=True)
+    current_img_num = models.IntegerField(null=True)
+    detection_score = models.FloatField(null=True)
+    finished_at = models.DateTimeField(null=True)

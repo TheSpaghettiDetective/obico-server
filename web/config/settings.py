@@ -157,7 +157,14 @@ REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': ('api.authentication.PrinterAuthentication', ),
 }
 
+# Settings to store and serve uploaded images
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
+MEDIA_HOST = os.environ.get('MEDIA_HOST')
+INTERNAL_MEDIA_HOST = 'http://web:3334'
+
 # Settings for `app` and `api`
+
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
-ML_PREFIX = os.environ.get('ML_PREFIX', 'http://ml_api:3333')
+ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')

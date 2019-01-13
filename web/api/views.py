@@ -21,16 +21,16 @@ class PrinterPicView(APIView):
         if not existing_print:
             return Response({'result': 'OK'})
 
-        pic = request.data['pic'].file
-        blob_url = save_file_obj('{}/1.jpg'.format(printer.id), pic)
-        resp = requests.get(settings.ML_PREFIX + '/p', params={'img': blob_url})
+        pic = request.data['pic']
+        internal_url, external_url = save_file_obj('{}/1.jpg'.format(printer.id), pic, request)
+        resp = requests.get(settings.ML_HOST + '/p', params={'img': internal_url})
         resp.raise_for_status()
 
         det = resp.json()
         score = sum([ d[1] for d in det ])
 
         existing_print.detection_score = score
-        existing_print.current_img_url= blob_url
+        existing_print.current_img_url= external_url
         existing_print.current_img_num += 1
         existing_print.save()
 

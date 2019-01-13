@@ -32,7 +32,7 @@ class PrinterPicView(APIView):
         blob_service.create_blob_from_stream(container, obj_name, pic)
         sas_token = blob_service.generate_blob_shared_access_signature(container,'1.jpg',BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
         blob_url = blob_service.make_blob_url(container, obj_name, sas_token=sas_token)
-        resp = requests.get('http://ml_api:3333/p', params={'img': blob_url})
+        resp = requests.get(settings.ML_PREFIX + '/p', params={'img': blob_url})
         resp.raise_for_status()
 
         det = resp.json()

@@ -151,7 +151,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 SITE_ID = 1
-AUTH_USER_MODEL = 'app.CustomUser'
+AUTH_USER_MODEL = 'app.User'
 
 REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': ('api.authentication.PrinterAuthentication', ),

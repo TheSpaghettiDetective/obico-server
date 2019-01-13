@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 
-class CustomUserManager(UserManager):
+class UserManager(UserManager):
     """Define a model manager for User model with no username field."""
 
     use_in_migrations = True
@@ -36,20 +36,20 @@ class CustomUserManager(UserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    objects = CustomUserManager()
+    objects = UserManager()
 
 
 class Printer(models.Model):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, null=False, blank=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
         return self.name

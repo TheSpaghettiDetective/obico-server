@@ -6,7 +6,7 @@ class PrintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Print
-        fields = ('name', 'current_img_url', 'current_img_num', 'detection_score', 'finished_at',)
+        fields = ('name', 'ended_at',)
         
 
 class PrinterSerializer(serializers.ModelSerializer):
@@ -14,4 +14,4 @@ class PrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('name', 'current_print',)
+        fields = ('name', 'current_print', 'current_img_url', 'detection_score')

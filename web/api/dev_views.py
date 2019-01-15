@@ -17,22 +17,23 @@ class PrinterPicView(APIView):
     def post(self, request):
         printer = request._auth
 
-        existing_print = Print.objects.filter(printer=printer, finished_at__isnull=True).first()
-        if not existing_print:
-            return Response({'result': 'OK'})
-
         pic = request.data['pic']
         internal_url, external_url = save_file_obj('{}/1.jpg'.format(printer.id), pic, request)
+        printer.current_img_url = external_url
+        printer.save()
+
+        existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
+        if not existing_print:
+            return Response({'result': 'OK'})
+        
         resp = requests.get(settings.ML_HOST + '/p', params={'img': internal_url})
         resp.raise_for_status()
 
         det = resp.json()
         score = sum([ d[1] for d in det ])
 
-        existing_print.detection_score = score
-        existing_print.current_img_url= external_url
-        existing_print.current_img_num += 1
-        existing_print.save()
+        printer.detection_score = score
+        printer.save()
 
         print(det)
         print(score)
@@ -57,18 +58,18 @@ class PrinterStatusView(APIView):
         printer = request._auth
         status = request.data
         file_name, printing = file_printing(status.get('octoprint_data', {}))
-        existing_print = Print.objects.filter(printer=printer, finished_at__isnull=True).first()
+        existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
 
         if not printing:
             if existing_print:
-                existing_print.finished_at = datetime.now()
+                existing_print.ended_at = datetime.now()
         else:
             if not existing_print:
-                existing_print = Print(name=file_name, printer=printer, current_img_num=0)
+                existing_print = Print(name=file_name, printer=printer, started_at=datetime.now())
             elif existing_print.name != file_name:
-                existing_print.finished_at = datetime.now()
+                existing_print.ended_at = datetime.now()
                 existing_print.save()
-                existing_print = Print(name=file_name, printer=printer, current_img_num=0)
+                existing_print = Print(name=file_name, printer=printer, started_at=datetime.now())
 
         if existing_print:
             existing_print.save()

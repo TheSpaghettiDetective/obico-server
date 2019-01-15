@@ -10,7 +10,7 @@ $(document).ready(function() {
                 dataType: 'json',
             })
             .done( function( printer ) {
-                printer_card.find("img.webcam_img").attr('src', printer.current_print.current_img_url);
+                printer_card.find("img.webcam_img").attr('src', printer.current_img_url);
             })
         }, 5*1000);
     } );

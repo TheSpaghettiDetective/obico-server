@@ -26,4 +26,7 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
-admin.site.register(Printer)
+
+@admin.register(Printer)
+class PrinterAdmin(admin.ModelAdmin):
+    exclude = ('current_img_url', 'detection_score')

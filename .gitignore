@@ -127,3 +127,4 @@ dmypy.json
 
 # derived static assets
 static_build
+node_modules

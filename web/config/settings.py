@@ -154,7 +154,10 @@ SITE_ID = 1
 AUTH_USER_MODEL = 'app.User'
 
 REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': ('api.authentication.PrinterAuthentication', ),
+  'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authentication.PrinterAuthentication', 
+        'rest_framework.authentication.SessionAuthentication',
+        ),
 }
 
 # Settings to store and serve uploaded images

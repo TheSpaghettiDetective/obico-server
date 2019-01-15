@@ -51,6 +51,11 @@ class Printer(models.Model):
     auth_token = models.CharField(max_length=28, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
+    def _get_current_print(self):
+        return self.print_set.filter(finished_at__isnull=False).order_by('-id').first()
+
+    current_print = property(_get_current_print)
+    
     def __str__(self):
         return self.name
 

@@ -1,17 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
-from rest_framework.permissions import IsAuthenticated
 
 from .models import *
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
-
+    return redirect('/printers/')
 
 class PrinterView(View):
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         printers = Printer.objects.filter(user=request.user)
-        return render(request, 'printer_gallery.html', {'printers': printers})
+        return render(request, 'printers_grid.html', {'printers': printers})

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
+    <div class="row justify-content-center">
         {% for printer in printers %}
         <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card">
             <div class="card">
@@ -67,6 +67,12 @@
             </div>
         </div>
         {% endfor %}
+        <div id="new-printer" class="col-sm-12 col-lg-6 printer-card">
+            <div>
+                <i class="fa fa-plus-square fa-5x"></i>
+                <div>Add new printer</div>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">

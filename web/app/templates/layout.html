@@ -10,12 +10,9 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin - Dashboard</title>
+  <title>TSD - The Spaghetti Detective</title>
 
   <!-- Bootstrap core CSS-->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous">
-
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
     crossorigin="anonymous">
 
@@ -37,21 +34,24 @@
               <span class="sr-only">(current)</span>
             </a>
           </li>
+          {% if user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
+            <a class="nav-link" href="/accounts/logout">Log out</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="/accounts/login">Log in</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Login</a>
-          </li>
+              <a class="nav-link" href="/accounts/signup">Sign up</a>
+            </li>
+            {% endif %}
         </ul>
       </div>
     </div>
   </nav>
 
-  <div id="content-wrapper" class="container">
+  <div id="content-wrapper" class="container-fluid">
     {% block content %}{% endblock content %}
   </div>
   <!-- /.content-wrapper -->
@@ -66,7 +66,7 @@
     crossorigin="anonymous"></script>
   <script src="//cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.5/all/gauge.min.js"></script>
 
-  <script src="{% static "js/printer_gallery.js" %}"></script>
+  <script src="{% static "js/printers_grid.js" %}"></script>
 </body>
 
 </html>

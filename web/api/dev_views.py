@@ -15,11 +15,12 @@ class PrinterPicView(APIView):
     parser_classes = (MultiPartParser,)
 
     def post(self, request):
-        printer = request._auth
+        printer = request.auth
 
         pic = request.data['pic']
         internal_url, external_url = save_file_obj('{}/1.jpg'.format(printer.id), pic, request)
         printer.current_img_url = external_url
+        printer.last_contacted = datetime.now()
         printer.save()
 
         existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
@@ -55,7 +56,10 @@ class PrinterStatusView(APIView):
             file_name = octoprint_data.get('job', {}).get('file', {}).get('name')
             return file_name, printing
 
-        printer = request._auth
+        printer = request.auth
+        printer.last_contacted = datetime.now()
+        printer.save()
+        
         status = request.data
         file_name, printing = file_printing(status.get('octoprint_data', {}))
         existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()

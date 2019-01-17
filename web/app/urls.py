@@ -1,9 +1,10 @@
 from django.urls import path
-from django.contrib.auth.decorators import login_required
 
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('printers/', login_required(views.PrinterView.as_view()))
+    path('printers/', views.printer_grid, name='printer_grid'),
+    path('printers/new/', views.new_printer, name='new_printer'),
+    path('printers/<int:id>/', views.edit_printer, name='edit_printer'),
 ]

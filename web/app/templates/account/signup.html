@@ -23,7 +23,7 @@
       <div class="form-group">
         {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="Email address" %}
         {% if form.email.errors %}
-        <small id="passwordHelp" class="text-danger">
+        <small id="emailHelp" class="text-danger">
           {% for error in form.email.errors %}
           {{ error|escape }}
           {% endfor %}

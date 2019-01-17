@@ -14,4 +14,4 @@ class PrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('name', 'current_print', 'current_img_url', 'detection_score')
+        fields = ('name', 'current_print', 'current_img_url', 'detection_score', 'last_contacted')

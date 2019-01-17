@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "gulp sass",
-    "watch": "gulp watch"
+    "watch": "yarn build && gulp watch"
   },
   "author": "",
   "license": "ISC",

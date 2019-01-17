@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-sm-11 col-md-8 col-lg-6">
+        <div id="smartwizard">
+            <ul>
+                <li><a href="#step-1">Step 1<br /><small>Give your printer a name</small></a></li>
+                <li><a href="#step-2">Step 2<br /><small>Copy token to the plugin</small></a></li>
+                <li><a href="#step-3">Step 3<br /><small>Verify connection</small></a></li>
+            </ul>
+
+            <div>
+                <div id="step-1" class="form-step">
+                    <form id="printer_form" method="POST" action="{% url 'new_printer' %}?#step-2">
+                        {% csrf_token %}
+                        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+                        <div class="form-group">
+                            {% render_field form.name class="form-control" aria-describedby="nameHelp" placeholder="Name for your shiny new printer" %}
+                            {% if form.name.errors %}
+                            <small id="passwordHelp" class="text-danger">
+                                {% for error in form.name.errors %}
+                                {{ error|escape }}
+                                {% endfor %}
+                            </small>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    </form>
+                </div>
+                <div id="step-2" class="token-step">
+                        Copy and paste this token to OctoPrint TheSpaghettiDetective Plugin settings:
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="foo" value="{{ form.instance.auth_token }}">
+                            <div class="input-group-append">
+                                <button id="copy-to-clipboard" class="btn btn-outline-secondary" type="button"
+                                    data-clipboard-target="#foo">
+                                    <i class="fas fa-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                        Click "Next" After you are done.  
+                </div>
+                <div id="step-3" class="">
+                    <div id="printer-connection" data-printer-id="{{ form.instance.id }}">
+                        <i class="fas fa-spinner fa-spin fa-lg"></i>
+                        <div>
+                            Waiting for TheSpaghettiDetective Plugin to connect...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock content %}

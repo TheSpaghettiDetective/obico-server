@@ -52,6 +52,7 @@ class Printer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     current_img_url = models.CharField(max_length=1000, null=True, blank=True)
     detection_score = models.FloatField(null=True)
+    last_contacted = models.DateTimeField(null=True)
 
     def _get_current_print(self):
         return self.print_set.filter(ended_at__isnull=False).order_by('-id').first()

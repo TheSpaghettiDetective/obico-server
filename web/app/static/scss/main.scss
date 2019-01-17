@@ -1,3 +1,10 @@
+@import 'theme';
+
+.form-control:focus {
+  box-shadow: none!important;
+  border-color: #ced4da!important;
+}
+
 /** Webcam */
 
 .webcam_container {
@@ -67,6 +74,53 @@
   }
 }
 
+/*** Printer Card *****/
 .printer-card {
-  min-height: 20em;
+  min-height: 25em;
+
+  .new-printer {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6em;
+
+    a {
+      text-align: center;
+      border: thin dashed;
+      border-radius: 0.5em;
+      border-color: lighten($color-primary, 20);
+      padding: 5em 3em;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
 }
+
+/*** Printer Form *****/
+
+.step-content {
+  min-height: 12em;
+
+  &.form-step {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+  }
+
+  &.token-step {
+    padding: 1em 0.5em;
+  }
+
+  #printer-connection {
+    text-align: center;
+    padding: 2em;
+
+    i {
+      margin: 1em;
+    }
+  }
+}
+

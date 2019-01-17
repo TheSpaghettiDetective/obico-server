@@ -1,7 +1,9 @@
+$color-primary: #9c27b0; 
+$color-secondary: #11cb5f; 
 
 $theme-colors: (
-    "primary": #9c27b0,
-    "secondary": #11cb5f,
-  );
+  "primary": $color-primary,
+  "secondary": $color-secondary,
+);
 
 @import "../../../node_modules/bootstrap/scss/bootstrap";

@@ -77,6 +77,7 @@
 /*** Printer Card *****/
 .printer-card {
   min-height: 25em;
+  margin-top: 2em;
 
   .new-printer {
     display: flex;
@@ -103,10 +104,15 @@
 
 #smartwizard {
   margin-top: 3em;
+  padding: 2.5em;
 
   &.sw-theme-default {
+    -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
     .sw-toolbar {
       background: none !important;
+      border-top: thin solid;
     }
     > ul.step-anchor > li > a {
       color: $color-disabled !important;
@@ -147,7 +153,7 @@
 
     #connected {
       i {
-        color: $color-secondary;
+        color: $color-success;
       }
     }
   }

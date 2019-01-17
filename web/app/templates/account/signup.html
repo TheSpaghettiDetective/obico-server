@@ -17,6 +17,7 @@
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i class="fab fa-facebook-f"></i> Sign up with Facebook</span> </a>
           <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i class="fab fa-google-plus-g"></i> Sign up with Google+</span> </a>
       </div>
+      <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
     <form class="signup form-signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">
       {% csrf_token %}
       {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
@@ -29,7 +30,7 @@
           {% endfor %}
         </small>
         {% else %}
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
         {% endif %}
       </div>
       <div class="form-group">
@@ -41,7 +42,7 @@
           {% endfor %}
         </small>
         {% else %}
-        <small id="password1Help" class="form-text text-muted">At least 6 characters. And be secure, please.</small>
+        <small id="password1Help" class="form-text">At least 6 characters. And be secure, please.</small>
         {% endif %}
       </div>
       <div class="form-group">

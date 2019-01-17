@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-8 col-lg-6">
+    <div class="col-sm-11 col-md-9 col-lg-7">
         <div id="smartwizard">
             <ul>
                 <li><a href="#step-1">Step 1<br /><small>Give your printer a name</small></a></li>
                 <li><a href="#step-2">Step 2<br /><small>Copy token to the plugin</small></a></li>
-                <li><a href="#step-3">Step 3<br /><small>Verify connection</small></a></li>
+                <li><a href="#step-3">Step 3<br /><small>Wait for connection</small></a></li>
             </ul>
 
             <div>
@@ -43,11 +43,17 @@
                         </div>
                         Click "Next" After you are done.  
                 </div>
-                <div id="step-3" class="">
-                    <div id="printer-connection" data-printer-id="{{ form.instance.id }}">
+                <div id="step-3" class="connection-step" data-printer-id="{{ form.instance.id }}">
+                    <div id="waiting">
                         <i class="fas fa-spinner fa-spin fa-lg"></i>
                         <div>
                             Waiting for TheSpaghettiDetective Plugin to connect...
+                        </div>
+                    </div>
+                    <div id="connected" style="display: none" >
+                        <i class="far fa-check-circle fa-lg"></i>TheSpaghettiDetective plugin is successfully configured!
+                        <div>
+                            <a class="btn btn-secondary" href="/" role="button">Done</a>
                         </div>
                     </div>
                 </div>

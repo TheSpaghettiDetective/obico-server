@@ -21,6 +21,12 @@ $(document).ready(function () {
         if (stepNumber === 0 && stepDirection === 'forward') {
             $("#printer_form").submit();
         }
+        if (stepNumber === 1 && stepDirection === 'forward') {
+            var printerId = $('.connection-step').data('printer-id');
+            if (printerId) {
+                checkPrinterEvent(printerId);
+            }
+        }
     });
 
     function setTooltip(btn, message) {
@@ -59,16 +65,13 @@ $(document).ready(function () {
         })
             .done(function (printer) {
                 if (printer.last_contacted) {
-                    console.log('got it');
+                    $('#connected').show();
+                    $('#waiting').hide();
                 } else {
                     setTimeout(function () {
                         checkPrinterEvent(printerId);
                     }, 2000);
                 }
             });
-    }
-    var printerId = $('#printer-connection').data('printer-id');
-    if (printerId) {
-        checkPrinterEvent(printerId);
     }
 });

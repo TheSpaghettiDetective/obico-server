@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid">
+
     <div class="row justify-content-center">
         {% for printer in printers %}
         <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card">
@@ -76,7 +76,7 @@
             </div>
         </div>
     </div>
-</div>
+
 <script type="text/javascript">
     var printer_stock_img_src = "{% static "img/3d_printer.png" %}";
 </script>

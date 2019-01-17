@@ -101,8 +101,31 @@
 
 /*** Printer Form *****/
 
+#smartwizard {
+  margin-top: 3em;
+
+  &.sw-theme-default {
+    .sw-toolbar {
+      background: none !important;
+    }
+    > ul.step-anchor > li > a {
+      color: $color-disabled !important;
+    }
+    > ul.step-anchor > li.done > a {
+      color: #EBEBEB !important;
+    }
+    > ul.step-anchor > li.active > a {
+      color: $color-primary !important;
+
+      &:after {
+        background: $color-primary;
+      }
+    }
+  }
+
 .step-content {
   min-height: 12em;
+  background: none;
 
   &.form-step {
     display: flex;
@@ -114,13 +137,19 @@
     padding: 1em 0.5em;
   }
 
-  #printer-connection {
+  &.connection-step {
     text-align: center;
     padding: 2em;
 
     i {
       margin: 1em;
     }
+
+    #connected {
+      i {
+        color: $color-secondary;
+      }
+    }
   }
 }
-
+}

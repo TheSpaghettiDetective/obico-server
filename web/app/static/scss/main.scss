@@ -76,7 +76,6 @@
 
 /*** Printer Card *****/
 .printer-card {
-  min-height: 25em;
   margin-top: 2em;
 
   .card-body {
@@ -88,8 +87,12 @@
       }
     }
   }
+}
 
-  .new-printer {
+#new-printer {
+  min-height: 25em;
+  .new-printer-container {
+    
     display: flex;
     flex-flow: column;
     align-items: center;

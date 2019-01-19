@@ -15,6 +15,8 @@ $(document).ready(function () {
                     } else {
                         printer_card.find("img.webcam_img").attr('src', printer_stock_img_src);
                     }
+
+                    printer_card.find('#tangle-index').attr('data-value', printer.detection_score*100);
                 })
         }, 5 * 1000);
     });

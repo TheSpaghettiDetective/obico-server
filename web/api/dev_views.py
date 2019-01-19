@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +19,7 @@ class PrinterPicView(APIView):
         printer = request.auth
 
         pic = request.data['pic']
-        internal_url, external_url = save_file_obj('{}/1.jpg'.format(printer.id), pic, request)
+        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, request)
         printer.current_img_url = external_url
         printer.last_contacted = datetime.now()
         printer.save()
@@ -26,7 +27,7 @@ class PrinterPicView(APIView):
         existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
         if not existing_print:
             return Response({'result': 'OK'})
-        
+
         resp = requests.get(settings.ML_HOST + '/p', params={'img': internal_url})
         resp.raise_for_status()
 
@@ -59,7 +60,7 @@ class PrinterStatusView(APIView):
         printer = request.auth
         printer.last_contacted = datetime.now()
         printer.save()
-        
+
         status = request.data
         file_name, printing = file_printing(status.get('octoprint_data', {}))
         existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()

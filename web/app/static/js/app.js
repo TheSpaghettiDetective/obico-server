@@ -10,7 +10,11 @@ $(document).ready(function () {
                 dataType: 'json',
             })
                 .done(function (printer) {
-                    printer_card.find("img.webcam_img").attr('src', printer.current_img_url);
+                    if (printer.current_img_url) {
+                        printer_card.find("img.webcam_img").attr('src', printer.current_img_url);
+                    } else {
+                        printer_card.find("img.webcam_img").attr('src', printer_stock_img_src);
+                    }
                 })
         }, 5 * 1000);
     });

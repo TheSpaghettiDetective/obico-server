@@ -79,6 +79,16 @@
   min-height: 25em;
   margin-top: 2em;
 
+  .card-body {
+    .container-fluid {
+      padding: 0px;
+
+      div[class*="col-"]:not(:last-child) {
+        border-right: thin solid;
+      }
+    }
+  }
+
   .new-printer {
     display: flex;
     flex-flow: column;

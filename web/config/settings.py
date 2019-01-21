@@ -167,8 +167,8 @@ REST_FRAMEWORK = {
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
-MEDIA_HOST = os.environ.get('MEDIA_HOST')
-INTERNAL_MEDIA_HOST = 'http://web:3334'
+MEDIA_URL = os.environ.get('MEDIA_URL')
+INTERNAL_MEDIA_URL = 'http://web:3334'
 
 # Settings for `app` and `api`
 

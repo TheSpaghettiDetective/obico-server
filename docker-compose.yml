@@ -19,10 +19,8 @@ services:
       - "3334:3334"
     volumes:
       - $PWD/web:/app
-    environment:
-      - FLASK_APP=server.py
-      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
-      - MEDIA_HOST=http://localhost:3334
+    env_file:
+      - .env_file
     command: bash -c "sleep 100000000000"
 
   db:
@@ -35,6 +33,11 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data/pgdata
+
+  redis:
+    image: redis:5.0
+    ports:
+      - "6379:6379"
 
 volumes:
      db-data:

@@ -19,12 +19,12 @@ def _save_to_file_system(dest_path, file_obj, request):
             dest_file.write(chunk)
 
     uri = settings.MEDIA_URL + dest_path
-    if settings.MEDIA_URL:
-        external_url = settings.MEDIA_URL + uri
+    if settings.EXTERNAL_MEDIA_HOST:
+        external_url = settings.EXTERNAL_MEDIA_HOST + uri
     else:
         external_url = request.build_absolute_uri(uri)
 
-    return settings.INTERNAL_MEDIA_URL + uri, external_url
+    return settings.INTERNAL_MEDIA_HOST + uri, external_url
 
 def _save_to_azure(dest_path, file_obj):
     blob_service = BlockBlobService(connection_string=settings.AZURE_STORAGE_CONNECTION_STRING)

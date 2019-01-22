@@ -13,6 +13,33 @@ $(document).ready(function () {
                     updatePrinterCard(printer, printer_card);
                 })
         }, 5 * 1000);
+
+        printer_card.find("#print-pause-resume").click(function() {
+            var btn = $(this);
+            var cmd = btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/';
+            $.ajax({
+                url: '/api/printers/' + printer_id + cmd,
+                type: 'GET',
+                dataType: 'json',
+            })
+            .done(function () {
+                $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+            });
+        });
+
+        printer_card.find('#print-cancel').confirmation({
+            rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
+            onConfirm: function(value) {
+                $.ajax({
+                    url: '/api/printers/' + printer_id + '/cancel_print/',
+                    type: 'GET',
+                    dataType: 'json',
+                })
+                .done(function () {
+                    $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+                });
+            },
+          });
     });
 
     function updatePrinterCard(printer, printer_card) {
@@ -26,7 +53,19 @@ $(document).ready(function () {
         printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
         printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0)*100);
 
-        printer_card.find("#print-file-name").text(_.get(printer, 'status.print_file_name', '-'));
+        if (_.get(printer, 'status.print_file_name')) {
+            printer_card.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
+            $('.print-status button').prop('disabled', false);
+        } else {
+            printer_card.find("#print-file-name").text('-');
+            $('.print-status button').prop('disabled', true);
+        }
+
+        if (_.get(printer, 'status.text') === 'Paused') {
+            printer_card.find("#print-pause-resume").addClass('btn-success').removeClass('btn-warning').text('Resume');
+        } else {
+            printer_card.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
+        }
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
         printer_card.find("#time-left").text( (secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');

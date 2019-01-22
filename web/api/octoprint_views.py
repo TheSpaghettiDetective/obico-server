@@ -12,7 +12,7 @@ from app.models import *
 from lib.file_storage import save_file_obj
 from lib import redis
 
-STATUS_TTL_SECONDS = 60
+STATUS_TTL_SECONDS = 180
 
 def command_response(printer):
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
@@ -44,7 +44,6 @@ class OctoPrintPicView(APIView):
         redis.printer_pic_set(printer.id, 'score', score, ex=STATUS_TTL_SECONDS)
 
         if score > settings.ALERT_THRESHOLD and redis.printer_status_get(printer.id, 'alert_outstanding') != 't':
-            import ipdb; ipdb.set_trace()
             redis.printer_status_set(printer.id, {'alert_outstanding': 't'}, ex=STATUS_TTL_SECONDS)
             PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': 'pause'}), status=PrinterCommand.PENDING)
 
@@ -73,8 +72,7 @@ class OctoPrintStatusView(APIView):
         status = request.data
         octo_data = status.get('octoprint_data', {})
         file_name, printing, text = file_printing(octo_data)
-
-        seconds_left = octo_data.get('progress', {}).get('printTimeLeft')
+        seconds_left = octo_data.get('progress', {}).get('printTimeLeft') or -1
 
         redis.printer_status_set(printer.id, {'text': text, 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
         if printing:

@@ -181,4 +181,4 @@ ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')
 import redis
 REDIS_CONN = None
 if not REDIS_CONN:
-    REDIS_CONN = redis.Redis.from_url(os.environ.get("REDIS_URL"))
+    REDIS_CONN = redis.Redis.from_url(os.environ.get("REDIS_URL"), charset="utf-8", decode_responses=True)

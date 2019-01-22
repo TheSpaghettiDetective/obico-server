@@ -59,7 +59,10 @@ class Printer(models.Model):
 
     @property
     def pic(self):
-        return redis.printer_pic_get(self.id)
+        pic_data = redis.printer_pic_get(self.id)
+        if pic_data['score']:
+            pic_data['score'] = float(pic_data['score'])
+        return pic_data
 
     def __str__(self):
         return self.name

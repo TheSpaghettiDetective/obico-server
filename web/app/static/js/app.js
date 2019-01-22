@@ -10,13 +10,8 @@ $(document).ready(function () {
                 dataType: 'json',
             })
                 .done(function (printer) {
-                    if (printer.current_img_url) {
-                        printer_card.find("img.webcam_img").attr('src', printer.current_img_url);
-                    } else {
-                        printer_card.find("img.webcam_img").attr('src', printer_stock_img_src);
-                    }
-
-                    printer_card.find('#tangle-index').attr('data-value', printer.detection_score*100);
+                    printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+                    printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0)*100);
                 })
         }, 5 * 1000);
     });

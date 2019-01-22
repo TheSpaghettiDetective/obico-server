@@ -81,10 +81,10 @@
   .card-body {
     .container-fluid {
       padding: 0px;
+    }
 
-      div[class*="col-"]:not(:last-child) {
-        border-right: thin solid;
-      }
+    &.failure-alert {
+      padding: .65em 1em;
     }
   }
 }
@@ -102,7 +102,6 @@
     a {
       text-align: center;
       border: thin dashed;
-      border-radius: 0.5em;
       border-color: lighten($color-primary, 20);
       padding: 5em 3em;
 

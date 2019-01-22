@@ -52,16 +52,18 @@ class Printer(models.Model):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    alert_outstanding = models.BooleanField(default=False)
 
     @property
     def status(self):
-        return redis.printer_status_get(self.id)
+        status_data = redis.printer_status_get(self.id)
+        if 'seconds_left' in status_data:
+            status_data['seconds_left'] = int(status_data['seconds_left'])
+        return status_data
 
     @property
     def pic(self):
         pic_data = redis.printer_pic_get(self.id)
-        if pic_data['score']:
+        if 'score' in pic_data:
             pic_data['score'] = float(pic_data['score'])
         return pic_data
 

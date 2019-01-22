@@ -10,11 +10,27 @@ $(document).ready(function () {
                 dataType: 'json',
             })
                 .done(function (printer) {
-                    printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-                    printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0)*100);
+                    updatePrinterCard(printer, printer_card);
                 })
         }, 5 * 1000);
     });
+
+    function updatePrinterCard(printer, printer_card) {
+
+        if (_.get(printer, 'status.alert_outstanding') === 't') {
+            printer_card.find(".failure-alert").show();
+        } else {
+            printer_card.find(".failure-alert").hide();
+        }
+
+        printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0)*100);
+
+        printer_card.find("#print-file-name").text(_.get(printer, 'status.print_file_name', '-'));
+
+        var secondsLeft = _.get(printer, 'status.seconds_left', -1);
+        printer_card.find("#time-left").text( (secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
+    }
 
     /** Printer form */
     $('#smartwizard').smartWizard();

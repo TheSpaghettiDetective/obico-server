@@ -176,8 +176,9 @@ AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRIN
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
 ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')
 
-# App-wide connection pool
+ALERT_THRESHOLD = 0.3
 
+# REDIS client
 import redis
 REDIS_CONN = None
 if not REDIS_CONN:

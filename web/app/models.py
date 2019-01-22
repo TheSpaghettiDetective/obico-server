@@ -52,6 +52,7 @@ class Printer(models.Model):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    alert_outstanding = models.BooleanField(default=False)
 
     @property
     def status(self):
@@ -66,3 +67,20 @@ class Printer(models.Model):
 
     def __str__(self):
         return self.name
+
+class PrinterCommand(models.Model):
+    PENDING = 'PENDING'
+    SENT = 'SENT'
+
+    COMMAND_STATUSES = (
+        (PENDING, 'pending'),
+        (SENT, 'sent'),
+    )
+
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    command = models.CharField(max_length=2000, null=False, blank=False)
+    status = models.CharField(
+        max_length=10,
+        choices=COMMAND_STATUSES,
+        default=PENDING,
+    )

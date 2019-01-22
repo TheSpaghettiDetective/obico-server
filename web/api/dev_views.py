@@ -6,12 +6,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
 import requests
+import json
 
 from app.models import *
 from lib.file_storage import save_file_obj
 from lib import redis
 
 STATUS_TTL_SECONDS = 60
+
+def command_response(printer):
+    commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
+    resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
+    commands.update(status=PrinterCommand.SENT)
+    return resp
+
 
 class PrinterPicView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -35,9 +43,15 @@ class PrinterPicView(APIView):
         score = sum([ d[1] for d in det ])
         redis.printer_pic_set(printer.id, 'score', score, ex=STATUS_TTL_SECONDS)
 
+        if score > settings.ALERT_THRESHOLD and not printer.alert_outstanding:
+            printer.alert_outstanding = True
+            printer.save()
+            
+            PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': 'pause'}), status=PrinterCommand.PENDING)
+
         print(det)
         print(score)
-        return Response({'result': det})
+        return command_response(printer)
 
 
 class PrinterStatusView(APIView):
@@ -66,4 +80,4 @@ class PrinterStatusView(APIView):
         else:
             redis.printer_status_delete(printer.id, 'current_print_filename')
 
-        return Response({'result': 'OK'})
+        return command_response(printer)

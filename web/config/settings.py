@@ -175,3 +175,10 @@ INTERNAL_MEDIA_HOST = 'http://web:3334'
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
 ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')
+
+# App-wide connection pool
+
+import redis
+REDIS_CONN = None
+if not REDIS_CONN:
+    REDIS_CONN = redis.Redis.from_url(os.environ.get("REDIS_URL"))

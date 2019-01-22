@@ -2,16 +2,10 @@ from rest_framework import serializers
 
 from app.models import *
 
-class PrintSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Print
-        fields = ('name', 'ended_at',)
-        
-
 class PrinterSerializer(serializers.ModelSerializer):
-    current_print = PrintSerializer()
+    pic = serializers.DictField(read_only=True)
+    status = serializers.DictField(read_only=True)
 
     class Meta:
         model = Printer
-        fields = ('name', 'current_print', 'current_img_url', 'detection_score', 'last_contacted')
+        fields = ('name', 'pic', 'status',)

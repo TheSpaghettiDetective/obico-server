@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 
+from lib import redis
+
 class UserManager(UserManager):
     """Define a model manager for User model with no username field."""
 
@@ -50,21 +52,14 @@ class Printer(models.Model):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    current_img_url = models.CharField(max_length=1000, null=True, blank=True)
-    detection_score = models.FloatField(null=True)
-    last_contacted = models.DateTimeField(null=True)
 
-    def _get_current_print(self):
-        return self.print_set.filter(ended_at__isnull=False).order_by('-id').first()
+    @property
+    def status(self):
+        return redis.printer_status_get(self.id)
 
-    current_print = property(_get_current_print)
-    
+    @property
+    def pic(self):
+        return redis.printer_pic_get(self.id)
+
     def __str__(self):
         return self.name
-
-
-class Print(models.Model):
-    name = models.CharField(max_length=200, null=True)
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
-    started_at = models.DateTimeField(null=True)
-    ended_at = models.DateTimeField(null=True)

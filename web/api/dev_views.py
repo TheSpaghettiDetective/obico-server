@@ -8,8 +8,10 @@ from django.conf import settings
 import requests
 
 from app.models import *
-from .file_storage import save_file_obj
+from lib.file_storage import save_file_obj
+from lib import redis
 
+STATUS_TTL_SECONDS = 60
 
 class PrinterPicView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -20,12 +22,10 @@ class PrinterPicView(APIView):
 
         pic = request.data['pic']
         internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, request)
-        printer.current_img_url = external_url
-        printer.last_contacted = datetime.now()
-        printer.save()
+        redis.printer_pic_set(printer.id, 'img_url', external_url, ex=STATUS_TTL_SECONDS)
 
-        existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
-        if not existing_print:
+        current_print_filename = redis.printer_status_get(printer.id, 'current_print_filename')
+        if not current_print_filename:
             return Response({'result': 'OK'})
 
         resp = requests.get(settings.ML_HOST + '/p', params={'img': internal_url})
@@ -33,9 +33,7 @@ class PrinterPicView(APIView):
 
         det = resp.json()
         score = sum([ d[1] for d in det ])
-
-        printer.detection_score = score
-        printer.save()
+        redis.printer_pic_set(printer.id, 'score', score, ex=STATUS_TTL_SECONDS)
 
         print(det)
         print(score)
@@ -55,28 +53,17 @@ class PrinterStatusView(APIView):
                     printing = True
 
             file_name = octoprint_data.get('job', {}).get('file', {}).get('name')
-            return file_name, printing
+            return file_name, printing, octoprint_data.get('state', {}).get('text')
 
         printer = request.auth
-        printer.last_contacted = datetime.now()
-        printer.save()
 
         status = request.data
-        file_name, printing = file_printing(status.get('octoprint_data', {}))
-        existing_print = Print.objects.filter(printer=printer, ended_at__isnull=True).first()
+        file_name, printing, text = file_printing(status.get('octoprint_data', {}))
 
-        if not printing:
-            if existing_print:
-                existing_print.ended_at = datetime.now()
+        redis.printer_status_set(printer.id, 'text', text, ex=STATUS_TTL_SECONDS)
+        if printing:
+            redis.printer_status_set(printer.id, 'current_print_filename', file_name, ex=STATUS_TTL_SECONDS)
         else:
-            if not existing_print:
-                existing_print = Print(name=file_name, printer=printer, started_at=datetime.now())
-            elif existing_print.name != file_name:
-                existing_print.ended_at = datetime.now()
-                existing_print.save()
-                existing_print = Print(name=file_name, printer=printer, started_at=datetime.now())
-
-        if existing_print:
-            existing_print.save()
+            redis.printer_status_delete(printer.id, 'current_print_filename')
 
         return Response({'result': 'OK'})

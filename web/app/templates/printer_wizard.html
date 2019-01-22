@@ -14,7 +14,7 @@
 
             <div>
                 <div id="step-1" class="form-step">
-                    <form id="printer_form" method="POST" action="{% url 'new_printer' %}?#step-2">
+                    <form id="printer_form" method="POST" action="{{ request.path }}?#step-2">
                         {% csrf_token %}
                         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
                         <div class="form-group">

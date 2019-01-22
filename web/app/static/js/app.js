@@ -127,7 +127,7 @@ $(document).ready(function () {
             dataType: 'json',
         })
             .done(function (printer) {
-                if (printer.last_contacted) {
+                if (!_.isEmpty(printer.status)) {
                     $('#connected').show();
                     $('#waiting').hide();
                 } else {

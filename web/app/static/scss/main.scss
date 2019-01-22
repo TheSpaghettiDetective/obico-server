@@ -78,6 +78,12 @@
 .printer-card {
   margin-top: 2em;
 
+  .card-header {
+    button.dropdown-toggle {
+      background-color: transparent;
+      border: none;
+    }
+  }
   .card-body {
     .container-fluid {
       padding: 0px;

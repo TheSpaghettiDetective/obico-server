@@ -40,6 +40,13 @@ $(document).ready(function () {
                 });
             },
           });
+
+          printer_card.find('#delete-print').confirmation({
+            rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
+            onConfirm: function(value) {
+                window.location.href = "/printers/" + printer_id + "/delete/";
+            },
+          });
     });
 
     function updatePrinterCard(printer, printer_card) {

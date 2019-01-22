@@ -33,3 +33,9 @@ def new_printer(request):
 def edit_printer(request, id):
     instance = get_object_or_404(Printer, id=id)
     return render(request, 'printer_wizard.html', {'form': PrinterForm(instance=instance)})
+
+@login_required
+def delete_printer(request, id):
+    instance = get_object_or_404(Printer, id=id)
+    instance.delete()
+    return redirect('/printers/')

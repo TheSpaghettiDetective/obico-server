@@ -9,6 +9,16 @@
         <div class="card">
             <div class="card-header">
                 {{ printer.name }}
+                <div class="float-right">
+                <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item" href="/printers/{{ printer.id }}/">Settings</a>
+                          <a id="delete-print" class="dropdown-item text-danger" href="#" data-toggle="confirmation">Delete</a>
+                        </div>
+                      </div>
+                      </div>
             </div>
 
             <div class="card-img-top webcam_container">

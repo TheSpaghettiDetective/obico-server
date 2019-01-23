@@ -1,0 +1,18 @@
+version: 2
+jobs:
+ build:
+   branches:
+     only:
+       - prod
+   machine: true
+   steps:
+     - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+     - checkout
+     # build the application image
+     - run: docker build -t thespaghettidetective/web:0.${CIRCLE_BUILD_NUM} web
+     - run: docker build -t thespaghettidetective/ml_api:0.${CIRCLE_BUILD_NUM} ml_api
+
+     # deploy the image
+     - run: docker push thespaghettidetective/web:0.${CIRCLE_BUILD_NUM}
+     - run: docker push thespaghettidetective/ml_api:0.${CIRCLE_BUILD_NUM}

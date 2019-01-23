@@ -1,8 +1,10 @@
 {% block html %}
 <html><body>
         <p>Hi,</p>
-        <p>The Spaghetti Detective spotted some suspicious activities on your printer {{ printer.name }}.</p>
-        <img src="{{ printer.pic['img_url'] }}" />
+        <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
+        <br />
+        <img src="{{ printer.pic.img_url }}" />
+        <br />
 
         Go to <a href="{{ view_link }}">The Spaghetti Detective real time view</a> to find out more and cancel the print if necessary.
 

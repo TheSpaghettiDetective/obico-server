@@ -1,20 +1,48 @@
 $(document).ready(function () {
-    var timers = [];
-    $('.printer-card').each(function () {
-        var printer_card = $(this);
-        var printer_id = printer_card.attr('id');
-        timers += setInterval(function () {
+    var timer;
+
+    function startPolling() {
+        if (timer === undefined) {
+            timer = setInterval(pollAllPrinters, 5 * 1000);
+        }
+    }
+
+    function stopPolling() {
+        if (timer) {
+            clearInterval(timer);
+            timer = undefined;
+        }
+    }
+
+    function pollAllPrinters() {
+        $('.printer-card').each(function () {
+            var printer_card = $(this);
+            var printer_id = printer_card.attr('id');
             $.ajax({
                 url: '/api/printers/' + printer_id + '/',
                 type: 'GET',
                 dataType: 'json',
             })
-                .done(function (printer) {
-                    updatePrinterCard(printer, printer_card);
-                })
-        }, 5 * 1000);
+            .done(function (printer) {
+                updatePrinterCard(printer, printer_card);
+            })
+        });
+    }
 
-        printer_card.find("#print-pause-resume").click(function() {
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            pollAllPrinters();
+            startPolling();
+        }
+    });
+
+    pollAllPrinters();
+    startPolling();
+
+    $('.printer-card').each(function () {
+        printer_card.find("#print-pause-resume").click(function () {
             var btn = $(this);
             var cmd = btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/';
             $.ajax({
@@ -22,31 +50,31 @@ $(document).ready(function () {
                 type: 'GET',
                 dataType: 'json',
             })
-            .done(function () {
-                $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
-            });
+                .done(function () {
+                    $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+                });
         });
 
         printer_card.find('#print-cancel').confirmation({
             rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
-            onConfirm: function(value) {
+            onConfirm: function (value) {
                 $.ajax({
                     url: '/api/printers/' + printer_id + '/cancel_print/',
                     type: 'GET',
                     dataType: 'json',
                 })
-                .done(function () {
-                    $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
-                });
+                    .done(function () {
+                        $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+                    });
             },
-          });
+        });
 
-          printer_card.find('#delete-print').confirmation({
+        printer_card.find('#delete-print').confirmation({
             rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
-            onConfirm: function(value) {
+            onConfirm: function (value) {
                 window.location.href = "/printers/" + printer_id + "/delete/";
             },
-          });
+        });
     });
 
     function updatePrinterCard(printer, printer_card) {
@@ -58,7 +86,7 @@ $(document).ready(function () {
         }
 
         printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0)*100);
+        printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0) * 100);
 
         if (_.get(printer, 'status.print_file_name')) {
             printer_card.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
@@ -75,7 +103,7 @@ $(document).ready(function () {
         }
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
-        printer_card.find("#time-left").text( (secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
+        printer_card.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
     }
 
     /** Printer form */

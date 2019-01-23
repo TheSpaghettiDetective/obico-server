@@ -12,7 +12,7 @@ def send_failure_alert(printer):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
-    subject = 'Your print {} may be failing on {}'.format(printer.status.get('print_file_name', ''), printer.name)
+    subject = 'TYour print {} may be failing on {}'.format(printer.status.get('print_file_name', ''), printer.name)
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
@@ -21,6 +21,6 @@ def send_failure_alert(printer):
     }
 
     message = get_template('email/failure_alert.html').render(ctx)
-    msg = EmailMessage(subject, message, to=printer.user.email, from_email=from_email)
+    msg = EmailMessage(subject, message, to=(printer.user.email,), from_email=from_email)
     msg.content_subtype = 'html'
     msg.send()

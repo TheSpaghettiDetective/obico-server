@@ -38,7 +38,7 @@ class OctoPrintPicView(APIView):
         if not current_print_filename:
             return command_response(printer)
 
-        resp = requests.get(settings.ML_HOST + '/p', params={'img': internal_url})
+        resp = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url})
         resp.raise_for_status()
 
         det = resp.json()

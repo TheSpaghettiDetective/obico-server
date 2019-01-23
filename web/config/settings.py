@@ -170,7 +170,7 @@ INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST', 'http://web:3334')
 
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
-ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')
+ML_API_HOST = os.environ.get('ML_API_HOST', 'http://ml_api:3333')
 
 # Alert settings
 ALERT_THRESHOLD = 0.3

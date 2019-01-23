@@ -169,7 +169,7 @@ REST_FRAMEWORK = {
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
-INTERNAL_MEDIA_HOST = 'http://web:3334'
+INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST', 'http://web:3334')
 
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')

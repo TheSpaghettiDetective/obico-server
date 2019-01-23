@@ -1,8 +1,35 @@
 @import 'theme';
 
+/*** Global styles */
+body {
+  font-family:Roboto, sans-serif;
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 74px; /* Should be equal to the height of your footer */
+}
+
 .form-control:focus {
   box-shadow: none!important;
   border-color: #ced4da!important;
+}
+
+footer {
+  padding: 25px 0;
+  text-align: center;
+  color: rgba(255,255,255,.6);
+  background-color: black;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+  }
+}
+
+.navbar {
+  text-transform: uppercase;
 }
 
 /** Webcam */

@@ -11,4 +11,4 @@ EXPOSE 3333
 ENV FLASK_APP=server.py
 ENV REDIS_URL=redis://redis:6379
 
-CMD ["python",  "server.py"]
+CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:$PORT"]

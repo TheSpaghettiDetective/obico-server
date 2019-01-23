@@ -8,9 +8,11 @@ from django.conf import settings
 import requests
 import json
 
-from app.models import *
 from lib.file_storage import save_file_obj
 from lib import redis
+from app.models import *
+from app.emails import send_failure_alert
+
 
 STATUS_TTL_SECONDS = 180
 
@@ -29,7 +31,7 @@ class OctoPrintPicView(APIView):
         printer = request.auth
 
         pic = request.data['pic']
-        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, request)
+        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic)
         redis.printer_pic_set(printer.id, 'img_url', external_url, ex=STATUS_TTL_SECONDS)
 
         current_print_filename = redis.printer_status_get(printer.id, 'print_file_name')
@@ -45,6 +47,7 @@ class OctoPrintPicView(APIView):
 
         if score > settings.ALERT_THRESHOLD and redis.printer_status_get(printer.id, 'alert_outstanding') != 't':
             redis.printer_status_set(printer.id, {'alert_outstanding': 't'}, ex=STATUS_TTL_SECONDS)
+            send_failure_alert(printer)
             PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': 'pause'}), status=PrinterCommand.PENDING)
 
         print(det)

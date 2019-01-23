@@ -12,7 +12,7 @@ def index(request):
     return redirect('/printers/')
 
 @login_required
-def printer_grid(request):
+def printers(request):
     printers = Printer.objects.filter(user=request.user)
     return render(request, 'printers_grid.html', {'printers': printers})
 

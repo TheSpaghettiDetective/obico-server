@@ -155,6 +155,8 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 LOGIN_REDIRECT_URL = '/'
 
 SITE_ID = 1
+SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS', 'True') == 'True'
+
 AUTH_USER_MODEL = 'app.User'
 
 REST_FRAMEWORK = {
@@ -167,15 +169,13 @@ REST_FRAMEWORK = {
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
-EXTERNAL_MEDIA_HOST = os.environ.get('EXTERNAL_MEDIA_HOST')
 INTERNAL_MEDIA_HOST = 'http://web:3334'
-
-# Settings for `app` and `api`
 
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
 ML_HOST = os.environ.get('ML_HOST', 'http://ml_api:3333')
 
+# Alert settings
 ALERT_THRESHOLD = 0.3
 
 # REDIS client
@@ -183,3 +183,13 @@ import redis
 REDIS_CONN = None
 if not REDIS_CONN:
     REDIS_CONN = redis.Redis.from_url(os.environ.get("REDIS_URL"), charset="utf-8", decode_responses=True)
+
+# Email settings
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_HOST', '') == 'True'
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'changeme@example.com')

@@ -5,6 +5,7 @@ import urllib
 import cv2
 import numpy as np
 
+from auth import token_required
 from lib.prediction_model import load_net, detect
 
 app = flask.Flask(__name__)
@@ -14,6 +15,7 @@ model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
 
 @app.route('/p', methods=['GET'])
+@token_required
 def predict():
     if 'img' in request.args:
         resp = urllib.request.urlopen(request.args['img'])

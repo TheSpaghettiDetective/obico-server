@@ -3,7 +3,7 @@ jobs:
  build:
    branches:
      only:
-       - prod
+       - release
    machine: true
    steps:
      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS

@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///'+os.path.join(BASE_DIR, 'db.sqlite3'))
+    'default': dj_database_url.config()
 }
 
 # Password validation
@@ -152,7 +152,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 LOGIN_REDIRECT_URL = '/'
 
 SITE_ID = 1
-SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS', 'True') == 'True'
+SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 
 AUTH_USER_MODEL = 'app.User'
 
@@ -166,11 +166,11 @@ REST_FRAMEWORK = {
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
-INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST', 'http://web:3334')
+INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST')
 
 AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER', 'tsd')
-ML_API_HOST = os.environ.get('ML_API_HOST', 'http://ml_api:3333')
+ML_API_HOST = os.environ.get('ML_API_HOST')
 
 # Alert settings
 ALERT_THRESHOLD = 0.3
@@ -187,6 +187,6 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_HOST', '') == 'True'
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'changeme@example.com')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')

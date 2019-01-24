@@ -32,6 +32,36 @@ footer {
   text-transform: uppercase;
 }
 
+.swal2-popup {
+  background-color: darken($color-bg, 5) !important;
+  border-radius: unset !important;
+  .swal2-title {
+    color: $color-text !important;
+  }
+
+  &.swal2-modal {
+    .swal2-content {
+      color: $color-text !important;
+      font-size: 1rem !important;
+    }
+    .swal2-title {
+      color: $color-text !important;
+      font-size: 1.4rem !important;
+    }
+    button {
+      border-radius: unset !important;
+      border: none !important;
+
+      &.swal2-confirm {
+        background-color: $color-primary !important;
+      }
+      
+      &.swal2-cancel {
+        background-color: $color-secondary !important;
+      }
+    }
+  }
+}
 /** Webcam */
 
 .webcam_container {

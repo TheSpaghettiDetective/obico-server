@@ -23,9 +23,9 @@ $(document).ready(function () {
                 type: 'GET',
                 dataType: 'json',
             })
-            .done(function (printer) {
-                updatePrinterCard(printer, printerCard);
-            })
+                .done(function (printer) {
+                    updatePrinterCard(printer, printerCard);
+                })
         });
     }
 
@@ -46,10 +46,12 @@ $(document).ready(function () {
             url: '/api/printers/' + printerId + command,
             type: 'GET',
             dataType: 'json',
-        })
-            .done(function () {
-                $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+        }).done(function () {
+            Toast.fire({
+                type: 'success',
+                title: 'Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.',
             });
+        });
     }
 
     $('.printer-card').each(function () {
@@ -61,58 +63,33 @@ $(document).ready(function () {
             sendPrinterCommand(printerId, btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/');
         });
 
-        printerCard.find('#print-cancel').click( function() {
-            $.confirm({
-                theme: 'dark',
-                title: 'Are you sure?',
-                content: 'Once cancelled, the print can no longer be resumed!',
-                buttons: {
-                    yes: {
-                        action: function () {
-                            sendPrinterCommand(printerId, '/cancel_print/');
-                        },
-                    },
-                    no: {}
+        printerCard.find('#print-cancel').click(function () {
+            Confirm.fire({
+                text: 'Once cancelled, the print can no longer be resumed.',
+            }).then( function(result) {
+                if (result.value) {  // When it is confirmed
+                    sendPrinterCommand(printerId, '/cancel_print/');
                 }
             });
         });
 
-        printerCard.find('#delete-print').click( function() {
-            $.confirm({
-                theme: 'dark',
-                title: 'Are you sure?',
-                content: '',
-                buttons: {
-                    yes: {
-                        action: function() {
-                            window.location.href = "/printers/" + printerId + "/delete/";
-                        },
-                    },
-                    no: {},
+        printerCard.find('#delete-print').click(function () {
+            Confirm.fire({
+            }).then( function(result) {
+                if (result.value) {  // When it is confirmed
+                    window.location.href = "/printers/" + printerId + "/delete/";
                 }
-            })
+            });
         });
 
-        printerCard.find('#not-a-failure').click( function(e) {
-            $.confirm({
-                theme: 'dark',
-                columnClass: 'medium',
+        printerCard.find('#not-a-failure').click(function (e) {
+            Confirm.fire({
                 title: 'Noted!',
-                content: 'What do you want to do now?',
-                buttons: {
-                    resume: {
-                        text: 'Resume print',
-                        action: function() {
-                            sendPrinterCommand(printerId, '/resume_print/');
-                        }
-                    },
-                    resumeAll: {
-                        text: 'Resume, and do not alert me again',
-                        action: function() {
-                            sendPrinterCommand(printerId, '/resume_print/');
-                        }
-                    },
-                }
+                text: 'What do you want to do now?',
+                confirmButtonText: 'Resume print',
+                cancelButtonText: 'Resume, and don\'t alert again for this print',
+            }).then( function(result) {
+                sendPrinterCommand(printerId, '/resume_print/');
             });
             e.preventDefault();
         })
@@ -206,4 +183,20 @@ $(document).ready(function () {
                 }
             });
     }
+
+    /*** Swal Mixins */
+
+    var Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        // timer: 5000,
+    });
+
+    var Confirm = Swal.mixin({
+        title: 'Are you sure?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+    });
 });

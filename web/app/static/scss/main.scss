@@ -116,8 +116,18 @@ footer {
       padding: 0px;
     }
 
+    .gauge {
+      padding: 8px;
+    }
+
     &.failure-alert {
       padding: .65em 1em;
+      a {
+        color: darken($color-primary, 20);
+        &:hover {
+          color: darken($color-primary, 35);
+        }
+      }
     }
   }
 }
@@ -135,7 +145,7 @@ footer {
     a {
       text-align: center;
       border: thin dashed;
-      border-color: lighten($color-primary, 20);
+      border-color: darken($color-primary, 10);
       padding: 5em 3em;
 
       &:hover {

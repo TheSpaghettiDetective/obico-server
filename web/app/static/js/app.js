@@ -42,6 +42,9 @@ $(document).ready(function () {
     startPolling();
 
     $('.printer-card').each(function () {
+        var printer_card = $(this);
+        var printer_id = printer_card.attr('id');
+
         printer_card.find("#print-pause-resume").click(function () {
             var btn = $(this);
             var cmd = btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/';
@@ -82,7 +85,7 @@ $(document).ready(function () {
         if (_.get(printer, 'status.alert_outstanding') === 't') {
             printer_card.find(".failure-alert").show();
         } else {
-            printer_card.find(".failure-alert").hide();
+            printer_card.find(".failure-alert").show();
         }
 
         printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));

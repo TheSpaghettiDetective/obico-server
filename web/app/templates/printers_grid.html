@@ -30,16 +30,14 @@
                     </div>
                 </div>
             </div>
-            <div class="failure-alert card-body bg-warning" style="display: none">
-                Failures detected!
+            <div class="failure-alert card-body bg-warning text-center" style="display: none">
+                    <i class="fas fa-exclamation-triangle"></i>
+                Failure Detected!
                 <a href="#">Not a failure?</a>
             </div>
             <div class="card-body">
-                <div>
-                    
-                </div>
-                <div class="text-center">
-                    <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
+                <div class="text-center gauge">
+                    <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120" data-height="120"
                         data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
                         data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false"
                         data-highlights='[
@@ -53,7 +51,7 @@
                         data-font-value="Led" data-animated-value="true"></canvas>
                 </div>
                 <hr />
-                <div class="print-status container-fluid">
+                <div class="print-status container">
                     <div class="row">
                         <div class="text-muted col-sm-3">
                             File:

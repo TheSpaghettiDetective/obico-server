@@ -108,10 +108,10 @@ $(document).ready(function () {
 
         if (_.get(printer, 'status.print_file_name')) {
             printerCard.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
-            $('.print-status button').prop('disabled', false);
+            printerCard.find('.print-status button').prop('disabled', false);
         } else {
             printerCard.find("#print-file-name").text('-');
-            $('.print-status button').prop('disabled', true);
+            printerCard.find('.print-status button').prop('disabled', true);
         }
 
         if (_.get(printer, 'status.text') === 'Paused') {
@@ -190,7 +190,7 @@ $(document).ready(function () {
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
-        // timer: 5000,
+        timer: 5000,
     });
 
     var Confirm = Swal.mixin({

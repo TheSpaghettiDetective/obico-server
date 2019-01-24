@@ -2,40 +2,17 @@ version: '2.1'
 services:
   ml_api:
     build:
-        context: ml_api
-    stdin_open: true
-    tty: true
-    ports:
-      - "3333:3333"
+      context: ml_api
     volumes:
       - $PWD/ml_api:/app
 
   web:
     build:
-        context: web
-    stdin_open: true
-    tty: true
+      context: web
     ports:
       - "3334:3334"
     volumes:
       - $PWD/web:/app
-    env_file:
-      - .env_file
-    command: bash -c "sleep 100000000000"
-
-  db:
-    image: postgres:10
-    ports:
-      - "6432:5432"
-    environment:
-      - POSTGRES_USER=thespaghettidetective
-      - POSTGRES_PASSWORD=thespaghettidetective
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - db-data:/var/lib/postgresql/data/pgdata
 
   redis:
     image: redis:5.0
-
-volumes:
-     db-data:

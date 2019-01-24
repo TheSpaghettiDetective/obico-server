@@ -94,7 +94,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.env_file
 
 # Spyder project settings
 .spyderproject
@@ -128,3 +127,6 @@ dmypy.json
 # derived static assets
 static_build
 node_modules
+
+# Docker override
+docker-compose.override.yml

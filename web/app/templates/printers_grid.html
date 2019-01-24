@@ -15,7 +15,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <a class="dropdown-item" href="/printers/{{ printer.id }}/">Settings</a>
-                          <a id="delete-print" class="dropdown-item text-danger" href="#" data-toggle="confirmation">Delete</a>
+                          <a id="delete-print" class="dropdown-item text-danger" href="#">Delete</a>
                         </div>
                       </div>
                       </div>
@@ -33,7 +33,7 @@
             <div class="failure-alert card-body bg-warning text-center" style="display: none">
                     <i class="fas fa-exclamation-triangle"></i>
                 Failure Detected!
-                <a href="#">Not a failure?</a>
+                <a id="not-a-failure" href="#">Not a failure?</a>
             </div>
             <div class="card-body">
                 <div class="text-center gauge">
@@ -74,7 +74,7 @@
                             <button id="print-pause-resume" type="button" class="btn btn-warning btn-block" disabled>Pause</button>
                         </div>
                         <div class="col-6">
-                            <button id="print-cancel" type="button" class="btn btn-danger btn-block" disabled data-toggle="confirmation">Cancel</button>
+                            <button id="print-cancel" type="button" class="btn btn-danger btn-block" disabled>Cancel</button>
                         </div>
                     </div>
                 </div>

@@ -16,15 +16,15 @@ $(document).ready(function () {
 
     function pollAllPrinters() {
         $('.printer-card').each(function () {
-            var printer_card = $(this);
-            var printer_id = printer_card.attr('id');
+            var printerCard = $(this);
+            var printerId = printerCard.attr('id');
             $.ajax({
-                url: '/api/printers/' + printer_id + '/',
+                url: '/api/printers/' + printerId + '/',
                 type: 'GET',
                 dataType: 'json',
             })
             .done(function (printer) {
-                updatePrinterCard(printer, printer_card);
+                updatePrinterCard(printer, printerCard);
             })
         });
     }
@@ -41,72 +41,110 @@ $(document).ready(function () {
     pollAllPrinters();
     startPolling();
 
+    function sendPrinterCommand(printerId, command) {
+        $.ajax({
+            url: '/api/printers/' + printerId + command,
+            type: 'GET',
+            dataType: 'json',
+        })
+            .done(function () {
+                $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
+            });
+    }
+
     $('.printer-card').each(function () {
-        var printer_card = $(this);
-        var printer_id = printer_card.attr('id');
+        var printerCard = $(this);
+        var printerId = printerCard.attr('id');
 
-        printer_card.find("#print-pause-resume").click(function () {
+        printerCard.find("#print-pause-resume").click(function () {
             var btn = $(this);
-            var cmd = btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/';
-            $.ajax({
-                url: '/api/printers/' + printer_id + cmd,
-                type: 'GET',
-                dataType: 'json',
+            sendPrinterCommand(printerId, btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/');
+        });
+
+        printerCard.find('#print-cancel').click( function() {
+            $.confirm({
+                theme: 'dark',
+                title: 'Are you sure?',
+                content: 'Once cancelled, the print can no longer be resumed!',
+                buttons: {
+                    yes: {
+                        action: function () {
+                            sendPrinterCommand(printerId, '/cancel_print/');
+                        },
+                    },
+                    no: {}
+                }
+            });
+        });
+
+        printerCard.find('#delete-print').click( function() {
+            $.confirm({
+                theme: 'dark',
+                title: 'Are you sure?',
+                content: '',
+                buttons: {
+                    yes: {
+                        action: function() {
+                            window.location.href = "/printers/" + printerId + "/delete/";
+                        },
+                    },
+                    no: {},
+                }
             })
-                .done(function () {
-                    $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
-                });
         });
 
-        printer_card.find('#print-cancel').confirmation({
-            rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
-            onConfirm: function (value) {
-                $.ajax({
-                    url: '/api/printers/' + printer_id + '/cancel_print/',
-                    type: 'GET',
-                    dataType: 'json',
-                })
-                    .done(function () {
-                        $.notify("Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.");
-                    });
-            },
-        });
-
-        printer_card.find('#delete-print').confirmation({
-            rootSelector: '.printer-card[id=' + printer_id + '] [data-toggle=confirmation]',
-            onConfirm: function (value) {
-                window.location.href = "/printers/" + printer_id + "/delete/";
-            },
-        });
+        printerCard.find('#not-a-failure').click( function(e) {
+            $.confirm({
+                theme: 'dark',
+                columnClass: 'medium',
+                title: 'Noted!',
+                content: 'What do you want to do now?',
+                buttons: {
+                    resume: {
+                        text: 'Resume print',
+                        action: function() {
+                            sendPrinterCommand(printerId, '/resume_print/');
+                        }
+                    },
+                    resumeAll: {
+                        text: 'Resume, and do not alert me again',
+                        action: function() {
+                            sendPrinterCommand(printerId, '/resume_print/');
+                        }
+                    },
+                }
+            });
+            e.preventDefault();
+        })
     });
 
-    function updatePrinterCard(printer, printer_card) {
+    function updatePrinterCard(printer, printerCard) {
 
         if (_.get(printer, 'status.alert_outstanding') === 't') {
-            printer_card.find(".failure-alert").show();
+            printerCard.find(".failure-alert").show();
         } else {
-            printer_card.find(".failure-alert").show();
+            printerCard.find(".failure-alert").hide();
         }
 
-        printer_card.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        printer_card.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0) * 100);
+        printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        printerCard.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0) * 100);
 
         if (_.get(printer, 'status.print_file_name')) {
-            printer_card.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
+            printerCard.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
             $('.print-status button').prop('disabled', false);
         } else {
-            printer_card.find("#print-file-name").text('-');
+            printerCard.find("#print-file-name").text('-');
             $('.print-status button').prop('disabled', true);
         }
 
         if (_.get(printer, 'status.text') === 'Paused') {
-            printer_card.find("#print-pause-resume").addClass('btn-success').removeClass('btn-warning').text('Resume');
+            printerCard.find("#print-pause-resume").addClass('btn-success').removeClass('btn-warning').text('Resume');
         } else {
-            printer_card.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
+            printerCard.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
         }
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
-        printer_card.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
+        printerCard.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
     }
 
     /** Printer form */

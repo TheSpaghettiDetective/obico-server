@@ -34,7 +34,8 @@
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
         <button type="submit" class="btn btn-primary btn-block">{% trans "Log In" %}</button>
-        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        <a class="button secondaryAction float-left" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >></a>
       </form>
     </div>
   </div>

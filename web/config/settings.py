@@ -47,9 +47,13 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
 ]
+
+if os.environ.get('SOCIAL_LOGIN') == 'True':
+    INSTALLED_APPS += [
+        'allauth.socialaccount.providers.facebook',
+        'allauth.socialaccount.providers.google',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

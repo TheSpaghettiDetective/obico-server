@@ -7,17 +7,22 @@
 {% block head_title %}{% trans "Log In" %}{% endblock %}
 
 {% block content %}
+{% get_providers as socialaccount_providers %}
 
 <div class="row justify-content-center logreg">
   <div class="col-sm-11 col-md-8 col-lg-6">
     <div id="logreg-forms">
       <h1 class="text-center">{% trans "Log In" %}</h1>
+      
+      {% if socialaccount_providers %}
       <div class="social-login">
         <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i
               class="fab fa-facebook-f"></i> Log In with Facebook</span> </a>
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i
               class="fab fa-google-plus-g"></i> Log In with Google+</span> </a>
       </div>
+      {% endif %}
+
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
 
       <form class="login form-signin" method="POST" action="{% url 'account_login' %}">

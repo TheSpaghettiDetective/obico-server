@@ -9,8 +9,8 @@ RUN pip install -r requirements.txt
 EXPOSE 3333
 
 # Required env vars and their default values
-ENV DEBUG=False
-# ENV DEBUG=True
+ENV DEBUG=True
+# ENV DEBUG=False
 ENV SITE_USES_HTTPS=False
 # ENV SITE_USES_HTTPS=True
 

@@ -16,7 +16,7 @@ ENV SITE_USES_HTTPS=False
 
 ENV FLASK_APP=server.py
 ENV REDIS_URL=redis://redis:6379
-ENV DATABASE_URL=sqlite:////app/db.sqlite3
+ENV DATABASE_URL=sqlite:////app/data/db.sqlite3
 ENV INTERNAL_MEDIA_HOST=http://web:3334
 ENV ML_API_HOST=http://ml_api:3333
 

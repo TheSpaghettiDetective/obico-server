@@ -30,6 +30,10 @@ footer {
 
 .navbar {
   text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  a.navbar-brand {
+    margin-top: -3px;
+  }
 }
 
 .swal2-popup {

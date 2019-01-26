@@ -28,10 +28,18 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
+        if request.GET.get('mute_alert', None):
+            printer = self.current_printer(pk)
+            printer.current_print_alert_muted = True
+            printer.save()
+
         return self.queue_octoprint_command(pk, 'resume')
 
     def queue_octoprint_command(self, pk, command):
-        printer = self.get_queryset().filter(id=pk).first()
+        printer = self.current_printer(pk)
         PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': command}), status=PrinterCommand.PENDING)
-        redis.printer_status_delete(printer.id, 'alert_outstanding')
+        printer.clear_alert()
         return Response({'status': 'OK'})
+
+    def current_printer(self, pk):
+        return self.get_queryset().filter(id=pk).first()

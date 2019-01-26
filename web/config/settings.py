@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+    'simple_history',
     'widget_tweaks',
     'rest_framework',
     'app',  # app has to come before allauth for template override to work

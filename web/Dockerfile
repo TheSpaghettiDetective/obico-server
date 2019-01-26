@@ -9,6 +9,7 @@ RUN pip install -r requirements.txt
 EXPOSE 3333
 
 # Required env vars and their default values
+
 ENV DEBUG=True
 # ENV DEBUG=False
 ENV SITE_USES_HTTPS=False
@@ -18,7 +19,7 @@ ENV SOCIAL_LOGIN=False
 
 ENV FLASK_APP=server.py
 ENV REDIS_URL=redis://redis:6379
-ENV DATABASE_URL=sqlite:////app/data/db.sqlite3
+ENV DATABASE_URL=sqlite:////app/db.sqlite3
 ENV INTERNAL_MEDIA_HOST=http://web:3334
 ENV ML_API_HOST=http://ml_api:3333
 
@@ -26,6 +27,7 @@ ENV ML_API_HOST=http://ml_api:3333
 
 # AZURE_STORAGE_CONNECTION_STRING=
 # AZURE_STORAGE_CONTAINER=
+# ENALBE_HISTORY=False
 # EMAIL_HOST=
 # EMAIL_HOST_USER=
 # EMAIL_HOST_PASSWORD=

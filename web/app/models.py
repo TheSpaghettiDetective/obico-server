@@ -1,8 +1,12 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
+from simple_history.models import HistoricalRecords
+import os
 
 from lib import redis
+from lib.utils import dict_or_none
 
 class UserManager(UserManager):
     """Define a model manager for User model with no username field."""
@@ -52,23 +56,54 @@ class Printer(models.Model):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    current_print_filename = models.CharField(max_length=1000, null=True, blank=True)
+    current_print_started_at = models.DateTimeField(null=True)
+    current_print_alerted_at = models.DateTimeField(null=True)
+    current_print_alert_muted = models.BooleanField(default=False)
+
+    if os.environ.get('ENALBE_HISTORY', '') == 'True':
+        history = HistoricalRecords()
 
     @property
     def status(self):
         status_data = redis.printer_status_get(self.id)
         if 'seconds_left' in status_data:
             status_data['seconds_left'] = int(status_data['seconds_left'])
-        return status_data
+        return dict_or_none(status_data)
 
     @property
     def pic(self):
         pic_data = redis.printer_pic_get(self.id)
         if 'score' in pic_data:
             pic_data['score'] = float(pic_data['score'])
-        return pic_data
+        return dict_or_none(pic_data)
+
+    def set_current_print(self, filename):
+        if filename != self.current_print_filename:
+            self.current_print_filename = filename
+            self.current_print_started_at = datetime.now()
+            self.save()
+    
+    def unset_current_print(self):
+        if self.current_print_filename is not None:
+            self.current_print_filename = None
+            self.current_print_started_at = None
+            self.current_print_alerted_at = None
+            self.current_print_alert_muted = False
+            self.save()
+
+    def set_alert(self):
+        if not self.current_print_alerted_at:
+            self.current_print_alerted_at = datetime.now()
+            self.save()
+
+    def clear_alert(self):
+        self.current_print_alerted_at = None
+        self.save()
 
     def __str__(self):
         return self.name
+
 
 class PrinterCommand(models.Model):
     PENDING = 'PENDING'

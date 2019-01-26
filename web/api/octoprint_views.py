@@ -34,8 +34,7 @@ class OctoPrintPicView(APIView):
         internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic)
         redis.printer_pic_set(printer.id, 'img_url', external_url, ex=STATUS_TTL_SECONDS)
 
-        current_print_filename = redis.printer_status_get(printer.id, 'print_file_name')
-        if not current_print_filename:
+        if not printer.current_print_filename:
             return command_response(printer)
 
         resp = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url})
@@ -45,10 +44,10 @@ class OctoPrintPicView(APIView):
         score = sum([ d[1] for d in det ])
         redis.printer_pic_set(printer.id, 'score', score, ex=STATUS_TTL_SECONDS)
 
-        if score > settings.ALERT_THRESHOLD and redis.printer_status_get(printer.id, 'alert_outstanding') != 't':
-            redis.printer_status_set(printer.id, {'alert_outstanding': 't'}, ex=STATUS_TTL_SECONDS)
-            send_failure_alert(printer)
+        if score > settings.ALERT_THRESHOLD and not printer.current_print_alerted_at and not printer.current_print_alert_muted:
+            printer.set_alert()
             PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': 'pause'}), status=PrinterCommand.PENDING)
+            send_failure_alert(printer)
 
         print(det)
         print(score)
@@ -67,20 +66,20 @@ class OctoPrintStatusView(APIView):
                 if flags.get(flag, False):
                     printing = True
 
-            file_name = octoprint_data.get('job', {}).get('file', {}).get('name')
-            return file_name, printing, octoprint_data.get('state', {}).get('text')
+            filename = octoprint_data.get('job', {}).get('file', {}).get('name')
+            return filename, printing, octoprint_data.get('state', {}).get('text')
 
         printer = request.auth
 
         status = request.data
         octo_data = status.get('octoprint_data', {})
-        file_name, printing, text = file_printing(octo_data)
+        filename, printing, text = file_printing(octo_data)
         seconds_left = octo_data.get('progress', {}).get('printTimeLeft') or -1
 
         redis.printer_status_set(printer.id, {'text': text, 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
         if printing:
-            redis.printer_status_set(printer.id, {'print_file_name': file_name}, ex=STATUS_TTL_SECONDS)
+            printer.set_current_print(filename)
         else:
-            redis.printer_status_delete(printer.id, 'print_file_name')
+            printer.unset_current_print()
 
         return command_response(printer)

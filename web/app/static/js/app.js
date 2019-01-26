@@ -89,7 +89,11 @@ $(document).ready(function () {
                 confirmButtonText: 'Resume print',
                 cancelButtonText: 'Resume, and don\'t alert again for this print',
             }).then( function(result) {
-                sendPrinterCommand(printerId, '/resume_print/');
+                if (result.value) {
+                    sendPrinterCommand(printerId, '/resume_print/');
+                } else if (result.dismiss == 'cancel') {
+                    sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');
+                }
             });
             e.preventDefault();
         })
@@ -97,7 +101,7 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (_.get(printer, 'status.alert_outstanding') === 't') {
+        if (printer.current_print_alerted_at){
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();
@@ -106,8 +110,8 @@ $(document).ready(function () {
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
         printerCard.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0) * 100);
 
-        if (_.get(printer, 'status.print_file_name')) {
-            printerCard.find("#print-file-name").text(_.get(printer, 'status.print_file_name'));
+        if (printer.status && printer.current_print_filename) {
+            printerCard.find("#print-file-name").text(printer.current_print_filename);
             printerCard.find('.print-status button').prop('disabled', false);
         } else {
             printerCard.find("#print-file-name").text('-');

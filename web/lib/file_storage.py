@@ -32,4 +32,5 @@ def _save_to_azure(dest_path, file_obj):
         container,
         dest_path,
         BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
-    return blob_service.make_blob_url(container, dest_path, sas_token=sas_token)
+    blob_url = blob_service.make_blob_url(container, dest_path, sas_token=sas_token)
+    return blob_url, blob_url

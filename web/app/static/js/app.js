@@ -51,6 +51,7 @@ $(document).ready(function () {
                 type: 'success',
                 title: 'Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.',
             });
+            pollAllPrinters();
         });
     }
 

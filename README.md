@@ -1,8 +1,12 @@
 # TheSpaghettiDetective
 
-# Configuration
+# Tools
 
 - Install git-lfs
+
+# Configuration
+
+- Enable social login
 
 # Upgrade server
 

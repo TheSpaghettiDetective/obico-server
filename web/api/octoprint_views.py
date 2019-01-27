@@ -22,6 +22,8 @@ def command_response(printer):
     commands.update(status=PrinterCommand.SENT)
     return resp
 
+def ml_api_auth_headers():
+    return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
 
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -37,7 +39,7 @@ class OctoPrintPicView(APIView):
         if not printer.current_print_filename:
             return command_response(printer)
 
-        resp = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url})
+        resp = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url}, headers=ml_api_auth_headers())
         resp.raise_for_status()
 
         det = resp.json()

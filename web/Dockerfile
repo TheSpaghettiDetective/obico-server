@@ -18,7 +18,6 @@ ENV SITE_USES_HTTPS=False
 ENV SOCIAL_LOGIN=False
 # ENV SOCIAL_LOGIN=True
 
-ENV FLASK_APP=server.py
 ENV REDIS_URL=redis://redis:6379
 ENV DATABASE_URL=sqlite:////app/db.sqlite3
 ENV INTERNAL_MEDIA_HOST=http://web:3334
@@ -35,5 +34,6 @@ ENV ML_API_HOST=http://ml_api:3333
 # EMAIL_PORT=
 # EMAIL_USE_TLS=True
 # DEFAULT_FROM_EMAIL=changeme@example.com
+# ML_API_TOKEN=
 
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:3334"]

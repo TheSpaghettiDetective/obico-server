@@ -1,6 +1,6 @@
 import flask
 from flask import request, jsonify
-from os import path
+from os import path, environ
 import urllib
 import cv2
 import numpy as np
@@ -9,7 +9,9 @@ from auth import token_required
 from lib.prediction_model import load_net, detect
 
 app = flask.Flask(__name__)
-app.config['DEBUG'] = True
+
+# SECURITY WARNING: don't run with debug turned on in production!
+app.config['DEBUG'] = environ.get('DEBUG') == 'True'
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))

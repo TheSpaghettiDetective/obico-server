@@ -7,7 +7,7 @@ ML_API_TOKEN=os.environ.get("ML_API_TOKEN")
 def token_required(f):
     @wraps(f)
     def check_authorization(*args, **kwargs):
-        if request.headers.get("Authorization") == 'Bearer: {}'.format(ML_API_TOKEN):
+        if request.headers.get("Authorization") == 'Bearer {}'.format(ML_API_TOKEN):
             return f()
         else:
             return Response(status=401)

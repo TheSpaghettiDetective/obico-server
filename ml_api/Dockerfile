@@ -9,6 +9,7 @@ RUN pip install -r requirements.txt
 ENV FLASK_APP=server.py
 ENV DEBUG=True
 # ENV DEBUG=False
+ENV REDIS_URL=redis://redis:6379
 
 # Optional env vars
 

@@ -1,3 +1,4 @@
+ipdb
 opencv-python>=3.4
 flask>=1.0
-ipdb
+redis==3.0.1

@@ -91,7 +91,7 @@ $(document).ready(function () {
                 cancelButtonText: 'Resume, and don\'t alert again for this print',
             }).then( function(result) {
                 if (result.value) {
-                    sendPrinterCommand(printerId, '/resume_print/');
+                    sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');   // Currently we mute alert in case of any false alarm to avoid bounced false alarms
                 } else if (result.dismiss == 'cancel') {
                     sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');
                 }
@@ -102,7 +102,7 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (printer.current_print_alerted_at){
+        if (printer.status && printer.current_print_alerted_at){
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();

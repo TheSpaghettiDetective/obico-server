@@ -36,14 +36,20 @@ class OctoPrintPicView(APIView):
         internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic)
         redis.printer_pic_set(printer.id, 'img_url', external_url, ex=STATUS_TTL_SECONDS)
 
-        if not printer.current_print_filename:
+        if not printer.current_print_filename or not printer.current_print_started_at:
             return command_response(printer)
 
-        resp = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url}, headers=ml_api_auth_headers())
-        resp.raise_for_status()
+        params = {
+            'img': internal_url,
+            'session_id': "{}|{}".format(printer.id, int(printer.current_print_started_at.timestamp()))
+        }
 
-        det = resp.json()
-        score = sum([ d[1] for d in det ])
+        req = requests.get(settings.ML_API_HOST + '/p', params=params, headers=ml_api_auth_headers())
+        req.raise_for_status()
+        resp = req.json()
+
+        det = resp['detections']
+        score = resp['score']
         redis.printer_pic_set(printer.id, 'score', score, ex=STATUS_TTL_SECONDS)
 
         if score > settings.ALERT_THRESHOLD and not printer.current_print_alerted_at and not printer.current_print_alert_muted:

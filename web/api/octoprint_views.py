@@ -44,7 +44,7 @@ class OctoPrintPicView(APIView):
             'session_id': "{}|{}".format(printer.id, int(printer.current_print_started_at.timestamp()))
         }
 
-        req = requests.get(settings.ML_API_HOST + '/p', params=params, headers=ml_api_auth_headers())
+        req = requests.get(settings.ML_API_HOST + '/p', params=params, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
 

@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Log In" %}{% endblock %}
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
@@ -12,14 +12,14 @@
 <div class="row justify-content-center logreg">
   <div class="col-sm-11 col-md-8 col-lg-6">
     <div id="logreg-forms">
-      <h1 class="text-center">{% trans "Log In" %}</h1>
+      <h1 class="text-center">{% trans "Sign In" %}</h1>
       
       {% if socialaccount_providers %}
       <div class="social-login">
         <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i
-              class="fab fa-facebook-f"></i> Log In with Facebook</span> </a>
+              class="fab fa-facebook-f"></i> Sign In with Facebook</span> </a>
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i
-              class="fab fa-google-plus-g"></i> Log In with Google+</span> </a>
+              class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
       </div>
       {% endif %}
 
@@ -43,7 +43,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <button type="submit" class="btn btn-primary btn-block">{% trans "Log In" %}</button>
+        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
         <a class="button secondaryAction float-left" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
         <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >></a>
       </form>

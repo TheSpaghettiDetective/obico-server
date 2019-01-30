@@ -11,8 +11,9 @@ EXPOSE 3333
 
 # Required env vars and their default values
 
-ENV DEBUG=True
-# ENV DEBUG=False
+# Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
+ENV DEBUG=False
+
 ENV SITE_USES_HTTPS=False
 # ENV SITE_USES_HTTPS=True
 ENV SOCIAL_LOGIN=False

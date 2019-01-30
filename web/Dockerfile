@@ -36,4 +36,6 @@ ENV ML_API_HOST=http://ml_api:3333
 # DEFAULT_FROM_EMAIL=changeme@example.com
 # ML_API_TOKEN=
 
+RUN python manage.py collectstatic --noinput -c
+
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:3334"]

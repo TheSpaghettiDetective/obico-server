@@ -180,7 +180,7 @@ ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
 # Alert settings
-ALERT_THRESHOLD = 0.3
+ALERT_P_THRESHOLD = 0.45
 
 # REDIS client
 import redis

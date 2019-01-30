@@ -109,7 +109,7 @@ $(document).ready(function () {
         }
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        printerCard.find('#tangle-index').attr('data-value', _.get(printer, 'pic.score', 0) * 100);
+        printerCard.find('#tangle-index').attr('data-value', _.get(printer, 'pic.p', 0) * 100);
 
         if (printer.status && printer.current_print_filename) {
             printerCard.find("#print-file-name").text(printer.current_print_filename);

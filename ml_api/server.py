@@ -34,11 +34,11 @@ def get_p():
         detections = detect(net_main, meta_main, img, thresh=0.25)
         
         key_name = 'p:' + request.args['session_id']
-        score, new_session = predict(detections, redis_client.hgetall(key_name))
+        p, new_session = predict(detections, redis_client.hgetall(key_name))
         redis_client.hmset(key_name, new_session)
         redis_client.expire(key_name, SESSION_TTL_SECONDS)
 
-        return jsonify({'detections': detections, 'score': score})
+        return jsonify({'detections': detections, 'p': p})
 
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))

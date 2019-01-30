@@ -74,8 +74,8 @@ class Printer(models.Model):
     @property
     def pic(self):
         pic_data = redis.printer_pic_get(self.id)
-        if 'score' in pic_data:
-            pic_data['score'] = float(pic_data['score'])
+        if 'p' in pic_data:
+            pic_data['p'] = float(pic_data['p'])
         return dict_or_none(pic_data)
 
     def set_current_print(self, filename):

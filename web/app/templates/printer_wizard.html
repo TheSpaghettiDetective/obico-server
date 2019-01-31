@@ -8,8 +8,9 @@
         <div id="smartwizard">
             <ul>
                 <li><a href="#step-1">Step 1<br /><small>Give your printer a name</small></a></li>
-                <li><a href="#step-2">Step 2<br /><small>Copy token to the plugin</small></a></li>
-                <li><a href="#step-3">Step 3<br /><small>Wait for connection</small></a></li>
+                <li><a href="#step-2">Step 2<br /><small>Install Plugin</small></a></li>
+                <li><a href="#step-3">Step 3<br /><small>Copy token to the plugin</small></a></li>
+                <li><a href="#step-4">Step 4<br /><small>Wait for connection</small></a></li>
             </ul>
 
             <div>
@@ -30,7 +31,21 @@
                         {% endwith %}
                     </form>
                 </div>
-                <div id="step-2" class="token-step">
+                <div id="step-2" class="plugin-step">
+                    In OctoPrint Plugin Manager, install TheSpaghettiDetective using this link:
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="plugin-link" value="https://github.com/TheSpaghettiDetective/OctoPrint-TheSpaghettiDetective/archive/master.zip">
+                        <div class="input-group-append">
+                            <button id="copy-to-clipboard" class="btn btn-outline-secondary" type="button"
+                                data-clipboard-target="#plugin-link">
+                                <i class="fas fa-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <img src="{% static 'img/install_plugin.png' %}" style="width: 100%;" />
+                    <div>For details please head to the <a href="https://www.thespaghettidetective.com/guide.html">Setup Guide</a>.</div>
+                </div>
+                <div id="step-3" class="token-step">
                         Copy and paste this token to OctoPrint TheSpaghettiDetective Plugin settings:
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="foo" value="{{ form.instance.auth_token }}">
@@ -41,9 +56,9 @@
                                 </button>
                             </div>
                         </div>
-                        Click "Next" After you are done.  
+                        <img src="{% static 'img/paste_token.png' %}" style="width: 100%;" />
                 </div>
-                <div id="step-3" class="connection-step" data-printer-id="{{ form.instance.id }}">
+                <div id="step-4" class="connection-step" data-printer-id="{{ form.instance.id }}">
                     <div id="waiting">
                         <i class="fas fa-spinner fa-spin fa-lg"></i>
                         <div>

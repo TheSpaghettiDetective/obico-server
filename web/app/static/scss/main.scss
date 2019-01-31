@@ -219,7 +219,7 @@ footer {
   }
 
 .step-content {
-  min-height: 12em;
+  min-height: 24em;
   background: none;
 
   &.form-step {
@@ -228,13 +228,18 @@ footer {
     justify-content: center;
   }
 
-  &.token-step {
+  &.token-step
+  &.plugin-step {
     padding: 1em 0.5em;
+  }
+  
+  img {
+    padding: 1em 2em;
   }
 
   &.connection-step {
     text-align: center;
-    padding: 2em;
+    padding: 1em;
 
     i {
       margin: 1em;

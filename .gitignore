@@ -131,3 +131,5 @@ node_modules
 
 # Docker override
 docker-compose.override.yml
+
+*.code-workspace

@@ -253,3 +253,28 @@ footer {
   }
 }
 }
+
+/*** timelapse-gallery  */
+
+.timelapse-gallery {
+  .card-img-top {
+    position: relative;
+
+    a.fullscreen-btn {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      padding: 0.5rem;
+      background-color: rgba(0,0,0,0.5);
+      color: rgba(255,255,255,0.25);
+    }
+  }
+  .modal-full {
+    min-width: 100%;
+    margin: 0;
+  }
+
+  .modal-full .modal-content {
+    min-height: 100vh;
+  }
+}

@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="timelapse-gallery">
+<div class="row">
+  <div class="col-sm-12 col-lg-3 printer-card">
+    <div class="card">
+      <div class="card-header">
+        asdfasdf
+
+      </div>
+
+      <div class="card-img-top">
+
+        <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" poster="MY_VIDEO_POSTER.jpg"
+          data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
+          <!-- <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D" type='video/mp4'> -->
+
+          <source src="https://getanywhereprod.blob.core.windows.net/timelapse/Part_Studio_1_-_Part_2_20190125210418.mp4?se=2046-06-12T21%3A07%3A19Z&sp=r&sv=2018-03-28&sr=b&sig=UCKa2F3YKTfXShAkQ50YFuYjKeTXh0Miv%2BT1NMEqo28%3D"
+            type='video/mp4'>
+          <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+          </p>
+        </video>
+        <a class="fullscreen-btn" href="#myModal" role="button" onclick="myFunction()" data-toggle="modal">
+            <i class="fa fa-search-plus fa-2x" aria-hidden="true"></i>
+        </a>          
+      </div>
+
+      <div class="card-body">
+        <div class="text-center gauge">
+          <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
+            data-height="120" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
+            data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false" data-highlights='[
+                                                { "from": 0, "to": 33, "color": "rgba(0,255,30,.75)" },
+                                                { "from": 33, "to": 66, "color": "rgb(255,165,0,.75)" },
+                                                { "from": 66, "to": 100, "color": "rgba(255,30,0,.75)" }
+                                            ]'
+            data-color-plate="#222" data-color-major-ticks="#f5f5f5" data-color-minor-ticks="#ddd" data-color-title="rgba(0,255,30,.75)"
+            data-color-units="#ccc" data-color-numbers="#eee" data-color-needle-start="rgba(240, 128, 128, 1)"
+            data-color-needle-end="rgba(255, 160, 122, .9)" data-value-box="true" data-animation-rule="bounce"
+            data-animation-duration="500" data-font-value="Led" data-animated-value="true"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-full" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body p-4" id="result">
+        <p>The grid inside the modal is responsive too..</p>
+        <div class="row">
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            Content
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+  {% endblock content %}

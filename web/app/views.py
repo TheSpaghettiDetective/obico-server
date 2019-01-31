@@ -45,3 +45,6 @@ def delete_printer(request, id):
     instance = get_object_or_404(Printer, id=id)
     instance.delete()
     return redirect('/printers/')
+
+def timelapse_gallery(request):
+    return render(request, 'timelapse_gallery.html')

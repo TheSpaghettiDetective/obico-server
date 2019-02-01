@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from jsonfield import JSONField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
@@ -121,3 +122,10 @@ class PrinterCommand(models.Model):
         choices=COMMAND_STATUSES,
         default=PENDING,
     )
+
+
+class PublicTimelapse(models.Model):
+    video_url = models.CharField(max_length=2000, null=False, blank=False)
+    poster_url = models.CharField(max_length=2000, null=False, blank=False)
+    creator_name = models.CharField(max_length=500, null=False, blank=False)
+    # frame

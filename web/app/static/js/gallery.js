@@ -1,8 +1,11 @@
 $(document).ready(function () {
 
-    var vjs = videojs('my-video');
-    vjs.on('timeupdate', function() {
-        console.log('kkk');
-    })
+    for (var i = 0; i < timelapses; i++) {
+        var tl = timelapses[i];
+        var vjs = videojs('tl-'+tl.id);
+        vjs.on('timeupdate', function() {
+            console.log('kkk');
+        });
+    }
 
 });

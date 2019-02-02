@@ -277,10 +277,18 @@ footer {
 
     .modal-full .modal-content {
       min-height: 100vh;
+      
+      .modal-body {
+        padding: 0;
+
+        .video-player {
+          height: calc(100vh - 211px);
+        }
+      }
     }
   }
   .gauge {
-    padding: 1.2rem;
+    padding: 1.2rem 0rem 0rem;
   }
   
   h1 {

@@ -61,6 +61,8 @@ class Printer(models.Model):
     current_print_started_at = models.DateTimeField(null=True)
     current_print_alerted_at = models.DateTimeField(null=True)
     current_print_alert_muted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
         history = HistoricalRecords()
@@ -122,10 +124,16 @@ class PrinterCommand(models.Model):
         choices=COMMAND_STATUSES,
         default=PENDING,
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class PublicTimelapse(models.Model):
+    title = models.CharField(max_length=500)
+    priority = models.IntegerField(null=False, default=1000000)
     video_url = models.CharField(max_length=2000, null=False, blank=False)
     poster_url = models.CharField(max_length=2000, null=False, blank=False)
     creator_name = models.CharField(max_length=500, null=False, blank=False)
-    # frame
+    frame_p = JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

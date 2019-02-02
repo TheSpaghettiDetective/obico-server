@@ -109,7 +109,9 @@
   <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
 
   <script type="text/javascript" src="{% static 'vendor/js/jquery.smartWizard.min.js' %}"></script>
+  <script src="{% static 'js/shared.js' %}"></script>
   <script src="{% static 'js/app.js' %}"></script>
+  {% block page_js %}{% endblock page_js %}
 </body>
 
 </html>

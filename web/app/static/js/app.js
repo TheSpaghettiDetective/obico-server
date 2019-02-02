@@ -1,17 +1,6 @@
 $(document).ready(function () {
     var timer;
 
-    function scaledP(p) {
-        var CUT_OFF = 0.45;
-        var scaleAboveCutOff = (100.0/3.0) / (1-CUT_OFF);
-        var scaleBelowCutOff = (200.0/3.0) / CUT_OFF;
-        if (p > CUT_OFF) {
-            return (p - CUT_OFF) * scaleAboveCutOff + 200.0/3.0;
-        } else {
-            return p * scaleBelowCutOff;
-        }
-    }
-
     function startPolling() {
         if (timer === undefined) {
             timer = setInterval(pollAllPrinters, 5 * 1000);
@@ -111,20 +100,6 @@ $(document).ready(function () {
         })
     });
 
-    function updateGauge(printerCard, p) {
-        printerCard.find('#tangle-index').attr('data-value', p);
-        if (p > 66) {
-            $('#tangle-index').attr('data-title', 'Failing!');
-            $('#tangle-index').attr('data-color-title', 'rgba(255,30,0,.75)');
-        } else if (p > 33) {
-            $('#tangle-index').attr('data-title', 'Fishy...');
-            $('#tangle-index').attr('data-color-title', 'rgb(255,165,0,.75)');
-        } else {
-            $('#tangle-index').attr('data-title', 'Looking Good');
-            $('#tangle-index').attr('data-color-title', 'rgba(0,255,30,.75)');
-        }
-    }
-
     function updatePrinterCard(printer, printerCard) {
 
         if (printer.status && printer.current_print_alerted_at){
@@ -135,7 +110,7 @@ $(document).ready(function () {
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
         
-        updateGauge(printerCard, scaledP(_.get(printer, 'pic.p', 0)));
+        updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'pic.p', 0));
 
         if (printer.status && printer.current_print_filename) {
             printerCard.find("#print-file-name").text(printer.current_print_filename);

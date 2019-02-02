@@ -33,7 +33,7 @@ class OctoPrintPicView(APIView):
         printer = request.auth
 
         pic = request.data['pic']
-        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic)
+        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
 
         if not printer.current_print_filename or not printer.current_print_started_at:
             redis.printer_pic_set(printer.id, {'img_url': external_url, 'p': '0'}, ex=STATUS_TTL_SECONDS)

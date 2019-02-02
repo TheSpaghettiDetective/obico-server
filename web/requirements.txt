@@ -10,5 +10,4 @@ django-extensions==2.1.4
 azure-storage-blob==1.4.0
 redis==3.0.1
 django-simple-history==2.7.0
-ffmpeg-python==0.1.17
 jsonfield==2.0.2

@@ -5,21 +5,19 @@
 
 <div class="timelapse-gallery">
   <div class="row">
+    {% for timelapse in timelapses %}
     <div class="col-sm-12 col-lg-3 printer-card">
       <div class="card">
         <div class="card-header">
-          asdfasdf
-
+          - By {{ timelapse.creator_name }}
         </div>
 
         <div class="card-img-top">
 
-          <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" poster="https://getanywhereprod.blob.core.windows.net/timelapse-posters/1371191931.png?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=0RVUmzzLppx2WMWQzeBuClTh1neOHar2fFHS58Z1IUY%3D"
+          <video id="tl-{{timelapse.id}}" class="video-js vjs-default-skin" controls preload="auto" poster="{{ timelapse.poster_url }}"
             data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
-            <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D" type='video/mp4'>
+            <source src="{{ timelapse.video_url }}" type='video/mp4'>
 
-            <!-- <source src="https://getanywhereprod.blob.core.windows.net/timelapse/Part_Studio_1_-_Part_2_20190125210418.mp4?se=2046-06-12T21%3A07%3A19Z&sp=r&sv=2018-03-28&sr=b&sig=UCKa2F3YKTfXShAkQ50YFuYjKeTXh0Miv%2BT1NMEqo28%3D" -->
-              type='video/mp4'>
             <p class="vjs-no-js">
               To view this video please enable JavaScript, and consider upgrading to a web browser that
               <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -32,7 +30,7 @@
 
         <div class="card-body">
           <div class="text-center gauge">
-            <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
+            <canvas id="gauge-{{timelapse.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
               data-height="120" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
               data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false" data-highlights='[
                                                 { "from": 0, "to": 33, "color": "rgba(0,255,30,.75)" },
@@ -47,6 +45,7 @@
         </div>
       </div>
     </div>
+    {% endfor %}
   </div>
 
   <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -60,19 +59,20 @@
         </div>
         <div class="modal-body p-4" id="result">
           <div>
-            <div  style="height: 70vh;">
-            <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" poster="https://getanywhereprod.blob.core.windows.net/timelapse-posters/1371191931.png?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=0RVUmzzLppx2WMWQzeBuClTh1neOHar2fFHS58Z1IUY%3D"
-              data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
-              <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D" type='video/mp4'>
+            <div style="height: 70vh;">
+              <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" poster="https://getanywhereprod.blob.core.windows.net/timelapse-posters/1371191931.png?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=0RVUmzzLppx2WMWQzeBuClTh1neOHar2fFHS58Z1IUY%3D"
+                data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
+                <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D"
+                  type='video/mp4'>
 
-              <!-- <source src="https://getanywhereprod.blob.core.windows.net/timelapse/Part_Studio_1_-_Part_2_20190125210418.mp4?se=2046-06-12T21%3A07%3A19Z&sp=r&sv=2018-03-28&sr=b&sig=UCKa2F3YKTfXShAkQ50YFuYjKeTXh0Miv%2BT1NMEqo28%3D" -->
+                <!-- <source src="https://getanywhereprod.blob.core.windows.net/timelapse/Part_Studio_1_-_Part_2_20190125210418.mp4?se=2046-06-12T21%3A07%3A19Z&sp=r&sv=2018-03-28&sr=b&sig=UCKa2F3YKTfXShAkQ50YFuYjKeTXh0Miv%2BT1NMEqo28%3D" -->
                 type='video/mp4'>
-              <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-              </p>
-            </video>
-          </div>
+                <p class="vjs-no-js">
+                  To view this video please enable JavaScript, and consider upgrading to a web browser that
+                  <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+              </video>
+            </div>
             <div>
               <div class="text-center gauge">
                 <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
@@ -95,5 +95,11 @@
       </div>
     </div>
   </div>
-  </div>
-  {% endblock content %}
+</div>
+
+{{ timelapses_json|json_script:"timelapses-data" }}
+{% endblock content %}
+
+{% block page_js %}
+<script src="{% static 'js/gallery.js' %}"></script>
+{% endblock page_js %}

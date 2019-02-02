@@ -11,17 +11,18 @@
     </div>
   </div>
   <div class="row">
-      <div class="col-sm-12 hints">
-        The Spaghetti Detective is still in beta testing and its algorithm is not perfect yet. It may sometimes give false alarms, or miss print failures. 
-        So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better than others at helping the Detective do the job.
-      </div>
+    <div class="col-sm-12 hints">
+      The Spaghetti Detective is still in beta testing and its algorithm is not perfect yet. It may sometimes give
+      false alarms, or miss print failures.
+      So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better
+      than others at helping the Detective do the job.
     </div>
-
+  </div>
   <div class="row">
-      <div class="col-sm-12">
-          {% bootstrap_paginate page_obj %}
-      </div>
+    <div class="col-sm-12">
+      {% bootstrap_paginate page_obj %}
     </div>
+  </div>
   <div class="row">
     {% for timelapse in timelapses %}
     <div class="col-sm-12 col-lg-4 timelapse-card">
@@ -32,8 +33,8 @@
 
         <div class="card-img-top">
 
-          <video id="tl-{{timelapse.id}}" class="video-js vjs-default-skin" controls preload="auto" poster="{{ timelapse.poster_url }}"
-            data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
+          <video id="tl-{{timelapse.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="{{ timelapse.poster_url }}"
+            data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
             <source src="{{ timelapse.video_url }}" type='video/mp4'>
 
             <p class="vjs-no-js">
@@ -41,8 +42,9 @@
               <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
             </p>
           </video>
-          <a id="fullscreen-btn-{{timelapse.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button" data-toggle="modal">
-            <i class="fa fa-search-plus fa-2x" aria-hidden="true"></i>
+          <a id="fullscreen-btn-{{timelapse.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+            data-toggle="modal">
+            <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
           </a>
         </div>
 
@@ -66,6 +68,11 @@
     </div>
     {% endfor %}
   </div>
+  <div class="row">
+      <div class="col-sm-12">
+        {% bootstrap_paginate page_obj %}
+      </div>
+    </div>
 
   <div class="modal" id="tl-fullscreen-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-full" role="document">
@@ -79,13 +86,9 @@
         <div class="modal-body" id="result">
           <div>
             <div class="video-player">
-              <video id="tl-fullscreen-vjs" class="video-js vjs-default-skin" controls preload="auto"
-                data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
+              <video id="tl-fullscreen-vjs" class="video-js vjs-default-skin" controls preload="auto" data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
                 <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D"
                   type='video/mp4'>
-
-                <!-- <source src="https://getanywhereprod.blob.core.windows.net/timelapse/Part_Studio_1_-_Part_2_20190125210418.mp4?se=2046-06-12T21%3A07%3A19Z&sp=r&sv=2018-03-28&sr=b&sig=UCKa2F3YKTfXShAkQ50YFuYjKeTXh0Miv%2BT1NMEqo28%3D" -->
-                type='video/mp4'>
                 <p class="vjs-no-js">
                   To view this video please enable JavaScript, and consider upgrading to a web browser that
                   <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>

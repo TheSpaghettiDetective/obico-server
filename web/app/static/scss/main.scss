@@ -267,11 +267,11 @@ footer {
 
     a.fullscreen-btn {
       position: absolute;
-      top: 0.25rem;
-      right: 0.25rem;
+      top: 0;
+      right: 0;
       padding: 0.5rem;
-      background-color: rgba(0,0,0,0.5);
-      color: rgba(255,255,255,0.25);
+      background-color: rgba(0,0,0,0.7);
+      color: rgba(255,255,255,0.5);
     }
   }
   #tl-fullscreen-modal {
@@ -307,5 +307,10 @@ footer {
 
   .timelapse-card {
     margin-top: 0.75em;
+  }
+
+  .pagination {
+    margin-bottom: 0;
+    margin-top: 15px;
   }
 }

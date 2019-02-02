@@ -15,7 +15,7 @@ def index(request):
 @login_required
 def printers(request):
     printers = Printer.objects.filter(user=request.user)
-    return render(request, 'printers_grid.html', {'printers': printers})
+    return render(request, 'printer_list.html', {'printers': printers})
 
 @login_required
 def new_printer(request):

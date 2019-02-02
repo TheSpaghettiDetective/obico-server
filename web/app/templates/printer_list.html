@@ -98,4 +98,8 @@
 <script type="text/javascript">
     var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
 </script>
+
+{% block page_js %}
+<script src="{% static 'js/printer_list.js' %}"></script>
+{% endblock page_js %}
 {% endblock content %}

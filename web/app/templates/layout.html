@@ -18,7 +18,8 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
     crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@8.0.1/dist/sweetalert2.min.css" integrity="sha256-/PVkO2+mUlKqE6wgKVXU5Wh4mx3vncHAxLEdpXrziGo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@8.0.1/dist/sweetalert2.min.css" integrity="sha256-/PVkO2+mUlKqE6wgKVXU5Wh4mx3vncHAxLEdpXrziGo="
+    crossorigin="anonymous">
 
   <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet">
 
@@ -37,25 +38,30 @@
 </head>
 
 <body>
+  {% with view_name=request.resolver_match.view_name %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
-      <a class="navbar-brand" href="https://www.thespaghettidetective.com/"><img src="{% static 'img/logo-inverted.png' %}" style="height: 28px;" /></a>
+      <a class="navbar-brand" href="https://www.thespaghettidetective.com/"><img src="{% static 'img/logo-inverted.png' %}"
+          style="height: 28px;" /></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="https://www.thespaghettidetective.com/">Home</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="https://www.thespaghettidetective.com/guide.html">Help</a>
-                </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.thespaghettidetective.com/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.thespaghettidetective.com/guide.html">Help</a>
+          </li>
+          <li class="nav-item {% if  view_name == 'publictimelapse_list' %}active{% endif %}">
+              <a class="nav-link glowing" href="/publictimelapses">Spaghetti Gallery</a>
+            </li>
         </ul>
         <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
-          <li class="nav-item active">
+          <li class="nav-item {% if  'printers' in view_name %}active{% endif %}">
             <a class="nav-link" href="/printers">My Printers
               <span class="sr-only">(current)</span>
             </a>
@@ -77,6 +83,7 @@
       </div>
     </div>
   </nav>
+  {% endwith %}
 
   <div id="content-wrapper" class="container">
     {% block content %}{% endblock content %}
@@ -105,12 +112,12 @@
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA="
     crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.0.1/dist/sweetalert2.all.min.js" integrity="sha256-mG11cus0fNYH261MLgasqxyp+DcMDZOVUvtVey09hP0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.0.1/dist/sweetalert2.all.min.js" integrity="sha256-mG11cus0fNYH261MLgasqxyp+DcMDZOVUvtVey09hP0="
+    crossorigin="anonymous"></script>
   <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
 
   <script type="text/javascript" src="{% static 'vendor/js/jquery.smartWizard.min.js' %}"></script>
   <script src="{% static 'js/shared.js' %}"></script>
-  <script src="{% static 'js/app.js' %}"></script>
   {% block page_js %}{% endblock page_js %}
 </body>
 

@@ -38,4 +38,4 @@ ENV ML_API_HOST=http://ml_api:3333
 
 RUN python manage.py collectstatic --noinput -c
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:3334"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn config.wsgi:application --workers 3 --bind 0.0.0.0:3334"]

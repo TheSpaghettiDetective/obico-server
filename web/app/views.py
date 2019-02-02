@@ -47,6 +47,5 @@ def delete_printer(request, id):
     return redirect('/printers/')
 
 def timelapse_gallery(request):
-    timelapses = PublicTimelapse.objects.all()
-    timelapses_json = [dict(id=tl.id, frame_p=tl.frame_p) for tl in timelapses]
-    return render(request, 'timelapse_gallery.html', dict(timelapses=timelapses, timelapses_json=timelapses_json))
+    timelapses = list(PublicTimelapse.objects.order_by('priority').values())
+    return render(request, 'timelapse_gallery.html', dict(timelapses=timelapses,))

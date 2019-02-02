@@ -269,16 +269,30 @@ footer {
       color: rgba(255,255,255,0.25);
     }
   }
-  .modal-full {
-    min-width: 100%;
-    margin: 0;
-  }
+  #tl-fullscreen-modal {
+    .modal-full {
+      min-width: 100%;
+      margin: 0;
+    }
 
-  .modal-full .modal-content {
-    min-height: 100vh;
+    .modal-full .modal-content {
+      min-height: 100vh;
+    }
   }
-
   .gauge {
     padding: 1.2rem;
+  }
+  
+  h1 {
+    margin-top: 0.5em;
+  }
+
+  .hints {
+    font-size: smaller;
+    margin-bottom: 1em;
+  }
+
+  .timelapse-card {
+    margin-top: 0.75em;
   }
 }

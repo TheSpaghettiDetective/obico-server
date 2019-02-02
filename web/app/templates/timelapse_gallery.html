@@ -5,8 +5,19 @@
 
 <div class="timelapse-gallery">
   <div class="row">
+    <div class="col-sm-12 text-center">
+      <h1>Spaghetti Gallery</h1>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-sm-12 hints">
+        The Spaghetti Detective is still in beta testing and its algorithm is not perfect yet. It may sometimes generates some false alarms, and sometimes miss print failures. 
+        So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better than others at helping the Detective do the job.
+      </div>
+    </div>
+  <div class="row">
     {% for timelapse in timelapses %}
-    <div class="col-sm-12 col-lg-3 printer-card">
+    <div class="col-sm-12 col-lg-4 timelapse-card">
       <div class="card">
         <div class="card-header">
           - By {{ timelapse.creator_name }}
@@ -23,16 +34,17 @@
               <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
             </p>
           </video>
-          <a class="fullscreen-btn" href="#myModal" role="button" onclick="myFunction()" data-toggle="modal">
+          <a id="fullscreen-btn-{{timelapse.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button" data-toggle="modal">
             <i class="fa fa-search-plus fa-2x" aria-hidden="true"></i>
           </a>
         </div>
 
         <div class="card-body">
           <div class="text-center gauge">
-            <canvas id="gauge-{{timelapse.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
-              data-height="120" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
-              data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false" data-highlights='[
+            <canvas id="gauge-{{timelapse.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="2"
+              data-width="120" data-height="120" data-units="false" data-title="Looking Good" data-value-box="false"
+              data-min-value="0" data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false"
+              data-highlights='[
                                                 { "from": 0, "to": 33, "color": "rgba(0,255,30,.75)" },
                                                 { "from": 33, "to": 66, "color": "rgb(255,165,0,.75)" },
                                                 { "from": 66, "to": 100, "color": "rgba(255,30,0,.75)" }
@@ -48,11 +60,11 @@
     {% endfor %}
   </div>
 
-  <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal" id="tl-fullscreen-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-full" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">asdfasdf</h5>
+          <h5 id="tl-modal-title" class="modal-title"></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
@@ -60,7 +72,7 @@
         <div class="modal-body p-4" id="result">
           <div>
             <div style="height: 70vh;">
-              <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" poster="https://getanywhereprod.blob.core.windows.net/timelapse-posters/1371191931.png?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=0RVUmzzLppx2WMWQzeBuClTh1neOHar2fFHS58Z1IUY%3D"
+              <video id="tl-fullscreen-vjs" class="video-js vjs-default-skin" controls preload="auto"
                 data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2] }'>
                 <source src="https://getanywhereprod.blob.core.windows.net/timelapse/1371191931.mp4?se=2046-06-17T03%3A45%3A25Z&sp=r&sv=2018-03-28&sr=b&sig=z0B337XVamtZsbLPtgvPCZ15WN3PaTGZBiF0Odqn91E%3D"
                   type='video/mp4'>
@@ -75,7 +87,7 @@
             </div>
             <div>
               <div class="text-center gauge">
-                <canvas id='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
+                <canvas id='gauge-fullscreen' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
                   data-height="120" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
                   data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false"
                   data-highlights='[
@@ -97,7 +109,7 @@
   </div>
 </div>
 
-{{ timelapses_json|json_script:"timelapses-data" }}
+{{ timelapses|json_script:"timelapses-data" }}
 {% endblock content %}
 
 {% block page_js %}

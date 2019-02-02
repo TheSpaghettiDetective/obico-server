@@ -34,6 +34,7 @@ def video_detect(jpgs_path, save_frame_to=None, weights_path=path.join(path.dirn
     for idx, jpg_file in enumerate(jpg_files):
         custom_image_bgr = cv2.imread(jpg_file)
         detections = detect(net_main, meta_main, custom_image_bgr, thresh=thresh)
+        img_file = "%05d.jpg" % idx
         if save_frame_to:
             cv2.imwrite(path.join(save_frame_to, img_file), overlay_detections(custom_image_bgr, detections))
 

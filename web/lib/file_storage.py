@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from django.conf import settings
 import os
+from shutil import copyfileobj
 from azure.storage.blob import BlockBlobService, BlobPermissions
 
 from lib import site
@@ -17,11 +18,6 @@ def _save_to_file_system(dest_path, file_obj, container):
         os.makedirs(os.path.dirname(fqp))
 
     with open(fqp, 'wb+') as dest_file:
-        if callable(getattr(file_obj, "chunks", None)):
-            for chunk in file_obj.chunks():
-                dest_file.write(chunk)
-        else:
-            from shutil import copyfileobj
             copyfileobj(file_obj, dest_file)
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)

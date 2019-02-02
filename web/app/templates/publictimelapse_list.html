@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load bootstrap_pagination %}
 
 {% block content %}
 
@@ -13,6 +14,12 @@
       <div class="col-sm-12 hints">
         The Spaghetti Detective is still in beta testing and its algorithm is not perfect yet. It may sometimes give false alarms, or miss print failures. 
         So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better than others at helping the Detective do the job.
+      </div>
+    </div>
+
+  <div class="row">
+      <div class="col-sm-12">
+          {% bootstrap_paginate page_obj %}
       </div>
     </div>
   <div class="row">

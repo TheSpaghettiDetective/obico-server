@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'simple_history',
     'widget_tweaks',
     'rest_framework',
+    'bootstrap_pagination',
     'app',  # app has to come before allauth for template override to work
     'api',
     'allauth',

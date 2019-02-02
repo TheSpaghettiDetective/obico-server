@@ -2,6 +2,7 @@ import os
 from binascii import hexlify
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 
 from .models import *
@@ -46,6 +47,16 @@ def delete_printer(request, id):
     instance.delete()
     return redirect('/printers/')
 
-def timelapse_gallery(request):
-    timelapses = list(PublicTimelapse.objects.order_by('priority').values())
-    return render(request, 'timelapse_gallery.html', dict(timelapses=timelapses,))
+def publictimelapse_list(request):
+    timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(timelapses_list, 9)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))

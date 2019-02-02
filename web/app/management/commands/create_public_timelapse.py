@@ -34,4 +34,7 @@ class Command( BaseCommand ):
         with open(p_json_path, 'r') as f:
             frame_p = json.load(f)
 
-        PublicTimelapse.objects.create(video_url=tl_url, poster_url=poster_url, creator_name=creator, frame_p=frame_p)
+        if len(PublicTimelapse.objects.filter(title=tl_basename)) == 1:
+            PublicTimelapse.objects.filter(title=tl_basename).update(video_url=tl_url, poster_url=poster_url, creator_name=creator, frame_p=frame_p)
+        else:
+            PublicTimelapse.objects.create(title=tl_basename, video_url=tl_url, poster_url=poster_url, creator_name=creator, frame_p=frame_p)

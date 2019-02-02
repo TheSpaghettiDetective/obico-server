@@ -17,10 +17,14 @@ def _save_to_file_system(dest_path, file_obj, container):
         os.makedirs(os.path.dirname(fqp))
 
     with open(fqp, 'wb+') as dest_file:
-        for chunk in file_obj.chunks():
-            dest_file.write(chunk)
+        if callable(getattr(file_obj, "chunks", None)):
+            for chunk in file_obj.chunks():
+                dest_file.write(chunk)
+        else:
+            from shutil import copyfileobj
+            copyfileobj(file_obj, dest_file)
 
-    uri = settings.MEDIA_URL + dest_path
+    uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
 
 def _save_to_azure(dest_path, file_obj, container):

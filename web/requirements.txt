@@ -11,3 +11,4 @@ azure-storage-blob==1.4.0
 redis==3.0.1
 django-simple-history==2.7.0
 jsonfield==2.0.2
+django-bootstrap-pagination==1.7.0

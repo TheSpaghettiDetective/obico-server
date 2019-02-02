@@ -6,7 +6,7 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
-  background: repeating-linear-gradient(45deg, #2b2b2b 0%, #2b2b2b 10%, #222222 0%, #222222 50%) 0 / 15px 15px;
+  background: repeating-linear-gradient(45deg, darken($color-bg, 3) 0%, darken($color-bg, 3) 10%, $color-bg 0%, $color-bg 50%) 0 / 15px 15px;
 }
 
 .form-control:focus {
@@ -198,6 +198,7 @@ footer {
 #smartwizard {
   margin-top: 3em;
   padding: 2.5em;
+  background: $color-bg;
 
   &.sw-theme-default {
     -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;

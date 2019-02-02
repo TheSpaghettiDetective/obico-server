@@ -5,9 +5,9 @@ from azure.storage.blob import BlockBlobService, BlobPermissions
 
 from lib import site
 
-def save_file_obj(dest_path, file_obj):
+def save_file_obj(dest_path, file_obj, container=None):
     if settings.AZURE_STORAGE_CONNECTION_STRING:
-        return _save_to_azure(dest_path, file_obj)
+        return _save_to_azure(dest_path, file_obj, container)
     else:
         return _save_to_file_system(dest_path, file_obj)
 
@@ -23,10 +23,10 @@ def _save_to_file_system(dest_path, file_obj):
     uri = settings.MEDIA_URL + dest_path
     return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
 
-def _save_to_azure(dest_path, file_obj):
+def _save_to_azure(dest_path, file_obj, container):
     blob_service = BlockBlobService(connection_string=settings.AZURE_STORAGE_CONNECTION_STRING)
 
-    container = settings.AZURE_STORAGE_CONTAINER
+    container = container or settings.AZURE_STORAGE_CONTAINER
     blob_service.create_blob_from_stream(container, dest_path, file_obj)
     sas_token = blob_service.generate_blob_shared_access_signature(
         container,

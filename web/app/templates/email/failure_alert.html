@@ -1,11 +1,169 @@
 {% block html %}
-<html><body>
-        <p>Hi,</p>
-        <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
-        <img src="{{ printer.pic.img_url }}" />
 
-        <p>Go to <a href="{{ view_link }}">The Spaghetti Detective</a> to find out more and cancel the print if necessary.</p>
-        
-        <p>The Spaghetti Detective - Print with peace of mind</p>
-</body></html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+  <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Roboto');
+
+    @media screen and (max-width: 630px) {
+      .full-width-nopad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+      }
+
+      .full-width-20pad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+      }
+
+      .vs20 {
+        width: 100% !important;
+        height: 20px !important;
+      }
+
+      .header-image {
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      .mobile-cta-button-table {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-button-row {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-font {
+        font-size: 18px !important;
+      }
+    }
+  </style>
+</head>
+
+<body style="padding:0; margin:0">
+  <table class="full-width-nopad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding-top:32px; padding-left:32px; padding-right:32px"
+    bgcolor="#FCFCFC" width="600">
+    <tr>
+      <td align="left" valign="top">
+        <table class="full-width-20pad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding:32px;
+        border-style:solid; border-color:#E7E7EA; border-width:1px;"
+          width="100%" bgcolor="#FFFFFF">
+          <tr>
+            <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+            font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+              <table style="margin:0px 0px 27px 0px; vertical-align:center;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td> <a target=_blank href="http://email.wlth.fr/wf/click?upn=1NMyO3bNPjll0y4VNm0qhAztTSzOwGL5dqc-2BA7Ih3l6Zrad7QlUkb3YUeY5Sy7iWAiefEl6tsIru36G-2FqK37WQ-3D-3D_nd4c1-2FhogENHvOqndnxlel-2Fc-2Be-2Brxw9UD0kLBSmFHxXsLkMtEgrsaXYB3kZoMdHzE7tZ1E17J14j7lVPT30ZJ1f81XtP8Rj860pUFJLjQ8tvgzx8NJanuycXNE1IXbXV7LrW3d7bVkGx-2BsrH1kd8hXweAWj7fYsElKYVgz4cRWixBGTSMJYW3Rx8lTjBnl0IGkRApyNwqROPTWyiJbMGvUPRiJucwkx8SRUjFTKACSna2abjUYVLNBQVyVhIkUBlBKhFqaH0o0mzdlxLTkfSAGIgCiTwmandYI1eUp8ygneEYpDw-2BT-2BIv31ISxZFAeM0olAOukfPI1Ca1dc7EIvNe0RyX7H5SMX9ZyvuYtmtAQxdyI37PgQDl4AEEE1L-2BXTx">
+                      <img style="height:24px; width:auto;" src="https://www.wealthfront.com/images/emails/wf_logo_purple260x48.png?_em=MAID-J57S-DQT0-M8EV"
+                        alt="Wealthfront" border="0">
+                    </a></td>
+                </tr>
+              </table>
+              <p>Hi {{ printer.user.first_name|default:"" }},</p>
+              <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
+              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <img style="width: 100%;" src="https://ci4.googleusercontent.com/proxy/JK4dBPbh_3cfb5_q9RQNXtX00eDTXfqg8Voh5QopSAUuHBr7O7yEpLaPj6vWn3s0lOg2ynFg0b2wIzKHbc5hsDisW7m5HmA_ecSeU8txOBrgfDmOYKdArAbGAmvCW5F7rqDzUw9N97vabnJ0K1SoRyaEtIvdHBj0V_Y-fk4f6LU-0iQkaJrJwHxvVPQshfcZwYW9spdNHAM4paJM92nLG424nmeBh1aox0yd9wXRvVMMZONKJ7L477jzTHd-AKzBRCI=s0-d-e1-ft#https://getanywhereprod.blob.core.windows.net/tsd-pics/2/1549141766.jpg?se=2027-04-21T21%3A09%3A26Z&sp=r&sv=2018-03-28&sr=b&sig=4nzgRMB6Oc3xUh0PYmynSE3J8FTMgAAK56DeslEw9lM%3D" />
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+                <tr>
+                  <td class="mobile-cta-button-row" bgcolor="#4840BB" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+                    align="center">
+                    <a class="mobile-cta-font" href="https://app.thespaghettidetective.com/printers/2/resume" target="_blank"
+                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+                      Yes it failed. Cancel the print!
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+                <tr>
+                  <td class="mobile-cta-button-row" bgcolor="#4840BB" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+                    align="center">
+                    <a class="mobile-cta-font" href="https://app.thespaghettidetective.com/printers/2/resume" target="_blank"
+                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+                      It is a false alarm. Resume the print!
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+                <tr>
+                  <td class="mobile-cta-button-row" bgcolor="#4840BB" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+                    align="center">
+                    <a class="mobile-cta-font" href="https://app.thespaghettidetective.com/printers/2/resume" target="_blank"
+                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+                      Go to The Spaghetti Detective to take a closer look.
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <br />
+              <hr />
+              <table style="margin-top:18px;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+                    <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why&nbsp;did I receive this email?</span></span></h2>
+                    <ul>
+                      <li>The Spaghetti Detective detected in your webcam image some features that are characteristic
+                        in failed prints (such as the shapes of spaghetti).</li>
+                      <li>Your print <strong>may</strong> have failed. It could also have been a false alarm since our
+                        algorithm is not yet perfect.</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+                    <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
+                    <ul>
+                      <li>If it's clear from the image included above that your print is really failing, you can cancel
+                        the print by pressing the "Cancel" button below. You may be asked to sign into The Spaghetti
+                        Detective web app.</li>
+                      <li>If it's clear from the image that your print is actually ok, that is, this email was a false
+                        alarm, </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="vs20" height="54px" valign="top">&nbsp;</td>
+                </tr>
+              </table>
+              <table style="background-color:#F9F9F9; color:#888796; overflow:auto; text-align:center;
+              margin:0 auto; height:48px; width:100%"
+                cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#888796; line-height:22px;">
+                    The Spaghetti Detecitve - Print With Peace Of Mind
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
+
 {% endblock %}

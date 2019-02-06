@@ -5,12 +5,22 @@ from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 
+from django.views.generic import ListView
+
 from .models import *
 from .forms import *
 
 # Create your views here.
 def index(request):
     return redirect('/printers/')
+
+
+class PrinterList(ListView):
+    model = Printer
+    template_name = 'printer_list.html'
+
+    def get_queryset(self):
+        return Printer.objects.filter(user=self.request.user)
 
 @login_required
 def printers(request):
@@ -40,6 +50,20 @@ def edit_printer(request, id):
             return render(request, 'printer_wizard.html', {'form': form})
     else:
         return render(request, 'printer_wizard.html', {'form': PrinterForm(instance=instance)})
+
+@login_required
+def delete_printer(request, id):
+    instance = get_object_or_404(Printer, id=id)
+    instance.delete()
+    return redirect('/printers/')
+
+
+@login_required
+def cancel_printer(request, id):
+    get_object_or_404(Printer, id=id)
+    instance.delete()
+    return redirect('/printers/')
+
 
 @login_required
 def delete_printer(request, id):

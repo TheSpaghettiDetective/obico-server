@@ -3,7 +3,6 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-import json
 
 from app.models import *
 from lib import redis
@@ -20,11 +19,13 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
-        return self.queue_octoprint_command(pk, 'cancel')
+        get_object_or_404(self.get_queryset, id=pk).queue_octoprint_command('cancel')
+        return Response({'status': 'OK'})
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
-        return self.queue_octoprint_command(pk, 'pause')
+        get_object_or_404(self.get_queryset, id=pk).queue_octoprint_command('pause')
+        return Response({'status': 'OK'})
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
@@ -33,12 +34,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
             printer.current_print_alert_muted = True
             printer.save()
 
-        return self.queue_octoprint_command(pk, 'resume')
-
-    def queue_octoprint_command(self, pk, command):
-        printer = self.current_printer(pk)
-        PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': command}), status=PrinterCommand.PENDING)
-        printer.clear_alert()
+        get_object_or_404(self.get_queryset, id=pk).queue_octoprint_command('resume')
         return Response({'status': 'OK'})
 
     def current_printer(self, pk):

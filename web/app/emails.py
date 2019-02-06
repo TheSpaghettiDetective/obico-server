@@ -18,6 +18,8 @@ def send_failure_alert(printer):
     ctx = {
         'printer': printer,
         'view_link': site.build_full_url('/printers/'),
+        'cancel_link': site.build_full_url('/printers/{}/cancel'.format(printer.id)),
+        'resume_link': site.build_full_url('/printers/{}/resume'.format(printer.id)),
     }
 
     message = get_template('email/failure_alert.html').render(ctx)

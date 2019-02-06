@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
 import os
+import json
 
 from lib import redis
 from lib.utils import dict_or_none
@@ -86,7 +87,7 @@ class Printer(models.Model):
             self.current_print_filename = filename
             self.current_print_started_at = datetime.now()
             self.save()
-    
+
     def unset_current_print(self):
         if self.current_print_filename is not None:
             self.current_print_filename = None
@@ -103,6 +104,11 @@ class Printer(models.Model):
     def clear_alert(self):
         self.current_print_alerted_at = None
         self.save()
+
+    def queue_octoprint_command(self, command, clear_alert=True):
+        PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command}), status=PrinterCommand.PENDING)
+        if clear_alert:
+            self.clear_alert()
 
     def __str__(self):
         return self.name

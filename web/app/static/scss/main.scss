@@ -63,7 +63,7 @@ footer {
       &.swal2-confirm {
         background-color: $color-primary !important;
       }
-      
+
       &.swal2-cancel {
         background-color: $color-secondary !important;
       }
@@ -173,7 +173,7 @@ footer {
 #new-printer {
   min-height: 25em;
   .new-printer-container {
-    
+
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -237,7 +237,7 @@ footer {
   &.plugin-step {
     padding: 1em 0.5em;
   }
-  
+
   img {
     padding: 1em 2em;
   }
@@ -257,6 +257,15 @@ footer {
     }
   }
 }
+}
+
+/**** printer-acted */
+.printer-acted {
+  text-align: center;
+
+  i {
+    color: $color-success;
+  }
 }
 
 /*** timelapse-gallery  */
@@ -282,7 +291,7 @@ footer {
 
     .modal-full .modal-content {
       min-height: 100vh;
-      
+
       .modal-body {
         padding: 0;
 
@@ -295,7 +304,7 @@ footer {
   .gauge {
     padding: 1.2rem 0rem 0rem;
   }
-  
+
   h1 {
     margin-top: 0.5em;
   }

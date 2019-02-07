@@ -31,8 +31,8 @@ def new_printer(request):
     return render(request, 'printer_wizard.html', {'form': form})
 
 @login_required
-def edit_printer(request, id):
-    instance = get_object_or_404(Printer, id=id, user=request.user)
+def edit_printer(request, pk):
+    instance = get_printer_or_404(pk, request)
     if request.method == "POST":
         form = PrinterForm(request.POST or None, instance=instance)
         if form.is_valid():
@@ -42,24 +42,25 @@ def edit_printer(request, id):
         return render(request, 'printer_wizard.html', {'form': PrinterForm(instance=instance)})
 
 @login_required
-def delete_printer(request, id):
-    instance = get_object_or_404(Printer, id=id)
-    instance.delete()
+def delete_printer(request, pk=None):
+    get_printer_or_404(pk, request).delete()
     return redirect('/printers/')
-
 
 @login_required
-def cancel_printer(request, id):
-    get_object_or_404(Printer, id=id)
-    instance.delete()
-    return redirect('/printers/')
-
+def cancel_printer(request, pk):
+    printer = get_printer_or_404(pk, request)
+    printer.queue_octoprint_command('cancel')
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel'})
 
 @login_required
-def delete_printer(request, id):
-    instance = get_object_or_404(Printer, id=id)
-    instance.delete()
-    return redirect('/printers/')
+def resume_printer(request, pk):
+    printer = get_printer_or_404(pk, request)
+    if request.GET.get('mute_alert', None):
+        printer.current_print_alert_muted = True
+        printer.save()
+
+    printer.queue_octoprint_command('resume')
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume'})
 
 def publictimelapse_list(request):
     timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())
@@ -74,3 +75,9 @@ def publictimelapse_list(request):
         page_obj = paginator.page(paginator.num_pages)
 
     return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))
+
+
+### helper methods ###
+
+def get_printer_or_404(pk, request):
+    return get_object_or_404(Printer, pk=pk, user=request.user)

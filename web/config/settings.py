@@ -170,6 +170,13 @@ REST_FRAMEWORK = {
         ),
 }
 
+# Sentry
+
+if os.environ.get('SENTRY_DSN'):
+    INSTALLED_APPS = INSTALLED_APPS + [
+        'raven.contrib.django.raven_compat',
+    ]
+
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')

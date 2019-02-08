@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify
 from os import path, environ
+from raven.contrib.flask import Sentry
 import urllib
 import cv2
 import numpy as np
@@ -15,6 +16,10 @@ app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
+
+# Sentry
+if environ.get('SENTRY_DSN'):
+    sentry = Sentry(app, dsn=environ.get('SENTRY_DSN'))
 
 # REDIS client
 import redis
@@ -32,7 +37,7 @@ def get_p():
         img_array = np.array(bytearray(resp.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
         detections = detect(net_main, meta_main, img, thresh=0.25)
-        
+
         key_name = 'p:' + request.args['session_id']
         p, new_session = predict(detections, redis_client.hgetall(key_name))
         redis_client.hmset(key_name, new_session)

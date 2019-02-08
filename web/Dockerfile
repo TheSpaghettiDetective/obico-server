@@ -35,6 +35,7 @@ ENV ML_API_HOST=http://ml_api:3333
 # EMAIL_USE_TLS=True
 # DEFAULT_FROM_EMAIL=changeme@example.com
 # ML_API_TOKEN=
+# SENTRY_DSN=
 
 RUN python manage.py collectstatic --noinput -c
 

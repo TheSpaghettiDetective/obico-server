@@ -2,3 +2,4 @@ ipdb
 opencv-python>=3.4
 flask>=1.0
 redis==3.0.1
+newrelic==4.12.0.113

@@ -16,4 +16,4 @@ ENV REDIS_URL=redis://redis:6379
 # ML_API_TOKEN=
 
 EXPOSE 3333
-CMD ["python",  "server.py"]
+CMD ["sh", "-c", "newrelic-admin run-program python server.py"]

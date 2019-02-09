@@ -1,9 +1,10 @@
+var ALERT_THRESHOLD = 0.45;
+
 function scaleP(p) {
-    var CUT_OFF = 0.45;
-    var scaleAboveCutOff = (100.0/3.0) / (1-CUT_OFF);
-    var scaleBelowCutOff = (200.0/3.0) / CUT_OFF;
-    if (p > CUT_OFF) {
-        return (p - CUT_OFF) * scaleAboveCutOff + 200.0/3.0;
+    var scaleAboveCutOff = (100.0/3.0) / (1-ALERT_THRESHOLD);
+    var scaleBelowCutOff = (200.0/3.0) / ALERT_THRESHOLD;
+    if (p > ALERT_THRESHOLD) {
+        return (p - ALERT_THRESHOLD) * scaleAboveCutOff + 200.0/3.0;
     } else {
         return p * scaleBelowCutOff;
     }

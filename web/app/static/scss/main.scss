@@ -271,6 +271,12 @@ footer {
 /*** timelapse-gallery  */
 
 .timelapse-gallery {
+
+  .card-body {
+    position: relative;
+    padding: 2rem 0 0.5rem 0;
+  }
+
   .card-img-top {
     position: relative;
 
@@ -321,5 +327,14 @@ footer {
   .pagination {
     margin-bottom: 0;
     margin-top: 15px;
+  }
+
+  .alert-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.3rem;
+    display: none;
   }
 }

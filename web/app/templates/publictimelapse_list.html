@@ -25,7 +25,7 @@
   </div>
   <div class="row">
     {% for timelapse in timelapses %}
-    <div class="col-sm-12 col-lg-4 timelapse-card">
+    <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
       <div class="card">
         <div class="card-header">
           - By {{ timelapse.creator_name }}
@@ -49,6 +49,9 @@
         </div>
 
         <div class="card-body">
+          <div id="alert-banner-{{timelapse.id}}" class="bg-warning alert-banner text-center">
+              <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+          </div>
           <div class="text-center gauge">
             <canvas id="gauge-{{timelapse.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="2"
               data-width="120" data-height="120" data-units="false" data-title="Looking Good" data-value-box="false"

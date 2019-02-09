@@ -31,11 +31,16 @@ $(document).ready(function () {
                 modalVjs.src(tl.video_url);
                 modalVjs.currentTime(currentTime);
                 modalVjs.play();
-
+                var modalAlertBanner = $('#alert-banner-fullscreen');
                 modalVjs.on('timeupdate', function (e) {
                     var num = Math.floor(this.currentTime() * 25);
                     var p = frame_p[num].p;
                     updateGauge($('#gauge-fullscreen'), p);
+                    if (p > ALERT_THRESHOLD) {
+                        modalAlertBanner.show();
+                    } else {
+                        modalAlertBanner.hide();
+                    }
                 });
             });
 

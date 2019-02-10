@@ -230,7 +230,15 @@ footer {
   &.form-step {
     display: flex;
     flex-flow: column;
-    justify-content: center;
+
+    .form-label {
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
   }
 
   &.token-step

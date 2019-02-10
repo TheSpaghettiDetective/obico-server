@@ -14,6 +14,12 @@ $(document).ready(function () {
         }
     });
 
+    // A very hacky way to make sure the wizard goes back to step 0 when there is validation error with the form.
+    if (formHasErrors) {
+        window.setTimeout(function () {
+            window.location.hash = '#step-1';
+        }, 100);
+    }
     function setTooltip(btn, message) {
         $(btn).tooltip('hide')
             .attr('data-original-title', message)

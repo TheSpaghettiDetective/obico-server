@@ -37,7 +37,7 @@ def edit_printer(request, pk):
         form = PrinterForm(request.POST or None, instance=instance)
         if form.is_valid():
             form.save()
-            return render(request, 'printer_wizard.html', {'form': form})
+        return render(request, 'printer_wizard.html', {'form': form})
     else:
         return render(request, 'printer_wizard.html', {'form': PrinterForm(instance=instance)})
 

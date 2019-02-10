@@ -55,6 +55,16 @@ class User(AbstractUser):
 
 
 class Printer(models.Model):
+    CANCEL = 'CANCEL'
+    PAUSE = 'PAUSE'
+    NONE = 'NONE'
+
+    ACTION_ON_FAILURE = (
+        (NONE, 'Just email me.'),
+        (PAUSE, 'Pause the print and email me.'),
+        (CANCEL, 'Cancel the print and email me (not available in beta testing).'),
+    )
+
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
@@ -62,6 +72,14 @@ class Printer(models.Model):
     current_print_started_at = models.DateTimeField(null=True)
     current_print_alerted_at = models.DateTimeField(null=True)
     current_print_alert_muted = models.BooleanField(default=False)
+    action_on_failure = models.CharField(
+        max_length=10,
+        choices=ACTION_ON_FAILURE,
+        default=PAUSE,
+    )
+    tools_off_on_pause = models.BooleanField(default=True)
+    bed_off_on_pause = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

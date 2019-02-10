@@ -33,11 +33,11 @@
               {% endif %}
             </div>
             <div class="form-group">
-              <div class="form-label text-muted">When failure is detected</div>
+              <div class="form-label text-muted">When failure is detected,</div>
               {% render_field form.action_on_failure %}
             </div>
             <div class="form-group">
-              <div class="form-label text-muted">After print is paused</div>
+              <div class="form-label text-muted">When print is paused,</div>
               <div class="form-check form-check-inline">
                 {% render_field form.tools_off_on_pause %}
                 <label class="form-check-label" for="id_bed_off_on_pause">

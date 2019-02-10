@@ -49,7 +49,7 @@ def delete_printer(request, pk=None):
 @login_required
 def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
-    printer.queue_octoprint_command('cancel')
+    printer.queue_octoprint_command('cancel', clear_alert=True)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel'})
 
 @login_required
@@ -59,7 +59,9 @@ def resume_printer(request, pk):
         printer.current_print_alert_muted = True
         printer.save()
 
-    printer.queue_octoprint_command('resume')
+    printer.queue_octoprint_command('restore_temps', clear_alert=True)
+    printer.queue_octoprint_command('resume', clear_alert=True)
+
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume'})
 
 def publictimelapse_list(request):

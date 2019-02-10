@@ -16,6 +16,21 @@ from app.emails import send_failure_alert
 
 STATUS_TTL_SECONDS = 180
 
+def send_alert_if_needed(printer, p):
+    if p < settings.ALERT_P_THRESHOLD or printer.current_print_alerted_at or printer.current_print_alert_muted:
+        return
+
+    printer.set_alert()
+    send_failure_alert(printer)
+
+    if printer.action_on_failure == Printer.PAUSE:
+        printer.queue_octoprint_command('pause')
+
+        if printer.tools_off_on_pause:
+            printer.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True})
+        if printer.bed_off_on_pause:
+            printer.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True})
+
 def command_response(printer):
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
     resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
@@ -50,13 +65,10 @@ class OctoPrintPicView(APIView):
         p = resp['p']
         redis.printer_pic_set(printer.id, {'img_url': external_url, 'p': p}, ex=STATUS_TTL_SECONDS)
 
-        if p > settings.ALERT_P_THRESHOLD and not printer.current_print_alerted_at and not printer.current_print_alert_muted:
-            printer.set_alert()
-            PrinterCommand.objects.create(printer=printer, command=json.dumps({'cmd': 'pause'}), status=PrinterCommand.PENDING)
-            send_failure_alert(printer)
-
         print(resp['detections'])
         print(p)
+
+        send_alert_if_needed(printer, p)
         return command_response(printer)
 
 

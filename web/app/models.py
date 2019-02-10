@@ -123,8 +123,8 @@ class Printer(models.Model):
         self.current_print_alerted_at = None
         self.save()
 
-    def queue_octoprint_command(self, command, clear_alert=True):
-        PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command}), status=PrinterCommand.PENDING)
+    def queue_octoprint_command(self, command, args={}, clear_alert=False):
+        PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command, 'args': args}), status=PrinterCommand.PENDING)
         if clear_alert:
             self.clear_alert()
 

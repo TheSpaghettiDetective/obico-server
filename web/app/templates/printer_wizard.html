@@ -32,6 +32,10 @@
               </small>
               {% endif %}
             </div>
+            <hr style="background-color: grey;"/>
+            <p class="text-warning">
+                <i class="fas fa-exclamation-triangle"></i>  If you are not sure about the settings below, leave them in default values to minimize surprises.
+            </p>
             <div class="form-group">
               <div class="form-label text-muted">When failure is detected,</div>
               {% render_field form.action_on_failure %}

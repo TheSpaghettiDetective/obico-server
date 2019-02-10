@@ -13,9 +13,9 @@ class RadioSelectWidget(forms.RadioSelect):
         for idx, choice in enumerate(self.choices):
             input_id = attrs['id'] + '_' + str(idx)
             html += '''
-<div>
-<input type="radio" name="{}" value="{}" class="{}" required="" id="{}" {}>
-<label class="form-check-label" for="{}">{}</label>
+<div class="custom-control custom-radio">
+<input type="radio" name="{}" value="{}" class="custom-control-input {}" required="" id="{}" {}>
+<label class="custom-control-label" for="{}">{}</label>
 </div>
             '''.format(
                 name,

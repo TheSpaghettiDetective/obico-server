@@ -42,15 +42,15 @@
             </div>
             <div class="form-group">
               <div class="form-label text-muted">When print is paused,</div>
-              <div class="form-check form-check-inline">
-                {% render_field form.tools_off_on_pause %}
-                <label class="form-check-label" for="id_bed_off_on_pause">
+              <div class="custom-control custom-checkbox form-check-inline">
+                {% render_field form.tools_off_on_pause class="custom-control-input" %}
+                <label class="custom-control-label" for="id_tools_off_on_pause">
                   Turn off hotend heater(s)
                 </label>
               </div>
-              <div class="form-check form-check-inline">
-                {% render_field form.bed_off_on_pause %}
-                <label class="form-check-label" for="id_bed_off_on_pause">
+              <div class="custom-control custom-checkbox form-check-inline">
+                {% render_field form.bed_off_on_pause class="custom-control-input" %}
+                <label class="custom-control-label" for="id_bed_off_on_pause">
                   Turn off bed heater
                 </label>
               </div>

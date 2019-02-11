@@ -4,7 +4,7 @@ services:
     build:
       context: ml_api
     volumes:
-      - $PWD/ml_api:/app
+      - ./ml_api:/app
     depends_on:
       - redis
 
@@ -14,7 +14,7 @@ services:
     ports:
       - "3334:3334"
     volumes:
-      - $PWD/web:/app
+      - ./web:/app
     depends_on:
       - ml_api
       - redis

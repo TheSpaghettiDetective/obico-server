@@ -35,6 +35,10 @@
   <link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
+
+  {% for extrajs in settings.EXTRA_JS %}
+  <script async src={{extrajs}}></script>
+  {% endfor %}
 </head>
 
 <body>

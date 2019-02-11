@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },
@@ -171,11 +172,13 @@ REST_FRAMEWORK = {
 }
 
 # Sentry
-
 if os.environ.get('SENTRY_DSN'):
     INSTALLED_APPS = INSTALLED_APPS + [
         'raven.contrib.django.raven_compat',
     ]
+
+# Extra js
+EXTRA_JS = [s for s in os.environ.get('EXTRA_JS', '').split('|') if s]
 
 # Settings to store and serve uploaded images
 MEDIA_URL = '/media/'
@@ -206,3 +209,8 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+# settings export
+SETTINGS_EXPORT = [
+    'EXTRA_JS',
+]

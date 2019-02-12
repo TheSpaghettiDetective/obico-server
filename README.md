@@ -6,14 +6,18 @@ This repo is everything you need to run a server for [The Spaghetti Detective](h
 
 ## Prerequisites
 
-The Spaghetti Detective server requires:
+The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). On that server, make sure
+the following softwares are installed:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)).
     - [Install Docker-compose](https://docs.docker.com/compose/install/).
 
-- git-lfs. This is because the model itself is 100+MB and therefore can't be directly checked into git.
+- git and git-lfs. This is because the model itself is 100+MB and therefore can't be directly checked into git.
     - [Install git-lfs](https://github.com/git-lfs/git-lfs/wiki/Installation).
+
+You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
+should also work but we haven't tried them.
 
 ## Get the code and start the server.
 
@@ -59,6 +63,20 @@ sake, this document assumes the server port is 3334.
 2. Click "Save". Yes it's correct that Django is not as smart as most people think. ;)
 
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/site_config.png)
+
+## Configure Email server (SMTP)
+
+The following is using gmail as an example. Other web mail services may vary slightly, such as EMAIL_PORT
+
+1. In `TheSpaghettiDetective` directory, find and open `docker-compose.yml` using your favorite editor.
+
+2. Find the following lines, and set them to the correct values of your email account:
+
+      EMAIL_HOST:     # -> such as smtp.gmail.com
+      EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
+      EMAIL_HOST_PASSWORD:    # -> your email account password
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: 'True'
 
 # Done!
 

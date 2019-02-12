@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.conf import settings
 
 from .models import *
 from .forms import *
@@ -78,6 +80,9 @@ def publictimelapse_list(request):
 
     return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))
 
+def serve_jpg_file(request, file_path):
+    with open(os.path.join(settings.MEDIA_ROOT, file_path), 'rb') as fh:
+        return HttpResponse(fh, content_type='image/jpeg')
 
 ### helper methods ###
 

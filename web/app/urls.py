@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('media/<path:file_path>', views.serve_jpg_file, name='serve_jpg_file'), # semi hacky solution to serve image files
     path('printers/', views.printers, name='printers'),
     path('printers/new/', views.new_printer, name='printers_new'),
     path('printers/<int:pk>/', views.edit_printer, name='printers_edit'),

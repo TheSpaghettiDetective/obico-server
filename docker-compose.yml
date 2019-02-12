@@ -7,6 +7,9 @@ services:
       - ./ml_api:/app
     depends_on:
       - redis
+    environment:
+        PLACEHOLDER: remove me once ml_api requires at least one env vars
+        # ML_API_TOKEN:
 
   web:
     build:
@@ -25,6 +28,20 @@ services:
       EMAIL_HOST_PASSWORD:    # -> your email account password
       EMAIL_PORT: 587
       EMAIL_USE_TLS: 'True'
+      DEFAULT_FROM_EMAIL: 'changeme@example.com'
+      DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
+      SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
+      SOCIAL_LOGIN: 'False'
+      ALERT_P_THRESHOLD: '0.45'
+      REDIS_URL: 'redis://redis:6379'
+      DATABASE_URL: 'sqlite:////app/db.sqlite3'
+      INTERNAL_MEDIA_HOST: 'http://web:3334'
+      ML_API_HOST: 'http://ml_api:3333'
+      # Optional env vars below this line
+      # AZURE_STORAGE_CONNECTION_STRING:
+      # ENALBE_HISTORY:
+      # ML_API_TOKEN:
+      # SENTRY_DSN:
 
   redis:
     image: redis:5.0

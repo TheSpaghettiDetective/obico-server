@@ -23,12 +23,14 @@ should also work but we haven't tried them.
 
 1. Get the code:
 
-    git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+```
+git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+```
 
-2. Run it! Do **EITHER** one of these:
+2. Run it! Do **either** one of these based on what OS you are using:
     - If you are on Linux: `cd TheSpaghettiDetective && sudo docker-compose up -d`
     - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
-    - If you are on Windows: ???
+    - If you are on Windows: ??? (help needed here)
 
 3. Go grab a coffee. Step 2 would take up to 30 minutes. BTW, we need help to shorten this process. Let us know if you can pitch in.
 
@@ -72,11 +74,13 @@ The following is using gmail as an example. Other web mail services may vary sli
 
 2. Find the following lines, and set them to the correct values of your email account:
 
+```
       EMAIL_HOST:     # -> such as smtp.gmail.com
       EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
       EMAIL_HOST_PASSWORD:    # -> your email account password
       EMAIL_PORT: 587
       EMAIL_USE_TLS: 'True'
+```
 
 # Done!
 

@@ -60,6 +60,10 @@ sake, this document assumes the server port is 3334.
 
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/site_config.png)
 
+# Done!
+
+That's it! You now have a fully-functionally The Spaghetti Detective server that your OctoPrint can talk to. We hope setting up the server has not been overwhelming.
+
 # Configure The Spagetti Detective OctoPrint Plugin to use your own server
 
 On The Spaghetti Detective plugin settings page:

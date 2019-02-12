@@ -117,4 +117,6 @@ On The Spaghetti Detective plugin settings page:
 
 Just make a copy of `TheSpaghettiDetective/web/db.sqlite`
 
+# How to train your own Machine Learning model (TBD)
+
 # Difficulties at getting The Spaghetti Detective server up and running? [Open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).

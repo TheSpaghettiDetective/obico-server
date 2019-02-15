@@ -74,6 +74,11 @@
               </table>
               <p>Hi {{ printer.user.first_name|default:"" }},</p>
               <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
+              {% if pause_print %}
+              <p>
+                The print has been paused. <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
+              </p>
+              {% endif %}
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -94,6 +99,7 @@
                 </tr>
               </table>
 
+              {% if pause_print %}
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
                 <tr>
                   <td class="mobile-cta-button-row" bgcolor="#4840BB" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
@@ -117,7 +123,7 @@
                   </td>
                 </tr>
               </table>
-
+              {% endif %}
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
                 <tr>
                   <td class="mobile-cta-button-row" bgcolor="#4840BB" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "

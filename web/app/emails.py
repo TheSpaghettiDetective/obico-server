@@ -7,7 +7,7 @@ from lib import site
 
 LOGGER = logging.getLogger(__name__)
 
-def send_failure_alert(printer):
+def send_failure_alert(printer, pause_print):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -17,6 +17,7 @@ def send_failure_alert(printer):
 
     ctx = {
         'printer': printer,
+        'pause_print': pause_print,
         'view_link': site.build_full_url('/printers/'),
         'cancel_link': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
         'resume_link': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)),

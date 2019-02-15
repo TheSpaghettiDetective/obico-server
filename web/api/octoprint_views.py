@@ -21,15 +21,17 @@ def send_alert_if_needed(printer, p):
         return
 
     printer.set_alert()
-    send_failure_alert(printer)
+    pause_print = printer.action_on_failure == Printer.PAUSE
 
-    if printer.action_on_failure == Printer.PAUSE:
+    if pause_print:
         printer.queue_octoprint_command('pause')
 
         if printer.tools_off_on_pause:
             printer.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True})
         if printer.bed_off_on_pause:
             printer.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True})
+
+    send_failure_alert(printer, pause_print)
 
 def command_response(printer):
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)

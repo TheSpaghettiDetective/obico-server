@@ -72,11 +72,8 @@
           {% if user.is_authenticated %}
           <li class="nav-item {% if  'printers' in view_name %}active{% endif %}">
             <a class="nav-link" href="/printers">My Printers
-              <span class="sr-only">(current)</span>
             </a>
           </li>
-          {% endif %}
-          {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="/accounts/logout">Log out</a>
           </li>

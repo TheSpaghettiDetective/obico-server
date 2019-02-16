@@ -3,12 +3,15 @@ from django.conf import settings
 import os
 from shutil import copyfileobj
 from azure.storage.blob import BlockBlobService, BlobPermissions
+from google.cloud import storage
 
 from lib import site
 
 def save_file_obj(dest_path, file_obj, container):
     if settings.AZURE_STORAGE_CONNECTION_STRING:
         return _save_to_azure(dest_path, file_obj, container)
+    elif settings.GOOGLE_APPLICATION_CREDENTIALS:
+        return _save_to_gcp(dest_path, file_obj, container)
     else:
         return _save_to_file_system(dest_path, file_obj, container)
 
@@ -33,3 +36,43 @@ def _save_to_azure(dest_path, file_obj, container):
         BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
     blob_url = blob_service.make_blob_url(container, dest_path, sas_token=sas_token)
     return blob_url, blob_url
+
+def _save_to_gcp(dest_path, file_obj, container):
+    client = storage.Client()
+    bucket = client.bucket(container)
+    blob = bucket.blob(dest_path)
+    import ipdb; ipdb.set_trace()
+    blob.upload_from_string(
+        file_obj.read(),
+        'application/octet-stream')
+    return blob.public_url
+
+def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
+    from oauth2client.service_account import ServiceAccountCredentials
+    import base64
+    from six.moves.urllib.parse import urlencode, quote
+
+    GCS_API_ENDPOINT = 'https://storage.googleapis.com'
+
+    expiration_in_epoch = int(expiration.timestamp())
+    signature_string = ('{verb}\n'
+                    '{content_md5}\n'
+                    '{content_type}\n'
+                    '{expiration}\n'
+                    '{resource}')
+
+    signature_string.format(verb=verb,
+        content_md5='',
+        content_type=content_type,
+        expiration=expiration_in_epoch,
+        resource=obj_path)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(settings.GOOGLE_APPLICATION_CREDENTIALS)
+    signature = creds.sign_blob(signature_string)[1]
+    encoded_signature = base64.b64encode(signature)
+    base_url= GCS_API_ENDPOINT + obj_path
+    storage_account_id = creds.service_account_email
+
+    return '{base_url}?GoogleAccessId={account_id}&Expires={expiration}&Signature={signature}'.format(base_url=base_url,
+        account_id=storage_account_id,
+        expiration = expiration_in_epoch,
+        signature=quote(encoded_signature))

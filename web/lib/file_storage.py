@@ -4,6 +4,9 @@ import os
 from shutil import copyfileobj
 from azure.storage.blob import BlockBlobService, BlobPermissions
 from google.cloud import storage
+from oauth2client.service_account import ServiceAccountCredentials
+import base64
+from six.moves.urllib.parse import urlencode, quote
 
 from lib import site
 
@@ -41,17 +44,12 @@ def _save_to_gcp(dest_path, file_obj, container):
     client = storage.Client()
     bucket = client.bucket(container)
     blob = bucket.blob(dest_path)
-    import ipdb; ipdb.set_trace()
-    blob.upload_from_string(
-        file_obj.read(),
-        'application/octet-stream')
-    return blob.public_url
+    content_type = 'application/octet-stream'
+    blob.upload_from_string(file_obj.read(), content_type)
+    blob_url = _sign_gcp_blob_url('GET', '/'+container+'/'+dest_path, content_type, datetime.utcnow() + timedelta(hours=24*3000))
+    return blob_url, blob_url
 
 def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
-    from oauth2client.service_account import ServiceAccountCredentials
-    import base64
-    from six.moves.urllib.parse import urlencode, quote
-
     GCS_API_ENDPOINT = 'https://storage.googleapis.com'
 
     expiration_in_epoch = int(expiration.timestamp())
@@ -61,13 +59,13 @@ def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
                     '{expiration}\n'
                     '{resource}')
 
-    signature_string.format(verb=verb,
+    signature = signature_string.format(verb=verb,
         content_md5='',
-        content_type=content_type,
+        content_type='',
         expiration=expiration_in_epoch,
         resource=obj_path)
     creds = ServiceAccountCredentials.from_json_keyfile_name(settings.GOOGLE_APPLICATION_CREDENTIALS)
-    signature = creds.sign_blob(signature_string)[1]
+    signature = creds.sign_blob(signature)[1]
     encoded_signature = base64.b64encode(signature)
     base_url= GCS_API_ENDPOINT + obj_path
     storage_account_id = creds.service_account_email

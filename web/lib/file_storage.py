@@ -41,6 +41,9 @@ def _save_to_azure(dest_path, file_obj, container):
     return blob_url, blob_url
 
 def _save_to_gcp(dest_path, file_obj, container):
+    if settings.BUCKET_PREFIX:
+        container = settings.BUCKET_PREFIX + container
+
     client = storage.Client()
     bucket = client.bucket(container)
     blob = bucket.blob(dest_path)

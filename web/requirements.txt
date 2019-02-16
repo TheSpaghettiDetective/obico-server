@@ -18,3 +18,4 @@ raven==6.10.0
 django-settings-export==1.2.1
 google-cloud-storage==1.14.0
 google-api-python-client==1.7.8
+oauth2client==4.1.3

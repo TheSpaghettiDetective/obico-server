@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 TL_FILE=$1
 OUT_DIR=$2

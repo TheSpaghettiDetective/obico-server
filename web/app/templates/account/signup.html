@@ -10,11 +10,11 @@
 {% get_providers as socialaccount_providers %}
 
 <div class="row justify-content-center logreg">
-  <div class="col-sm-11 col-md-8 col-lg-6">
+  <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
       <div id="logreg-forms">
-  
+
       <h1 class="text-center">{% trans "Sign Up" %}</h1>
-      
+
       {% if socialaccount_providers %}
       <div class="social-login">
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i class="fab fa-facebook-f"></i> Sign up with Facebook</span> </a>

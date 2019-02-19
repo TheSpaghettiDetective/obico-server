@@ -133,3 +133,5 @@ node_modules
 docker-compose.override.yml
 
 *.code-workspace
+
+/gcp-key

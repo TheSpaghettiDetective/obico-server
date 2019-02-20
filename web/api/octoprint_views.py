@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,22 +15,20 @@ from app.emails import send_failure_alert
 
 
 STATUS_TTL_SECONDS = 180
+ALERT_COOLDOWN_SECONDS = 120
 
 def send_alert_if_needed(printer, p):
-    if p < settings.ALERT_P_THRESHOLD or printer.current_print_alerted_at or printer.current_print_alert_muted:
+    last_acknowledge = printer.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    if p < settings.ALERT_P_THRESHOLD \
+        or printer.current_print_alerted_at \
+        or (datetime.now(timezone.utc) - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return
 
     printer.set_alert()
+
     pause_print = printer.action_on_failure == Printer.PAUSE
-
     if pause_print:
-        printer.queue_octoprint_command('pause')
-
-        if printer.tools_off_on_pause:
-            printer.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True})
-        if printer.bed_off_on_pause:
-            printer.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True})
-
+        printer.pause_print_on_failure()
     send_failure_alert(printer, pause_print)
 
 def command_response(printer):

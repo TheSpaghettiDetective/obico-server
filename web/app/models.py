@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from django.db import models
 from jsonfield import JSONField
 from django.contrib.auth.models import AbstractUser, UserManager
@@ -71,7 +71,7 @@ class Printer(models.Model):
     current_print_filename = models.CharField(max_length=1000, null=True, blank=True)
     current_print_started_at = models.DateTimeField(null=True)
     current_print_alerted_at = models.DateTimeField(null=True)
-    current_print_alert_muted = models.BooleanField(default=False)
+    alert_acknowledged_at = models.DateTimeField(null=True)
     action_on_failure = models.CharField(
         max_length=10,
         choices=ACTION_ON_FAILURE,
@@ -103,7 +103,9 @@ class Printer(models.Model):
     def set_current_print(self, filename):
         if filename != self.current_print_filename:
             self.current_print_filename = filename
-            self.current_print_started_at = datetime.now()
+            self.current_print_started_at = datetime.now(timezone.utc)
+            self.current_print_alerted_at = None
+            self.alert_acknowledged_at = None
             self.save()
 
     def unset_current_print(self):
@@ -111,22 +113,47 @@ class Printer(models.Model):
             self.current_print_filename = None
             self.current_print_started_at = None
             self.current_print_alerted_at = None
-            self.current_print_alert_muted = False
+            self.alert_acknowledged_at = None
             self.save()
 
+    def resume_print(self, mute_alert=False):
+        self.alert_acknowledged_at = datetime.now(timezone.utc)
+        self.save()
+        if not mute_alert:
+            self.clear_alert()
+
+        self.queue_octoprint_command('restore_temps')
+        self.queue_octoprint_command('resume', abort_existing=False)
+
+    def pause_print(self):
+        self.queue_octoprint_command('pause')
+
+    def pause_print_on_failure(self):
+        self.queue_octoprint_command('pause')
+        if self.tools_off_on_pause:
+            self.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True}, abort_existing=False)
+        if self.bed_off_on_pause:
+            self.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True}, abort_existing=False)
+
+    def cancel_print(self):
+        self.alert_acknowledged_at = datetime.now(timezone.utc)
+        self.save()
+        self.queue_octoprint_command('cancel')
+
     def set_alert(self):
-        if not self.current_print_alerted_at:
-            self.current_print_alerted_at = datetime.now()
-            self.save()
+        self.current_print_alerted_at = datetime.now(timezone.utc)
+        self.alert_acknowledged_at = None
+        self.save()
 
     def clear_alert(self):
         self.current_print_alerted_at = None
+        self.alert_acknowledged_at = datetime.now(timezone.utc)
         self.save()
 
-    def queue_octoprint_command(self, command, args={}, clear_alert=False):
+    def queue_octoprint_command(self, command, args={}, abort_existing=True):
+        if abort_existing:
+            PrinterCommand.objects.filter(printer=self, status=PrinterCommand.PENDING).update(status=PrinterCommand.ABORTED)
         PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command, 'args': args}), status=PrinterCommand.PENDING)
-        if clear_alert:
-            self.clear_alert()
 
     def __str__(self):
         return self.name
@@ -135,10 +162,12 @@ class Printer(models.Model):
 class PrinterCommand(models.Model):
     PENDING = 'PENDING'
     SENT = 'SENT'
+    ABORTED = 'ABORTED'
 
     COMMAND_STATUSES = (
         (PENDING, 'pending'),
         (SENT, 'sent'),
+        (ABORTED, 'aborted'),
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)

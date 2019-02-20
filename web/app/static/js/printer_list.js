@@ -102,14 +102,14 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (printer.status && printer.current_print_alerted_at){
+        if (printer.status && printer.current_print_alerted_at && !printer.alert_acknowledged_at){
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();
         }
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        
+
         updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'pic.p', 0));
 
         if (printer.status && printer.current_print_filename) {

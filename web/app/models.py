@@ -65,9 +65,9 @@ class Printer(models.Model):
     NONE = 'NONE'
 
     ACTION_ON_FAILURE = (
-        (NONE, 'Just email me.'),
-        (PAUSE, 'Pause the print and email me.'),
-        (CANCEL, 'Cancel the print and email me (not available during beta testing).'),
+        (NONE, 'Just notify me via email and text.'),
+        (PAUSE, 'Pause the print and notify me via email and text.'),
+        (CANCEL, 'Cancel the print and notifiy me (not available during beta testing).'),
     )
 
     name = models.CharField(max_length=200, null=False)

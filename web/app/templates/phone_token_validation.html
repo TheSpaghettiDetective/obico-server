@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-sm-11 col-md-10 col-lg-8">
+      <div class="form-container container">
+      <h4 class="text-center">Enter verification code</h4>
+      <hr />
+      {% if form.errors %}
+      <div class="text-danger">Wait! You have got errors to fix.</div>
+      {% endif %}
+      <form method="POST">
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+        {{ form.non_field_errors }}
+        {{ form.token.errors }}
+
+        <div class="form-group row">
+          <div class="col-sm-12">
+            {% render_field form.token class="form-control" placeholder="Verification Code" %}
+          </div>
+        </div>
+        <input type="submit" value="Verify" class="btn btn-primary btn-block">
+        {% endwith %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

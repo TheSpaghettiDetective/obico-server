@@ -2,6 +2,7 @@ FROM python:3
 
 ADD . /app
 WORKDIR /app
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Required env vars and their default values

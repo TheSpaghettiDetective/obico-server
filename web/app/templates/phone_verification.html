@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container container">
+      <h4 class="text-center">Verify my phone number</h4>
+      <hr />
+      {% if form.errors %}
+      <div class="text-danger">Wait! You have got errors to fix.</div>
+      {% endif %}
+      <form method="POST">
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+
+        {{ form.country_code.errors }}
+        {{ form.phone_number.errors }}
+        {{ form.via.errors }}
+
+        <div class="form-group row">
+          <div class="col-sm-3">
+            {% render_field form.country_code class="form-control" placeholder="Country Code" %}
+          </div>
+          <div class="col-sm-9">
+            {% render_field form.phone_number class="form-control" placeholder="Phone Number" %}
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-12">
+          {% render_field form.via class="custom-control-input" inline="True" %}
+          </div>
+        </div>
+        <input type="submit" value="Get verification code" class="btn btn-primary btn-block">
+        {% endwith %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,10 +5,14 @@ from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.contrib import messages
 from django.conf import settings
 
 from .models import *
 from .forms import *
+
+if settings.TWILIO_API_KEY:
+    authy_api = AuthyApiClient(settings.TWILIO_API_KEY)
 
 # Create your views here.
 def index(request):
@@ -86,8 +90,51 @@ def user_preferences(request):
     if request.method == "POST":
         if form.is_valid():
             user = form.save()
+            messages.success(request, 'Your preferences have been updated successfully!')
 
     return render(request, 'user_preferences.html', dict(form=form))
+
+@login_required
+def phone_verification(request):
+    if request.method == 'POST':
+        form = PhoneVerificationForm(request.POST)
+        if form.is_valid():
+            request.session['phone_number'] = form.cleaned_data['phone_number']
+            request.session['country_code'] = form.cleaned_data['country_code']
+            authy_api.phones.verification_start(
+                form.cleaned_data['phone_number'],
+                form.cleaned_data['country_code'],
+                via=form.cleaned_data['via']
+            )
+            return redirect('phone_token_validation')
+    else:
+        form = PhoneVerificationForm(initial={'via': 'sms'})
+    return render(request, 'phone_verification.html', {'form': form})
+
+@login_required
+def phone_token_validation(request):
+    if request.method == 'POST':
+        form = PhoneTokenForm(request.POST)
+        if form.is_valid():
+            verification = authy_api.phones.verification_check(
+                request.session['phone_number'],
+                request.session['country_code'],
+                form.cleaned_data['token']
+            )
+            if verification.ok():
+                request.session['is_verified'] = True
+                request.user.phone_country_code = request.session['country_code']
+                request.user.phone_number = request.session['phone_number']
+                request.user.save()
+                messages.success(request, 'Phone number has been verified successfully!')
+                return redirect('user_preferences')
+            else:
+                for error_msg in verification.errors().values():
+                    form.add_error(None, error_msg)
+    else:
+        form = PhoneTokenForm()
+    return render(request, 'phone_token_validation.html', {'form': form})
+
 
 ### helper methods ###
 

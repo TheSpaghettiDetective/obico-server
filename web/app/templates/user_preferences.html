@@ -41,6 +41,7 @@
             {% else %}
             <a href="{% url 'phone_verification' %}" class="btn btn-primary">Add phone to be alerted via text (SMS)</a>
             {% endif %}
+            <small class="form-text text-muted">You will be alerted via text (SMS) on your phone number.</small>
             {% else %}
             <p class="text-muted">Please configure TWILIO_* items in settings to enable phone alert.</p>
             {% endif %}

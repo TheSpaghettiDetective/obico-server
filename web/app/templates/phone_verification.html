@@ -7,7 +7,8 @@
 <div class="row justify-content-center">
   <div class="col-sm-11 col-md-10 col-lg-8">
     <div class="form-container container">
-      <h4 class="text-center">Verify my phone number</h4>
+      <h4>Set your phone number</h4>
+      <p>Add your phone number if you want to be alerted via text (SMS) when print starts to fail.</p>
       <hr />
       {% if form.errors %}
       <div class="text-danger">Wait! You have got errors to fix.</div>
@@ -29,11 +30,13 @@
           </div>
         </div>
         <div class="form-group row">
+          <label class="col-sm-12">We need to verify your phone number. How do you want to get verification code?</label>
           <div class="col-sm-12">
           {% render_field form.via class="custom-control-input" inline="True" %}
           </div>
         </div>
         <input type="submit" value="Get verification code" class="btn btn-primary btn-block">
+        <a href="{% url 'printers' %}"class="btn btn-secondary btn-block">Skip phone number for now.</a>
         {% endwith %}
       </form>
     </div>

@@ -74,15 +74,20 @@
             <a class="nav-link" href="/printers">My Printers
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/accounts/logout">Log out</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="themes" aria-expanded="false">{{user.first_name|default:user.email}}
+              <span class="caret"></span></a>
+            <div class="dropdown-menu" aria-labelledby="themes">
+                <a class="dropdown-item" href="/user_preferences/">Preferences</a>
+              <a class="dropdown-item" href="/accounts/logout/">Log out</a>
+            </div>
           </li>
           {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="/accounts/login">Sign In</a>
+            <a class="nav-link" href="/accounts/login/">Sign In</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/accounts/signup">Sign up</a>
+            <a class="nav-link" href="/accounts/signup/">Sign up</a>
           </li>
           {% endif %}
         </ul>

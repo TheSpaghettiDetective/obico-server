@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div id="smartwizard" class="form-container">
+      {% if form.errors %}
+      <div class="text-danger">Wait! You have got errors to fix.</div>
+      {% endif %}
+      <form id="preference_form" method="POST" action="{% url 'user_preferences' %}">
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+        <div class="form-group row">
+          <label for="id_email" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10 col-form-label text-muted">{{form.instance.email}}
+            <small class="form-text">You can't change your email address. Please <a
+                href="mailto:suppoert@thespaghettidetective.com">email us</a> if you really want to.</small>
+            </div>
+        </div>
+        <div class="form-group row">
+          <label for="id_first_name" class="col-sm-2 col-form-label">First Name</label>
+          <div class="col-sm-10">
+            {% render_field form.first_name class="form-control" %}
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="id_last_name" class="col-sm-2 col-form-label">Last Name</label>
+          <div class="col-sm-10">
+            {% render_field form.last_name class="form-control" %}
+          </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Phone</label>
+            <div class="col-sm-10">
+            <button class="btn btn-primary">Add phone to be alerted via text (SMS)</button>
+            </div>
+          </div>
+        {% endwith %}
+        <hr />
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary float-right">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

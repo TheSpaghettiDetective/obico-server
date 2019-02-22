@@ -30,7 +30,6 @@ footer {
 }
 
 .navbar {
-  text-transform: uppercase;
   padding: 0.5rem 1rem;
   a.navbar-brand {
     margin-top: -3px;
@@ -70,6 +69,16 @@ footer {
     }
   }
 }
+
+.form-container {
+  margin: 3em 0em;
+  padding: 2.5em;
+  background: $color-bg;
+  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+}
+
 /** Webcam */
 
 .webcam_container {
@@ -196,10 +205,6 @@ footer {
 /*** Printer Form *****/
 
 #smartwizard {
-  margin-top: 3em;
-  padding: 2.5em;
-  background: $color-bg;
-
   &.sw-theme-default {
     -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
     box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;

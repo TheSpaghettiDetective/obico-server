@@ -78,6 +78,17 @@ def serve_jpg_file(request, file_path):
     with open(os.path.join(settings.MEDIA_ROOT, file_path), 'rb') as fh:
         return HttpResponse(fh, content_type='image/jpeg')
 
+# User preferences
+
+@login_required
+def user_preferences(request):
+    form = UserPrefernecesForm(request.POST or None, request.FILES or None, instance=request.user)
+    if request.method == "POST":
+        if form.is_valid():
+            user = form.save()
+
+    return render(request, 'user_preferences.html', dict(form=form))
+
 ### helper methods ###
 
 def get_printer_or_404(pk, request):

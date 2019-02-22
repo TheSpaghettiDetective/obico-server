@@ -12,3 +12,8 @@ class PrinterForm(ModelForm):
         widgets = {
             'action_on_failure': RadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }
+
+class UserPrefernecesForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']

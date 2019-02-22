@@ -55,6 +55,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    def sms_eligible(self):
+        return self.phone_number and self.phone_country_code
+
 
 class Printer(models.Model):
     CANCEL = 'CANCEL'

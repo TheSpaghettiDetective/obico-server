@@ -11,7 +11,7 @@ import json
 from lib.file_storage import save_file_obj
 from lib import redis
 from app.models import *
-from app.emails import send_failure_alert
+from app.notifications import send_failure_alert
 
 
 STATUS_TTL_SECONDS = 180

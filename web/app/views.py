@@ -7,12 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
 from django.conf import settings
+from authy.api import AuthyApiClient
 
 from .models import *
 from .forms import *
 
-if settings.TWILIO_API_KEY:
-    authy_api = AuthyApiClient(settings.TWILIO_API_KEY)
+if settings.TWILIO_ACCOUNT_SECURITY_API_KEY:
+    authy_api = AuthyApiClient(settings.TWILIO_ACCOUNT_SECURITY_API_KEY)
 
 # Create your views here.
 def index(request):

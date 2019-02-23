@@ -2,6 +2,7 @@
 
 TL_FILE=$1
 OUT_DIR=$2
+FPS=$3
 
 TL_BN=$(basename "$TL_FILE")
 
@@ -12,12 +13,14 @@ mkdir -p "$JPG_IN_DIR"
 rm -rf "$JPG_OUT_DIR"
 mkdir -p "$JPG_OUT_DIR"
 
-FRM_NUM=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "$TL_FILE")
+if [ "x" = ${FPS+x} ]; then
+    FRM_NUM=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "$TL_FILE")
 
-if [ $FRM_NUM -gt 750 ]; then
-    FPS=$((25*750/$FRM_NUM))
-else
-    FPS=25
+    if [ $FRM_NUM -gt 750 ]; then
+        FPS=$((30*750/$FRM_NUM))
+    else
+        FPS=30
+    fi
 fi
 
 ffmpeg -i "$TL_FILE" -vf fps=$FPS -qscale:v 2 "$JPG_IN_DIR/%5d.jpg"

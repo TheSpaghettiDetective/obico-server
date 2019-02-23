@@ -3,9 +3,10 @@
 {% load widget_tweaks %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center user-preferences">
   <div class="col-sm-11 col-md-10 col-lg-8">
     <div class="form-container">
+      <h2>Profile</h2>
       {% if form.errors %}
       <div class="text-danger">Wait! You have got errors to fix.</div>
       {% endif %}
@@ -32,29 +33,32 @@
           </div>
         </div>
         <div class="form-group row">
-          <label class="col-sm-2 col-form-label">Phone</label>
-          <div class="col-sm-10 col-form-label">
-            {% if settings.TWILIO_ENABLED %}
-            {% if form.instance.phone_country_code and form.instance.phone_number %}
-            {{form.instance.phone_country_code}} {{form.instance.phone_number}}
-            <a href="{% url 'phone_verification' %}" class="btn btn-primary mx-3">Change</a>
-            {% else %}
-            <a href="{% url 'phone_verification' %}" class="btn btn-primary">Add phone to be alerted via text (SMS)</a>
-            {% endif %}
-            <small class="form-text text-muted">You will be alerted via text (SMS) on your phone number.</small>
-            {% else %}
-            <p class="text-muted">Please configure TWILIO_* items in settings to enable phone alert.</p>
-            {% endif %}
-          </div>
-        </div>
-        {% endwith %}
-        <hr />
-        <div class="form-group row">
           <div class="col-sm-12">
             <button type="submit" class="btn btn-primary float-right">Save</button>
           </div>
         </div>
       </form>
+      <br /><br />
+      <h2>Notification</h2>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Phone</label>
+        <div class="col-sm-10 col-form-label">
+          {% if settings.TWILIO_ENABLED %}
+          {% if form.instance.phone_country_code and form.instance.phone_number %}
+          {{form.instance.phone_country_code}} {{form.instance.phone_number}}
+          <a href="{% url 'phone_verification' %}" class="btn btn-primary mx-3">Change</a>
+          {% else %}
+          <a href="{% url 'phone_verification' %}" class="btn btn-primary">Add phone to be alerted via text (SMS)</a>
+          {% endif %}
+          <small class="form-text text-muted">You will be alerted via text (SMS) on your phone number.</small>
+          {% else %}
+          <p class="text-muted">Please configure TWILIO_* items in settings to enable phone alert.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endwith %}
+      <hr />
+
     </div>
   </div>
 </div>

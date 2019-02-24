@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'request_logging.middleware.LoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -231,3 +232,6 @@ SETTINGS_EXPORT = [
     'EXTRA_JS',
     'TWILIO_ENABLED',
 ]
+
+import logging
+REQUEST_LOGGING_DATA_LOG_LEVEL=logging.INFO

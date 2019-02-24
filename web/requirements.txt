@@ -22,3 +22,4 @@ oauth2client==4.1.3
 authy==2.2.3
 phonenumbers==8.10.5
 twilio==6.24.1
+django-request-logging==0.6.7

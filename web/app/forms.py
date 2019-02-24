@@ -2,7 +2,7 @@ from django.db import models
 from django.forms import ModelForm, Form, CharField, ChoiceField
 import phonenumbers
 
-from .widgets import CustomRadioSelectWidget
+from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
 from .models import *
 
 class PrinterForm(ModelForm):
@@ -21,7 +21,7 @@ class UserPrefernecesForm(ModelForm):
 ### Phone verification ##
 
 class PhoneVerificationForm(Form):
-    country_code = CharField(max_length=3)
+    country_code = CharField(max_length=3, widget=PhoneCountryCodeWidget())
     phone_number = CharField(max_length=12)
     via = ChoiceField(
         choices=[('sms', 'Text me (SMS)'), ('call', 'Call me')],

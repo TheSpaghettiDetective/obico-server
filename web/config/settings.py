@@ -139,6 +139,25 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Request logging for debugging purpose
+
+import logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # change debug level as appropiate
+            'propagate': False,
+        },
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -232,6 +251,3 @@ SETTINGS_EXPORT = [
     'EXTRA_JS',
     'TWILIO_ENABLED',
 ]
-
-import logging
-REQUEST_LOGGING_DATA_LOG_LEVEL=logging.INFO

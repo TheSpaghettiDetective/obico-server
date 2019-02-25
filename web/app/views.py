@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
+from django.urls import reverse
 from django.conf import settings
 from authy.api import AuthyApiClient
 
@@ -21,6 +22,9 @@ def index(request):
 
 @login_required
 def printers(request):
+    if not request.user.phone_number and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60:
+        return redirect(reverse('phone_verification'))
+
     printers = Printer.objects.filter(user=request.user)
     return render(request, 'printer_list.html', {'printers': printers})
 

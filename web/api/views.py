@@ -32,5 +32,10 @@ class PrinterViewSet(viewsets.ModelViewSet):
         self.current_printer_or_404(pk).resume_print(mute_alert=request.GET.get('mute_alert', None))
         return Response({'status': 'OK'})
 
+    @action(detail=True, methods=['get'])
+    def acknowledge_alert(self, request, pk=None):
+        self.current_printer_or_404(pk).acknowledge_alert()
+        return Response({'status': 'OK'})
+
     def current_printer_or_404(self, pk):
         return get_object_or_404(self.get_queryset(), pk=pk)

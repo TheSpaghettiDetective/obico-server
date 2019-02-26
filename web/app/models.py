@@ -122,10 +122,10 @@ class Printer(models.Model):
             self.save()
 
     def resume_print(self, mute_alert=False):
-        self.alert_acknowledged_at = datetime.now(timezone.utc)
-        self.save()
+        self.acknowledge_alert()
         if not mute_alert:
-            self.clear_alert()
+            self.current_print_alerted_at = None   # reset current_print_alerted_at so that further alerts won't be surpressed.
+        self.save()
 
         self.queue_octoprint_command('restore_temps')
         self.queue_octoprint_command('resume', abort_existing=False)
@@ -141,8 +141,7 @@ class Printer(models.Model):
             self.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True}, abort_existing=False)
 
     def cancel_print(self):
-        self.alert_acknowledged_at = datetime.now(timezone.utc)
-        self.save()
+        self.acknowledge_alert()
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):
@@ -150,8 +149,7 @@ class Printer(models.Model):
         self.alert_acknowledged_at = None
         self.save()
 
-    def clear_alert(self):
-        self.current_print_alerted_at = None
+    def acknowledge_alert(self):
         self.alert_acknowledged_at = datetime.now(timezone.utc)
         self.save()
 

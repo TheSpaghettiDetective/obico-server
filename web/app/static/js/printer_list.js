@@ -84,18 +84,32 @@ $(document).ready(function () {
         });
 
         printerCard.find('#not-a-failure').click(function (e) {
-            Confirm.fire({
-                title: 'Noted!',
-                text: 'What do you want to do now?',
-                confirmButtonText: 'Resume print',
-                cancelButtonText: 'Resume, and don\'t alert again for this print',
-            }).then( function(result) {
-                if (result.value) {
-                    sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');   // Currently we mute alert in case of any false alarm to avoid bounced false alarms
-                } else if (result.dismiss == 'cancel') {
-                    sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');
-                }
-            });
+            if (printerCard.find("#print-pause-resume").text() == 'Resume') {
+                Confirm.fire({
+                    title: 'Noted!',
+                    text: 'What do you want to do now?',
+                    confirmButtonText: 'Resume print',
+                    cancelButtonText: 'Resume, and don\'t alert again for this print',
+                }).then( function(result) {
+                    if (result.value) {
+                        sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');   // Currently we mute alert in case of any false alarm to avoid bounced false alarms
+                    } else if (result.dismiss == 'cancel') {
+                        sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '/api/printers/' + printerId + '/acknowledge_alert/',
+                    type: 'GET',
+                    dataType: 'json',
+                });
+                Swal.fire({
+                    title: 'Noted!',
+                    text: 'Thank you for your feedback.',
+                    timer: 2500
+                  })
+            }
+
             e.preventDefault();
         })
     });

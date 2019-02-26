@@ -1,6 +1,7 @@
 version: '2.1'
 services:
   ml_api:
+    restart: unless-stopped
     build:
       context: ml_api
     volumes:
@@ -12,6 +13,7 @@ services:
         # ML_API_TOKEN:
 
   web:
+    restart: unless-stopped
     build:
       context: web
     ports:
@@ -49,4 +51,5 @@ services:
       # SENTRY_DSN:
 
   redis:
+    restart: unless-stopped
     image: redis:5.0

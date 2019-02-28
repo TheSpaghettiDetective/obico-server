@@ -12,7 +12,7 @@ from lib.file_storage import save_file_obj
 from lib import redis
 from app.models import *
 from app.notifications import send_failure_alert
-from lib.prediction import update_prediction_with_p, is_failing
+from lib.prediction import update_prediction_with_detections, is_failing
 
 STATUS_TTL_SECONDS = 180
 ALERT_COOLDOWN_SECONDS = 120
@@ -63,10 +63,9 @@ class OctoPrintPicView(APIView):
         req = requests.get(settings.ML_API_HOST + '/p', params=params, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
-        p = resp['p']
 
         prediction = PrinterPrediction.objects.get(printer=printer)
-        update_prediction_with_p(prediction, p)
+        update_prediction_with_detections(prediction, resp['detections'])
         prediction.save()
 
         if is_failing(prediction):

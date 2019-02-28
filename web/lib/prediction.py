@@ -7,7 +7,8 @@ THRESHOLD_HIGH = 0.55    # Definitely failing if ewm mean is above this level
 ROLLING_SHORT_MULTIPLE = 5.5   # Print is failing is ewm mean is this many times over the short rolling mean
 INIT_SAFE_FRAME_NUM = 30        # The number of frames at the beginning of the print that are considered "safe"
 
-def update_prediction_with_p(prediction, p):
+def update_prediction_with_detections(prediction, detections):
+    p = sum_p_in_detections(detections)
     prediction.current_p = p
     prediction.current_frame_num += 1
     prediction.ewm_mean = next_ewm_mean(p, prediction.ewm_mean)
@@ -39,3 +40,6 @@ def next_rolling_mean_long(p, current_rolling_mean):
 # Approximation of rolling mean
 def next_rolling_mean(p, current_rolling_mean, win_size):
     return current_rolling_mean + (p - current_rolling_mean )/float(win_size)
+
+def sum_p_in_detections(detections):
+    return sum([ d[1] for d in detections ])

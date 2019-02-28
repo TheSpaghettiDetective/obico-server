@@ -1,4 +1,4 @@
-var ALERT_THRESHOLD = 0.45;
+var ALERT_THRESHOLD = 0.5;
 
 function scaleP(p) {
     var scaleAboveCutOff = (100.0/3.0) / (1-ALERT_THRESHOLD);

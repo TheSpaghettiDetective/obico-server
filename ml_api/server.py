@@ -8,7 +8,6 @@ import numpy as np
 
 from auth import token_required
 from lib.detection_model import load_net, detect
-from lib.session_agg import predict
 
 SESSION_TTL_SECONDS = 60*2
 

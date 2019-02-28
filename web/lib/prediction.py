@@ -2,7 +2,7 @@ from django.conf import settings
 
 EWM_ALPHA = 2/(9 + 1)   # 9 is the optimal EWM span in hyper parameter grid search
 ROLLING_WIN_SHORT = 88 # rolling window of 88 samples.
-ROLLING_WIN_LONG = 10000 # rolling window of 10000 samples. Approximation of printer's base noise level
+ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximation of printer's base noise level
 
 ROLLING_MEAN_SHORT_MULTIPLE = 5.43   # Print is failing is ewm mean is this many times over the short rolling mean
 INIT_SAFE_FRAME_NUM = 30        # The number of frames at the beginning of the print that are considered "safe"
@@ -16,6 +16,7 @@ def update_prediction_with_detections(prediction, detections):
     prediction.rolling_mean_long = next_rolling_mean_long(p, prediction.rolling_mean_long)
 
 def is_failing(prediction):
+    print(prediction)
     if prediction.current_frame_num < INIT_SAFE_FRAME_NUM:
         return False
 

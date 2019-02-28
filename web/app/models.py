@@ -207,6 +207,16 @@ class PrinterPrediction(models.Model):
         self.rolling_mean_short = 0.0
         self.save()
 
+    def __str__(self):
+        return '| printer_id: {} | current_p: {} | ewm_mean: {} | rolling_mean_short: {} | rolling_mean_long: {} | current_frame_num: {} |'.format(
+            self.printer_id,
+            self.current_p,
+            self.ewm_mean,
+            self.rolling_mean_short,
+            self.rolling_mean_long,
+            self.current_frame_num,
+        )
+
 @receiver(post_save, sender=Printer)
 def create_printer_prediction(sender, instance, created, **kwargs):
     if created:

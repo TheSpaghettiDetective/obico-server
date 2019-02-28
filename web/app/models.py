@@ -103,8 +103,6 @@ class Printer(models.Model):
     @property
     def pic(self):
         pic_data = redis.printer_pic_get(self.id)
-        if 'p' in pic_data:
-            pic_data['p'] = float(pic_data['p'])
         return dict_or_none(pic_data)
 
     def set_current_print(self, filename):
@@ -114,7 +112,8 @@ class Printer(models.Model):
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
-            self.printerpreidction.reset_for_new_print()
+
+            self.printerprediction.reset_for_new_print()
 
     def unset_current_print(self):
         if self.current_print_filename is not None:
@@ -123,7 +122,10 @@ class Printer(models.Model):
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
-            self.printerpreidction.reset_for_new_print()
+            self.printerprediction.reset_for_new_print()
+
+    def is_printing(self):
+        return self.current_print_filename and self.current_print_started_at
 
     def resume_print(self, mute_alert=False):
         self.acknowledge_alert()

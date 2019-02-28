@@ -17,7 +17,7 @@ from lib.prediction import update_prediction_with_detections, is_failing
 STATUS_TTL_SECONDS = 180
 ALERT_COOLDOWN_SECONDS = 120
 
-def alert_if_needed(printer, p):
+def alert_if_needed(printer):
     last_acknowledge = printer.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
     if printer.current_print_alerted_at \
         or (datetime.now(timezone.utc) - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
@@ -52,15 +52,10 @@ class OctoPrintPicView(APIView):
 
         redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
 
-        if not printer.current_print_filename or not printer.current_print_started_at:
+        if not printer.is_printing():
             return command_response(printer)
 
-        params = {
-            'img': internal_url,
-            'session_id': "{}|{}".format(printer.id, int(printer.current_print_started_at.timestamp()))
-        }
-
-        req = requests.get(settings.ML_API_HOST + '/p', params=params, headers=ml_api_auth_headers(), verify=False)
+        req = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
 
@@ -69,7 +64,7 @@ class OctoPrintPicView(APIView):
         prediction.save()
 
         if is_failing(prediction):
-            alert_if_needed(printer, p)
+            alert_if_needed(printer)
 
         return command_response(printer)
 

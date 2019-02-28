@@ -221,6 +221,10 @@ BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
+# Hyper parameters for prediction model
+THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW'))   # Definitely not failing if ewm mean is below this level
+THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH'))   # Definitely failing if ewm mean is above this level
+
 # REDIS client
 import redis
 REDIS_CONN = None

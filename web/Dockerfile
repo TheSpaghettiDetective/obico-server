@@ -7,6 +7,9 @@ ADD . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
+ENV THRESHOLD_LOW=0.20    # = (0.27 - 0.07): 0.27 - optimal THRESHOLD_LOW in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
+ENV THRESHOLD_HIGH=0.49   # = (0.56 - 0.07): 0.56 - optimal THRESHOLD_HIGH in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
+
 EXPOSE 3333
 
 RUN python manage.py collectstatic --noinput -c

@@ -34,7 +34,6 @@ services:
       DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
       SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
       SOCIAL_LOGIN: 'False'
-      ALERT_P_THRESHOLD: '0.45'
       REDIS_URL: 'redis://redis:6379'
       DATABASE_URL: 'sqlite:////app/db.sqlite3'
       INTERNAL_MEDIA_HOST: 'http://web:3334'

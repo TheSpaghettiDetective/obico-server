@@ -12,15 +12,14 @@ from lib.file_storage import save_file_obj
 from lib import redis
 from app.models import *
 from app.notifications import send_failure_alert
-
+from lib.prediction import update_prediction_with_p, is_failing
 
 STATUS_TTL_SECONDS = 180
 ALERT_COOLDOWN_SECONDS = 120
 
-def send_alert_if_needed(printer, p):
+def alert_if_needed(printer, p):
     last_acknowledge = printer.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    if p < settings.ALERT_P_THRESHOLD \
-        or printer.current_print_alerted_at \
+    if printer.current_print_alerted_at \
         or (datetime.now(timezone.utc) - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return
 
@@ -29,6 +28,7 @@ def send_alert_if_needed(printer, p):
     pause_print = printer.action_on_failure == Printer.PAUSE
     if pause_print:
         printer.pause_print_on_failure()
+
     send_failure_alert(printer, pause_print)
 
 def command_response(printer):
@@ -50,8 +50,9 @@ class OctoPrintPicView(APIView):
         pic = request.data['pic']
         internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
 
+        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
+
         if not printer.current_print_filename or not printer.current_print_started_at:
-            redis.printer_pic_set(printer.id, {'img_url': external_url, 'p': '0'}, ex=STATUS_TTL_SECONDS)
             return command_response(printer)
 
         params = {
@@ -63,12 +64,14 @@ class OctoPrintPicView(APIView):
         req.raise_for_status()
         resp = req.json()
         p = resp['p']
-        redis.printer_pic_set(printer.id, {'img_url': external_url, 'p': p}, ex=STATUS_TTL_SECONDS)
 
-        print(resp['detections'])
-        print(p)
+        prediction = PrinterPrediction.objects.get(printer=printer)
+        update_prediction_with_p(prediction, p)
+        prediction.save()
 
-        send_alert_if_needed(printer, p)
+        if is_failing(prediction):
+            alert_if_needed(printer, p)
+
         return command_response(printer)
 
 

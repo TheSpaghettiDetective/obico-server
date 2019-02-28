@@ -124,7 +124,7 @@ $(document).ready(function () {
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
 
-        updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'pic.p', 0));
+        updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
         if (printer.status && printer.current_print_filename) {
             printerCard.find("#print-file-name").text(printer.current_print_filename);

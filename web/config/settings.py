@@ -221,9 +221,6 @@ BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
-# Alert settings
-ALERT_P_THRESHOLD = float(os.environ.get('ALERT_P_THRESHOLD'))
-
 # REDIS client
 import redis
 REDIS_CONN = None

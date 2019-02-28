@@ -3,6 +3,8 @@ from django.db import models
 from jsonfield import JSONField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from simple_history.models import HistoricalRecords
 import os
 import json
@@ -112,6 +114,7 @@ class Printer(models.Model):
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
+            self.printerpreidction.reset_for_new_print()
 
     def unset_current_print(self):
         if self.current_print_filename is not None:
@@ -120,6 +123,7 @@ class Printer(models.Model):
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
+            self.printerpreidction.reset_for_new_print()
 
     def resume_print(self, mute_alert=False):
         self.acknowledge_alert()
@@ -182,6 +186,29 @@ class PrinterCommand(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class PrinterPrediction(models.Model):
+    printer = models.OneToOneField(Printer, on_delete=models.CASCADE, primary_key=True)
+    current_frame_num = models.IntegerField(null=False, default=0)
+    current_p = models.FloatField(null=False, default=0.0)
+    ewm_mean = models.FloatField(null=False, default=0.0)
+    rolling_mean_long = models.FloatField(null=False, default=0.0)
+    rolling_mean_short = models.FloatField(null=False, default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def reset_for_new_print(self):
+        self.current_frame_num = 0
+        self.current_p = 0.0
+        self.ewm_mean = 0.0
+        self.rolling_mean_short = 0.0
+        self.save()
+
+@receiver(post_save, sender=Printer)
+def create_printer_prediction(sender, instance, created, **kwargs):
+    if created:
+        PrinterPrediction.objects.create(printer=instance)
 
 
 class PublicTimelapse(models.Model):

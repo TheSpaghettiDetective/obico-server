@@ -12,6 +12,9 @@ def create_printer_prediction_for_existing_printers(apps, schema_editor):
     for printer in Printer.objects.all():
         PrinterPrediction.objects.create(printer=printer)
 
+def reverse_func(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -24,6 +27,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('printer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='app.Printer')),
                 ('current_frame_num', models.IntegerField(default=0)),
+                ('lifetime_frame_num', models.IntegerField(default=0)),
                 ('current_p', models.FloatField(default=0.0)),
                 ('ewm_mean', models.FloatField(default=0.0)),
                 ('rolling_mean_long', models.FloatField(default=0.0)),
@@ -42,5 +46,5 @@ class Migration(migrations.Migration):
             name='action_on_failure',
             field=models.CharField(choices=[('NONE', 'Just notify me via email and text.'), ('PAUSE', 'Pause the print and notify me via email and text.'), ('CANCEL', 'Cancel the print and notifiy me (not available during beta testing).')], default='PAUSE', max_length=10),
         ),
-        migrations.RunPython(create_printer_prediction_for_existing_printers),
+        migrations.RunPython(create_printer_prediction_for_existing_printers, reverse_func),
     ]

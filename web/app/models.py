@@ -193,6 +193,7 @@ class PrinterCommand(models.Model):
 class PrinterPrediction(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, primary_key=True)
     current_frame_num = models.IntegerField(null=False, default=0)
+    lifetime_frame_num = models.IntegerField(null=False, default=0)
     current_p = models.FloatField(null=False, default=0.0)
     ewm_mean = models.FloatField(null=False, default=0.0)
     rolling_mean_long = models.FloatField(null=False, default=0.0)
@@ -208,13 +209,14 @@ class PrinterPrediction(models.Model):
         self.save()
 
     def __str__(self):
-        return '| printer_id: {} | current_p: {} | ewm_mean: {} | rolling_mean_short: {} | rolling_mean_long: {} | current_frame_num: {} |'.format(
+        return '| printer_id: {} | current_p: {:.4f} | ewm_mean: {:.4f} | rolling_mean_short: {:.4f} | rolling_mean_long: {:.4f} | current_frame_num: {} | lifetime_frame_num: {} |'.format(
             self.printer_id,
             self.current_p,
             self.ewm_mean,
             self.rolling_mean_short,
             self.rolling_mean_long,
             self.current_frame_num,
+            self.lifetime_frame_num,
         )
 
 @receiver(post_save, sender=Printer)

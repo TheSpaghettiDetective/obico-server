@@ -11,9 +11,10 @@ def update_prediction_with_detections(prediction, detections):
     p = sum_p_in_detections(detections)
     prediction.current_p = p
     prediction.current_frame_num += 1
+    prediction.lifetime_frame_num += 1
     prediction.ewm_mean = next_ewm_mean(p, prediction.ewm_mean)
-    prediction.rolling_mean_short = next_rolling_mean_short(p, prediction.rolling_mean_short)
-    prediction.rolling_mean_long = next_rolling_mean_long(p, prediction.rolling_mean_long)
+    prediction.rolling_mean_short = next_rolling_mean(p, prediction.rolling_mean_short, prediction.current_frame_num, ROLLING_WIN_SHORT)
+    prediction.rolling_mean_long = next_rolling_mean(p, prediction.rolling_mean_long, prediction.lifetime_frame_num, ROLLING_WIN_LONG)
 
 def is_failing(prediction):
     print(prediction)
@@ -32,15 +33,9 @@ def is_failing(prediction):
 def next_ewm_mean(p, current_ewm_mean):
     return p * EWM_ALPHA + current_ewm_mean * (1-EWM_ALPHA)
 
-def next_rolling_mean_short(p, current_rolling_mean):
-    return next_rolling_mean(p, current_rolling_mean, ROLLING_WIN_SHORT)
-
-def next_rolling_mean_long(p, current_rolling_mean):
-    return next_rolling_mean(p, current_rolling_mean, ROLLING_WIN_LONG)
-
-# Approximation of rolling mean
-def next_rolling_mean(p, current_rolling_mean, win_size):
-    return current_rolling_mean + (p - current_rolling_mean )/float(win_size)
+# Approximation of rolling mean. inspired by https://dev.to/nestedsoftware/calculating-a-moving-average-on-streaming-data-5a7k
+def next_rolling_mean(p, current_rolling_mean, count, win_size):
+    return current_rolling_mean + (p - current_rolling_mean )/float(win_size if win_size <= count else count+1)
 
 def sum_p_in_detections(detections):
     return sum([ d[1] for d in detections ])

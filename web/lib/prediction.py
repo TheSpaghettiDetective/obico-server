@@ -1,7 +1,7 @@
 from django.conf import settings
 
 EWM_ALPHA = 2/(9 + 1)   # 9 is the optimal EWM span in hyper parameter grid search
-ROLLING_WIN_SHORT = 88 # rolling window of 88 samples.
+ROLLING_WIN_SHORT = 50 # rolling window of 88 samples.
 ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximation of printer's base noise level
 
 ROLLING_MEAN_SHORT_MULTIPLE = 5.43   # Print is failing is ewm mean is this many times over the short rolling mean

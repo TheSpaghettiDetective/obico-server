@@ -61,7 +61,7 @@
           {% endif %}
       </div>
       {% endwith %}
-      <input type="hidden" name="next" value="{% url 'phone_verification' %}" />
+      <input type="hidden" name="next" value="/" />
       <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
       <a class="button secondaryAction float-right" href="{% url 'account_login' %}">{% trans "Sign In" %} >></a>
     </form>

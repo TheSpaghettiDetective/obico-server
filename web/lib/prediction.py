@@ -4,8 +4,6 @@ EWM_ALPHA = 2/(9 + 1)   # 9 is the optimal EWM span in hyper parameter grid sear
 ROLLING_WIN_SHORT = 50 # rolling window of 88 samples.
 ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximation of printer's base noise level
 
-ROLLING_MEAN_SHORT_MULTIPLE = 5.43   # Print is failing is ewm mean is this many times over the short rolling mean
-
 def update_prediction_with_detections(prediction, detections):
     p = sum_p_in_detections(detections)
     prediction.current_p = p
@@ -27,7 +25,7 @@ def is_failing(prediction, detective_sensitivity):
     if adjusted_ewm_mean > settings.THRESHOLD_HIGH + prediction.rolling_mean_long:
         return True
 
-    if adjusted_ewm_mean > prediction.rolling_mean_short * ROLLING_MEAN_SHORT_MULTIPLE:
+    if adjusted_ewm_mean > prediction.rolling_mean_short * settings.ROLLING_MEAN_SHORT_MULTIPLE:
         return True
 
 def next_ewm_mean(p, current_ewm_mean):

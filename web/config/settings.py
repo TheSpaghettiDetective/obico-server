@@ -225,6 +225,7 @@ ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.11'))   # Definitely not failing if ewm mean is below this level. =(0.18 - 0.07): 0.18 - optimal THRESHOLD_LOW in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
 THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.65'))   # Definitely failing if ewm mean is above this level. =(0.72 - 0.07): 0.72 - optimal THRESHOLD_HIGH in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
 INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # The number of frames at the beginning of the print that are considered "safe"
+ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 5.43))   # Print is failing is ewm mean is this many times over the short rolling mean
 
 # REDIS client
 import redis

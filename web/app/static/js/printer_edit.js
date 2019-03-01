@@ -65,4 +65,32 @@ $(document).ready(function () {
                 }
             });
     }
+
+    $('#sensitivity').slider({
+        formatter: function(value) {
+            if (value < 0.95) {
+                return 'Low';
+            }
+            if (value > 1.05) {
+                return 'High';
+            }
+            return 'Medium';
+        }
+    });
+
+    function updateSensitivityHint() {
+        $('.sensitivity div[class^=hint]').hide();
+        var value = parseFloat($('#sensitivity').val());
+        if (value < 0.95) {
+            $('.sensitivity .hint-low').show();
+        } else if (value > 1.05) {
+            $('.sensitivity .hint-high').show();
+        } else {
+            $('.sensitivity .hint-medium').show();
+        }
+    }
+
+    $('#sensitivity').on('change', updateSensitivityHint);
+
+    updateSensitivityHint();
 });

@@ -8,7 +8,7 @@ from .models import *
 class PrinterForm(ModelForm):
     class Meta:
         model = Printer
-        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause']
+        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause', 'detective_sensitivity']
         widgets = {
             'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }

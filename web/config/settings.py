@@ -224,6 +224,7 @@ ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 # Hyper parameters for prediction model
 THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW'))   # Definitely not failing if ewm mean is below this level
 THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH'))   # Definitely failing if ewm mean is above this level
+INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # The number of frames at the beginning of the print that are considered "safe"
 
 # REDIS client
 import redis

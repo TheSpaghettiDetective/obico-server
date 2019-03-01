@@ -2,7 +2,7 @@
 
 /*** Global styles */
 body {
-  font-family:Roboto, sans-serif;
+  font-family: 'Roboto', sans-serif;
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
@@ -228,48 +228,88 @@ footer {
     }
   }
 
-.step-content {
-  min-height: 24em;
-  background: none;
+  .step-content {
+    min-height: 24em;
+    background: none;
 
-  &.form-step {
-    display: flex;
-    flex-flow: column;
+    &.form-step {
+      display: flex;
+      flex-flow: column;
 
-    .form-label {
-      font-size: 1.1rem;
-      margin-top: 1.5rem;
+      .form-label {
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
     }
 
-    input[type="checkbox"] {
-      margin-right: 0.5rem;
-    }
-  }
-
-  &.token-step
-  &.plugin-step {
-    padding: 1em 0.5em;
-  }
-
-  img {
-    padding: 1em 2em;
-  }
-
-  &.connection-step {
-    text-align: center;
-    padding: 1em;
-
-    i {
-      margin: 1em;
+    &.token-step
+    &.plugin-step {
+      padding: 1em 0.5em;
     }
 
-    #connected {
+    img {
+      padding: 1em 2em;
+    }
+
+    &.connection-step {
+      text-align: center;
+      padding: 1em;
+
       i {
-        color: $color-success;
+        margin: 1em;
+      }
+
+      #connected {
+        i {
+          color: $color-success;
+        }
+      }
+    }
+
+    .sensitivity {
+      >div {
+        margin-bottom: 0.5rem;
+      }
+
+      div[class^="hint-"] {
+        display: none;
+      }
+
+      #sensitivity-slider {
+        width: 100%;
+        .slider-selection {
+          background: $color-primary;
+        }
+        .slider-handle {
+          background: $color-secondary;
+        }
+      }
+      .slider.slider-horizontal:hover, .slider.slider-vertical:hover {
+          .tooltip.tooltip-main {
+              opacity: 0.7 !important;
+          }
+          .tooltip-inner {
+              font-size: 90%;
+              width: auto;
+          }
+      }
+      .slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
+      .slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
+        content: '';
+        width: 0;
+        height: 0;
+        position: absolute;
+        left: 45%;
+        bottom: -10px;
+        border: transparent 5px solid;
+        border-top: #000 5px solid;
       }
     }
   }
-}
 }
 
 /**** printer-acted */

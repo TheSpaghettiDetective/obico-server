@@ -86,6 +86,7 @@ class Printer(models.Model):
     )
     tools_off_on_pause = models.BooleanField(default=True)
     bed_off_on_pause = models.BooleanField(default=False)
+    detective_sensitivity = models.FloatField(null=False, default=1.0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

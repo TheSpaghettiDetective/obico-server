@@ -50,9 +50,24 @@
               </div>
               <div class="custom-control custom-checkbox form-check-inline">
                 {% render_field form.bed_off_on_pause class="custom-control-input" %}
-                <label class="custom-control-label" for="id_bed_off_on_pause">
+                <label class="custom-control-label" for="id_bed_off_on_pause" >
                   Turn off bed heater
                 </label>
+              </div>
+            </div>
+            <div class="form-group sensitivity">
+              <div class="form-label text-muted">How alerted do you want the Detective to be on this printer?</div>
+              <div>
+                <input id="sensitivity" name="detective_sensitivity" data-slider-id='sensitivity-slider' type="text" data-slider-min="0.8" data-slider-max="1.2" data-slider-step="0.05" data-slider-value="{{ form.instance.detective_sensitivity }}"/>
+              </div>
+              <div class="hint-low">
+                Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
+              </div>
+              <div class="hint-medium">
+                Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
+              </div>
+              <div class="hint-high">
+                High - Hit me with all the false alarms. I just want you to catch as many as you can.
               </div>
             </div>
             {% endwith %}

@@ -63,7 +63,7 @@ class OctoPrintPicView(APIView):
         update_prediction_with_detections(prediction, resp['detections'])
         prediction.save()
 
-        if is_failing(prediction):
+        if is_failing(prediction, printer.detective_sensitivity):
             alert_if_needed(printer)
 
         return command_response(printer)

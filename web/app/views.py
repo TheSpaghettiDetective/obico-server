@@ -22,8 +22,8 @@ def index(request):
 
 @login_required
 def printers(request):
-    if not request.user.phone_number and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60 and not request.session.get('phone_verification_next_page'):
-        request.session['phone_verification_next_page'] = 'printers'
+    if not request.session.get('tour_shown') and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60:
+        request.session['tour_shown'] = 'True'
         return redirect(reverse('phone_verification'))
 
     printers = Printer.objects.filter(user=request.user)
@@ -133,8 +133,7 @@ def phone_token_validation(request):
                 request.user.phone_number = request.session['phone_number']
                 request.user.save()
                 messages.success(request, 'Phone number has been verified successfully!')
-                next_page = request.session.pop('phone_verification_next_page', 'user_preferences')
-                return redirect(next_page)
+                return redirect(reverse('printers'))
             else:
                 for error_msg in verification.errors().values():
                     form.add_error(None, error_msg)

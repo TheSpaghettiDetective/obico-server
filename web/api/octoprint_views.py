@@ -14,7 +14,7 @@ from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing
 
-STATUS_TTL_SECONDS = 180
+STATUS_TTL_SECONDS = 240
 ALERT_COOLDOWN_SECONDS = 120
 
 def alert_if_needed(printer):

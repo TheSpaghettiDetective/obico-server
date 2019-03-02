@@ -22,7 +22,7 @@ def index(request):
 
 @login_required
 def printers(request):
-    if not request.user.phone_number and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60:
+    if not request.user.phone_number and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60 and not request.session.get('phone_verification_next_page'):
         request.session['phone_verification_next_page'] = 'printers'
         return redirect(reverse('phone_verification'))
 

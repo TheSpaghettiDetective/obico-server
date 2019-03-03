@@ -48,7 +48,7 @@ class OctoPrintPicView(APIView):
         printer = request.auth
 
         pic = request.data['pic']
-        internal_url, external_url = save_file_obj('{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
+        internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
 
         redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
 

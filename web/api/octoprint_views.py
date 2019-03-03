@@ -74,24 +74,44 @@ class OctoPrintStatusView(APIView):
 
     def post(self, request):
 
-        def file_printing(octoprint_data):
+        def file_printing(op_status, printer):
+            # Event, if present, should be used to determine the printing status
+            op_event = op_status.get('octoprint_event', {})
+            filename = (op_event.get('data') or {}).get('name')    # octoprint_event may be {'data': null, xxx}
+            if filename and op_event.get('event_type') == 'PrintStarted':
+                return filename, True, False
+            if filename and op_event.get('event_type') == 'PrintDone':
+                return filename, False, False
+            if filename and op_event.get('event_type') == 'PrintCancelled':
+                return filename, False, True
+
+            # No event. Fall back to using octoprint_data.
+            # But we wait for a period because octoprint_data can be out of sync with octoprint_event briefly and cause race condition
+            if (datetime.now(timezone.utc) - printer.print_status_updated_at).total_seconds() < 60:
+                return None, None, None
+
+            octoprint_data = op_status.get('octoprint_data', {})
+            filename = octoprint_data.get('job', {}).get('file', {}).get('name')
             printing = False
             flags = octoprint_data.get('state', {}).get('flags', {})
             for flag in ('cancelling', 'paused', 'pausing', 'printing', 'resuming', 'finishing'):
                 if flags.get(flag, False):
                     printing = True
 
-            filename = octoprint_data.get('job', {}).get('file', {}).get('name')
-            return filename, printing, octoprint_data.get('state', {}).get('text')
+            return filename, printing, False   # we can't derive from octoprint_data if the job was cancelled. Always return true.
 
         printer = request.auth
 
-        status = request.data
-        octo_data = status.get('octoprint_data', {})
-        filename, printing, text = file_printing(octo_data)
-        seconds_left = octo_data.get('progress', {}).get('printTimeLeft') or -1
+        octoprint_data = request.data.get('octoprint_data', {})
+        seconds_left = octoprint_data.get('progress', {}).get('printTimeLeft') or -1
 
-        redis.printer_status_set(printer.id, {'text': text, 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
+        redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
+
+        filename, printing, cancelled = file_printing(request.data, printer)
+        print("kkkk {} - {} - {}".format(filename, printing, cancelled))
+        if printing is None:
+            return command_response(printer)
+
         if printing:
             printer.set_current_print(filename)
         else:

@@ -77,6 +77,7 @@ class Printer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     current_print_filename = models.CharField(max_length=1000, null=True, blank=True)
     current_print_started_at = models.DateTimeField(null=True)
+    print_status_updated_at = models.DateTimeField(null=False, blank=False, auto_now_add=True)
     current_print_alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
     action_on_failure = models.CharField(
@@ -110,6 +111,7 @@ class Printer(models.Model):
         if filename != self.current_print_filename:
             self.current_print_filename = filename
             self.current_print_started_at = datetime.now(timezone.utc)
+            self.print_status_updated_at = datetime.now(timezone.utc)
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
@@ -120,6 +122,7 @@ class Printer(models.Model):
         if self.current_print_filename is not None:
             self.current_print_filename = None
             self.current_print_started_at = None
+            self.print_status_updated_at = datetime.now(timezone.utc)
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()

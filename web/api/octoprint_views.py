@@ -7,9 +7,12 @@ from rest_framework.parsers import MultiPartParser
 from django.conf import settings
 import requests
 import json
+import io
+from PIL import Image
 
 from lib.file_storage import save_file_obj
 from lib import redis
+from lib.image import overlay_detections
 from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing
@@ -50,18 +53,25 @@ class OctoPrintPicView(APIView):
         pic = request.data['pic']
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
 
-        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
-
         if not printer.is_printing():
+            redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
             return command_response(printer)
 
         req = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
 
+        detections = resp['detections']
         prediction = PrinterPrediction.objects.get(printer=printer)
-        update_prediction_with_detections(prediction, resp['detections'])
+        update_prediction_with_detections(prediction, detections)
         prediction.save()
+
+        pic.file.seek(0)  # Reset file object pointer so that we can load it again
+        tagged_img = io.BytesIO()
+        overlay_detections(Image.open(pic), detections).save(tagged_img, "JPEG")
+        tagged_img.seek(0)
+        internal_url, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, int(time.time())), tagged_img, settings.PICS_CONTAINER)
+        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
 
         if is_failing(prediction, printer.detective_sensitivity):
             alert_if_needed(printer)

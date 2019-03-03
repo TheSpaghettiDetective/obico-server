@@ -25,3 +25,4 @@ twilio==6.24.1
 django-request-logging==0.6.7
 celery[redis]==4.2.1
 django-safedelete==0.5.1
+Pillow==5.4.1

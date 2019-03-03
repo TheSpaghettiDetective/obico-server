@@ -1,6 +1,41 @@
-version: '2.1'
+version: '3.7'
+
+x-web-defaults: &web-defaults
+  restart: unless-stopped
+  build:
+    context: web
+  volumes:
+    - ./web:/app
+  depends_on:
+    - redis
+  environment:
+    EMAIL_HOST:     # -> such as smtp.gmail.com
+    EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
+    EMAIL_HOST_PASSWORD:    # -> your email account password
+    EMAIL_PORT: 587
+    EMAIL_USE_TLS: 'True'
+    DEFAULT_FROM_EMAIL: 'changeme@example.com'
+    DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
+    SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
+    SOCIAL_LOGIN: 'False'
+    REDIS_URL: 'redis://redis:6379'
+    DATABASE_URL: 'sqlite:////app/db.sqlite3'
+    INTERNAL_MEDIA_HOST: 'http://web:3334'
+    ML_API_HOST: 'http://ml_api:3333'
+
+    #### Optional env vars below this line ###
+    # TWILIO_ACCOUNT_SECURITY_API_KEY:
+    # TWILIO_ACCOUNT_SID:
+    # TWILIO_AUTH_TOKEN:
+    # TWILIO_FROM_NUMBER:
+    # AZURE_STORAGE_CONNECTION_STRING:
+    # ENALBE_HISTORY:
+    # ML_API_TOKEN:
+    # SENTRY_DSN:
+
 services:
   ml_api:
+    hostname: ml_api
     restart: unless-stopped
     build:
       context: ml_api
@@ -13,41 +48,18 @@ services:
         # ML_API_TOKEN:
 
   web:
-    restart: unless-stopped
-    build:
-      context: web
+    <<: *web-defaults
+    hostname: web
     ports:
       - "3334:3334"
-    volumes:
-      - ./web:/app
     depends_on:
       - ml_api
-      - redis
     command: bash -c "python manage.py collectstatic --noinput -c && python manage.py migrate && newrelic-admin run-program gunicorn config.wsgi:application --workers 3 --bind 0.0.0.0:3334"
-    environment:
-      EMAIL_HOST:     # -> such as smtp.gmail.com
-      EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
-      EMAIL_HOST_PASSWORD:    # -> your email account password
-      EMAIL_PORT: 587
-      EMAIL_USE_TLS: 'True'
-      DEFAULT_FROM_EMAIL: 'changeme@example.com'
-      DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
-      SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
-      SOCIAL_LOGIN: 'False'
-      REDIS_URL: 'redis://redis:6379'
-      DATABASE_URL: 'sqlite:////app/db.sqlite3'
-      INTERNAL_MEDIA_HOST: 'http://web:3334'
-      ML_API_HOST: 'http://ml_api:3333'
 
-      #### Optional env vars below this line ###
-      # TWILIO_ACCOUNT_SECURITY_API_KEY:
-      # TWILIO_ACCOUNT_SID:
-      # TWILIO_AUTH_TOKEN:
-      # TWILIO_FROM_NUMBER:
-      # AZURE_STORAGE_CONNECTION_STRING:
-      # ENALBE_HISTORY:
-      # ML_API_TOKEN:
-      # SENTRY_DSN:
+  celery:
+    <<: *web-defaults
+    hostname: celery
+    command: bash -c "celery -A config worker -l info"
 
   redis:
     restart: unless-stopped

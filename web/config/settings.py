@@ -228,10 +228,12 @@ INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # Th
 ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 5.43))   # Print is failing is ewm mean is this many times over the short rolling mean
 
 # REDIS client
+REDIS_URL = os.environ.get('REDIS_URL')
+
 import redis
 REDIS_CONN = None
 if not REDIS_CONN:
-    REDIS_CONN = redis.Redis.from_url(os.environ.get("REDIS_URL"), charset="utf-8", decode_responses=True)
+    REDIS_CONN = redis.Redis.from_url(REDIS_URL, charset="utf-8", decode_responses=True)
 
 # Email and SMS settings
 
@@ -254,3 +256,11 @@ SETTINGS_EXPORT = [
     'EXTRA_JS',
     'TWILIO_ENABLED',
 ]
+
+# Celery
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}

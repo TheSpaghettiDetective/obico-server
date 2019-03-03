@@ -1,6 +1,6 @@
-FROM python:3
+FROM python:3.6
 
-RUN apt-get update && apt-get install -y vim
+RUN apt-get update && apt-get install -y vim ffmpeg
 RUN pip install --upgrade pip
 
 ADD . /app
@@ -10,5 +10,3 @@ RUN pip install -r requirements.txt
 EXPOSE 3333
 
 RUN python manage.py collectstatic --noinput -c
-
-CMD ["sh", "-c", "python manage.py migrate && newrelic-admin run-program gunicorn config.wsgi:application --workers 3 --bind 0.0.0.0:3334"]

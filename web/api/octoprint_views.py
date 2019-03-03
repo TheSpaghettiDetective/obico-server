@@ -108,13 +108,12 @@ class OctoPrintStatusView(APIView):
         redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
 
         filename, printing, cancelled = file_printing(request.data, printer)
-        print("kkkk {} - {} - {}".format(filename, printing, cancelled))
         if printing is None:
             return command_response(printer)
 
         if printing:
             printer.set_current_print(filename)
         else:
-            printer.unset_current_print()
+            printer.unset_current_print(cancelled)
 
         return command_response(printer)

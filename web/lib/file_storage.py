@@ -18,6 +18,14 @@ def save_file_obj(dest_path, file_obj, container):
     else:
         return _save_to_file_system(dest_path, file_obj, container)
 
+def list_file_obj(dir_path, container):
+    if settings.GOOGLE_APPLICATION_CREDENTIALS:
+        return _list_file_obj_from_gcp(dir_path, container)
+
+def retrieve_to_file_obj(src_path, file_obj, container):
+    if settings.GOOGLE_APPLICATION_CREDENTIALS:
+        return _retrieve_to_file_obj_from_gcp(src_path, file_obj, container)
+
 def _save_to_file_system(dest_path, file_obj, container):
     fqp = os.path.join(settings.MEDIA_ROOT, container, dest_path)
     if not os.path.exists(os.path.dirname(fqp)):
@@ -41,16 +49,21 @@ def _save_to_azure(dest_path, file_obj, container):
     return blob_url, blob_url
 
 def _save_to_gcp(dest_path, file_obj, container):
-    if settings.BUCKET_PREFIX:
-        container = settings.BUCKET_PREFIX + container
-
-    client = storage.Client()
-    bucket = client.bucket(container)
+    bucket, real_container_name = _gcp_bucket(container)
     blob = bucket.blob(dest_path)
     content_type = 'application/octet-stream'
     blob.upload_from_string(file_obj.read(), content_type)
-    blob_url = _sign_gcp_blob_url('GET', '/'+container+'/'+dest_path, content_type, datetime.utcnow() + timedelta(hours=24*3000))
+    blob_url = _sign_gcp_blob_url('GET', '/'+real_container_name+'/'+dest_path, content_type, datetime.utcnow() + timedelta(hours=24*3000))
     return blob_url, blob_url
+
+def _list_file_obj_from_gcp(dir_path, container):
+    bucket, _ = _gcp_bucket(container)
+    return [ blob.name for blob in bucket.list_blobs(prefix=dir_path) ]
+
+def _retrieve_to_file_obj_from_gcp(src_path, file_obj, container):
+    bucket, _ = _gcp_bucket(container)
+    blob = bucket.get_blob(src_path)
+    blob.download_to_file(file_obj)
 
 def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
     GCS_API_ENDPOINT = 'https://storage.googleapis.com'
@@ -77,3 +90,9 @@ def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
         account_id=storage_account_id,
         expiration = expiration_in_epoch,
         signature=quote(encoded_signature))
+
+def _gcp_bucket(container_name):
+    if settings.BUCKET_PREFIX:
+        container_name = settings.BUCKET_PREFIX + container_name
+    client = storage.Client()
+    return client.bucket(container_name), container_name

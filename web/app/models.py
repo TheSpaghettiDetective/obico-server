@@ -1,11 +1,13 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from django.db import models
 from jsonfield import JSONField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from simple_history.models import HistoricalRecords
+from safedelete.models import SafeDeleteModel
 import os
 import json
 
@@ -61,7 +63,7 @@ class User(AbstractUser):
         return self.phone_number and self.phone_country_code
 
 
-class Printer(models.Model):
+class Printer(SafeDeleteModel):
     CANCEL = 'CANCEL'
     PAUSE = 'PAUSE'
     NONE = 'NONE'
@@ -110,23 +112,39 @@ class Printer(models.Model):
     def set_current_print(self, filename):
         if filename != self.current_print_filename:
             self.current_print_filename = filename
-            self.current_print_started_at = datetime.now(timezone.utc)
-            self.print_status_updated_at = datetime.now(timezone.utc)
+            self.current_print_started_at = timezone.now()
+            self.print_status_updated_at = timezone.now()
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
 
             self.printerprediction.reset_for_new_print()
 
-    def unset_current_print(self):
-        if self.current_print_filename is not None:
+    def unset_current_print(self, cancelled):
+        if self.is_printing():  # was printing now it is not
+            print = Print(
+                printer=self,
+                filename=self.current_print_filename,
+                started_at=self.current_print_started_at,
+                )
+            if cancelled:
+                print.cancelled_at = timezone.now()
+            else:
+                print.finished_at = timezone.now()
+            print.save()
+
+            from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
+            compile_timelapse.delay(print.id)
+
             self.current_print_filename = None
             self.current_print_started_at = None
-            self.print_status_updated_at = datetime.now(timezone.utc)
+            self.print_status_updated_at = timezone.now()
             self.current_print_alerted_at = None
             self.alert_acknowledged_at = None
             self.save()
+
             self.printerprediction.reset_for_new_print()
+
 
     def is_printing(self):
         return self.current_print_filename and self.current_print_started_at
@@ -155,12 +173,12 @@ class Printer(models.Model):
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):
-        self.current_print_alerted_at = datetime.now(timezone.utc)
+        self.current_print_alerted_at = timezone.now()
         self.alert_acknowledged_at = None
         self.save()
 
     def acknowledge_alert(self):
-        self.alert_acknowledged_at = datetime.now(timezone.utc)
+        self.alert_acknowledged_at = timezone.now()
         self.save()
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
@@ -237,5 +255,18 @@ class PublicTimelapse(models.Model):
     creator_name = models.CharField(max_length=500, null=False, blank=False)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     frame_p = JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Print(SafeDeleteModel):
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    filename = models.CharField(max_length=1000, null=False, blank=False)
+    started_at = models.DateTimeField(null=False, blank=False)
+    finished_at = models.DateTimeField(null=True)
+    cancelled_at = models.DateTimeField(null=True)
+    video_url = models.CharField(max_length=2000, null=True)
+    tagged_video_url = models.CharField(max_length=2000, null=True)
+    poster_url = models.CharField(max_length=2000, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

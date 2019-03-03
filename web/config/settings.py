@@ -228,7 +228,7 @@ INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # Th
 ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 5.43))   # Print is failing is ewm mean is this many times over the short rolling mean
 
 # REDIS client
-REDIS_URL = os.environ.get('REDIS_URL')
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')
 
 # Email and SMS settings
 

@@ -230,11 +230,6 @@ ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE'
 # REDIS client
 REDIS_URL = os.environ.get('REDIS_URL')
 
-import redis
-REDIS_CONN = None
-if not REDIS_CONN:
-    REDIS_CONN = redis.Redis.from_url(REDIS_URL, charset="utf-8", decode_responses=True)
-
 # Email and SMS settings
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')

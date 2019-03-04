@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta, timezone
-import time
+from datetime import datetime, timedelta
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
+from django.core import serializers
 import requests
 import json
 import io
@@ -23,7 +24,7 @@ ALERT_COOLDOWN_SECONDS = 120
 def alert_if_needed(printer):
     last_acknowledge = printer.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
     if printer.current_print_alerted_at \
-        or (datetime.now(timezone.utc) - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
+        or (timezone.now() - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return
 
     printer.set_alert()
@@ -51,7 +52,8 @@ class OctoPrintPicView(APIView):
         printer = request.auth
 
         pic = request.data['pic']
-        internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, int(time.time())), pic, settings.PICS_CONTAINER)
+        pic_id = int(timezone.now().timestamp())
+        internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER, return_url=True)
 
         if not printer.is_printing():
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
@@ -70,8 +72,14 @@ class OctoPrintPicView(APIView):
         tagged_img = io.BytesIO()
         overlay_detections(Image.open(pic), detections).save(tagged_img, "JPEG")
         tagged_img.seek(0)
-        internal_url, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, int(time.time())), tagged_img, settings.PICS_CONTAINER)
+        internal_url, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, pic_id), tagged_img, settings.PICS_CONTAINER, return_url=True)
         redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
+
+        prediction_json = serializers.serialize("json", [prediction, ])
+        p_out = io.StringIO()
+        p_out.write(prediction_json)
+        p_out.seek(0)
+        save_file_obj('p/{}/{}.json'.format(printer.id, pic_id), p_out, settings.PICS_CONTAINER, return_url=False)
 
         if is_failing(prediction, printer.detective_sensitivity):
             alert_if_needed(printer)
@@ -97,7 +105,7 @@ class OctoPrintStatusView(APIView):
 
             # No event. Fall back to using octoprint_data.
             # But we wait for a period because octoprint_data can be out of sync with octoprint_event briefly and cause race condition
-            if (datetime.now(timezone.utc) - printer.print_status_updated_at).total_seconds() < 60:
+            if (timezone.now() - printer.print_status_updated_at).total_seconds() < 60:
                 return None, None, None
 
             octoprint_data = op_status.get('octoprint_data', {})

@@ -10,11 +10,11 @@ from six.moves.urllib.parse import urlencode, quote
 
 from lib import site
 
-def save_file_obj(dest_path, file_obj, container):
+def save_file_obj(dest_path, file_obj, container, return_url=False):
     if settings.AZURE_STORAGE_CONNECTION_STRING:
         return _save_to_azure(dest_path, file_obj, container)
     elif settings.GOOGLE_APPLICATION_CREDENTIALS:
-        return _save_to_gcp(dest_path, file_obj, container)
+        return _save_to_gcp(dest_path, file_obj, container, return_url)
     else:
         return _save_to_file_system(dest_path, file_obj, container)
 
@@ -26,13 +26,16 @@ def retrieve_to_file_obj(src_path, file_obj, container):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _retrieve_to_file_obj_from_gcp(src_path, file_obj, container)
 
-def _save_to_file_system(dest_path, file_obj, container):
+def _save_to_file_system(dest_path, file_obj, container, return_url):
     fqp = os.path.join(settings.MEDIA_ROOT, container, dest_path)
     if not os.path.exists(os.path.dirname(fqp)):
         os.makedirs(os.path.dirname(fqp))
 
     with open(fqp, 'wb+') as dest_file:
             copyfileobj(file_obj, dest_file)
+
+    if not return_url:
+        return
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
@@ -48,11 +51,15 @@ def _save_to_azure(dest_path, file_obj, container):
     blob_url = blob_service.make_blob_url(container, dest_path, sas_token=sas_token)
     return blob_url, blob_url
 
-def _save_to_gcp(dest_path, file_obj, container):
+def _save_to_gcp(dest_path, file_obj, container, return_url):
     bucket, real_container_name = _gcp_bucket(container)
     blob = bucket.blob(dest_path)
     content_type = 'application/octet-stream'
     blob.upload_from_string(file_obj.read(), content_type)
+
+    if not return_url:
+        return
+
     blob_url = _sign_gcp_blob_url('GET', '/'+real_container_name+'/'+dest_path, content_type, datetime.utcnow() + timedelta(hours=24*3000))
     return blob_url, blob_url
 

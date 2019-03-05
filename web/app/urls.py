@@ -15,4 +15,5 @@ urlpatterns = [
     path('user_preferences/', views.user_preferences, name='user_preferences'),
     path('phone_verification/', views.phone_verification, name='phone_verification'),
     path('phone_token_validation/', views.phone_token_validation, name='phone_token_validation'),
+    path('prints/', views.prints, name='prints'),
 ]

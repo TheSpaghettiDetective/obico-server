@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load bootstrap_pagination %}
+
+{% block content %}
+
+<div class="timelapse-gallery">
+  <div class="row">
+    <div class="col-sm-12 text-center">
+      <h1>My Gallery</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {% bootstrap_paginate page_obj %}
+    </div>
+  </div>
+  <div class="row">
+    {% for print in prints %}
+    <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
+      <div class="card">
+        <div class="card-header">
+          - By {{ timelapse.creator_name }}
+        </div>
+
+        <div class="card-img-top">
+
+          <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="{{ print.poster_url }}"
+            data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+            <source src="{{ print.video_url }}" type='video/mp4'>
+
+            <p class="vjs-no-js">
+              To view this video please enable JavaScript, and consider upgrading to a web browser that
+              <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p>
+          </video>
+          <a id="fullscreen-btn-{{print.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+            data-toggle="modal">
+            <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="card-body">
+          <div id="alert-banner-{{print.id}}" class="bg-warning alert-banner text-center">
+              <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+          </div>
+          <div class="text-center gauge">
+            <canvas id="gauge-{{print.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="2"
+              data-width="120" data-height="120" data-units="false" data-title="Looking Good" data-value-box="false"
+              data-min-value="0" data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false"
+              data-highlights='[
+                                                { "from": 0, "to": 33, "color": "rgba(0,255,30,.75)" },
+                                                { "from": 33, "to": 66, "color": "rgb(255,165,0,.75)" },
+                                                { "from": 66, "to": 100, "color": "rgba(255,30,0,.75)" }
+                                            ]'
+              data-color-plate="#222" data-color-major-ticks="#f5f5f5" data-color-minor-ticks="#ddd" data-color-title="rgba(0,255,30,.75)"
+              data-color-units="#ccc" data-color-numbers="#eee" data-color-needle-start="rgba(240, 128, 128, 1)"
+              data-color-needle-end="rgba(255, 160, 122, .9)" data-value-box="true" data-animation-rule="bounce"
+              data-animation-duration="500" data-font-value="Led" data-animated-value="true"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="row">
+      <div class="col-sm-12">
+        {% bootstrap_paginate page_obj %}
+      </div>
+    </div>
+
+  <div class="modal" id="tl-fullscreen-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="tl-modal-title" class="modal-title"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body" id="result">
+          <div>
+            <div class="video-player">
+              <video id="tl-fullscreen-vjs" class="video-js vjs-default-skin" controls preload="auto" data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+                <source
+                  type='video/mp4'>
+                <p class="vjs-no-js">
+                  To view this video please enable JavaScript, and consider upgrading to a web browser that
+                  <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+              </video>
+            </div>
+            <div style="position: relative; padding: 32px 0 8px 0;">
+              <div id="alert-banner-fullscreen" class="bg-warning alert-banner text-center">
+                  <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+              </div>
+              <div class="text-center gauge">
+                <canvas id='gauge-fullscreen' data-type="radial-gauge" data-value-dec="0" data-value-int="2" data-width="120"
+                  data-height="120" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
+                  data-max-value="100" data-major-ticks="" data-minor-ticks="" data-stroke-ticks="false"
+                  data-highlights='[
+                                                      { "from": 0, "to": 33, "color": "rgba(0,255,30,.75)" },
+                                                      { "from": 33, "to": 66, "color": "rgb(255,165,0,.75)" },
+                                                      { "from": 66, "to": 100, "color": "rgba(255,30,0,.75)" }
+                                                  ]'
+                  data-color-plate="#222" data-color-major-ticks="#f5f5f5" data-color-minor-ticks="#ddd"
+                  data-color-title="rgba(0,255,30,.75)" data-color-units="#ccc" data-color-numbers="#eee"
+                  data-color-needle-start="rgba(240, 128, 128, 1)" data-color-needle-end="rgba(255, 160, 122, .9)"
+                  data-value-box="true" data-animation-rule="bounce" data-animation-duration="500" data-font-value="Led"
+                  data-animated-value="true"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ prediction_urls|json_script:"prediction_urls" }}
+{% endblock content %}
+
+{% block page_js %}
+<script src="{% static 'js/print_list.js' %}"></script>
+{% endblock page_js %}

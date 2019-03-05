@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+    'django.contrib.humanize',
     'simple_history',
     'widget_tweaks',
     'rest_framework',

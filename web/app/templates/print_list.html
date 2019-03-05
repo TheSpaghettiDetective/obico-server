@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 {% load bootstrap_pagination %}
+{% load humanize %}
 
 {% block content %}
 
@@ -20,12 +21,12 @@
     <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
       <div class="card">
         <div class="card-header">
-          - By {{ timelapse.creator_name }}
+          <input type="checkbox" data-toggle="toggle" data-on="<img src='{% static 'img/logo-square.png' %}' class='toggle-icon' />" data-off="<i class='far fa-eye'></i>">
         </div>
 
-        <div class="card-img-top">
+        <div class="card-img-top plain-view">
 
-          <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="{{ print.poster_url }}"
+          <video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="{{ print.poster_url }}"
             data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
             <source src="{{ print.video_url }}" type='video/mp4'>
 
@@ -40,7 +41,45 @@
           </a>
         </div>
 
-        <div class="card-body">
+        <div class="card-body plain-view">
+            <div class="print-status container">
+                <div class="row">
+                    <div class="text-muted col-sm-3">
+                      File:
+                    </div>
+                    <div id="print-file-name" class="col-sm-9">
+                      {{ print.filename }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-muted col-sm-3">
+                        Printed:
+                    </div>
+                    <div id="time-left" class="col-sm-9">
+                        {{ print.ended_at|naturaltime }} {{ print.end_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-img-top detective-view" style="display: none">
+
+          <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="{{ print.poster_url }}"
+            data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+            <source src="{{ print.tagged_video_url }}" type='video/mp4'>
+
+            <p class="vjs-no-js">
+              To view this video please enable JavaScript, and consider upgrading to a web browser that
+              <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p>
+          </video>
+          <a id="fullscreen-btn-{{print.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+            data-toggle="modal">
+            <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="card-body detective-view" style="display: none">
           <div id="alert-banner-{{print.id}}" class="bg-warning alert-banner text-center">
               <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
           </div>

@@ -48,7 +48,7 @@ def compile_timelapse(print_id):
         local_pics = download_files(print_pics, to_dir)
         mp4_filename = '{}_tagged.mp4'.format(pprint.id)
         output_mp4 = os.path.join(to_dir, mp4_filename)
-        subprocess.run('ffmpeg -y -pattern_type glob -i {}/*.jpg -c:v libx264 -vf fps=30 -pix_fmt yuv420p {}'.format(last_pic.parent, output_mp4).split(' '), check=True)
+        subprocess.run('ffmpeg -y -pattern_type glob -i {}/*.jpg -c:v libx264 -vf fps=30 -pix_fmt yuv420p {}'.format(local_pics[0].parent, output_mp4).split(' '), check=True)
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 

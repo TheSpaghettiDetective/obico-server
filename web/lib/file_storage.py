@@ -10,13 +10,13 @@ from six.moves.urllib.parse import urlencode, quote
 
 from lib import site
 
-def save_file_obj(dest_path, file_obj, container, return_url=False):
+def save_file_obj(dest_path, file_obj, container, return_url=True):
     if settings.AZURE_STORAGE_CONNECTION_STRING:
         return _save_to_azure(dest_path, file_obj, container)
     elif settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _save_to_gcp(dest_path, file_obj, container, return_url)
     else:
-        return _save_to_file_system(dest_path, file_obj, container)
+        return _save_to_file_system(dest_path, file_obj, container, return_url)
 
 def list_file_obj(dir_path, container):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
@@ -70,7 +70,8 @@ def _list_file_obj_from_gcp(dir_path, container):
 def _retrieve_to_file_obj_from_gcp(src_path, file_obj, container):
     bucket, _ = _gcp_bucket(container)
     blob = bucket.get_blob(src_path)
-    blob.download_to_file(file_obj)
+    if blob:
+        blob.download_to_file(file_obj)
 
 def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
     GCS_API_ENDPOINT = 'https://storage.googleapis.com'

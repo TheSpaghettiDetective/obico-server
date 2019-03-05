@@ -53,7 +53,7 @@ class OctoPrintPicView(APIView):
 
         pic = request.data['pic']
         pic_id = int(timezone.now().timestamp())
-        internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER, return_url=True)
+        internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
         if not printer.is_printing():
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
@@ -72,7 +72,7 @@ class OctoPrintPicView(APIView):
         tagged_img = io.BytesIO()
         overlay_detections(Image.open(pic), detections).save(tagged_img, "JPEG")
         tagged_img.seek(0)
-        internal_url, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, pic_id), tagged_img, settings.PICS_CONTAINER, return_url=True)
+        _, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, pic_id), tagged_img, settings.PICS_CONTAINER)
         redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])

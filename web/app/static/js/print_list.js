@@ -1,16 +1,18 @@
 $(document).ready(function () {
 
+    videojs.addLanguage('en', { "The media could not be loaded, either because the server or network failed or because the format is not supported.": "The timelapse is being processed. Grab a coffee and come back." });
+
     var predictionMap = JSON.parse($('#prediction_urls').text());
 
-    $.when.apply($, predictionMap.map(function(pm) {
+    $.when.apply($, predictionMap.map(function (pm) {
         return $.ajax(pm.prediction_json_url);
-    })).done( function() {
+    })).done(function () {
         // there will be one argument passed to this callback for each ajax call
         // each argument is of this form [data, statusText, jqXHR]
         for (var i = 0; i < arguments.length; i++) {
             try {
                 predictionMap[i].predictions = JSON.parse(arguments[i][0]);
-            } catch(e) {
+            } catch (e) {
                 predictionMap[i].predictions = [];
             }
         }
@@ -29,7 +31,7 @@ $(document).ready(function () {
                     updateAlertBanner($('#alert-banner-' + pId), p);
                 });
 
-                $('#fullscreen-btn-' + pId).click( function() {
+                $('#fullscreen-btn-' + pId).click(function () {
                     vjs.pause();
 
                     var modalVjs = videojs('tl-fullscreen-vjs');
@@ -54,7 +56,7 @@ $(document).ready(function () {
 
     $('.timelapse-card').each(function () {
         var printCard = $(this);
-        printCard.find('input.view-toggle').on('change', function(e) {
+        printCard.find('input.view-toggle').on('change', function (e) {
             if ($(this).is(':checked')) {
                 printCard.find('.plain-view').hide();
                 printCard.find('.detective-view').show();

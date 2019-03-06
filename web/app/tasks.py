@@ -40,6 +40,7 @@ def compile_timelapse(print_id):
 
         pprint.video_url = mp4_file_url
         pprint.poster_url = poster_file_url
+        pprint.save()
 
     # build tagged timelapse
     print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(pprint.printer.id), settings.PICS_CONTAINER), pprint.started_at, end_time)
@@ -70,8 +71,7 @@ def compile_timelapse(print_id):
 
         pprint.tagged_video_url = mp4_file_url
         pprint.prediction_json_url = json_url
-
-    pprint.save()
+        pprint.save()
 
     shutil.rmtree(to_dir, ignore_errors=True)
 

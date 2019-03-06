@@ -38,7 +38,7 @@
               <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
             </p>
           </video>
-          <a id="fullscreen-btn-{{print.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+          <a id="fullscreen-btn-{{print.id}}-p" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
             data-toggle="modal">
             <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
           </a>
@@ -77,7 +77,7 @@
               <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
             </p>
           </video>
-          <a id="fullscreen-btn-{{print.id}}" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+          <a id="fullscreen-btn-{{print.id}}-d" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
             data-toggle="modal">
             <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
           </a>
@@ -159,7 +159,7 @@
   </div>
 </div>
 
-{{ prediction_urls|json_script:"prediction_urls" }}
+{{ prints|json_script:"prints-data" }}
 {% endblock content %}
 
 {% block page_js %}

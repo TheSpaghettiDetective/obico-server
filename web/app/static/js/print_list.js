@@ -22,36 +22,25 @@ $(document).ready(function () {
 
                 var gauge = $('#gauge-' + pId);
                 var vjs = videojs('tl-' + pId);
-                var alertBanner = $('#alert-banner-' + pId);
                 vjs.on('timeupdate', function (e) {
                     var num = Math.floor(this.currentTime() * 30);
                     var p = _.get(frame_p[num], 'fields.ewm_mean');
                     updateGauge(gauge, p);
-                    if (p > ALERT_THRESHOLD) {
-                        alertBanner.show();
-                    } else {
-                        alertBanner.hide();
-                    }
+                    updateAlertBanner($('#alert-banner-' + pId), p);
                 });
 
                 $('#fullscreen-btn-' + pId).click( function() {
                     vjs.pause();
-                    var currentTime = vjs.currentTime();
 
                     var modalVjs = videojs('tl-fullscreen-vjs');
-                    modalVjs.src(tl.video_url);
-                    modalVjs.currentTime(currentTime);
+                    modalVjs.src(vjs.currentSrc());
+                    modalVjs.currentTime(vjs.currentTime());
                     modalVjs.play();
-                    var modalAlertBanner = $('#alert-banner-fullscreen');
                     modalVjs.on('timeupdate', function (e) {
-                        var num = Math.floor(this.currentTime() * 25);
-                        var p = frame_p[num].p;
+                        var num = Math.floor(this.currentTime() * 30);
+                        var p = _.get(frame_p[num], 'fields.ewm_mean');
                         updateGauge($('#gauge-fullscreen'), p);
-                        if (p > ALERT_THRESHOLD) {
-                            modalAlertBanner.show();
-                        } else {
-                            modalAlertBanner.hide();
-                        }
+                        updateAlertBanner($('#alert-banner-fullscreen'), p);
                     });
                 });
 

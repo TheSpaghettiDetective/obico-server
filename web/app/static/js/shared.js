@@ -24,3 +24,11 @@ function updateGauge(gaugeEle, p) {
        gaugeEle.attr('data-color-title', 'rgba(0,255,30,.75)');
     }
 }
+
+function updateAlertBanner(banner, p) {
+    if (p > ALERT_THRESHOLD) {
+        banner.show();
+    } else {
+        banner.hide();
+    }
+}

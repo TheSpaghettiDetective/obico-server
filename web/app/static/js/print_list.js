@@ -62,4 +62,17 @@ $(document).ready(function () {
         var player = videojs('tl-fullscreen-vjs');
         player.pause();
     });
+
+    $('.timelapse-card').each(function () {
+        var printCard = $(this);
+        printCard.find('input.view-toggle').on('change', function(e) {
+            if ($(this).is(':checked')) {
+                printCard.find('.plain-view').hide();
+                printCard.find('.detective-view').show();
+            } else {
+                printCard.find('.plain-view').show();
+                printCard.find('.detective-view').hide();
+            }
+        })
+    });
 });

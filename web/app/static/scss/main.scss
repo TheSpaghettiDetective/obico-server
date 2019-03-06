@@ -391,6 +391,10 @@ footer {
     display: none;
   }
 
+  .card-body.plain-view {
+    min-height: 186px;
+  }
+
   img.toggle-icon {
     width: 20px;
     height: 20px;

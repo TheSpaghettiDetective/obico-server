@@ -63,11 +63,10 @@ def compile_timelapse(print_id):
                 except json.decoder.JSONDecodeError:    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
                     p_json = [{}]
                 preidction_json += p_json
-        preidction_json_io = io.StringIO()
-        json.dump(preidction_json, preidction_json_io)
+        preidction_json_io = io.BytesIO()
+        preidction_json_io.write(json.dumps(preidction_json).encode('UTF-8'))
         preidction_json_io.seek(0)
-        with open(output_mp4, 'rb') as mp4_file:
-            _, json_url = save_file_obj('private/{}_p.json'.format(pprint.id), preidction_json_io, settings.TIMELAPSE_CONTAINER)
+        _, json_url = save_file_obj('private/{}_p.json'.format(pprint.id), preidction_json_io, settings.TIMELAPSE_CONTAINER)
 
         pprint.tagged_video_url = mp4_file_url
         pprint.prediction_json_url = json_url

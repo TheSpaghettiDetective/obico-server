@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from django.conf import settings
 import os
+from os import path
 from shutil import copyfileobj
-from azure.storage.blob import BlockBlobService, BlobPermissions
 from google.cloud import storage
 from oauth2client.service_account import ServiceAccountCredentials
 import base64
@@ -11,9 +11,7 @@ from six.moves.urllib.parse import urlencode, quote
 from lib import site
 
 def save_file_obj(dest_path, file_obj, container, return_url=True):
-    if settings.AZURE_STORAGE_CONNECTION_STRING:
-        return _save_to_azure(dest_path, file_obj, container)
-    elif settings.GOOGLE_APPLICATION_CREDENTIALS:
+    if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _save_to_gcp(dest_path, file_obj, container, return_url)
     else:
         return _save_to_file_system(dest_path, file_obj, container, return_url)
@@ -21,18 +19,23 @@ def save_file_obj(dest_path, file_obj, container, return_url=True):
 def list_file_obj(dir_path, container):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _list_file_obj_from_gcp(dir_path, container)
+    else:
+        return _list_file_obj_from_file_system(dir_path, container)
 
+# Note: sliently ignore error if src_path does not exist
 def retrieve_to_file_obj(src_path, file_obj, container):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _retrieve_to_file_obj_from_gcp(src_path, file_obj, container)
+    else:
+        return _retrieve_to_file_obj_from_file_system(src_path, file_obj, container)
 
 def _save_to_file_system(dest_path, file_obj, container, return_url):
-    fqp = os.path.join(settings.MEDIA_ROOT, container, dest_path)
-    if not os.path.exists(os.path.dirname(fqp)):
-        os.makedirs(os.path.dirname(fqp))
+    fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
+    if not path.exists(path.dirname(fqp)):
+        os.makedirs(path.dirname(fqp))
 
     with open(fqp, 'wb+') as dest_file:
-            copyfileobj(file_obj, dest_file)
+        copyfileobj(file_obj, dest_file)
 
     if not return_url:
         return
@@ -40,16 +43,16 @@ def _save_to_file_system(dest_path, file_obj, container, return_url):
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
 
-def _save_to_azure(dest_path, file_obj, container):
-    blob_service = BlockBlobService(connection_string=settings.AZURE_STORAGE_CONNECTION_STRING)
+def _list_file_obj_from_file_system(dir_path, container):
+    fqp = path.join(settings.MEDIA_ROOT, container, dir_path)
+    return [ path.join(path.normpath(dir_path), f) for f in os.listdir(fqp) ]
 
-    blob_service.create_blob_from_stream(container, dest_path, file_obj)
-    sas_token = blob_service.generate_blob_shared_access_signature(
-        container,
-        dest_path,
-        BlobPermissions.READ,datetime.utcnow() + timedelta(hours=24*3000))
-    blob_url = blob_service.make_blob_url(container, dest_path, sas_token=sas_token)
-    return blob_url, blob_url
+def _retrieve_to_file_obj_from_file_system(src_path, file_obj, container):
+    fqp = path.join(settings.MEDIA_ROOT, container, src_path)
+    if not path.isfile(fqp):
+        return
+    with open(fqp, 'rb') as src_file:
+        copyfileobj(src_file, file_obj)
 
 def _save_to_gcp(dest_path, file_obj, container, return_url):
     bucket, real_container_name = _gcp_bucket(container)

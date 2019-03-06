@@ -131,7 +131,8 @@ def phone_token_validation(request):
 def prints(request):
     prints = list(Print.objects.filter(printer__user=request.user).order_by('-id').values())
     page_obj = get_paginator(prints, request, 9)
-    return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj))
+    prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in prints]
+    return render(request, 'print_list.html', dict(prints=prints, page_obj=page_obj, prediction_urls=prediction_urls))
 
 def publictimelapse_list(request):
     timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())

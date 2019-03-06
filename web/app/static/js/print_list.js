@@ -2,24 +2,24 @@ $(document).ready(function () {
 
     videojs.addLanguage('en', { "The media could not be loaded, either because the server or network failed or because the format is not supported.": "The timelapse is being processed. Grab a coffee and come back." });
 
-    var printList = JSON.parse($('#prints-data').text());
+    var predictionMap = JSON.parse($('#prediction_urls').text());
 
-    $.when.apply($, printList.map(function (pm) {
+    $.when.apply($, predictionMap.map(function (pm) {
         return $.ajax(pm.prediction_json_url);
     })).done(function () {
         // there will be one argument passed to this callback for each ajax call
         // each argument is of this form [data, statusText, jqXHR]
         for (var i = 0; i < arguments.length; i++) {
             try {
-                printList[i].predictions = JSON.parse(arguments[i][0]);
+                predictionMap[i].predictions = JSON.parse(arguments[i][0]);
             } catch (e) {
-                printList[i].predictions = [];
+                predictionMap[i].predictions = [];
             }
         }
-        for (var i = 0; i < printList.length; i++) {
+        for (var i = 0; i < predictionMap.length; i++) {
             (function () {          // Self-invoking function for closure scope
-                var printPred = printList[i];
-                var pId = printPred.id;
+                var printPred = predictionMap[i];
+                var pId = printPred.print_id;
                 var frame_p = printPred.predictions;
 
                 var gauge = $('#gauge-' + pId);

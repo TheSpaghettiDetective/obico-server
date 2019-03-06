@@ -1,4 +1,5 @@
 {% load static %}
+{% load hijack_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,6 +24,7 @@
   <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css" integrity="sha256-+xqVrdbLgHjiKF8ULvcwzQ545r7lCVfOqXlNJCB3XOg=" crossorigin="anonymous" />
 
+  <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
   <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/css/smart_wizard.css' %}">
   <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
@@ -44,6 +46,7 @@
 </head>
 
 <body>
+  {% hijack_notification %}
   {% with view_name=request.resolver_match.view_name %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">

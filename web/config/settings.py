@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'django.contrib.humanize',
+    'hijack',
+    'compat',
     'simple_history',
     'widget_tweaks',
     'rest_framework',
@@ -99,6 +101,8 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+HIJACK_ALLOW_GET_REQUESTS = True
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

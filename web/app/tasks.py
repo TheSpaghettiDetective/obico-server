@@ -14,8 +14,8 @@ import tempfile
 from .models import *
 from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
 
-@shared_task(acks_late=True)
-def compile_timelapse(print_id):
+@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
+def compile_timelapse(self, print_id):
     pprint = Print.objects.get(id=print_id)
     end_time = pprint.finished_at or pprint.cancelled_at
 

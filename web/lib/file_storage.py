@@ -10,6 +10,9 @@ from six.moves.urllib.parse import urlencode, quote
 
 from lib import site
 
+if settings.GOOGLE_APPLICATION_CREDENTIALS:
+    GCP_CLIENT = storage.Client()
+
 def save_file_obj(dest_path, file_obj, container, return_url=True):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _save_to_gcp(dest_path, file_obj, container, return_url)
@@ -105,5 +108,4 @@ def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
 def _gcp_bucket(container_name):
     if settings.BUCKET_PREFIX:
         container_name = settings.BUCKET_PREFIX + container_name
-    client = storage.Client()
-    return client.bucket(container_name), container_name
+    return GCP_CLIENT.bucket(container_name), container_name

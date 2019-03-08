@@ -14,6 +14,16 @@ def printer_status_set(printer_id, mapping, ex=None):
     if ex:
         REDIS.expire(prefix, ex)
 
+def printer_status_get(printer_id, key=None):
+    prefix = printer_key_prefix(printer_id) + 'status'
+    if key:
+        return REDIS.hget(prefix, key)
+    else:
+        return REDIS.hgetall(prefix)
+
+def printer_status_delete(printer_id, key):
+    return REDIS.hdel(printer_key_prefix(printer_id) + 'status', key)
+
 def printer_pic_set(printer_id, mapping, ex=None):
     cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
     prefix = printer_key_prefix(printer_id) + 'pic'
@@ -28,12 +38,16 @@ def printer_pic_get(printer_id, key=None):
     else:
         return REDIS.hgetall(prefix)
 
-def printer_status_get(printer_id, key=None):
-    prefix = printer_key_prefix(printer_id) + 'status'
+def printer_settings_set(printer_id, mapping, ex=None):
+    cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
+    prefix = printer_key_prefix(printer_id) + 'settings'
+    REDIS.hmset(prefix, cleaned_mapping)
+    if ex:
+        REDIS.expire(prefix, ex)
+
+def printer_settings_get(printer_id, key=None):
+    prefix = printer_key_prefix(printer_id) + 'settings'
     if key:
         return REDIS.hget(prefix, key)
     else:
         return REDIS.hgetall(prefix)
-
-def printer_status_delete(printer_id, key):
-    return REDIS.hdel(printer_key_prefix(printer_id) + 'status', key)

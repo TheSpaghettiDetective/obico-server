@@ -12,6 +12,7 @@ from authy.api import AuthyApiClient
 
 from .models import *
 from .forms import *
+from lib.channels import send_commands_to_channel
 
 if settings.TWILIO_ACCOUNT_SECURITY_API_KEY:
     authy_api = AuthyApiClient(settings.TWILIO_ACCOUNT_SECURITY_API_KEY)
@@ -62,12 +63,14 @@ def delete_printer(request, pk=None):
 def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     printer.cancel_print()
+    send_commands_to_channel(printer)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel'})
 
 @login_required
 def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+    send_commands_to_channel(printer)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume'})
 
 

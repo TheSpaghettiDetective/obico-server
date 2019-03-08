@@ -8,6 +8,7 @@ from app.models import *
 from lib import redis
 from .serializers import *
 
+from lib.channels import send_commands_to_channel
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -20,21 +21,25 @@ class PrinterViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
         self.current_printer_or_404(pk).cancel_print()
-        return Response({'status': 'OK'})
+        return self.send_response(pk)
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
         self.current_printer_or_404(pk).pause_print()
-        return Response({'status': 'OK'})
+        return self.send_response(pk)
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
         self.current_printer_or_404(pk).resume_print(mute_alert=request.GET.get('mute_alert', None))
-        return Response({'status': 'OK'})
+        return self.send_response(pk)
 
     @action(detail=True, methods=['get'])
     def acknowledge_alert(self, request, pk=None):
         self.current_printer_or_404(pk).acknowledge_alert()
+        return self.send_response(pk)
+
+    def send_response(self, pk):
+        send_commands_to_channel(self.current_printer_or_404(pk))
         return Response({'status': 'OK'})
 
     def current_printer_or_404(self, pk):

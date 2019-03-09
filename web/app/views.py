@@ -63,14 +63,14 @@ def delete_printer(request, pk=None):
 def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     printer.cancel_print()
-    send_commands_to_group(printer)
+    send_commands_to_group(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel'})
 
 @login_required
 def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
-    send_commands_to_group(printer)
+    send_commands_to_group(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume'})
 
 

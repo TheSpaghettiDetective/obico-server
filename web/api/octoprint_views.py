@@ -37,7 +37,7 @@ def alert_if_needed(printer):
     send_failure_alert(printer, pause_print)
 
 def command_response(printer):
-    send_commands_to_group(printer)
+    send_commands_to_group(printer.id)
     send_status_to_group(printer.id)
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
     resp = Response({'commands': [ json.loads(c.command) for c in commands ]})

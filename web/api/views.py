@@ -39,7 +39,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_response(pk)
 
     def send_response(self, pk):
-        send_commands_to_group(self.current_printer_or_404(pk))
+        send_commands_to_group(pk)
         return Response({'status': 'OK'})
 
     def current_printer_or_404(self, pk):

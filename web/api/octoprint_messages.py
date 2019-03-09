@@ -33,9 +33,15 @@ def process_octoprint_status(printer, status):
 
         return filename, printing, False   # we can't derive from octoprint_data if the job was cancelled. Always return true.
 
+    def settings_dict(octoprint_settings):
+        return dict(('webcam_'+k, str(v)) for k, v in octoprint_settings['webcam'].items())
+
+    octoprint_settings = status.get('octoprint_settings')
+    if octoprint_settings:
+        redis.printer_settings_set(printer.id, settings_dict(octoprint_settings))
+
     octoprint_data = status.get('octoprint_data', {})
     seconds_left = octoprint_data.get('progress', {}).get('printTimeLeft') or -1
-
     redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
 
     filename, printing, cancelled = file_printing(status, printer)

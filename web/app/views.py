@@ -12,6 +12,7 @@ from authy.api import AuthyApiClient
 
 from .models import *
 from .forms import *
+from lib import redis
 from lib.channels import send_commands_to_group
 
 if settings.TWILIO_ACCOUNT_SECURITY_API_KEY:
@@ -28,6 +29,10 @@ def printers(request):
         return redirect(reverse('phone_verification'))
 
     printers = Printer.objects.filter(user=request.user)
+    for printer in printers:
+        p_settings = redis.printer_settings_get(printer.id)
+        printer.settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
+
     return render(request, 'printer_list.html', {'printers': printers})
 
 @login_required

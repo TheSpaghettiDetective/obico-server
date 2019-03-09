@@ -1,45 +1,48 @@
 $(document).ready(function () {
-    var timer;
+    var wsList = [];
 
-    function startPolling() {
-        if (timer === undefined) {
-            timer = setInterval(pollAllPrinters, 5 * 1000);
-        }
+    function removeWebSocket(ws) {
+        _.remove(wsList, function(ele) {
+            return ele === ws;
+        })
     }
 
-    function stopPolling() {
-        if (timer) {
-            clearInterval(timer);
-            timer = undefined;
-        }
-    }
-
-    function pollAllPrinters() {
+    function openPrinterWebSockets() {
         $('.printer-card').each(function () {
             var printerCard = $(this);
             var printerId = printerCard.attr('id');
-            $.ajax({
-                url: '/api/printers/' + printerId + '/',
-                type: 'GET',
-                dataType: 'json',
-            })
-                .done(function (printer) {
-                    updatePrinterCard(printer, printerCard);
-                })
+            var printerSocket = new WebSocket(
+                window.location.protocol.replace('http', 'ws') + '//' + window.location.host +
+                '/ws/web/' + printerId + '/');
+
+            wsList.push(printerSocket);
+            printerSocket.onmessage = function (e) {
+                var printer = JSON.parse(e.data);
+                updatePrinterCard(printer, printerCard);
+            };
+
+            printerSocket.onclose = function (e) {
+                removeWebSocket(printerSocket);
+            };
+            printerSocket.onerror = function (e) {
+                printerSocket.close();
+            };
         });
     }
 
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden) {
-            stopPolling();
-        } else {
-            pollAllPrinters();
-            startPolling();
-        }
-    });
+    function closePrinterWebSockets() {
+        _.forEach(wsList, function(ws) {
+            ws.close();
+        });
+    }
 
-    pollAllPrinters();
-    startPolling();
+    ifvisible.on("blur", function(){
+        closePrinterWebSockets();
+    });
+    ifvisible.on("focus", function(){
+        openPrinterWebSockets();
+    });
+    openPrinterWebSockets();
 
     function sendPrinterCommand(printerId, command) {
         $.ajax({
@@ -51,7 +54,6 @@ $(document).ready(function () {
                 type: 'success',
                 title: 'Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.',
             });
-            pollAllPrinters();
         });
     }
 
@@ -67,7 +69,7 @@ $(document).ready(function () {
         printerCard.find('#print-cancel').click(function () {
             Confirm.fire({
                 text: 'Once cancelled, the print can no longer be resumed.',
-            }).then( function(result) {
+            }).then(function (result) {
                 if (result.value) {  // When it is confirmed
                     sendPrinterCommand(printerId, '/cancel_print/');
                 }
@@ -76,7 +78,7 @@ $(document).ready(function () {
 
         printerCard.find('#delete-print').click(function () {
             Confirm.fire({
-            }).then( function(result) {
+            }).then(function (result) {
                 if (result.value) {  // When it is confirmed
                     window.location.href = "/printers/" + printerId + "/delete/";
                 }
@@ -90,7 +92,7 @@ $(document).ready(function () {
                     text: 'What do you want to do now?',
                     confirmButtonText: 'Resume print',
                     cancelButtonText: 'Resume, and don\'t alert again for this print',
-                }).then( function(result) {
+                }).then(function (result) {
                     if (result.value) {
                         sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');   // Currently we mute alert in case of any false alarm to avoid bounced false alarms
                     } else if (result.dismiss == 'cancel') {
@@ -107,7 +109,7 @@ $(document).ready(function () {
                     title: 'Noted!',
                     text: 'Thank you for your feedback.',
                     timer: 2500
-                  })
+                })
             }
 
             e.preventDefault();
@@ -116,7 +118,7 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (printer.status && printer.current_print_alerted_at && !printer.alert_acknowledged_at){
+        if (printer.status && printer.current_print_alerted_at && !printer.alert_acknowledged_at) {
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();

@@ -8,7 +8,7 @@ from app.models import *
 from lib import redis
 from .serializers import *
 
-from lib.channels import send_commands_to_channel
+from lib.channels import send_commands_to_group
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -39,7 +39,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_response(pk)
 
     def send_response(self, pk):
-        send_commands_to_channel(self.current_printer_or_404(pk))
+        send_commands_to_group(self.current_printer_or_404(pk))
         return Response({'status': 'OK'})
 
     def current_printer_or_404(self, pk):

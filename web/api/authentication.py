@@ -34,6 +34,7 @@ class PrinterWSAuthMiddleWare:
                 token_name, token_key = headers[b'authorization'].decode().split()
                 if token_name == 'bearer':
                     printer = Printer.objects.select_related('user').get(auth_token=token_key)
+                    printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
                     scope['user'] = printer
                 else:
                     scope['user'] = None

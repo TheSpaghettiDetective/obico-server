@@ -17,7 +17,7 @@ from lib.image import overlay_detections
 from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing
-from lib.channels import send_commands_to_channel
+from lib.channels import send_commands_to_group, send_status_to_group
 from .octoprint_messages import process_octoprint_status, STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
@@ -37,7 +37,8 @@ def alert_if_needed(printer):
     send_failure_alert(printer, pause_print)
 
 def command_response(printer):
-    send_commands_to_channel(printer)
+    send_commands_to_group(printer)
+    send_status_to_group(printer.id)
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
     resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
     commands.update(status=PrinterCommand.SENT)
@@ -45,9 +46,6 @@ def command_response(printer):
 
 def ml_api_auth_headers():
     return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
-
-def channels_group_name(printer):
-    return 'printer_{}'.format(printer.id)
 
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)

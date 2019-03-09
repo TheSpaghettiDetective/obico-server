@@ -1,6 +1,7 @@
 from django.utils import timezone
 
 from lib import redis
+from lib import channels
 
 STATUS_TTL_SECONDS = 240
 
@@ -38,10 +39,10 @@ def process_octoprint_status(printer, status):
     redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
 
     filename, printing, cancelled = file_printing(status, printer)
-    if printing is None:
-        return
+    if printing is not None:
+        if printing:
+            printer.set_current_print(filename)
+        else:
+            printer.unset_current_print(cancelled)
 
-    if printing:
-        printer.set_current_print(filename)
-    else:
-        printer.unset_current_print(cancelled)
+    channels.send_status_to_group(printer.id)

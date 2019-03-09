@@ -4,21 +4,34 @@ from channels.layers import get_channel_layer
 from . import redis
 from app.models import *
 
-def channels_group_name(printer):
-    return 'printer_{}'.format(printer.id)
+def commands_group_name(printer_id):
+    return 'p_cmd_{}'.format(printer_id)
 
-def send_commands_to_channel(printer):
+def status_group_name(printer_id):
+    return 'p_sts_{}'.format(printer_id)
+
+def send_commands_to_group(printer):
     if not redis.printer_settings_get(printer.id, 'using_ws'):
         return
 
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
-    commands.update(status=PrinterCommand.SENT)
 
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
-        channels_group_name(printer),
+        commands_group_name(printer.id),
         {
-            'type': 'printer_commands',
+            'type': 'printer.commands',    # mapped to -> printer_commands in consumer
             'commands': [ json.loads(c.command) for c in commands ],
+        }
+    )
+
+    commands.update(status=PrinterCommand.SENT)
+
+def send_status_to_group(printer_id):
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        status_group_name(printer_id),
+        {
+            'type': 'printer.status',         # mapped to -> printer_status in consumer
         }
     )

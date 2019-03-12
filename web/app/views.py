@@ -23,6 +23,11 @@ def index(request):
     return redirect('/printers/')
 
 @login_required
+def priner_auth_token(request):
+    printers = Printer.objects.filter(user=request.user)
+    print
+
+@login_required
 def printers(request):
     if not request.session.get('tour_shown') and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60:
         request.session['tour_shown'] = 'True'

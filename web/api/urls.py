@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('octo/status/', octoprint_views.OctoPrintStatusView.as_view()),
     path('octo/pic/', octoprint_views.OctoPrintPicView.as_view()),
+    path('octo/ping/', octoprint_views.OctoPrintPingView.as_view()),
 ]

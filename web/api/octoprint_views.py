@@ -97,3 +97,10 @@ class OctoPrintStatusView(APIView):
         printer = request.auth
         process_octoprint_status(printer, request.data)
         return command_response(printer)
+
+
+class OctoPrintPingView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response({'status': 'pong'})

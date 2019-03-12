@@ -9,6 +9,10 @@ body {
   background: repeating-linear-gradient(45deg, darken($color-bg, 3) 0%, darken($color-bg, 3) 10%, $color-bg 0%, $color-bg 50%) 0 / 15px 15px;
 }
 
+.color-secondary {
+  color: $color-secondary;
+}
+
 .form-control:focus {
   box-shadow: none!important;
   border-color: #ced4da!important;
@@ -437,5 +441,20 @@ footer {
   h2 {
     border-bottom-style: solid;
     border-bottom-width: thin;
+  }
+}
+
+/**** printer auth token page **/
+.printer-auth-token {
+  padding: 2rem 0rem;
+  .token {
+    padding: 1.5rem 3rem 2.5rem;
+    border: gray thin dashed;
+    margin-bottom: 2rem;
+    text-align: center;
+
+    .input-group {
+      margin-top: 1rem;
+    }
   }
 }

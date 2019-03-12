@@ -23,9 +23,13 @@ def index(request):
     return redirect('/printers/')
 
 @login_required
-def priner_auth_token(request):
-    printers = Printer.objects.filter(user=request.user)
-    print
+def priner_auth_token(request, pk):
+    pk_filter = {}
+    if pk != 0:
+        pk_filter = dict(pk=pk)
+    printers = Printer.objects.filter(user=request.user, **pk_filter)
+
+    return render(request, 'printer_auth_token.html', {'printers': printers})
 
 @login_required
 def printers(request):

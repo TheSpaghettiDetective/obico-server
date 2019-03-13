@@ -5,7 +5,11 @@ import json
 import glob
 
 from lib.detection_model import load_net, detect
-from lib.session_agg import predict
+
+EWM_ALPHA = 2/(9 + 1)   # 9 is the optimal EWM span in hyper parameter grid search
+
+def next_ewm_mean(p, current_ewm_mean):
+    return p * EWM_ALPHA + current_ewm_mean * (1-EWM_ALPHA)
 
 def sum_score(detections):
         return sum([d[1] for d in detections])
@@ -38,7 +42,8 @@ def video_detect(jpgs_path, save_frame_to=None, weights_path=path.join(path.dirn
         if save_frame_to:
             cv2.imwrite(path.join(save_frame_to, img_file), overlay_detections(custom_image_bgr, detections))
 
-        p, session = predict(detections, session)
+        p = 0.0
+        p = next_ewm_mean(sum_score(detections), p)
 
         result += [dict(frame=idx, p=p, detections=detections)]
 

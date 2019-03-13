@@ -46,6 +46,7 @@ services:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
         # ML_API_TOKEN:
+        # HAS_GPU: 'False'
 
   web:
     <<: *web-defaults

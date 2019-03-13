@@ -48,9 +48,13 @@ class METADATA(Structure):
                 ("names", POINTER(c_char_p))]
 
 
+if os.environ.get('HAS_GPU', 'False') == 'True':
+    hasGPU = True
+    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model_gpu.so")
+else:
+    hasGPU = False
+    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model.so")
 
-hasGPU = False
-so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model.so")
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int

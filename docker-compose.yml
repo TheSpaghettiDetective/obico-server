@@ -43,7 +43,8 @@ services:
     depends_on:
       - redis
     environment:
-        PLACEHOLDER: remove me once ml_api requires at least one env vars
+        DEBUG: 'True'
+        FLASK_APP: 'server.py'
         # ML_API_TOKEN:
 
   web:

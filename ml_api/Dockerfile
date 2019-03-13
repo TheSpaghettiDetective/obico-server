@@ -7,7 +7,7 @@ RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 
 ADD . /app
 WORKDIR /app
-RUN wget -O model/model.weights $(cat model/model.weights.url)
+RUN wget --quiet -O model/model.weights $(cat model/model.weights.url)
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 

@@ -23,7 +23,7 @@ if environ.get('SENTRY_DSN'):
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
 
-@app.route('/p', methods=['GET'])
+@app.route('/p/', methods=['GET'])
 @token_required
 def get_p():
     if 'img' in request.args:

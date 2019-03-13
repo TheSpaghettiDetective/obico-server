@@ -62,7 +62,7 @@ class OctoPrintPicView(APIView):
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
             return command_response(printer)
 
-        req = requests.get(settings.ML_API_HOST + '/p', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
 

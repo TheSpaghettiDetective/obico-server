@@ -2,12 +2,12 @@ import flask
 from flask import request, jsonify
 from os import path, environ
 from raven.contrib.flask import Sentry
-import urllib
 import cv2
 import numpy as np
 
 from auth import token_required
 from lib.detection_model import load_net, detect
+from lib.retry import request_with_retry
 
 SESSION_TTL_SECONDS = 60*2
 
@@ -27,7 +27,7 @@ net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(mode
 @token_required
 def get_p():
     if 'img' in request.args:
-        resp = urllib.request.urlopen(request.args['img'])
+        resp = request_with_retry(request.args['img'])
         img_array = np.array(bytearray(resp.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
         detections = detect(net_main, meta_main, img, thresh=0.25)

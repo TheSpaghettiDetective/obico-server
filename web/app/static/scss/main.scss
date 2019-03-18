@@ -263,13 +263,16 @@ footer {
     min-height: 24em;
     background: none;
 
+    &.tab-pane {
+      padding-top: 1.5rem;
+    }
+
     &.form-step {
       display: flex;
       flex-flow: column;
 
       .form-label {
         font-size: 1.1rem;
-        margin-top: 1.5rem;
       }
 
       input[type="checkbox"] {

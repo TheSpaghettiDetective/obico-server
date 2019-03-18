@@ -38,10 +38,6 @@ services:
     restart: unless-stopped
     build:
       context: ml_api
-    volumes:
-      - ./ml_api:/app
-    depends_on:
-      - redis
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'

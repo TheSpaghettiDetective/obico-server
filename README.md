@@ -15,8 +15,7 @@ the following softwares are installed:
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)).
     - [Install Docker-compose](https://docs.docker.com/compose/install/).
 
-- git and git-lfs. This is because the model itself is 100+MB and therefore can't be directly checked into git.
-    - [Install git-lfs](https://github.com/git-lfs/git-lfs/wiki/Installation).
+- git.
 
 You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
 should also work but we haven't tried them.

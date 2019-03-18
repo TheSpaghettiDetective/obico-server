@@ -31,7 +31,7 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 2. Run it! Do **either** one of these based on what OS you are using:
     - If you are on Linux: `cd TheSpaghettiDetective && sudo docker-compose up -d`
     - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
-    - If you are on Windows: ??? (help needed here)
+    - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
 
 3. Go grab a coffee. Step 2 would take up to 30 minutes. BTW, we need help to shorten this process. Let us know if you can pitch in.
 

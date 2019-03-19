@@ -14,6 +14,8 @@ the following softwares are installed:
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)).
     - [Install Docker-compose](https://docs.docker.com/compose/install/).
+- (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
+![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png)
 
 - git.
 

@@ -4,50 +4,49 @@ $(document).ready(function () {
 
     var predictionMap = JSON.parse($('#prediction_urls').text());
 
-    $.when.apply($, predictionMap.map(function (pm) {
-        return $.ajax(pm.prediction_json_url);
-    })).done(function () {
-        // there will be one argument passed to this callback for each ajax call
-        // each argument is of this form [data, statusText, jqXHR]
-        for (var i = 0; i < arguments.length; i++) {
-            try {
-                predictionMap[i].predictions = JSON.parse(arguments[i][0]);
-            } catch (e) {
-                predictionMap[i].predictions = [];
-            }
-        }
-        for (var i = 0; i < predictionMap.length; i++) {
-            (function () {          // Self-invoking function for closure scope
-                var printPred = predictionMap[i];
-                var pId = printPred.print_id;
-                var frame_p = printPred.predictions;
+    $.when(
+        $.map(predictionMap, function (pm) {
+            return $.ajax(pm.prediction_json_url);
+        })
+    ).always(function (arr) {
+        $.each(arr, function (i, value) {
+            // `success`
+            value.then(
+                function (data, textStatus, jqxhr) {
+                    predictionMap[i].predictions = JSON.parse(data);
+                    var printPred = predictionMap[i];
+                    var pId = printPred.print_id;
+                    var frame_p = printPred.predictions;
 
-                var gauge = $('#gauge-' + pId);
-                var vjs = videojs('tl-' + pId);
-                vjs.on('timeupdate', function (e) {
-                    var num = Math.floor(this.currentTime() * 30);
-                    var p = _.get(frame_p[num], 'fields.ewm_mean');
-                    updateGauge(gauge, p);
-                    updateAlertBanner($('#alert-banner-' + pId), p);
-                });
-
-                $("[id^=fullscreen-btn-"+pId+"]").click(function () {
-                    vjs.pause();
-
-                    var modalVjs = videojs('tl-fullscreen-vjs');
-                    modalVjs.src(vjs.currentSrc());
-                    modalVjs.currentTime(vjs.currentTime());
-                    modalVjs.play();
-                    modalVjs.on('timeupdate', function (e) {
+                    var gauge = $('#gauge-' + pId);
+                    var vjs = videojs('tl-' + pId);
+                    vjs.on('timeupdate', function (e) {
                         var num = Math.floor(this.currentTime() * 30);
                         var p = _.get(frame_p[num], 'fields.ewm_mean');
-                        updateGauge($('#gauge-fullscreen'), p);
-                        updateAlertBanner($('#alert-banner-fullscreen'), p);
+                        updateGauge(gauge, p);
+                        updateAlertBanner($('#alert-banner-' + pId), p);
                     });
-                });
 
-            })();
-        }
+                    $("[id^=fullscreen-btn-" + pId + "]").click(function () {
+                        vjs.pause();
+
+                        var modalVjs = videojs('tl-fullscreen-vjs');
+                        modalVjs.src(vjs.currentSrc());
+                        modalVjs.currentTime(vjs.currentTime());
+                        modalVjs.play();
+                        modalVjs.on('timeupdate', function (e) {
+                            var num = Math.floor(this.currentTime() * 30);
+                            var p = _.get(frame_p[num], 'fields.ewm_mean');
+                            updateGauge($('#gauge-fullscreen'), p);
+                            updateAlertBanner($('#alert-banner-fullscreen'), p);
+                        });
+                    });
+                },
+                // `error`
+                function (jqxhr, textStatus, errorThrown) {
+                    predictionMap[i].predictions = [];
+                });
+        });
     });
     $('#tl-fullscreen-modal').on('hide.bs.modal', function (e) {
         var player = videojs('tl-fullscreen-vjs');

@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
+from django.http import Http404
 from authy.api import AuthyApiClient
 
 from .models import *
@@ -164,7 +165,10 @@ def publictimelapse_list(request):
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
 def serve_jpg_file(request, file_path):
-    with open(os.path.join(settings.MEDIA_ROOT, file_path), 'rb') as fh:
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+    if not os.path.exists(full_path):
+        raise Http404("Requested file does not exist")
+    with open(full_path, 'rb') as fh:
         return HttpResponse(fh, content_type='image/jpeg')
 
 

@@ -21,12 +21,12 @@
     <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
       <div class="card">
         <div class="card-header">
-          <input type="checkbox" class="view-toggle" data-toggle="toggle"
+          <input type="checkbox" checked class="view-toggle" data-toggle="toggle"
             data-on="<img src='{% static 'img/logo-square.png' %}' class='toggle-icon' />"
             data-off="<i class='far fa-eye'></i>" data-size="xs">
         </div>
 
-        <div class="card-img-top plain-view">
+        <div class="card-img-top plain-view" style="display: none">
 
           <video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
             poster="{{ print.poster_url }}"
@@ -44,7 +44,7 @@
           </a>
         </div>
 
-        <div class="card-body plain-view">
+        <div class="card-body plain-view" style="display: none">
           <div class="print-status container">
             <div class="row">
               <div class="text-muted col-sm-3">
@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="card-img-top detective-view" style="display: none">
+        <div class="card-img-top detective-view">
 
           <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
             poster="{{ print.poster_url }}"
@@ -83,7 +83,7 @@
           </a>
         </div>
 
-        <div class="card-body detective-view" style="display: none">
+        <div class="card-body detective-view">
           <div id="alert-banner-{{print.id}}" class="bg-warning alert-banner text-center">
             <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
           </div>

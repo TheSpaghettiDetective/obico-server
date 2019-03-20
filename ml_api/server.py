@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import flask
 from flask import request, jsonify
 from os import path, environ

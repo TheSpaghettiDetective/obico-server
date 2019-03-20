@@ -10,7 +10,7 @@ $(document).ready(function () {
             var gauge = $('#gauge-' + tl.id);
             var vjs = videojs('tl-' + tl.id);
             vjs.on('timeupdate', function (e) {
-                var num = Math.floor(this.currentTime() * 25);
+                var num = Math.round(frame_p.length*(this.currentTime()/this.duration()));
                 var p = frame_p[num].p;
                 updateGauge(gauge, p);
                 updateAlertBanner($('#alert-banner-' + tl.id), p);
@@ -27,7 +27,7 @@ $(document).ready(function () {
                 modalVjs.currentTime(currentTime);
                 modalVjs.play();
                 modalVjs.on('timeupdate', function (e) {
-                    var num = Math.floor(this.currentTime() * 25);
+                    var num = Math.round(frame_p.length*(this.currentTime()/this.duration()));
                     var p = frame_p[num].p;
                     updateGauge($('#gauge-fullscreen'), p);
                     updateAlertBanner($('#alert-banner-fullscreen'), p);

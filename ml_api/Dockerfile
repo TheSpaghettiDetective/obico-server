@@ -12,4 +12,3 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 EXPOSE 3333
-CMD ["sh", "-c", "python", "server.py"]

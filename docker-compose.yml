@@ -1,7 +1,6 @@
 version: '3.7'
 
 x-web-defaults: &web-defaults
-  restart: unless-stopped
   build:
     context: web
   volumes:
@@ -43,6 +42,7 @@ services:
         FLASK_APP: 'server.py'
         # ML_API_TOKEN:
         # HAS_GPU: 'False'
+    command: bash -c "python /app/server.py"
 
   web:
     <<: *web-defaults

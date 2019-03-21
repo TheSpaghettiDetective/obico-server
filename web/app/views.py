@@ -134,7 +134,7 @@ def phone_token_validation(request):
             )
             if verification.ok():
                 request.session['is_verified'] = True
-                request.user.phone_phone_country_code = request.session['phone_country_code']
+                request.user.phone_country_code = request.session['phone_country_code']
                 request.user.phone_number = request.session['phone_number']
                 request.user.save()
                 messages.success(request, 'Phone number has been verified successfully!')

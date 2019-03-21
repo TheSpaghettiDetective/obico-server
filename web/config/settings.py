@@ -50,10 +50,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'bootstrap_pagination',
     'app',  # app has to come before allauth for template override to work
-    'api',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'api',
 ]
 
 if os.environ.get('SOCIAL_LOGIN') == 'True':

@@ -22,7 +22,6 @@ $(document).ready(function () {
                     var vjs = videojs('tl-' + pId);
                     vjs.on('timeupdate', function (e) {
                         var num = Math.round(frame_p.length*(this.currentTime()/this.duration()));
-                        console.log(num);
                         var p = _.get(frame_p[num], 'fields.ewm_mean');
                         updateGauge(gauge, p);
                         updateAlertBanner($('#alert-banner-' + pId), p);

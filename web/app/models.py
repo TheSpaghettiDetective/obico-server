@@ -159,10 +159,14 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('resume', abort_existing=False)
 
     def pause_print(self):
-        self.queue_octoprint_command('pause')
+        args = {'retract': 6.5, 'lift_z': 2.5}
+        if self.tools_off_on_pause:
+            args['tools_off'] = True
+        if self.bed_off_on_pause:
+            args['bed_off'] = True
+        self.queue_octoprint_command('pause', args=args)
 
-    def pause_print_on_failure(self):
-        self.queue_octoprint_command('pause')
+        # TODO: remove me after 0.4.0 is not in use
         if self.tools_off_on_pause:
             self.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True}, abort_existing=False)
         if self.bed_off_on_pause:

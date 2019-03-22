@@ -10,6 +10,7 @@ from simple_history.models import HistoricalRecords
 from safedelete.models import SafeDeleteModel
 import os
 import json
+from datetime import timedelta
 
 from lib import redis
 from lib.utils import dict_or_none
@@ -155,10 +156,23 @@ class Printer(SafeDeleteModel):
             self.current_print_alerted_at = None   # reset current_print_alerted_at so that further alerts won't be surpressed.
         self.save()
 
+        # TODO: find a more elegant way to prevent rage clicking
+        last_commands = self.printercommand_set.order_by('-id')[:1]
+        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
+            return
+
+        # TODO: remove me after 0.4.0 is not in use
         self.queue_octoprint_command('restore_temps')
+
         self.queue_octoprint_command('resume', abort_existing=False)
 
     def pause_print(self):
+
+        # TODO: find a more elegant way to prevent rage clicking
+        last_commands = self.printercommand_set.order_by('-id')[:1]
+        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
+            return
+
         args = {'retract': 6.5, 'lift_z': 2.5}
         if self.tools_off_on_pause:
             args['tools_off'] = True

@@ -175,7 +175,7 @@ class Printer(SafeDeleteModel):
         if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
             return
 
-        args = {'retract': 6.5, 'lift_z': 2.5}
+        args = {'retract': self.retract_on_pause, 'lift_z': self.lift_z_on_pause}
         if self.tools_off_on_pause:
             args['tools_off'] = True
         if self.bed_off_on_pause:

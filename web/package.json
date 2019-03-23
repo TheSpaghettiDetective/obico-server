@@ -17,6 +17,6 @@
     "merge-stream": "^1.0.1"
   },
   "dependencies": {
-    "bootstrap": "^4.2.1"
+    "bootstrap": ">=4.3.1"
   }
 }

@@ -21,9 +21,10 @@
     <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
       <div class="card">
         <div class="card-header">
-          <input type="checkbox" checked class="view-toggle" data-toggle="toggle"
-            data-on="<img src='{% static 'img/logo-square.png' %}' class='toggle-icon' />"
-            data-off="<i class='far fa-eye'></i>" data-size="xs">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle={{ print.id }}" checked="">
+                <label class="custom-control-label" for="view-toggle={{ print.id }}">Detective View</label>
+              </div>
         </div>
 
         <div class="card-img-top plain-view" style="display: none">

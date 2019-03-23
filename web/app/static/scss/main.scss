@@ -13,11 +13,6 @@ body {
   color: $color-secondary;
 }
 
-.form-control:focus {
-  box-shadow: none!important;
-  border-color: #ced4da!important;
-}
-
 footer {
   padding: 25px 0;
   text-align: center;
@@ -280,7 +275,15 @@ hr {
       }
 
       input[type="checkbox"] {
-        margin-right: 0.5rem;
+        margin-right: 0.75rem;
+      }
+
+      .form-group {
+        margin-top: 0.5rem;
+        .custom-control {
+          padding-bottom: 0.15rem;
+          padding-top: 0.15rem;
+        }
       }
     }
 

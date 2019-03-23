@@ -90,6 +90,8 @@ class Printer(SafeDeleteModel):
     )
     tools_off_on_pause = models.BooleanField(default=True)
     bed_off_on_pause = models.BooleanField(default=False)
+    retract_on_pause = models.FloatField(null=False, default=6.5)
+    lift_z_on_pause = models.FloatField(null=False, default=2.5)
     detective_sensitivity = models.FloatField(null=False, default=1.0)
 
     created_at = models.DateTimeField(auto_now_add=True)

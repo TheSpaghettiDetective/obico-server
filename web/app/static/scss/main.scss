@@ -2,7 +2,7 @@
 
 /*** Global styles */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
@@ -277,13 +277,18 @@ hr {
       input[type="checkbox"] {
         margin-right: 0.75rem;
       }
-
+      input[type="number"] {
+        width: 4rem;
+      }
       .form-group {
         margin-top: 0.5rem;
         .custom-control {
           padding-bottom: 0.15rem;
           padding-top: 0.15rem;
         }
+      }
+      .form-control {
+        border: 1px solid $color-gray;
       }
     }
 

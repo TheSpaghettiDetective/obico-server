@@ -64,7 +64,8 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
         )
 
     def receive_json(self, data, **kwargs):
-        process_octoprint_status(self.current_printer(), data)
+        printer = Printer.objects.get(id=self.current_printer().id)
+        process_octoprint_status(printer, data)
 
     def printer_commands(self, command):
         self.send_json(command)

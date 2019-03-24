@@ -56,7 +56,7 @@
                 </div>
                 <div class="form-inline my-1">
                   <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox" class="custom-control-input" id="retract-checkbox" {% if form.instance.retract_on_pause > 0 %}checked="checked"{%endif %}>
+                    <input type="checkbox" class="custom-control-input" id="retract-checkbox">
                     <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                   </div>
                   <div class="input-group input-group-sm">
@@ -68,7 +68,7 @@
               </div>
               <div class="form-inline my-1">
                   <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox"class="custom-control-input" id="lift-z-checkbox" {% if form.instance.lift_z_on_pause > 0 %}checked="checked"{%endif %}>
+                    <input type="checkbox"class="custom-control-input" id="lift-z-checkbox">
                     <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                   </div>
                   <div class="input-group input-group-sm">

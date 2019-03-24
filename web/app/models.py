@@ -114,13 +114,12 @@ class Printer(SafeDeleteModel):
 
     def set_current_print(self, filename):
         if filename != self.current_print_filename:
-            Printer.objects.filter(id=self.id).update(
-                current_print_filename = filename,
-                current_print_started_at = timezone.now(),
-                print_status_updated_at = timezone.now(),
-                current_print_alerted_at = None,
-                alert_acknowledged_at = None,
-            )
+            self.current_print_filename = filename
+            self.current_print_started_at = timezone.now()
+            self.print_status_updated_at = timezone.now()
+            self.current_print_alerted_at = None
+            self.alert_acknowledged_at = None
+            self.save()
 
             self.printerprediction.reset_for_new_print()
 
@@ -140,13 +139,12 @@ class Printer(SafeDeleteModel):
             from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
             compile_timelapse.delay(print.id)
 
-            Printer.objects.filter(id=self.id).update(
-                current_print_filename = None,
-                current_print_started_at = None,
-                print_status_updated_at = timezone.now(),
-                current_print_alerted_at = None,
-                alert_acknowledged_at = None,
-            )
+            self.current_print_filename = None
+            self.current_print_started_at = None
+            self.print_status_updated_at = timezone.now()
+            self.current_print_alerted_at = None
+            self.alert_acknowledged_at = None
+            self.save()
 
             self.printerprediction.reset_for_new_print()
 

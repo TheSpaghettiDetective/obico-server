@@ -42,6 +42,28 @@ hr {
   background-color: grey;
 }
 
+.form-container {
+  margin: 3em 0em;
+  padding: 2.5em;
+  background: $color-bg;
+  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+
+  .form-control {
+    border: 1px solid white;
+    &[readonly] {
+      background-color: $color-form-bg;
+      border: 1px solid $color-form-bg;
+    }
+  }
+
+  h2 {
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+  }
+}
+
 .flipH {
   -webkit-transform: scaleX(-1);
   -moz-transform: scaleX(-1);
@@ -97,15 +119,6 @@ hr {
       }
     }
   }
-}
-
-.form-container {
-  margin: 3em 0em;
-  padding: 2.5em;
-  background: $color-bg;
-  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
-  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
-  border: none !important;
 }
 
 /** Webcam */
@@ -234,6 +247,69 @@ hr {
 
 /*** Printer Form *****/
 
+form#printer_form {
+  .form-label {
+    font-size: 1.1rem;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 0.75rem;
+  }
+  input[type="number"] {
+    width: 4rem;
+  }
+  .form-group {
+    margin-top: 0.5rem;
+    .custom-control {
+      padding-bottom: 0.15rem;
+      padding-top: 0.15rem;
+    }
+  }
+  .form-control {
+    border: 1px solid $color-gray;
+  }
+
+  .sensitivity {
+    >div {
+      margin-bottom: 0.5rem;
+    }
+
+    div[class^="hint-"] {
+      display: none;
+    }
+
+    #sensitivity-slider {
+      width: 100%;
+      .slider-selection {
+        background: $color-primary;
+      }
+      .slider-handle {
+        background: $color-secondary;
+      }
+    }
+    .slider.slider-horizontal:hover, .slider.slider-vertical:hover {
+        .tooltip.tooltip-main {
+            opacity: 0.7 !important;
+        }
+        .tooltip-inner {
+            font-size: 90%;
+            width: auto;
+        }
+    }
+    .slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
+    .slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
+      content: '';
+      width: 0;
+      height: 0;
+      position: absolute;
+      left: 45%;
+      bottom: -10px;
+      border: transparent 5px solid;
+      border-top: #000 5px solid;
+    }
+  }
+}
+
 #smartwizard {
   &.sw-theme-default {
     -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
@@ -269,27 +345,6 @@ hr {
     &.form-step {
       display: flex;
       flex-flow: column;
-
-      .form-label {
-        font-size: 1.1rem;
-      }
-
-      input[type="checkbox"] {
-        margin-right: 0.75rem;
-      }
-      input[type="number"] {
-        width: 4rem;
-      }
-      .form-group {
-        margin-top: 0.5rem;
-        .custom-control {
-          padding-bottom: 0.15rem;
-          padding-top: 0.15rem;
-        }
-      }
-      .form-control {
-        border: 1px solid $color-gray;
-      }
     }
 
     &.token-step
@@ -313,46 +368,6 @@ hr {
         i {
           color: $color-success;
         }
-      }
-    }
-
-    .sensitivity {
-      >div {
-        margin-bottom: 0.5rem;
-      }
-
-      div[class^="hint-"] {
-        display: none;
-      }
-
-      #sensitivity-slider {
-        width: 100%;
-        .slider-selection {
-          background: $color-primary;
-        }
-        .slider-handle {
-          background: $color-secondary;
-        }
-      }
-      .slider.slider-horizontal:hover, .slider.slider-vertical:hover {
-          .tooltip.tooltip-main {
-              opacity: 0.7 !important;
-          }
-          .tooltip-inner {
-              font-size: 90%;
-              width: auto;
-          }
-      }
-      .slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
-      .slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
-        content: '';
-        width: 0;
-        height: 0;
-        position: absolute;
-        left: 45%;
-        bottom: -10px;
-        border: transparent 5px solid;
-        border-top: #000 5px solid;
       }
     }
   }
@@ -448,14 +463,6 @@ hr {
 
   .print-status {
     font-size: 0.9rem;
-  }
-}
-
-/*** User preferences **/
-.user-preferences {
-  h2 {
-    border-bottom-style: solid;
-    border-bottom-width: thin;
   }
 }
 

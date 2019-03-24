@@ -6,7 +6,7 @@ $(document).ready(function () {
         if (stepNumber === 0 && stepDirection === 'forward') {
             $("#printer_form").submit();
         }
-        if (stepNumber === 1 && stepDirection === 'forward') {
+        if (stepNumber === 2 && stepDirection === 'forward') {
             var printerId = $('.connection-step').data('printer-id');
             if (printerId) {
                 checkPrinterEvent(printerId);
@@ -28,7 +28,7 @@ $(document).ready(function () {
             dataType: 'json',
         })
             .done(function (printer) {
-                if (!_.isEmpty(printer.status)) {
+                if (!_.isEmpty(printer.status) || !_.isEmpty(printer.pic)) {
                     $('#connected').show();
                     $('#waiting').hide();
                 } else {

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container printer-settings">
+      <h2 class="mb-4">Settings</h2>
+      <form id="printer_form" method="POST" action="{{ request.path }}">
+        {% include 'includes/_printer_form.html' %}
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary float-right">Save</button>
+          </div>
+        </div>
+      </form>
+      <br /><br />
+      <h2 class="mb-4">Secret Token</h2>
+      {% include 'includes/_secret_token.html' %}
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  var formHasErrors = false;
+</script>
+
+{% endblock content %}
+
+{% block page_js %}
+<script src="{% static 'js/printer_edit.js' %}"></script>
+{% endblock page_js %}

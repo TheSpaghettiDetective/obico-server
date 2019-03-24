@@ -50,28 +50,27 @@ def printers(request):
     return render(request, 'printer_list.html', {'printers': printers})
 
 @login_required
-def new_printer(request):
-    form = PrinterForm(request.POST or None, request.FILES or None)
-    if request.method == "POST":
-        if form.is_valid():
-            printer = form.save(commit=False)
-            printer.user = request.user
-            printer.auth_token = hexlify(os.urandom(10)).decode()
-            printer.save()
-            return redirect('/printers/{}/#step-2'.format(printer.id))
-
-    return render(request, 'printer_wizard.html', {'form': form})
-
-@login_required
 def edit_printer(request, pk):
-    instance = get_printer_or_404(pk, request)
-    if request.method == "POST":
-        form = PrinterForm(request.POST or None, instance=instance)
-        if form.is_valid():
-            form.save()
-        return render(request, 'printer_wizard.html', {'form': form})
+    if pk == 'new':
+        printer = None
+        template = 'printer_wizard.html'
     else:
-        return render(request, 'printer_wizard.html', {'form': PrinterForm(instance=instance)})
+        printer = get_printer_or_404(int(pk), request)
+        template = 'printer_wizard.html' if request.GET.get('wizard', False) else 'printer_edit.html'
+
+    form = PrinterForm(request.POST or None, request.FILES or None, instance=printer)
+    if request.method == "POST":
+        if form.is_valid():
+            if pk == 'new':
+                printer = form.save(commit=False)
+                printer.user = request.user
+                printer.auth_token = hexlify(os.urandom(10)).decode()
+                form.save()
+                return redirect('/printers/{}/?wizard=True#step-2'.format(printer.id))
+            else:
+                form.save()
+
+    return render(request, template, {'form': form})
 
 @login_required
 def delete_printer(request, pk=None):

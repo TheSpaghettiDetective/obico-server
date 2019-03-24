@@ -1,10 +1,11 @@
+
 var ALERT_THRESHOLD = 0.5;
 
 function scaleP(p) {
-    var scaleAboveCutOff = (100.0/3.0) / (1-ALERT_THRESHOLD);
-    var scaleBelowCutOff = (200.0/3.0) / ALERT_THRESHOLD;
+    var scaleAboveCutOff = (100.0 / 3.0) / (1 - ALERT_THRESHOLD);
+    var scaleBelowCutOff = (200.0 / 3.0) / ALERT_THRESHOLD;
     if (p > ALERT_THRESHOLD) {
-        return (p - ALERT_THRESHOLD) * scaleAboveCutOff + 200.0/3.0;
+        return (p - ALERT_THRESHOLD) * scaleAboveCutOff + 200.0 / 3.0;
     } else {
         return p * scaleBelowCutOff;
     }
@@ -15,13 +16,13 @@ function updateGauge(gaugeEle, p) {
     gaugeEle.attr('data-value', scaledP);
     if (scaledP > 66) {
         gaugeEle.attr('data-title', 'Failing!');
-       gaugeEle.attr('data-color-title', 'rgba(255,30,0,.75)');
+        gaugeEle.attr('data-color-title', 'rgba(255,30,0,.75)');
     } else if (scaledP > 33) {
-       gaugeEle.attr('data-title', 'Fishy...');
-       gaugeEle.attr('data-color-title', 'rgb(255,165,0,.75)');
+        gaugeEle.attr('data-title', 'Fishy...');
+        gaugeEle.attr('data-color-title', 'rgb(255,165,0,.75)');
     } else {
-       gaugeEle.attr('data-title', 'Looking Good');
-       gaugeEle.attr('data-color-title', 'rgba(0,255,30,.75)');
+        gaugeEle.attr('data-title', 'Looking Good');
+        gaugeEle.attr('data-color-title', 'rgba(0,255,30,.75)');
     }
 }
 
@@ -45,18 +46,22 @@ function hideTooltip(btn) {
     }, 1000);
 }
 
-$('#copy-to-clipboard').tooltip({
-    trigger: 'click',
-    placement: 'bottom'
-});
+$(document).ready(function () {
 
-var clipboard = new ClipboardJS('#copy-to-clipboard');
-clipboard.on('success', function (e) {
-    setTooltip(e.trigger, 'Copied!');
-    hideTooltip(e.trigger);
-});
+    $('#copy-to-clipboard').tooltip({
+        trigger: 'click',
+        placement: 'bottom'
+    });
 
-clipboard.on('error', function (e) {
-    setTooltip(e.trigger, 'Failed!');
-    hideTooltip(e.trigger);
+    var clipboard = new ClipboardJS('#copy-to-clipboard');
+    clipboard.on('success', function (e) {
+        setTooltip(e.trigger, 'Copied!');
+        hideTooltip(e.trigger);
+    });
+
+    clipboard.on('error', function (e) {
+        setTooltip(e.trigger, 'Failed!');
+        hideTooltip(e.trigger);
+    });
+
 });

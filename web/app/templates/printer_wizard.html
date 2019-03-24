@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% load static %}
-{% load widget_tweaks %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -18,84 +17,9 @@
           {% if form.errors %}
           <div class="text-danger">Wait! You have got errors to fix.</div>
           {% endif %}
-          <form id="printer_form" method="POST" action="{{ request.path }}?#step-2">
-            {% csrf_token %}
-            {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
-            <div class="form-group text-muted">
-              <label class="form-label" for="{{ form.name.id_for_label }}">Give your new printer a shiny name</label>
-              {% render_field form.name class="form-control" aria-describedby="nameHelp" placeholder="My Awesome 3D Printer" %}
-              {% if form.name.errors %}
-              <small id="passwordHelp" class="text-danger">
-                {% for error in form.name.errors %}
-                {{ error|escape }}
-                {% endfor %}
-              </small>
-              {% endif %}
-            </div>
-            <hr />
-            <p class="text-warning">
-                <i class="fas fa-exclamation-triangle"></i>  If you are not sure about the settings below, leave them in default values to minimize surprises.
-            </p>
-            <div class="form-group mt-4">
-              <div class="form-label text-muted">When failure is detected,</div>
-                {% render_field form.action_on_failure %}
-              </div>
-              <div class="form-group mt-4">
-                <div class="form-label text-muted">When print is paused,</div>
-                <div class="custom-control custom-checkbox form-check-inline">
-                  {% render_field form.tools_off_on_pause class="custom-control-input" %}
-                  <label class="custom-control-label" for="id_tools_off_on_pause">
-                    Turn off hotend heater(s)
-                  </label>
-                </div>
-                <div class="custom-control custom-checkbox form-check-inline">
-                  {% render_field form.bed_off_on_pause class="custom-control-input" %}
-                  <label class="custom-control-label" for="id_bed_off_on_pause" >
-                    Turn off bed heater
-                  </label>
-                </div>
-                <div class="form-inline my-1">
-                  <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox" class="custom-control-input" id="retract-checkbox">
-                    <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
-                  </div>
-                  <div class="input-group input-group-sm">
-                    {% render_field form.retract_on_pause class="form-control" step="0.5" min="0" %}
-                    <div class="input-group-append">
-                      <span class="input-group-text">mm</span>
-                    </div>
-                  </div>
-              </div>
-              <div class="form-inline my-1">
-                  <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox"class="custom-control-input" id="lift-z-checkbox">
-                    <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
-                  </div>
-                  <div class="input-group input-group-sm">
-                    {% render_field form.lift_z_on_pause class="form-control" step="0.5" min="0" %}
-                    <div class="input-group-append">
-                      <span class="input-group-text">mm</span>
-                    </div>
-                  </div>
-              </div>
-              <div class="form-group sensitivity my-4">
-                <div class="form-label text-muted">How alerted do you want the Detective to be on this printer?</div>
-                <div>
-                  <input id="sensitivity" name="detective_sensitivity" data-slider-id='sensitivity-slider' type="text" data-slider-min="0.8" data-slider-max="1.2" data-slider-step="0.05" data-slider-value="{{ form.instance.detective_sensitivity }}"/>
-                </div>
-                <div class="hint-low">
-                  Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
-                </div>
-                <div class="hint-medium">
-                  Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
-                </div>
-                <div class="hint-high">
-                  High - Hit me with all the false alarms. I just want you to catch as many as you can.
-                </div>
-              </div>
-              {% endwith %}
-            </form>
-          </div>
+          <form id="printer_form" method="POST" action="{{ request.get_full_path }}#step-2">
+              {% include 'includes/_printer_form.html' %}
+          </form>
         </div>
         <div id="step-2" class="plugin-step">
           If you have not installed The Spaghetti Detective plugin (Beta) for OctoPrint, please do so before clicking "Next".
@@ -104,17 +28,7 @@
               Guide</a>.</div>
         </div>
         <div id="step-3" class="token-step">
-          Copy and paste this token to OctoPrint TheSpaghettiDetective Plugin settings:
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="foo" value="{{ form.instance.auth_token }}">
-            <div class="input-group-append">
-              <button id="copy-to-clipboard" class="btn btn-outline-secondary" type="button"
-                data-clipboard-target="#foo">
-                <i class="fas fa-clipboard"></i>
-              </button>
-            </div>
-          </div>
-          <img src="{% static 'img/paste_token.png' %}" style="width: 100%;" />
+          {% include 'includes/_secret_token.html' %}
         </div>
         <div id="step-4" class="connection-step" data-printer-id="{{ form.instance.id }}">
           <div id="waiting">

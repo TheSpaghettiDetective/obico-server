@@ -69,6 +69,8 @@ def edit_printer(request, pk):
                 return redirect('/printers/{}/?wizard=True#step-2'.format(printer.id))
             else:
                 form.save()
+                if not request.GET.get('wizard', False):
+                    messages.success(request, 'Printer settings have been updated successfully!')
 
     return render(request, template, {'form': form})
 

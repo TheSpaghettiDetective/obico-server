@@ -12,7 +12,7 @@ The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfort
 the following softwares are installed:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
-    - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kind of weird problems.
+    - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
     - [Install Docker-compose](https://docs.docker.com/compose/install/).
 - (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png)
@@ -122,4 +122,6 @@ Just make a copy of `TheSpaghettiDetective/web/db.sqlite`
 
 # How to train your own Machine Learning model (TBD)
 
-# Difficulties at getting The Spaghetti Detective server up and running? [Open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
+# Difficulties at getting The Spaghetti Detective server up and running?
+
+Check the [FAQ document](docs/faq.md). If you can't find the answer there, [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).

@@ -2,7 +2,7 @@
 
 ## How do I run TSD on a server with GPU?
 
-Great to know you are ready for the challenge! ;)
+Great to know you are ready for some challenge! ;)
 
 ### On Linux
 

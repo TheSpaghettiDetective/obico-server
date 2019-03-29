@@ -31,7 +31,7 @@ net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(mode
 def get_p():
     if 'img' in request.args:
         try:
-            resp = requests.get(request.args['img'], stream=True, timeout=(0.05, 0.2))
+            resp = requests.get(request.args['img'], stream=True, timeout=(0.1, 5))
             resp.raise_for_status()
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)
@@ -45,5 +45,5 @@ def get_p():
 
     return jsonify({'detections': []})
 
-
-app.run(host='0.0.0.0', port=3333, threaded=False)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=3333, threaded=False)

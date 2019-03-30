@@ -69,17 +69,17 @@
             </div>
           </li>
           <li class="nav-item {% if view_name == 'publictimelapse_list' %}active{% endif %}">
-              <a class="nav-link glowing" href="/publictimelapses">Spaghetti Gallery</a>
+              <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
           <li class="nav-item {% if  'printers' in view_name %}active{% endif %}">
-            <a class="nav-link" href="/printers">My Printers
+            <a class="nav-link" href="/printers/">My Printers
             </a>
           </li>
           <li class="nav-item {% if  'prints' in view_name %}active{% endif %}">
-            <a class="nav-link" href="/prints">My Gallery
+            <a class="nav-link" href="/prints/">My Gallery
             </a>
           </li>
           <li class="nav-item dropdown">

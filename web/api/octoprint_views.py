@@ -54,7 +54,7 @@ class OctoPrintPicView(APIView):
     def post(self, request):
         printer = request.auth
 
-        pic = request.data['pic']
+        pic = request.FILES['pic']
         pic_id = int(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 

@@ -13,6 +13,16 @@ body {
   color: $color-secondary;
 }
 
+.borderless {
+  border: none !important;
+}
+
+.custom-control-label {
+  &::before {
+    border: $color-primary solid 2px;
+  }
+}
+
 footer {
   padding: 25px 0;
   text-align: center;

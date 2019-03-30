@@ -145,20 +145,4 @@ $(document).ready(function () {
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
         printerCard.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
     }
-
-    /*** Swal Mixins */
-
-    var Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-    });
-
-    var Confirm = Swal.mixin({
-        title: 'Are you sure?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-    });
 });

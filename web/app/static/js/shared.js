@@ -46,6 +46,22 @@ function hideTooltip(btn) {
     }, 1000);
 }
 
+/*** Swal Mixins */
+
+var Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 5000,
+});
+
+var Confirm = Swal.mixin({
+    title: 'Are you sure?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+});
+
 $(document).ready(function () {
 
     $('#copy-to-clipboard').tooltip({

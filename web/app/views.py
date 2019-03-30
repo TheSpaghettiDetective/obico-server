@@ -152,10 +152,21 @@ def phone_token_validation(request):
 
 @login_required
 def prints(request):
-    prints = Print.objects.filter(printer__user=request.user).order_by('-id')
+    prints = get_prints(request).order_by('-id')
     page_obj = get_paginator(prints, request, 9)
     prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
+
+@login_required
+def delete_prints(request, pk):
+    if request.method == 'POST':
+        select_prints_ids = request.POST.getlist('selected_print_ids', [])
+    else:
+        select_prints_ids = [pk]
+
+    get_prints(request).filter(id__in=select_prints_ids).delete()
+    messages.success(request, '{} time-lapses deleted.'.format(len(select_prints_ids)))
+    return redirect(reverse('prints'))
 
 def publictimelapse_list(request):
     timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())
@@ -177,6 +188,9 @@ def serve_jpg_file(request, file_path):
 
 def get_printer_or_404(pk, request):
     return get_object_or_404(Printer, pk=pk, user=request.user)
+
+def get_prints(request):
+    return Print.objects.filter(printer__user=request.user)
 
 def get_paginator(objs, request, num_per_page):
     page = request.GET.get('page', 1)

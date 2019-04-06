@@ -52,7 +52,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: bash -c "python manage.py collectstatic --noinput -c && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
+    command: bash -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
 
   tasks:
     <<: *web-defaults

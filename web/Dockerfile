@@ -7,6 +7,6 @@ ADD . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-EXPOSE 3333
+EXPOSE 3334
 
 RUN python manage.py collectstatic --noinput -c

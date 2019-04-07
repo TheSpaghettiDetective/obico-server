@@ -24,7 +24,7 @@ x-web-defaults: &web-defaults
     ML_API_HOST: 'http://ml_api:3333'
 
     #### Optional env vars below this line ###
-    # TWILIO_ACCOUNT_SECURITY_API_KEY:
+    # TWILIO_ACCOUNT_SECURITY_API_KEY:   # https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
     # TWILIO_ACCOUNT_SID:
     # TWILIO_AUTH_TOKEN:
     # TWILIO_FROM_NUMBER:

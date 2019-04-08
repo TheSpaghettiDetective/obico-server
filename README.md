@@ -6,6 +6,10 @@ The core of this project is based on a Deep Learning model. [See how the model w
 
 # Install and run the server
 
+If you are on Windows 10 and prefer a video tutorial, [you are in luck](https://www.youtube.com/watch?time_continue=309&v=8l4C_K9S2-Y). Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/) for creating this awesome video.
+
+If you otherwise prefer textual instructions, follow the steps below.
+
 ## Prerequisites
 
 The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). On that server, make sure
@@ -14,7 +18,7 @@ the following softwares are installed:
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
     - [Install Docker-compose](https://docs.docker.com/compose/install/).
-- (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
+    - (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png)
 
 - git.
@@ -91,13 +95,21 @@ That's it! You now have a fully-functional The Spaghetti Detective server that y
 
 # Configure The Spagetti Detective OctoPrint Plugin to use your own server
 
+Before you can configure The Spagetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spagetti Detective server you just built and obtain the secret token for that. To do so:
+
+    - Pointing your browser to `http://your_server_ip:3334/`.
+
+    - Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-setup.html#step-1-sign-up-the-spaghetti-detective-beta-account) and obtain the secret token.
+
 On The Spaghetti Detective plugin settings page:
 
 1. Check the box "I have my own TSD server. Don't check this unless you know what you are doing."
 
 2. Enter `http://your_serer_ip:3334/`. This time you need to enter both "http://" and the trailing "/". I know it's confusing but...
 
-3. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
+3. Enter the secret token you copied from the previous step.
+
+4. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
 
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/plugin_config.png)
 

@@ -97,11 +97,11 @@ That's it! You now have a fully-functional The Spaghetti Detective server that y
 
 Before you can configure The Spagetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spagetti Detective server you just built and obtain the secret token for that. To do so:
 
-    - Pointing your browser to `http://your_server_ip:3334/`.
+1. Pointing your browser to `http://your_server_ip:3334/`.
 
-    - Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-setup.html#step-1-sign-up-the-spaghetti-detective-beta-account) and obtain the secret token.
+1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-setup.html#step-1-sign-up-the-spaghetti-detective-beta-account) and obtain the secret token.
 
-On The Spaghetti Detective plugin settings page:
+Then, on The Spaghetti Detective plugin settings page:
 
 1. Check the box "I have my own TSD server. Don't check this unless you know what you are doing."
 

@@ -6,7 +6,7 @@ The core of this project is based on a Deep Learning model. [See how the model w
 
 # Install and run the server
 
-If you are on Windows 10 and prefer a video tutorial, [you are in luck](https://www.youtube.com/watch?time_continue=309&v=8l4C_K9S2-Y). Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/) for creating this awesome video.
+If you are on Windows 10 and prefer a video tutorial, head to LukesLaboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
 
 If you otherwise prefer textual instructions, follow the steps below.
 
@@ -21,7 +21,7 @@ the following softwares are installed:
     - (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png)
 
-- git.
+- git ([how to install](https://git-scm.com/downloads)).
 
 You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
 should also work but we haven't tried them.

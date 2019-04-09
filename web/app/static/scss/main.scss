@@ -52,6 +52,32 @@ hr {
   background-color: grey;
 }
 
+
+.icon-btn {
+  background-color: transparent;
+  border: none;
+  color: rgba(255,255,255,0.75);
+
+  &:hover, &:active, &:focus {
+    background-color: transparent !important;
+    border: none !important;
+    color: rgba(255,255,255, 1.0) !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.dropdown-menu {
+  .dropdown-item {
+    font-size: 1rem;
+    i {
+      width: 20px;
+      margin-right: 16px;
+      text-align: center;
+    }
+  }
+}
+
 .form-container {
   margin: 3em 0em;
   padding: 2.5em;
@@ -207,13 +233,6 @@ hr {
 
   .card {
     border: none;
-  }
-
-  .card-header {
-    button.dropdown-toggle {
-      background-color: transparent;
-      border: none;
-    }
   }
   .card-body {
     .container-fluid {

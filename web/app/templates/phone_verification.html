@@ -29,13 +29,7 @@
             {% render_field form.phone_number class="form-control" placeholder="Phone Number" %}
           </div>
         </div>
-        <div class="form-group row">
-          <label class="col-sm-12">We need to verify your phone number. How do you want to get verification code?</label>
-          <div class="col-sm-12">
-          {% render_field form.via class="custom-control-input" inline="True" %}
-          </div>
-        </div>
-        <input type="submit" value="Get verification code" class="btn btn-primary btn-block">
+        <input type="submit" value="Save" class="btn btn-primary btn-block">
         <a href="{% url 'printers' %}"class="btn btn-secondary btn-block">Skip phone number for now</a>
         {% endwith %}
       </form>

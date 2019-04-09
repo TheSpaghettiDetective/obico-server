@@ -25,7 +25,8 @@ class PhoneVerificationForm(Form):
     phone_number = CharField(max_length=12)
     via = ChoiceField(
         choices=[('sms', 'Text me (SMS)'), ('call', 'Call me')],
-        widget=CustomRadioSelectWidget())
+        widget=CustomRadioSelectWidget(),
+        required=False)
 
     def clean_phone_country_code(self):
         phone_country_code = self.cleaned_data['phone_country_code']

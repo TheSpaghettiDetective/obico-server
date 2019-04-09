@@ -8,19 +8,24 @@
   <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card">
     <div class="card">
       <div class="card-header">
-        {{ printer.name }}
+        <div class="float-left">{{ printer.name }}</div>
         <div class="float-right">
-          <a role="button" class="btn btn-outline-danger float-right btn-sm borderless" id="delete-print"
-            class="dropdown-item text-danger" href="#">
-            <i class="fas fa-trash-alt fa-lg"></i>
-          </a>
-          <a role="button" class="btn btn-outline float-right btn-sm borderless"
-            href="{{ request.path }}{{ printer.id }}">
-            <i class="fas fa-cog fa-lg"></i>
-          </a>
-        </div>
-      </div>
+          <div class="dropdown">
+            <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+              aria-haspopup="true"><i class="fas fa-ellipsis-v"></i></button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle={{ print.id }}"
+              checked="">
+            <label class="custom-control-label" for="view-toggle={{ print.id }}"><img src="{% static 'img/logo-square.png' %}" /></label>
+          </div>
+      </div>
+              <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
+              <a id="delete-print" class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt fa-lg"></i>Delete</a>
+            </div>
+          </div>
+        </div>
       <div class="card-img-top webcam_container">
         <div
           class="webcam_rotator {{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">

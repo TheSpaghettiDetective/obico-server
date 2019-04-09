@@ -111,41 +111,47 @@ def phone_verification(request):
     if request.method == 'POST':
         form = PhoneVerificationForm(request.POST)
         if form.is_valid():
-            request.session['phone_number'] = form.cleaned_data['phone_number']
-            request.session['phone_country_code'] = form.cleaned_data['phone_country_code']
-            authy_api.phones.verification_start(
-                form.cleaned_data['phone_number'],
-                form.cleaned_data['phone_country_code'],
-                via=form.cleaned_data['via']
-            )
-            return redirect('phone_token_validation')
+            request.user.phone_country_code = form.cleaned_data['phone_country_code']
+            request.user.phone_number = form.cleaned_data['phone_number']
+            request.user.save()
+            messages.success(request, 'Phone number has been verified successfully!')
+            return redirect(reverse('printers'))
+
+        #     request.session['phone_number'] = form.cleaned_data['phone_number']
+        #     request.session['phone_country_code'] = form.cleaned_data['phone_country_code']
+        #     authy_api.phones.verification_start(
+        #         form.cleaned_data['phone_number'],
+        #         form.cleaned_data['phone_country_code'],
+        #         via=form.cleaned_data['via']
+        #     )
+        #     return redirect('phone_token_validation')
     else:
         form = PhoneVerificationForm(initial={'via': 'sms'})
     return render(request, 'phone_verification.html', {'form': form})
 
-@login_required
-def phone_token_validation(request):
-    if request.method == 'POST':
-        form = PhoneTokenForm(request.POST)
-        if form.is_valid():
-            verification = authy_api.phones.verification_check(
-                request.session['phone_number'],
-                request.session['phone_country_code'],
-                form.cleaned_data['token']
-            )
-            if verification.ok():
-                request.session['is_verified'] = True
-                request.user.phone_country_code = request.session['phone_country_code']
-                request.user.phone_number = request.session['phone_number']
-                request.user.save()
-                messages.success(request, 'Phone number has been verified successfully!')
-                return redirect(reverse('printers'))
-            else:
-                for error_msg in verification.errors().values():
-                    form.add_error(None, error_msg)
-    else:
-        form = PhoneTokenForm()
-    return render(request, 'phone_token_validation.html', {'form': form})
+# @login_required
+# def phone_token_validation(request):
+#     if request.method == 'POST':
+#         form = PhoneTokenForm(request.POST)
+#         if form.is_valid():
+#             verification = authy_api.phones.verification_check(
+#                 request.session['phone_number'],
+#                 request.session['phone_country_code'],
+#                 form.cleaned_data['token']
+#             )
+#             if verification.ok():
+#                 request.session['is_verified'] = True
+#                 request.user.phone_country_code = request.session['phone_country_code']
+#                 request.user.phone_number = request.session['phone_number']
+#                 request.user.save()
+#                 messages.success(request, 'Phone number has been verified successfully!')
+#                 return redirect(reverse('printers'))
+#             else:
+#                 for error_msg in verification.errors().values():
+#                     form.add_error(None, error_msg)
+#     else:
+#         form = PhoneTokenForm()
+#     return render(request, 'phone_token_validation.html', {'form': form})
 
 
 ### Prints and public time lapse ###

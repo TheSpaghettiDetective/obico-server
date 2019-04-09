@@ -205,6 +205,10 @@ hr {
 .printer-card {
   margin-top: 2em;
 
+  .card {
+    border: none;
+  }
+
   .card-header {
     button.dropdown-toggle {
       background-color: transparent;

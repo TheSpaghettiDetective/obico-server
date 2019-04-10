@@ -4,6 +4,6 @@ import re
 
 def build_full_url(url):
     protocol = 'https://' if settings.SITE_USES_HTTPS else 'http://'
-    domain_name = Site.objects.get_current().domain
+    domain_name = Site.objects.first().domain
     normalized_url = re.sub(r'^/', '', url)
     return '{}{}/{}'.format(protocol, domain_name, normalized_url)

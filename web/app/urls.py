@@ -13,8 +13,6 @@ urlpatterns = [
     path('printers/<int:pk>/resume/', views.resume_printer, name='printers_resume'),
     path('publictimelapses/', views.publictimelapse_list, name='publictimelapse_list'),
     path('user_preferences/', views.user_preferences, name='user_preferences'),
-    path('phone_verification/', views.phone_verification, name='phone_verification'),
-    # path('phone_token_validation/', views.phone_token_validation, name='phone_token_validation'),
     path('prints/', views.prints, name='prints'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
 ]

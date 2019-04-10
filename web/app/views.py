@@ -9,15 +9,11 @@ from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
-from authy.api import AuthyApiClient
 
 from .models import *
 from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
-
-if settings.TWILIO_ACCOUNT_SECURITY_API_KEY:
-    authy_api = AuthyApiClient(settings.TWILIO_ACCOUNT_SECURITY_API_KEY)
 
 # Create your views here.
 def index(request):
@@ -38,10 +34,6 @@ def priner_auth_token(request, pk):
 
 @login_required
 def printers(request):
-    if not request.session.get('tour_shown') and (datetime.now(timezone.utc) - request.user.date_joined).total_seconds() < 60:
-        request.session['tour_shown'] = 'True'
-        return redirect(reverse('phone_verification'))
-
     printers = Printer.objects.filter(user=request.user)
     for printer in printers:
         p_settings = redis.printer_settings_get(printer.id)
@@ -105,54 +97,6 @@ def user_preferences(request):
             messages.success(request, 'Your preferences have been updated successfully!')
 
     return render(request, 'user_preferences.html', dict(form=form))
-
-@login_required
-def phone_verification(request):
-    if request.method == 'POST':
-        form = PhoneVerificationForm(request.POST)
-        if form.is_valid():
-            request.user.phone_country_code = form.cleaned_data['phone_country_code']
-            request.user.phone_number = form.cleaned_data['phone_number']
-            request.user.save()
-            messages.success(request, 'Phone number has been verified successfully!')
-            return redirect(reverse('printers'))
-
-        #     request.session['phone_number'] = form.cleaned_data['phone_number']
-        #     request.session['phone_country_code'] = form.cleaned_data['phone_country_code']
-        #     authy_api.phones.verification_start(
-        #         form.cleaned_data['phone_number'],
-        #         form.cleaned_data['phone_country_code'],
-        #         via=form.cleaned_data['via']
-        #     )
-        #     return redirect('phone_token_validation')
-    else:
-        form = PhoneVerificationForm(initial={'via': 'sms'})
-    return render(request, 'phone_verification.html', {'form': form})
-
-# @login_required
-# def phone_token_validation(request):
-#     if request.method == 'POST':
-#         form = PhoneTokenForm(request.POST)
-#         if form.is_valid():
-#             verification = authy_api.phones.verification_check(
-#                 request.session['phone_number'],
-#                 request.session['phone_country_code'],
-#                 form.cleaned_data['token']
-#             )
-#             if verification.ok():
-#                 request.session['is_verified'] = True
-#                 request.user.phone_country_code = request.session['phone_country_code']
-#                 request.user.phone_number = request.session['phone_number']
-#                 request.user.save()
-#                 messages.success(request, 'Phone number has been verified successfully!')
-#                 return redirect(reverse('printers'))
-#             else:
-#                 for error_msg in verification.errors().values():
-#                     form.add_error(None, error_msg)
-#     else:
-#         form = PhoneTokenForm()
-#     return render(request, 'phone_token_validation.html', {'form': form})
-
 
 ### Prints and public time lapse ###
 

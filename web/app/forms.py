@@ -16,17 +16,10 @@ class PrinterForm(ModelForm):
 class UserPrefernecesForm(ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
-
-### Phone verification ##
-
-class PhoneVerificationForm(Form):
-    phone_country_code = CharField(max_length=5, widget=PhoneCountryCodeWidget())
-    phone_number = CharField(max_length=12)
-    via = ChoiceField(
-        choices=[('sms', 'Text me (SMS)'), ('call', 'Call me')],
-        widget=CustomRadioSelectWidget(),
-        required=False)
+        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number']
+        widgets = {
+            'phone_country_code': PhoneCountryCodeWidget()
+        }
 
     def clean_phone_country_code(self):
         phone_country_code = self.cleaned_data['phone_country_code']
@@ -43,6 +36,3 @@ class PhoneVerificationForm(Form):
                 self.add_error('phone_number', 'Invalid phone number')
         except phonenumbers.NumberParseException as e:
             self.add_error('phone_number', e)
-
-class PhoneTokenForm(Form):
-    token = CharField(max_length=6)

@@ -18,7 +18,7 @@ from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing
 from lib.channels import send_commands_to_group, send_status_to_group
-from .octoprint_messages import process_octoprint_status, STATUS_TTL_SECONDS
+from .octoprint_messages import STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
 
@@ -87,15 +87,6 @@ class OctoPrintPicView(APIView):
         if is_failing(prediction, printer.detective_sensitivity):
             alert_if_needed(printer)
 
-        return command_response(printer)
-
-
-class OctoPrintStatusView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request):
-        printer = request.auth
-        process_octoprint_status(printer, request.data)
         return command_response(printer)
 
 

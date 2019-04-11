@@ -29,7 +29,7 @@ class UserPrefernecesForm(ModelForm):
 
     def clean(self):
         data = self.cleaned_data
-        phone_number = data['phone_country_code'] + data['phone_number']
+        phone_number = (data['phone_country_code'] or '') + (data['phone_number'] or '')
         try:
             phone_number = phonenumbers.parse(phone_number, None)
             if not phonenumbers.is_valid_number(phone_number):

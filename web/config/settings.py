@@ -194,6 +194,7 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 LOGIN_REDIRECT_URL = '/'
 
+SITE_ID = 1
 SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 
 AUTH_USER_MODEL = 'app.User'

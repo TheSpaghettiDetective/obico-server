@@ -1,1 +1,0 @@
-ML_API_TOKEN=yyy NEW_RELIC_APP_NAME=tsd-ml  NEW_RELIC_LOG=stdout NEW_RELIC_LICENSE_KEY=zzz SENTRY_DSN='aaa' newrelic-admin run-program python server.py

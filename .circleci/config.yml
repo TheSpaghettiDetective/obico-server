@@ -16,7 +16,7 @@ jobs:
      # Tag the current build as latest
      - run: docker tag thespaghettidetective/web:0.${CIRCLE_BUILD_NUM} thespaghettidetective/web:latest
      - run: docker tag thespaghettidetective/ml_api:0.${CIRCLE_BUILD_NUM} thespaghettidetective/ml_api:latest
-       -
+
      # deploy the image
      - run: docker push thespaghettidetective/web:0.${CIRCLE_BUILD_NUM}
      - run: docker push thespaghettidetective/ml_api:0.${CIRCLE_BUILD_NUM}

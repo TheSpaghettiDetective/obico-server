@@ -2,7 +2,8 @@ version: '2.4'
 
 x-web-defaults: &web-defaults
   restart: unless-stopped
-  image: thespaghettidetective/web:0.123
+  build:
+    context: web
   volumes:
     - ./web:/app
   depends_on:
@@ -34,7 +35,8 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    image: thespaghettidetective/ml_api:0.123
+    build:
+      context: ml_api
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'

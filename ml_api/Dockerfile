@@ -1,5 +1,6 @@
 FROM nvidia/cuda:9.0-runtime-ubuntu16.04
 WORKDIR /app
+EXPOSE 3333
 RUN apt update && \
     apt install --no-install-recommends -y libsm6 libxrender1 libfontconfig1 python3-pip python3-setuptools vim ffmpeg wget curl && \
     rm -rf /var/lib/apt/lists/* && \
@@ -14,4 +15,3 @@ RUN wget --quiet -O model/model.weights $(cat model/model.weights.url | tr -d '\
 
 ADD . .
 
-EXPOSE 3333

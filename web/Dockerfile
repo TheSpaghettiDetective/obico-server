@@ -1,6 +1,7 @@
 FROM python:3.6-alpine3.9
 
 WORKDIR /app
+EXPOSE 3334
 RUN apk -U add vim ffmpeg postgresql-libs && \
     apk add --virtual .build-deps gcc musl-dev postgresql-dev zlib-dev jpeg-dev
 RUN pip install --upgrade pip
@@ -10,7 +11,5 @@ RUN pip install -r requirements.txt && \
     apk --purge del .build-deps
 
 ADD . .
-
-EXPOSE 3334
 
 RUN python manage.py collectstatic --noinput -c

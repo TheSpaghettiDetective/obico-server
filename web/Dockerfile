@@ -1,12 +1,15 @@
-FROM python:3.6
+FROM python:3.6-alpine3.9
 
-RUN apt-get update && apt-get install -y vim ffmpeg
+WORKDIR /app
+EXPOSE 3334
+RUN apk -U add vim ffmpeg postgresql-libs && \
+    apk add --virtual .build-deps gcc musl-dev postgresql-dev zlib-dev jpeg-dev
 RUN pip install --upgrade pip
 
-ADD . /app
-WORKDIR /app
-RUN pip install -r requirements.txt
+ADD requirements.txt .
+RUN pip install -r requirements.txt && \
+    apk --purge del .build-deps
 
-EXPOSE 3334
+ADD . .
 
 RUN python manage.py collectstatic --noinput -c

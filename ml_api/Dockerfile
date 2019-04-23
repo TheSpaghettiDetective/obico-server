@@ -1,17 +1,9 @@
-FROM nvidia/cuda:9.0-runtime-ubuntu16.04
+FROM thespaghettidetective/ml_api:base
 WORKDIR /app
 EXPOSE 3333
-RUN apt update && \
-    apt install --no-install-recommends -y libsm6 libxrender1 libfontconfig1 python3-pip python3-setuptools vim ffmpeg wget curl && \
-    rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 10 && \
-    update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 
-ADD requirements.txt .
+ADD . /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-ADD model model
+
 RUN wget --quiet -O model/model.weights $(cat model/model.weights.url | tr -d '\r')
-
-ADD . .
-

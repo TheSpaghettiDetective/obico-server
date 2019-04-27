@@ -58,7 +58,7 @@ def _retrieve_to_file_obj_from_file_system(src_path, file_obj, container):
         copyfileobj(src_file, file_obj)
 
 def _save_to_gcp(dest_path, file_obj, container, return_url):
-    bucket, real_container_name = _gcp_bucket(container)
+    bucket = _gcp_bucket(container)
     blob = bucket.blob(dest_path)
     content_type = 'application/octet-stream'
     blob.upload_from_string(file_obj.read(), content_type)
@@ -66,46 +66,21 @@ def _save_to_gcp(dest_path, file_obj, container, return_url):
     if not return_url:
         return
 
-    blob_url = _sign_gcp_blob_url('GET', '/'+real_container_name+'/'+dest_path, content_type, datetime.utcnow() + timedelta(hours=24*3000))
+    creds = ServiceAccountCredentials.from_json_keyfile_name(settings.GOOGLE_APPLICATION_CREDENTIALS)
+    blob_url = blob.generate_signed_url(timedelta(hours=24*3000), credentials=creds, version="v4")
     return blob_url, blob_url
 
 def _list_file_obj_from_gcp(dir_path, container):
-    bucket, _ = _gcp_bucket(container)
+    bucket = _gcp_bucket(container)
     return [ blob.name for blob in bucket.list_blobs(prefix=dir_path) ]
 
 def _retrieve_to_file_obj_from_gcp(src_path, file_obj, container):
-    bucket, _ = _gcp_bucket(container)
+    bucket = _gcp_bucket(container)
     blob = bucket.get_blob(src_path)
     if blob:
         blob.download_to_file(file_obj)
 
-def _sign_gcp_blob_url(verb, obj_path, content_type, expiration):
-    GCS_API_ENDPOINT = 'https://storage.googleapis.com'
-
-    expiration_in_epoch = int(expiration.timestamp())
-    signature_string = ('{verb}\n'
-                    '{content_md5}\n'
-                    '{content_type}\n'
-                    '{expiration}\n'
-                    '{resource}')
-
-    signature = signature_string.format(verb=verb,
-        content_md5='',
-        content_type='',
-        expiration=expiration_in_epoch,
-        resource=obj_path)
-    creds = ServiceAccountCredentials.from_json_keyfile_name(settings.GOOGLE_APPLICATION_CREDENTIALS)
-    signature = creds.sign_blob(signature)[1]
-    encoded_signature = base64.b64encode(signature)
-    base_url= GCS_API_ENDPOINT + obj_path
-    storage_account_id = creds.service_account_email
-
-    return '{base_url}?GoogleAccessId={account_id}&Expires={expiration}&Signature={signature}'.format(base_url=base_url,
-        account_id=storage_account_id,
-        expiration = expiration_in_epoch,
-        signature=quote(encoded_signature))
-
 def _gcp_bucket(container_name):
     if settings.BUCKET_PREFIX:
         container_name = settings.BUCKET_PREFIX + container_name
-    return GCP_CLIENT.bucket(container_name), container_name
+    return GCP_CLIENT.bucket(container_name)

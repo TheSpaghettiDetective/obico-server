@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ "x$1" = 'x-c' ]; then
   celery -A config worker -l info

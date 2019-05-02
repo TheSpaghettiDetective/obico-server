@@ -82,7 +82,7 @@
               <span class="caret"></span></a>
             <div class="dropdown-menu" aria-labelledby="themes">
                 <a class="dropdown-item" href="/user_preferences/">Preferences</a>
-              {% if not backends.associated %}
+              {% if not user.provider %}
               <a class="dropdown-item" href="/accounts/password/change">Change Password</a>
               {% endif %}
               <a class="dropdown-item" href="/accounts/logout/">Log out</a>

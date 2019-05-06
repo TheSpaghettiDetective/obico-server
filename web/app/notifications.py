@@ -45,8 +45,9 @@ def send_failure_alert_sms(printer, pause_print):
     from_number = settings.TWILIO_FROM_NUMBER
 
     to_number = printer.user.phone_country_code + printer.user.phone_number
-    msg = 'The Spaghetti Detective - Your print {} may be failing on {}. {}Go check it at: https://app.thespaghettidetective.com'.format(
+    msg = 'The Spaghetti Detective - Your print {} may be failing on {}. {}Go check it at: {}'.format(
         printer.current_print_filename or '',
         printer.name,
-        'Printer is paused. ' if pause_print else '')
+        'Printer is paused. ' if pause_print else '',
+        site.build_full_url('/'))
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)

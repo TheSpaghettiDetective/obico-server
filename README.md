@@ -61,7 +61,7 @@ sake, this document assumes the server port is 3334.
 
 ## Login as Django admin
 
-1. Open Django admin page at `http://your_serer_ip:3334/admin/`
+1. Open Django admin page at `http://your_server_ip:3334/admin/`
 
 2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 

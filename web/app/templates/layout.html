@@ -1,5 +1,6 @@
 {% load static %}
 {% load hijack_tags %}
+{%  load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -82,7 +83,8 @@
               <span class="caret"></span></a>
             <div class="dropdown-menu" aria-labelledby="themes">
                 <a class="dropdown-item" href="/user_preferences/">Preferences</a>
-              {% if not user.provider %}
+              {% get_social_accounts user as accounts %}
+              {% if not accounts  %}
               <a class="dropdown-item" href="/accounts/password/change">Change Password</a>
               {% endif %}
               <a class="dropdown-item" href="/accounts/logout/">Log out</a>
@@ -110,6 +112,7 @@
 
   <footer>
     <div class="container">
+      {{  user.provider }}
       <p>&copy; The Spaghetti Detective 2018. All Rights Reserved.</p>
     </div>
   </footer>

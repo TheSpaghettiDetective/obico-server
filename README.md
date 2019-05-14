@@ -13,7 +13,7 @@ If you otherwise prefer textual instructions, follow the steps below.
 ## Prerequisites
 
 The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). On that server, make sure
-the following softwares are installed:
+the following software is installed:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
@@ -46,8 +46,7 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 
 # Basic server configuration
 
-These are the bare minimum configuration required for the server to be functional.
-
+This is the bare minimum configuration required for the server to be functional.
 ## Obtain server's IP address
 
 The Spaghetti Detective server needs to have an IP address that is accessible by OctoPrint. It can be an private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and The Spaghetti Detective server.
@@ -63,7 +62,7 @@ sake, this document assumes the server port is 3334.
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`
 
-2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
+2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 
 ## Configure Django site
 
@@ -93,9 +92,9 @@ The following is using gmail as an example. Other web mail services may vary sli
 
 That's it! You now have a fully-functional The Spaghetti Detective server that your OctoPrint can talk to. We hope setting up the server has not been overwhelming.
 
-# Configure The Spagetti Detective OctoPrint Plugin to use your own server
+# Configure The Spaghetti Detective OctoPrint Plugin to use your own server
 
-Before you can configure The Spagetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spagetti Detective server you just built and obtain the secret token for that. To do so:
+Before you can configure The Spaghetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spaghetti Detective server you just built and obtain the secret token for that. To do so:
 
 1. Pointing your browser to `http://your_server_ip:3334/`.
 
@@ -105,7 +104,7 @@ Then, on The Spaghetti Detective plugin settings page:
 
 1. Check the box "I have my own TSD server. Don't check this unless you know what you are doing."
 
-2. Enter `http://your_serer_ip:3334/`. This time you need to enter both "http://" and the trailing "/". I know it's confusing but...
+2. Enter `http://your_server_ip:3334/`. This time you need to enter both "http://" and the trailing "/". I know it's confusing but...
 
 3. Enter the secret token you copied from the previous step.
 

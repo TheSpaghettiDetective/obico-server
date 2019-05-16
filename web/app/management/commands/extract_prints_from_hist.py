@@ -10,7 +10,7 @@ class Command( BaseCommand ):
 
     def handle(self, *args, **options):
         header_written = False
-        for pprint in Print.objects.iterator():
+        for pprint in Print.objects.all(force_visibility=True).iterator():
             alerts_hist = HistoricalPrinter.objects.filter(id=pprint.printer_id, current_print_started_at=pprint.started_at, current_print_alerted_at__isnull=False).order_by('-history_id')
             acks_hist = HistoricalPrinter.objects.filter(id=pprint.printer_id, current_print_started_at=pprint.started_at, alert_acknowledged_at__isnull=False).order_by('-history_id')
             alerted_at = alerts_hist[0].current_print_alerted_at if len(alerts_hist) > 0 else None

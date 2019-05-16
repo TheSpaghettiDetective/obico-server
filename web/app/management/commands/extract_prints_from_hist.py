@@ -9,14 +9,13 @@ class Command( BaseCommand ):
     help = 'Extract prints from history table'
 
     def handle(self, *args, **options):
-        prints = []
-        for pprint in Print.objects.all():
-            print(pprint)
+        header_written = False
+        for pprint in Print.objects.iterator():
             alerts_hist = HistoricalPrinter.objects.filter(id=pprint.printer_id, current_print_started_at=pprint.started_at, current_print_alerted_at__isnull=False).order_by('-history_id')
             acks_hist = HistoricalPrinter.objects.filter(id=pprint.printer_id, current_print_started_at=pprint.started_at, alert_acknowledged_at__isnull=False).order_by('-history_id')
             alerted_at = alerts_hist[0].current_print_alerted_at if len(alerts_hist) > 0 else None
             acked_at = acks_hist[0].alert_acknowledged_at if len(acks_hist) > 0 else None
-            prints += [dict(
+            row = dict(
                 printer_id=pprint.id,
                 started=pprint.started_at,
                 finished=pprint.finished_at,
@@ -31,8 +30,11 @@ class Command( BaseCommand ):
                 video_url=pprint.video_url,
                 tagged_video_url=pprint.tagged_video_url,
                 prediction_json_url=pprint.prediction_json_url,
-                )]
+                )
+            if not header_written:
+                w = csv.DictWriter(sys.stdout, row.keys())
+                w.writeheader()
+                header_written = True
+            w.writerow(row)
 
-        w = csv.DictWriter(sys.stdout, prints[0].keys())
-        w.writeheader()
-        w.writerows(prints)
+

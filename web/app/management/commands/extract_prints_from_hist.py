@@ -16,7 +16,7 @@ class Command( BaseCommand ):
             alerted_at = alerts_hist[0].current_print_alerted_at if len(alerts_hist) > 0 else None
             acked_at = acks_hist[0].alert_acknowledged_at if len(acks_hist) > 0 else None
             row = dict(
-                printer_id=pprint.id,
+                print_id=pprint.id,
                 started=pprint.started_at,
                 finished=pprint.finished_at,
                 cancelled=pprint.cancelled_at,

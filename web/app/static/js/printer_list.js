@@ -118,7 +118,7 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (printer.status && printer.current_print_alerted_at && !printer.alert_acknowledged_at) {
+        if (printer.status && printer.current_print && printer.current_print.alerted_at && !printer.current_print.alert_acknowledged_at) {
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();
@@ -128,8 +128,8 @@ $(document).ready(function () {
 
         updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
-        if (printer.status && printer.current_print_filename) {
-            printerCard.find("#print-file-name").text(printer.current_print_filename);
+        if (printer.status && printer.current_print) {
+            printerCard.find("#print-file-name").text(printer.current_print.filename);
             printerCard.find('.print-status button').prop('disabled', false);
         } else {
             printerCard.find("#print-file-name").text('-');

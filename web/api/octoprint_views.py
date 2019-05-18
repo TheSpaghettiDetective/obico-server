@@ -23,8 +23,10 @@ from .octoprint_messages import STATUS_TTL_SECONDS
 ALERT_COOLDOWN_SECONDS = 120
 
 def alert_if_needed(printer):
-    last_acknowledge = printer.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    if printer.current_print_alerted_at \
+    last_acknowledge = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    print(last_acknowledge)
+    print(printer.current_print.alerted_at)
+    if printer.current_print.alerted_at \
         or (timezone.now() - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return
 
@@ -67,7 +69,7 @@ class OctoPrintPicView(APIView):
         resp = req.json()
 
         detections = resp['detections']
-        prediction = PrinterPrediction.objects.get(printer=printer)
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
         update_prediction_with_detections(prediction, detections)
         prediction.save()
 

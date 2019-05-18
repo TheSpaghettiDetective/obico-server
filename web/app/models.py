@@ -78,11 +78,7 @@ class Printer(SafeDeleteModel):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    current_print_filename = models.CharField(max_length=1000, null=True, blank=True)
-    current_print_started_at = models.DateTimeField(null=True)
-    print_status_updated_at = models.DateTimeField(null=False, blank=False, auto_now_add=True)
-    current_print_alerted_at = models.DateTimeField(null=True)
-    alert_acknowledged_at = models.DateTimeField(null=True)
+    current_print = models.OneToOneField('Print', on_delete=models.SET_NULL, null=True, related_name='not_used')
     action_on_failure = models.CharField(
         max_length=10,
         choices=ACTION_ON_FAILURE,
@@ -112,51 +108,74 @@ class Printer(SafeDeleteModel):
         pic_data = redis.printer_pic_get(self.id)
         return dict_or_none(pic_data)
 
-    def set_current_print(self, filename):
-        if filename != self.current_print_filename:
-            self.current_print_filename = filename
-            self.current_print_started_at = timezone.now()
-            self.print_status_updated_at = timezone.now()
-            self.current_print_alerted_at = None
-            self.alert_acknowledged_at = None
-            self.save()
+    def update_current_print(self, filename, current_print_ts):
+        if current_print_ts == -1:      # Not printing
+            if self.current_print:
+                self.unset_current_print_with_ts()
+        else:                           # currently printing
+            if self.current_print:
+                if self.current_print.ext_id != current_print_ts:
+                    self.unset_current_print_with_ts()
+                    self.set_current_print_with_ts(filename, current_print_ts)
+            else:
+                self.set_current_print_with_ts(filename, current_print_ts)
 
-            self.printerprediction.reset_for_new_print()
+    def unset_current_print_with_ts(self):
+        if self.current_print.cancelled_at is None:
+            self.current_print.finished_at = timezone.now()
+        self.current_print.save()
+        self.current_print = None
+        self.save()
+
+        self.printerprediction.reset_for_new_print()
+
+    def set_current_print_with_ts(self, filename, current_print_ts):
+        if current_print_ts and current_print_ts != -1:
+            cur_print, _ = Print.objects.get_or_create(
+                printer=self,
+                ext_id=current_print_ts,
+                defaults={'filename': filename, 'started_at': timezone.now()},
+                )
+        else:
+            cur_print = Print.objects.create(
+                printer=self,
+                filename=filename,
+                started_at=timezone.now(),
+                )
+        self.current_print = cur_print
+        self.save()
+
+        self.printerprediction.reset_for_new_print()
+
+    ####
+    ## Backward compatibility. Old way of setting print without current_print_ts
+    #####
+    def set_current_print(self, filename):
+        if self.current_print:
+            if self.current_print.filename == filename:
+                return
+            else:
+                self.unset_current_print_with_ts()
+
+        self.set_current_print_with_ts(filename, None)
 
     def unset_current_print(self, cancelled):
-        if self.is_printing():  # was printing now it is not
-            print = Print(
-                printer=self,
-                filename=self.current_print_filename,
-                started_at=self.current_print_started_at,
-                )
+        if self.current_print:  # was printing now it is not
             if cancelled:
-                print.cancelled_at = timezone.now()
-            else:
-                print.finished_at = timezone.now()
-            print.save()
+                self.current_print.cancelled_at = timezone.now()
 
-            from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
-            compile_timelapse.delay(print.id)
+        self.unset_current_print_with_ts()
 
-            self.current_print_filename = None
-            self.current_print_started_at = None
-            self.print_status_updated_at = timezone.now()
-            self.current_print_alerted_at = None
-            self.alert_acknowledged_at = None
-            self.save()
-
-            self.printerprediction.reset_for_new_print()
-
+    ###### End of old way of setting/unsetting print
 
     def is_printing(self):
-        return self.current_print_filename and self.current_print_started_at
+        return self.current_print != None
 
     def resume_print(self, mute_alert=False):
         self.acknowledge_alert()
         if not mute_alert:
-            self.current_print_alerted_at = None   # reset current_print_alerted_at so that further alerts won't be surpressed.
-        self.save()
+            self.current_print.alerted_at = None   # reset alerted_at so that further alerts won't be surpressed.
+        self.current_print.save()
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
@@ -193,13 +212,13 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):
-        self.current_print_alerted_at = timezone.now()
-        self.alert_acknowledged_at = None
-        self.save()
+        self.current_print.alerted_at = timezone.now()
+        self.current_print.alert_acknowledged_at = None
+        self.current_print.save()
 
     def acknowledge_alert(self):
-        self.alert_acknowledged_at = timezone.now()
-        self.save()
+        self.current_print.alert_acknowledged_at = timezone.now()
+        self.current_print.save()
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
         if abort_existing:
@@ -281,10 +300,13 @@ class PublicTimelapse(models.Model):
 
 class Print(SafeDeleteModel):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
     started_at = models.DateTimeField(null=False, blank=False)
     finished_at = models.DateTimeField(null=True)
     cancelled_at = models.DateTimeField(null=True)
+    alerted_at = models.DateTimeField(null=True)
+    alert_acknowledged_at = models.DateTimeField(null=True)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)

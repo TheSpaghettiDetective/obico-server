@@ -179,7 +179,7 @@ class Printer(SafeDeleteModel):
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
-        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
+        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=10):
             return
 
         self.queue_octoprint_command('resume')
@@ -188,7 +188,7 @@ class Printer(SafeDeleteModel):
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
-        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
+        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=10):
             return
 
         args = {'retract': self.retract_on_pause, 'lift_z': self.lift_z_on_pause}

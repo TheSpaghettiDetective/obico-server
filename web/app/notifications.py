@@ -17,7 +17,7 @@ def send_failure_alert_email(printer, pause_print):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
-    subject = 'Your print {} may be failing on {}'.format(printer.current_print_filename or '', printer.name)
+    subject = 'Your print {} may be failing on {}'.format(printer.current_print.filename or '', printer.name)
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
@@ -46,7 +46,7 @@ def send_failure_alert_sms(printer, pause_print):
 
     to_number = printer.user.phone_country_code + printer.user.phone_number
     msg = 'The Spaghetti Detective - Your print {} may be failing on {}. {}Go check it at: {}'.format(
-        printer.current_print_filename or '',
+        printer.current_print.filename or '',
         printer.name,
         'Printer is paused. ' if pause_print else '',
         site.build_full_url('/'))

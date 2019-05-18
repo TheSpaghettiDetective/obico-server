@@ -49,7 +49,6 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
                 channels.commands_group_name(self.current_printer().id),
                 self.channel_name
             )
-            redis.printer_settings_set(self.current_printer().id, {'using_ws': 'True'})
             # self.accept('binary')
             # self.accept('base64')
             self.accept()

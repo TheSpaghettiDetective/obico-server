@@ -11,9 +11,6 @@ def status_group_name(printer_id):
     return 'p_sts_{}'.format(printer_id)
 
 def send_commands_to_group(printer_id):
-    if not redis.printer_settings_get(printer_id, 'using_ws'):
-        return
-
     commands = PrinterCommand.objects.filter(printer_id=printer_id, status=PrinterCommand.PENDING)
     if not commands:
         return

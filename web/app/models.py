@@ -164,7 +164,7 @@ class Printer(SafeDeleteModel):
             if cancelled:
                 self.current_print.cancelled_at = timezone.now()
 
-        self.unset_current_print_with_ts()
+            self.unset_current_print_with_ts()
 
     ###### End of old way of setting/unsetting print
 
@@ -182,10 +182,7 @@ class Printer(SafeDeleteModel):
         if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=60):
             return
 
-        # TODO: remove me after 0.4.0 is not in use
-        self.queue_octoprint_command('restore_temps')
-
-        self.queue_octoprint_command('resume', abort_existing=False)
+        self.queue_octoprint_command('resume')
 
     def pause_print(self):
 
@@ -200,12 +197,6 @@ class Printer(SafeDeleteModel):
         if self.bed_off_on_pause:
             args['bed_off'] = True
         self.queue_octoprint_command('pause', args=args)
-
-        # TODO: remove me after 0.4.0 is not in use
-        if self.tools_off_on_pause:
-            self.queue_octoprint_command('set_temps', args={'heater': 'tools', 'target': 0, 'save': True}, abort_existing=False)
-        if self.bed_off_on_pause:
-            self.queue_octoprint_command('set_temps', args={'heater': 'bed', 'target': 0, 'save': True}, abort_existing=False)
 
     def cancel_print(self):
         self.acknowledge_alert()

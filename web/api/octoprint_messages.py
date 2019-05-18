@@ -20,7 +20,7 @@ def process_octoprint_status(printer, status):
 
         # No event. Fall back to using octoprint_data.
         # But we wait for a period because octoprint_data can be out of sync with octoprint_event briefly and cause race condition
-        if (timezone.now() - printer.current_print.updated_at).total_seconds() < 60:
+        if printer.current_print and (timezone.now() - printer.current_print.updated_at).total_seconds() < 60:
             return None, None, None
 
         octoprint_data = op_status.get('octoprint_data', {})

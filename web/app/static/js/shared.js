@@ -16,13 +16,13 @@ function updateGauge(gaugeEle, p) {
     gaugeEle.attr('data-value', scaledP);
     if (scaledP > 66) {
         gaugeEle.attr('data-title', 'Failing!');
-        gaugeEle.attr('data-color-title', 'rgba(255,30,0,.75)');
+        gaugeEle.attr('data-color-title', '#d9534f');
     } else if (scaledP > 33) {
         gaugeEle.attr('data-title', 'Fishy...');
-        gaugeEle.attr('data-color-title', 'rgb(255,165,0,.75)');
+        gaugeEle.attr('data-color-title', '#f0ad4e');
     } else {
         gaugeEle.attr('data-title', 'Looking Good');
-        gaugeEle.attr('data-color-title', 'rgba(0,255,30,.75)');
+        gaugeEle.attr('data-color-title', '#5cb85c');
     }
 }
 

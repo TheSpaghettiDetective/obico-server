@@ -24,9 +24,8 @@ ALERT_COOLDOWN_SECONDS = 120
 
 def alert_if_needed(printer):
     last_acknowledge = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    print(last_acknowledge)
-    print(printer.current_print.alerted_at)
     if printer.current_print.alerted_at \
+        or printer.current_print.alert_muted_at \
         or (timezone.now() - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
         return
 

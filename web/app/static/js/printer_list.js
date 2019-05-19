@@ -81,9 +81,8 @@ $(document).ready(function () {
         });
 
         printerCard.find('input.alert-toggle').on('change', function (e) {
-            var alertOff = $(this).is(':checked');
-            printerGet(printerId, '/toggle_current_print_alert/?alert_off=' + alertOff, function(result) {
-                var printer = JSON.parse(result);
+            var muteAlert = $(this).is(':checked');
+            printerGet(printerId, '/mute_current_print/?mute_alert=' + muteAlert, function(printer) {
                 updatePrinterCard(printer, printerCard);
             });
         });
@@ -130,10 +129,16 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
-        if (printer.status && printer.current_print && printer.current_print.alerted_at && !printer.current_print.alert_acknowledged_at) {
+        if (printer.current_print && printer.current_print.alerted_at && !printer.current_print.alert_acknowledged_at) {
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();
+        }
+
+        if (printer.current_print) {
+            printerCard.find(".mute-toggle").show();
+        } else {
+            printerCard.find(".mute-toggle").hide();
         }
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
@@ -156,5 +161,7 @@ $(document).ready(function () {
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
         printerCard.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
+
+        printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
     }
 });

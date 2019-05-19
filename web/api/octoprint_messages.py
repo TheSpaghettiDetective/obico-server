@@ -52,7 +52,8 @@ def process_octoprint_status(printer, status):
 
     octoprint_data = status.get('octoprint_data', {})
     seconds_left = octoprint_data.get('progress', {}).get('printTimeLeft') or -1
-    redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left}, ex=STATUS_TTL_SECONDS)
+    seconds_total = octoprint_data.get('progress', {}).get('printTime') or -1
+    redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left, 'seconds_total': seconds_total}, ex=STATUS_TTL_SECONDS)
 
     if status.get('current_print_ts'): # New plugin version that passes current_print_ts
         process_octoprint_status_with_ts(status, printer)

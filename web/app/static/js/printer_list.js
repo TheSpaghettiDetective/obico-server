@@ -171,7 +171,11 @@ $(document).ready(function () {
         }
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
-        printerCard.find("#time-left").text((secondsLeft > 0) ? moment.duration(secondsLeft, 'seconds').humanize() : '-');
+        var secondsTotal = _.get(printer, 'status.seconds_total', -1);
+        var timeText = (secondsLeft > 0 && secondsTotal > 0)
+            ?  moment.duration(secondsLeft, "seconds").humanize() + " remaining / " + moment.duration(secondsTotal, "seconds").humanize() + " total"
+            : ' - ';
+        printerCard.find("#time-left").text(timeText);
 
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
     }

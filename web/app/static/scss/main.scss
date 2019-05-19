@@ -260,7 +260,7 @@ hr {
           margin-bottom: -150px;
         }
 
-        &.banner {
+        &.failure-alert {
           padding: .65em 1em;
           a {
             color: darken($color-primary, 20);
@@ -269,6 +269,9 @@ hr {
             }
           }
         }
+      }
+      .mute-toggle {
+        text-align: center;
       }
   }
 }

@@ -33,16 +33,10 @@
           </div>
         </div>
       </div>
-      <div class="failure-alert card-body banner bg-warning text-center" style="display: none">
+      <div class="failure-alert card-body bg-warning text-center" style="display: none">
         <i class="fas fa-exclamation-triangle"></i>
         Failure Detected!
         <a id="not-a-failure" href="#">Not a failure?</a>
-      </div>
-      <div class="mute-toggle card-body banner" style="display: none">
-        <div class="custom-control custom-switch">
-          <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
-          <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for current print</label>
-        </div>
       </div>
       <div class="card-body">
         <div class="text-center gauge">
@@ -79,18 +73,16 @@
           data-borders="false"></canvas>
         </div>
         <hr />
+        <div class="mute-toggle" style="display: none">
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
+            <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for this print</label>
+          </div>
+        </div>
         <div class="print-status container">
           <div class="row">
-            <div class="text-muted col-sm-3">
-              File:
-            </div>
-            <div id="print-file-name" class="col-sm-9">
-              -
-            </div>
-          </div>
-          <div class="row">
-            <div class="text-muted col-sm-3">
-              Time left:
+            <div class="text-muted col-sm-2">
+                <i class="far fa-clock"></i>
             </div>
             <div id="time-left" class="col-sm-9">
               -

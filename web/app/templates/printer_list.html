@@ -18,8 +18,6 @@
               <a id="delete-print" class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt fa-lg"></i>Delete</a>
             </div>
           </div>
-
-
         </div>
       </div>
       <div class="card-img-top webcam_container">
@@ -34,12 +32,12 @@
           </div>
         </div>
       </div>
-      <div class="card-body banner bg-warning text-center" style="display: none">
+      <div class="failure-alert card-body banner bg-warning text-center" style="display: none">
         <i class="fas fa-exclamation-triangle"></i>
         Failure Detected!
         <a id="not-a-failure" href="#">Not a failure?</a>
       </div>
-      <div class="card-body banner">
+      <div class="mute-toggle card-body banner" style="display: none">
         <div class="custom-control custom-switch">
           <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
           <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for current print</label>

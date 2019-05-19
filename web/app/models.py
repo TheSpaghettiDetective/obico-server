@@ -173,9 +173,8 @@ class Printer(SafeDeleteModel):
 
     def resume_print(self, mute_alert=False):
         self.acknowledge_alert()
-        if not mute_alert:
-            self.current_print.alerted_at = None   # reset alerted_at so that further alerts won't be surpressed.
-        self.current_print.save()
+        if mute_alert:
+            self.mute_current_print(True)
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
@@ -208,13 +207,12 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
     def acknowledge_alert(self):
+        self.current_print.alerted_at = None
         self.current_print.alert_acknowledged_at = timezone.now()
         self.current_print.save()
 
-    def toggle_current_print_alert(self, alert_off):
-        if not self.current_print:
-            return
-        self.current_print.alert_off = alert_off
+    def mute_current_print(self, muted):
+        self.current_print.alert_muted_at = timezone.now() if muted else None
         self.current_print.save()
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
@@ -304,7 +302,7 @@ class Print(SafeDeleteModel):
     cancelled_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
-    alert_off = models.BooleanField(default=False)
+    alert_muted_at = models.DateTimeField(null=True)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)

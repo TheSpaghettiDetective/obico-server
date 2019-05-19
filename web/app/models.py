@@ -310,6 +310,9 @@ class Print(SafeDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    if os.environ.get('ENALBE_HISTORY', '') == 'True':
+        history = HistoricalRecords()
+
     def ended_at(self):
         return self.cancelled_at or self.finished_at
 

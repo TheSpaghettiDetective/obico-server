@@ -211,6 +211,12 @@ class Printer(SafeDeleteModel):
         self.current_print.alert_acknowledged_at = timezone.now()
         self.current_print.save()
 
+    def toggle_current_print_alert(self, alert_off):
+        if not self.current_print:
+            return
+        self.current_print.alert_off = alert_off
+        self.current_print.save()
+
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
         if abort_existing:
             PrinterCommand.objects.filter(printer=self, status=PrinterCommand.PENDING).update(status=PrinterCommand.ABORTED)
@@ -298,6 +304,7 @@ class Print(SafeDeleteModel):
     cancelled_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
+    alert_off = models.BooleanField(default=False)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)

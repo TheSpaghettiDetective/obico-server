@@ -61,7 +61,7 @@ $(document).ready(function () {
                 printCard.find('.plain-view').show();
                 printCard.find('.detective-view').hide();
             }
-        })
+        });
     });
 
     function updateBtns() {

@@ -34,10 +34,16 @@
           </div>
         </div>
       </div>
-      <div class="failure-alert card-body bg-warning text-center" style="display: none">
+      <div class="card-body banner bg-warning text-center" style="display: none">
         <i class="fas fa-exclamation-triangle"></i>
         Failure Detected!
         <a id="not-a-failure" href="#">Not a failure?</a>
+      </div>
+      <div class="card-body banner">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
+          <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for current print</label>
+        </div>
       </div>
       <div class="card-body">
         <div class="text-center gauge">

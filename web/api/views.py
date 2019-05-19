@@ -21,24 +21,31 @@ class PrinterViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
         self.current_printer_or_404(pk).cancel_print()
-        return self.send_response(pk)
+        return self.send_command_response(pk)
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
         self.current_printer_or_404(pk).pause_print()
-        return self.send_response(pk)
+        return self.send_command_response(pk)
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
         self.current_printer_or_404(pk).resume_print(mute_alert=request.GET.get('mute_alert', None))
-        return self.send_response(pk)
+        return self.send_command_response(pk)
+
+    @action(detail=True, methods=['get'])
+    def toggle_current_print_alert(self, request, pk=None):
+        printer = self.current_printer_or_404(pk)
+        printer.toggle_current_print_alert(request.GET.get('alert_off', 'false').lower() == 'true')
+        serializer = PrinterSerializer(printer)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def acknowledge_alert(self, request, pk=None):
         self.current_printer_or_404(pk).acknowledge_alert()
-        return self.send_response(pk)
+        return self.send_command_response(pk)
 
-    def send_response(self, pk):
+    def send_command_response(self, pk):
         send_commands_to_group(pk)
         return Response({'status': 'OK'})
 

@@ -44,12 +44,16 @@ $(document).ready(function () {
     });
     openPrinterWebSockets();
 
-    function sendPrinterCommand(printerId, command) {
+    function printerGet(printerId, uri, callback) {
         $.ajax({
-            url: '/api/printers/' + printerId + command,
+            url: '/api/printers/' + printerId + uri,
             type: 'GET',
             dataType: 'json',
-        }).done(function () {
+        }).done(function(result) { callback(result); });
+    }
+
+    function sendPrinterCommand(printerId, command) {
+        printerGet(printerId, command, function () {
             Toast.fire({
                 type: 'success',
                 title: 'Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.',
@@ -73,6 +77,14 @@ $(document).ready(function () {
                 if (result.value) {  // When it is confirmed
                     sendPrinterCommand(printerId, '/cancel_print/');
                 }
+            });
+        });
+
+        printerCard.find('input.alert-toggle').on('change', function (e) {
+            var alertOff = $(this).is(':checked');
+            printerGet(printerId, '/toggle_current_print_alert/?alert_off=' + alertOff, function(result) {
+                var printer = JSON.parse(result);
+                updatePrinterCard(printer, printerCard);
             });
         });
 

@@ -255,7 +255,8 @@ hr {
   .printer-card .card-body .container-fluid {
     padding: 0px; }
   .printer-card .card-body .gauge {
-    padding: 8px; }
+    padding: 8px;
+    margin-bottom: -150px; }
   .printer-card .card-body.banner {
     padding: .65em 1em; }
     .printer-card .card-body.banner a {

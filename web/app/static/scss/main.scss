@@ -232,26 +232,44 @@ hr {
 
   .card {
     border: none;
-  }
-  .card-body {
-    .container-fluid {
-      padding: 0px;
-    }
+      .card-header {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
 
-    .gauge {
-      padding: 8px;
-      margin-bottom: -150px;
-    }
-
-    &.banner {
-      padding: .65em 1em;
-      a {
-        color: darken($color-primary, 20);
-        &:hover {
-          color: darken($color-primary, 35);
+        .title-box {
+          display: flex;
+          flex-flow: column nowrap;
+        }
+        .primary-title {
+          font-weight: bolder;
+        }
+        .secondary-title {
+          font-weight: lighter;
+          font-size: 0.8em;
         }
       }
-    }
+      .card-body {
+        .container-fluid {
+          padding: 0px;
+        }
+
+        .gauge {
+          padding: 8px;
+          margin-bottom: -150px;
+        }
+
+        &.banner {
+          padding: .65em 1em;
+          a {
+            color: darken($color-primary, 20);
+            &:hover {
+              color: darken($color-primary, 35);
+            }
+          }
+        }
+      }
   }
 }
 

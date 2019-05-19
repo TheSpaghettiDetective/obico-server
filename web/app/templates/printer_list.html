@@ -8,15 +8,16 @@
   <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card">
     <div class="card">
       <div class="card-header">
-        <div class="float-left">{{ printer.name }}</div>
-        <div class="float-right">
-          <div class="dropdown">
-            <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-              aria-haspopup="true"><i class="fas fa-ellipsis-v"></i></button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
-              <a id="delete-print" class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt fa-lg"></i>Delete</a>
-            </div>
+        <div class="title-box">
+          <div class="primary-title print-filename"></div>
+          <div class="printer-name">{{ printer.name }}</div>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true"><i class="fas fa-ellipsis-v"></i></button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
+            <a id="delete-print" class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt fa-lg"></i>Delete</a>
           </div>
         </div>
       </div>
@@ -65,7 +66,7 @@
                           ]'
           data-color-plate="rgba(255,255,255,.0)"
           data-color-title="#5cb85c"
-          data-color-units="#ccc"
+          data-color-stroke-ticks="#EBEBEB"
           data-color-numbers="#eee"
           data-color-needle-start="rgba(240, 128, 128, 1)"
           data-color-needle-end="rgba(255, 160, 122, .9)"
@@ -75,7 +76,7 @@
           data-animated-value="true"
           data-start-angle="90"
           data-ticks-angle="180"
-          data-borders="false" />
+          data-borders="false"></canvas>
         </div>
         <hr />
         <div class="print-status container">

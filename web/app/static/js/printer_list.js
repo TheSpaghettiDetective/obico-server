@@ -129,6 +129,17 @@ $(document).ready(function () {
 
     function updatePrinterCard(printer, printerCard) {
 
+        var printFilenameDiv = printerCard.find(".print-filename");
+        var printerNameDiv = printerCard.find(".printer-name");
+        if (printer.current_print && printer.current_print.filename) {
+            printFilenameDiv.text(printer.current_print.filename);
+            printFilenameDiv.show();
+            printerNameDiv.addClass("secondary-title");
+        } else {
+            printFilenameDiv.hide();
+            printerNameDiv.removeClass("secondary-title");
+        }
+
         if (printer.current_print && printer.current_print.alerted_at && !printer.current_print.alert_acknowledged_at) {
             printerCard.find(".failure-alert").show();
         } else {

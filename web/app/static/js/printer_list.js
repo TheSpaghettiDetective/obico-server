@@ -155,7 +155,7 @@ $(document).ready(function () {
 
         printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
 
-        updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
+        updateGauge(printerCard.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
         if (printer.status && printer.current_print) {
             printerCard.find('.print-status button').prop('disabled', false);

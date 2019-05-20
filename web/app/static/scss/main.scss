@@ -156,6 +156,11 @@ hr {
   }
 }
 
+.gauge {
+  padding: 8px;
+  margin-bottom: -150px;
+}
+
 /** Webcam */
 
 .webcam_container {
@@ -253,11 +258,6 @@ hr {
       .card-body {
         .container-fluid {
           padding: 0px;
-        }
-
-        .gauge {
-          padding: 8px;
-          margin-bottom: -150px;
         }
 
         &.failure-alert {
@@ -484,9 +484,6 @@ form#printer_form {
         }
       }
     }
-  }
-  .gauge {
-    padding: 1.2rem 0rem 0rem;
   }
 
   h1 {

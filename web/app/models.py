@@ -173,9 +173,10 @@ class Printer(SafeDeleteModel):
         return self.current_print != None
 
     def resume_print(self, mute_alert=False):
-        self.acknowledge_alert()
-        if mute_alert:
-            self.mute_current_print(True)
+        if self.is_printing():          # when a link on an old email is clicked
+            self.acknowledge_alert()
+            if mute_alert:
+                self.mute_current_print(True)
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
@@ -199,7 +200,8 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('pause', args=args)
 
     def cancel_print(self):
-        self.acknowledge_alert()
+        if self.is_printing():
+            self.acknowledge_alert()
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):

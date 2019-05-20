@@ -131,6 +131,7 @@ $(document).ready(function () {
 
         var printFilenameDiv = printerCard.find(".print-filename");
         var printerNameDiv = printerCard.find(".printer-name");
+
         if (printer.current_print && printer.current_print.filename) {
             printFilenameDiv.text(printer.current_print.filename);
             printFilenameDiv.show();
@@ -157,10 +158,8 @@ $(document).ready(function () {
         updateGauge(printerCard.find('#tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
         if (printer.status && printer.current_print) {
-            printerCard.find("#print-file-name").text(printer.current_print.filename);
             printerCard.find('.print-status button').prop('disabled', false);
         } else {
-            printerCard.find("#print-file-name").text('-');
             printerCard.find('.print-status button').prop('disabled', true);
         }
 
@@ -172,10 +171,12 @@ $(document).ready(function () {
 
         var secondsLeft = _.get(printer, 'status.seconds_left', -1);
         var secondsTotal = _.get(printer, 'status.seconds_total', -1);
-        var timeText = (secondsLeft > 0 && secondsTotal > 0)
-            ?  moment.duration(secondsLeft, "seconds").humanize() + " remaining / " + moment.duration(secondsTotal, "seconds").humanize() + " total"
-            : ' - ';
-        printerCard.find("#time-left").text(timeText);
+        if (secondsLeft > 0 && secondsTotal > 0) {
+            printerCard.find(".print-time").show();
+            printerCard.find(".time-left").text(moment.duration(secondsLeft, "seconds").humanize() + " remaining / " + moment.duration(secondsTotal, "seconds").humanize() + " total");
+        } else {
+            printerCard.find(".print-time").hide();
+        }
 
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
     }

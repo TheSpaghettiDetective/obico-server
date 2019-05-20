@@ -39,6 +39,12 @@
         <a id="not-a-failure" href="#">Not a failure?</a>
       </div>
       <div class="card-body">
+        <div class="mute-toggle" style="display: none">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
+              <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for this print</label>
+            </div>
+          </div>
         <div class="text-center gauge">
           <canvas id='tangle-index'
           data-type="radial-gauge"
@@ -73,27 +79,17 @@
           data-borders="false"></canvas>
         </div>
         <hr />
-        <div class="mute-toggle" style="display: none">
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
-            <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for this print</label>
-          </div>
-        </div>
         <div class="print-status container">
           <div class="row">
-            <div class="text-muted col-sm-2">
-                <i class="far fa-clock"></i>
-            </div>
-            <div id="time-left" class="col-sm-9">
-              -
+            <div class="col-sm-12">
+                <div class="print-time"><i class="far fa-clock text-muted"></i><span class="time-left"></span></div>
             </div>
           </div>
-          <br />
           <div class="row">
-            <div class="col-6">
+            <div class="col-sm-6">
               <button id="print-pause-resume" type="button" class="btn btn-warning btn-block" disabled>Pause</button>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
               <button id="print-cancel" type="button" class="btn btn-danger btn-block" disabled>Cancel</button>
             </div>
           </div>

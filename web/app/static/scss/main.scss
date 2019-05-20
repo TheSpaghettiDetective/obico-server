@@ -270,8 +270,18 @@ hr {
           }
         }
       }
+
       .mute-toggle {
-        text-align: center;
+        margin-top: -0.75rem;
+      }
+
+      .print-status {
+        .row {
+          padding-top: 1.5em;
+        }
+        .time-left {
+          padding-left: 1em;
+        }
       }
   }
 }

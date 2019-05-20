@@ -307,7 +307,7 @@ class Print(SafeDeleteModel):
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)
-    prediction_json_url = models.CharField(max_length=2000, null=True)
+    prediction_json_url = models.CharField(max_length=2000, db_index=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -133,4 +133,3 @@ docker-compose.override.yml
 
 /gcp-key
 /ml_api/model/model.weights
-/web/app/static/css/app.css

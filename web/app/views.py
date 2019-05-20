@@ -102,7 +102,7 @@ def user_preferences(request):
 
 @login_required
 def prints(request):
-    prints = get_prints(request).order_by('-id')
+    prints = get_prints(request).filter(prediction_json_url__isnull=False).order_by('-id')
     page_obj = get_paginator(prints, request, 9)
     prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))

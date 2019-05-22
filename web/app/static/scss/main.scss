@@ -246,6 +246,13 @@ hr {
         .title-box {
           display: flex;
           flex-flow: column nowrap;
+          max-width: 90%;
+
+          .printer-name, .print-filename {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
         }
         .primary-title {
           font-weight: bolder;

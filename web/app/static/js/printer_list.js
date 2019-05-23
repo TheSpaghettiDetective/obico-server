@@ -173,7 +173,18 @@ $(document).ready(function () {
         var secondsTotal = _.get(printer, 'status.seconds_total', -1);
         if (secondsLeft > 0 && secondsTotal > 0) {
             printerCard.find(".print-time").show();
-            printerCard.find(".time-left").text(moment.duration(secondsLeft, "seconds").humanize() + " remaining / " + moment.duration(secondsTotal, "seconds").humanize() + " total");
+            printerCard.find(".time-left").text(moment.duration(secondsLeft, "seconds").humanize());
+            printerCard.find(".time-total").text(moment.duration(secondsTotal, "seconds").humanize());
+        } else {
+            printerCard.find(".print-time").hide();
+        }
+
+        var secondsLeft = _.get(printer, 'status.seconds_left', -1);
+        var secondsTotal = _.get(printer, 'status.seconds_total', -1);
+        if (secondsLeft > 0 && secondsTotal > 0) {
+            printerCard.find(".print-time").show();
+            printerCard.find(".time-left").text(moment.duration(secondsLeft, "seconds").humanize());
+            printerCard.find(".time-total").text(moment.duration(secondsTotal, "seconds").humanize());
         } else {
             printerCard.find(".print-time").hide();
         }

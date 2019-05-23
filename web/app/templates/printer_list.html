@@ -81,10 +81,51 @@
         <hr />
         <div class="print-status container">
           <div class="row">
-            <div class="col-sm-12">
-                <div class="print-time"><i class="far fa-clock text-muted"></i><span class="time-left"></span></div>
+            <div class="col-5 offset-2">
+                <i class="far fa-clock text-muted"></i> Remaining
+            </div>
+            <div class="col-5">
+                <i class="far fa-clock text-muted"></i> Total
             </div>
           </div>
+          <div class="row">
+            <div class="col-5 offset-2">
+                <div class="time-left"></div>
+            </div>
+            <div class="col-5">
+                <div class="time-total"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-5 offset-2">
+                <i class="fas fa-thermometer-half"></i> Actual
+            </div>
+            <div class="col-5">
+                <i class="fas fa-thermometer-half"></i> Target
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              Bed
+            </div>
+            <div class="col-5">
+                <div class="temp-actual">51.3°</div>
+            </div>
+            <div class="col-5">
+                <div class="temp-target">60°</div>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col-2">
+                  Tool 0
+                </div>
+              <div class="col-5">
+                  <div class="temp-actual">197.3°</div>
+              </div>
+              <div class="col-5">
+                  <div class="temp-target">210°</div>
+              </div>
+            </div>
           <div class="row">
             <div class="col-sm-6">
               <button id="print-pause-resume" type="button" class="btn btn-warning btn-block" disabled>Pause</button>

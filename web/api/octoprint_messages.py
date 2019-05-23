@@ -1,4 +1,5 @@
 from django.utils import timezone
+import json
 
 from lib import redis
 from lib import channels
@@ -51,9 +52,13 @@ def process_octoprint_status(printer, status):
         redis.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
     octoprint_data = status.get('octoprint_data', {})
-    seconds_left = octoprint_data.get('progress', {}).get('printTimeLeft') or -1
-    seconds_total = octoprint_data.get('progress', {}).get('printTime') or -1
-    redis.printer_status_set(printer.id, {'text': octoprint_data.get('state', {}).get('text'), 'seconds_left': seconds_left, 'seconds_total': seconds_total}, ex=STATUS_TTL_SECONDS)
+    octoprint_status = dict(
+        status_text=octoprint_data.get('state', {}).get('text'),
+        seconds_left=octoprint_data.get('progress', {}).get('printTimeLeft') or -1,
+        seconds_total=octoprint_data.get('progress', {}).get('printTime') or -1,
+        temps=status.get('octoprint_temps', {})
+    )
+    redis.printer_status_set(printer.id, json.dumps(octoprint_status))
 
     if status.get('current_print_ts'): # New plugin version that passes current_print_ts
         process_octoprint_status_with_ts(status, printer)

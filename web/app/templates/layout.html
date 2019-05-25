@@ -1,5 +1,6 @@
 {% load static %}
 {% load hijack_tags %}
+{%  load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -82,6 +83,10 @@
               <span class="caret"></span></a>
             <div class="dropdown-menu" aria-labelledby="themes">
                 <a class="dropdown-item" href="/user_preferences/">Preferences</a>
+              {% get_social_accounts user as accounts %}
+              {% if not accounts  %}
+              <a class="dropdown-item" href="/accounts/password/change">Change Password</a>
+              {% endif %}
               <a class="dropdown-item" href="/accounts/logout/">Log out</a>
             </div>
           </li>

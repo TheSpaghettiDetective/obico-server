@@ -49,7 +49,7 @@ footer {
 }
 
 hr {
-  background-color: grey;
+  background-color: $color-form-bg;
 }
 
 
@@ -236,59 +236,69 @@ hr {
 
   .card {
     border: none;
-      .card-header {
+    .card-header {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+
+      .title-box {
         display: flex;
-        flex-flow: row nowrap;
-        justify-content: space-between;
-        align-items: center;
+        flex-flow: column nowrap;
+        max-width: 90%;
 
-        .title-box {
-          display: flex;
-          flex-flow: column nowrap;
-          max-width: 90%;
-
-          .printer-name, .print-filename {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-        .primary-title {
-          font-weight: bolder;
-        }
-        .secondary-title {
-          font-weight: lighter;
-          font-size: 0.8em;
+        .printer-name, .print-filename {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
-      .card-body {
-        .container-fluid {
-          padding: 0px;
-        }
+      .primary-title {
+        font-weight: bolder;
+      }
+      .secondary-title {
+        font-weight: lighter;
+        font-size: 0.8em;
+      }
+    }
+    .card-body {
+      .container-fluid {
+        padding: 0px;
+      }
 
-        &.failure-alert {
-          padding: .65em 1em;
-          a {
-            color: darken($color-primary, 20);
-            &:hover {
-              color: darken($color-primary, 35);
-            }
+      &.failure-alert {
+        padding: .65em 1em;
+        a {
+          color: darken($color-primary, 20);
+          &:hover {
+            color: darken($color-primary, 35);
           }
         }
       }
+    }
 
-      .mute-toggle {
-        margin-top: -0.75rem;
-      }
+    .mute-toggle {
+      margin-top: -0.75rem;
+    }
 
-      .print-status {
-        .row {
-          padding-top: 1.5em;
-        }
-        .time-left {
-          padding-left: 1em;
+    .print-status {
+      .row {
+        padding: 0.3em 0em 0.1em;
+        text-align: center;
+        &.temp-header {
+          border-bottom: 1px solid $color-form-bg;
         }
       }
+      .time-left {
+        padding-left: 1em;
+      }
+      .numbers {
+        font-size: 1.8em;
+      }
+      .text-subscript {
+        font-size: 0.8rem;
+      }
+    }
   }
 }
 
@@ -538,7 +548,7 @@ form#printer_form {
   padding: 2rem 0rem;
   .token {
     padding: 1.5rem 3rem 2.5rem;
-    border: gray thin dashed;
+    border: $color-form-bg thin dashed;
     margin-bottom: 2rem;
     text-align: center;
 

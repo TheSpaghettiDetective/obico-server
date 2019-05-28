@@ -190,5 +190,19 @@ $(document).ready(function () {
         }
 
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
+
+        var temperatures = [];
+        ['bed', 'tool0', 'tool1'].forEach( function(tempKey) {
+            var temp = _.get(printer, 'status.temperatures.' + tempKey);
+            if (temp) {
+                temp.actual = parseFloat(temp.actual).toFixed(1);
+                temp.target = parseFloat(temp.target).toFixed();
+                Object.assign(temp, {toolName: _.capitalize(tempKey)});
+                temperatures.push(temp);
+            }
+        });
+
+        template = Mustache.template('status_temp');
+        $("#status_temp_block").html(template.render({temperatures: temperatures}));
     }
 });

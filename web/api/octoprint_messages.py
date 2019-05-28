@@ -56,7 +56,7 @@ def process_octoprint_status(printer, status):
         status_text=octoprint_data.get('state', {}).get('text'),
         seconds_left=octoprint_data.get('progress', {}).get('printTimeLeft') or -1,
         seconds_total=octoprint_data.get('progress', {}).get('printTime') or -1,
-        temps=status.get('octoprint_temps', {})
+        temperatures=status.get('octoprint_temperatures', {})
     )
     redis.printer_status_set(printer.id, json.dumps(octoprint_status))
 

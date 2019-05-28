@@ -39,6 +39,10 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
 
+  <!-- Mustache should be loaded before html body or else there will be errors. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+  <script type="text/javascript" src="{% static 'vendor/js/django.mustache.js' %}"></script>
+
   {% for extrajs in settings.EXTRA_JS %}
   <script async src={{extrajs}}></script>
   {% endfor %}

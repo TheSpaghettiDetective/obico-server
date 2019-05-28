@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load jstemplate %}
 
 {% block content %}
+
+{% mustachejs "status_temp" %}
 
 <div class="row justify-content-center">
   {% for printer in printers %}
@@ -88,27 +91,18 @@
                 <i class="far fa-clock text-muted"></i> Total: <span class="time-total"></span>
             </div>
           </div>
-          <div class="row">
-            <div class="col-2">
-              Bed
+          <div class="row text-subscript text-muted temp-header">
+              <div class="col-3">
+                <i class="fas fa-thermometer-half fa-lg"></i>
+              </div>
+              <div class="col-5">
+                  Actual
+              </div>
+              <div class="col-4">
+                  Target
+              </div>
             </div>
-            <div class="col-5">
-                <i class="fas fa-thermometer-half"></i> Actual: <span class="temp-actual">51.3°</span>
-            </div>
-            <div class="col-5">
-                <i class="fas fa-thermometer-half"></i> Target: <span class="temp-target">60°</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-2">
-              Tool 0
-            </div>
-            <div class="col-5">
-                <i class="fas fa-thermometer-half"></i> Actual: <span class="temp-actual">192.5°</span>
-            </div>
-            <div class="col-5">
-                <i class="fas fa-thermometer-half"></i> Target: <span class="temp-target">210°</span>
-            </div>
+          <div id="status_temp_block">
           </div>
           <div class="row">
             <div class="col-sm-6">

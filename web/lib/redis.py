@@ -7,19 +7,14 @@ REDIS = redis.Redis.from_url(settings.REDIS_URL, charset="utf-8", decode_respons
 def printer_key_prefix(printer_id):
     return 'printer:{}:'.format(printer_id)
 
-def printer_status_set(printer_id, mapping, ex=None):
-    cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
+def printer_status_set(printer_id, status, ex=None):
     prefix = printer_key_prefix(printer_id) + 'status'
-    REDIS.hmset(prefix, cleaned_mapping)
+    REDIS.set(prefix, status)
     if ex:
         REDIS.expire(prefix, ex)
 
-def printer_status_get(printer_id, key=None):
-    prefix = printer_key_prefix(printer_id) + 'status'
-    if key:
-        return REDIS.hget(prefix, key)
-    else:
-        return REDIS.hgetall(prefix)
+def printer_status_get(printer_id):
+    return REDIS.get(printer_key_prefix(printer_id) + 'status')
 
 def printer_status_delete(printer_id, key):
     return REDIS.hdel(printer_key_prefix(printer_id) + 'status', key)

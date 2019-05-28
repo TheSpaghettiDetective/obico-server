@@ -86,7 +86,6 @@ hr {
   border: none !important;
 
   .form-control {
-    border: 1px solid white;
     &[readonly] {
       background-color: $color-form-bg;
       border: 1px solid $color-form-bg;

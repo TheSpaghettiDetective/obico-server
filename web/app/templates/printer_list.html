@@ -82,6 +82,8 @@
           data-borders="false"></canvas>
         </div>
         <hr />
+      </div>
+      <div>
         <div class="print-status container">
           <div id="print-time" >
             <div class="row text-subscript text-muted header">
@@ -95,13 +97,18 @@
                     Total
                 </div>
             </div>
+            <div class="progress" style="height: 3px; margin: 0px -15px;">
+              <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>
+            </div>
             <div class="row">
               <div id="print-time-remaining" class="col-5 offset-2 numbers"></div>
               <div id="print-time-total" class="col-5 numbers"></div>
             </div>
           </div>
-          <div id="status_temp_block">
+          <div id="status_temp_block" style="padding-top: 15px;">
           </div>
+        </div>
+        <div class="print-actions card-body container">
           <div class="row">
             <div class="col-sm-6">
               <button id="print-pause-resume" type="button" class="btn btn-warning btn-block" disabled>Pause</button>

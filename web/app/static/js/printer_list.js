@@ -158,12 +158,12 @@ $(document).ready(function () {
         updateGauge(printerCard.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
         if (printer.status && printer.current_print) {
-            printerCard.find('.print-status button').prop('disabled', false);
+            printerCard.find('.print-actions button').prop('disabled', false);
         } else {
-            printerCard.find('.print-status button').prop('disabled', true);
+            printerCard.find('.print-actions button').prop('disabled', true);
         }
 
-        if (_.get(printer, 'status.text') === 'Paused') {
+        if (_.get(printer, 'status.state.text') === 'Paused') {
             printerCard.find("#print-pause-resume").addClass('btn-success').removeClass('btn-warning').text('Resume');
         } else {
             printerCard.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
@@ -179,6 +179,11 @@ $(document).ready(function () {
             $("#print-time-total").html(toDurationBlock(secondsTotal));
         } else {
             printerCard.find("#print-time").hide();
+        }
+
+        var progressPct = _.get(printer, 'status.progress.completion');
+        if (progressPct) {
+            $('#print-progress').css('width', progressPct+'%').attr('aria-valuenow', progressPct);
         }
 
         var temperatures = [];
@@ -204,7 +209,7 @@ $(document).ready(function () {
             var h = Math.floor(d.asHours());
             var m = d.minutes();
             var s = d.seconds();
-            durationObj = {valid: true, hours: h, showHours: (h>0), minutes: m, showMinutes: (m>0), seconds: s, showSeconds: (m==0)}
+            durationObj = {valid: true, hours: h, showHours: (h>0), minutes: m, showMinutes: (h>0 || m>0), seconds: s, showSeconds: (h==0 && m==0)}
         }
         return Mustache.template('duration_block').render(durationObj);
     }

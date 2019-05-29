@@ -99,7 +99,9 @@ class Printer(SafeDeleteModel):
     @property
     def status(self):
         status_data = redis.printer_status_get(self.id)
-        return dict_or_none(json.loads(status_data))
+        for prop_name in ['state', 'progress', 'temperatures']:
+            status_data[prop_name] = json.loads(status_data[prop_name])
+        return dict_or_none(status_data)
 
     @property
     def pic(self):

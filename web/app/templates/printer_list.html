@@ -4,7 +4,7 @@
 
 {% block content %}
 
-{% mustachejs "status_temp" %}
+{% mustachejs '(.*)'  %}
 
 <div class="row justify-content-center">
   {% for printer in printers %}
@@ -83,25 +83,23 @@
         </div>
         <hr />
         <div class="print-status container">
-          <div class="row">
-            <div class="col-5 offset-2">
-                <i class="far fa-clock text-muted"></i> Remaining:<span class="time-left"></span>
+          <div id="print-time" >
+            <div class="row text-subscript text-muted header">
+                <div class="col-2">
+                <i class="fas fa-clock fa-lg"></i>
+                </div>
+                <div class="col-5">
+                    Remaining
+                </div>
+                <div class="col-5">
+                    Total
+                </div>
             </div>
-            <div class="col-5">
-                <i class="far fa-clock text-muted"></i> Total: <span class="time-total"></span>
+            <div class="row">
+              <div id="print-time-remaining" class="col-5 offset-2 numbers"></div>
+              <div id="print-time-total" class="col-5 numbers"></div>
             </div>
           </div>
-          <div class="row text-subscript text-muted temp-header">
-              <div class="col-3">
-                <i class="fas fa-thermometer-half fa-lg"></i>
-              </div>
-              <div class="col-5">
-                  Actual
-              </div>
-              <div class="col-4">
-                  Target
-              </div>
-            </div>
           <div id="status_temp_block">
           </div>
           <div class="row">

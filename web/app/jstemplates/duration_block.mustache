@@ -1,0 +1,14 @@
+{{^valid}}
+-
+{{/valid}}
+{{#valid}}
+{{#showHours}}
+{{hours}}<span class="text-subscript text-muted">h</span><span class="colon">:</span>
+{{/showHours}}
+{{#showMinutes}}
+{{minutes}}<span class="text-subscript text-muted">m</span>
+{{/showMinutes}}
+{{#showSeconds}}
+{{seconds}}<span class="text-subscript text-muted">s</span>
+{{/showSeconds}}
+{{/valid}}

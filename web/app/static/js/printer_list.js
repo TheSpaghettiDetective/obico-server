@@ -169,16 +169,17 @@ $(document).ready(function () {
             printerCard.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
         }
 
-        var secondsLeft = _.get(printer, 'status.seconds_left', -1);
-        var secondsTotal = _.get(printer, 'status.seconds_total', -1);
-        if (secondsLeft > 0 && secondsTotal > 0) {
-            printerCard.find(".print-time").show();
-            printerCard.find(".time-left").text(moment.duration(secondsLeft, "seconds").humanize() + " remaining / " + moment.duration(secondsTotal, "seconds").humanize() + " total");
-        } else {
-            printerCard.find(".print-time").hide();
-        }
-
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
+
+        var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
+        var secondsTotal = _.get(printer, 'status.progress.printTime');
+        if (secondsLeft || secondsTotal ) {
+            printerCard.find("#print-time").show();
+            $("#print-time-remaining").html(toDurationBlock(secondsLeft));
+            $("#print-time-total").html(toDurationBlock(secondsTotal));
+        } else {
+            printerCard.find("#print-time").hide();
+        }
 
         var temperatures = [];
         ['bed', 'tool0', 'tool1'].forEach( function(tempKey) {
@@ -191,7 +192,20 @@ $(document).ready(function () {
             }
         });
 
-        template = Mustache.template('status_temp');
-        $("#status_temp_block").html(template.render({temperatures: temperatures}));
+        $("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
+    }
+
+    function toDurationBlock(seconds) {
+        var durationObj;
+        if (!seconds) {
+            durationObj = {valid: false};
+        } else {
+            var d = moment.duration(seconds, 'seconds')
+            var h = Math.floor(d.asHours());
+            var m = d.minutes();
+            var s = d.seconds();
+            durationObj = {valid: true, hours: h, showHours: (h>0), minutes: m, showMinutes: (m>0), seconds: s, showSeconds: (m==0)}
+        }
+        return Mustache.template('duration_block').render(durationObj);
     }
 });

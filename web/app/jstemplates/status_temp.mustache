@@ -1,13 +1,26 @@
+{{#show}}
+<div class="row text-subscript text-muted header">
+    <div class="col-2">
+    <i class="fas fa-thermometer-half fa-lg"></i>
+    </div>
+    <div class="col-5">
+        Actual
+    </div>
+    <div class="col-5">
+        Target
+    </div>
+</div>
 {{#temperatures}}
 <div class="row">
-<div class="col-3 numbers">
+<div class="col-2 numbers">
     <span class="text-subscript text-muted">{{toolName}}</span>
 </div>
 <div class="col-5 numbers">
     {{actual}}<span class="text-subscript text-muted">°C</span>
 </div>
-<div class="col-4 numbers">
+<div class="col-5 numbers">
     {{target}}<span class="text-subscript text-muted">°C</span>
 </div>
 </div>
 {{/temperatures}}
+{{/show}}

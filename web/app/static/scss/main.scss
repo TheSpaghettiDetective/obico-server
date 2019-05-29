@@ -52,7 +52,6 @@ hr {
   background-color: $color-form-bg;
 }
 
-
 .icon-btn {
   background-color: transparent;
   border: none;
@@ -287,6 +286,7 @@ hr {
 
       .row {
         padding: 0.3em 0em 0.1em;
+        margin: 0px;
         text-align: center;
         &.header {
           border-bottom: 1px solid $color-form-bg;

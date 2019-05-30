@@ -172,11 +172,11 @@ $(document).ready(function () {
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
 
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
-        var secondsTotal = _.get(printer, 'status.progress.printTime');
-        if (secondsLeft || secondsTotal ) {
+        var secondsPrinted = _.get(printer, 'status.progress.printTime');
+        if (secondsLeft || secondsPrinted ) {
             printerCard.find("#print-time").show();
             printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
-            printerCard.find("#print-time-total").html(toDurationBlock(secondsTotal));
+            printerCard.find("#print-time-total").html(toDurationBlock(secondsLeft && secondsPrinted && secondsPrinted + secondsLeft));
         } else {
             printerCard.find("#print-time").hide();
         }

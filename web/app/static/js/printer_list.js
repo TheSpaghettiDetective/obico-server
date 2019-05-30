@@ -173,10 +173,10 @@ $(document).ready(function () {
 
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
-        if (secondsLeft || secondsPrinted ) {
+        if (secondsLeft != null && secondsPrinted != null ) {
             printerCard.find("#print-time").show();
             printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
-            printerCard.find("#print-time-total").html(toDurationBlock(secondsLeft && secondsPrinted && secondsPrinted + secondsLeft));
+            printerCard.find("#print-time-total").html(toDurationBlock(secondsPrinted + secondsLeft));
         } else {
             printerCard.find("#print-time").hide();
         }
@@ -207,7 +207,7 @@ $(document).ready(function () {
 
     function toDurationBlock(seconds) {
         var durationObj;
-        if (!seconds) {
+        if (seconds == null) {
             durationObj = {valid: false};
         } else {
             var d = moment.duration(seconds, 'seconds')

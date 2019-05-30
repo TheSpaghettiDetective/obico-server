@@ -285,13 +285,9 @@ hr {
 
       .row {
         padding: 0.3em 0em 0.1em;
-        margin: 0px;
         text-align: center;
-        &.header {
-          border-bottom: 1px solid $color-form-bg;
-        }
         div[class^="col-"] {
-            padding: 0px;
+            padding: 0px 8px;
         }
         .colon {
           padding: 0px 0px 0px 4px;

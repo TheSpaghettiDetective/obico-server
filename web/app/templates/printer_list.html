@@ -86,7 +86,7 @@
       <div>
         <div class="print-status container">
           <div id="print-time" style="display: none">
-            <div class="row text-subscript text-muted header" style="padding-top: 12px;">
+            <div class="row text-subscript text-muted" style="padding-top: 12px;">
                 <div class="col-2">
                 <i class="fas fa-clock fa-lg"></i>
                 </div>
@@ -97,13 +97,16 @@
                     Total
                 </div>
             </div>
-            <div class="progress" style="height: 2px;">
-              <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
-            </div>
             <div class="row">
               <div id="print-time-remaining" class="col-5 offset-2 numbers"></div>
               <div id="print-time-total" class="col-5 numbers"></div>
+              <div class="col-12">
+                  <div class="progress" style="height: 2px;">
+                      <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                    </div>
+              </div>
             </div>
+
           </div>
           <div id="status_temp_block">
           </div>

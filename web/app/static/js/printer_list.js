@@ -184,6 +184,11 @@ $(document).ready(function () {
         var progressPct = _.get(printer, 'status.progress.completion');
         if (progressPct) {
             printerCard.find('#print-progress').css('width', progressPct+'%').attr('aria-valuenow', progressPct);
+            if (progressPct > 99.9) {
+                printerCard.find('#print-progress').removeClass('progress-bar-striped progress-bar-animated');
+            } else {
+                printerCard.find('#print-progress').addClass('progress-bar-striped progress-bar-animated');
+            }
         }
 
         var temperatures = [];

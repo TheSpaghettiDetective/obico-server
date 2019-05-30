@@ -175,15 +175,15 @@ $(document).ready(function () {
         var secondsTotal = _.get(printer, 'status.progress.printTime');
         if (secondsLeft || secondsTotal ) {
             printerCard.find("#print-time").show();
-            $("#print-time-remaining").html(toDurationBlock(secondsLeft));
-            $("#print-time-total").html(toDurationBlock(secondsTotal));
+            printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
+            printerCard.find("#print-time-total").html(toDurationBlock(secondsTotal));
         } else {
             printerCard.find("#print-time").hide();
         }
 
         var progressPct = _.get(printer, 'status.progress.completion');
         if (progressPct) {
-            $('#print-progress').css('width', progressPct+'%').attr('aria-valuenow', progressPct);
+            printerCard.find('#print-progress').css('width', progressPct+'%').attr('aria-valuenow', progressPct);
         }
 
         var temperatures = [];
@@ -197,7 +197,7 @@ $(document).ready(function () {
             }
         });
 
-        $("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
+        printerCard.find("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
     }
 
     function toDurationBlock(seconds) {

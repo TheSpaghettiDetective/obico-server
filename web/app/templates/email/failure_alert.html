@@ -79,6 +79,7 @@
                 The print has been paused. <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
               </p>
               {% endif %}
+              {% if insert_img %}
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>
@@ -86,6 +87,7 @@
                   </td>
                 </tr>
               </table>
+              {% endif %}
 
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
                 <tr>

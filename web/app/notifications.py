@@ -2,6 +2,7 @@ from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from twilio.rest import Client
 from django.conf import settings
+import requests
 import logging
 
 from lib import site
@@ -17,6 +18,17 @@ def send_failure_alert_email(printer, pause_print):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
+    # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
+    try:
+        from urllib.parse import urlparse
+        import ipaddress
+        if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
+            attachments = []
+        else:
+            attachments = [('possible_failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
+    except:
+        attachments = []
+
     subject = 'Your print {} may be failing on {}'.format(printer.current_print.filename or '', printer.name)
     from_email = settings.DEFAULT_FROM_EMAIL
 
@@ -26,10 +38,11 @@ def send_failure_alert_email(printer, pause_print):
         'view_link': site.build_full_url('/printers/'),
         'cancel_link': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
         'resume_link': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)),
+        'insert_img': len(attachments) == 0,
     }
 
     message = get_template('email/failure_alert.html').render(ctx)
-    msg = EmailMessage(subject, message, to=(printer.user.email,), from_email=from_email)
+    msg = EmailMessage(subject, message, to=(printer.user.email,), from_email=from_email, attachments=attachments)
     msg.content_subtype = 'html'
     msg.send()
 

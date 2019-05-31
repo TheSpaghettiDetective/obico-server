@@ -103,9 +103,13 @@
   </nav>
   {% endwith %}
 
+  {% if user.is_authenticated and not user.has_verified_email %}
+    {% include 'snippets/no_email_verified.html' %}
+  {% endif %}
   <div id="content-wrapper" class="container">
     {% include 'snippets/messages.html' %}
     {% block content %}{% endblock content %}
+
   </div>
   <!-- /.content-wrapper -->
 

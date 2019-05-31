@@ -5,7 +5,10 @@
 {% block head_title %}{% trans "Account" %}{% endblock %}
 
 {% block content %}
-    <h1>{% trans "E-mail Addresses" %}</h1>
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div id="email-form" class="form-container">
+    <h2>{% trans "E-mail Addresses" %}</h2>
 {% if user.emailaddress_set.all %}
 <p>{% trans 'The following e-mail addresses are associated with your account:' %}</p>
 
@@ -14,10 +17,9 @@
 <fieldset class="blockLabels">
 
   {% for emailaddress in user.emailaddress_set.all %}
-<div class="ctrlHolder">
-      <label for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%}">
-
-      <input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+<div class="ctrlHolder custom-control custom-radio form-check-inline">
+  <input id="email_radio_{{forloop.counter}}" class="custom-control-input" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+  <label for="email_radio_{{forloop.counter}}" class="custom-control-label {% if emailaddress.primary %}primary_email{%endif%}">
 
 {{ emailaddress.email }}
     {% if emailaddress.verified %}
@@ -31,9 +33,9 @@
   {% endfor %}
 
 <div class="buttonHolder">
-      <button class="secondaryAction" type="submit" name="action_primary" >{% trans 'Make Primary' %}</button>
-      <button class="secondaryAction" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
-      <button class="primaryAction" type="submit" name="action_remove" >{% trans 'Remove' %}</button>
+      <button class="secondaryAction btn btn-primary" type="submit" name="action_primary" >{% trans 'Make Primary' %}</button>
+      <button class="secondaryAction btn btn-primary" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
+      <button class="primaryAction btn btn-danger" type="submit" name="action_remove" >{% trans 'Remove' %}</button>
 </div>
 
 </fieldset>
@@ -49,10 +51,15 @@
 
     <form method="post" action="{% url 'account_email' %}" class="add_email">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button name="action_add" type="submit">{% trans "Add E-mail" %}</button>
+        {% for error in form.email.errors %}
+              {{ error|escape }}
+        {% endfor %}
+        <input type="email" name="email" class="form-control" placeholder="E-mail address" required="" id="id_email">
+        <button class="btn btn-primary" name="action_add" type="submit">{% trans "Add E-mail" %}</button>
     </form>
-
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 

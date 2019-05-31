@@ -1,3 +1,4 @@
+from allauth.account.admin import EmailAddress
 from datetime import datetime
 from django.db import models
 from jsonfield import JSONField
@@ -62,6 +63,18 @@ class User(AbstractUser):
 
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
+
+    def is_primary_email_verified(self):
+        """Checks if the users primary email address is verified"""
+        if EmailAddress.objects.filter(user=self, email=self.email,
+                                       verified=True).exists():
+            return True
+        return False
+
+    def has_verified_email(self):
+        """Checks if the user has at least one verified email address"""
+        return EmailAddress.objects.filter(user=self,
+                                           verified=True).exists()
 
 
 class Printer(SafeDeleteModel):

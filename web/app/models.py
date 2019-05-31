@@ -132,8 +132,6 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
 
-
-
     def set_current_print_with_ts(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
             cur_print, _ = Print.objects.get_or_create(

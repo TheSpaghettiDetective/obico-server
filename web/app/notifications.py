@@ -1,3 +1,4 @@
+from allauth.account.admin import EmailAddress
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from twilio.rest import Client
@@ -41,10 +42,17 @@ def send_failure_alert_email(printer, pause_print):
         'insert_img': len(attachments) == 0,
     }
 
+    # By default email verification should be required for notifications but
+    # maybe users will want to disable it on private servers
+    if settings.EMAIL_REQUIRES_VERIFICATION:
+        emails = EmailAddress.objects.filter(user=printer.user, verified=True)
+    else:
+        emails = EmailAddress.objects.filter(user=printer.user)
     message = get_template('email/failure_alert.html').render(ctx)
-    msg = EmailMessage(subject, message, to=(printer.user.email,), from_email=from_email, attachments=attachments)
-    msg.content_subtype = 'html'
-    msg.send()
+    for email in emails:
+        msg = EmailMessage(subject, message, to=(email.email,), from_email=from_email, attachments=attachments)
+        msg.content_subtype = 'html'
+        msg.send()
 
 def send_failure_alert_sms(printer, pause_print):
     if not settings.TWILIO_ENABLED:

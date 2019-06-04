@@ -44,7 +44,7 @@ def send_failure_alert_email(printer, pause_print):
 
     # By default email verification should be required for notifications but
     # maybe users will want to disable it on private servers
-    if settings.EMAIL_REQUIRES_VERIFICATION:
+    if settings.ACCOUNT_EMAIL_VERIFICATION != 'none':
         emails = EmailAddress.objects.filter(user=printer.user, verified=True)
     else:
         emails = EmailAddress.objects.filter(user=printer.user)

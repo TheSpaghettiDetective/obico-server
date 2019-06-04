@@ -186,20 +186,10 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET=True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
-# If email host is set then assume we should send a verification email.
-if os.environ.get('EMAIL_HOST') is not None:
-    ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION',
-                                                'optional')
-# If email isn't configured then trying to send a verification
-# email will cause a 500 error, default to not sending one.
-else:
-    ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION',
-                                                'none')
 
 LOGIN_REDIRECT_URL = '/'
 
@@ -234,7 +224,6 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
-EMAIL_REQUIRES_VERIFICATION = os.environ.get('EMAIL_REQUIRES_VERIFICATION') == 'True'
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 

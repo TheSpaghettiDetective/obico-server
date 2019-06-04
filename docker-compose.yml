@@ -14,7 +14,6 @@ x-web-defaults: &web-defaults
     EMAIL_HOST_PASSWORD:    # -> your email account password
     EMAIL_PORT: 587
     EMAIL_USE_TLS: 'True'
-    EMAIL_REQUIRES_VERIFICATION: 'False' # When True email addresses must be verified before they will receive notifications
     DEFAULT_FROM_EMAIL: 'changeme@example.com'
     DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
     SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up

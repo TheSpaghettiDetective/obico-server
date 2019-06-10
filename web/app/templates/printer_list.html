@@ -17,7 +17,7 @@
         </div>
         <div class="dropdown">
           <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-            aria-haspopup="true"><i class="fas fa-ellipsis-v"></i></button>
+            aria-haspopup="true" aria-label="{{ printer.name }} Controls"><i class="fas fa-ellipsis-v"></i></button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
             <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
             <a id="delete-print" class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt fa-lg"></i>Delete</a>
@@ -31,7 +31,8 @@
             <div class="webcam_fixed_ratio_inner">
               <img
                 class="webcam_img {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
-                src="{% static 'img/3d_printer.png' %}" />
+                src="{% static 'img/3d_printer.png' %}"
+                alt="{{ printer.name }} current image"/>
             </div>
           </div>
         </div>

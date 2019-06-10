@@ -7,7 +7,7 @@
   {% if printers.count > 1 %}
   <div class="row justify-content-center">
       <div class="col-sm-11 col-lg-8">
-          <p>You have more than one printers. Which printer do you want to get screte token for?</p>
+          <p>You have more than one printers. Which printer do you want to get secret token for?</p>
           <ul>
           {% for printer in printers %}
             <li><a href={% url 'priner_auth_token' printer.id %}>{{ printer.name }} >></a></li>
@@ -40,7 +40,7 @@
           token above, and paste it to "Secret Token" box on the settings page.</li>
         <li><span class="text-warning">Don't forget to click "Save".</span> I know it sounds stupid but...</li>
       </ol>
-      <img src={% static 'img/paste_token.png' %} style="width: 100%" />
+      <img src="{% static 'img/paste_token.png' %}" alt="Plugin configuration instructions"  style="width: 100%" />
     </div>
   </div>
   {% endfor %}

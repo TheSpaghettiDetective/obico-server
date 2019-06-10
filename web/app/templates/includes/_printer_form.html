@@ -4,7 +4,9 @@
 {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
 <div class="form-group text-muted">
   <label class="form-label" for="{{ form.name.id_for_label }}">Give your new printer a shiny name</label>
-  {% render_field form.name class="form-control" aria-describedby="nameHelp" placeholder="My Awesome 3D Printer" %}
+  <input type="text" name="name" value="{{ form.name.value }}" maxlength="200"
+         placeholder="My Awesome 3D Printer" class="form-control field_required"
+         required="required" id="id_name" {% if form.name.errors %}aria-describedby="nameHelp" aria-invalid="true"{% endif %}>
   {% if form.name.errors %}
   <small id="passwordHelp" class="text-danger">
     {% for error in form.name.errors %}
@@ -42,7 +44,7 @@
       <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
     </div>
     <div class="input-group input-group-sm">
-      {% render_field form.retract_on_pause class="form-control" step="0.5" min="0" %}
+      {% render_field form.retract_on_pause class="form-control" step="0.5" min="0" aria-label="Retraction ammount in millimeters" %}
       <div class="input-group-append">
         <span class="input-group-text">mm</span>
       </div>
@@ -54,7 +56,7 @@
       <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
     </div>
     <div class="input-group input-group-sm">
-      {% render_field form.lift_z_on_pause class="form-control" step="0.5" min="0" %}
+      {% render_field form.lift_z_on_pause class="form-control" step="0.5" min="0" aria-label="Lift Z Axis ammount in millimeters"%}
       <div class="input-group-append">
         <span class="input-group-text">mm</span>
       </div>

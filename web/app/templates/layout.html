@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
+  <meta name="description" content="Constantly watching your prints in the background so you don't have to.">
   <meta name="author" content="">
 
   <title>TSD - The Spaghetti Detective</title>
@@ -37,7 +37,7 @@
   <link rel="manifest" href="{% static 'site.webmanifest' %}">
   <link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#9965f4">
 
   <!-- Mustache should be loaded before html body or else there will be errors. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
@@ -54,7 +54,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
       <a class="navbar-brand" href="https://www.thespaghettidetective.com/"><img src="{% static 'img/logo-inverted.png' %}"
-          style="height: 28px;" /></a>
+          style="height: 28px;" alt="The Spaghetti Detective"/></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -102,7 +102,7 @@
     </div>
   </nav>
   {% endwith %}
-
+  <main>
   {% if settings.ACCOUNT_EMAIL_VERIFICATION != 'none' and user.is_authenticated and not user.has_verified_email %}
     {% include 'snippets/no_email_verified.html' %}
   {% endif %}
@@ -112,7 +112,7 @@
 
   </div>
   <!-- /.content-wrapper -->
-
+  </main>
   <footer>
     <div class="container">
       <p>&copy; The Spaghetti Detective 2018. All Rights Reserved.</p>

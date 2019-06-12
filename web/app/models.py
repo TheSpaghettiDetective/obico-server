@@ -158,6 +158,10 @@ class Printer(SafeDeleteModel):
                 filename=filename,
                 started_at=timezone.now(),
                 )
+
+        if cur_print.ended_at():
+            raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
+
         self.current_print = cur_print
         self.save()
 

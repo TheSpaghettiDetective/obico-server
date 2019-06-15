@@ -2,6 +2,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
+from django.core.exceptions import ObjectDoesNotExist
 
 from lib import redis
 from lib import channels
@@ -67,6 +68,9 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
         try:
             printer = Printer.objects.get(id=self.current_printer().id)
             process_octoprint_status(printer, data)
+        except ObjectDoesNotExist:
+            import traceback; traceback.print_exc()
+            self.close()
         except:  # sentry doesn't automatically capture consumer errors
             sentryClient.captureException()
 

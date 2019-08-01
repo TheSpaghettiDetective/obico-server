@@ -3,6 +3,7 @@ from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from twilio.rest import Client
 from django.conf import settings
+from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
 
@@ -10,9 +11,11 @@ from lib import site
 
 LOGGER = logging.getLogger(__name__)
 
+
 def send_failure_alert(printer, pause_print):
     send_failure_alert_sms(printer, pause_print)
     send_failure_alert_email(printer, pause_print)
+
 
 def send_failure_alert_email(printer, pause_print):
     if not settings.EMAIL_HOST:
@@ -26,11 +29,13 @@ def send_failure_alert_email(printer, pause_print):
         if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
             attachments = []
         else:
-            attachments = [('possible_failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
+            attachments = [('possible_failure.jpg', requests.get(
+                printer.pic['img_url']).content, 'image/jpeg')]
     except:
         attachments = []
 
-    subject = 'Your print {} may be failing on {}'.format(printer.current_print.filename or '', printer.name)
+    subject = 'Your print {} may be failing on {}'.format(
+        printer.current_print.filename or '', printer.name)
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
@@ -50,9 +55,11 @@ def send_failure_alert_email(printer, pause_print):
         emails = EmailAddress.objects.filter(user=printer.user)
     message = get_template('email/failure_alert.html').render(ctx)
     for email in emails:
-        msg = EmailMessage(subject, message, to=(email.email,), from_email=from_email, attachments=attachments)
+        msg = EmailMessage(subject, message, to=(email.email,),
+                           from_email=from_email, attachments=attachments)
         msg.content_subtype = 'html'
         msg.send()
+
 
 def send_failure_alert_sms(printer, pause_print):
     if not settings.TWILIO_ENABLED:
@@ -62,7 +69,8 @@ def send_failure_alert_sms(printer, pause_print):
     if not printer.user.sms_eligible():
         return
 
-    twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    twilio_client = Client(settings.TWILIO_ACCOUNT_SID,
+                           settings.TWILIO_AUTH_TOKEN)
     from_number = settings.TWILIO_FROM_NUMBER
 
     to_number = printer.user.phone_country_code + printer.user.phone_number
@@ -72,3 +80,24 @@ def send_failure_alert_sms(printer, pause_print):
         'Printer is paused. ' if pause_print else '',
         site.build_full_url('/'))
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
+
+
+def send_failure_alert_pushbullet(printer, pause_print):
+    if not printer.user.has_valid_pushbullet_token():
+        return
+
+    pb = Pushbullet(printer.user.pushbullet_access_token)
+    title = 'The Spaghetti Detective - Your print {} may be failing on {}.'.format(
+        printer.current_print.filename or '', printer.name)
+    link = site.build_full_url('/')
+    body = '{}Go check it at: {}'.format(
+        'Printer is paused. ' if pause_print else '', link)
+
+    try:
+        pb.push_link(title, link, body)
+    except PushError as e:
+        logging.debug(e)
+        pass
+    except PushbulletError as e:
+        logging.debug(e)
+        pass

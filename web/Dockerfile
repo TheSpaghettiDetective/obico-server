@@ -1,9 +1,11 @@
 FROM thespaghettidetective/web:base
 
 WORKDIR /app
+COPY requirements.txt /app/
+ADD . /app
 EXPOSE 3334
 
-ADD . /app
-RUN pip install -r requirements.txt
+RUN pip3 install -U pip
+RUN pip3 install -r requirements.txt
 
 RUN python manage.py collectstatic --noinput -c

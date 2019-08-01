@@ -17,7 +17,6 @@ from pushbullet import Pushbullet, errors
 from lib import redis
 from lib.utils import dict_or_none
 
-
 class UserManager(UserManager):
     """Define a model manager for User model with no username field."""
 
@@ -57,8 +56,8 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
-    pushbullet_access_token = models.CharField(
-        max_length=45, null=True, blank=True)
+    pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -77,8 +76,7 @@ class User(AbstractUser):
 
     def has_verified_email(self):
         """Checks if the user has at least one verified email address"""
-        return EmailAddress.objects.filter(user=self,
-                                           verified=True).exists()
+        return EmailAddress.objects.filter(user=self, verified=True).exists()
 
     def has_valid_pushbullet_token(self):
         """Checks if the user has a pushbullet access token that Pushbullet recognizes"""
@@ -104,11 +102,9 @@ class Printer(SafeDeleteModel):
     )
 
     name = models.CharField(max_length=200, null=False)
-    auth_token = models.CharField(
-        max_length=28, unique=True, null=False, blank=False)
+    auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    current_print = models.OneToOneField(
-        'Print', on_delete=models.SET_NULL, null=True, related_name='not_used')
+    current_print = models.OneToOneField('Print', on_delete=models.SET_NULL, null=True, related_name='not_used')
     action_on_failure = models.CharField(
         max_length=10,
         choices=ACTION_ON_FAILURE,
@@ -154,8 +150,7 @@ class Printer(SafeDeleteModel):
         if self.current_print.cancelled_at is None:
             self.current_print.finished_at = timezone.now()
         self.current_print.save()
-        # can't put import at the top of the file to avoid circular dependency
-        from app.tasks import compile_timelapse
+        from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
         compile_timelapse.delay(self.current_print.id)
 
         self.current_print = None
@@ -169,17 +164,16 @@ class Printer(SafeDeleteModel):
                 printer=self,
                 ext_id=current_print_ts,
                 defaults={'filename': filename, 'started_at': timezone.now()},
-            )
+                )
         else:
             cur_print = Print.objects.create(
                 printer=self,
                 filename=filename,
                 started_at=timezone.now(),
-            )
+                )
 
         if cur_print.ended_at():
-            raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(
-                self.id, current_print_ts, filename))
+            raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         self.current_print = cur_print
         self.save()
@@ -187,7 +181,7 @@ class Printer(SafeDeleteModel):
         self.printerprediction.reset_for_new_print()
 
     ####
-    # Backward compatibility. Old way of setting print without current_print_ts
+    ## Backward compatibility. Old way of setting print without current_print_ts
     #####
     def set_current_print(self, filename):
         if self.current_print:
@@ -205,7 +199,7 @@ class Printer(SafeDeleteModel):
 
             self.unset_current_print_with_ts()
 
-    # End of old way of setting/unsetting print
+    ###### End of old way of setting/unsetting print
 
     def is_printing(self):
         return self.current_print != None
@@ -230,8 +224,7 @@ class Printer(SafeDeleteModel):
         if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=10):
             return
 
-        args = {'retract': self.retract_on_pause,
-                'lift_z': self.lift_z_on_pause}
+        args = {'retract': self.retract_on_pause, 'lift_z': self.lift_z_on_pause}
         if self.tools_off_on_pause:
             args['tools_off'] = True
         if self.bed_off_on_pause:
@@ -259,10 +252,8 @@ class Printer(SafeDeleteModel):
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
         if abort_existing:
-            PrinterCommand.objects.filter(printer=self, status=PrinterCommand.PENDING).update(
-                status=PrinterCommand.ABORTED)
-        PrinterCommand.objects.create(printer=self, command=json.dumps(
-            {'cmd': command, 'args': args}), status=PrinterCommand.PENDING)
+            PrinterCommand.objects.filter(printer=self, status=PrinterCommand.PENDING).update(status=PrinterCommand.ABORTED)
+        PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command, 'args': args}), status=PrinterCommand.PENDING)
 
     def __str__(self):
         return self.name
@@ -291,8 +282,7 @@ class PrinterCommand(models.Model):
 
 
 class PrinterPrediction(models.Model):
-    printer = models.OneToOneField(
-        Printer, on_delete=models.CASCADE, primary_key=True)
+    printer = models.OneToOneField(Printer, on_delete=models.CASCADE, primary_key=True)
     current_frame_num = models.IntegerField(null=False, default=0)
     lifetime_frame_num = models.IntegerField(null=False, default=0)
     current_p = models.FloatField(null=False, default=0.0)
@@ -319,7 +309,6 @@ class PrinterPrediction(models.Model):
             self.current_frame_num,
             self.lifetime_frame_num,
         )
-
 
 @receiver(post_save, sender=Printer)
 def create_printer_prediction(sender, instance, created, **kwargs):
@@ -352,8 +341,7 @@ class Print(SafeDeleteModel):
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)
-    prediction_json_url = models.CharField(
-        max_length=2000, db_index=True, null=True)
+    prediction_json_url = models.CharField(max_length=2000, db_index=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

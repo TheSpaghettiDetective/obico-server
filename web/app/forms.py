@@ -1,28 +1,23 @@
 from django.db import models
 from django.forms import ModelForm, Form, CharField, ChoiceField
-from django.conf import settings
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
 
 from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
 from .models import *
 
-
 class PrinterForm(ModelForm):
     class Meta:
         model = Printer
-        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause',
-                  'detective_sensitivity', 'retract_on_pause', 'lift_z_on_pause']
+        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause', 'detective_sensitivity', 'retract_on_pause', 'lift_z_on_pause']
         widgets = {
             'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }
 
-
 class UserPrefernecesForm(ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_country_code',
-                  'phone_number', 'pushbullet_access_token']
+        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token']
         widgets = {
             'phone_country_code': PhoneCountryCodeWidget()
         }

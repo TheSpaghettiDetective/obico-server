@@ -464,6 +464,8 @@ form#printer_form {
 
 .timelapse-gallery {
 
+  margin-top: 1.5rem;
+
   .card-body {
     position: relative;
     padding: 2rem 0 0.5rem 0;
@@ -499,11 +501,6 @@ form#printer_form {
       }
     }
   }
-
-  h1 {
-    margin-top: 0.5em;
-  }
-
   .hints {
     font-size: smaller;
     margin-bottom: 1em;

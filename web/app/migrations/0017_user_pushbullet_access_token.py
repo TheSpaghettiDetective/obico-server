@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0017_auto_20190731_2223'),
+        ('app', '0016_add_index_json_url_to_print'),
     ]
 
     operations = [

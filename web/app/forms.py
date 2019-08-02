@@ -23,20 +23,16 @@ class UserPrefernecesForm(ModelForm):
         }
 
     def clean_phone_country_code(self):
-        if not settings.TWILIO_ENABLED:
-            return ''
-
         phone_country_code = self.cleaned_data['phone_country_code']
-        if not phone_country_code.startswith('+'):
+        if phone_country_code and not phone_country_code.startswith('+'):
             phone_country_code = '+' + phone_country_code
         return phone_country_code
 
     def clean(self):
         data = self.cleaned_data
-        phone_number = (data['phone_country_code'] or '') + \
-            (data['phone_number'] or '')
+        phone_number = (data['phone_country_code'] or '') + (data['phone_number'] or '')
 
-        if settings.TWILIO_ENABLED and phone_number:
+        if phone_number:
             try:
                 phone_number = phonenumbers.parse(phone_number, None)
                 if not phonenumbers.is_valid_number(phone_number):

@@ -6,6 +6,8 @@ from django.conf import settings
 from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
+from urllib.parse import urlparse
+import ipaddress
 
 from lib import site
 
@@ -14,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 def send_failure_alert(printer, pause_print):
     send_failure_alert_sms(printer, pause_print)
     send_failure_alert_email(printer, pause_print)
+    send_failure_alert_pushbullet(printer, pause_print)
 
 def send_failure_alert_email(printer, pause_print):
     if not settings.EMAIL_HOST:
@@ -22,12 +25,10 @@ def send_failure_alert_email(printer, pause_print):
 
     # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
     try:
-        from urllib.parse import urlparse
-        import ipaddress
         if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
             attachments = []
         else:
-            attachments = [('possible_failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
+            attachments = [('Detected Failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
     except:
         attachments = []
 
@@ -87,10 +88,19 @@ def send_failure_alert_pushbullet(printer, pause_print):
         'Printer is paused. ' if pause_print else '', link)
 
     try:
-        pb.push_link(title, link, body)
+        file_url = None
+        try:
+            file_url = printer.pic['img_url']
+            if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
+                pb.upload_file(requests.get(file_url).content, 'Detected Failure.jpg')
+        except:
+            pass
+
+        if file_url:
+            pb.push_file(file_url=file_url, file_name="Detected Failure.jpg", file_type="image/jpeg", body=body, title=title)
+        else:
+            pb.push_link(title, link, body)
     except PushError as e:
-        logging.debug(e)
-        pass
+        LOGGER.error(e)
     except PushbulletError as e:
-        logging.debug(e)
-        pass
+        LOGGER.error(e)

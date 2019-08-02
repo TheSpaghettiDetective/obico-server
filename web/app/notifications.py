@@ -3,8 +3,11 @@ from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from twilio.rest import Client
 from django.conf import settings
+from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
+from urllib.parse import urlparse
+import ipaddress
 
 from lib import site
 
@@ -13,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 def send_failure_alert(printer, pause_print):
     send_failure_alert_sms(printer, pause_print)
     send_failure_alert_email(printer, pause_print)
+    send_failure_alert_pushbullet(printer, pause_print)
 
 def send_failure_alert_email(printer, pause_print):
     if not settings.EMAIL_HOST:
@@ -21,12 +25,10 @@ def send_failure_alert_email(printer, pause_print):
 
     # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
     try:
-        from urllib.parse import urlparse
-        import ipaddress
         if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
             attachments = []
         else:
-            attachments = [('possible_failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
+            attachments = [('Detected Failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
     except:
         attachments = []
 
@@ -72,3 +74,33 @@ def send_failure_alert_sms(printer, pause_print):
         'Printer is paused. ' if pause_print else '',
         site.build_full_url('/'))
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
+
+
+def send_failure_alert_pushbullet(printer, pause_print):
+    if not printer.user.has_valid_pushbullet_token():
+        return
+
+    pb = Pushbullet(printer.user.pushbullet_access_token)
+    title = 'The Spaghetti Detective - Your print {} may be failing on {}.'.format(
+        printer.current_print.filename or '', printer.name)
+    link = site.build_full_url('/')
+    body = '{}Go check it at: {}'.format(
+        'Printer is paused. ' if pause_print else '', link)
+
+    try:
+        file_url = None
+        try:
+            file_url = printer.pic['img_url']
+            if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
+                pb.upload_file(requests.get(file_url).content, 'Detected Failure.jpg')
+        except:
+            pass
+
+        if file_url:
+            pb.push_file(file_url=file_url, file_name="Detected Failure.jpg", file_type="image/jpeg", body=body, title=title)
+        else:
+            pb.push_link(title, link, body)
+    except PushError as e:
+        LOGGER.error(e)
+    except PushbulletError as e:
+        LOGGER.error(e)

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'bootstrap_pagination',
     'jstemplate',
+    'pushbullet',
     'app',  # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',

@@ -3,6 +3,7 @@ from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from twilio.rest import Client
 from django.conf import settings
+from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
 
@@ -72,3 +73,24 @@ def send_failure_alert_sms(printer, pause_print):
         'Printer is paused. ' if pause_print else '',
         site.build_full_url('/'))
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
+
+
+def send_failure_alert_pushbullet(printer, pause_print):
+    if not printer.user.has_valid_pushbullet_token():
+        return
+
+    pb = Pushbullet(printer.user.pushbullet_access_token)
+    title = 'The Spaghetti Detective - Your print {} may be failing on {}.'.format(
+        printer.current_print.filename or '', printer.name)
+    link = site.build_full_url('/')
+    body = '{}Go check it at: {}'.format(
+        'Printer is paused. ' if pause_print else '', link)
+
+    try:
+        pb.push_link(title, link, body)
+    except PushError as e:
+        logging.debug(e)
+        pass
+    except PushbulletError as e:
+        logging.debug(e)
+        pass

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'api',
+    'pushbullet',
 ]
 
 if os.environ.get('SOCIAL_LOGIN') == 'True':

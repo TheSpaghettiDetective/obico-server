@@ -12,6 +12,7 @@ from safedelete.models import SafeDeleteModel
 import os
 import json
 from datetime import timedelta
+from pushbullet import Pushbullet, errors
 
 from lib import redis
 from lib.utils import dict_or_none
@@ -55,6 +56,8 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
+    pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -73,8 +76,18 @@ class User(AbstractUser):
 
     def has_verified_email(self):
         """Checks if the user has at least one verified email address"""
-        return EmailAddress.objects.filter(user=self,
-                                           verified=True).exists()
+        return EmailAddress.objects.filter(user=self, verified=True).exists()
+
+    def has_valid_pushbullet_token(self):
+        """Checks if the user has a pushbullet access token that Pushbullet recognizes"""
+        if not self.pushbullet_access_token:
+            return False
+
+        try:
+            Pushbullet(self.pushbullet_access_token)
+            return True
+        except errors.InvalidKeyError:
+            return False
 
 
 class Printer(SafeDeleteModel):

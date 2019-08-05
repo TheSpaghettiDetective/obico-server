@@ -112,7 +112,7 @@ $(document).ready(function () {
                 });
             } else {
                 $.ajax({
-                    url: '/api/printers/' + printerId + '/acknowledge_alert/',
+                    url: '/api/printers/' + printerId + '/invalidate_alert/',
                     type: 'GET',
                     dataType: 'json',
                 });
@@ -141,7 +141,7 @@ $(document).ready(function () {
             printerNameDiv.removeClass("secondary-title");
         }
 
-        if (printer.current_print && printer.current_print.alerted_at && !printer.current_print.alert_acknowledged_at) {
+        if (printer.current_print && printer.current_print.alerted_at) {
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();

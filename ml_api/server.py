@@ -11,6 +11,7 @@ import requests
 from auth import token_required
 from lib.detection_model import load_net, detect
 
+THRESH = 0.08
 SESSION_TTL_SECONDS = 60*2
 
 app = flask.Flask(__name__)
@@ -35,7 +36,7 @@ def get_p():
             resp.raise_for_status()
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)
-            detections = detect(net_main, meta_main, img, thresh=0.25)
+            detections = detect(net_main, meta_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
         except:
             if sentry:

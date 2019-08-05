@@ -1,7 +1,7 @@
 from django.conf import settings
 
-EWM_ALPHA = 2/(9 + 1)   # 9 is the optimal EWM span in hyper parameter grid search
-ROLLING_WIN_SHORT = 50 # rolling window of 88 samples.
+EWM_ALPHA = 2/(12 + 1)   # 12 is the optimal EWM span in hyper parameter grid search
+ROLLING_WIN_SHORT = 310 # rolling window of 310 samples.
 ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximation of printer's base noise level
 
 def update_prediction_with_detections(prediction, detections):
@@ -13,19 +13,19 @@ def update_prediction_with_detections(prediction, detections):
     prediction.rolling_mean_short = next_rolling_mean(p, prediction.rolling_mean_short, prediction.current_frame_num, ROLLING_WIN_SHORT)
     prediction.rolling_mean_long = next_rolling_mean(p, prediction.rolling_mean_long, prediction.lifetime_frame_num, ROLLING_WIN_LONG)
 
-def is_failing(prediction, detective_sensitivity):
+def is_failing(prediction, detective_sensitivity, escalating_factor=1):
     print(prediction)
     if prediction.current_frame_num < settings.INIT_SAFE_FRAME_NUM:
         return False
 
-    adjusted_ewm_mean = prediction.ewm_mean * detective_sensitivity
-    if adjusted_ewm_mean < settings.THRESHOLD_LOW + prediction.rolling_mean_long:
+    adjusted_ewm_mean = (prediction.ewm_mean - prediction.rolling_mean_long) * detective_sensitivity / escalating_factor
+    if adjusted_ewm_mean < settings.THRESHOLD_LOW:
         return False
 
-    if adjusted_ewm_mean > settings.THRESHOLD_HIGH + prediction.rolling_mean_long:
+    if adjusted_ewm_mean > settings.THRESHOLD_HIGH:
         return True
 
-    if adjusted_ewm_mean > prediction.rolling_mean_short * settings.ROLLING_MEAN_SHORT_MULTIPLE:
+    if adjusted_ewm_mean > (prediction.rolling_mean_short - prediction.rolling_mean_long) * settings.ROLLING_MEAN_SHORT_MULTIPLE:
         return True
 
 def next_ewm_mean(p, current_ewm_mean):

@@ -43,9 +43,9 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_command_response(printer)
 
     @action(detail=True, methods=['get'])
-    def acknowledge_alert(self, request, pk=None):
+    def invalidate_alert(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        printer.acknowledge_alert()
+        printer.invalidate_alert()
         return self.send_command_response(printer)
 
     def send_command_response(self, printer):

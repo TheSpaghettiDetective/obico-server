@@ -9,16 +9,17 @@ import logging
 from urllib.parse import urlparse
 import ipaddress
 
+from app.models import Printer
 from lib import site
 
 LOGGER = logging.getLogger(__name__)
 
-def send_failure_alert(printer, pause_print):
-    send_failure_alert_sms(printer, pause_print)
-    send_failure_alert_email(printer, pause_print)
-    send_failure_alert_pushbullet(printer, pause_print)
+def send_failure_alert(printer, is_warning=True, print_paused=False):
+    send_failure_alert_sms(printer, is_warning, print_paused)
+    send_failure_alert_email(printer, is_warning, print_paused)
+    send_failure_alert_pushbullet(printer, is_warning, print_paused)
 
-def send_failure_alert_email(printer, pause_print):
+def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -32,12 +33,16 @@ def send_failure_alert_email(printer, pause_print):
     except:
         attachments = []
 
-    subject = 'Your print {} may be failing on {}'.format(printer.current_print.filename or '', printer.name)
+    subject = 'Your print {} on {} {}.'.format(
+        printer.current_print.filename or '',
+        printer.name,
+        'smells fishy' if is_warning else 'is probably failing')
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
         'printer': printer,
-        'pause_print': pause_print,
+        'print_paused': print_paused,
+        'is_warning': is_warning,
         'view_link': site.build_full_url('/printers/'),
         'cancel_link': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
         'resume_link': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)),
@@ -56,7 +61,7 @@ def send_failure_alert_email(printer, pause_print):
         msg.content_subtype = 'html'
         msg.send()
 
-def send_failure_alert_sms(printer, pause_print):
+def send_failure_alert_sms(printer, is_warning, print_paused):
     if not settings.TWILIO_ENABLED:
         LOGGER.warn("Twilio settings are missing. Ignored send requests")
         return
@@ -68,24 +73,39 @@ def send_failure_alert_sms(printer, pause_print):
     from_number = settings.TWILIO_FROM_NUMBER
 
     to_number = printer.user.phone_country_code + printer.user.phone_number
-    msg = 'The Spaghetti Detective - Your print {} may be failing on {}. {}Go check it at: {}'.format(
+
+    pausing_msg = ''
+    if print_paused:
+        pausing_msg = 'Printer is paused. '
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        pausing_msg = 'Printer is NOT paused. '
+
+    msg = 'The Spaghetti Detective - Your print {} on {} {}. {}Go check it at: {}'.format(
         printer.current_print.filename or '',
         printer.name,
-        'Printer is paused. ' if pause_print else '',
+        'smells fishy' if is_warning else 'is probably failing',
+        pausing_msg,
         site.build_full_url('/'))
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
 
 
-def send_failure_alert_pushbullet(printer, pause_print):
+def send_failure_alert_pushbullet(printer, is_warning, print_paused):
     if not printer.user.has_valid_pushbullet_token():
         return
 
+    pausing_msg = ''
+    if print_paused:
+        pausing_msg = 'Printer is paused. '
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it. '
+
     pb = Pushbullet(printer.user.pushbullet_access_token)
-    title = 'The Spaghetti Detective - Your print {} may be failing on {}.'.format(
-        printer.current_print.filename or '', printer.name)
+    title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
+        printer.current_print.filename or '',
+        printer.name,
+        'smells fishy' if is_warning else 'is probably failing')
     link = site.build_full_url('/')
-    body = '{}Go check it at: {}'.format(
-        'Printer is paused. ' if pause_print else '', link)
+    body = '{}Go check it at: {}'.format(pausing_msg, link)
 
     try:
         file_url = None

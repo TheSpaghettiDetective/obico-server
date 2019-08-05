@@ -205,10 +205,15 @@ class Printer(SafeDeleteModel):
         return self.current_print != None
 
     def resume_print(self, mute_alert=False):
-        if self.is_printing():          # when a link on an old email is clicked
-            self.acknowledge_alert()
-            if mute_alert:
-                self.mute_current_print(True)
+        if self.current_print == None: # when a link on an old email is clicked
+            return
+
+        self.current_print.paused_at = None
+        self.current_print.save()
+
+        self.invalidate_alert()
+        if mute_alert:
+            self.mute_current_print(True)
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
@@ -218,6 +223,11 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('resume')
 
     def pause_print(self):
+        if self.current_print == None:
+            return
+
+        self.current_print.paused_at = timezone.now()
+        self.current_print.save()
 
         # TODO: find a more elegant way to prevent rage clicking
         last_commands = self.printercommand_set.order_by('-id')[:1]
@@ -232,19 +242,26 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('pause', args=args)
 
     def cancel_print(self):
-        if self.is_printing():
-            self.acknowledge_alert()
+        self.acknowledge_alert()
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):
         self.current_print.alerted_at = timezone.now()
         self.current_print.alert_acknowledged_at = None
+        self.current_print.alert_invalidated_at = None
         self.current_print.save()
 
     def acknowledge_alert(self):
-        self.current_print.alerted_at = None
-        self.current_print.alert_acknowledged_at = timezone.now()
-        self.current_print.save()
+        if self.current_print and self.current_print.alerted_at:
+            self.current_print.alerted_at = None
+            self.current_print.alert_acknowledged_at = timezone.now()
+            self.current_print.save()
+
+    def invalidate_alert(self):
+        if self.current_print and self.current_print.alerted_at:
+            self.current_print.alerted_at = None
+            self.current_print.alert_invalidated_at = timezone.now()
+            self.current_print.save()
 
     def mute_current_print(self, muted):
         self.current_print.alert_muted_at = timezone.now() if muted else None
@@ -337,7 +354,9 @@ class Print(SafeDeleteModel):
     cancelled_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
+    alert_invalidated_at = models.DateTimeField(null=True)
     alert_muted_at = models.DateTimeField(null=True)
+    paused_at = models.DateTimeField(null=True)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)

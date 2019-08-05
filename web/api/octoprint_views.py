@@ -22,20 +22,32 @@ from .octoprint_messages import STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
 
+def alert_suppressed(printer):
+    if printer.current_print == None:
+        return True
+
+    last_invalidated = printer.current_print.alert_invalidated_at or datetime.fromtimestamp(0, timezone.utc)
+    return printer.current_print.alert_muted_at \
+        or (timezone.now() - last_invalidated).total_seconds() < ALERT_COOLDOWN_SECONDS
+
 def alert_if_needed(printer):
-    last_acknowledge = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    if printer.current_print.alerted_at \
-        or printer.current_print.alert_muted_at \
-        or (timezone.now() - last_acknowledge).total_seconds() < ALERT_COOLDOWN_SECONDS:
+    if printer.current_print.alerted_at or alert_suppressed(printer):
         return
 
     printer.set_alert()
+    send_failure_alert(printer, is_warning=True, print_paused=False)
 
-    pause_print = printer.action_on_failure == Printer.PAUSE
-    if pause_print:
+def pause_if_needed(printer):
+    if alert_suppressed(printer):
+        return
+
+    if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
         printer.pause_print()
-
-    send_failure_alert(printer, pause_print)
+        printer.set_alert()
+        send_failure_alert(printer, is_warning=False, print_paused=True)
+    elif not printer.current_print.alerted_at:
+        printer.set_alert()
+        send_failure_alert(printer, is_warning=False, print_paused=False)
 
 def command_response(printer):
     send_commands_to_group(printer.id)
@@ -85,7 +97,9 @@ class OctoPrintPicView(APIView):
         p_out.seek(0)
         save_file_obj('p/{}/{}.json'.format(printer.id, pic_id), p_out, settings.PICS_CONTAINER, return_url=False)
 
-        if is_failing(prediction, printer.detective_sensitivity):
+        if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
+            pause_if_needed(printer)
+        elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
 
         return command_response(printer)

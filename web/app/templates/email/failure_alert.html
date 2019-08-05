@@ -74,9 +74,14 @@
               </table>
               <p>Hi {{ printer.user.first_name|default:"" }},</p>
               <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
-              {% if pause_print %}
+
+              {% if print_paused %}
               <p>
                 The print has been paused. <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
+              </p>
+              {% elif printer.action_on_failure == Printer.PAUSE and is_warning %}
+              <p>
+                Printer is NOT paused because The Detective is not very sure about it.
               </p>
               {% endif %}
               {% if insert_img %}

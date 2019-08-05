@@ -269,9 +269,10 @@ ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
 # Hyper parameters for prediction model
-THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.11'))   # Definitely not failing if ewm mean is below this level. =(0.18 - 0.07): 0.18 - optimal THRESHOLD_LOW in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
-THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.65'))   # Definitely failing if ewm mean is above this level. =(0.72 - 0.07): 0.72 - optimal THRESHOLD_HIGH in hyper params grid search; 0.07 - 2 x median of rolling_mean_short
+THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.38'))   # Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
+THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.78'))   # Definitely failing if ewm mean is above this level. =(0.8 - 0.02): 0.8 - optimal THRESHOLD_HIGH in hyper params grid search; 0.02 - average of rolling_mean_short
 INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # The number of frames at the beginning of the print that are considered "safe"
-ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 5.43))   # Print is failing is ewm mean is this many times over the short rolling mean
+ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 3.8))   # Print is failing is ewm mean is this many times over the short rolling mean
+ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))   # The multiplication factor to escalate "warning" to "error"
 
 TIMELAPSE_MINIMUM_SECONDS = 5 if DEBUG else 300

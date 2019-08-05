@@ -77,7 +77,7 @@
 
               {% if print_paused %}
               <p>
-                The print has been paused. <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
+                <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
               </p>
               {% elif printer.action_on_failure == Printer.PAUSE and is_warning %}
               <p>
@@ -106,7 +106,7 @@
                 </tr>
               </table>
 
-              {% if pause_print %}
+              {% if print_paused %}
               <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
                 <tr>
                   <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "

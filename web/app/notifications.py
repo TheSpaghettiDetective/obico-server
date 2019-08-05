@@ -95,9 +95,9 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
 
     pausing_msg = ''
     if print_paused:
-        pausing_msg = 'Printer is paused. '
+        pausing_msg = 'Printer is paused.'
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
-        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it. '
+        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
     pb = Pushbullet(printer.user.pushbullet_access_token)
     title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
@@ -105,7 +105,7 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
         printer.name,
         'smells fishy' if is_warning else 'is probably failing')
     link = site.build_full_url('/')
-    body = '{}Go check it at: {}'.format(pausing_msg, link)
+    body = '{}\nGo check it at: {}'.format(pausing_msg, link)
 
     try:
         file_url = None

@@ -7,6 +7,7 @@ from . import views
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'printers', views.PrinterViewSet, 'Printer')
+router.register(r'prints', views.PrintViewSet, 'Print')
 
 urlpatterns = [
     path('', include(router.urls)),

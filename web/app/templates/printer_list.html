@@ -42,13 +42,15 @@
         Failure Detected!
         <a id="not-a-failure" href="#">Not a failure?</a>
       </div>
-      <div class="card-body">
+      <div class="px-3 pt-2">
         <div class="mute-toggle" style="display: none">
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
-              <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for this print</label>
-            </div>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
+            <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not alert for this print</label>
           </div>
+        </div>
+      </div>
+      <div class="card-body gauge-container">
         <div class="text-center gauge">
           <canvas class='tangle-index'
           data-type="radial-gauge"
@@ -85,7 +87,7 @@
         <hr />
       </div>
       <div>
-        <div class="print-status container">
+        <div class="info-section container">
           <div id="print-time" style="display: none">
             <div class="row text-subscript text-muted" style="padding-top: 12px;">
                 <div class="col-2">

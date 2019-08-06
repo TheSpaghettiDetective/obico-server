@@ -176,6 +176,37 @@ hr {
   margin-bottom: -150px;
 }
 
+.dg-icon {
+  width: 1em;
+  height: 1em;
+}
+
+/** Shared styles for printer and print cards */
+
+.card {
+  .gauge-container {
+    padding: 0 16px 14px;;
+  }
+  .info-section {
+    background: darken($color-bg, 1);
+    margin-top: -18px;
+
+    .row {
+      padding: 0.3em 0em 0.1em;
+      text-align: center;
+      div[class^="col-"] {
+          padding: 0px 8px;
+      }
+    }
+    .numbers {
+      font-size: 1.5em;
+    }
+    .text-subscript {
+      font-size: 0.8rem;
+    }
+  }
+}
+
 /** Webcam */
 
 .webcam_container {
@@ -289,29 +320,6 @@ hr {
             color: darken($color-primary, 35);
           }
         }
-      }
-    }
-
-    .mute-toggle {
-      margin-top: -0.75rem;
-    }
-
-    .print-status {
-      background: darken($color-bg, 1);
-      margin-top: -18px;
-
-      .row {
-        padding: 0.3em 0em 0.1em;
-        text-align: center;
-        div[class^="col-"] {
-            padding: 0px 8px;
-        }
-      }
-      .numbers {
-        font-size: 1.5em;
-      }
-      .text-subscript {
-        font-size: 0.8rem;
       }
     }
   }
@@ -485,7 +493,6 @@ form#printer_form {
 
   .card-body {
     position: relative;
-    padding: 2rem 0 0.5rem 0;
   }
 
   .card-img-top {
@@ -542,16 +549,12 @@ form#printer_form {
   }
 
   .card-body.plain-view {
-    min-height: 186px;
+    min-height: 10em;
   }
 
   img.toggle-icon {
     width: 20px;
     height: 20px;
-  }
-
-  .print-status {
-    font-size: 0.9rem;
   }
 }
 

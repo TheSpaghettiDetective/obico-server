@@ -346,6 +346,16 @@ class PublicTimelapse(models.Model):
 
 
 class Print(SafeDeleteModel):
+    FAILED = 'FAILED'
+    SUCCEEDED = 'SUCCEEDED'
+    PARTIALY_FAILED = 'PARTIALY_FAILED'
+
+    USER_FEEDBACK = (
+        (FAILED, FAILED),
+        (SUCCEEDED, SUCCEEDED),
+        (PARTIALY_FAILED, PARTIALY_FAILED),
+    )
+
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
@@ -361,6 +371,11 @@ class Print(SafeDeleteModel):
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)
     prediction_json_url = models.CharField(max_length=2000, db_index=True, null=True)
+    user_feedback = models.CharField(
+        max_length=20,
+        choices=USER_FEEDBACK,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -375,3 +390,21 @@ class Print(SafeDeleteModel):
 
     def duration(self):
         return self.ended_at() - self.started_at
+
+    def is_alerted(self):
+        return self.alerted_at or self.alert_acknowledged_at or self.alert_invalidated_at
+
+    def (self):
+        if self.user_feedback == Print.SUCCEEDED:
+            return True
+
+        if self.alert_invalidated_at:
+            return True
+
+        return False
+
+    def is_false_negative(self):
+        return self.user_feedback == Print.FAILED
+
+    def partially_failed(self):
+        return self.user_feedback == Print.PARTIALY_FAILED

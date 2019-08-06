@@ -97,11 +97,22 @@ $(document).ready(function () {
         var numSelected = $('input[id^="select-print-"]:checked').length;
 
         Confirm.fire({
-            text: 'Delete ' + numSelected + ' time-lapses from your gallery?',
+            text: 'Delete ' + numSelected + ' time-lapses permanently?',
         }).then(function (result) {
             if (result.value) {  // When it is confirmed
                 $('#prints-form').submit();
             }
         });
     });
+
+    $("input[type=radio][name=user_feedback]").on('change', function(event) {
+        var form = $(event.target.form);
+        $.ajax({
+            url: '/api/prints/' + form.data('print-id') + '/user_feedback/?value=' + form.serializeArray()[0].value,
+            type: 'GET',
+            dataType: 'json',
+        }).done(function(result) {
+
+        });
+    })
 });

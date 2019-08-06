@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from app.models import *
 from lib import redis
@@ -55,3 +56,17 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     def current_printer_or_404(self, pk):
         return get_object_or_404(self.get_queryset(), pk=pk)
+
+
+class PrintViewSet(viewsets.ModelViewSet):
+
+    def get_queryset(self):
+        return Print.objects.filter(printer__user=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def user_feedback(self, request, pk=None):
+        print = get_object_or_404(self.get_queryset(), pk=pk)
+        print.user_feedback = request.GET.get('value', None)
+        print.save()
+        return Response('ok', status=status.HTTP_200_OK)
+

@@ -43,8 +43,25 @@ footer {
   a.navbar-brand {
     margin-top: -3px;
   }
+
   a.glowing {
     text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px $color-primary, 0 0 70px $color-primary, 0 0 80px $color-primary, 0 0 100px $color-primary, 0 0 150px $color-primary;
+  }
+
+  .badge-btn {
+    position: relative;
+    width: 3.3rem;
+    img {
+      width: 2rem;
+    }
+    .badge {
+      position: absolute;
+      right: 0;
+      top: 2px;
+      height: 18px;
+      border-radius: 4px;
+      background-color: $color-primary;
+    }
   }
 }
 

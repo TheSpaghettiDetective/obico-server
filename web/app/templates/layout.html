@@ -83,6 +83,10 @@
         </ul>
         <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
+          <button type="button" class="btn badge-btn">
+              <img src="{% static 'img/detective-gear-inverse.png' %}"> <span class="badge badge-light">9</span>
+              <span class="sr-only">unread messages</span>
+            </button>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" id="{{user.id}}"
               aria-expanded="false">{{user.first_name|default:user.email}}

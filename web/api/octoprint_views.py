@@ -26,12 +26,17 @@ def alert_suppressed(printer):
     if printer.current_print == None:
         return True
 
-    last_invalidated = printer.current_print.alert_invalidated_at or datetime.fromtimestamp(0, timezone.utc)
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
     return printer.current_print.alert_muted_at \
-        or (timezone.now() - last_invalidated).total_seconds() < ALERT_COOLDOWN_SECONDS
+        or (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
 
 def alert_if_needed(printer):
-    if printer.current_print.alerted_at or alert_suppressed(printer):
+    if alert_suppressed(printer):
+        return
+
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
+    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    if last_alerted > last_acknowledged:
         return
 
     printer.set_alert()
@@ -41,11 +46,14 @@ def pause_if_needed(printer):
     if alert_suppressed(printer):
         return
 
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
+    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
         printer.pause_print()
         printer.set_alert()
         send_failure_alert(printer, is_warning=False, print_paused=True)
-    elif not printer.current_print.alerted_at:
+    elif not last_alerted > last_acknowledged:
         printer.set_alert()
         send_failure_alert(printer, is_warning=False, print_paused=False)
 

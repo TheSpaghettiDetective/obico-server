@@ -36,6 +36,17 @@ $(document).ready(function () {
         });
     }
 
+    function shouldShowAlert(printer) {
+        if (!printer.current_print || !printer.current_print.alerted_at) {
+            return false;
+        }
+        if (!printer.current_print.alert_acknowledged_at) {
+            return true;
+        }
+        return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at));
+
+    }
+
     ifvisible.on("blur", function(){
         closePrinterWebSockets();
     });
@@ -112,7 +123,7 @@ $(document).ready(function () {
                 });
             } else {
                 $.ajax({
-                    url: '/api/printers/' + printerId + '/invalidate_alert/',
+                    url: '/api/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
                     type: 'GET',
                     dataType: 'json',
                 });
@@ -141,7 +152,7 @@ $(document).ready(function () {
             printerNameDiv.removeClass("secondary-title");
         }
 
-        if (printer.current_print && printer.current_print.alerted_at) {
+        if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
         } else {
             printerCard.find(".failure-alert").hide();

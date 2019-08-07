@@ -44,9 +44,9 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_command_response(printer)
 
     @action(detail=True, methods=['get'])
-    def invalidate_alert(self, request, pk=None):
+    def acknowledge_alert(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        printer.invalidate_alert()
+        printer.acknowledge_alert(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer)
 
     def send_command_response(self, printer):
@@ -64,9 +64,9 @@ class PrintViewSet(viewsets.ModelViewSet):
         return Print.objects.filter(printer__user=self.request.user)
 
     @action(detail=True, methods=['get'])
-    def user_feedback(self, request, pk=None):
+    def alert_overwrite(self, request, pk=None):
         print = get_object_or_404(self.get_queryset(), pk=pk)
-        print.user_feedback = request.GET.get('value', None)
+        print.alert_overwrite = request.GET.get('value', None)
         print.save()
         return Response('ok', status=status.HTTP_200_OK)
 

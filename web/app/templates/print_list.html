@@ -129,17 +129,17 @@
                 <div class="col-sm-12">
                   <form class="user-feedback-form" method="get" data-print-id="{{ print.id }}">
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="user_feedback" {% if print.failed %} checked{% endif %} value="FAILED" class="custom-control-input"
+                      <input type="radio" name="alert_overwrite" {% if print.failed %} checked{% endif %} value="FAILED" class="custom-control-input"
                         id="{{ print.id }}_FAILED">
                       <label class="custom-control-label" for="{{ print.id }}_FAILED">{{ print.is_alerted |yesno:"Yes this print did fail.,This print actually failed."}}</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="user_feedback" {% if print.succeeded %} checked{% endif %} value="SUCCEEDED" class="custom-control-input"
-                        id="{{ print.id}}_SUCCEEDED">
-                      <label class="custom-control-label" for="{{ print.id}}_SUCCEEDED">{{ print.is_alerted |yesno:"Nothing was wrong. It was a false alarm.,Yes this print was successful."}}</label>
+                      <input type="radio" name="alert_overwrite" {% if print.succeeded %} checked{% endif %} value="NOT_FAILED" class="custom-control-input"
+                        id="{{ print.id}}_NOT_FAILED">
+                      <label class="custom-control-label" for="{{ print.id}}_NOT_FAILED">{{ print.is_alerted |yesno:"Nothing was wrong. It was a false alarm.,Yes this print was successful."}}</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="user_feedback" {% if print.partially_failed %} checked{% endif %} value="PARTIALY_FAILED" class="custom-control-input"
+                      <input type="radio" name="alert_overwrite" {% if print.partially_failed %} checked{% endif %} value="PARTIALY_FAILED" class="custom-control-input"
                         id="{{ print.id }}_PARTIALY_FAILED">
                       <label class="custom-control-label" for="{{ print.id }}_PARTIALY_FAILED">There were some problems.
                         But the print managed to finish anyway.</label>

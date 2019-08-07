@@ -211,7 +211,7 @@ class Printer(SafeDeleteModel):
         self.current_print.paused_at = None
         self.current_print.save()
 
-        self.invalidate_alert()
+        self.acknowledge_alert(Print.NOT_FAILED)
         if mute_alert:
             self.mute_current_print(True)
 
@@ -242,25 +242,17 @@ class Printer(SafeDeleteModel):
         self.queue_octoprint_command('pause', args=args)
 
     def cancel_print(self):
-        self.acknowledge_alert()
+        self.acknowledge_alert(Print.FAILED)
         self.queue_octoprint_command('cancel')
 
     def set_alert(self):
         self.current_print.alerted_at = timezone.now()
-        self.current_print.alert_acknowledged_at = None
-        self.current_print.alert_invalidated_at = None
         self.current_print.save()
 
-    def acknowledge_alert(self):
+    def acknowledge_alert(self, alert_overwrite):
         if self.current_print and self.current_print.alerted_at:
-            self.current_print.alerted_at = None
             self.current_print.alert_acknowledged_at = timezone.now()
-            self.current_print.save()
-
-    def invalidate_alert(self):
-        if self.current_print and self.current_print.alerted_at:
-            self.current_print.alerted_at = None
-            self.current_print.alert_invalidated_at = timezone.now()
+            self.current_print.alert_overwrite = alert_overwrite
             self.current_print.save()
 
     def mute_current_print(self, muted):
@@ -347,12 +339,12 @@ class PublicTimelapse(models.Model):
 
 class Print(SafeDeleteModel):
     FAILED = 'FAILED'
-    SUCCEEDED = 'SUCCEEDED'
+    NOT_FAILED = 'NOT_FAILED'
     PARTIALY_FAILED = 'PARTIALY_FAILED'
 
-    USER_FEEDBACK = (
+    ALERT_OVERWRITE = (
         (FAILED, FAILED),
-        (SUCCEEDED, SUCCEEDED),
+        (NOT_FAILED, NOT_FAILED),
         (PARTIALY_FAILED, PARTIALY_FAILED),
     )
 
@@ -364,16 +356,15 @@ class Print(SafeDeleteModel):
     cancelled_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
-    alert_invalidated_at = models.DateTimeField(null=True)
     alert_muted_at = models.DateTimeField(null=True)
     paused_at = models.DateTimeField(null=True)
     video_url = models.CharField(max_length=2000, null=True)
     tagged_video_url = models.CharField(max_length=2000, null=True)
     poster_url = models.CharField(max_length=2000, null=True)
     prediction_json_url = models.CharField(max_length=2000, db_index=True, null=True)
-    user_feedback = models.CharField(
+    alert_overwrite = models.CharField(
         max_length=20,
-        choices=USER_FEEDBACK,
+        choices=ALERT_OVERWRITE,
         null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -392,19 +383,16 @@ class Print(SafeDeleteModel):
         return self.ended_at() - self.started_at
 
     def is_alerted(self):
-        return self.alerted_at or self.alert_acknowledged_at or self.alert_invalidated_at
+        return self.alerted_at or self.alert_acknowledged_at
 
-    def (self):
-        if self.user_feedback == Print.SUCCEEDED:
-            return True
-
-        if self.alert_invalidated_at:
+    def asd(self):
+        if self.alert_overwrite == Print.NOT_FAILED:
             return True
 
         return False
 
     def is_false_negative(self):
-        return self.user_feedback == Print.FAILED
+        return self.alert_overwrite == Print.FAILED
 
     def partially_failed(self):
-        return self.user_feedback == Print.PARTIALY_FAILED
+        return self.alert_overwrite == Print.PARTIALY_FAILED

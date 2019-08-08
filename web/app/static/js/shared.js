@@ -87,11 +87,13 @@ $(document).ready(function () {
         hideTooltip(e.trigger);
     });
 
-    $.ajax({
-        url: '/api/user_credits/total/',
-        type: 'GET',
-        dataType: 'json',
-    }).done(function (userCredits) {
-        easeInUserCredits(userCredits.count);
-    });
+    if (user_authenticated) {
+        $.ajax({
+            url: '/api/user_credits/total/',
+            type: 'GET',
+            dataType: 'json',
+        }).done(function (userCredits) {
+            easeInUserCredits(userCredits.count);
+        });
+    }
 });

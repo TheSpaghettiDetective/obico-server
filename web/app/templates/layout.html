@@ -152,6 +152,10 @@
 
   <script type="text/javascript" src="{% static 'vendor/js/jquery.smartWizard.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/js/ifvisible.min.js' %}"></script>
+
+  <script type="text/javascript">
+    var user_authenticated = {{ user.is_authenticated |yesno:"true,false" }};
+  </script>
   <script src="{% static 'js/shared.js' %}"></script>
   {% block page_js %}{% endblock page_js %}
 </body>

@@ -46,6 +46,13 @@ function hideTooltip(btn) {
     }, 1000);
 }
 
+function easeInUserCredits(credits) {
+    var div = $("#user-credits");
+    div.fadeOut(function () {
+        div.text(credits);
+        div.fadeIn();
+    });
+}
 /*** Swal Mixins */
 
 var Toast = Swal.mixin({
@@ -80,4 +87,11 @@ $(document).ready(function () {
         hideTooltip(e.trigger);
     });
 
+    $.ajax({
+        url: '/api/user_credits/total/',
+        type: 'GET',
+        dataType: 'json',
+    }).done(function (userCredits) {
+        easeInUserCredits(userCredits.count);
+    });
 });

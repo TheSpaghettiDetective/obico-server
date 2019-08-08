@@ -72,3 +72,15 @@ class PrintViewSet(viewsets.ModelViewSet):
         serializer = UserCreditSerializer(credit)
         return Response(serializer.data)
 
+
+class UserCreditViewSet(viewsets.ModelViewSet):
+    serializer_class = UserCreditSerializer
+
+    def get_queryset(self):
+        return UserCredit.objects.filter(user=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def total(self, request, pk=None):
+        user_credits = self.get_queryset()
+        total_credits = sum([c.amount for c in user_credits])
+        return Response({'count': total_credits})

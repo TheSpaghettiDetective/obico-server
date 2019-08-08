@@ -58,17 +58,23 @@ footer {
 
   .badge-btn {
     position: relative;
-    width: 3.3rem;
+    height: 1.8rem;
+    padding-top: 0.4em;
+    margin-right: 1.5em;
     img {
-      width: 2rem;
+      height: 1.3rem;
     }
     .badge {
       position: absolute;
-      right: 0;
-      top: 2px;
+      left: 15px;
+      top: -1px;
       height: 18px;
       border-radius: 4px;
       background-color: $color-primary;
+      transition: transform 0.2s; /* Animation */
+      &:hover {
+        transform: scale(1.5);
+      }
     }
   }
 }

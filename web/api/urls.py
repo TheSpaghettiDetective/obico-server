@@ -8,6 +8,7 @@ from . import views
 router = DefaultRouter()
 router.register(r'printers', views.PrinterViewSet, 'Printer')
 router.register(r'prints', views.PrintViewSet, 'Print')
+router.register(r'user_credits', views.UserCreditViewSet, 'UserCredit')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -124,6 +124,14 @@ def publictimelapse_list(request):
     return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))
 
 
+### Users credits ######
+
+@login_required
+def user_credits(request):
+    user_credits = UserCredit.objects.filter(user = request.user).select_related('print').order_by('-updated_at')
+    total_credits = sum([c.amount for c in user_credits])
+    return render(request, 'user_credits.html', dict(user_credits=user_credits, total_credits=total_credits))
+
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
 def serve_jpg_file(request, file_path):

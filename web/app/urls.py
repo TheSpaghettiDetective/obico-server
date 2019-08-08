@@ -15,4 +15,5 @@ urlpatterns = [
     path('user_preferences/', views.user_preferences, name='user_preferences'),
     path('prints/', views.prints, name='prints'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
+    path('user_credits/', views.user_credits, name='user_credits'),
 ]

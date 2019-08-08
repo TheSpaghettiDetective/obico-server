@@ -115,7 +115,7 @@ $(document).ready(function () {
             Toast.fire({
                 type: 'success',
                 html: '<h6>Thank you for helping The Detective get better.</h6>' +
-                      '<a href="">You just earned ' + _.repeat('<img class="dg-icon" src="/static/img/detective-gear-inverse.png" />', userCredit.amount) +
+                      '<a href="/user_credits/">You just earned ' + '<img class="dg-icon" src="/static/img/detective-gear-4-primary.png" />' +
                       '.</a>',
             });
         });

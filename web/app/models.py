@@ -90,11 +90,28 @@ class User(AbstractUser):
             return False
 
 
+class UserCredit(models.Model):
+    ALERT_OVERWRITE = 'ALERT_OVERWRITE'
+    REASON = (
+        (ALERT_OVERWRITE, ALERT_OVERWRITE),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    amount = models.IntegerField(null=False, default=0)
+    reason = models.CharField(
+        max_length=20,
+        choices=REASON,
+    )
+    print = models.ForeignKey('Print', on_delete=models.CASCADE, null=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class Printer(SafeDeleteModel):
     CANCEL = 'CANCEL'
     PAUSE = 'PAUSE'
     NONE = 'NONE'
-
     ACTION_ON_FAILURE = (
         (NONE, 'Just notify me via email and text.'),
         (PAUSE, 'Pause the print and notify me via email and text.'),
@@ -382,17 +399,5 @@ class Print(SafeDeleteModel):
     def duration(self):
         return self.ended_at() - self.started_at
 
-    def is_alerted(self):
-        return self.alerted_at or self.alert_acknowledged_at
-
-    def asd(self):
-        if self.alert_overwrite == Print.NOT_FAILED:
-            return True
-
-        return False
-
-    def is_false_negative(self):
-        return self.alert_overwrite == Print.FAILED
-
-    def partially_failed(self):
-        return self.alert_overwrite == Print.PARTIALY_FAILED
+    def has_alerted(self):
+        return self.alerted_at

@@ -40,10 +40,7 @@ $(document).ready(function () {
         if (!printer.current_print || !printer.current_print.alerted_at) {
             return false;
         }
-        if (!printer.current_print.alert_acknowledged_at) {
-            return true;
-        }
-        return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at));
+        return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at || 0));
 
     }
 
@@ -67,7 +64,8 @@ $(document).ready(function () {
         printerGet(printerId, command, function () {
             Toast.fire({
                 type: 'success',
-                title: 'Successfully sent command to OctoPrint! It may take a while to be executed by OctoPrint.',
+                title: 'Successfully sent command to OctoPrint!',
+                text: 'It may take a while to be executed by OctoPrint.',
             });
         });
     }

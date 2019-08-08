@@ -13,6 +13,14 @@ body {
   color: $color-secondary;
 }
 
+.color-success {
+  color: $color-success;
+}
+
+.color-error {
+  color: $color-error;
+}
+
 .borderless {
   border: none !important;
 }
@@ -143,8 +151,9 @@ hr {
 .swal2-popup {
   background-color: darken($color-bg, 5) !important;
   border-radius: unset !important;
-  .swal2-title {
+  .swal2-title, .swal2-content, #swal2-content {
     color: $color-text !important;
+    text-align: left !important;
   }
 
   &.swal2-modal {
@@ -177,8 +186,7 @@ hr {
 }
 
 .dg-icon {
-  width: 1em;
-  height: 1em;
+  height: 1.2em;
 }
 
 /** Shared styles for printer and print cards */

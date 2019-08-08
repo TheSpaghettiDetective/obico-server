@@ -68,5 +68,7 @@ class PrintViewSet(viewsets.ModelViewSet):
         print = get_object_or_404(self.get_queryset(), pk=pk)
         print.alert_overwrite = request.GET.get('value', None)
         print.save()
-        return Response('ok', status=status.HTTP_200_OK)
+        credit = UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
+        serializer = UserCreditSerializer(credit)
+        return Response(serializer.data)
 

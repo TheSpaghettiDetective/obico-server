@@ -111,8 +111,13 @@ $(document).ready(function () {
             url: '/api/prints/' + form.data('print-id') + '/alert_overwrite/?value=' + form.serializeArray()[0].value,
             type: 'GET',
             dataType: 'json',
-        }).done(function(result) {
-
+        }).done(function(userCredit) {
+            Toast.fire({
+                type: 'success',
+                html: '<h6>Thank you for helping The Detective get better.</h6>' +
+                      '<a href="">You just earned ' + _.repeat('<img class="dg-icon" src="/static/img/detective-gear-inverse.png" />', userCredit.amount) +
+                      '.</a>',
+            });
         });
     })
 });

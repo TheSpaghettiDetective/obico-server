@@ -110,36 +110,33 @@
             <hr />
           </div>
           <div>
-            <div class="print-actions card-body container">
+            <div class="print-actions card-body container pt-0">
               <div class="row">
                 <div class="col-sm-12">
-                  {% if print.is_alerted %}
-                  <p>Spaghetti was detected on this print.</p>
+                  {% if print.has_alerted %}
+                  <p class="color-error">Spaghetti was detected on this print.</p>
                   {% else %}
-                  <p>The Detective didn't find anything fishy.</p>
+                  <p class="color-success">The Detective didn't find anything fishy.</p>
                   {% endif %}
-                  <p><img class="dg-icon" src="{% static 'img/detective-gear-inverse.png' %}" /><img class="dg-icon"
-                      src="{% static 'img/detective-gear-inverse.png' %}" /><img class="dg-icon"
-                      src="{% static 'img/detective-gear-inverse.png' %}" /><img class="dg-icon"
-                      src="{% static 'img/detective-gear-inverse.png' %}" />
-                    &nbsp;You can help The Detective get better by telling her what really happened to this print:</p>
+                  <p>Help The Detective get better by telling her what actually happened to this print. <img class="dg-icon"
+                    src="{% static 'img/detective-gear-4-inverse.png' %}" /> <a href="">What is it?</a></p>
                 </div>
               </div>
               <div class="row">
                 <div class="col-sm-12">
                   <form class="user-feedback-form" method="get" data-print-id="{{ print.id }}">
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="alert_overwrite" {% if print.failed %} checked{% endif %} value="FAILED" class="custom-control-input"
+                      <input type="radio" name="alert_overwrite" {% if print.alert_overwrite == 'FAILED' %} checked{% endif %} value="FAILED" class="custom-control-input"
                         id="{{ print.id }}_FAILED">
-                      <label class="custom-control-label" for="{{ print.id }}_FAILED">{{ print.is_alerted |yesno:"Yes this print did fail.,This print actually failed."}}</label>
+                      <label class="custom-control-label" for="{{ print.id }}_FAILED">{{ print.has_alerted |yesno:"Yes this print did fail.,This print actually failed."}}</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="alert_overwrite" {% if print.succeeded %} checked{% endif %} value="NOT_FAILED" class="custom-control-input"
+                      <input type="radio" name="alert_overwrite" {% if print.alert_overwrite == 'NOT_FAILED' %} checked{% endif %} value="NOT_FAILED" class="custom-control-input"
                         id="{{ print.id}}_NOT_FAILED">
-                      <label class="custom-control-label" for="{{ print.id}}_NOT_FAILED">{{ print.is_alerted |yesno:"Nothing was wrong. It was a false alarm.,Yes this print was successful."}}</label>
+                      <label class="custom-control-label" for="{{ print.id}}_NOT_FAILED">{{ print.has_alerted |yesno:"Nothing was wrong. It was a false alarm.,Yes this print was successful."}}</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input type="radio" name="alert_overwrite" {% if print.partially_failed %} checked{% endif %} value="PARTIALY_FAILED" class="custom-control-input"
+                      <input type="radio" name="alert_overwrite" {% if print.alert_overwrite == 'PARTIALY_FAILED' %} checked{% endif %} value="PARTIALY_FAILED" class="custom-control-input"
                         id="{{ print.id }}_PARTIALY_FAILED">
                       <label class="custom-control-label" for="{{ print.id }}_PARTIALY_FAILED">There were some problems.
                         But the print managed to finish anyway.</label>

@@ -74,16 +74,18 @@ def delete_printer(request, pk=None):
 @login_required
 def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
-    printer.cancel_print()
-    send_commands_to_group(printer.id)
-    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel'})
+    succeeded, alert_acknowledged = printer.cancel_print()
+    if succeeded:
+        send_commands_to_group(printer.id)
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel', 'succeeded': succeeded, 'alert_acknowledged': alert_acknowledged})
 
 @login_required
 def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
-    printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
-    send_commands_to_group(printer.id)
-    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume'})
+    succeeded, alert_acknowledged = printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+    if succeeded:
+        send_commands_to_group(printer.id)
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'alert_acknowledged': alert_acknowledged})
 
 
 # User preferences
@@ -93,7 +95,7 @@ def user_preferences(request):
     form = UserPrefernecesForm(request.POST or None, request.FILES or None, instance=request.user)
     if request.method == "POST":
         if form.is_valid():
-            user = form.save()
+            form.save()
             messages.success(request, 'Your preferences have been updated successfully!')
 
     return render(request, 'user_preferences.html', dict(form=form))
@@ -103,6 +105,8 @@ def user_preferences(request):
 @login_required
 def prints(request):
     prints = get_prints(request).filter(prediction_json_url__isnull=False).order_by('-id')
+    if request.GET.get('deleted', False):
+        prints = prints.all(force_visibility=True)
     page_obj = get_paginator(prints, request, 9)
     prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))

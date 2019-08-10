@@ -61,11 +61,16 @@ $(document).ready(function () {
     }
 
     function sendPrinterCommand(printerId, command) {
-        printerGet(printerId, command, function () {
+        printerGet(printerId, command, function (result) {
+            var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
+            '<p>It may take a while to be executed by OctoPrint.</p>';
+            if (result.alert_acknowledged) {
+                toastHtml += '<p>BTW <a href="/user_credits/">You just earned ' +
+                '<img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" />.</a><p>';
+            }
             Toast.fire({
                 type: 'success',
-                title: 'Successfully sent command to OctoPrint!',
-                text: 'It may take a while to be executed by OctoPrint.',
+                html: toastHtml,
             });
         });
     }
@@ -109,7 +114,8 @@ $(document).ready(function () {
             if (printerCard.find("#print-pause-resume").text() == 'Resume') {
                 Confirm.fire({
                     title: 'Noted!',
-                    text: 'What do you want to do now?',
+                    html: '<a href="/user_credits/">You just earned ' + '<img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" />' + '.</a>' +
+                    '<p /><p>What do you want to do now?</p>',
                     confirmButtonText: 'Resume print',
                     cancelButtonText: 'Resume, and don\'t alert again for this print',
                 }).then(function (result) {
@@ -126,8 +132,8 @@ $(document).ready(function () {
                     dataType: 'json',
                 });
                 Swal.fire({
-                    title: 'Noted!',
-                    text: 'Thank you for your feedback.',
+                    html: '<h6>Noted!</h6><p>Thank you for your feedback.</p><p><a href="/user_credits/">You just earned ' +
+                        '<img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" />' + '.</a></p>',
                     timer: 2500
                 })
             }
@@ -140,6 +146,8 @@ $(document).ready(function () {
 
         var printFilenameDiv = printerCard.find(".print-filename");
         var printerNameDiv = printerCard.find(".printer-name");
+        var pauseResumeBtn = printerCard.find("#print-pause-resume");
+        var cancelBtn = printerCard.find('#print-cancel');
 
         if (printer.current_print && printer.current_print.filename) {
             printFilenameDiv.text(printer.current_print.filename);
@@ -152,8 +160,12 @@ $(document).ready(function () {
 
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
+            pauseResumeBtn.find("img").show();
+            cancelBtn.find("img").show();
         } else {
             printerCard.find(".failure-alert").hide();
+            pauseResumeBtn.find("img").hide();
+            cancelBtn.find("img").hide();
         }
 
         if (printer.current_print) {
@@ -173,9 +185,11 @@ $(document).ready(function () {
         }
 
         if (_.get(printer, 'status.state.text') === 'Paused') {
-            printerCard.find("#print-pause-resume").addClass('btn-success').removeClass('btn-warning').text('Resume');
+            pauseResumeBtn.addClass('btn-success').removeClass('btn-warning');
+            pauseResumeBtn.find('span').text('Resume');
         } else {
-            printerCard.find("#print-pause-resume").removeClass('btn-success').addClass('btn-warning').text('Pause');
+            pauseResumeBtn.removeClass('btn-success').addClass('btn-warning');
+            pauseResumeBtn.find('span').text('Pause ');
         }
 
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);

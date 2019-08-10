@@ -37,10 +37,11 @@
           </div>
         </div>
       </div>
-      <div class="failure-alert card-body bg-warning text-center" style="display: none">
-        <i class="fas fa-exclamation-triangle"></i>
-        Failure Detected!
-        <a id="not-a-failure" href="#">Not a failure?</a>
+      <div class="failure-alert card-body bg-warning px-2 py-1" style="display: none">
+        <i class="fas fa-exclamation-triangle align-middle"></i>
+        <span class="align-middle">Failure Detected!</span>
+        <button type="button" id="not-a-failure" class="btn btn-outline-primary btn-sm float-right">Not a failure?
+          <img class="dg-icon" src="{% static 'img/detective-gear-4-inverse.png' %}" /></button>
       </div>
       <div class="px-3 pt-2">
         <div class="mute-toggle" style="display: none">
@@ -114,13 +115,13 @@
           <div id="status_temp_block">
           </div>
         </div>
-        <div class="print-actions card-body container">
+        <div class="print-actions container">
           <div class="row">
             <div class="col-sm-6">
-              <button id="print-pause-resume" type="button" class="btn btn-warning btn-block" disabled>Pause</button>
+              <button id="print-pause-resume" type="button" class="btn btn-warning btn-block mt-2" disabled><span>Pause </span><img class="dg-icon" style="display: none;" src="{% static 'img/detective-gear-4-inverse.png' %}" /></button>
             </div>
             <div class="col-sm-6">
-              <button id="print-cancel" type="button" class="btn btn-danger btn-block" disabled>Cancel</button>
+              <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" disabled><span>Cancel </span><img class="dg-icon" style="display: none;" src="{% static 'img/detective-gear-4-inverse.png' %}" /></button>
             </div>
           </div>
         </div>

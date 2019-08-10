@@ -193,6 +193,7 @@ hr {
 
 .dg-icon {
   height: 1em;
+  vertical-align: text-bottom;
 }
 
 /** Shared styles for printer and print cards */
@@ -327,7 +328,6 @@ hr {
       }
 
       &.failure-alert {
-        padding: .65em 1em;
         a {
           color: darken($color-primary, 20);
           &:hover {
@@ -493,10 +493,6 @@ form#printer_form {
 /**** printer-acted */
 .printer-acted {
   text-align: center;
-
-  i {
-    color: $color-success;
-  }
 }
 
 /*** timelapse-gallery  */

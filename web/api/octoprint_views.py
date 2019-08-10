@@ -21,6 +21,7 @@ from lib.channels import send_commands_to_group, send_status_to_group
 from .octoprint_messages import STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
+VISUALIZATION_THRESH = 0.2  # The thresh for a box to be drawn on the detective view
 
 def alert_suppressed(printer):
     if printer.current_print == None:
@@ -94,7 +95,8 @@ class OctoPrintPicView(APIView):
 
         pic.file.seek(0)  # Reset file object pointer so that we can load it again
         tagged_img = io.BytesIO()
-        overlay_detections(Image.open(pic), detections).save(tagged_img, "JPEG")
+        detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
+        overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
         tagged_img.seek(0)
         _, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, pic_id), tagged_img, settings.PICS_CONTAINER)
         redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)

@@ -11,7 +11,7 @@ import requests
 from auth import token_required
 from lib.detection_model import load_net, detect
 
-THRESH = 0.08
+THRESH = 0.08  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
 
 app = flask.Flask(__name__)

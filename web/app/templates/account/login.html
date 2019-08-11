@@ -16,21 +16,22 @@
 
       {% if socialaccount_providers %}
       <div class="social-login">
-        <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i
-              class="fab fa-facebook-f"></i> Sign In with Facebook</span> </a>
-        <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn" role="button"><span><i
-              class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
+        <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+          role="button"><span><i class="fab fa-facebook-f"></i> Sign In with Facebook</span> </a>
+        <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+          role="button"><span><i class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
       </div>
       {% endif %}
 
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
 
       <form class="login form-signin" method="POST" action="{% url 'account_login' %}">
-          {% if form.errors %}
-          <div style="padding-bottom: 0.5em">
-          <span class="text-danger">Wrong email or password.</span> <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        {% if form.errors %}
+        <div style="padding-bottom: 0.5em">
+          <span class="text-danger">Wrong email or password.</span> <a class="button secondaryAction"
+            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
         </div>
-          {% endif %}
+        {% endif %}
         {% csrf_token %}
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
         <div class="input-group">
@@ -44,8 +45,11 @@
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
         <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
-        <a class="button secondaryAction float-left" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-        <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >></a>
+        <div class="pt-2">
+          <a class="button secondaryAction float-left"
+            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >></a>
+        </div>
       </form>
     </div>
   </div>

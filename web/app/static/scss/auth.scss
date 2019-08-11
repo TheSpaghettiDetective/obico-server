@@ -2,10 +2,10 @@
 
 #logreg-forms{
     margin:10vh auto;
+    padding: 0em 1.5em;
     background-color: $color-form-bg;
     box-shadow: 0 7px 7px rgba(0, 0, 0, 0.12), 0 12px 40px rgba(0,0,0,0.24);
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-
 
     h1 {
         padding: 24px;
@@ -13,8 +13,7 @@
 
     form {
         width: 100%;
-        max-width: 510px;
-        padding: 1em 1em 3.5em 1em;
+        padding: 1em 0em 3.5em 0em;
         margin: auto;
     }
     .form-control {
@@ -40,19 +39,19 @@
     }
 
     .social-login{
-        width:490px;
-        margin:0 auto;
         margin-bottom: 14px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
     .social-btn{
         font-weight: 100;
+        width: 49%;
         color:white;
-        width:240px;
         font-size: 0.9rem;
     }
 
     a{
-        padding-top:10px;
         color:#fff;
     }
 
@@ -87,18 +86,18 @@
 
   @media screen and (max-width:500px){
       #logreg-forms{
-          width:300px;
+        padding: 0em 0.5em;
 
        .social-login{
-          width:200px;
           margin:0 auto;
           margin-bottom: 10px;
+          flex-direction: column;
       }
       .social-btn{
           font-size: 1.3rem;
           font-weight: 100;
+          width: 100%;
           color:white;
-          width:200px;
           height: 56px;
 
       }

@@ -13,8 +13,15 @@
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
       <div id="logreg-forms">
 
-      <h1 class="text-center">{% trans "Sign Up" %}</h1>
-
+      <h1 class="text-center">{% trans "Beta Testing Sign Up" %}</h1>
+      <ul class="small">
+        <li>As a beta tester, you will have access to the FULL FEATURES of The Spaghetti Detective during beta
+          testing period.</li>
+        <li>After beta testing ends, you will have the option to turn your test account into the FREE service tier,
+          or upgrade it to a premium account.</li>
+        <li>Please make sure you have <a class="js-scroll-trigger" href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#hardware-requirements">what's needed to use The Spaghetti
+            Detective </a> before you sign up.</li>
+      </ul>
       {% if socialaccount_providers %}
       <div class="social-login">
           <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn" role="button"><span><i class="fab fa-facebook-f"></i> Sign up with Facebook</span> </a>
@@ -63,7 +70,7 @@
       {% endwith %}
       <input type="hidden" name="next" value="/" />
       <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
-      <a class="button secondaryAction float-right" href="{% url 'account_login' %}">{% trans "Sign In" %} >></a>
+      <a class="button secondaryAction float-right pt-2" href="{% url 'account_login' %}">{% trans "Sign In" %} >></a>
     </form>
   </div>
   </div>

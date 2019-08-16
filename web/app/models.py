@@ -57,7 +57,8 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
-
+    telegram_secret = models.CharField(db_index=True, max_length=24, unique=True, null=True, blank=True)
+    telegram_chat_id = models.BigIntegerField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -66,6 +67,9 @@ class User(AbstractUser):
 
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
+
+    def telegram_eligible(self):
+        return not not self.telegram_chat_id # coerce truthy/falsey into true/false
 
     def is_primary_email_verified(self):
         """Checks if the users primary email address is verified"""

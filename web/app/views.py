@@ -4,20 +4,49 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
 
+from ipaddress import ip_address, ip_network
+
 from .models import *
 from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
+from .telegram_bot import bot_name, handle_callback_query
+
+# This list from https://core.telegram.org/bots/webhooks
+TELEGRAM_IPS = [ip_network('149.154.160.0/20'), ip_network('91.108.4.0/22')]
 
 # Create your views here.
 def index(request):
     return redirect('/printers/')
+
+@csrf_exempt
+@require_POST
+def telegram(request):
+    # verify request came from telegram
+    forwarded_for = u'{}'.format(request.META.get('HTTP_X_FORWARDED_FOR'))
+    client_ip_address = ip_address(forwarded_for)
+
+    valid_ip = False
+    for network in TELEGRAM_IPS:
+        if client_ip_address in network:
+            valid_ip = True
+
+    if not valid_ip:
+        return JsonResponse({'forbidden': 'Request came from invalid IP'})
+
+    body = json.loads(request.body)
+    callback = body['callback_query']
+    handle_callback_query(callback)
+
+    return JsonResponse({'ok': 'POST request processed'})
 
 @login_required
 def priner_auth_token(request, pk):
@@ -92,13 +121,13 @@ def resume_printer(request, pk):
 
 @login_required
 def user_preferences(request):
-    form = UserPrefernecesForm(request.POST or None, request.FILES or None, instance=request.user)
+    form = UserPreferencesForm(request.POST or None, request.FILES or None, instance=request.user)
     if request.method == "POST":
         if form.is_valid():
             form.save()
             messages.success(request, 'Your preferences have been updated successfully!')
 
-    return render(request, 'user_preferences.html', dict(form=form))
+    return render(request, 'user_preferences.html', dict(form=form, bot_name=bot_name))
 
 ### Prints and public time lapse ###
 

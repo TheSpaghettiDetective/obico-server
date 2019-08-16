@@ -1,10 +1,14 @@
+from django.conf import settings
 from django.db import models
-from django.forms import ModelForm, Form, CharField, ChoiceField
+from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
+from secrets import token_hex
 
 from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
+from .validators import validate_telegram_login
 from .models import *
+from .telegram_bot import bot, send_notification
 
 class PrinterForm(ModelForm):
     class Meta:
@@ -14,10 +18,12 @@ class PrinterForm(ModelForm):
             'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }
 
-class UserPrefernecesForm(ModelForm):
+class UserPreferencesForm(ModelForm):
+    telegram_chat_id = CharField(widget=HiddenInput(), validators=[validate_telegram_login], required=False)
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token']
+        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token', 'telegram_secret', 'telegram_chat_id']
         widgets = {
             'phone_country_code': PhoneCountryCodeWidget()
         }
@@ -30,6 +36,7 @@ class UserPrefernecesForm(ModelForm):
 
     def clean(self):
         data = self.cleaned_data
+
         phone_number = (data['phone_country_code'] or '') + (data['phone_number'] or '')
 
         if phone_number:
@@ -47,3 +54,17 @@ class UserPrefernecesForm(ModelForm):
             except PushbulletError:
                 self.add_error('pushbullet_access_token',
                                'Invalid pushbullet access token.')
+
+        if not data['telegram_chat_id']:
+            data['telegram_chat_id'] = None
+
+        if bot and data['telegram_chat_id']:
+            auth = json.loads(data['telegram_chat_id'])
+            data['telegram_chat_id'] = auth['id']
+            telegram_chat_id = data['telegram_chat_id']
+
+            # When a user logs in, we save their chat id and their secret.
+            # We use their secret to validate web hooks,
+            # so we can query for the user and be sure they're not being spoofed.
+            data['telegram_secret'] = token_hex(12)
+            telegram_secret = data['telegram_secret']

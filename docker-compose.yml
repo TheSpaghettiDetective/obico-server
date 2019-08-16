@@ -30,6 +30,7 @@ x-web-defaults: &web-defaults
     # ENALBE_HISTORY:
     # ML_API_TOKEN:
     # SENTRY_DSN:
+    # TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
 
 services:
   ml_api:

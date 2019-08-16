@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 {% load widget_tweaks %}
-{%  load socialaccount %}
+{% load socialaccount %}
 
 {% block content %}
 <div class="row justify-content-center user-preferences">
@@ -102,6 +102,16 @@
             {% endif %}
           </div>
         </div>
+        <br />
+        {% if bot_name %}
+        <h3>Telegram</h3>
+        <small class="form-text text-muted">
+          Login to be notified by our Telegram bot.
+        </small>
+        <br />
+        {{ form.telegram_chat_id }}
+        {% include "telegram_button.html" with form=form bot_name=bot_name %}
+        {% endif %}
         <br /><br />
         <div class="form-group row">
           <div class="col-sm-12">

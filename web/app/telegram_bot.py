@@ -140,8 +140,8 @@ def handle_callback_query(call):
         prefix = "✅" if succeeded else "❌"
         bot.answer_callback_query(call['id'], reply)
         bot.edit_message_caption(f'{prefix} {reply}', chat_id=chat_id, message_id=message_id)
-        reset_markup(chat_id, message_id)
     except:
-        reset_markup(chat_id, message_id)
+        pass
 
+    reset_markup(chat_id, message_id)
     return succeeded

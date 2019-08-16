@@ -64,7 +64,7 @@ $(document).ready(function () {
         printerGet(printerId, command, function (result) {
             var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
             '<p>It may take a while to be executed by OctoPrint.</p>';
-            if (result.alert_acknowledged) {
+            if (result.user_credited) {
                 toastHtml += '<p>BTW <a href="/user_credits/">You just earned ' +
                 '<img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" />.</a><p>';
             }

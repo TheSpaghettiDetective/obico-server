@@ -74,18 +74,18 @@ def delete_printer(request, pk=None):
 @login_required
 def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
-    succeeded, alert_acknowledged = printer.cancel_print()
+    succeeded, user_credited = printer.cancel_print()
     if succeeded:
         send_commands_to_group(printer.id)
-    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel', 'succeeded': succeeded, 'alert_acknowledged': alert_acknowledged})
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel', 'succeeded': succeeded, 'user_credited': user_credited})
 
 @login_required
 def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
-    succeeded, alert_acknowledged = printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+    succeeded, user_credited = printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
     if succeeded:
         send_commands_to_group(printer.id)
-    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'alert_acknowledged': alert_acknowledged})
+    return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
 
 
 # User preferences

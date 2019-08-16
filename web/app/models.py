@@ -221,7 +221,7 @@ class Printer(SafeDeleteModel):
     def is_printing(self):
         return self.current_print != None
 
-    ## return: succeeded, alert_acknowledged ##
+    ## return: succeeded, user_credited ##
     def resume_print(self, mute_alert=False):
         if self.current_print == None: # when a link on an old email is clicked
             return False, False
@@ -234,14 +234,14 @@ class Printer(SafeDeleteModel):
         self.current_print.paused_at = None
         self.current_print.save()
 
-        alert_acknowledged = self.acknowledge_alert(Print.NOT_FAILED)
+        user_credited = self.acknowledge_alert(Print.NOT_FAILED)
         if mute_alert:
             self.mute_current_print(True)
 
         self.queue_octoprint_command('resume')
-        return True, alert_acknowledged
+        return True, user_credited
 
-    ## return: succeeded, alert_acknowledged ##
+    ## return: succeeded, user_credited ##
     def pause_print(self):
         if self.current_print == None:
             return False, False
@@ -263,14 +263,14 @@ class Printer(SafeDeleteModel):
 
         return True, False
 
-    ## return: succeeded, alert_acknowledged ##
+    ## return: succeeded, user_credited ##
     def cancel_print(self):
         if self.current_print == None: # when a link on an old email is clicked
             return False, False
 
-        alert_acknowledged = self.acknowledge_alert(Print.FAILED)
+        user_credited = self.acknowledge_alert(Print.FAILED)
         self.queue_octoprint_command('cancel')
-        return True, alert_acknowledged
+        return True, user_credited
 
     def set_alert(self):
         self.current_print.alerted_at = timezone.now()
@@ -280,11 +280,15 @@ class Printer(SafeDeleteModel):
         if not self.current_print.alerted_at:
             return False
 
+        user_credited = False
+        if self.current_print.alert_overwrite == None:
+            UserCredit.objects.create(user=self.user, print=self.current_print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
+            user_credited = True
+
         self.current_print.alert_acknowledged_at = timezone.now()
         self.current_print.alert_overwrite = alert_overwrite
         self.current_print.save()
-        UserCredit.objects.create(user=self.user, print=self.current_print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
-        return True
+        return user_credited
 
     def mute_current_print(self, muted):
         self.current_print.alert_muted_at = timezone.now() if muted else None

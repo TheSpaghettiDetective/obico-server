@@ -22,20 +22,20 @@ class PrinterViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        succeeded, alert_acknowledged = printer.cancel_print()
-        return self.send_command_response(printer, succeeded, alert_acknowledged)
+        succeeded, user_credited = printer.cancel_print()
+        return self.send_command_response(printer, succeeded, user_credited)
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        succeeded, alert_acknowledged = printer.pause_print()
-        return self.send_command_response(printer, succeeded, alert_acknowledged)
+        succeeded, user_credited = printer.pause_print()
+        return self.send_command_response(printer, succeeded, user_credited)
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        succeeded, alert_acknowledged = printer.resume_print(mute_alert=request.GET.get('mute_alert', None))
-        return self.send_command_response(printer, succeeded, alert_acknowledged)
+        succeeded, user_credited = printer.resume_print(mute_alert=request.GET.get('mute_alert', None))
+        return self.send_command_response(printer, succeeded, user_credited)
 
     @action(detail=True, methods=['get'])
     def mute_current_print(self, request, pk=None):
@@ -46,12 +46,12 @@ class PrinterViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def acknowledge_alert(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        alert_acknowledged = printer.acknowledge_alert(request.GET.get('alert_overwrite'))
-        return self.send_command_response(printer, alert_acknowledged, alert_acknowledged)
+        user_credited = printer.acknowledge_alert(request.GET.get('alert_overwrite'))
+        return self.send_command_response(printer, user_credited, user_credited)
 
-    def send_command_response(self, printer, succeeded, alert_acknowledged):
+    def send_command_response(self, printer, succeeded, user_credited):
         send_commands_to_group(printer.id)
-        return Response(dict(succeeded=succeeded, alert_acknowledged=alert_acknowledged))
+        return Response(dict(succeeded=succeeded, user_credited=user_credited))
 
     def current_printer_or_404(self, pk):
         return get_object_or_404(self.get_queryset(), pk=pk)
@@ -65,11 +65,16 @@ class PrintViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def alert_overwrite(self, request, pk=None):
         print = get_object_or_404(self.get_queryset(), pk=pk)
+
+        user_credited = False
+        if print.alert_overwrite == None:
+            UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
+            user_credited = True
+
         print.alert_overwrite = request.GET.get('value', None)
         print.save()
-        credit = UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
-        serializer = UserCreditSerializer(credit)
-        return Response(serializer.data)
+
+        return Response(dict(user_credited=user_credited))
 
 
 class UserCreditViewSet(viewsets.ModelViewSet):

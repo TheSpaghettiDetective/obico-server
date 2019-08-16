@@ -126,7 +126,7 @@ def handle_callback_query(call):
         return confirm_print_failed(chat_id, message_id, secret, printer_id)
 
     try:
-        printer = get_printer(printer_id)
+        printer = get_printer(user, printer_id)
     except:
         reset_markup(chat_id, message_id)
         return False

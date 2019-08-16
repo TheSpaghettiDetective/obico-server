@@ -109,43 +109,39 @@ def send_notification(chat_id, notification_text, photo, user, printer_id=None):
 
 def handle_callback_query(call):
     if not bot:
-        return
+        return False
 
     command, printer_id, secret = call['data'].split('|')
     chat_id, message_id = call['message']['chat']['id'], call['message']['message_id']
 
-    try:
-        user = get_user(secret)
-    except:
-        reset_markup(chat_id, message_id)
-        return False
-
-    if command == 'nevermind':
-        return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=inline_markup(user, printer_id))
-    elif command == 'print_failed':
-        return confirm_print_failed(chat_id, message_id, secret, printer_id)
-
-    try:
-        printer = get_printer(user, printer_id)
-    except:
-        reset_markup(chat_id, message_id)
-        return False
-
     reply = ''
     succeeded = False
-    if command == 'resume':
-        succeeded, alert_acknowledged = printer.resume_print()
-        reply = 'Resumed the print' if succeeded else 'Could not resume the print'
-    elif command == 'do_not_ask':
-        succeeded, alert_acknowledged = printer.resume_print(mute_alert=True)
-        reply = 'Resumed the print. Will not pause again during this print' if succeeded else 'Could not resume the print'
-    elif command == 'cancel':
-        succeeded, alert_acknowledged = printer.cancel_print()
-        reply = 'Canceled the print' if succeeded else 'Could not cancel the print'
 
-    prefix = "✅" if succeeded else "❌"
-    bot.answer_callback_query(call['id'], reply)
-    bot.edit_message_caption(f'{prefix} {reply}', chat_id=chat_id, message_id=message_id)
-    reset_markup(chat_id, message_id)
+    try:
+        user = get_user(secret)
+
+        if command == 'nevermind':
+            return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=inline_markup(user, printer_id))
+        elif command == 'print_failed':
+            return confirm_print_failed(chat_id, message_id, secret, printer_id)
+
+        printer = get_printer(user, printer_id)
+
+        if command == 'resume':
+            succeeded, alert_acknowledged = printer.resume_print()
+            reply = 'Resumed the print' if succeeded else 'Could not resume the print'
+        elif command == 'do_not_ask':
+            succeeded, alert_acknowledged = printer.resume_print(mute_alert=True)
+            reply = 'Resumed the print. Will not pause again during this print' if succeeded else 'Could not resume the print'
+        elif command == 'cancel':
+            succeeded, alert_acknowledged = printer.cancel_print()
+            reply = 'Canceled the print' if succeeded else 'Could not cancel the print'
+
+        prefix = "✅" if succeeded else "❌"
+        bot.answer_callback_query(call['id'], reply)
+        bot.edit_message_caption(f'{prefix} {reply}', chat_id=chat_id, message_id=message_id)
+        reset_markup(chat_id, message_id)
+    except:
+        reset_markup(chat_id, message_id)
 
     return succeeded

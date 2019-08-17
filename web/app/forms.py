@@ -3,12 +3,11 @@ from django.db import models
 from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
-from secrets import token_hex
 
 from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
 from .validators import validate_telegram_login
 from .models import *
-from .telegram_bot import bot, send_notification
+from .telegram_bot import bot
 
 class PrinterForm(ModelForm):
     class Meta:
@@ -23,7 +22,7 @@ class UserPreferencesForm(ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token', 'telegram_secret', 'telegram_chat_id']
+        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token', 'telegram_chat_id']
         widgets = {
             'phone_country_code': PhoneCountryCodeWidget()
         }
@@ -60,11 +59,4 @@ class UserPreferencesForm(ModelForm):
 
         if bot and data['telegram_chat_id']:
             auth = json.loads(data['telegram_chat_id'])
-            data['telegram_chat_id'] = auth['id']
-            telegram_chat_id = data['telegram_chat_id']
-
-            # When a user logs in, we save their chat id and their secret.
-            # We use their secret to validate web hooks,
-            # so we can query for the user and be sure they're not being spoofed.
-            data['telegram_secret'] = token_hex(12)
-            telegram_secret = data['telegram_secret']
+            data['telegram_chat_id'] = telegram_chat_id = auth['id']

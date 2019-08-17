@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='user',
-            name='telegram_secret',
-            field=models.CharField(db_index=True, max_length=24, unique=True, blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='user',
             name='telegram_chat_id',
             field=models.BigIntegerField(blank=True, null=True),
         )

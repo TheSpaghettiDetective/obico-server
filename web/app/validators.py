@@ -5,6 +5,8 @@ import hashlib
 import hmac
 from time import time
 
+# See https://core.telegram.org/widgets/login#checking-authorization for more information
+# on how this auth validation works.
 def validate_telegram_login(auth_dict):
     if not auth_dict:
         return

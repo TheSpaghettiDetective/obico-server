@@ -57,7 +57,6 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
-    telegram_secret = models.CharField(db_index=True, max_length=24, unique=True, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'

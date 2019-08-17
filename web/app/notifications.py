@@ -11,15 +11,19 @@ from urllib.parse import urlparse
 import ipaddress
 
 from app.models import Printer
-import app.telegram_bot
+from app.telegram_bot import send_notification as send_telegram_notification
 from lib import site
 
 LOGGER = logging.getLogger(__name__)
-TELEGRAM_BOT = TeleBot(settings.TELEGRAM_BOT_TOKEN)
 
 def notification_elements(printer, is_warning, print_paused):
+    filename = ''
+    print(f'{printer.current_print}')
+    if printer.current_print:
+        filename = printer.current_print.filename
+
     title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
-        printer.current_print.filename or '',
+        filename,
         printer.name,
         'smells fishy' if is_warning else 'is probably failing')
 
@@ -138,9 +142,12 @@ def send_failure_alert_telegram(printer, is_warning, print_paused):
     if not printer.user.telegram_eligible():
         return
 
-    chat_id = printer.user.telegram_chat_id
-    notification_text = notification_elements(printer, is_warning, print_paused)
-
     photo = get_photo(printer)
 
-    telegram_bot.send_notification(chat_id, notification_text, photo, printer_id)
+    action = ''
+    if print_paused:
+        action = 'The print is paused.'
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        'Printer is NOT paused because The Detective is not very sure about it.'
+
+    send_telegram_notification(printer, action, photo)

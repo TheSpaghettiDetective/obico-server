@@ -12,16 +12,13 @@ from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
 
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_address
 
 from .models import *
 from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
-from .telegram_bot import bot_name, handle_callback_query
-
-# This list from https://core.telegram.org/bots/webhooks
-TELEGRAM_IPS = [ip_network('149.154.160.0/20'), ip_network('91.108.4.0/22')]
+from .telegram_bot import bot_name, handle_callback_query, valid_telegram_ip
 
 # Create your views here.
 def index(request):
@@ -32,14 +29,9 @@ def index(request):
 def telegram(request):
     # verify request came from telegram
     forwarded_for = u'{}'.format(request.META.get('HTTP_X_FORWARDED_FOR'))
-    client_ip_address = ip_address(forwarded_for)
+    ip = ip_address(forwarded_for)
 
-    valid_ip = False
-    for network in TELEGRAM_IPS:
-        if client_ip_address in network:
-            valid_ip = True
-
-    if not valid_ip:
+    if not valid_telegram_ip(ip):
         return JsonResponse({'forbidden': 'Request came from invalid IP'})
 
     body = json.loads(request.body)

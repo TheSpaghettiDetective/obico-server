@@ -3,10 +3,19 @@ from django.conf import settings
 from lib import site
 import logging
 import sys
+from secrets import token_hex
+from ipaddress import ip_address, ip_network
+from lib.redis import REDIS
 
 from .models import User, Printer
 
 LOGGER = logging.getLogger(__name__)
+
+# This list from https://core.telegram.org/bots/webhooks
+TELEGRAM_CALLBACK_IPS = [ip_network('149.154.160.0/20'), ip_network('91.108.4.0/22')]
+
+def valid_telegram_ip(ip):
+    return any([ip in network for network in TELEGRAM_CALLBACK_IPS])
 
 bot = None
 bot_name = None
@@ -21,17 +30,30 @@ if settings.TELEGRAM_BOT_TOKEN:
 
     # This is in case a user is running the bot locally and doesn't have a web-accessible url
     try:
-        bot.set_webhook(site.build_full_url('/telegram/'))
+        bot.set_webhook(site.build_full_url('/channels/telegram/'))
         webhooks_enabled = True
     except:
         webhooks_enabled = False
 
+# When the bot sends a notification, we stick a secret key into redis with their userid as a value.
+# We use this to securely connect the callback to their uuid.
+# See https://core.telegram.org/bots#deep-linking-example for more info.
+def generate_callback_secret(user):
+    secret = token_hex(12)
+    REDIS.set(secret, user.id, nx=True)
+    return secret
+
 def closer_look_button():
     return types.InlineKeyboardButton('Go to The Spaghetti Detective to take a closer look.', url=site.build_full_url('/printers/'))
 
-def inline_markup(user, printer_id=None):
-    secret = user.telegram_secret
-    callback_data = lambda callback: f'{callback}|{printer_id}|{secret}'
+def default_markup():
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup.add(closer_look_button())
+    return markup
+
+def inline_markup(printer):
+    secret = generate_callback_secret(printer.user)
+    callback_data = lambda callback: f'{callback}|{printer.id}|{secret}'
 
     if webhooks_enabled:
         button_list = [
@@ -43,22 +65,35 @@ def inline_markup(user, printer_id=None):
                 callback_data=callback_data('do_not_ask')),
             closer_look_button()
         ]
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(*button_list)
     else:
-        button_list = [closer_look_button()]
+        markup = default_markup()
 
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(*button_list)
     return markup
 
-def initialize_response_objects(chat_id, notification_text, user, printer_id=None):
-    notification = '{}. {}'.format(notification_text['title'], notification_text['body'])
-    return [notification, inline_markup(user, printer_id)]
+def notification_text():
+    # The telegram bot will send a message based on the failure_alert.html template,
+    # rather than the pushbullet/sms template.
+    return """Hi {},
 
-def confirm_print_failed(chat_id, message_id, secret, printer_id=None):
+The Spaghetti Detective spotted some suspicious activity on your printer {}.
+
+{}"""
+
+def initialize_response_objects(chat_id, action, printer):
+    notification = notification_text().format(
+        printer.user.first_name or '',
+        printer.name,
+        action)
+    return [notification, inline_markup(printer)]
+
+def confirm_print_failed(chat_id, message_id, printer):
     if not bot:
         return
 
-    callback_data = lambda callback: f'{callback}|{printer_id}|{secret}'
+    secret = generate_callback_secret(printer.user)
+    callback_data = lambda callback: f'{callback}|{printer.id}|{secret}'
 
     button_list_confirm = [
         types.InlineKeyboardButton("I'm sure it failed. Cancel the print.",
@@ -73,39 +108,31 @@ def confirm_print_failed(chat_id, message_id, secret, printer_id=None):
     bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=markup_confirm)
 
 def get_user(secret):
-    users = User.objects.filter(telegram_secret=secret)
+    user_id = REDIS.get(secret)
+    REDIS.delete(secret)
 
-    if len(users) is not 1:
-        LOGGER.warning('Callback called with invalid secret.')
-        raise
-
-    return users[0]
+    return User.objects.get(pk=user_id)
 
 def get_printer(user, printer_id):
-    printer = Printer.objects.filter(user=user, id=printer_id)
-
-    if len(printers) is not 1:
-        LOGGER.warning('Callback called with invalid printer id.')
-        raise
-
-    return printers[0]
+    return Printer.objects.filter(user=user).get(pk=printer_id)
 
 def reset_markup(chat_id, message_id):
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(closer_look_button())
-    return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=markup)
+    return bot.edit_message_reply_markup(
+        chat_id=chat_id, message_id=message_id, reply_markup=default_markup()
+    )
 
-def send_notification(chat_id, notification_text, photo, user, printer_id=None):
+def send_notification(printer, action, photo):
     if not bot:
         return
 
+    chat_id = printer.user.telegram_chat_id
     telegram_user = bot.get_chat(chat_id)
-    notification, keyboard = initialize_response_objects(telegram_user, notification_text, user, printer_id=None)
+    notification, keyboard = initialize_response_objects(telegram_user, action, printer)
 
     if photo:
         bot.send_photo(chat_id, photo, caption=notification, reply_markup=keyboard)
     else:
-        bot.send_message(chat_id, notification)
+        bot.send_message(chat_id, notification, reply_markup=default_markup())
 
 def handle_callback_query(call):
     if not bot:
@@ -119,13 +146,12 @@ def handle_callback_query(call):
 
     try:
         user = get_user(secret)
+        printer = get_printer(user, printer_id)
 
         if command == 'nevermind':
-            return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=inline_markup(user, printer_id))
+            return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=inline_markup(printer))
         elif command == 'print_failed':
-            return confirm_print_failed(chat_id, message_id, secret, printer_id)
-
-        printer = get_printer(user, printer_id)
+            return confirm_print_failed(chat_id, message_id, printer)
 
         if command == 'resume':
             succeeded, alert_acknowledged = printer.resume_print()
@@ -137,9 +163,12 @@ def handle_callback_query(call):
             succeeded, alert_acknowledged = printer.cancel_print()
             reply = 'Canceled the print' if succeeded else 'Could not cancel the print'
 
-        prefix = "✅" if succeeded else "❌"
         bot.answer_callback_query(call['id'], reply)
-        bot.edit_message_caption(f'{prefix} {reply}', chat_id=chat_id, message_id=message_id)
+
+        action = f'✅ {reply}' if succeeded else f'❌ {reply}'
+        notification, _ = initialize_response_objects(chat_id, action, printer)
+
+        bot.edit_message_caption(notification, chat_id=chat_id, message_id=message_id)
     except:
         pass
 

@@ -25,7 +25,7 @@ class AlertTestCase(TestCase):
 
     def test_warning_once_and_cancel(self, send_failure_alert):
         response = self.client.get('/api/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'alert_acknowledged': False})
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': False})
 
         alert_if_needed(self.printer)
         send_failure_alert.assert_called_once_with(self.printer, is_warning=True, print_paused=False)
@@ -33,7 +33,7 @@ class AlertTestCase(TestCase):
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
         response = self.client.get('/api/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'alert_acknowledged': True})
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': True})
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at > self.printer.current_print.alerted_at)
         self.assertEqual(self.printer.current_print.alert_overwrite, Print.FAILED)
@@ -45,7 +45,7 @@ class AlertTestCase(TestCase):
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
         response = self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'alert_acknowledged': True})
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': True})
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at > self.printer.current_print.alerted_at)
         self.assertEqual(self.printer.current_print.alert_overwrite, Print.NOT_FAILED)

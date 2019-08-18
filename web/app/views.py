@@ -18,27 +18,10 @@ from .models import *
 from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
-from .telegram_bot import bot_name, handle_callback_query, valid_telegram_ip
 
 # Create your views here.
 def index(request):
     return redirect('/printers/')
-
-@csrf_exempt
-@require_POST
-def telegram(request):
-    # verify request came from telegram
-    forwarded_for = u'{}'.format(request.META.get('HTTP_X_FORWARDED_FOR'))
-    ip = ip_address(forwarded_for)
-
-    if not valid_telegram_ip(ip):
-        return JsonResponse({'forbidden': 'Request came from invalid IP'})
-
-    body = json.loads(request.body)
-    callback = body['callback_query']
-    handle_callback_query(callback)
-
-    return JsonResponse({'ok': 'POST request processed'})
 
 @login_required
 def priner_auth_token(request, pk):

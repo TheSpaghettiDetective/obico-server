@@ -1,11 +1,7 @@
 from telebot import TeleBot, types
 from django.conf import settings
-from django.urls import reverse
 from lib import site
-from lib.redis import REDIS
-from secrets import token_hex
-from ipaddress import ip_address, ip_network
-from .models import User, Printer
+from .models import Printer
 
 import logging
 
@@ -21,53 +17,34 @@ if settings.TELEGRAM_BOT_TOKEN:
     except:
         bot, bot_name = None, None
 
-    try:
-        bot.set_webhook( site.build_full_url(reverse('telegram')) )
-        webhooks_enabled = True
-    except Exception as e:
-        LOGGER.warning(f'Could not set webhook url because: {e}')
-        webhooks_enabled = False
-
-# This list from https://core.telegram.org/bots/webhooks
-TELEGRAM_CALLBACK_IPS = [ip_network('149.154.160.0/20'), ip_network('91.108.4.0/22')]
-
-def valid_telegram_ip(ip):
-    return any([ip in network for network in TELEGRAM_CALLBACK_IPS])
-
-# When the bot sends a notification, we stick a secret key into redis with their userid as a value.
-# We use this to securely connect the callback to their uuid.
-# See https://core.telegram.org/bots#deep-linking-example for more info.
-def generate_callback_secret(user):
-    secret = token_hex(12)
-    REDIS.set(secret, user.id, nx=True)
-    return secret
-
-def closer_look_button():
-    return types.InlineKeyboardButton('Go to The Spaghetti Detective to take a closer look.', url=site.build_full_url('/printers/'))
+MORE_INFO_LINK = site.build_full_url('/printers/')
 
 def default_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(closer_look_button())
+    markup.add(types.InlineKeyboardButton('Go to The Spaghetti Detective to take a closer look.',
+        url=MORE_INFO_LINK))
     return markup
 
 def inline_markup(printer):
-    secret = generate_callback_secret(printer.user)
-    callback_data = lambda callback: f'{callback}|{printer.id}|{secret}'
+    links = {
+        'cancel': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
+        'resume': site.build_full_url('/printers/{}/resume/'.format(printer.id)),
+        'do_not_ask': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)),
+        'more_info': MORE_INFO_LINK
+    }
 
-    if webhooks_enabled:
-        button_list = [
-            types.InlineKeyboardButton('Yes it failed. Cancel the print!',
-                callback_data=callback_data('print_failed')),
-            types.InlineKeyboardButton('It is a false alarm. Resume the print!',
-                callback_data=callback_data('resume')),
-            types.InlineKeyboardButton("Resume the print, and don't alert me for the rest of this print.",
-                callback_data=callback_data('do_not_ask')),
-            closer_look_button()
-        ]
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        markup.add(*button_list)
-    else:
-        markup = default_markup()
+    button_list = [
+        types.InlineKeyboardButton('Yes it failed. Cancel the print!',
+            url=links['cancel']),
+        types.InlineKeyboardButton('It is a false alarm. Resume the print!',
+            url=links['resume']),
+        types.InlineKeyboardButton("Resume the print, and don't alert me for the rest of this print.",
+            url=links['do_not_ask']),
+        types.InlineKeyboardButton('Go to The Spaghetti Detective to take a closer look.',
+            url=links['more_info'])
+    ]
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup.add(*button_list)
 
     return markup
 
@@ -87,39 +64,6 @@ def initialize_response_objects(chat_id, action, printer):
         action)
     return [notification, inline_markup(printer)]
 
-def confirm_print_failed(chat_id, message_id, printer):
-    if not bot:
-        return
-
-    secret = generate_callback_secret(printer.user)
-    callback_data = lambda callback: f'{callback}|{printer.id}|{secret}'
-
-    button_list_confirm = [
-        types.InlineKeyboardButton("I'm sure it failed. Cancel the print.",
-            callback_data=callback_data('cancel')),
-        types.InlineKeyboardButton("I changed my mind. Don't cancel the print.",
-            callback_data=callback_data('nevermind'))
-    ]
-
-    markup_confirm = types.InlineKeyboardMarkup(row_width=1)
-    markup_confirm.add(*button_list_confirm)
-
-    bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=markup_confirm)
-
-def get_user(secret):
-    user_id = REDIS.get(secret)
-    REDIS.delete(secret)
-
-    return User.objects.get(pk=user_id)
-
-def get_printer(user, printer_id):
-    return Printer.objects.filter(user=user).get(pk=printer_id)
-
-def reset_markup(chat_id, message_id):
-    return bot.edit_message_reply_markup(
-        chat_id=chat_id, message_id=message_id, reply_markup=default_markup()
-    )
-
 def send_notification(printer, action, photo):
     if not bot:
         return
@@ -132,44 +76,3 @@ def send_notification(printer, action, photo):
         bot.send_photo(chat_id, photo, caption=notification, reply_markup=keyboard)
     else:
         bot.send_message(chat_id, notification, reply_markup=default_markup())
-
-def handle_callback_query(call):
-    if not bot:
-        return False
-
-    command, printer_id, secret = call['data'].split('|')
-    chat_id, message_id = call['message']['chat']['id'], call['message']['message_id']
-
-    reply = ''
-    succeeded = False
-
-    try:
-        user = get_user(secret)
-        printer = get_printer(user, printer_id)
-
-        if command == 'nevermind':
-            return bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=inline_markup(printer))
-        elif command == 'print_failed':
-            return confirm_print_failed(chat_id, message_id, printer)
-
-        if command == 'resume':
-            succeeded, alert_acknowledged = printer.resume_print()
-            reply = 'Resumed the print' if succeeded else 'Could not resume the print'
-        elif command == 'do_not_ask':
-            succeeded, alert_acknowledged = printer.resume_print(mute_alert=True)
-            reply = 'Resumed the print. Will not pause again during this print' if succeeded else 'Could not resume the print'
-        elif command == 'cancel':
-            succeeded, alert_acknowledged = printer.cancel_print()
-            reply = 'Canceled the print' if succeeded else 'Could not cancel the print'
-
-        bot.answer_callback_query(call['id'], reply)
-
-        action = f'✅ {reply}' if succeeded else f'❌ {reply}'
-        notification, _ = initialize_response_objects(chat_id, action, printer)
-
-        bot.edit_message_caption(notification, chat_id=chat_id, message_id=message_id)
-    except:
-        pass
-
-    reset_markup(chat_id, message_id)
-    return succeeded

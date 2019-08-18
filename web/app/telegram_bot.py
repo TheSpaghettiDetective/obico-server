@@ -8,14 +8,10 @@ import logging
 LOGGER = logging.getLogger(__name__)
 bot = None
 bot_name = None
-webhooks_enabled = True
 
 if settings.TELEGRAM_BOT_TOKEN:
-    try:
-        bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
-        bot_name = bot.get_me().username
-    except:
-        bot, bot_name = None, None
+    bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
+    bot_name = bot.get_me().username
 
 MORE_INFO_LINK = site.build_full_url('/printers/')
 

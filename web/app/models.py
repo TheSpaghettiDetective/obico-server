@@ -67,9 +67,6 @@ class User(AbstractUser):
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
 
-    def telegram_eligible(self):
-        return not not self.telegram_chat_id # coerce truthy/falsey into true/false
-
     def is_primary_email_verified(self):
         """Checks if the users primary email address is verified"""
         if EmailAddress.objects.filter(user=self, email=self.email,

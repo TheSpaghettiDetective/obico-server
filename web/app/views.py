@@ -4,15 +4,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
-
-from ipaddress import ip_address
 
 from .models import *
 from .forms import *

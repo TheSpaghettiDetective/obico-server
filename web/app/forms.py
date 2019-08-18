@@ -7,7 +7,7 @@ from pushbullet import Pushbullet, PushbulletError
 from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
 from .validators import validate_telegram_login
 from .models import *
-from .telegram_bot import bot
+from .telegram_bot import bot as telebot
 
 class PrinterForm(ModelForm):
     class Meta:
@@ -54,9 +54,4 @@ class UserPreferencesForm(ModelForm):
                 self.add_error('pushbullet_access_token',
                                'Invalid pushbullet access token.')
 
-        if not data['telegram_chat_id']:
-            data['telegram_chat_id'] = None
-
-        if bot and data['telegram_chat_id']:
-            auth = json.loads(data['telegram_chat_id'])
-            data['telegram_chat_id'] = telegram_chat_id = auth['id']
+        data['telegram_chat_id'] = json.loads(data['telegram_chat_id'])['id'] if telebot and data['telegram_chat_id'] else None

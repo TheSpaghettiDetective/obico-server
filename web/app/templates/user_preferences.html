@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 {% load widget_tweaks %}
-{%  load socialaccount %}
+{% load socialaccount %}
 
 {% block content %}
 <div class="row justify-content-center user-preferences">
@@ -102,6 +102,41 @@
             {% endif %}
           </div>
         </div>
+        <br />
+        {% if bot_name %}
+        <h3>Telegram</h3>
+        <small class="form-text text-muted">
+          Login to be notified by our Telegram bot.
+        </small>
+        <br />
+        {{ form.telegram_chat_id }}
+        <div class="form-group row">
+        {% if user.telegram_chat_id %}
+        <div class="col-sm-12" id="id_telegram_logout_btn">
+        <div class="btn btn-primary float-left"
+          onclick="onTelegramLogout()">Unlink Telegram</div>
+        </div>
+        {% else %}
+        <script async src="https://telegram.org/js/telegram-widget.js?7"
+          data-telegram-login="{{ bot_name }}"
+          data-size="large"
+          data-onauth="onTelegramAuth(user)"
+          data-request-access="write"></script>
+        {% endif %}
+
+        <script type="text/javascript">
+          function onTelegramAuth(user) {
+            document.getElementById("id_telegram_chat_id").value = JSON.stringify(user);
+            document.getElementById("preference_form").submit()
+          }
+
+          function onTelegramLogout() {
+            document.getElementById("id_telegram_chat_id").value = "";
+            document.getElementById("preference_form").submit()
+          }
+        </script>
+        </div>
+        {% endif %}
         <br /><br />
         <div class="form-group row">
           <div class="col-sm-12">

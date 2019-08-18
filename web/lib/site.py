@@ -1,3 +1,4 @@
+from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.models import Site
 from django.conf import settings
 import re

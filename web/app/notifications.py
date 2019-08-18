@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 import ipaddress
 
 from app.models import Printer
+from app.telegram_bot import send_notification as send_telegram_notification
 from lib import site
 
 LOGGER = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     send_failure_alert_sms(printer, is_warning, print_paused)
     send_failure_alert_email(printer, is_warning, print_paused)
     send_failure_alert_pushbullet(printer, is_warning, print_paused)
+    send_failure_alert_telegram(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:
@@ -124,3 +126,26 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
         LOGGER.error(e)
     except PushbulletError as e:
         LOGGER.error(e)
+
+def send_failure_alert_telegram(printer, is_warning, print_paused):
+    if not printer.user.telegram_chat_id:
+        return
+
+    try:
+        photo = requests.get(printer.pic['img_url']).content
+    except:
+        photo = None
+
+    action = ''
+    if print_paused:
+        action = 'The print is paused.'
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        'Printer is NOT paused because The Detective is not very sure about it.'
+
+    notification_text = f"""Hi *{printer.user.first_name or ''}*,
+
+_The Spaghetti Detective_ spotted some suspicious activity on your printer *{printer.name}*.
+
+{action}"""
+
+    send_telegram_notification(printer, notification_text, photo)

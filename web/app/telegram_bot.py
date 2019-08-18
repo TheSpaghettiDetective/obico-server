@@ -12,6 +12,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 bot = None
 bot_name = None
+webhooks_enabled = True
 
 if settings.TELEGRAM_BOT_TOKEN:
     try:
@@ -20,32 +21,17 @@ if settings.TELEGRAM_BOT_TOKEN:
     except:
         bot, bot_name = None, None
 
+    try:
+        bot.set_webhook( site.build_full_url(reverse('telegram')) )
+        webhooks_enabled = True
+    except:
+        webhooks_enabled = False
+
 # This list from https://core.telegram.org/bots/webhooks
 TELEGRAM_CALLBACK_IPS = [ip_network('149.154.160.0/20'), ip_network('91.108.4.0/22')]
 
 def valid_telegram_ip(ip):
     return any([ip in network for network in TELEGRAM_CALLBACK_IPS])
-
-def webhooks_enabled():
-    try:
-        return not not bot.get_webhook_info().url # coerce string into bool
-    except:
-        return False
-
-# A middleware for enabling webhooks for telegram. Webhooks require https to be set up.
-def enable_webhooks(get_response):
-    def middleware(request):
-        # Try/except in case a user is running the bot locally
-        # and doesn't have a web-accessible url
-        try:
-            if not webhooks_enabled():
-                bot.set_webhook( site.build_full_url(reverse('telegram'), request) )
-        except Exception as e:
-            LOGGER.warning(e)
-
-        return get_response(request)
-
-    return middleware
 
 # When the bot sends a notification, we stick a secret key into redis with their userid as a value.
 # We use this to securely connect the callback to their uuid.
@@ -67,7 +53,7 @@ def inline_markup(printer):
     secret = generate_callback_secret(printer.user)
     callback_data = lambda callback: f'{callback}|{printer.id}|{secret}'
 
-    if webhooks_enabled():
+    if webhooks_enabled:
         button_list = [
             types.InlineKeyboardButton('Yes it failed. Cancel the print!',
                 callback_data=callback_data('print_failed')),

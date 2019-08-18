@@ -14,6 +14,7 @@ from .models import *
 from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
+from .telegram_bot import bot_name
 
 # Create your views here.
 def index(request):

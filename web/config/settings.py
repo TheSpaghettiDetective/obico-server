@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'bootstrap_pagination',
     'jstemplate',
     'pushbullet',
+    'telebot',
     'app',  # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',
@@ -72,7 +73,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -233,11 +234,14 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER')
 TWILIO_ENABLED = TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER
 
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+
 # settings export
 SETTINGS_EXPORT = [
     'EXTRA_JS',
     'TWILIO_ENABLED',
     'ACCOUNT_EMAIL_VERIFICATION',
+    'TELEGRAM_BOT_TOKEN',
 ]
 
 # Celery

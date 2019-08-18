@@ -4,34 +4,67 @@ from django.core.mail import EmailMessage
 from twilio.rest import Client
 from django.conf import settings
 from pushbullet import Pushbullet, PushbulletError, PushError
+from telebot import TeleBot, types
 import requests
 import logging
 from urllib.parse import urlparse
 import ipaddress
 
 from app.models import Printer
+from app.telegram_bot import send_notification as send_telegram_notification
 from lib import site
 
 LOGGER = logging.getLogger(__name__)
+
+def notification_elements(printer, is_warning, print_paused):
+    filename = ''
+    print(f'{printer.current_print}')
+    if printer.current_print:
+        filename = printer.current_print.filename
+
+    title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
+        filename,
+        printer.name,
+        'smells fishy' if is_warning else 'is probably failing')
+
+    pausing_msg = ''
+    if print_paused:
+        pausing_msg = 'Printer is paused.'
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
+
+
+    link = site.build_full_url('/')
+
+    body = '{}\nGo check it at: {}'.format(pausing_msg, link)
+
+    return { 'title': title, 'body': body, 'link': link }
+
+def get_photo(printer):
+    try:
+        if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
+            return None
+        else:
+            return requests.get(printer.pic['img_url']).content
+    except:
+        return None
 
 def send_failure_alert(printer, is_warning=True, print_paused=False):
     send_failure_alert_sms(printer, is_warning, print_paused)
     send_failure_alert_email(printer, is_warning, print_paused)
     send_failure_alert_pushbullet(printer, is_warning, print_paused)
+    send_failure_alert_telegram(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:
-        LOGGER.warn("Email settings are missing. Ignored send requests")
+        LOGGER.warn('Email settings are missing. Ignored send requests')
         return
 
     # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
-    try:
-        if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
-            attachments = []
-        else:
-            attachments = [('Detected Failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
-    except:
-        attachments = []
+    photo = get_photo(printer)
+    attachments = []
+    if photo:
+        attachments = [('Detected Failure.jpg', photo, 'image/jpeg')]
 
     subject = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
@@ -63,7 +96,7 @@ def send_failure_alert_email(printer, is_warning, print_paused):
 
 def send_failure_alert_sms(printer, is_warning, print_paused):
     if not settings.TWILIO_ENABLED:
-        LOGGER.warn("Twilio settings are missing. Ignored send requests")
+        LOGGER.warn('Twilio settings are missing. Ignored send requests')
         return
 
     if not printer.user.sms_eligible():
@@ -73,19 +106,9 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
     from_number = settings.TWILIO_FROM_NUMBER
 
     to_number = printer.user.phone_country_code + printer.user.phone_number
+    notification_text = notification_elements(printer, is_warning, print_paused)
 
-    pausing_msg = ''
-    if print_paused:
-        pausing_msg = 'Printer is paused. '
-    elif printer.action_on_failure == Printer.PAUSE and is_warning:
-        pausing_msg = 'Printer is NOT paused. '
-
-    msg = 'The Spaghetti Detective - Your print {} on {} {}. {}Go check it at: {}'.format(
-        printer.current_print.filename or '',
-        printer.name,
-        'smells fishy' if is_warning else 'is probably failing',
-        pausing_msg,
-        site.build_full_url('/'))
+    msg = '{}. {}'.format(notification_text['title'], notification_text['body'])
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
 
 
@@ -93,19 +116,9 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
     if not printer.user.has_valid_pushbullet_token():
         return
 
-    pausing_msg = ''
-    if print_paused:
-        pausing_msg = 'Printer is paused.'
-    elif printer.action_on_failure == Printer.PAUSE and is_warning:
-        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
-
     pb = Pushbullet(printer.user.pushbullet_access_token)
-    title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
-        printer.current_print.filename or '',
-        printer.name,
-        'smells fishy' if is_warning else 'is probably failing')
-    link = site.build_full_url('/')
-    body = '{}\nGo check it at: {}'.format(pausing_msg, link)
+    notification_text = notification_elements(printer, is_warning, print_paused)
+    title, link, body = notification_text['title'], notification_text['link'], notification_text['body']
 
     try:
         file_url = None
@@ -117,10 +130,24 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
             pass
 
         if file_url:
-            pb.push_file(file_url=file_url, file_name="Detected Failure.jpg", file_type="image/jpeg", body=body, title=title)
+            pb.push_file(file_url=file_url, file_name='Detected Failure.jpg', file_type='image/jpeg', body=body, title=title)
         else:
             pb.push_link(title, link, body)
     except PushError as e:
         LOGGER.error(e)
     except PushbulletError as e:
         LOGGER.error(e)
+
+def send_failure_alert_telegram(printer, is_warning, print_paused):
+    if not printer.user.telegram_eligible():
+        return
+
+    photo = get_photo(printer)
+
+    action = ''
+    if print_paused:
+        action = 'The print is paused.'
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        'Printer is NOT paused because The Detective is not very sure about it.'
+
+    send_telegram_notification(printer, action, photo)

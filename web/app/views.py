@@ -4,11 +4,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
+
+from ipaddress import ip_address
 
 from .models import *
 from .forms import *
@@ -92,13 +96,13 @@ def resume_printer(request, pk):
 
 @login_required
 def user_preferences(request):
-    form = UserPrefernecesForm(request.POST or None, request.FILES or None, instance=request.user)
+    form = UserPreferencesForm(request.POST or None, request.FILES or None, instance=request.user)
     if request.method == "POST":
         if form.is_valid():
             form.save()
             messages.success(request, 'Your preferences have been updated successfully!')
 
-    return render(request, 'user_preferences.html', dict(form=form))
+    return render(request, 'user_preferences.html', dict(form=form, bot_name=bot_name))
 
 ### Prints and public time lapse ###
 

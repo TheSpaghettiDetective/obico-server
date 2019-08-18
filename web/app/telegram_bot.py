@@ -51,9 +51,9 @@ def inline_markup(printer):
 def notification_text():
     # The telegram bot will send a message based on the failure_alert.html template,
     # rather than the pushbullet/sms template.
-    return """Hi {},
+    return """Hi *{}*,
 
-The Spaghetti Detective spotted some suspicious activity on your printer {}.
+_The Spaghetti Detective_ spotted some suspicious activity on your printer *{}*.
 
 {}"""
 
@@ -73,6 +73,6 @@ def send_notification(printer, action, photo):
     notification, keyboard = initialize_response_objects(telegram_user, action, printer)
 
     if photo:
-        bot.send_photo(chat_id, photo, caption=notification, reply_markup=keyboard)
+        bot.send_photo(chat_id, photo, caption=notification, parse_mode='Markdown', reply_markup=keyboard)
     else:
-        bot.send_message(chat_id, notification, reply_markup=default_markup())
+        bot.send_message(chat_id, notification, parse_mode='Markdown', reply_markup=default_markup())

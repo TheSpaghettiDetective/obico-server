@@ -24,7 +24,8 @@ if settings.TELEGRAM_BOT_TOKEN:
     try:
         bot.set_webhook( site.build_full_url(reverse('telegram')) )
         webhooks_enabled = True
-    except:
+    except Exception as e:
+        LOGGER.warning(f'Could not set webhook url because: {e}')
         webhooks_enabled = False
 
 # This list from https://core.telegram.org/bots/webhooks

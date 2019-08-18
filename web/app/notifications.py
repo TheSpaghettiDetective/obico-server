@@ -125,6 +125,7 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
     except PushError as e:
         LOGGER.error(e)
     except PushbulletError as e:
+        LOGGER.error(e)
 
 def send_failure_alert_telegram(printer, is_warning, print_paused):
     if not printer.user.telegram_chat_id:

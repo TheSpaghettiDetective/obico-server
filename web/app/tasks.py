@@ -78,6 +78,10 @@ def compile_timelapse(self, print_id):
 
     shutil.rmtree(to_dir, ignore_errors=True)
 
+@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
+def detect_timelapse(self, print_id):
+    pass
+
 def download_files(filenames, to_dir):
     output_files = []
     for filename in filenames:

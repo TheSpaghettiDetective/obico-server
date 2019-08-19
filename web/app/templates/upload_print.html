@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="row justify-content-center py-5">
+  <div class="col-sm-12 col-lg-6 ">
+    <p>Upload time-lapse videos to see if The Detective can correctly tell the bad prints from the good ones.</p>
+    <p>You will earn <img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" /> for each time-lapse you upload.</p>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-sm-12 col-lg-6">
+  <form action="?" id="print-upload" class="dropzone upload-box">
+      {% csrf_token %}
+    <div class="dz-message needsclick">
+        <i class="fas fa-upload fa-2x"></i> <br />
+        Drop files here or click to upload.<br />
+        (*.mp4 or *.mpg files. Up to 200MB.)
+    <div class="fallback">
+      <input name="file" type="file" multiple />
+    </div>
+  </form>
+</div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+<script src="{% static 'js/upload_print.js' %}"></script>
+
+{% endblock page_js %}

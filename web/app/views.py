@@ -16,6 +16,7 @@ from lib import redis
 from lib.channels import send_commands_to_group
 from .telegram_bot import bot_name
 from lib.file_storage import save_file_obj
+from app.tasks import detect_timelapse
 
 # Create your views here.
 def index(request):
@@ -131,9 +132,12 @@ def upload_print(request):
         _, video_url = save_file_obj('private/{}.mp4'.format(print.id), request.FILES['file'], settings.TIMELAPSE_CONTAINER)
         print.video_url = video_url
         print.save()
+
+        detect_timelapse.delay(print.id)
+
         return JsonResponse(dict(status='Ok'))
     else:
-        return render(request, 'print_upload.html')
+        return render(request, 'upload_print.html')
 
 def publictimelapse_list(request):
     timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())

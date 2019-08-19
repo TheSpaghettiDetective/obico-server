@@ -138,13 +138,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Request logging for debugging purpose
@@ -166,6 +162,10 @@ LOGGING = {
         },
     },
 }
+
+# Django settings
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 200*1024*1024
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

@@ -568,6 +568,24 @@ form#printer_form {
   }
 }
 
+.upload-box {
+  &.dropzone {
+  border: thin dashed;
+  border-color: darken($color-primary, 10);
+  color: $color-primary;
+  background: none;
+  margin: auto;
+  min-height: 194px;
+
+  a {
+    text-align: center;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+}
+
 /**** printer auth token page **/
 .printer-auth-token {
   padding: 2rem 0rem;

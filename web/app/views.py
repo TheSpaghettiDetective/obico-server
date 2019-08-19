@@ -15,6 +15,7 @@ from .forms import *
 from lib import redis
 from lib.channels import send_commands_to_group
 from .telegram_bot import bot_name
+from lib.file_storage import save_file_obj
 
 # Create your views here.
 def index(request):
@@ -122,6 +123,17 @@ def delete_prints(request, pk):
     get_prints(request).filter(id__in=select_prints_ids).delete()
     messages.success(request, '{} time-lapses deleted.'.format(len(select_prints_ids)))
     return redirect(reverse('prints'))
+
+@login_required
+def upload_print(request):
+    if request.method == 'POST':
+        print = Print.objects.create(filename=request.FILES['file'].name, uploaded_at=timezone.now())
+        _, video_url = save_file_obj('private/{}.mp4'.format(print.id), request.FILES['file'], settings.TIMELAPSE_CONTAINER)
+        print.video_url = video_url
+        print.save()
+        return JsonResponse(dict(status='Ok'))
+    else:
+        return render(request, 'print_upload.html')
 
 def publictimelapse_list(request):
     timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())

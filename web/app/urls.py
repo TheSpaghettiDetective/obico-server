@@ -14,6 +14,7 @@ urlpatterns = [
     path('publictimelapses/', views.publictimelapse_list, name='publictimelapse_list'),
     path('user_preferences/', views.user_preferences, name='user_preferences'),
     path('prints/', views.prints, name='prints'),
+    path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
     path('user_credits/', views.user_credits, name='user_credits'),
 ]

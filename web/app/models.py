@@ -383,12 +383,13 @@ class Print(SafeDeleteModel):
         (PARTIALY_FAILED, PARTIALY_FAILED),
     )
 
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
-    started_at = models.DateTimeField(null=False, blank=False)
+    started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
     cancelled_at = models.DateTimeField(null=True)
+    uploaded_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
     alert_muted_at = models.DateTimeField(null=True)

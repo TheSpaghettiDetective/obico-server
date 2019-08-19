@@ -21,7 +21,7 @@ $(document).ready(function () {
                     var gauge = $('#gauge-' + pId);
                     var vjs = videojs('tl-' + pId);
                     vjs.on('timeupdate', function (e) {
-                        var num = Math.round(frame_p.length*(this.currentTime()/this.duration()));
+                        var num = Math.round(frame_p.length * (this.currentTime() / this.duration()));
                         var p = _.get(frame_p[num], 'fields.ewm_mean');
                         updateGauge(gauge, p);
                     });
@@ -34,7 +34,7 @@ $(document).ready(function () {
                         modalVjs.currentTime(vjs.currentTime());
                         modalVjs.play();
                         modalVjs.on('timeupdate', function (e) {
-                            var num = Math.round(frame_p.length*(this.currentTime()/this.duration()));
+                            var num = Math.round(frame_p.length * (this.currentTime() / this.duration()));
                             var p = _.get(frame_p[num], 'fields.ewm_mean');
                             updateGauge($('#gauge-fullscreen'), p);
                         });
@@ -80,7 +80,7 @@ $(document).ready(function () {
         }
     }
 
-    $('input[id^="select-print-"]').on('change', function() {
+    $('input[id^="select-print-"]').on('change', function () {
         updateBtns();
     });
 
@@ -93,7 +93,7 @@ $(document).ready(function () {
         updateBtns();
     });
 
-    $('#delete-prints-btn').on('click', function() {
+    $('#delete-prints-btn').on('click', function () {
         var numSelected = $('input[id^="select-print-"]:checked').length;
 
         Confirm.fire({
@@ -105,13 +105,13 @@ $(document).ready(function () {
         });
     });
 
-    $("input[type=radio][name=alert_overwrite]").on('change', function(event) {
+    $("input[type=radio][name=alert_overwrite]").on('change', function (event) {
         var form = $(event.target.form);
         $.ajax({
             url: '/api/prints/' + form.data('print-id') + '/alert_overwrite/?value=' + form.serializeArray()[0].value,
             type: 'GET',
             dataType: 'json',
-        }).done(function(result) {
+        }).done(function (result) {
             var html = '<h6>Thank you for helping The Detective get better.</h6>';
             if (result.user_credited) {
                 html += '<a href="/user_credits/">You just earned ' + '<img class="dg-icon" src="/static/img/detective-gear-4-primary.png" />.</a>';
@@ -124,3 +124,4 @@ $(document).ready(function () {
         });
     })
 });
+

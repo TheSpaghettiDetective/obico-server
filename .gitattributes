@@ -1,4 +1,1 @@
-* text eol=lf
-
-*.png binary
-*.so binary
+*.gif -crlf

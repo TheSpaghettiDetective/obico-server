@@ -137,10 +137,13 @@ def send_failure_alert_telegram(printer, is_warning, print_paused):
         photo = None
 
     action = ''
+    button_list = ['more_info']
     if print_paused:
         action = 'The print is paused.'
+        button_list = ['cancel', 'resume', 'do_not_ask', 'more_info']
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
         action = 'Printer is NOT paused because The Detective is not very sure about it.'
+        button_list = ['cancel', 'more_info']
 
     notification_text = f"""Hi *{printer.user.first_name or ''}*,
 
@@ -148,4 +151,4 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 
 {action}"""
 
-    send_telegram_notification(printer, notification_text, photo)
+    send_telegram_notification(printer, button_list, notification_text, photo)

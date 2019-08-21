@@ -26,6 +26,14 @@
   </div>
 </div>
 <div class="row justify-content-center py-5">
+  <div id="tl-verifying" class="col-sm-12 col-lg-8 text-center" style="display: none;">
+    The Detective is verifying the file(s) you just uploaded. Hold on tight...
+    <div class="d-flex justify-content-center py-3">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+  </div>
   <div id="tl-uploaded" class="col-sm-12 col-lg-8 text-center" style="display: none;">
     <img style="height: auto; width: 12rem;" src="{% static 'img/detective-working.gif' %}" />
     <div class="py-2 text-center">

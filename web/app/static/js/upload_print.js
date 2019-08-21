@@ -18,12 +18,6 @@ Dropzone.options.printUpload = {
             dgEarned += 4;
             $('#dg-earned').html('You earned ' + '<img class="dg-icon" src="/static/img/detective-gear-inverse.png" />'.repeat(dgEarned));
         });
-        this.on("uploadprogress", function (file, progress) {
-            if (progress >= 100) {
-                $('#tl-uploaded').hide();
-                $('#tl-verifying').show();
-            }
-        });
     },
 };
 

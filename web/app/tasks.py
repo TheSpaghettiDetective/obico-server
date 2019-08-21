@@ -90,7 +90,26 @@ def compile_timelapse(self, print_id):
 
     shutil.rmtree(to_dir, ignore_errors=True)
 
-@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
+@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
+def preprocess_timelapse(self, user_id, video_path, filename):
+        tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
+        converted_mp4_path = tmp_file_path + '.mp4'
+        with open(tmp_file_path, 'wb') as file_obj:
+            retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER)
+
+        subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
+
+        _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now())
+        with open(converted_mp4_path, 'rb') as mp4_file:
+            _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER)
+        _print.video_url = video_url
+        _print.save()
+
+        detect_timelapse.delay(_print.id)
+        os.remove(tmp_file_path)
+        os.remove(converted_mp4_path)
+
+@shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
 def detect_timelapse(self, print_id):
     MAX_FRAME_NUM = 750
 

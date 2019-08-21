@@ -10,9 +10,6 @@ from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
-from django.core.files.uploadhandler import TemporaryFileUploadHandler
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-import subprocess
 
 from .models import *
 from .forms import *
@@ -20,7 +17,7 @@ from lib import redis
 from lib.channels import send_commands_to_group
 from .telegram_bot import bot_name
 from lib.file_storage import save_file_obj
-from app.tasks import detect_timelapse
+from app.tasks import preprocess_timelapse
 
 # Create your views here.
 def index(request):
@@ -129,28 +126,13 @@ def delete_prints(request, pk):
     messages.success(request, '{} time-lapses deleted.'.format(len(select_prints_ids)))
     return redirect(reverse('prints'))
 
-# has to use csrf_exempt and call another protected method, otherwise you can change upload handler
-# https://stackoverflow.com/questions/5258850/cannot-alter-upload-handlers-while-trying-to-upload-file
 @login_required
-@csrf_exempt
 def upload_print(request):
-    request.upload_handlers = [TemporaryFileUploadHandler(request)]
-    return _upload_print(request)
-
-@csrf_exempt
-def _upload_print(request):
     if request.method == 'POST':
-        output_mp4 = os.path.join(tempfile.gettempdir(), str(timezone.now().timestamp()) + '.mp4')
-        subprocess.run(f'ffmpeg -y -i {request.FILES["file"].temporary_file_path()} -c:v libx264 -pix_fmt yuv420p {output_mp4}'.split(), check=True)
-
-        _print = Print.objects.create(user=request.user, filename=request.FILES['file'].name, uploaded_at=timezone.now())
-        with open(output_mp4, 'rb') as mp4_file:
-            _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER)
-        _print.video_url = video_url
-        _print.save()
-
-        detect_timelapse.delay(_print.id)
-        os.remove(output_mp4)
+        _, file_extension = os.path.splitext(request.FILES['file'].name)
+        video_path = f'{str(timezone.now().timestamp())}{file_extension}'
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER)
+        preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))
     else:

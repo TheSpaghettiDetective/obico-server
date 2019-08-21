@@ -14,14 +14,14 @@ from PIL import Image
 from lib.file_storage import save_file_obj
 from lib import redis
 from lib.image import overlay_detections
+from lib.utils import ml_api_auth_headers
 from app.models import *
 from app.notifications import send_failure_alert
-from lib.prediction import update_prediction_with_detections, is_failing
+from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_commands_to_group, send_status_to_group
 from .octoprint_messages import STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
-VISUALIZATION_THRESH = 0.2  # The thresh for a box to be drawn on the detective view
 
 def alert_suppressed(printer):
     if printer.current_print == None:
@@ -65,9 +65,6 @@ def command_response(printer):
     resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
     commands.update(status=PrinterCommand.SENT)
     return resp
-
-def ml_api_auth_headers():
-    return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
 
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)

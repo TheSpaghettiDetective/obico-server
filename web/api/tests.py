@@ -16,7 +16,7 @@ class AlertTestCase(TestCase):
         user.set_password('test')
         user.save()
         self.printer = Printer.objects.create(user=user)
-        print = Print.objects.create(printer=self.printer, filename='test.gcode', started_at=timezone.now())
+        print = Print.objects.create(user=user, printer=self.printer, filename='test.gcode', started_at=timezone.now())
         self.printer.current_print = print
         self.printer.save()
 

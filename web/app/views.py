@@ -133,6 +133,7 @@ def upload_print(request):
         video_path = f'{str(timezone.now().timestamp())}{file_extension}'
         save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER)
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
+        UserCredit.objects.create(user=request.user, reason=UserCredit.TIMELAPSE_UPLOAD, amount=4)
 
         return JsonResponse(dict(status='Ok'))
     else:

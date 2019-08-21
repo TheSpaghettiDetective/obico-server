@@ -92,8 +92,10 @@ class User(AbstractUser):
 
 class UserCredit(models.Model):
     ALERT_OVERWRITE = 'ALERT_OVERWRITE'
+    TIMELAPSE_UPLOAD = 'TIMELAPSE_UPLOAD'
     REASON = (
         (ALERT_OVERWRITE, ALERT_OVERWRITE),
+        (TIMELAPSE_UPLOAD, TIMELAPSE_UPLOAD),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
@@ -102,7 +104,7 @@ class UserCredit(models.Model):
         max_length=20,
         choices=REASON,
     )
-    print = models.ForeignKey('Print', on_delete=models.CASCADE, null=False)
+    print = models.ForeignKey('Print', on_delete=models.CASCADE, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

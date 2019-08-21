@@ -582,24 +582,30 @@ form#printer_form {
     width: 20px;
     height: 20px;
   }
+  .card-img-overlay {
+    top: initial;
+    padding: 0.5rem;
+    background-color: rgba($color-gray, 0.7);
+  }
 }
 
 .upload-box {
   &.dropzone {
-  border: thin dashed;
-  border-color: darken($color-primary, 10);
-  color: $color-primary;
-  background: none;
-  margin: auto;
-  min-height: 194px;
+    border: thin dashed;
+    border-color: darken($color-primary, 10);
+    color: $color-primary;
+    background: none;
+    margin: auto;
+    min-height: 194px;
+    padding: 20px 16px;
 
-  a {
-    text-align: center;
-    &:hover {
-      text-decoration: none;
+    a {
+      text-align: center;
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
-}
 }
 
 /**** printer auth token page **/

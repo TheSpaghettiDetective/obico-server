@@ -111,7 +111,7 @@ def user_preferences(request):
 
 @login_required
 def prints(request):
-    prints = get_prints(request).filter(prediction_json_url__isnull=False).order_by('-id')
+    prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
     if request.GET.get('deleted', False):
         prints = prints.all(force_visibility=True)
     page_obj = get_paginator(prints, request, 9)

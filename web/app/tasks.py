@@ -7,6 +7,7 @@ import json
 import subprocess
 from pathlib import Path
 import shutil
+import logging
 from django.conf import settings
 from django.core import serializers
 from celery import shared_task
@@ -14,12 +15,16 @@ import tempfile
 import requests
 from PIL import Image
 import copy
+from django.template.loader import render_to_string, get_template
+from django.core.mail import EmailMessage
 
 from .models import *
 from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
 from lib.utils import ml_api_auth_headers
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
+
+LOGGER = logging.getLogger(__name__)
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def compile_timelapse(self, print_id):
@@ -143,6 +148,9 @@ def detect_timelapse(self, print_id):
     _print.save()
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
+    send_timelapse_detection_done_email(_print)
+
+# helper functions
 
 def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     output_files = []
@@ -168,3 +176,20 @@ def filter_pics_by_start_end(pic_files, start_time, end_time):
             filtered_pic_files += [pic_file]
 
     return filtered_pic_files
+
+def send_timelapse_detection_done_email(_print):
+    if not settings.EMAIL_HOST:
+        LOGGER.warn("Email settings are missing. Ignored send requests")
+        return
+
+    subject = 'The Detective is done looking at the time-lapse you uploaded.'
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    ctx = {
+        'print': _print,
+    }
+    emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
+    message = get_template('email/upload_print_processed.html').render(ctx)
+    msg = EmailMessage(subject, message, to=emails, from_email=from_email)
+    msg.content_subtype = 'html'
+    msg.send()

@@ -1,0 +1,106 @@
+{% block html %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+  <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Roboto');
+
+    @media screen and (max-width: 630px) {
+      .full-width-nopad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+      }
+
+      .full-width-20pad {
+        width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+      }
+
+      .vs20 {
+        width: 100% !important;
+        height: 20px !important;
+      }
+
+      .header-image {
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      .mobile-cta-button-table {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-button-row {
+        text-align: center !important;
+        width: 100% !important;
+        height: 48px !important;
+      }
+
+      .mobile-cta-font {
+        font-size: 18px !important;
+      }
+    }
+  </style>
+</head>
+
+<body style="padding:0; margin:0">
+  <table class="full-width-nopad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding-top:32px; padding-left:32px; padding-right:32px"
+    bgcolor="#FCFCFC" width="600">
+    <tr>
+      <td align="left" valign="top">
+        <table class="full-width-20pad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding:32px;
+        border-style:solid; border-color:#E7E7EA; border-width:1px;"
+          width="100%" bgcolor="#FFFFFF">
+          <tr>
+            <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+            font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+              <table style="margin:0px 0px 27px 0px; vertical-align:center;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td> <a target=_blank href="https://www.thespaghettidetective.com/">
+                      <img style="height:32px; width:auto;" src="https://www.thespaghettidetective.com/img/logo.png"
+                        alt="The Spaghetti Detecitve" border="0">
+                    </a></td>
+                </tr>
+              </table>
+              <p>Hi {{ print.user.first_name|default:"" }},</p>
+              <p>The Detecitve has finished examining <b>{{ print.filename }}</b>.</p>
+              <p>
+                Curious if The Detective found any spaghetti in it? <a href="https://app.thespaghettidetective.com/prints/">Go check out</a>!
+              </p>
+              <br />
+              <p style="font-size: 12px; color: #777;">You have earned <img src="https://www.thespaghettidetective.com/img/detective-gear-4-primary.png" style="height: 13px; vertical-align: text-bottom;" />
+                by uploading the time-lapse.</p>
+              <p style="font-size: 12px; color: #777;">You can earn more by teaching The Detective if she made any mistakes. <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Learn more</a>.
+              </p>
+              <br />
+              <br />
+              <table style="background-color:#F9F9F9; color:#888796; overflow:auto; text-align:center;
+              margin:0 auto; height:48px; width:100%"
+                cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#888796; line-height:22px;">
+                    The Spaghetti Detecitve - Print With Peace Of Mind
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
+
+{% endblock %}

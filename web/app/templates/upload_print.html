@@ -3,25 +3,38 @@
 
 {% block content %}
 
-<div class="row justify-content-center py-5">
-  <div class="col-sm-12 col-lg-6 ">
+<div class="row justify-content-center pt-5 pb-2">
+  <div class="col-sm-12 col-lg-8">
     <p>Upload time-lapse videos to see if The Detective can correctly tell the bad prints from the good ones.</p>
-    <p>You will earn <img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" /> for each time-lapse you upload.</p>
+    <p>You will earn <img class="dg-icon" src="/static/img/detective-gear-4-inverse.png" /> for each time-lapse you
+      upload.</p>
   </div>
 </div>
 <div class="row justify-content-center">
-  <div class="col-sm-12 col-lg-6">
-  <form action="?" id="print-upload" class="dropzone upload-box">
+  <div class="col-sm-12 col-lg-8">
+    <form action="?" id="print-upload" class="dropzone upload-box">
       {% csrf_token %}
-    <div class="dz-message needsclick">
+      <div class="dz-message needsclick">
         <i class="fas fa-upload fa-2x"></i> <br />
         Drop files here or click to upload.<br />
         *.mp4 or *.mpg files only. Up to 200MB each.
-    <div class="fallback">
-      <input name="file" type="file" multiple />
-    </div>
-  </form>
+        <div class="fallback">
+          <input name="file" type="file" multiple />
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+<div class="row justify-content-center py-5">
+  <div id="tl-uploaded" class="col-sm-12 col-lg-8 text-center" style="display: none;">
+    <img style="height: auto; width: 12rem;" src="{% static 'img/detective-working.gif' %}" />
+    <div class="py-2 text-center">
+      <div id="dg-earned"></div>
+      <div class="py-2">The Detective is busy looking at the time-lapse video(s) you
+        uploaded.</div>
+      <div>We will send you email when she is done.</div><a href="/prints/">Check status now >>></a>
+      </div>
+  </div>
 </div>
 
 {% endblock content %}

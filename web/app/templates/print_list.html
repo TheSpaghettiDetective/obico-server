@@ -49,6 +49,7 @@
           </div>
 
           <div class="card-img-top detective-view">
+            {% if print.tagged_video_url %}
             <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
               poster="{{ print.poster_url }}"
               data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
@@ -63,6 +64,10 @@
               data-toggle="modal">
               <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
             </a>
+            {% else %}
+            <img class="card-img" src="{% static 'img/detective-working.gif' %}" style="width: 100%;" />
+            <div class="card-img-overlay">The Detective is busy looking at this time-lapse. Check back later.</div>
+            {% endif %}
           </div>
           <div class="px-3 pt-2">
             <div class="custom-control custom-switch">
@@ -83,10 +88,14 @@
               </div>
               <div class="row">
                 <div class="text-muted col-4">
-                  Printed:
+                  {{ print.uploaded_at|yesno:"Uploaded:,Printed:" }}
                 </div>
                 <div id="time-left" class="col-8">
+                  {% if print.uploaded_at %}
+                  {{ print.uploaded_at|naturaltime }} {{ print.end_status }}
+                  {% else %}
                   {{ print.ended_at|naturaltime }} {{ print.end_status }}
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -111,6 +120,7 @@
           </div>
           <div>
             <div class="print-actions card-body container pt-0">
+              {% if print.tagged_video_url %}
               <div class="row">
                 <div class="col-sm-12">
                   {% if print.has_alerted %}
@@ -145,6 +155,7 @@
                   </form>
                 </div>
               </div>
+              {% endif %}
             </div>
           </div>
         </div>

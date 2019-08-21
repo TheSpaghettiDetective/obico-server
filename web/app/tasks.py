@@ -117,6 +117,10 @@ def detect_timelapse(self, print_id):
             detections = req.json()['detections']
             update_prediction_with_detections(last_prediction, detections)
             predictions.append(last_prediction)
+
+            if is_failing(last_prediction, 1, escalating_factor=1):
+                _print.alerted_at = timezone.now()
+
             last_prediction = copy.deepcopy(last_prediction)
             detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
             overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")
@@ -137,6 +141,8 @@ def detect_timelapse(self, print_id):
     _print.prediction_json_url = json_url
     _print.poster_url = poster_file_url
     _print.save()
+
+    shutil.rmtree(tmp_dir, ignore_errors=True)
 
 def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     output_files = []

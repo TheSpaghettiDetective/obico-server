@@ -523,6 +523,7 @@ form#printer_form {
 
   .card-img-top {
     position: relative;
+    background-color: black;
 
     a.fullscreen-btn {
       position: absolute;
@@ -581,6 +582,9 @@ form#printer_form {
   img.toggle-icon {
     width: 20px;
     height: 20px;
+  }
+  .card-img {
+    margin: 31px 0px;
   }
   .card-img-overlay {
     top: initial;

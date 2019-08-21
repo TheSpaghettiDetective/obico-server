@@ -96,7 +96,7 @@ def detect_timelapse(self, print_id):
 
     _print = Print.objects.get(pk=print_id)
     tmp_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
-    tl_path = download_files([f'private/{_print.video_url.split("/")[-1]}'], tmp_dir, container=settings.TIMELAPSE_CONTAINER)[0]
+    tl_path = download_files([f'private/{_print.id}.mp4'], tmp_dir, container=settings.TIMELAPSE_CONTAINER)[0]
 
     jpgs_dir = os.path.join(tmp_dir, 'jpgs')
     shutil.rmtree(jpgs_dir, ignore_errors=True)

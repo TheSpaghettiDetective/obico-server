@@ -4,6 +4,8 @@ EWM_ALPHA = 2/(12 + 1)   # 12 is the optimal EWM span in hyper parameter grid se
 ROLLING_WIN_SHORT = 310 # rolling window of 310 samples.
 ROLLING_WIN_LONG = 7200 # rolling window of 7200 samples (~20 hours). Approximation of printer's base noise level
 
+VISUALIZATION_THRESH = 0.2  # The thresh for a box to be drawn on the detective view
+
 def update_prediction_with_detections(prediction, detections):
     p = sum_p_in_detections(detections)
     prediction.current_p = p

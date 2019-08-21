@@ -178,12 +178,14 @@ class Printer(SafeDeleteModel):
     def set_current_print_with_ts(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
             cur_print, _ = Print.objects.get_or_create(
+                user=self.user,
                 printer=self,
                 ext_id=current_print_ts,
                 defaults={'filename': filename, 'started_at': timezone.now()},
                 )
         else:
             cur_print = Print.objects.create(
+                user=self.user,
                 printer=self,
                 filename=filename,
                 started_at=timezone.now(),
@@ -384,6 +386,7 @@ class Print(SafeDeleteModel):
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
     started_at = models.DateTimeField(null=True)

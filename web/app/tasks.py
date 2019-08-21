@@ -8,11 +8,18 @@ import subprocess
 from pathlib import Path
 import shutil
 from django.conf import settings
+from django.core import serializers
 from celery import shared_task
 import tempfile
+import requests
+from PIL import Image
+import copy
 
 from .models import *
 from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
+from lib.utils import ml_api_auth_headers
+from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
+from lib.image import overlay_detections
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def compile_timelapse(self, print_id):
@@ -80,15 +87,64 @@ def compile_timelapse(self, print_id):
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def detect_timelapse(self, print_id):
-    pass
+    MAX_FRAME_NUM = 750
 
-def download_files(filenames, to_dir):
+    _print = Print.objects.get(pk=print_id)
+    tmp_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
+    tl_path = download_files([f'private/{_print.video_url.split("/")[-1]}'], tmp_dir, container=settings.TIMELAPSE_CONTAINER)[0]
+
+    jpgs_dir = os.path.join(tmp_dir, 'jpgs')
+    shutil.rmtree(jpgs_dir, ignore_errors=True)
+    os.makedirs(jpgs_dir)
+    tagged_jpgs_dir = os.path.join(tmp_dir, 'tagged_jpgs')
+    shutil.rmtree(tagged_jpgs_dir, ignore_errors=True)
+    os.makedirs(tagged_jpgs_dir)
+
+    ffprobe_cmd = subprocess.run(f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
+    frame_num = int(ffprobe_cmd.stdout.strip())
+    fps = 30*MAX_FRAME_NUM/frame_num if frame_num > MAX_FRAME_NUM else 30
+    subprocess.run(f'ffmpeg -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/{print_id}-%5d.jpg'.split())
+
+    predictions = []
+    last_prediction = PrinterPrediction()
+    jpg_filenames = sorted(os.listdir(jpgs_dir))
+    for jpg_path in jpg_filenames:
+        jpg_abs_path = os.path.join(jpgs_dir, jpg_path)
+        with open(jpg_abs_path, 'rb') as pic:
+            internal_url, _ = save_file_obj(f'raw/uploaded_prints/{jpg_path}', pic, settings.PICS_CONTAINER)
+            req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
+            req.raise_for_status()
+            detections = req.json()['detections']
+            update_prediction_with_detections(last_prediction, detections)
+            predictions.append(last_prediction)
+            last_prediction = copy.deepcopy(last_prediction)
+            detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]
+            overlay_detections(Image.open(jpg_abs_path), detections_to_visualize).save(os.path.join(tagged_jpgs_dir, jpg_path), "JPEG")
+
+    predictions_json = serializers.serialize("json", predictions)
+    _, json_url = save_file_obj(f'private/{_print.id}_p.json', io.BytesIO(str.encode(predictions_json)), settings.TIMELAPSE_CONTAINER)
+
+    mp4_filename = f'{_print.id}_tagged.mp4'
+    output_mp4 = os.path.join(tmp_dir, mp4_filename)
+    subprocess.run(f'ffmpeg -y -r 30 -pattern_type glob -i {tagged_jpgs_dir}/*.jpg -c:v libx264 -pix_fmt yuv420p {output_mp4}'.split(), check=True)
+    with open(output_mp4, 'rb') as mp4_file:
+        _, mp4_file_url = save_file_obj(f'private/{mp4_filename}', mp4_file, settings.TIMELAPSE_CONTAINER)
+
+    with open(os.path.join(jpgs_dir, jpg_filenames[-1]), 'rb') as poster_file:
+        _, poster_file_url = save_file_obj(f'private/{_print.id}_poster.jpg', poster_file, settings.TIMELAPSE_CONTAINER)
+
+    _print.tagged_video_url = mp4_file_url
+    _print.prediction_json_url = json_url
+    _print.poster_url = poster_file_url
+    _print.save()
+
+def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     output_files = []
     for filename in filenames:
         output_path = Path(os.path.join(to_dir, filename))
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'wb') as file_obj:
-            retrieve_to_file_obj(filename, file_obj, settings.PICS_CONTAINER)
+            retrieve_to_file_obj(filename, file_obj, container)
         output_files += [output_path]
 
     return output_files

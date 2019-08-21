@@ -60,7 +60,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
 class PrintViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
-        return Print.objects.filter(printer__user=self.request.user)
+        return Print.objects.filter(user=self.request.user)
 
     @action(detail=True, methods=['get'])
     def alert_overwrite(self, request, pk=None):

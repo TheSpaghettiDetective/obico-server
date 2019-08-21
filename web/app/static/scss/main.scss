@@ -47,17 +47,18 @@ footer {
 }
 
 .navbar {
-  padding: 0rem 1rem;
+  padding: 0.5rem 1rem;
   a.navbar-brand {
     margin-top: -3px;
   }
-
   .nav-item {
-    padding: 0.5rem 0.24rem;
     text-transform: uppercase;
     &.active, &:hover {
       background-color: lighten($color-gray, 5);
     }
+  }
+  .user-menu {
+    text-transform: none;
   }
 
   a.glowing {
@@ -84,6 +85,14 @@ footer {
       }
     }
   }
+
+  @media (min-width: 992px) {
+    padding: 0rem 1rem;
+    .nav-item {
+      padding: 0.5rem 0.24rem;
+    }
+  }
+
 }
 
 hr {

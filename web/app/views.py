@@ -150,6 +150,7 @@ def _upload_print(request):
         _print.save()
 
         detect_timelapse.delay(_print.id)
+        os.remove(output_mp4)
 
         return JsonResponse(dict(status='Ok'))
     else:

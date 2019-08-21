@@ -1,7 +1,9 @@
 
-// Can't be put inside document.ready(). https://github.com/enyo/dropzone/issues/1423
-
 var dgEarned = 0;
+
+// Can't be put inside document.ready(). https://github.com/enyo/dropzone/issues/1423
+// Also https://stackoverflow.com/questions/33672327/dropzone-events-not-working-need-a-success-call-back
+Dropzone.autoDiscover = false;
 
 Dropzone.options.printUpload = {
     paramName: "file", // The name that will be used to transfer the file
@@ -9,17 +11,21 @@ Dropzone.options.printUpload = {
     maxFilesize: 200, // MB
     timeout: 60 * 60 * 1000, // For large files
     acceptedFiles: "video/mp4,video/mpeg",
-    success: function (file) {
-        $('#tl-verifying').hide();
-        $('#tl-uploaded').show();
-        dgEarned += 4;
-        $('#dg-earned').html('You earned ' + '<img class="dg-icon" src="/static/img/detective-gear-inverse.png" />'.repeat(dgEarned));
-    },
-    uploadprogress: function (file, progress) {
-        if (progress >= 100) {
-            $('#tl-uploaded').hide();
-            $('#tl-verifying').show();
-        }
+    init: function() {
+        this.on("success", function (file) {
+            $('#tl-verifying').hide();
+            $('#tl-uploaded').show();
+            dgEarned += 4;
+            $('#dg-earned').html('You earned ' + '<img class="dg-icon" src="/static/img/detective-gear-inverse.png" />'.repeat(dgEarned));
+        });
+        this.on("uploadprogress", function (file, progress) {
+            if (progress >= 100) {
+                $('#tl-uploaded').hide();
+                $('#tl-verifying').show();
+            }
+        });
     },
 };
+
+$('#print-upload').dropzone();
 

@@ -13,12 +13,10 @@ if settings.TELEGRAM_BOT_TOKEN:
     bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
     bot_name = bot.get_me().username
 
-MORE_INFO_LINK = site.build_full_url('/printers/')
-
 def default_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(types.InlineKeyboardButton('Go to The Spaghetti Detective to take a closer look.',
-        url=MORE_INFO_LINK))
+        url=site.build_full_url('/printers/')))
     return markup
 
 def inline_markup(printer, buttons=['more_info']):
@@ -26,7 +24,7 @@ def inline_markup(printer, buttons=['more_info']):
         'cancel': { 'text': 'Yes it failed. Cancel the print!', 'url': site.build_full_url('/printers/{}/cancel/'.format(printer.id)) },
         'resume': { 'text': 'It is a false alarm. Resume the print!', 'url': site.build_full_url('/printers/{}/resume/'.format(printer.id)) },
         'do_not_ask': { 'text': 'Resume the print, and don\'t alert me for the rest of this print.', 'url': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)) },
-        'more_info': { 'text': 'Go to The Spaghetti Detective to take a closer look.', 'url': MORE_INFO_LINK }
+        'more_info': { 'text': 'Go to The Spaghetti Detective to take a closer look.', 'url': site.build_full_url('/printers/') }
     }
 
     button_list = [

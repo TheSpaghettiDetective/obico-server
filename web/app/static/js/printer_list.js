@@ -81,7 +81,7 @@ $(document).ready(function () {
 
         printerCard.find("#print-pause-resume").click(function () {
             var btn = $(this);
-            sendPrinterCommand(printerId, btn.text() === 'Pause' ? '/pause_print/' : '/resume_print/');
+            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
         });
 
         printerCard.find('#print-cancel').click(function () {

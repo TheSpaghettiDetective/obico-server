@@ -13,7 +13,6 @@ from lib.channels import send_commands_to_group
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -58,6 +57,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
 
 class PrintViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return Print.objects.filter(user=self.request.user)
@@ -78,6 +78,7 @@ class PrintViewSet(viewsets.ModelViewSet):
 
 
 class UserCreditViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserCreditSerializer
 
     def get_queryset(self):

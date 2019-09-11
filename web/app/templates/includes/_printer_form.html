@@ -4,7 +4,7 @@
 {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
 <div class="form-group text-muted">
   <label class="form-label" for="{{ form.name.id_for_label }}">Give your new printer a shiny name</label>
-  <input type="text" name="name" value="{{ form.name.value }}" maxlength="200"
+  <input type="text" name="name" value="{{ form.name.value|default_if_none:'' }}" maxlength="200"
          placeholder="My Awesome 3D Printer" class="form-control field_required"
          required="required" id="id_name" {% if form.name.errors %}aria-describedby="nameHelp" aria-invalid="true"{% endif %}>
   {% if form.name.errors %}

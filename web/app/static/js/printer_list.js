@@ -1,10 +1,15 @@
 $(document).ready(function () {
     var wsList = [];
 
-    function removeWebSocket(ws) {
-        _.remove(wsList, function(ele) {
-            return ele === ws;
-        })
+    function ensureWebsocketClosed(ws) {
+        ws.onclose = function (e) {
+            _.remove(wsList, function(ele) {
+                return ele === ws;
+            })
+        };
+        ws.onerror = function (e) {
+            ws.close();
+        };
     }
 
     function openPrinterWebSockets() {
@@ -21,16 +26,18 @@ $(document).ready(function () {
                 updatePrinterCard(printer, printerCard);
             };
 
-            printerSocket.onclose = function (e) {
-                removeWebSocket(printerSocket);
-            };
-            printerSocket.onerror = function (e) {
-                printerSocket.close();
-            };
+            ensureWebsocketClosed(printerSocket);
+
+            var janusWSUrl =
+                window.location.protocol.replace('http', 'ws') + '//' + window.location.host +
+                '/ws/janus/' + printerId + '/';
+
+            ensureWebsocketClosed(printerSocket);
+
         });
     }
 
-    function closePrinterWebSockets() {
+    function closeWebSockets() {
         _.forEach(wsList, function(ws) {
             ws.close();
         });
@@ -45,7 +52,7 @@ $(document).ready(function () {
     }
 
     ifvisible.on("blur", function(){
-        closePrinterWebSockets();
+        closeWebSockets();
     });
     ifvisible.on("focus", function(){
         openPrinterWebSockets();

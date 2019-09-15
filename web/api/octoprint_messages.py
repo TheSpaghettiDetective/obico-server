@@ -19,7 +19,7 @@ def process_octoprint_status(printer, status):
 
     if status.get('current_print_ts'): # New plugin version that passes current_print_ts
         process_octoprint_status_with_ts(status, printer)
-        channels.send_status_to_group(printer.id)
+        channels.send_status_to_web(printer.id)
         return
 
     ### Old way of determining a print. For backward compatibility
@@ -30,7 +30,7 @@ def process_octoprint_status(printer, status):
         else:
             printer.unset_current_print(cancelled)
 
-    channels.send_status_to_group(printer.id)
+    channels.send_status_to_web(printer.id)
 
 def file_printing(op_status, printer):
     # Event, if present, should be used to determine the printing status

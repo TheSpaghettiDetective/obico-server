@@ -9,7 +9,7 @@ from app.models import *
 from lib import redis
 from .serializers import *
 
-from lib.channels import send_commands_to_group
+from lib.channels import send_commands_to_printer
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -49,7 +49,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_command_response(printer, user_credited, user_credited)
 
     def send_command_response(self, printer, succeeded, user_credited):
-        send_commands_to_group(printer.id)
+        send_commands_to_printer(printer.id)
         return Response(dict(succeeded=succeeded, user_credited=user_credited))
 
     def current_printer_or_404(self, pk):

@@ -28,6 +28,9 @@
         <div
           class="{{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">
           <div class="webcam_fixed_ratio ratio43">
+            <!-- <div id="webrtc-stream" class="webcam_fixed_ratio_inner"></div> -->
+            <div id="webrtc-stream" >
+            </div>
             <div class="webcam_fixed_ratio_inner">
               <img
                 class="webcam_img {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
@@ -149,4 +152,7 @@
 
 {% block page_js %}
 <script src="{% static 'js/printer_list.js' %}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js" ></script>
+<script src="{% static 'js/janus.js' %}"></script>
+<script src="{% static 'js/webrtc_streaming.js' %}"></script>
 {% endblock page_js %}

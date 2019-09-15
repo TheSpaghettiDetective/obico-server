@@ -18,7 +18,7 @@ from lib.utils import ml_api_auth_headers
 from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
-from lib.channels import send_commands_to_group, send_status_to_group
+from lib.channels import send_commands_to_printer, send_status_to_web
 from .octoprint_messages import STATUS_TTL_SECONDS
 
 ALERT_COOLDOWN_SECONDS = 120
@@ -59,8 +59,8 @@ def pause_if_needed(printer):
         send_failure_alert(printer, is_warning=False, print_paused=False)
 
 def command_response(printer):
-    send_commands_to_group(printer.id)
-    send_status_to_group(printer.id)
+    send_commands_to_printer(printer.id)
+    send_status_to_web(printer.id)
     commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
     resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
     commands.update(status=PrinterCommand.SENT)

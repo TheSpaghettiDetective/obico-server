@@ -14,7 +14,7 @@ from django.http import Http404
 from .models import *
 from .forms import *
 from lib import redis
-from lib.channels import send_commands_to_group
+from lib.channels import send_commands_to_printer
 from .telegram_bot import bot_name
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
@@ -80,7 +80,7 @@ def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     succeeded, user_credited = printer.cancel_print()
     if succeeded:
-        send_commands_to_group(printer.id)
+        send_commands_to_printer(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel', 'succeeded': succeeded, 'user_credited': user_credited})
 
 @login_required
@@ -88,7 +88,7 @@ def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     succeeded, user_credited = printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
     if succeeded:
-        send_commands_to_group(printer.id)
+        send_commands_to_printer(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
 
 
@@ -152,6 +152,9 @@ def user_credits(request):
     user_credits = UserCredit.objects.filter(user = request.user).select_related('print').order_by('-updated_at')
     total_credits = sum([c.amount for c in user_credits])
     return render(request, 'user_credits.html', dict(user_credits=user_credits, total_credits=total_credits))
+
+def webrtc(request):
+    return render(request, 'webrtc.html')
 
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 

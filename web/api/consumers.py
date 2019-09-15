@@ -1,4 +1,4 @@
-from channels.generic.websocket import JsonWebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
@@ -51,8 +51,6 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
                 channels.commands_group_name(self.current_printer().id),
                 self.channel_name
             )
-            # self.accept('binary')
-            # self.accept('base64')
             self.accept()
         else:
             self.close()
@@ -67,11 +65,18 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
     def receive_json(self, data, **kwargs):
         try:
             printer = Printer.objects.get(id=self.current_printer().id)
-            process_octoprint_status(printer, data)
+
+            if (data.get('janus')):
+                channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
+            else:
+                process_octoprint_status(printer, data)
+
         except ObjectDoesNotExist:
             import traceback; traceback.print_exc()
             self.close()
         except:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            self.close()
             sentryClient.captureException()
 
     def printer_commands(self, command):
@@ -79,3 +84,29 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
 
     def current_printer(self):
         return self.scope['user']
+
+class JanusWebConsumer(WebsocketConsumer):
+    def connect(self):
+        self.printer_id = self.scope['url_route']['kwargs']['printer_id']
+        try:
+            async_to_sync(self.channel_layer.group_add)(
+                channels.janus_web_group_name(self.printer_id),
+                self.channel_name
+            )
+            self.accept('janus-protocol')
+        except:
+            self.close()
+
+
+    def disconnect(self, close_code):
+        LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
+        async_to_sync(self.channel_layer.group_discard)(
+            channels.janus_web_group_name(self.printer_id),
+            self.channel_name
+        )
+
+    def receive(self, text_data=None, bytes_data=None):
+        channels.send_janus_msg_to_printer(self.printer_id, text_data)
+
+    def janus_message(self, msg):
+        self.send(text_data=msg.get('msg'))

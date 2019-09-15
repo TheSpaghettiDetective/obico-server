@@ -27,13 +27,6 @@ $(document).ready(function () {
             };
 
             ensureWebsocketClosed(printerSocket);
-
-            var janusWSUrl =
-                window.location.protocol.replace('http', 'ws') + '//' + window.location.host +
-                '/ws/janus/' + printerId + '/';
-
-            ensureWebsocketClosed(printerSocket);
-
         });
     }
 

@@ -175,7 +175,7 @@ $(document).ready(function() {
 										addButtons = true;
 										$('#stream').append('<video class="rounded centered hide" id="remotevideo" width=960 height=540 autoplay playsinline/>');
 										// Show the stream and hide the spinner when we get a playing event
-										$("#remotevideo").bind("playing", function () {
+										$("#remotevideo").on("playing", function () {
 											$('#waitingvideo').remove();
 											if(this.videoWidth)
 												$('#remotevideo').removeClass('hide').show();

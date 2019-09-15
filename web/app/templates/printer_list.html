@@ -28,15 +28,13 @@
         <div
           class="{{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">
           <div class="webcam_fixed_ratio ratio43">
-            <!-- <div id="webrtc-stream" class="webcam_fixed_ratio_inner"></div> -->
-            <div id="webrtc-stream" >
-            </div>
             <div class="webcam_fixed_ratio_inner">
               <img
                 class="webcam_img {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 src="{% static 'img/3d_printer.png' %}"
                 alt="{{ printer.name }} current image"/>
             </div>
+            <div id="webrtc-stream" style="position: absolute;"></div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ jobs:
    branches:
      only:
        - release
+       - webrtc
    machine: true
    steps:
      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS

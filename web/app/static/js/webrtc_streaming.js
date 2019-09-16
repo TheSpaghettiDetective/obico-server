@@ -145,14 +145,8 @@ $(document).ready(function() {
                             return;
                     });
 
-                    printerCard.on("click", "#remotevideo", function(e) {
-                        var ele = $(this);
-                        if (ele.parent().hasClass("thumbnail")) {
-                            var currentThumbnail = ele.parent().parent().find(".thumbnail");
-                            var currentFull = ele.parent().parent().find(".full");
-                            currentFull.addClass("thumbnail").removeClass("full");
-                            currentThumbnail.removeClass("thumbnail").addClass("full");
-                        }
+                    printerCard.on("click", "#remotevideo", function() {
+                        swapthumbnailAndFull($(this));
                     });
 
                 }

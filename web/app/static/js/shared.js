@@ -69,6 +69,17 @@ var Confirm = Swal.mixin({
     cancelButtonText: 'No',
 });
 
+/**** Streaming */
+
+function swapthumbnailAndFull(ele) {
+    if (ele.parent().hasClass("thumbnail")) {
+        var currentThumbnail = ele.parent().parent().find(".thumbnail");
+        var currentFull = ele.parent().parent().find(".full");
+        currentFull.addClass("thumbnail").removeClass("full");
+        currentThumbnail.removeClass("thumbnail").addClass("full");
+    }
+}
+
 $(document).ready(function () {
 
     $('#copy-to-clipboard').tooltip({

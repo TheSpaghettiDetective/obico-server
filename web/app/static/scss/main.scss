@@ -303,25 +303,22 @@ hr {
 
   .full {
     img, video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    z-index: 1;
-
-  }
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 1;
+    }
   }
 
   .thumbnail {
     img, video {
-
-    width: 25%;
-    height: 25%;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    z-index: 1000;
-
-  }
+      width: 25%;
+      height: 25%;
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      z-index: 1000;
+    }
   }
 }
 

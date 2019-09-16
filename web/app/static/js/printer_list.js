@@ -139,7 +139,11 @@ $(document).ready(function () {
             }
 
             e.preventDefault();
-        })
+        });
+
+        printerCard.find('.webcam_img').on('click', function () {
+            swapthumbnailAndFull($(this));
+        });
     });
 
     function updatePrinterCard(printer, printerCard) {

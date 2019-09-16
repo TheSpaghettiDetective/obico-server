@@ -23,7 +23,7 @@ class WebConsumer(JsonWebsocketConsumer):
                 self.channel_name
             )
             self.accept()
-            channels.send_status_to_group(printer.id)
+            channels.send_status_to_web(printer.id)
         except:
             self.close()
 

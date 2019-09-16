@@ -27,14 +27,14 @@
       <div class="card-img-top webcam_container">
         <div
           class="{{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">
-          <div class="webcam_fixed_ratio ratio43">
-            <div class="webcam_fixed_ratio_inner">
+          <div class="webcam_fixed_ratio {{ printer.settings.ratio169|yesno:'ratio169, ratio43, ratio43' }}">
+            <div class="webcam_fixed_ratio_inner full">
               <img
                 class="webcam_img {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 src="{% static 'img/3d_printer.png' %}"
                 alt="{{ printer.name }} current image"/>
             </div>
-            <div id="webrtc-stream"></div>
+            <div id="webrtc-stream" class="webcam_fixed_ratio_inner thumbnail"></div>
           </div>
         </div>
       </div>

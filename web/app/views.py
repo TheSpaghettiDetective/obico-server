@@ -42,7 +42,7 @@ def printers(request):
     for printer in printers:
         p_settings = redis.printer_settings_get(printer.id)
         printer.settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
-
+        printer.settings.update(dict(ratio169=p_settings.get('webcam_streamRatio', '4:3') == '16:9'))
     return render(request, 'printer_list.html', {'printers': printers})
 
 @login_required

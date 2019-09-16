@@ -136,7 +136,7 @@ $(document).ready(function() {
                 var addButtons = false;
                 if(printerCard.find('#remotevideo').length === 0) {
                     addButtons = true;
-                    printerCard.find('#webrtc-stream').html('<video id="remotevideo" width=960 height=540 autoplay playsinline class="hide remotevideo" />');
+                    printerCard.find('#webrtc-stream').html('<video id="remotevideo" width=960 height=540 autoplay playsinline class="hide" />');
                     printerCard.on("playing", "#remotevideo", function () {
                         if(this.videoWidth)
                             printerCard.find('#remotevideo').removeClass('hide').show();
@@ -144,9 +144,17 @@ $(document).ready(function() {
                         if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0)
                             return;
                     });
-                    printerCard.on("click", "#remotevideo", function (e) {
-                        console.log(e);
+
+                    printerCard.on("click", "#remotevideo", function(e) {
+                        var ele = $(this);
+                        if (ele.parent().hasClass("thumbnail")) {
+                            var currentThumbnail = ele.parent().parent().find(".thumbnail");
+                            var currentFull = ele.parent().parent().find(".full");
+                            currentFull.addClass("thumbnail").removeClass("full");
+                            currentThumbnail.removeClass("thumbnail").addClass("full");
+                        }
                     });
+
                 }
                 Janus.attachMediaStream(printerCard.find('#remotevideo').get(0), stream);
                 var videoTracks = stream.getVideoTracks();

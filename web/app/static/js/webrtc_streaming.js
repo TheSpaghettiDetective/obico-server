@@ -24,7 +24,7 @@ $(document).ready(function() {
                 printerCard.find("#start").click(startStream);
                 printerCard.find("#stop").click(stopStream);
 
-                janus = new Janus({
+                var janus = new Janus({
                     server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/ws/janus/' + printerId + '/',
                     success: function() {
                         janus.attach(

@@ -136,7 +136,7 @@ $(document).ready(function() {
                 var addButtons = false;
                 if(printerCard.find('#remotevideo').length === 0) {
                     addButtons = true;
-                    printerCard.find('#webrtc-stream').html('<video id="remotevideo" width=960 height=540 autoplay playsinline class="hide" style="width: 25%; height: 25%; float: right;"/>');
+                    printerCard.find('#webrtc-stream').html('<video id="remotevideo" width=960 height=540 autoplay playsinline class="hide remotevideo" />');
                     printerCard.on("playing", "#remotevideo", function () {
                         if(this.videoWidth)
                             printerCard.find('#remotevideo').removeClass('hide').show();

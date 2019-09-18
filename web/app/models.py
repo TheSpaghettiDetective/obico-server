@@ -93,9 +93,11 @@ class User(AbstractUser):
 class UserCredit(models.Model):
     ALERT_OVERWRITE = 'ALERT_OVERWRITE'
     TIMELAPSE_UPLOAD = 'TIMELAPSE_UPLOAD'
+    BUG_REPORT = 'BUG_REPORT'
     REASON = (
         (ALERT_OVERWRITE, ALERT_OVERWRITE),
         (TIMELAPSE_UPLOAD, TIMELAPSE_UPLOAD),
+        (BUG_REPORT, BUG_REPORT),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)

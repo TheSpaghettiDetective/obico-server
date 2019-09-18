@@ -91,7 +91,7 @@ def compile_timelapse(self, print_id):
     shutil.rmtree(to_dir, ignore_errors=True)
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
-def preprocess_timelapse(self, user_id, video_path, filename):
+def preprocess_timelapse(self, user_id, video_path, filename, user_credit_id):
         tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
         converted_mp4_path = tmp_file_path + '.mp4'
         with open(tmp_file_path, 'wb') as file_obj:
@@ -108,6 +108,7 @@ def preprocess_timelapse(self, user_id, video_path, filename):
         detect_timelapse.delay(_print.id)
         os.remove(tmp_file_path)
         os.remove(converted_mp4_path)
+        UserCredit.objects.get(id=user_credit_id).update(print_id=_print.id)
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
 def detect_timelapse(self, print_id):

@@ -127,6 +127,44 @@ Then, on The Spaghetti Detective plugin settings page:
 
 ## Change email server to be one other than `sendmail` on localhost (TBD)
 
+## Using a reverse proxy
+
+We are using the reverse proxy traefik.
+
+ 1. [Follow these instructions on how to setup Traefik (First two steps)](https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-debian-9)
+ 2. Navigate to your directory of TheSpaghettiDetective `cd TheSpaghettiDetective`
+ 3. Edit the docker-compose.yml file with your favorite editor: `nano docker-compose.yml`
+ 4. - Add `labels:` and `networks:` to the `web:` section
+    - and also add `networks:` at the end of the file
+    ```
+    ...
+      web:
+        <<: *web-defaults
+        hostname: web
+        ports:
+          - 3334:3334
+        labels:
+          - traefik.backend=thespaghettidetective
+          - traefik.frontend.rule=Host:spaghetti.your.domain
+          - traefik.docker.network=web
+          - traefik.port=3334
+        networks:
+          - web
+        depends_on:
+          - ml_api
+        command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
+
+      ...
+
+      ...
+
+        networks:
+          web:
+            external: true
+      ```
+ 5. Start TheSpaghettiDetective with `docker-compose up -d`
+ 6. You should now be able to browse to `spaghetti.your.domain`
+
 
 # Operating and maintaining The Spaghetti Detective server
 

@@ -262,6 +262,26 @@ hr {
       top: 0;
       bottom: 0;
 
+      &.ratio43 {
+        .thumbnail {
+          img, video {
+            height: 18.75%;
+            top: initial;
+            bottom: 0px;
+          }
+        }
+      }
+
+      &.ratio169 {
+        .thumbnail {
+          img, video {
+            height: 14.06%;
+            top: initial;
+            bottom: 0px;
+          }
+        }
+      }
+
       .webcam_fixed_ratio_inner {
         width: 100%;
 

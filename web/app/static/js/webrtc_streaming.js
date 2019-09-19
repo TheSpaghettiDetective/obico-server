@@ -49,6 +49,18 @@ $(document).ready(function() {
             var printerCard = $(this);
             var printerId = printerCard.attr('id');
 
+            printerCard.on("playing", ".remotevideo", function () {
+                if(this.videoWidth)
+                    printerCard.find('.remotevideo').removeClass('hide').show();
+                var videoTracks = stream.getVideoTracks();
+                if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0)
+                    return;
+            });
+
+            printerCard.on("click", ".remotevideo", function() {
+                swapthumbnailAndFull($(this));
+            });
+
             var streaming;
 
             var janus = new Janus({
@@ -77,7 +89,7 @@ $(document).ready(function() {
                                 $('#datarecv').val(data);
                             },
                             oncleanup: function() {
-                                printerCard.find('#webrtc-stream').empty();
+                                printerCard.find('.remotevideo').hide();
                             }
                         });
                 },
@@ -134,29 +146,13 @@ $(document).ready(function() {
                 Janus.debug(" ::: Got a remote stream :::");
                 Janus.debug(stream);
                 var addButtons = false;
-                if(printerCard.find('#remotevideo').length === 0) {
-                    addButtons = true;
-                    printerCard.find('#webrtc-stream').html('<video id="remotevideo" width=960 height=540 autoplay playsinline class="hide" />');
-                    printerCard.on("playing", "#remotevideo", function () {
-                        if(this.videoWidth)
-                            printerCard.find('#remotevideo').removeClass('hide').show();
-                        var videoTracks = stream.getVideoTracks();
-                        if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0)
-                            return;
-                    });
-
-                    printerCard.on("click", "#remotevideo", function() {
-                        swapthumbnailAndFull($(this));
-                    });
-
-                }
-                Janus.attachMediaStream(printerCard.find('#remotevideo').get(0), stream);
+                Janus.attachMediaStream(printerCard.find('.remotevideo').get(0), stream);
                 var videoTracks = stream.getVideoTracks();
                 if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
                     // No remote video
-                    printerCard.find('#remotevideo').hide();
+                    printerCard.find('.remotevideo').hide();
                 } else {
-                    printerCard.find('#remotevideo').removeClass('hide').show();
+                    printerCard.find('.remotevideo').removeClass('hide').show();
                 }
             }
 

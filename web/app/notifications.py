@@ -16,6 +16,8 @@ from lib import site
 LOGGER = logging.getLogger(__name__)
 
 def send_failure_alert(printer, is_warning=True, print_paused=False):
+    LOGGER.info(f'Sending alerts to {printer.user.id}')
+
     send_failure_alert_sms(printer, is_warning, print_paused)
     send_failure_alert_email(printer, is_warning, print_paused)
     send_failure_alert_pushbullet(printer, is_warning, print_paused)

@@ -1,3 +1,5 @@
+import logging
+import dj_database_url
 """
 Django settings for config project.
 
@@ -110,7 +112,6 @@ HIJACK_ALLOW_GET_REQUESTS = True
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600)
 }
@@ -145,22 +146,26 @@ USE_TZ = True
 
 # Request logging for debugging purpose
 
-import logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'console'
         },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'DEBUG',  # change debug level as appropiate
-            'propagate': False,
-        },
-    },
+        '': {
+            'level': 'INFO',
+            'handlers': ['console']
+        }
+    }
 }
 
 # Django settings
@@ -188,8 +193,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_LOGOUT_ON_GET=True
-ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get(
+    'ACCOUNT_EMAIL_VERIFICATION', 'none')
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 LOGIN_REDIRECT_URL = '/'
@@ -200,10 +206,10 @@ SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 AUTH_USER_MODEL = 'app.User'
 
 REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'api.authentication.PrinterAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        ),
+    ),
 }
 
 # Sentry
@@ -259,7 +265,8 @@ CHANNEL_LAYERS = {
 }
 
 # Settings to store and serve uploaded images
-GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+GOOGLE_APPLICATION_CREDENTIALS = os.environ.get(
+    'GOOGLE_APPLICATION_CREDENTIALS')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
@@ -272,10 +279,16 @@ ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
 # Hyper parameters for prediction model
-THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.38'))   # Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
-THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.78'))   # Definitely failing if ewm mean is above this level. =(0.8 - 0.02): 0.8 - optimal THRESHOLD_HIGH in hyper params grid search; 0.02 - average of rolling_mean_short
-INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))        # The number of frames at the beginning of the print that are considered "safe"
-ROLLING_MEAN_SHORT_MULTIPLE = float(os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 3.8))   # Print is failing is ewm mean is this many times over the short rolling mean
-ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))   # The multiplication factor to escalate "warning" to "error"
+# Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
+THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.38'))
+# Definitely failing if ewm mean is above this level. =(0.8 - 0.02): 0.8 - optimal THRESHOLD_HIGH in hyper params grid search; 0.02 - average of rolling_mean_short
+THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.78'))
+# The number of frames at the beginning of the print that are considered "safe"
+INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))
+# Print is failing is ewm mean is this many times over the short rolling mean
+ROLLING_MEAN_SHORT_MULTIPLE = float(
+    os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 3.8))
+# The multiplication factor to escalate "warning" to "error"
+ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
 TIMELAPSE_MINIMUM_SECONDS = 5 if DEBUG else 300

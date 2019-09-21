@@ -1,4 +1,7 @@
+import logging
 from django.conf import settings
+
+LOGGER = logging.getLogger(__name__)
 
 EWM_ALPHA = 2/(12 + 1)   # 12 is the optimal EWM span in hyper parameter grid search
 ROLLING_WIN_SHORT = 310 # rolling window of 310 samples.
@@ -16,7 +19,7 @@ def update_prediction_with_detections(prediction, detections):
     prediction.rolling_mean_long = next_rolling_mean(p, prediction.rolling_mean_long, prediction.lifetime_frame_num, ROLLING_WIN_LONG)
 
 def is_failing(prediction, detective_sensitivity, escalating_factor=1):
-    print(prediction)
+    LOGGER.info(prediction)
     if prediction.current_frame_num < settings.INIT_SAFE_FRAME_NUM:
         return False
 

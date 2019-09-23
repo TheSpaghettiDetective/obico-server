@@ -18,10 +18,12 @@ LOGGER = logging.getLogger(__name__)
 def send_failure_alert(printer, is_warning=True, print_paused=False):
     LOGGER.info(f'Sending alerts to {printer.user.id}')
 
-    send_failure_alert_sms(printer, is_warning, print_paused)
+    # Fixme: any exception will cause subsequent notification channel to be tried at all.
+    # This is also why SMS is currently at the end, since it'll fail with exception when area code is not allowed.
     send_failure_alert_email(printer, is_warning, print_paused)
     send_failure_alert_pushbullet(printer, is_warning, print_paused)
     send_failure_alert_telegram(printer, is_warning, print_paused)
+    send_failure_alert_sms(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:

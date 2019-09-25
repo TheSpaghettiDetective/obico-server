@@ -49,16 +49,17 @@ $(document).ready(function() {
             var printerCard = $(this);
             var printerId = printerCard.attr('id');
 
-            printerCard.on("playing", ".remotevideo", function () {
-                if(this.videoWidth)
-                    printerCard.find('.remotevideo').removeClass('hide').show();
+            printerCard.on("playing", ".remote-video", function () {
+                if(this.videoWidth) {
+                    showStreamView(printerCard.find('.remote-video'));
+                }
                 var videoTracks = stream.getVideoTracks();
                 if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0)
                     return;
             });
 
-            printerCard.on("click", ".remotevideo", function() {
-                swapthumbnailAndFull($(this));
+            printerCard.on("click", ".remote-video", function() {
+                expandThumbnailToFull($(this));
             });
 
             var mjpegStreamDecoder = new Decoder(updateJpeg);
@@ -92,7 +93,7 @@ $(document).ready(function() {
                                 mjpegStreamDecoder.onMessage(data);
                             },
                             oncleanup: function() {
-                                printerCard.find('.remotevideo').hide();
+                                printerCard.find('.remote-video').hide();
                             }
                         });
                 },
@@ -149,13 +150,14 @@ $(document).ready(function() {
                 Janus.debug(" ::: Got a remote stream :::");
                 Janus.debug(stream);
                 var addButtons = false;
-                Janus.attachMediaStream(printerCard.find('.remotevideo').get(0), stream);
+                Janus.attachMediaStream(printerCard.find('.remote-video').get(0), stream);
                 var videoTracks = stream.getVideoTracks();
+                var videoEle = printerCard.find('.remote-video');
                 if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
                     // No remote video
-                    printerCard.find('.remotevideo').hide();
+                    videoEle.hide();
                 } else {
-                    printerCard.find('.remotevideo').removeClass('hide').show();
+                    showStreamView(videoEle);
                 }
             }
 
@@ -172,9 +174,10 @@ $(document).ready(function() {
             }
 
             function updateJpeg(jpg) {
-                printerCard.find(".mjpeg").attr("src", 'data:image/jpg;base64, ' + jpg);
+                var jpgEle = printerCard.find(".remote-jpg");
+                jpgEle.attr("src", 'data:image/jpg;base64, ' + jpg);
+                showStreamView(jpgEle);
             }
-
         });
 
     }});

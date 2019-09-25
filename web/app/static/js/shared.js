@@ -71,7 +71,7 @@ var Confirm = Swal.mixin({
 
 /**** Streaming */
 
-function swapthumbnailAndFull(ele) {
+function expandThumbnailToFull(ele) {
     if (ele.parent().hasClass("thumbnail")) {
         var currentThumbnail = ele.parent().parent().find(".thumbnail");
         var currentFull = ele.parent().parent().find(".full");
@@ -79,6 +79,20 @@ function swapthumbnailAndFull(ele) {
         currentThumbnail.removeClass("thumbnail").addClass("full");
     }
 }
+
+function showStreamView(ele) {
+    var parentView = ele.parent().parent();
+    if (!ele.is(':visible')) {
+        parentView.find('[class^=remote-]').addClass('hide').hide();
+        ele.removeClass('hide').show();
+    }
+    if (parentView.find('.default-cam-view').attr('src').endsWith('img/3d_printer.png')) {
+        expandThumbnailToFull(ele);
+    }
+}
+
+/******** End of streaming functions */
+
 
 $(document).ready(function () {
 

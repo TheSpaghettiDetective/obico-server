@@ -30,20 +30,22 @@
           <div class="webcam_fixed_ratio {{ printer.settings.ratio169|yesno:'ratio169, ratio43, ratio43' }}">
             <div class="webcam_fixed_ratio_inner full">
               <img
-                class="webcam_img {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                class="remote-tagged-jpg default-cam-view {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 src="{% static 'img/3d_printer.png' %}"
                 alt="{{ printer.name }} current image"/>
             </div>
             <div id="webrtc-stream" class="webcam_fixed_ratio_inner thumbnail">
               <video
-                class="remotevideo hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
-                width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay playsinline />
+                class="remote-video hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay playsinline >
+              </video>
+              <img
+              class="remote-jpg hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+              width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }}>
+            </img>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <img class="mjpeg" />
       </div>
       <div class="failure-alert card-body bg-warning px-2 py-1" style="display: none">
         <i class="fas fa-exclamation-triangle align-middle"></i>

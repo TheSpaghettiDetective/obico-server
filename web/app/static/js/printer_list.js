@@ -141,8 +141,8 @@ $(document).ready(function () {
             e.preventDefault();
         });
 
-        printerCard.find('.webcam_img').on('click', function () {
-            swapthumbnailAndFull($(this));
+        printerCard.find('.remote-tagged-jpg').on('click', function () {
+            expandThumbnailToFull($(this));
         });
     });
 
@@ -178,7 +178,7 @@ $(document).ready(function () {
             printerCard.find(".mute-toggle").hide();
         }
 
-        printerCard.find("img.webcam_img").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        printerCard.find("img.remote-tagged-jpg").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
 
         updateGauge(printerCard.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 

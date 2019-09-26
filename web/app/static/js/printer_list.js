@@ -141,7 +141,7 @@ $(document).ready(function () {
             e.preventDefault();
         });
 
-        printerCard.find('.remote-tagged-jpg').on('click', function () {
+        printerCard.find('.tagged-jpg').on('click', function () {
             expandThumbnailToFull($(this));
         });
     });
@@ -153,6 +153,7 @@ $(document).ready(function () {
         var pauseResumeBtn = printerCard.find("#print-pause-resume");
         var cancelBtn = printerCard.find('#print-cancel');
 
+        // Card title
         if (printer.current_print && printer.current_print.filename) {
             printFilenameDiv.text(printer.current_print.filename);
             printFilenameDiv.show();
@@ -162,6 +163,7 @@ $(document).ready(function () {
             printerNameDiv.removeClass("secondary-title");
         }
 
+        // Alert section
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
             pauseResumeBtn.find("img").show();
@@ -172,16 +174,25 @@ $(document).ready(function () {
             cancelBtn.find("img").hide();
         }
 
+        // Alert toggle
         if (printer.current_print) {
             printerCard.find(".mute-toggle").show();
         } else {
             printerCard.find(".mute-toggle").hide();
         }
 
-        printerCard.find("img.remote-tagged-jpg").attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
+        var taggedJpgEle = printerCard.find("img.tagged-jpg");
+        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith('img/3d_printer.png')) {
+            taggedJpgEle.removeClass('hide').show();
+            expandThumbnailToFull(taggedJpgEle);
+        }
 
+        // Gauge
         updateGauge(printerCard.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
 
+        // Pause/Resume/Cancel buttons
         if (printer.status && printer.current_print) {
             printerCard.find('.print-actions button').prop('disabled', false);
         } else {
@@ -198,6 +209,7 @@ $(document).ready(function () {
 
         printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
 
+        // Print status
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
         if (secondsLeft != null && secondsPrinted != null ) {
@@ -218,6 +230,7 @@ $(document).ready(function () {
             }
         }
 
+        // Temperatures
         var temperatures = [];
         ['bed', 'tool0', 'tool1'].forEach( function(tempKey) {
             var temp = _.get(printer, 'status.temperatures.' + tempKey);
@@ -228,7 +241,6 @@ $(document).ready(function () {
                 temperatures.push(temp);
             }
         });
-
         printerCard.find("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
     }
 

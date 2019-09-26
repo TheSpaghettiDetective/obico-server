@@ -52,14 +52,14 @@ $(document).ready(function () {
 
                 printerCard.on("playing", ".remote-video", function () {
                     if (this.videoWidth) {
-                        showStreamView(printerCard.find('.remote-video'));
+                        showRemoteStream(printerCard.find('.remote-video'));
                     }
                     var videoTracks = stream.getVideoTracks();
                     if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0)
                         return;
                 });
 
-                printerCard.on("click", ".remote-video", function () {
+                printerCard.on("click", "[class^=remote-]", function () {
                     expandThumbnailToFull($(this));
                 });
 
@@ -150,7 +150,6 @@ $(document).ready(function () {
                 function onRemoteStream(stream) {
                     Janus.debug(" ::: Got a remote stream :::");
                     Janus.debug(stream);
-                    var addButtons = false;
                     Janus.attachMediaStream(printerCard.find('.remote-video').get(0), stream);
                     var videoTracks = stream.getVideoTracks();
                     var videoEle = printerCard.find('.remote-video');
@@ -158,7 +157,7 @@ $(document).ready(function () {
                         // No remote video
                         videoEle.hide();
                     } else {
-                        showStreamView(videoEle);
+                        showRemoteStream(videoEle);
                     }
                 }
 
@@ -179,12 +178,25 @@ $(document).ready(function () {
                 function updateJpeg(jpg) {
                     var jpgEle = printerCard.find(".remote-jpg");
                     jpgEle.attr("src", 'data:image/jpg;base64, ' + jpg);
-                    showStreamView(jpgEle);
+                    showRemoteStream(jpgEle);
                 }
             });
 
         }
     });
+
+    function showRemoteStream(ele) {
+        var parentView = ele.parent().parent();
+        if (!ele.is(':visible')) {
+            parentView.find('[class^=remote-]').addClass('hide').hide();
+            ele.removeClass('hide').show();
+        }
+        var taggedJpgEle = parentView.find('.tagged-jpg');
+        if (taggedJpgEle.attr('src').endsWith('img/3d_printer.png')) {
+            taggedJpgEle.addClass('hide').hide();
+            expandThumbnailToFull(ele);
+        }
+    }
 
     function Decoder(onFrame) {
         this.onFrame = onFrame;

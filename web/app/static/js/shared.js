@@ -80,17 +80,6 @@ function expandThumbnailToFull(ele) {
     }
 }
 
-function showStreamView(ele) {
-    var parentView = ele.parent().parent();
-    if (!ele.is(':visible')) {
-        parentView.find('[class^=remote-]').addClass('hide').hide();
-        ele.removeClass('hide').show();
-    }
-    if (parentView.find('.default-cam-view').attr('src').endsWith('img/3d_printer.png')) {
-        expandThumbnailToFull(ele);
-    }
-}
-
 /******** End of streaming functions */
 
 

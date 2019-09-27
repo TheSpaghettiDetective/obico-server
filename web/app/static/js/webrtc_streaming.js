@@ -175,9 +175,15 @@ $(document).ready(function () {
                     });
                 }
 
-                function updateJpeg(jpg) {
+                function updateJpeg(jpg, l) {
                     var jpgEle = printerCard.find(".remote-jpg");
-                    jpgEle.attr("src", 'data:image/jpg;base64, ' + jpg);
+
+                    try {
+                        console.log("jpg length: " + atob(jpg).length + " expected length: " + l);
+                        jpgEle.attr("src", 'data:image/jpg;base64, ' + jpg);
+                    } catch (e) {
+                        console.log(e);
+                    }
                     showRemoteStream(jpgEle);
                 }
             });
@@ -212,14 +218,18 @@ $(document).ready(function () {
             this.bytesRead += value.length;
 
             if (this.bytesRead >= this.contentLength) {
-                this.onFrame(this.imageBuffer);
+                var jpg = this.imageBuffer;
+                var jpgLength = this.originalJpgLength;
                 this.contentLength = NaN;
                 this.imageBuffer = '';
                 this.bytesRead = 0;
+                this.onFrame(jpg, jpgLength);
             }
         } else {
             if (value.slice(0, 2) === '\r\n' && value.slice(value.length - 2) === '\r\n') {
-                this.contentLength = parseInt(value.slice(2, value.length - 2));
+                var lengthHeaders = value.slice(2, value.length - 2).split(':');
+                this.contentLength = parseInt(lengthHeaders[0]);
+                this.originalJpgLength = parseInt(lengthHeaders[1]);
             }
         }
     }

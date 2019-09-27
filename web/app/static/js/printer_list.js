@@ -184,7 +184,7 @@ $(document).ready(function () {
         // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
         var taggedJpgEle = printerCard.find("img.tagged-jpg");
         taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith('img/3d_printer.png')) {
+        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
             taggedJpgEle.removeClass('hide').show();
             expandThumbnailToFull(taggedJpgEle);
         }

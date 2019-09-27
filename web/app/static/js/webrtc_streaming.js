@@ -198,7 +198,7 @@ $(document).ready(function () {
             ele.removeClass('hide').show();
         }
         var taggedJpgEle = parentView.find('.tagged-jpg');
-        if (taggedJpgEle.attr('src').endsWith('img/3d_printer.png')) {
+        if (taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
             taggedJpgEle.addClass('hide').hide();
             expandThumbnailToFull(ele);
         }

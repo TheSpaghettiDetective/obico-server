@@ -63,7 +63,6 @@ $(document).ready(function () {
                     expandThumbnailToFull($(this));
                 });
 
-                var mjpegStreamDecoder = new Decoder(updateJpeg);
                 var streaming;
 
                 var janus = new Janus({
@@ -88,10 +87,6 @@ $(document).ready(function () {
                                 ondataopen: function (data) {
                                 },
                                 ondata: function (data) {
-                                    if (data.length < 50) {
-                                        Janus.debug("We got data from the DataChannel! " + data);
-                                    }
-                                    mjpegStreamDecoder.onMessage(data);
                                 },
                                 oncleanup: function () {
                                     printerCard.find('.remote-video').hide();
@@ -174,18 +169,6 @@ $(document).ready(function () {
                         }
                     });
                 }
-
-                function updateJpeg(jpg, l) {
-                    var jpgEle = printerCard.find(".remote-jpg");
-
-                    try {
-                        console.log("jpg length: " + atob(jpg).length + " expected length: " + l);
-                        jpgEle.attr("src", 'data:image/jpg;base64, ' + jpg);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                    showRemoteStream(jpgEle);
-                }
             });
 
         }
@@ -203,35 +186,4 @@ $(document).ready(function () {
             expandThumbnailToFull(ele);
         }
     }
-
-    function Decoder(onFrame) {
-        this.onFrame = onFrame;
-        this.contentLength = NaN;
-        this.imageBuffer = '';
-        this.bytesRead = 0;
-    }
-
-    Decoder.prototype.onMessage = function (value) {
-
-        if (this.contentLength) {
-            this.imageBuffer += value;
-            this.bytesRead += value.length;
-
-            if (this.bytesRead >= this.contentLength) {
-                var jpg = this.imageBuffer;
-                var jpgLength = this.originalJpgLength;
-                this.contentLength = NaN;
-                this.imageBuffer = '';
-                this.bytesRead = 0;
-                this.onFrame(jpg, jpgLength);
-            }
-        } else {
-            if (value.slice(0, 2) === '\r\n' && value.slice(value.length - 2) === '\r\n') {
-                var lengthHeaders = value.slice(2, value.length - 2).split(':');
-                this.contentLength = parseInt(lengthHeaders[0]);
-                this.originalJpgLength = parseInt(lengthHeaders[1]);
-            }
-        }
-    }
-
 });

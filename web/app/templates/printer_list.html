@@ -39,10 +39,6 @@
                 class="remote-video hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay playsinline >
               </video>
-              <img
-              class="remote-jpg hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
-              width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }}>
-            </img>
             </div>
           </div>
         </div>

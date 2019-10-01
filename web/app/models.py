@@ -288,7 +288,7 @@ class Printer(SafeDeleteModel):
 
         user_credited = False
         if self.current_print.alert_overwrite == None:
-            UserCredit.objects.create(user=self.user, print=self.current_print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
+            UserCredit.objects.create(user=self.user, print=self.current_print, reason=UserCredit.ALERT_OVERWRITE, amount=2)
             user_credited = True
 
         self.current_print.alert_acknowledged_at = timezone.now()

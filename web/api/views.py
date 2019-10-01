@@ -68,7 +68,7 @@ class PrintViewSet(viewsets.ModelViewSet):
 
         user_credited = False
         if print.alert_overwrite == None:
-            UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=4)
+            UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=2)
             user_credited = True
 
         print.alert_overwrite = request.GET.get('value', None)

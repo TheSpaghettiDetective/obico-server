@@ -11,6 +11,7 @@ jobs:
      - checkout
      # build the application image
      - run: docker build -t thespaghettidetective/web:0.${CIRCLE_BUILD_NUM} web
+     - run: docker run --rm thespaghettidetective/web:0.${CIRCLE_BUILD_NUM} "python manage.py test"
      - run: docker build -t thespaghettidetective/ml_api:0.${CIRCLE_BUILD_NUM} ml_api
 
      # Tag the current build as latest

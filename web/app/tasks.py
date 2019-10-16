@@ -71,7 +71,7 @@ def compile_timelapse(self, print_id):
 
 
         json_files = [ print_pic.replace('tagged/', 'p/').replace('.jpg', '.json') for print_pic in print_pics ]
-        local_jsons = download_files(json_files, to_dir)
+        local_jsons = download_files(json_files, to_dir, from_redis=True)
         preidction_json = []
         for p_json_file in local_jsons:
             with open(p_json_file, 'r') as f:
@@ -173,13 +173,23 @@ def detect_timelapse(self, print_id):
 
 # helper functions
 
-def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
+def download_files(filenames, to_dir, container=settings.PICS_CONTAINER, from_redis=False):
     output_files = []
     for filename in filenames:
         output_path = Path(os.path.join(to_dir, filename))
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'wb') as file_obj:
-            retrieve_to_file_obj(filename, file_obj, container)
+            written = False
+            if from_redis:
+                m = re.search('p/(\d+)/(\d+).json', filename)
+                p_json = redis.printer_p_json_get(m[1], m[2])
+                if p_json:
+                    file_obj.write(p_json.encode())
+                    written = True
+
+            if not written:
+                retrieve_to_file_obj(filename, file_obj, container)
+
         output_files += [output_path]
 
     return output_files

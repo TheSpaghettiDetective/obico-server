@@ -51,3 +51,11 @@ def printer_settings_get(printer_id, key=None):
         return REDIS.hget(prefix, key)
     else:
         return REDIS.hgetall(prefix)
+
+def printer_p_json_set(printer_id, pic_id, json_str, ex=None):
+    key = f'{printer_key_prefix(printer_id)}:p_json:{pic_id}'
+    REDIS.set(key, json_str, ex=ex)
+
+def printer_p_json_get(printer_id, pic_id):
+    key = f'{printer_key_prefix(printer_id)}:p_json:{pic_id}'
+    return REDIS.get(key)

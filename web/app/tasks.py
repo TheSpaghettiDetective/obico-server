@@ -69,6 +69,7 @@ def compile_timelapse(self, print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
+
         json_files = [ print_pic.replace('tagged/', 'p/').replace('.jpg', '.json') for print_pic in print_pics ]
         local_jsons = download_files(json_files, to_dir)
         preidction_json = []

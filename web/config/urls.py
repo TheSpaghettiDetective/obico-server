@@ -24,3 +24,8 @@ urlpatterns = [
     path('hijack/', include('hijack.urls', namespace='hijack')),
     path('admin/', admin.site.urls),
 ]
+
+if settings.WEB_ENT:
+    urlpatterns += [
+        path('app_ent/', include('app_ent.urls')),
+    ]

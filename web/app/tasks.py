@@ -69,17 +69,14 @@ def compile_timelapse(self, print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
-
-        json_files = [ print_pic.replace('tagged/', 'p/').replace('.jpg', '.json') for print_pic in print_pics ]
-        local_jsons = download_files(json_files, to_dir, from_redis=True)
         preidction_json = []
-        for p_json_file in local_jsons:
-            with open(p_json_file, 'r') as f:
-                try:
-                    p_json = json.load(f)
-                except json.decoder.JSONDecodeError:    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
-                    p_json = [{}]
-                preidction_json += p_json
+        for print_pic_filename in print_pics:
+            try:
+                m = re.search('tagged/(\d+)/(\d+).jpg', print_pic_filename)
+                p_json = json.loads(redis.printer_p_json_get(m[1], m[2]))
+            except (json.decoder.JSONDecodeError, TypeError):    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
+                p_json = [{}]
+            preidction_json += p_json
         preidction_json_io = io.BytesIO()
         preidction_json_io.write(json.dumps(preidction_json).encode('UTF-8'))
         preidction_json_io.seek(0)
@@ -173,22 +170,13 @@ def detect_timelapse(self, print_id):
 
 # helper functions
 
-def download_files(filenames, to_dir, container=settings.PICS_CONTAINER, from_redis=False):
+def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     output_files = []
     for filename in filenames:
         output_path = Path(os.path.join(to_dir, filename))
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'wb') as file_obj:
-            written = False
-            if from_redis:
-                m = re.search('p/(\d+)/(\d+).json', filename)
-                p_json = redis.printer_p_json_get(m[1], m[2])
-                if p_json:
-                    file_obj.write(p_json.encode())
-                    written = True
-
-            if not written:
-                retrieve_to_file_obj(filename, file_obj, container)
+            retrieve_to_file_obj(filename, file_obj, container)
 
         output_files += [output_path]
 

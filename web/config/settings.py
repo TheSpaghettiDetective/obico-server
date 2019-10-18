@@ -31,8 +31,6 @@ DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
-WEB_ENT = False
-
 # Application definition
 
 INSTALLED_APPS = [

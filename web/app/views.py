@@ -1,9 +1,8 @@
 import os
 from binascii import hexlify
 import tempfile
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views import View
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -11,6 +10,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
 
+from .view_helpers import *
 from .models import *
 from .forms import *
 from lib import redis
@@ -164,23 +164,3 @@ def serve_jpg_file(request, file_path):
         raise Http404("Requested file does not exist")
     with open(full_path, 'rb') as fh:
         return HttpResponse(fh, content_type='image/jpeg')
-
-
-### helper methods ###
-
-def get_printer_or_404(pk, request):
-    return get_object_or_404(Printer, pk=pk, user=request.user)
-
-def get_prints(request):
-    return Print.objects.filter(user=request.user)
-
-def get_paginator(objs, request, num_per_page):
-    page = request.GET.get('page', 1)
-    paginator = Paginator(objs, num_per_page)
-    try:
-        page_obj = paginator.page(page)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-    return page_obj

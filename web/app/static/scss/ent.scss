@@ -1,0 +1,86 @@
+@import 'theme';
+
+.pricing {
+    background: $color-bg;
+
+    #pricing-selections {
+        .btn {
+            border: solid thin darken(white, 60);
+        }
+    }
+
+    .price-matrix {
+        padding-top: 32px;
+        div[class^="col-"] {
+            padding: 0px;
+            border-top: solid thin darken(white, 60);
+            border-bottom: solid thin darken(white, 60);
+
+            >div {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .price-header {
+                height: 11rem;
+            }
+
+            .price-action {
+                height: 6rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-bottom: solid thin darken(white, 60);
+                border-top: solid thin darken(white, 60);
+            }
+
+            .feature-header {
+                margin-top: 2rem;
+                height: 2rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                color: darken($color-text, 30);
+            }
+
+            .features {
+                &.essentials {
+                    height: 25rem;
+                }
+
+                >div {
+                    display: flex;
+                    padding-top: 0.7rem;
+                }
+
+                i {
+                    padding-right: 0.7rem;
+                    padding-top: 0.35rem;
+                    color: lighten($color-primary, 12);
+                }
+            }
+        }
+
+        >div:not(:first-child) {
+            border-left: solid thin darken(white, 60);
+        }
+
+        .plan-name {
+            font-size: 31px;
+            line-height: 43px;
+            padding-top: 1.5rem;
+        }
+
+        .plan-price {
+            font-size: 31px;
+            line-height: 43px;
+            font-weight: bold;
+            padding-top: 1.5rem;
+
+            .price-unit {
+                font-size: 18px;
+                color: darken($color-text, 30);
+            }
+        }
+    }
+}

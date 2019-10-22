@@ -60,8 +60,20 @@
                 }
 
                 .dh-per-month {
-                    font-weight: bold;
-                    font-size: 1.2em;
+                    // font-weight: bold;
+                    // font-size: 1.2em;
+                }
+
+                a {
+                    color: $color-primary;
+                    text-decoration: none;
+                    background-color: transparent;
+
+                    &:hover {
+                        color: darken($color-primary, 15);
+                        text-decoration: underline;
+                        cursor: pointer;
+                    }
                 }
             }
         }
@@ -87,5 +99,39 @@
                 color: darken($color-text, 30);
             }
         }
+    }
+}
+
+.price-calculator {
+    .price-line {
+        display: flex;
+    }
+
+    .slider {
+        width: 100%;
+        .slider-handle {
+            background: $color-primary;
+        }
+        .slider-selection {
+            background: lighten($color-primary, 10);
+        }
+    }
+
+    .cal-selection {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: $color-primary;
+    }
+
+    .btn-group-toggle {
+        .btn {
+            border: solid thin darken(white, 60);
+        }
+    }
+}
+
+.need-more-hours {
+    li {
+        padding: 0.3em 0em;
     }
 }

@@ -1,20 +1,26 @@
 @import 'theme';
+@import 'mixin';
 
 .pricing {
-    background: $color-bg;
-
     #pricing-selections {
+
+        .btn-group-toggle {
+            background: $color-bg;
+        }
+
         .btn {
             border: solid thin darken(white, 60);
         }
     }
 
     .price-matrix {
-        padding-top: 32px;
+        padding-top: 2rem;
+
         div[class^="col-"] {
             padding: 0px;
             border-top: solid thin darken(white, 60);
             border-bottom: solid thin darken(white, 60);
+            background: $color-bg;
 
             >div {
                 padding-left: 1rem;
@@ -45,7 +51,15 @@
 
             .features {
                 &.essentials {
-                    height: 25rem;
+                    @include respond-above(md) {
+                        height: 25em;
+                    }
+                    @include respond-between(sm, md) {
+                        height: 18em;
+                    }
+                    @include respond-below(sm) {
+                        padding-bottom: 1em;
+                    }
                 }
 
                 >div {
@@ -78,8 +92,16 @@
             }
         }
 
-        >div:not(:first-child) {
-            border-left: solid thin darken(white, 60);
+        @include respond-above(md) {
+            >div:not(:first-child) {
+                border-left: solid thin darken(white, 60);
+            }
+        }
+
+        @include respond-between(sm, md) {
+            >div:nth-child(2n+0) {
+                border-left: solid thin darken(white, 60);
+            }
         }
 
         .plan-name {

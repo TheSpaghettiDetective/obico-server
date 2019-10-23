@@ -103,6 +103,18 @@ hr {
   background-color: $color-form-bg;
 }
 
+a.link {
+  color: $color-primary !important;
+  text-decoration: none;
+  background-color: transparent;
+
+  &:hover {
+      color: darken($color-primary, 15) !important;
+      text-decoration: underline !important;
+      cursor: pointer !important;
+  }
+}
+
 .icon-btn {
   background-color: transparent;
   border: none;

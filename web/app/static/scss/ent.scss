@@ -1,13 +1,11 @@
 @import 'theme';
 @import 'mixin';
 
+
 .pricing {
-    #pricing-selections {
 
-        .btn-group-toggle {
-            background: $color-bg;
-        }
-
+    .btn-group-toggle {
+        background: $color-bg;
         .btn {
             border: solid thin darken(white, 60);
         }
@@ -77,18 +75,6 @@
                     // font-weight: bold;
                     // font-size: 1.2em;
                 }
-
-                a {
-                    color: $color-primary;
-                    text-decoration: none;
-                    background-color: transparent;
-
-                    &:hover {
-                        color: darken($color-primary, 15);
-                        text-decoration: underline;
-                        cursor: pointer;
-                    }
-                }
             }
         }
 
@@ -122,11 +108,44 @@
             }
         }
     }
+
+    #accordion {
+        .card {
+            background: $color-bg;
+        }
+        .card-header {
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+        }
+        .card-link {
+            p{position:absolute;top:5px;right:20px;font-size:20px;color:white;
+            -webkit-animation: minus 0.5s;}
+
+            @keyframes minus {
+                from {
+                    transform:rotate(0deg);
+                }
+                to {
+                    transform:rotate(360deg);
+                }
+            }
+    }
+    [aria-expanded="false"] > .expanded, [aria-expanded="true"] > .collapsed {display: none;}
+    }
+
 }
 
 .price-calculator {
     .price-line {
         display: flex;
+    }
+
+    .btn-group-toggle {
+        .btn {
+            border: solid thin darken(white, 60);
+        }
     }
 
     .slider {
@@ -144,12 +163,6 @@
         font-weight: bold;
         color: $color-primary;
     }
-
-    .btn-group-toggle {
-        .btn {
-            border: solid thin darken(white, 60);
-        }
-    }
 }
 
 .need-more-hours {
@@ -157,3 +170,4 @@
         padding: 0.3em 0em;
     }
 }
+

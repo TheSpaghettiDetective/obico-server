@@ -228,6 +228,35 @@ a.link {
   vertical-align: text-bottom;
 }
 
+.slider {
+  .slider-selection {
+    background: lighten($color-primary, 10);
+  }
+  .slider-handle {
+    background: $color-primary;
+  }
+}
+.slider.slider-horizontal:hover, .slider.slider-vertical:hover {
+  .tooltip.tooltip-main {
+      opacity: 0.7 !important;
+  }
+  .tooltip-inner {
+      font-size: 90%;
+      width: auto;
+  }
+}
+.slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
+.slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
+  content: '';
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 45%;
+  bottom: -10px;
+  border: transparent 5px solid;
+  border-top: #000 5px solid;
+}
+
 /** Shared styles for printer and print cards */
 
 .card {
@@ -459,39 +488,12 @@ form#printer_form {
     div[class^="hint-"] {
       display: none;
     }
-
-    #sensitivity-slider {
+    .slider {
       width: 100%;
-      .slider-selection {
-        background: $color-primary;
-      }
-      .slider-handle {
-        background: $color-secondary;
-      }
-    }
-    .slider.slider-horizontal:hover, .slider.slider-vertical:hover {
-        .tooltip.tooltip-main {
-            opacity: 0.7 !important;
-        }
-        .tooltip-inner {
-            font-size: 90%;
-            width: auto;
-        }
-    }
-    .slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
-    .slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
-      content: '';
-      width: 0;
-      height: 0;
-      position: absolute;
-      left: 45%;
-      bottom: -10px;
-      border: transparent 5px solid;
-      border-top: #000 5px solid;
     }
   }
-}
 
+}
 #smartwizard {
   &.sw-theme-default {
     -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;

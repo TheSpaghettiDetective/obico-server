@@ -160,13 +160,16 @@ class Printer(SafeDeleteModel):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
                 self.unset_current_print_with_ts()
-        else:                           # currently printing
-            if self.current_print:
-                if self.current_print.ext_id != current_print_ts:
-                    self.unset_current_print_with_ts()
-                    self.set_current_print_with_ts(filename, current_print_ts)
-            else:
+
+            return
+
+        # currently printing
+        if self.current_print:
+            if self.current_print.ext_id != current_print_ts:
+                self.unset_current_print_with_ts()
                 self.set_current_print_with_ts(filename, current_print_ts)
+        else:
+            self.set_current_print_with_ts(filename, current_print_ts)
 
     def unset_current_print_with_ts(self):
         if self.current_print.cancelled_at is None:
@@ -174,7 +177,7 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
         from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
         compile_timelapse.delay(self.current_print.id)
-        django_rq.enqueue('app_ent.tasks.print_ended', self.current_print.id)
+        PrintEvent.create(self.current_print, PrintEvent.ENDED)
 
         self.current_print = None
         self.save()
@@ -203,7 +206,7 @@ class Printer(SafeDeleteModel):
         self.current_print = cur_print
         self.save()
 
-        django_rq.enqueue('app_ent.tasks.print_started', cur_print.id)
+        PrintEvent.create(cur_print, PrintEvent.STARTED)
         self.printerprediction.reset_for_new_print()
 
     ####
@@ -226,9 +229,6 @@ class Printer(SafeDeleteModel):
             self.unset_current_print_with_ts()
 
     ###### End of old way of setting/unsetting print
-
-    def is_printing(self):
-        return self.current_print != None
 
     ## return: succeeded, user_credited ##
     def resume_print(self, mute_alert=False):
@@ -302,6 +302,10 @@ class Printer(SafeDeleteModel):
     def mute_current_print(self, muted):
         self.current_print.alert_muted_at = timezone.now() if muted else None
         self.current_print.save()
+        if muted:
+            PrintEvent.create(self.current_print, PrintEvent.ALERT_MUTED)
+        else:
+            PrintEvent.create(self.current_print, PrintEvent.ALERT_UNMUTED)
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
         if abort_existing:
@@ -430,3 +434,36 @@ class Print(SafeDeleteModel):
 
     def has_alerted(self):
         return self.alerted_at
+
+class PrintEvent(models.Model):
+    STARTED = 'STARTED'
+    ENDED = 'ENDED'
+    PAUSED = 'PAUSED'
+    RESUMED = 'RESUMED'
+    ALERT_MUTED = 'ALERT_MUTED'
+    ALERT_UNMUTED = 'ALERT_UNMUTED'
+
+    EVENT_TYPE = (
+        (STARTED, STARTED),
+        (ENDED, ENDED),
+        (PAUSED, PAUSED),
+        (RESUMED, RESUMED),
+        (ALERT_MUTED, ALERT_MUTED),
+        (ALERT_UNMUTED, ALERT_UNMUTED),
+    )
+
+    print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
+    event_type = models.CharField(
+        max_length=20,
+        choices=EVENT_TYPE,
+        null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def create(print, event_type):
+        event = PrintEvent.objects.create(
+            print = print,
+            event_type = event_type,
+        )
+        django_rq.enqueue('app_ent.tasks.process_print_event', event.id)

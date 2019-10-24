@@ -3,6 +3,7 @@ from django.utils import timezone
 from lib import redis
 from lib import channels
 from lib.utils import set_as_str_if_present
+from app.models import PrintEvent
 
 STATUS_TTL_SECONDS = 240
 
@@ -67,6 +68,18 @@ def process_octoprint_status_with_ts(op_status, printer):
     print_ts = op_status.get('current_print_ts')
     current_filename = op_event.get('name') or op_data.get('job', {}).get('file', {}).get('name')
     printer.update_current_print(current_filename, print_ts)
+    if not printer.current_print:
+        return
+
+    print(op_event.get('event_type'))
     if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()
+    elif op_event.get('event_type') == 'PrintPaused':
+        printer.current_print.paused_at = timezone.now()
+        printer.current_print.save()
+        PrintEvent.create(printer.current_print, PrintEvent.PAUSED)
+    elif op_event.get('event_type') == 'PrintResumed':
+        printer.current_print.paused_at = None
+        printer.current_print.save()
+        PrintEvent.create(printer.current_print, PrintEvent.RESUMED)

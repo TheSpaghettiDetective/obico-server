@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('hijack/', include('hijack.urls', namespace='hijack')),
     path('admin/', admin.site.urls),
+    path('django-rq/', include('django_rq.urls')),
 ]

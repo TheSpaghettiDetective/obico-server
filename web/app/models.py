@@ -13,6 +13,7 @@ import os
 import json
 from datetime import timedelta
 from pushbullet import Pushbullet, errors
+import django_rq
 
 from lib import redis
 from lib.utils import dict_or_none
@@ -173,6 +174,7 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
         from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
         compile_timelapse.delay(self.current_print.id)
+        django_rq.enqueue('app_ent.tasks.print_ended', self.current_print.id)
 
         self.current_print = None
         self.save()
@@ -201,6 +203,7 @@ class Printer(SafeDeleteModel):
         self.current_print = cur_print
         self.save()
 
+        django_rq.enqueue('app_ent.tasks.print_started', cur_print.id)
         self.printerprediction.reset_for_new_print()
 
     ####

@@ -18,6 +18,7 @@
             padding: 0px;
             border-top: solid thin darken(white, 60);
             border-bottom: solid thin darken(white, 60);
+            border-right: solid thin darken(white, 60);
             background: $color-bg;
 
             >div {
@@ -27,6 +28,7 @@
 
             .price-header {
                 height: 13rem;
+                background: darken($color-bg, 8);
 
                 .price-sub {
                     font-size: 0.95em;
@@ -104,22 +106,23 @@
                     padding-top: 0.35rem;
                     color: lighten($color-primary, 12);
                 }
-
-                .dh-per-month {
-                    // font-weight: bold;
-                    // font-size: 1.2em;
-                }
             }
         }
 
         @include respond-above(md) {
-            >div:not(:first-child) {
+            >div:first-child {
                 border-left: solid thin darken(white, 60);
             }
         }
 
         @include respond-between(sm, md) {
-            >div:nth-child(2n+0) {
+            >div:nth-child(2n+1) {
+                border-left: solid thin darken(white, 60);
+            }
+        }
+
+        @include respond-below(sm) {
+            >div {
                 border-left: solid thin darken(white, 60);
             }
         }

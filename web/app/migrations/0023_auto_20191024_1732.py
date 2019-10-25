@@ -17,7 +17,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('event_type', models.CharField(choices=[('STARTED', 'STARTED'), ('ENDED', 'ENDED'), ('PAUSED', 'PAUSED'), ('RESUMED', 'RESUMED'), ('ALERT_MUTED', 'ALERT_MUTED'), ('ALERT_UNMUTED', 'ALERT_UNMUTED')], max_length=20, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
                 ('print', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.Print')),
             ],
         ),

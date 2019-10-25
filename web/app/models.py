@@ -459,7 +459,6 @@ class PrintEvent(models.Model):
         null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def create(print, event_type):
         event = PrintEvent.objects.create(

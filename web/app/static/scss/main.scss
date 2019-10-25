@@ -104,12 +104,12 @@ hr {
 }
 
 a.link {
-  color: $color-primary !important;
+  color: lighten($color-primary, 7) !important;
   text-decoration: none;
   background-color: transparent;
 
   &:hover {
-      color: darken($color-primary, 15) !important;
+      color: $color-primary !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }

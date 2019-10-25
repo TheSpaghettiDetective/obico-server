@@ -26,7 +26,13 @@
             }
 
             .price-header {
-                height: 11rem;
+                height: 13rem;
+
+                .price-sub {
+                    font-size: 0.95em;
+                    font-weight: lighter;
+                    margin-top: -0.2em;
+                }
             }
 
             .price-action {
@@ -48,12 +54,40 @@
             }
 
             .features {
+                font-weight: lighter;
+                font-size: 0.94em;
+
+                &.keyfeatures {
+                    font-weight: bolder;
+                }
                 &.essentials {
                     @include respond-above(md) {
-                        height: 25em;
+                        height: 10em;
                     }
                     @include respond-between(sm, md) {
-                        height: 18em;
+                        height: 8em;
+                    }
+                    @include respond-below(sm) {
+                        padding-bottom: 1em;
+                    }
+                }
+                &.keyfeatures {
+                    @include respond-above(md) {
+                        height: 6.5em;
+                    }
+                    @include respond-between(sm, md) {
+                        height: 5em;
+                    }
+                    @include respond-below(sm) {
+                        padding-bottom: 1em;
+                    }
+                }
+                &.notification {
+                    @include respond-above(md) {
+                        height: 12.5em;
+                    }
+                    @include respond-between(sm, md) {
+                        height: 5em;
                     }
                     @include respond-below(sm) {
                         padding-bottom: 1em;
@@ -161,7 +195,11 @@
 
 .need-more-hours {
     li {
-        padding: 0.3em 0em;
+        padding: 0.2em 0em;
+    }
+
+    li, p {
+        font-weight: normal;
     }
 }
 

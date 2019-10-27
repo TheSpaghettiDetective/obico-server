@@ -56,44 +56,8 @@
             }
 
             .features {
-                font-weight: lighter;
-                font-size: 0.94em;
-
                 &.keyfeatures {
                     font-weight: bolder;
-                }
-                &.essentials {
-                    @include respond-above(md) {
-                        height: 10em;
-                    }
-                    @include respond-between(sm, md) {
-                        height: 8em;
-                    }
-                    @include respond-below(sm) {
-                        padding-bottom: 1em;
-                    }
-                }
-                &.keyfeatures {
-                    @include respond-above(md) {
-                        height: 6.5em;
-                    }
-                    @include respond-between(sm, md) {
-                        height: 5em;
-                    }
-                    @include respond-below(sm) {
-                        padding-bottom: 1em;
-                    }
-                }
-                &.notification {
-                    @include respond-above(md) {
-                        height: 12.5em;
-                    }
-                    @include respond-between(sm, md) {
-                        height: 5em;
-                    }
-                    @include respond-below(sm) {
-                        padding-bottom: 1em;
-                    }
                 }
 
                 >div {
@@ -190,19 +154,14 @@
         font-weight: bold;
         color: $color-primary;
     }
-
     .slider {
         width: 100%;
     }
 }
 
-.need-more-hours {
-    li {
-        padding: 0.2em 0em;
-    }
-
-    li, p {
-        font-weight: normal;
+.subcribe-dlg {
+    .input-group {
+        width: 10rem;
     }
 }
 

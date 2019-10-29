@@ -172,17 +172,20 @@ class Printer(SafeDeleteModel):
             self.set_current_print_with_ts(filename, current_print_ts)
 
     def unset_current_print_with_ts(self):
-        if self.current_print.cancelled_at is None:
-            self.current_print.finished_at = timezone.now()
-        self.current_print.save()
-        from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
-        compile_timelapse.delay(self.current_print.id)
-        PrintEvent.create(self.current_print, PrintEvent.ENDED)
-
+        print = self.current_print
         self.current_print = None
         self.save()
 
         self.printerprediction.reset_for_new_print()
+
+        if print.cancelled_at is None:
+            print.finished_at = timezone.now()
+            print.save()
+
+        from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
+        compile_timelapse.delay(print.id)
+        PrintEvent.create(print, PrintEvent.ENDED)
+
 
     def set_current_print_with_ts(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
@@ -225,6 +228,7 @@ class Printer(SafeDeleteModel):
         if self.current_print:  # was printing now it is not
             if cancelled:
                 self.current_print.cancelled_at = timezone.now()
+                self.current_print.save()
 
             self.unset_current_print_with_ts()
 
@@ -452,17 +456,23 @@ class PrintEvent(models.Model):
         (ALERT_UNMUTED, ALERT_UNMUTED),
     )
 
+    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
+
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=20,
         choices=EVENT_TYPE,
         null=True
     )
+    alert_muted = models.BooleanField(null=False)
+    processed_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def create(print, event_type):
         event = PrintEvent.objects.create(
             print = print,
             event_type = event_type,
+            alert_muted = (print.alert_muted_at is not None)
         )
-        django_rq.enqueue('app_ent.tasks.process_print_event', event.id)
+        if event_type in PrintEvent.ENDED:
+            django_rq.enqueue('app_ent.tasks.process_print_events', print.id)

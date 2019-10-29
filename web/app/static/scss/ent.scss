@@ -27,7 +27,7 @@
             }
 
             .price-header {
-                height: 13rem;
+                height: 14.5rem;
                 background: darken($color-bg, 8);
 
                 .price-sub {
@@ -58,6 +58,10 @@
             .features {
                 &.keyfeatures {
                     font-weight: bolder;
+                }
+
+                &.essentials {
+                    font-weight: lighter;
                 }
 
                 >div {
@@ -137,31 +141,27 @@
     }
 
 }
-
-.price-calculator {
-    .price-line {
-        display: flex;
+.subcribe-dlg {
+    font-weight: normal;
+    .input-group {
+        width: 7.5rem;
+        border: solid thin darken(white, 60);
     }
-
+    label.custom-control-label {
+        line-height: 25px;
+    }
+    th {
+        font-size: 1.5em;
+    }
+    table {
+        background: darken($color-bg, 10);
+    }
     .btn-group-toggle {
         .btn {
             border: solid thin darken(white, 60);
+            font-size: 0.9rem;
+            box-shadow: none;
         }
-    }
-
-    .cal-selection {
-        font-size: 1.5em;
-        font-weight: bold;
-        color: $color-primary;
-    }
-    .slider {
-        width: 100%;
-    }
-}
-
-.subcribe-dlg {
-    .input-group {
-        width: 10rem;
     }
 }
 

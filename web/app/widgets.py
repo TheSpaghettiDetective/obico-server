@@ -78,7 +78,7 @@ class PhoneCountryCodeWidget(forms.Select):
             # ('+53', 'Cuba (+53)'),
             # ('+90392', 'Cyprus North (+90392)'),
             # ('+357', 'Cyprus South (+357)'),
-            ('+42', 'Czech Republic (+42)'),
+            ('+420', 'Czech Republic (+420)'),
             ('+45', 'Denmark (+45)'),
             # ('+253', 'Djibouti (+253)'),
             # ('+1809', 'Dominica (+1809)'),

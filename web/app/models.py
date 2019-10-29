@@ -13,8 +13,8 @@ import os
 import json
 from datetime import timedelta
 from pushbullet import Pushbullet, errors
-import django_rq
 
+from config.celery import celery_app
 from lib import redis
 from lib.utils import dict_or_none
 
@@ -182,10 +182,8 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        from app.tasks import compile_timelapse  # can't put import at the top of the file to avoid circular dependency
-        compile_timelapse.delay(print.id)
+        celery_app.send_task('app.tasks.compile_timelapse', args=[print.id])
         PrintEvent.create(print, PrintEvent.ENDED)
-
 
     def set_current_print_with_ts(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
@@ -475,4 +473,4 @@ class PrintEvent(models.Model):
             alert_muted = (print.alert_muted_at is not None)
         )
         if event_type in PrintEvent.ENDED:
-            django_rq.enqueue('app_ent.tasks.process_print_events', print.id)
+            celery_app.send_task('app_ent.tasks.process_print_events', args=[print.id])

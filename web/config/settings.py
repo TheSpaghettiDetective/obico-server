@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'bootstrap_pagination',
     'jstemplate',
     'pushbullet',
-    'django_rq',
     'app',  # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',
@@ -254,15 +253,6 @@ CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600*12}
 CELERY_TASK_IGNORE_RESULT = True
-
-# Djang-RQ
-
-RQ_QUEUES = {
-        'default': {
-        'URL': REDIS_URL,
-        'DEFAULT_TIMEOUT': 500,
-    },
-}
 
 # Channels layers
 CHANNEL_LAYERS = {

@@ -74,19 +74,16 @@ class OctoPrintPicView(APIView):
     def post(self, request):
         printer = request.auth
 
-        dh_balance = redis.printer_dh_balance_get(printer.id)
-        if dh_balance and dh_balance < 0:
-            return Response({})
-
-        printer_cur_state = redis.printer_status_get(printer.id, 'state')
-        if not printer_cur_state or not json.loads(printer_cur_state).get('flags', {}).get('printing', False):
-            return Response({})
 
         pic = request.FILES['pic']
         pic_id = int(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
-        if not printer.current_print:
+        printer_cur_state = redis.printer_status_get(printer.id, 'state')
+        dh_balance = redis.printer_dh_balance_get(printer.id)
+        if not printer.current_print or \
+            not printer_cur_state or not json.loads(printer_cur_state).get('flags', {}).get('printing', False) or \
+            (dh_balance and dh_balance < 0):
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
             return command_response(printer)
 

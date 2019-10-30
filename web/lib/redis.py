@@ -72,7 +72,7 @@ def user_dh_balance_set(user_id, balance):
 
 def user_dh_balance_get(user_id):
     key = f'{user_key_prefix(user_id)}:dh'
-    return float(REDIS.get(key))
+    return float(REDIS.get(key) or 0)
 
 def print_num_predictions_incr(print_id):
     key = f'{print_key_prefix(print_id)}:pred'

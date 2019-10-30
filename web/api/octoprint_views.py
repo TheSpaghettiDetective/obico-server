@@ -112,6 +112,7 @@ class OctoPrintPicView(APIView):
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
 
+        celery_app.send_task('app_ent.tasks.print_predicted', args=[printer.current_print.id])
         return command_response(printer)
 
 

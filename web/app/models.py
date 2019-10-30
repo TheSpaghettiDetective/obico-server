@@ -142,7 +142,7 @@ class Printer(SafeDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords()
+        history = HistoricalRecords(excluded_fields=['updated_at'])
 
     @property
     def status(self):
@@ -423,7 +423,7 @@ class Print(SafeDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords()
+        history = HistoricalRecords(excluded_fields=['updated_at'])
 
     def ended_at(self):
         return self.cancelled_at or self.finished_at

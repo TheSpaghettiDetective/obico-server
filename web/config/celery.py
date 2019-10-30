@@ -7,7 +7,6 @@ from raven.contrib.celery import register_signal, register_logger_signal
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
-
 class MyCelery(celery.Celery):
 
     def on_configure(self):
@@ -21,6 +20,9 @@ class MyCelery(celery.Celery):
             register_signal(client)
 
 celery_app = MyCelery('config')
+celery_app.conf.task_ignore_result = True
+celery_app.conf.task_store_errors_even_if_ignored = True
+celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

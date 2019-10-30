@@ -1,11 +1,26 @@
 from __future__ import absolute_import, unicode_literals
 import os
-from celery import Celery
+import celery
+import raven
+from raven.contrib.celery import register_signal, register_logger_signal
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
-celery_app = Celery('config')
+
+class MyCelery(celery.Celery):
+
+    def on_configure(self):
+        if os.environ.get('SENTRY_DSN'):
+            client = raven.Client(os.environ.get('SENTRY_DSN'))
+
+            # register a custom filter to filter out duplicate logs
+            register_logger_signal(client)
+
+            # hook into the Celery error handler
+            register_signal(client)
+
+celery_app = MyCelery('config')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

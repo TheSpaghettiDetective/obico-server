@@ -59,3 +59,11 @@ def printer_p_json_set(printer_id, pic_id, json_str, ex=None):
 def printer_p_json_get(printer_id, pic_id):
     key = f'{printer_key_prefix(printer_id)}:p_json:{pic_id}'
     return REDIS.get(key)
+
+def printer_dh_balance_set(printer_id, balance):
+    key = f'{printer_key_prefix(printer_id)}:dh'
+    REDIS.set(key, balance)
+
+def printer_dh_balance_get(printer_id):
+    key = f'{printer_key_prefix(printer_id)}:dh'
+    return REDIS.get(key)

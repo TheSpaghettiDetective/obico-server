@@ -71,7 +71,6 @@ def process_octoprint_status_with_ts(op_status, printer):
     if not printer.current_print:
         return
 
-    print(op_event.get('event_type'))
     if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()

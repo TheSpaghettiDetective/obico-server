@@ -20,6 +20,7 @@ from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_commands_to_printer, send_status_to_web
 from .octoprint_messages import STATUS_TTL_SECONDS
+from config.celery import celery_app
 
 ALERT_COOLDOWN_SECONDS = 120
 

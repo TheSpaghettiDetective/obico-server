@@ -8,7 +8,7 @@ from rest_framework import status
 from app.models import *
 from lib import redis
 from .serializers import *
-
+from config.celery import celery_app
 from lib.channels import send_commands_to_printer
 
 class PrinterViewSet(viewsets.ModelViewSet):
@@ -68,24 +68,10 @@ class PrintViewSet(viewsets.ModelViewSet):
 
         user_credited = False
         if print.alert_overwrite == None:
-            UserCredit.objects.create(user=request.user, print=print, reason=UserCredit.ALERT_OVERWRITE, amount=2)
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.printer.user.id, 1, 'Credit: Flagging "{}"'.format(print.filename[:100])])
             user_credited = True
 
         print.alert_overwrite = request.GET.get('value', None)
         print.save()
 
         return Response(dict(user_credited=user_credited))
-
-
-class UserCreditViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UserCreditSerializer
-
-    def get_queryset(self):
-        return UserCredit.objects.filter(user=self.request.user)
-
-    @action(detail=False, methods=['get'])
-    def total(self, request, pk=None):
-        user_credits = self.get_queryset()
-        total_credits = sum([c.amount for c in user_credits])
-        return Response({'count': total_credits})

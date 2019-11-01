@@ -17,6 +17,5 @@ urlpatterns = [
     path('prints/', views.prints, name='prints'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
-    path('user_credits/', views.user_credits, name='user_credits'),
     path('webrtc/', views.webrtc, name='webrtc'),
 ]

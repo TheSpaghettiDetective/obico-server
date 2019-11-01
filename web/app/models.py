@@ -18,6 +18,8 @@ from config.celery import celery_app
 from lib import redis
 from lib.utils import dict_or_none
 
+UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
+
 class UserManager(UserManager):
     """Define a model manager for User model with no username field."""
 
@@ -96,28 +98,6 @@ def update_consented_at(sender, instance, created, **kwargs):
     if created:
         instance.consented_at = timezone.now()
         instance.save()
-
-
-class UserCredit(models.Model):
-    ALERT_OVERWRITE = 'ALERT_OVERWRITE'
-    TIMELAPSE_UPLOAD = 'TIMELAPSE_UPLOAD'
-    BUG_REPORT = 'BUG_REPORT'
-    REASON = (
-        (ALERT_OVERWRITE, ALERT_OVERWRITE),
-        (TIMELAPSE_UPLOAD, TIMELAPSE_UPLOAD),
-        (BUG_REPORT, BUG_REPORT),
-    )
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    amount = models.IntegerField(null=False, default=0)
-    reason = models.CharField(
-        max_length=20,
-        choices=REASON,
-    )
-    print = models.ForeignKey('Print', on_delete=models.CASCADE, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Printer(SafeDeleteModel):
@@ -300,7 +280,7 @@ class Printer(SafeDeleteModel):
 
         user_credited = False
         if self.current_print.alert_overwrite == None:
-            UserCredit.objects.create(user=self.user, print=self.current_print, reason=UserCredit.ALERT_OVERWRITE, amount=2)
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit: Flagging "{}"'.format(self.current_print.filename[:100])])
             user_credited = True
 
         self.current_print.alert_acknowledged_at = timezone.now()

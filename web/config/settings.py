@@ -90,6 +90,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
+                'app.context_processors.detective_hour_processor',
             ],
         },
     },
@@ -219,6 +220,7 @@ if os.environ.get('SENTRY_DSN'):
 
 # Extra js
 EXTRA_JS = [s for s in os.environ.get('EXTRA_JS', '').split('|') if s]
+IS_ENT = False
 
 # REDIS client
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')
@@ -246,6 +248,7 @@ SETTINGS_EXPORT = [
     'TWILIO_ENABLED',
     'ACCOUNT_EMAIL_VERIFICATION',
     'TELEGRAM_BOT_TOKEN',
+    'IS_ENT',
 ]
 
 # Celery

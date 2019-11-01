@@ -138,8 +138,8 @@ def upload_print(request):
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{str(timezone.now().timestamp())}{file_extension}'
         save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER)
-        user_credit = UserCredit.objects.create(user=request.user, reason=UserCredit.TIMELAPSE_UPLOAD, amount=4)
-        preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name, user_credit.id)
+        celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[request.user.id, 1, 'Credit - Upload "{}"'.format(request.FILES['file'].name[:100])])
+        preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))
     else:
@@ -151,15 +151,8 @@ def publictimelapse_list(request):
     return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))
 
 
-### Users credits ######
-
-@login_required
-def user_credits(request):
-    user_credits = UserCredit.objects.filter(user = request.user).select_related('print').order_by('-updated_at')
-    total_credits = sum([c.amount for c in user_credits])
-    return render(request, 'user_credits.html', dict(user_credits=user_credits, total_credits=total_credits))
-
 ### Consent page #####
+
 @login_required
 def consent(request):
     if request.method == 'POST':

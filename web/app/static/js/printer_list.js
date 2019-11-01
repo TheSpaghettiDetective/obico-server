@@ -293,5 +293,7 @@ $(document).ready(function () {
          });
     }
 
-    showNotificationMsgIfExisted();
+    if (isEnt) {
+        showNotificationMsgIfExisted();
+    }
 });

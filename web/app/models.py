@@ -59,6 +59,7 @@ class User(AbstractUser):
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
+    consented_at = models.DateTimeField(null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -89,6 +90,12 @@ class User(AbstractUser):
             return True
         except errors.InvalidKeyError:
             return False
+
+@receiver(post_save, sender=User)
+def update_consented_at(sender, instance, created, **kwargs):
+    if created:
+        instance.consented_at = timezone.now()
+        instance.save()
 
 
 class UserCredit(models.Model):

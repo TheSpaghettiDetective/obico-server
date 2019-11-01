@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container">
+      <div class="form-group row">
+        <div class="col-sm-12">
+          <h4>Wait! We need to record your consent according to regulations such as <a class="link" href="https://gdpr.eu/gdpr-consent-requirements/">GDPR</a>.</h4>
+        </div>
+      </div>
+      <form id="consent_form" method="POST" action="{{ request.path }}">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <div style="margin-bottom: 1rem;">
+                  <div class="custom-control custom-checkbox form-check-inline">
+                    <input type="checkbox" class="custom-control-input" id="consented">
+                    <label class="custom-control-label" style="font-size: 16px;" for="consented">I agree to The Spaghetti Detective's <a class="link" href="https://www.thespaghettidetective.com/terms.html">Terms of Use</a> and <a class="link" href="https://www.thespaghettidetective.com/privacy.html">Privacy Policy</a></label>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary btn-block disabled">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+<script src="{% static 'js/consent.js' %}"></script>
+{% endblock page_js %}

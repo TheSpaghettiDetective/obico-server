@@ -21,7 +21,10 @@ from app.tasks import preprocess_timelapse
 
 # Create your views here.
 def index(request):
-    return redirect('/printers/')
+    if request.user.is_authenticated and not request.user.consented_at:
+        return redirect('/consent/')
+    else:
+        return redirect('/printers/')
 
 @login_required
 def priner_auth_token(request, pk):
@@ -38,6 +41,9 @@ def priner_auth_token(request, pk):
 
 @login_required
 def printers(request):
+    if not request.user.consented_at:
+        return redirect('/consent/')
+
     printers = Printer.objects.filter(user=request.user)
     for printer in printers:
         p_settings = redis.printer_settings_get(printer.id)
@@ -152,6 +158,17 @@ def user_credits(request):
     user_credits = UserCredit.objects.filter(user = request.user).select_related('print').order_by('-updated_at')
     total_credits = sum([c.amount for c in user_credits])
     return render(request, 'user_credits.html', dict(user_credits=user_credits, total_credits=total_credits))
+
+### Consent page #####
+@login_required
+def consent(request):
+    if request.method == 'POST':
+        user = request.user
+        user.consented_at = timezone.now()
+        user.save()
+        return redirect('/printers/')
+    else:
+        return render(request, 'consent.html')
 
 def webrtc(request):
     return render(request, 'webrtc.html')

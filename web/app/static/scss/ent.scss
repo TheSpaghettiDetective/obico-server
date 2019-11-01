@@ -12,8 +12,6 @@
     }
 
     .price-matrix {
-        padding-top: 2rem;
-
         div[class^="col-"] {
             padding: 0px;
             border-top: solid thin darken(white, 60);
@@ -29,6 +27,9 @@
             .price-header {
                 height: 14.5rem;
                 background: darken($color-bg, 8);
+                &.dh-pack-header {
+                    height: 12rem;
+                }
 
                 .price-sub {
                     font-size: 0.95em;
@@ -64,6 +65,11 @@
                     font-weight: lighter;
                 }
 
+                &.dh-pack {
+                    height: 12rem;
+                    font-weight: lighter;
+                }
+
                 >div {
                     display: flex;
                     padding-top: 0.7rem;
@@ -77,19 +83,13 @@
             }
         }
 
-        @include respond-above(md) {
+        @include respond-above(sm) {
             >div:first-child {
                 border-left: solid thin darken(white, 60);
             }
         }
 
-        @include respond-between(sm, md) {
-            >div:nth-child(2n+1) {
-                border-left: solid thin darken(white, 60);
-            }
-        }
-
-        @include respond-below(sm) {
+        @include respond-below(md) {
             >div {
                 border-left: solid thin darken(white, 60);
             }

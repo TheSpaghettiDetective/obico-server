@@ -470,7 +470,6 @@ class PrintEvent(models.Model):
         null=True
     )
     alert_muted = models.BooleanField(null=False)
-    processed_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def create(print, event_type):

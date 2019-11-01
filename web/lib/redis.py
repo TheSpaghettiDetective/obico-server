@@ -83,7 +83,7 @@ def print_num_predictions_incr(print_id):
 
 def print_num_predictions_get(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
-    return int(REDIS.get(key))
+    return int(REDIS.get(key) or 0)
 
 def print_num_predictions_delete(print_id):
     key = f'{print_key_prefix(print_id)}:pred'

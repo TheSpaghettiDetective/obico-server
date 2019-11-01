@@ -1,6 +1,8 @@
 $(document).ready(function () {
     var wsList = [];
 
+    /*** Websocket messaging */
+
     function ensureWebsocketClosed(ws) {
         ws.onclose = function (e) {
             _.remove(wsList, function(ele) {
@@ -52,6 +54,9 @@ $(document).ready(function () {
     });
     openPrinterWebSockets();
 
+    /*** End of websocket messaging */
+
+    /** Printer cards */
     function printerGet(printerId, uri, callback) {
         $.ajax({
             url: '/api/printers/' + printerId + uri,
@@ -257,4 +262,36 @@ $(document).ready(function () {
         }
         return Mustache.template('duration_block').render(durationObj);
     }
+
+    /*** End of printer card */
+
+    function showNotificationMsgIfExisted() {
+        $.ajax({
+            url: '/ent/api/messages/',
+            type: 'GET',
+            dataType: 'json',
+        }).done(function(result) {
+            if (result.length > 0) {
+                msg = result[0];
+                opt = {
+                    position: 'top-end',
+                    confirmButtonText: "Gotcha! Don't show this again.",
+                };
+                msg_obj = JSON.parse(msg.message);
+                _.assign(opt, msg_obj);
+                Swal.fire(opt)
+                .then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: '/ent/api/messages/' + msg.id + '/dismiss/',
+                            type: 'GET',
+                            dataType: 'json',
+                        });
+                    }
+                });
+            }
+         });
+    }
+
+    showNotificationMsgIfExisted();
 });

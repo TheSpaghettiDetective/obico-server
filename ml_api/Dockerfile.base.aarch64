@@ -4,7 +4,7 @@ EXPOSE 3333
 RUN rm -rf /etc/apt/sources.list.d/cuda.list && \
 	apt update
 ARG DEBIAN_FRONTEND=noninteractive
-RUN -O /libopencv_3.3.1-2-g31ccdfe11_arm64.deb http://169.44.201.108:7002/jetpacks/4.2.1/libopencv_3.3.1-2-g31ccdfe11_arm64.deb && \
+RUN wget -O /libopencv_3.3.1-2-g31ccdfe11_arm64.deb http://169.44.201.108:7002/jetpacks/4.2.1/libopencv_3.3.1-2-g31ccdfe11_arm64.deb && \
 	dpkg --install /libopencv_3.3.1-2-g31ccdfe11_arm64.deb
 RUN apt install --no-install-recommends -y python-opencv python3-opencv && \
 	apt install --no-install-recommends -y libsm6 libxrender1 libfontconfig1 python3-pip python3-setuptools vim ffmpeg wget curl && \

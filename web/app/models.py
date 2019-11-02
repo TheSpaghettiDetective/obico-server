@@ -280,7 +280,7 @@ class Printer(SafeDeleteModel):
 
         user_credited = False
         if self.current_print.alert_overwrite == None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit: Flagging "{}"'.format(self.current_print.filename[:100])])
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit: Flag "{}"'.format(self.current_print.filename[:100])])
             user_credited = True
 
         self.current_print.alert_acknowledged_at = timezone.now()

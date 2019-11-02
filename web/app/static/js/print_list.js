@@ -114,7 +114,7 @@ $(document).ready(function () {
         }).done(function (result) {
             var html = '<h6>Thank you for helping The Detective get better.</h6>';
             if (result.user_credited) {
-                html += '<a href="/user_credits/">You just earned ' + '<img class="dg-icon" src="/static/img/detective-hour-2-primary.png" />.</a>';
+                html += '<a href="/user_credits/">You just earned ' + '<img class="dh-icon" src="/static/img/detective-hour-2-primary.png" />.</a>';
             }
 
             Toast.fire({

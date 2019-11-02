@@ -71,7 +71,7 @@ $(document).ready(function () {
             '<p>It may take a while to be executed by OctoPrint.</p>';
             if (result.user_credited) {
                 toastHtml += '<p>BTW <a href="/user_credits/">You just earned ' +
-                '<img class="dg-icon" src="/static/img/detective-hour-2-inverse.png" />.</a><p>';
+                '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />.</a><p>';
             }
             Toast.fire({
                 type: 'success',
@@ -119,7 +119,7 @@ $(document).ready(function () {
             if (printerCard.find("#print-pause-resume").text() == 'Resume') {
                 Confirm.fire({
                     title: 'Noted!',
-                    html: '<a href="/user_credits/">You just earned ' + '<img class="dg-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a>' +
+                    html: '<a href="/user_credits/">You just earned ' + '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a>' +
                     '<p /><p>What do you want to do now?</p>',
                     confirmButtonText: 'Resume print',
                     cancelButtonText: 'Resume, and don\'t alert again for this print',
@@ -138,7 +138,7 @@ $(document).ready(function () {
                 });
                 Swal.fire({
                     html: '<h6>Noted!</h6><p>Thank you for your feedback.</p><p><a href="/user_credits/">You just earned ' +
-                        '<img class="dg-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a></p>',
+                        '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a></p>',
                     timer: 2500
                 })
             }

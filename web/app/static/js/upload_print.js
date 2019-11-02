@@ -16,7 +16,7 @@ Dropzone.options.printUpload = {
             $('#tl-verifying').hide();
             $('#tl-uploaded').show();
             dgEarned += 4;
-            $('#dg-earned').html('You earned ' + '<img class="dg-icon" src="/static/img/detective-hour-inverse.png" />'.repeat(dgEarned));
+            $('#dg-earned').html('You earned ' + '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />'.repeat(dgEarned));
         });
     },
 };

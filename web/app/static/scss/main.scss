@@ -32,6 +32,11 @@ body {
   }
 }
 
+.hint {
+  cursor: help;
+  border-bottom: dotted thin;
+}
+
 .hide {
   display: none;
 }

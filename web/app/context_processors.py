@@ -7,6 +7,6 @@ def detective_hour_processor(request):
         if dh_balance >= UNLIMITED_DH:
             return {'dh_balance': '\u221E'}
         else:
-            return {'dh_balance': int(dh_balance)}
+            return {'dh_balance': round(dh_balance)}
     else:
         return {}

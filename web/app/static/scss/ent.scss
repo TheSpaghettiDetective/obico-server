@@ -1,6 +1,12 @@
 @import 'theme';
 @import 'mixin';
 
+table.pricing {
+    background: darken($color-bg, 10);
+    th {
+        font-size: 1.2em;
+    }
+}
 
 .pricing {
 
@@ -152,9 +158,6 @@
     }
     th {
         font-size: 1.5em;
-    }
-    table {
-        background: darken($color-bg, 10);
     }
     .btn-group-toggle {
         .btn {

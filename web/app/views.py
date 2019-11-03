@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.http import Http404
+from django.utils.safestring import mark_safe
 
 from .view_helpers import *
 from .models import *
@@ -44,11 +45,15 @@ def printers(request):
     if not request.user.consented_at:
         return redirect('/consent/')
 
-    printers = Printer.objects.filter(user=request.user)
+    printers = request.user.printer_set.all()
     for printer in printers:
         p_settings = redis.printer_settings_get(printer.id)
         printer.settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
         printer.settings.update(dict(ratio169=p_settings.get('webcam_streamRatio', '4:3') == '16:9'))
+
+    if Printer.with_archived.filter(user=request.user, archived_at__isnull=False).count() > 0:
+        messages.warning(request, mark_safe('Some of your printers have been archived. <a href="/ent/printers/archived/">Find them here.</a>'))
+
     return render(request, 'printer_list.html', {'printers': printers})
 
 @login_required

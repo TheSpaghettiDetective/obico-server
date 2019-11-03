@@ -1,17 +1,18 @@
 from allauth.account.admin import EmailAddress
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
+import json
 from django.db import models
 from jsonfield import JSONField
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 from safedelete.models import SafeDeleteModel
-import os
-import json
-from datetime import timedelta
+from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 
 from config.celery import celery_app
@@ -20,7 +21,7 @@ from lib.utils import dict_or_none
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 
-class UserManager(UserManager):
+class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
     use_in_migrations = True
@@ -100,7 +101,14 @@ def update_consented_at(sender, instance, created, **kwargs):
         instance.save()
 
 
+class PrinterManager(SafeDeleteManager):
+    def get_queryset(self):
+        return super(PrinterManager, self).get_queryset().filter(archived_at__isnull=True)
+
 class Printer(SafeDeleteModel):
+    class Meta:
+        default_manager_name = 'objects'
+
     CANCEL = 'CANCEL'
     PAUSE = 'PAUSE'
     NONE = 'NONE'
@@ -125,8 +133,12 @@ class Printer(SafeDeleteModel):
     lift_z_on_pause = models.FloatField(null=False, default=2.5)
     detective_sensitivity = models.FloatField(null=False, default=1.0)
 
+    archived_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = PrinterManager()
+    with_archived = SafeDeleteManager()
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
         history = HistoricalRecords(excluded_fields=['updated_at'])

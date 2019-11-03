@@ -16,6 +16,6 @@ urlpatterns = [
     path('user_preferences/', views.user_preferences, name='user_preferences'),
     path('prints/', views.prints, name='prints'),
     path('prints/upload/', views.upload_print, name='upload_print'),
-    path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
+    path('prints/<int:pk>/delete/', views.delete_prints, name='prints_delete'),
     path('webrtc/', views.webrtc, name='webrtc'),
 ]

@@ -13,6 +13,11 @@ RUN wget -O /libopencv_3.3.1-2-g31ccdfe11_arm64.deb http://169.44.201.108:7002/j
 	dpkg --install /libopencv_3.3.1-2-g31ccdfe11_arm64.deb
 ## Additional OpenCV dependencies usually installed by the CUDA Toolkit
 
+ADD . /app
+RUN cp bin/model_$(uname --m).so bin/model.so && \
+	cp bin/model_gpu_$(uname --m).so bin/model_gpu.so
+
 RUN pip install --upgrade pip
-ADD requirements.txt .
 RUN pip install -r requirements.txt
+
+RUN wget --quiet -O model/model.weights $(cat model/model.weights.url | tr -d '\r')

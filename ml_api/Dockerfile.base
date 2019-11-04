@@ -10,3 +10,5 @@ RUN apt update && \
 RUN pip install --upgrade pip
 ADD requirements.txt .
 RUN pip install -r requirements.txt
+ADD requirements_x86_64.txt .
+RUN pip install -r requirements_x86_64.txt

@@ -8,5 +8,5 @@ RUN apt update && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 
 RUN pip install --upgrade pip
-ADD requirements.txt .
-RUN pip install -r requirements.txt
+ADD requirements.txt requirements_x86_64.txt ./
+RUN pip install -r requirements_x86_64.txt

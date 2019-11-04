@@ -1,0 +1,4 @@
+-r requirements.txt
+
+opencv-python>=3.4
+opencv-contrib-python>=4.0

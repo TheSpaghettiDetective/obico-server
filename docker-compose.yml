@@ -38,6 +38,7 @@ services:
     restart: unless-stopped
     build:
       context: ml_api
+      # dockerfile: Dockerfile.aarch64   # Uncomment this line if you are running it on Jetson
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'

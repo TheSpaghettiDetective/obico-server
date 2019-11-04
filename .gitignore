@@ -130,6 +130,3 @@ node_modules
 docker-compose.override.yml
 
 *.code-workspace
-
-/gcp-key
-/ml_api/model/model.weights

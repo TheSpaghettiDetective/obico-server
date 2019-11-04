@@ -6,6 +6,11 @@
 {% block content %}
 
 <div class="timelapse-gallery">
+  <div class="row my-5 justify-content-center">
+    <div class="col-12">
+      <a role="button" class="btn btn-outline-primary btn-block" href="/prints/upload/">Upload time-lapses and earn some <img class="dh-icon" src="{% static 'img/detective-hour-primary.png' %}" /></a>
+    </div>
+  </div>
   <form id="prints-form" method="POST" action="{{ request.path }}delete/bulk/">{% csrf_token %}</form>
     <div class="row">
       <div class="col-sm-12 text-center pb-3">
@@ -25,7 +30,7 @@
               <label class="custom-control-label" for="select-print-{{ print.id }}"></label>
             </div>
             <a role="button" class="btn btn-outline-danger float-right btn-sm borderless"
-              href="{{ request.path }}{{ print.id }}/delete/">
+              href="{{ request.path }}delete/{{ print.id }}/">
               <i class="fas fa-trash-alt fa-lg"></i>
             </a>
           </div>

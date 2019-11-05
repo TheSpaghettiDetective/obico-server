@@ -9,7 +9,6 @@ Thanks to Raymond's work, you can now easily run TSD server on Jetson. You only 
 - Modify file to include:
 
 ```
-...
 version: '2.4'
 
 x-web-defaults: &web-defaults
@@ -24,7 +23,6 @@ services:
     environment:
         HAS_GPU: 'True'
     runtime: nvidia
-...
 ```
 
 You can then follow the remaining steps by following the instructions in [README.md].

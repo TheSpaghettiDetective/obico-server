@@ -121,7 +121,7 @@ class Printer(SafeDeleteModel):
     name = models.CharField(max_length=200, null=False)
     auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    current_print = models.OneToOneField('Print', on_delete=models.SET_NULL, null=True, related_name='not_used')
+    current_print = models.OneToOneField('Print', on_delete=models.SET_NULL, null=True, blank=True, related_name='not_used')
     action_on_failure = models.CharField(
         max_length=10,
         choices=ACTION_ON_FAILURE,
@@ -133,7 +133,7 @@ class Printer(SafeDeleteModel):
     lift_z_on_pause = models.FloatField(null=False, default=2.5)
     detective_sensitivity = models.FloatField(null=False, default=1.0)
 
-    archived_at = models.DateTimeField(null=True)
+    archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

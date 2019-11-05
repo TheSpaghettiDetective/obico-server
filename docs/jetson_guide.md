@@ -4,13 +4,26 @@
 
 Thanks to Raymond's work, you can now easily run TSD server on Jetson. You only need to take one extra step to make it work:
 
-- Open `docker-compose.yml` file.
+- Create and or open `docker-compose.override.yml` file.
 
-- Find the following line and uncomment it:
+- Modify file to include:
 
 ```
 ...
-# dockerfile: Dockerfile.aarch64   # Uncomment this line if you are running it on Jetson
+version: '2.4'
+
+x-web-defaults: &web-defaults
+  build:
+    dockerfile: Dockerfile.base
+
+services:
+  ml_api:
+    build:
+      context: ml_api
+      dockerfile: Dockerfile.aarch64
+    environment:
+        HAS_GPU: 'True'
+    runtime: nvidia
 ...
 ```
 

@@ -224,7 +224,16 @@ $(document).ready(function () {
         }
 
         // Gauge
-        updateGauge(printerCard.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
+        var gaugeDiv = printerCard.find('.gauge-container');
+        updateGauge(gaugeDiv.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
+        if (printer.should_watch) {
+            gaugeDiv.removeClass('overlay');
+            gaugeDiv.find('.overlay-top').hide();
+        } else {
+            gaugeDiv.addClass('overlay');
+            gaugeDiv.find('.overlay-top').show();
+        }
+
 
         // Pause/Resume/Cancel buttons
         if (printer.status && printer.current_print) {
@@ -315,7 +324,6 @@ $(document).ready(function () {
                 }
             });
 
-
             // Panel settings
             if (isInfoSectionOn("panel-settings")) {
                 printerCard.find("#panel-settings").show();
@@ -372,4 +380,9 @@ $(document).ready(function () {
     if (isEnt) {
         showNotificationMsgIfExisted();
     }
+
+    $('.hint').popover({
+        container: 'body'
+    });
+
 });

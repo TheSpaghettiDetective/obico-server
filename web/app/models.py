@@ -154,6 +154,14 @@ class Printer(SafeDeleteModel):
         pic_data = redis.printer_pic_get(self.id)
         return dict_or_none(pic_data)
 
+    def should_watch(self):
+        if not self.watching or redis.user_dh_balance_get(self.user_id) < 0:
+            return False
+
+        printer_cur_state = redis.printer_status_get(self.id, 'state')
+        return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False) and \
+            self.current_print and self.current_print.alert_muted_at == None
+
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing
             if self.current_print:

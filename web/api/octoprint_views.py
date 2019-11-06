@@ -29,8 +29,7 @@ def alert_suppressed(printer):
         return True
 
     last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    return printer.current_print.alert_muted_at \
-        or (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
+    return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
 
 def alert_if_needed(printer):
     if alert_suppressed(printer):
@@ -78,11 +77,7 @@ class OctoPrintPicView(APIView):
         pic_id = int(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
-        printer_cur_state = redis.printer_status_get(printer.id, 'state')
-        if not printer.current_print or \
-                not printer_cur_state or not json.loads(printer_cur_state).get('flags', {}).get('printing', False) or \
-                redis.user_dh_balance_get(printer.user.id) < 0:
-
+        if not printer.should_watch():
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
             return command_response(printer)
 

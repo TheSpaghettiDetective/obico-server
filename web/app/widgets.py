@@ -23,7 +23,7 @@ class CustomRadioSelectWidget(forms.RadioSelect):
                 choice[0],
                 attrs['class'],
                 input_id,
-                ('checked=""' if choice[0] == value else '') + (' disabled' if choice[0] == 'CANCEL' else ''),
+                ('checked=""' if choice[0] == value else ''),
                 input_id,
                 choice[1]
             )

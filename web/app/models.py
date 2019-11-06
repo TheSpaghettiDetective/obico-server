@@ -109,13 +109,11 @@ class Printer(SafeDeleteModel):
     class Meta:
         default_manager_name = 'objects'
 
-    CANCEL = 'CANCEL'
     PAUSE = 'PAUSE'
     NONE = 'NONE'
     ACTION_ON_FAILURE = (
-        (NONE, 'Just notify me via email and text.'),
-        (PAUSE, 'Pause the print and notify me via email and text.'),
-        (CANCEL, 'Cancel the print and notifiy me (not available during beta testing).'),
+        (NONE, 'Just notify me.'),
+        (PAUSE, 'Pause the printer and notify me.'),
     )
 
     name = models.CharField(max_length=200, null=False)
@@ -127,6 +125,7 @@ class Printer(SafeDeleteModel):
         choices=ACTION_ON_FAILURE,
         default=PAUSE,
     )
+    watching = models.BooleanField(default=True)
     tools_off_on_pause = models.BooleanField(default=True)
     bed_off_on_pause = models.BooleanField(default=False)
     retract_on_pause = models.FloatField(null=False, default=6.5)

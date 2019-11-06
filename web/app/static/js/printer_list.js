@@ -1,5 +1,6 @@
 $(document).ready(function () {
     var wsList = [];
+    var printerList = [];
 
     /*** Websocket messaging */
 
@@ -25,7 +26,8 @@ $(document).ready(function () {
             wsList.push(printerSocket);
             printerSocket.onmessage = function (e) {
                 var printer = JSON.parse(e.data);
-                updatePrinterCard(printer, printerCard);
+                printerList[printerId] = printer;
+                updatePrinterCard(printerCard);
             };
 
             ensureWebsocketClosed(printerSocket);
@@ -71,7 +73,7 @@ $(document).ready(function () {
             '<p>It may take a while to be executed by OctoPrint.</p>';
             if (result.user_credited) {
                 toastHtml += '<p>BTW <a href="/ent/detective_hours/">You just earned ' +
-                '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />.</a><p>';
+                '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>';
             }
             Toast.fire({
                 type: 'success',
@@ -99,10 +101,28 @@ $(document).ready(function () {
             });
         });
 
+        printerCard.find('input.update-printer').on('change', function (e) {
+            var formInputs = {
+                action_on_failure: printerCard.find('input[name="action_on_failure"]:checked').val(),
+                watching: printerCard.find('input[name="watching"]').prop('checked'),
+            }
+            $.ajax({
+                url: '/api/printers/' + printerId + '/',
+                type: 'PATCH',
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(formInputs),
+            }).done(function(result) {
+                printerList[printerId] = result.printer;
+                updatePrinterCard(printerCard);
+            });
+        });
+
         printerCard.find('input.alert-toggle').on('change', function (e) {
             var muteAlert = $(this).is(':checked');
-            printerGet(printerId, '/mute_current_print/?mute_alert=' + muteAlert, function(printer) {
-                updatePrinterCard(printer, printerCard);
+            printerGet(printerId, '/mute_current_print/?mute_alert=' + muteAlert, function(result) {
+                printerList[printerId] = result.printer;
+                updatePrinterCard(printerCard);
             });
         });
 
@@ -119,7 +139,7 @@ $(document).ready(function () {
             if (printerCard.find("#print-pause-resume").text() == 'Resume') {
                 Confirm.fire({
                     title: 'Noted!',
-                    html: '<a href="/ent/detective_hours/">You just earned ' + '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a>' +
+                    html: '<a href="/ent/detective_hours/">You just earned ' + '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a>' +
                     '<p /><p>What do you want to do now?</p>',
                     confirmButtonText: 'Resume print',
                     cancelButtonText: 'Resume, and don\'t alert again for this print',
@@ -138,7 +158,7 @@ $(document).ready(function () {
                 });
                 Swal.fire({
                     html: '<h6>Noted!</h6><p>Thank you for your feedback.</p><p><a href="/ent/detective_hours/">You just earned ' +
-                        '<img class="dh-icon" src="/static/img/detective-hour-2-inverse.png" />' + '.</a></p>',
+                        '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a></p>',
                     timer: 2500
                 })
             }
@@ -149,16 +169,30 @@ $(document).ready(function () {
         printerCard.find('.tagged-jpg').on('click', function () {
             expandThumbnailToFull($(this));
         });
+
+        printerCard.find('button.info-section-toggle').on('click', function() {
+            var ele = $(this);
+            setPrinterLocalPref(ele.data('target-div'), printerId, !ele.hasClass('pressed'));
+            updatePrinterCard(printerCard);
+        })
+
+        updatePrinterCard(printerCard);
     });
 
-    function updatePrinterCard(printer, printerCard) {
+    function updatePrinterCard(printerCard) {
+        var printerId = printerCard.attr('id');
+        updateUI();
 
-        var printFilenameDiv = printerCard.find(".print-filename");
-        var printerNameDiv = printerCard.find(".printer-name");
-        var pauseResumeBtn = printerCard.find("#print-pause-resume");
-        var cancelBtn = printerCard.find('#print-cancel');
+        var printer = printerList[printerId];
+
+        if (!printer) {
+            return;
+        }
 
         // Card title
+        var printFilenameDiv = printerCard.find(".print-filename");
+        var printerNameDiv = printerCard.find(".printer-name");
+
         if (printer.current_print && printer.current_print.filename) {
             printFilenameDiv.text(printer.current_print.filename);
             printFilenameDiv.show();
@@ -168,7 +202,17 @@ $(document).ready(function () {
             printerNameDiv.removeClass("secondary-title");
         }
 
+        // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
+        var taggedJpgEle = printerCard.find("img.tagged-jpg");
+        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
+        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
+            taggedJpgEle.removeClass('hide').show();
+            expandThumbnailToFull(taggedJpgEle);
+        }
+
         // Alert section
+        var pauseResumeBtn = printerCard.find("#print-pause-resume");
+        var cancelBtn = printerCard.find('#print-cancel');
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
             pauseResumeBtn.find("img").show();
@@ -177,21 +221,6 @@ $(document).ready(function () {
             printerCard.find(".failure-alert").hide();
             pauseResumeBtn.find("img").hide();
             cancelBtn.find("img").hide();
-        }
-
-        // Alert toggle
-        if (printer.current_print) {
-            printerCard.find(".mute-toggle").show();
-        } else {
-            printerCard.find(".mute-toggle").hide();
-        }
-
-        // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
-        var taggedJpgEle = printerCard.find("img.tagged-jpg");
-        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
-            taggedJpgEle.removeClass('hide').show();
-            expandThumbnailToFull(taggedJpgEle);
         }
 
         // Gauge
@@ -212,12 +241,27 @@ $(document).ready(function () {
             pauseResumeBtn.find('span').text('Pause ');
         }
 
-        printerCard.find(".alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
+        // Panel settings
+        printerCard.find('input[name=watching]').prop('checked', printer.watching);
+        printerCard.find('#watching-status').text(printer.watching ? 'ON' : 'OFF');
+        if (printer.watching) {
+            printerCard.find('#detailed-controls').show();
+        } else {
+            printerCard.find('#detailed-controls').hide();
+        }
+        printerCard.find('input[name=action_on_failure][value=' + printer.action_on_failure + ']').prop('checked', true);
+
+        if (printer.current_print) {
+            printerCard.find("input.alert-toggle").removeAttr('disabled');
+        } else {
+            printerCard.find("input.alert-toggle").attr('disabled', 'disabled');
+        }
+        printerCard.find("input.alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
 
         // Print status
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
-        if (secondsLeft != null && secondsPrinted != null ) {
+        if (secondsLeft != null && secondsPrinted != null && isInfoSectionOn('print-time')) {
             printerCard.find("#print-time").show();
             printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
             printerCard.find("#print-time-total").html(toDurationBlock(secondsPrinted + secondsLeft));
@@ -247,6 +291,38 @@ $(document).ready(function () {
             }
         });
         printerCard.find("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
+        if (isInfoSectionOn("status_temp_block")) {
+            printerCard.find("#status_temp_block").show();
+        } else {
+            printerCard.find("#status_temp_block").hide();
+        }
+
+        function isInfoSectionOn(sectionId) {
+            return getPrinterLocalPref(sectionId,
+                printerId,
+                printerCard.find('button[data-target-div="' + sectionId + '"]').hasClass('pressed')
+                );
+        }
+
+        function updateUI() {
+
+            // Section visibility controls
+            printerCard.find('button.info-section-toggle').removeClass('pressed');
+            printerCard.find('button.info-section-toggle').each( function(index, element) {
+                var sectionId = $(element).data('target-div');
+                if (isInfoSectionOn(sectionId)) {
+                    $(element).addClass('pressed');
+                }
+            });
+
+
+            // Panel settings
+            if (isInfoSectionOn("panel-settings")) {
+                printerCard.find("#panel-settings").show();
+            } else {
+                printerCard.find("#panel-settings").hide();
+            }
+        }
     }
 
     function toDurationBlock(seconds) {

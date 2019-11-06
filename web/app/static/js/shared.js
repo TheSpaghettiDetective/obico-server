@@ -46,6 +46,16 @@ function hideTooltip(btn) {
     }, 1000);
 }
 
+function getPrinterLocalPref(prefix, printerId, defaultValue) {
+    var itemId = prefix + String(printerId);
+    return JSON.parse(localStorage.getItem(itemId) || defaultValue);
+}
+
+function setPrinterLocalPref(prefix, printerId, value) {
+    var itemId = prefix + String(printerId);
+    return localStorage.setItem(itemId, value);
+}
+
 /*** Swal Mixins */
 
 var Toast = Swal.mixin({

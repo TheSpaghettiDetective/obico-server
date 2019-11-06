@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
+from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
 from lib import redis
 from .serializers import *
@@ -13,6 +14,7 @@ from lib.channels import send_commands_to_printer
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -48,9 +50,14 @@ class PrinterViewSet(viewsets.ModelViewSet):
         user_credited = printer.acknowledge_alert(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer, user_credited, user_credited)
 
+    def partial_update(self, request, pk=None):
+        self.get_queryset().filter(pk=pk).update(**request.data)
+        return self.send_command_response(self.current_printer_or_404(pk), True, False)
+
     def send_command_response(self, printer, succeeded, user_credited):
         send_commands_to_printer(printer.id)
-        return Response(dict(succeeded=succeeded, user_credited=user_credited))
+        serializer = self.serializer_class(printer)
+        return Response(dict(succeeded=succeeded, user_credited=user_credited, printer=serializer.data))
 
     def current_printer_or_404(self, pk):
         return get_object_or_404(self.get_queryset(), pk=pk)

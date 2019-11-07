@@ -75,7 +75,7 @@ class PrintViewSet(viewsets.ModelViewSet):
 
         user_credited = False
         if print.alert_overwrite == None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.printer.user.id, 1, 'Credit: Flag "{}"'.format(print.filename[:100])])
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.user.id, 1, 'Credit | Flag "{}"'.format(print.filename[:100])])
             user_credited = True
 
         print.alert_overwrite = request.GET.get('value', None)

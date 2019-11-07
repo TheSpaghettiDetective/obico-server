@@ -108,7 +108,7 @@ $(document).ready(function () {
     $("input[type=radio][name=alert_overwrite]").on('change', function (event) {
         var form = $(event.target.form);
         $.ajax({
-            url: '/api/prints/' + form.data('print-id') + '/alert_overwrite/?value=' + form.serializeArray()[0].value,
+            url: '/api/v1/prints/' + form.data('print-id') + '/alert_overwrite/?value=' + form.serializeArray()[0].value,
             type: 'GET',
             dataType: 'json',
         }).done(function (result) {

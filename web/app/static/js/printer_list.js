@@ -61,7 +61,7 @@ $(document).ready(function () {
     /** Printer cards */
     function printerGet(printerId, uri, callback) {
         $.ajax({
-            url: '/api/printers/' + printerId + uri,
+            url: '/api/v1/printers/' + printerId + uri,
             type: 'GET',
             dataType: 'json',
         }).done(function(result) { callback(result); });
@@ -107,7 +107,7 @@ $(document).ready(function () {
                 watching: printerCard.find('input[name="watching"]').prop('checked'),
             }
             $.ajax({
-                url: '/api/printers/' + printerId + '/',
+                url: '/api/v1/printers/' + printerId + '/',
                 type: 'PATCH',
                 contentType: "application/json",
                 dataType: "json",
@@ -152,7 +152,7 @@ $(document).ready(function () {
                 });
             } else {
                 $.ajax({
-                    url: '/api/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
+                    url: '/api/v1/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
                     type: 'GET',
                     dataType: 'json',
                 });

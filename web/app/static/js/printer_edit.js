@@ -23,7 +23,7 @@ $(document).ready(function () {
 
     function checkPrinterEvent(printerId) {
         $.ajax({
-            url: '/api/printers/' + printerId + '/',
+            url: '/api/v1/printers/' + printerId + '/',
             type: 'GET',
             dataType: 'json',
         })

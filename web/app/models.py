@@ -100,6 +100,27 @@ def update_consented_at(sender, instance, created, **kwargs):
         instance.consented_at = timezone.now()
         instance.save()
 
+class UserCredit(models.Model):
+    ALERT_OVERWRITE = 'ALERT_OVERWRITE'
+    TIMELAPSE_UPLOAD = 'TIMELAPSE_UPLOAD'
+    BUG_REPORT = 'BUG_REPORT'
+    REASON = (
+        (ALERT_OVERWRITE, ALERT_OVERWRITE),
+        (TIMELAPSE_UPLOAD, TIMELAPSE_UPLOAD),
+        (BUG_REPORT, BUG_REPORT),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    amount = models.IntegerField(null=False, default=0)
+    reason = models.CharField(
+        max_length=20,
+        choices=REASON,
+    )
+    print = models.ForeignKey('Print', on_delete=models.CASCADE, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class PrinterManager(SafeDeleteManager):
     def get_queryset(self):
@@ -140,7 +161,7 @@ class Printer(SafeDeleteModel):
     with_archived = SafeDeleteManager()
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords(excluded_fields=['updated_at'])
+        history = HistoricalRecords() #excluded_fields=['updated_at'])
 
     @property
     def status(self):
@@ -429,7 +450,7 @@ class Print(SafeDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords(excluded_fields=['updated_at'])
+        history = HistoricalRecords() #excluded_fields=['updated_at'])
 
     def ended_at(self):
         return self.cancelled_at or self.finished_at

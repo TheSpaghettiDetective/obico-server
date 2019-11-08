@@ -31,7 +31,7 @@ table.pricing {
             }
 
             .price-header {
-                height: 14.5rem;
+                height: 15rem;
                 background: darken($color-bg, 8);
                 &.dh-pack-header {
                     height: 12rem;
@@ -40,7 +40,7 @@ table.pricing {
                 .price-sub {
                     font-size: 0.95em;
                     font-weight: lighter;
-                    margin-top: -0.2em;
+                    margin-top: -0.1em;
                 }
             }
 

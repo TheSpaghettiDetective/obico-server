@@ -169,7 +169,7 @@ a.link {
 
   .form-control {
     &[readonly] {
-      background-color: $color-form-bg;
+      background-color: $color-disabled;
       border: 1px solid $color-form-bg;
     }
   }

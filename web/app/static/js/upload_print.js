@@ -15,7 +15,7 @@ Dropzone.options.printUpload = {
         this.on("success", function (file) {
             $('#tl-verifying').hide();
             $('#tl-uploaded').show();
-            dgEarned += 4;
+            dgEarned += 1;
             $('#dg-earned').html('You earned ' + '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />'.repeat(dgEarned));
         });
     },

@@ -1,208 +1,120 @@
-{% block html %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+{% extends 'email/layout.html' %}
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="format-detection" content="telephone=no">
-  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
-  <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
-  <style type="text/css">
-    @import url('https://fonts.googleapis.com/css?family=Roboto');
+{% block email_content %}
 
-    @media screen and (max-width: 630px) {
-      .full-width-nopad {
-        width: 100% !important;
-        height: auto !important;
-        padding: 0 !important;
-      }
+<p>Hi {{ printer.user.first_name|default:"" }},</p>
+<p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
 
-      .full-width-20pad {
-        width: 100% !important;
-        height: auto !important;
-        padding: 20px !important;
-      }
+{% if print_paused %}
+<p>
+  <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
+</p>
+{% elif printer.action_on_failure == Printer.PAUSE and is_warning %}
+<p>
+  Printer is NOT paused because The Detective is not very sure about it.
+</p>
+{% endif %}
+{% if insert_img %}
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>
+    <td><img style="width: 100%;" src="{{ printer.pic.img_url }}" />
+    </td>
+  </tr>
+</table>
+{% endif %}
 
-      .vs20 {
-        width: 100% !important;
-        height: 20px !important;
-      }
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ cancel_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Yes it failed. Cancel the print!
+      </a>
+      <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
+    </td>
+  </tr>
+</table>
 
-      .header-image {
-        width: 100% !important;
-        height: auto !important;
-      }
+{% if print_paused %}
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        It is a false alarm. Resume the print!
+      </a>
+      <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
+    </td>
+  </tr>
+</table>
 
-      .mobile-cta-button-table {
-        text-align: center !important;
-        width: 100% !important;
-        height: 48px !important;
-      }
-
-      .mobile-cta-button-row {
-        text-align: center !important;
-        width: 100% !important;
-        height: 48px !important;
-      }
-
-      .mobile-cta-font {
-        font-size: 18px !important;
-      }
-    }
-  </style>
-</head>
-
-<body style="padding:0; margin:0">
-  <table class="full-width-nopad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding-top:32px; padding-left:32px; padding-right:32px"
-    bgcolor="#FCFCFC" width="600">
-    <tr>
-      <td align="left" valign="top">
-        <table class="full-width-20pad" border="0px" cellpadding="0" cellspacing="0" style="margin:0 auto; padding:32px;
-        border-style:solid; border-color:#E7E7EA; border-width:1px;"
-          width="100%" bgcolor="#FFFFFF">
-          <tr>
-            <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
-            font-size:14px; font-weight:400; color:#161338; line-height:22px;">
-              <table style="margin:0px 0px 27px 0px; vertical-align:center;" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td> <a target=_blank href="https://www.thespaghettidetective.com/">
-                      <img style="height:32px; width:auto;" src="https://www.thespaghettidetective.com/img/logo.png"
-                        alt="The Spaghetti Detecitve" border="0">
-                    </a></td>
-                </tr>
-              </table>
-              <p>Hi {{ printer.user.first_name|default:"" }},</p>
-              <p>The Spaghetti Detective spotted some suspicious activities on your printer <b>{{ printer.name }}</b>.</p>
-
-              {% if print_paused %}
-              <p>
-                <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
-              </p>
-              {% elif printer.action_on_failure == Printer.PAUSE and is_warning %}
-              <p>
-                Printer is NOT paused because The Detective is not very sure about it.
-              </p>
-              {% endif %}
-              {% if insert_img %}
-              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td>
-                  <td><img style="width: 100%;" src="{{ printer.pic.img_url }}" />
-                  </td>
-                </tr>
-              </table>
-              {% endif %}
-
-              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
-                <tr>
-                  <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
-                    align="center">
-                    <a class="mobile-cta-font" href="{{ cancel_link }}" target="_blank"
-                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-                      Yes it failed. Cancel the print!
-                    </a>
-                    <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
-                  </td>
-                </tr>
-              </table>
-
-              {% if print_paused %}
-              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
-                <tr>
-                  <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
-                    align="center">
-                    <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
-                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-                      It is a false alarm. Resume the print!
-                    </a>
-                    <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
-                  </td>
-                </tr>
-              </table>
-
-              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
-                <tr>
-                  <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
-                    align="center">
-                    <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
-                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-                      Resume the print, and don't alert me again for this print.
-                    </a>
-                    <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
-                  </td>
-                </tr>
-              </table>
-              {% endif %}
-              <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
-                <tr>
-                  <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
-                    align="center">
-                    <a class="mobile-cta-font" href="{{ view_link }}" target="_blank"
-                      style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-                      Go to The Spaghetti Detective to take a closer look.
-                    </a>
-                  </td>
-                </tr>
-              </table>
-              <br />
-              <hr />
-              <table style="margin-top:18px;" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
-                    <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why did I receive this email?</span></span></h2>
-                    <ul>
-                      <li>The Spaghetti Detective detected in your webcam image some features that are characteristic
-                        in failed prints (such as the shapes of spaghetti).</li>
-                      <li>Your print <strong>may</strong> have failed. It could also have been a false alarm since our
-                        algorithm is not yet perfect.</li>
-                    </ul>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
-                    <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
-                    <ul>
-                      <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it failed. Cancel the print!" button above. You may be asked to sign into The Spaghetti
-                        Detective web app.</li>
-                      <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you can suppress alerts for the
-                        resest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
-                      <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click "Go to The Spaghetti Detecitve to take a closer look" to go to the real time webcam view. From there you can see the webcam in real time,
-                        and decide if you want to resume or cancel the print.</li>
-                      <li>If you can directly access your OctoPrint right now, you can also resume the print from there. Just remember that The Spaghetti Detective has turned off the heaters for your safety. Remember to turn them back on before resumeing it in OctoPrint.</li>
-                    </ul>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
-                    <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What is <img src="https://www.thespaghettidetective.com/img/detective-hour-primary.png" style="height: 20px; vertical-align: text-bottom;" />?</span></span></h2>
-                    <ul>
-                      <li>It means that this is an action you can take to help The Detective get better.
-                        And you will earn 4 DG credits by doing so. Check out <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">how DG credit works.</a></li>
-                    </ul>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="vs20" height="54px" valign="top">&nbsp;</td>
-                </tr>
-              </table>
-              <table style="background-color:#F9F9F9; color:#888796; overflow:auto; text-align:center;
-              margin:0 auto; height:48px; width:100%"
-                cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#888796; line-height:22px;">
-                    The Spaghetti Detecitve - Print With Peace Of Mind
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-
-</html>
-
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ resume_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Resume the print, and don't alert me again for this print.
+      </a>
+      <img src="https://www.thespaghettidetective.com/img/detective-hour-inverse.png" style="height: 18px; vertical-align: text-bottom;" />
+    </td>
+  </tr>
+</table>
+{% endif %}
+<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td class="mobile-cta-button-row" bgcolor="#9965f4" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; "
+      align="center">
+      <a class="mobile-cta-font" href="{{ view_link }}" target="_blank"
+        style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
+        Go to The Spaghetti Detective to take a closer look.
+      </a>
+    </td>
+  </tr>
+</table>
+<br />
+<hr />
+<table style="margin-top:18px;" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+      <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why did I receive this email?</span></span></h2>
+      <ul>
+        <li>The Spaghetti Detective detected in your webcam image some features that are characteristic
+          in failed prints (such as the shapes of spaghetti).</li>
+        <li>Your print <strong>may</strong> have failed. It could also have been a false alarm since our
+          algorithm is not yet perfect.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+      <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
+      <ul>
+        <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it failed. Cancel the print!" button above. You may be asked to sign into The Spaghetti
+          Detective web app.</li>
+        <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you can suppress alerts for the
+          resest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
+        <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click "Go to The Spaghetti Detecitve to take a closer look" to go to the real time webcam view. From there you can see the webcam in real time,
+          and decide if you want to resume or cancel the print.</li>
+        <li>If you can directly access your OctoPrint right now, you can also resume the print from there. Just remember that The Spaghetti Detective has turned off the heaters for your safety. Remember to turn them back on before resumeing it in OctoPrint.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
+      <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What is <img src="https://www.thespaghettidetective.com/img/detective-hour-primary.png" style="height: 20px; vertical-align: text-bottom;" />?</span></span></h2>
+      <ul>
+        <li>It means that this is an action you can take to help The Detective get better.
+          And you will earn 4 DG credits by doing so. Check out <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">how DG credit works.</a></li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td class="vs20" height="54px" valign="top">&nbsp;</td>
+  </tr>
+</table>
 {% endblock %}

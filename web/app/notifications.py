@@ -61,9 +61,15 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         emails = EmailAddress.objects.filter(user=printer.user, verified=True)
     else:
         emails = EmailAddress.objects.filter(user=printer.user)
-    message = get_template('email/failure_alert.html').render(ctx)
     for email in emails:
-        msg = EmailMessage(subject, message, to=(email.email,), from_email=from_email, attachments=attachments)
+        unsub_url = 'https://app.thespaghettidetective.com/ent/email_unsubscribe/?list=notification&email={}'.format(email)
+        ctx['unsub_url'] = unsub_url
+        message = get_template('email/failure_alert.html').render(ctx)
+        msg = EmailMessage(subject, message,
+            to=(email.email,),
+            from_email=from_email,
+            attachments=attachments,
+            headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(unsub_url)},)
         msg.content_subtype = 'html'
         msg.send()
 

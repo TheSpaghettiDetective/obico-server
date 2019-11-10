@@ -1,4 +1,4 @@
-FROM jetsistant/cuda-jetpack:4.2.1-devel
+FROM jetsistant/cuda-jetpack:4.2.1-runtime
 WORKDIR /app
 EXPOSE 3333
 RUN rm -rf /etc/apt/sources.list.d/cuda.list && \

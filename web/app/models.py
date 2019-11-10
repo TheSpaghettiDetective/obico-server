@@ -94,6 +94,7 @@ class User(AbstractUser):
         except errors.InvalidKeyError:
             return False
 
+# We use a signal as opposed to a form field because users may sign up using social buttons
 @receiver(post_save, sender=User)
 def update_consented_at(sender, instance, created, **kwargs):
     if created:

@@ -24,16 +24,16 @@ class AlertTestCase(TestCase):
         self.client.login(email='test@tsd.com', password='test')
 
     def test_warning_once_and_cancel(self, send_failure_alert):
-        response = self.client.get('/api/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': False})
+        response = self.client.get('/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
+        self.assertContains(response, '"succeeded":true,"user_credited":false')
 
         alert_if_needed(self.printer)
         send_failure_alert.assert_called_once_with(self.printer, is_warning=True, print_paused=False)
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
-        response = self.client.get('/api/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': True})
+        response = self.client.get('/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
+        self.assertContains(response, '"succeeded":true,"user_credited":true')
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at > self.printer.current_print.alerted_at)
         self.assertEqual(self.printer.current_print.alert_overwrite, Print.FAILED)
@@ -44,8 +44,8 @@ class AlertTestCase(TestCase):
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
-        response = self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
-        self.assertJSONEqual(str(response.content, encoding='utf8'), {'succeeded': True, 'user_credited': True})
+        response = self.client.get('/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
+        self.assertContains(response, '"succeeded":true,"user_credited":true')
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at > self.printer.current_print.alerted_at)
         self.assertEqual(self.printer.current_print.alert_overwrite, Print.NOT_FAILED)
@@ -59,7 +59,7 @@ class AlertTestCase(TestCase):
         one_hour_ago = timezone.now() - timedelta(hours=1)
         with patch('django.utils.timezone.now', return_value=one_hour_ago):
             alert_if_needed(self.printer)
-            self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         alert_if_needed(self.printer)
@@ -70,8 +70,8 @@ class AlertTestCase(TestCase):
         with patch('django.utils.timezone.now', return_value=one_hour_ago):
             alert_if_needed(self.printer)
         with patch('django.utils.timezone.now', return_value=(timezone.now() - timedelta(minutes=30))):
-            self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
-            self.client.get('/api/printers/{}/mute_current_print/'.format(self.printer.id), {'mute_alert': 'true'})
+            self.client.get('/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/mute_current_print/'.format(self.printer.id), {'mute_alert': 'true'})
 
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alert_muted_at)
@@ -85,7 +85,7 @@ class AlertTestCase(TestCase):
         one_minute_ago = timezone.now() - timedelta(minutes=1)
         with patch('django.utils.timezone.now', return_value=one_minute_ago):
             alert_if_needed(self.printer)
-            self.client.get('/api/printers/{}/resume_print/'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/resume_print/'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         alert_if_needed(self.printer)
@@ -98,7 +98,7 @@ class AlertTestCase(TestCase):
         self.assertIsNotNone(self.printer.current_print.alerted_at)
         self.assertIsNotNone(self.printer.current_print.paused_at)
 
-        self.client.get('/api/printers/{}/cancel_print/'.format(self.printer.id))
+        self.client.get('/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at > self.printer.current_print.alerted_at)
         self.assertIsNotNone(self.printer.current_print.paused_at)
@@ -125,7 +125,7 @@ class AlertTestCase(TestCase):
         with patch('django.utils.timezone.now', return_value=one_hour_ago):
             alert_if_needed(self.printer)
             send_failure_alert.assert_called_with(self.printer, is_warning=True, print_paused=False)
-            self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         self.assertIsNone(self.printer.current_print.alert_muted_at)
@@ -140,7 +140,7 @@ class AlertTestCase(TestCase):
         one_minute_ago = timezone.now() - timedelta(minutes=1)
         with patch('django.utils.timezone.now', return_value=one_minute_ago):
             alert_if_needed(self.printer)
-            self.client.get('/api/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         self.assertIsNone(self.printer.current_print.alert_muted_at)
@@ -156,7 +156,7 @@ class AlertTestCase(TestCase):
             pause_if_needed(self.printer)
         with patch('django.utils.timezone.now', return_value=(timezone.now() - timedelta(minutes=30))):
             send_failure_alert.assert_called_with(self.printer, is_warning=False, print_paused=True)
-            self.client.get('/api/printers/{}/resume_print/'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/resume_print/'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         self.assertIsNone(self.printer.current_print.alert_muted_at)
@@ -169,12 +169,12 @@ class AlertTestCase(TestCase):
         self.assertTrue(self.printer.current_print.alert_acknowledged_at < self.printer.current_print.alerted_at)
         self.assertIsNone(self.printer.current_print.paused_at)
 
-    def test_error_resumed_muted_then_warning(self, send_failure_alert):
+    def test_error_resumed_muted_then_error(self, send_failure_alert):
         one_hour_ago = timezone.now() - timedelta(hours=1)
         with patch('django.utils.timezone.now', return_value=one_hour_ago):
             pause_if_needed(self.printer)
         with patch('django.utils.timezone.now', return_value=timezone.now() - timedelta(hours=0.5)):
-            self.client.get('/api/printers/{}/resume_print/'.format(self.printer.id), {'mute_alert': 'true'})
+            self.client.get('/api/v1/printers/{}/resume_print/'.format(self.printer.id), {'mute_alert': 'true'})
 
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alert_muted_at)
@@ -204,7 +204,7 @@ class AlertTestCase(TestCase):
             self.assertIsNotNone(self.printer.current_print.paused_at)
 
         with patch('django.utils.timezone.now', return_value=timezone.now() - timedelta(hours=0.5)):
-            self.client.get('/api/printers/{}/resume_print/'.format(self.printer.id))
+            self.client.get('/api/v1/printers/{}/resume_print/'.format(self.printer.id))
 
         self.printer.action_on_failure = Printer.NONE
         self.printer.save()

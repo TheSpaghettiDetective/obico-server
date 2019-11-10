@@ -25,7 +25,7 @@ from config.celery import celery_app
 ALERT_COOLDOWN_SECONDS = 120
 
 def alert_suppressed(printer):
-    if printer.current_print == None:
+    if not printer.watching or printer.current_print == None or printer.current_print.alert_muted_at:
         return True
 
     last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)

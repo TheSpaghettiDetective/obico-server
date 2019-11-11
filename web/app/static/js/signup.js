@@ -8,4 +8,7 @@ $(document).ready(function () {
             $('button.btn').addClass('disabled');
         }
     });
+    $('.popover').popover({
+        container: 'body'
+    });
 });

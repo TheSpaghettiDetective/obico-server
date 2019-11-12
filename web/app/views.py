@@ -45,7 +45,7 @@ def printers(request):
     if not request.user.consented_at:
         return redirect('/consent/')
 
-    printers = request.user.printer_set.all()
+    printers = request.user.printer_set.order_by('-created_at').all()
     for printer in printers:
         p_settings = redis.printer_settings_get(printer.id)
         printer.settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))

@@ -270,7 +270,7 @@ $(document).ready(function () {
         // Print status
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
-        if (secondsLeft != null && secondsPrinted != null && isInfoSectionOn('print-time')) {
+        if (isInfoSectionOn('print-time')) {
             printerCard.find("#print-time").show();
             printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
             printerCard.find("#print-time-total").html(toDurationBlock(secondsPrinted + secondsLeft));
@@ -336,7 +336,7 @@ $(document).ready(function () {
 
     function toDurationBlock(seconds) {
         var durationObj;
-        if (seconds == null) {
+        if (seconds == null || seconds == 0) {
             durationObj = {valid: false};
         } else {
             var d = moment.duration(seconds, 'seconds')

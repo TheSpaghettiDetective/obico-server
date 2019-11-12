@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 {% load jstemplate %}
+{% load account_status %}
 
 {% block content %}
 
@@ -157,16 +158,21 @@
   </div>
 </div>
 
-<script type="text/javascript">
-  var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
-</script>
-
 {% endblock content %}
 
 {% block page_js %}
+
+{% subscription as account_subscription%}
+
+<script type="text/javascript">
+  var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
+  var isPro = {{ account_subscription.is_pro|yesno:"true,false" }};
+</script>
+
 <script src="{% static 'js/printer_list.js' %}"></script>
 <script type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
 <script src="{% static 'js/janus.js' %}"></script>
 <script src="{% static 'js/webrtc_streaming.js' %}"></script>
+
 {% endblock page_js %}

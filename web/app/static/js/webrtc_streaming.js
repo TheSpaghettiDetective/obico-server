@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    if (!isPro) {
+        return;
+    }
+
     var streamList = [];
 
     function removeFromList(janus) {

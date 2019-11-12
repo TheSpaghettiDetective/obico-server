@@ -21,6 +21,9 @@ from lib.utils import dict_or_none
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 
+def dh_is_unlimited(dh):
+    return dh >= UNLIMITED_DH
+
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -63,6 +66,8 @@ class User(AbstractUser):
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
     consented_at = models.DateTimeField(null=True)
+    is_pro = models.BooleanField(null=False, blank=False, default=True)
+    dh_balance = models.FloatField(null=False, default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -156,7 +161,7 @@ class Printer(SafeDeleteModel):
         return dict_or_none(pic_data)
 
     def should_watch(self):
-        if not self.watching or redis.user_dh_balance_get(self.user_id) < 0:
+        if not self.watching or self.user.dh_balance < 0:
             return False
 
         printer_cur_state = redis.printer_status_get(self.id, 'state')

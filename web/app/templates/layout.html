@@ -103,15 +103,12 @@
               <a class="nav-link" href="/accounts/signup/">Sign up</a>
             </li>
           {% else %}
-            {% detective_hours as dh %}
-            {% if dh is not None %}
-            <li class="nav-item">
-              <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
-                  <img src="{% static 'img/detective-hour-inverse.png' %}"> <span id="user-credits" class="badge badge-light">{{ dh.balance }}</span>
-                  <span class="sr-only">Detective Hours</span>
-              </a>
-            </li>
-            {% endif %}
+          <li class="nav-item">
+            <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
+                <img src="{% static 'img/detective-hour-inverse.png' %}"> <span id="user-credits" class="badge badge-light">{{ user.dh_balance | dh_badge_num }}</span>
+                <span class="sr-only">Detective Hours</span>
+            </a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" id="{{user.id}}"
               aria-expanded="false">{{user.first_name|default:user.email}}
@@ -176,6 +173,11 @@
   <script type="text/javascript">
     var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
     var isEnt = {{ settings.IS_ENT |yesno:"true,false" }};
+    {% if user.is_authenticated and user.is_pro %}
+      var isProAccount = true;
+    {% else %}
+      var isProAccount = false;
+    {% endif %}
   </script>
   <script src="{% static 'js/shared.js' %}"></script>
   {% block page_js %}{% endblock page_js %}

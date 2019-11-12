@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% load static %}
 {% load jstemplate %}
-{% load account_status %}
 
 {% block content %}
 
@@ -162,11 +161,8 @@
 
 {% block page_js %}
 
-{% subscription as account_subscription%}
-
 <script type="text/javascript">
   var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
-  var isPro = {{ account_subscription.is_pro|yesno:"true,false" }};
 </script>
 
 <script src="{% static 'js/printer_list.js' %}"></script>

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    if (!isPro) {
+    if (!isProAccount) {
         return;
     }
 

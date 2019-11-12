@@ -1,16 +1,12 @@
-import datetime
 from django import template
 
 register = template.Library()
 
-from ..models import *
+from ..models import dh_is_unlimited
 
-@register.simple_tag()
-def subscription():
-    return {
-        'is_pro': True,
-    }
-
-@register.simple_tag()
-def detective_hours():
-    return None
+@register.filter
+def dh_badge_num(dh):
+    if dh_is_unlimited(dh):
+        return'\u221E'
+    else:
+        return round(dh)

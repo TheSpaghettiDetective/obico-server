@@ -316,11 +316,12 @@ $(document).ready(function () {
         function updateUI() {
 
             // Section visibility controls
-            printerCard.find('button.info-section-toggle').removeClass('pressed');
             printerCard.find('button.info-section-toggle').each( function(index, element) {
                 var sectionId = $(element).data('target-div');
                 if (isInfoSectionOn(sectionId)) {
                     $(element).addClass('pressed');
+                } else {
+                    $(element).removeClass('pressed');
                 }
             });
 

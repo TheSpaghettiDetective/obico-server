@@ -154,13 +154,15 @@
       width: 33px;
       height: 33px;
       position: relative;
+      color: lighten($color-gray, 25);
+      font-size: 1rem;
+      padding: 0rem 1.5rem;
       i {
         position: absolute;
         transform: translate(-50%, -50%);
       }
       &.pressed {
-        color: $color-primary;
-        background: darken($color-bg, 1);
+        color: lighten($color-primary, 5);
       }
     }
   }

@@ -23,7 +23,8 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     send_failure_alert_email(printer, is_warning, print_paused)
     send_failure_alert_pushbullet(printer, is_warning, print_paused)
     send_failure_alert_telegram(printer, is_warning, print_paused)
-    send_failure_alert_sms(printer, is_warning, print_paused)
+    if printer.user.is_pro:
+        send_failure_alert_sms(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:

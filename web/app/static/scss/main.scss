@@ -300,6 +300,20 @@ a.link {
     .text-subscript {
       font-size: 0.8rem;
     }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: solid thin $color-gray;
+      label {
+        font-size: 1rem;
+        text-align: left;
+        width: 100%;
+        .text-muted {
+          font-size: 0.9em;
+        }
+      }
+    }
   }
 }
 

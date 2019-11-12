@@ -103,7 +103,7 @@ $(document).ready(function () {
 
         printerCard.find('input.update-printer').on('change', function (e) {
             var formInputs = {
-                action_on_failure: printerCard.find('input[name="action_on_failure"]:checked').val(),
+                action_on_failure: printerCard.find('input[name="pause_on_failure"]').prop('checked') ? 'PAUSE': 'NONE',
                 watching: printerCard.find('input[name="watching"]').prop('checked'),
             }
             $.ajax({
@@ -258,7 +258,7 @@ $(document).ready(function () {
         } else {
             printerCard.find('#detailed-controls').hide();
         }
-        printerCard.find('input[name=action_on_failure][value=' + printer.action_on_failure + ']').prop('checked', true);
+        printerCard.find('input[name=pause_on_failure]').prop('checked', printer.action_on_failure == 'PAUSE' );
 
         if (printer.current_print) {
             printerCard.find("input.alert-toggle").removeAttr('disabled');

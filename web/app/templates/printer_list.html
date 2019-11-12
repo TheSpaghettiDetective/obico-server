@@ -79,30 +79,21 @@
         <div class="info-section container">
           <div id="panel-settings" style="display: none;">
             <div class="pt-2 pb-3">
-            <div class="row">
-              <div class="col-sm-12">
-                  <div class="custom-control custom-switch pb-1" style="font-size: 1rem;">
+            <div class="row justify-content-center px-3">
+              <div class="col-12 setting-item">
+                  <label for="watching-toggle-{{ printer.id }}">Watch for failures</label>
+                  <div class="custom-control custom-switch">
                     <input type="checkbox" name="watching" class="custom-control-input update-printer" id="watching-toggle-{{ printer.id }}">
-                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;">Detective Watching: <span id="watching-status" style="font-weight: bolder;">OFF</span></label>
+                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
                   </div>
               </div>
-              <div class="col-sm-12 text-left px-4" id="detailed-controls" style="display: none;">
-                  <div>
-                    <div class="custom-control custom-switch">
-                      <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}" disabled>
-                      <label class="custom-control-label" for="alert-toggle-{{ printer.id }}">Do not watch this print</label>
-                    </div>
-                  </div>
-                  <div class="custom-control custom-radio ">
-                    <input type="radio" name="action_on_failure" value="NONE" class="custom-control-input update-printer"
-                      required="" id="id_action_on_failure_0_{{ printer.id }}" checked="">
-                    <label class="custom-control-label" for="id_action_on_failure_0_{{ printer.id }}">Just notify me
-                      text.</label>
-                  </div>
-                  <div class="custom-control custom-radio ">
-                    <input type="radio" name="action_on_failure" value="PAUSE" class="custom-control-input update-printer"
-                      required="" id="id_action_on_failure_1_{{ printer.id }}">
-                    <label class="custom-control-label" for="id_action_on_failure_1_{{ printer.id }}">Pause the print and notify me.</label>
+            </div>
+            <div class="row justify-content-center px-3">
+              <div class="col-12 setting-item">
+                  <label for="pause-toggle-{{ printer.id }}">Pause on detected failures<div class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications</div></label>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer" id="pause-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="pause-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
                   </div>
               </div>
             </div>

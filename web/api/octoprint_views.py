@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from django.utils import timezone
 from rest_framework.views import APIView
@@ -23,6 +24,8 @@ from .octoprint_messages import STATUS_TTL_SECONDS
 from config.celery import celery_app
 
 ALERT_COOLDOWN_SECONDS = 120
+
+LOGGER = logging.getLogger(__name__)
 
 def alert_suppressed(printer):
     if not printer.watching or printer.current_print == None or printer.current_print.alert_muted_at:
@@ -72,6 +75,9 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
+
+        if not request.path.startswith('/api/v1'):
+            LOGGER.warn(f'Beta plugin connecting from {printer.id}')
 
         pic = request.FILES['pic']
         pic_id = int(timezone.now().timestamp())

@@ -114,4 +114,10 @@ class OctoPrintPingView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        return Response({'status': 'pong'})
+        user = request.user
+        return Response({
+            'user': {
+                'is_pro': user.is_pro,
+                'dh_balance': user.dh_balance,
+            }
+        })

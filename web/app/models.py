@@ -171,19 +171,19 @@ class Printer(SafeDeleteModel):
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
-                self.unset_current_print_with_ts()
+                self.unset_current_print()
 
             return
 
         # currently printing
         if self.current_print:
             if self.current_print.ext_id != current_print_ts:
-                self.unset_current_print_with_ts()
-                self.set_current_print_with_ts(filename, current_print_ts)
+                self.unset_current_print()
+                self.set_current_print(filename, current_print_ts)
         else:
-            self.set_current_print_with_ts(filename, current_print_ts)
+            self.set_current_print(filename, current_print_ts)
 
-    def unset_current_print_with_ts(self):
+    def unset_current_print(self):
         print = self.current_print
         self.current_print = None
         self.save()
@@ -197,7 +197,7 @@ class Printer(SafeDeleteModel):
         celery_app.send_task('app.tasks.compile_timelapse', args=[print.id])
         PrintEvent.create(print, PrintEvent.ENDED)
 
-    def set_current_print_with_ts(self, filename, current_print_ts):
+    def set_current_print(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
             cur_print, _ = Print.objects.get_or_create(
                 user=self.user,

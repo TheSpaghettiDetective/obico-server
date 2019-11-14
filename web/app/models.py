@@ -222,28 +222,6 @@ class Printer(SafeDeleteModel):
         PrintEvent.create(cur_print, PrintEvent.STARTED)
         self.printerprediction.reset_for_new_print()
 
-    ####
-    ## Backward compatibility. Old way of setting print without current_print_ts
-    #####
-    def set_current_print(self, filename):
-        if self.current_print:
-            if self.current_print.filename == filename:
-                return
-            else:
-                self.unset_current_print_with_ts()
-
-        self.set_current_print_with_ts(filename, None)
-
-    def unset_current_print(self, cancelled):
-        if self.current_print:  # was printing now it is not
-            if cancelled:
-                self.current_print.cancelled_at = timezone.now()
-                self.current_print.save()
-
-            self.unset_current_print_with_ts()
-
-    ###### End of old way of setting/unsetting print
-
     ## return: succeeded, user_credited ##
     def resume_print(self, mute_alert=False):
         if self.current_print == None: # when a link on an old email is clicked

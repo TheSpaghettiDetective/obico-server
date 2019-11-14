@@ -22,7 +22,7 @@ def send_commands_to_printer(printer_id):
     async_to_sync(layer.group_send)(
         commands_group_name(printer_id),
         {
-            'type': 'printer.commands',    # mapped to -> printer_commands in consumer
+            'type': 'printer.message',    # mapped to -> printer_message in consumer
             'commands': [ json.loads(c.command) for c in commands ],
         }
     )
@@ -34,8 +34,18 @@ def send_janus_msg_to_printer(printer_id, msg):
     async_to_sync(layer.group_send)(
         commands_group_name(printer_id),
         {
-            'type': 'printer.commands',    # mapped to -> printer_commands in consumer
+            'type': 'printer.message',    # mapped to -> printer_message in consumer
             'janus': msg
+        }
+    )
+
+def send_remote_status_to_printer(printer_id, msg):
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        commands_group_name(printer_id),
+        {
+            'type': 'printer.message',    # mapped to -> printer_message in consumer
+            'remote_status': msg
         }
     )
 

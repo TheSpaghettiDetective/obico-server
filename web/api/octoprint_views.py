@@ -124,6 +124,5 @@ class OctoPrintPingView(APIView):
         return Response({
             'user': {
                 'is_pro': user.is_pro,
-                'dh_balance': user.dh_balance,
             }
         })

@@ -12,23 +12,32 @@ from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
 
+def send_remote_status(printer, viewing):
+    printer.refresh_from_db()
+    channels.send_remote_status_to_printer(printer.id, {
+        'viewing': viewing,
+        'should_watch': printer.should_watch(),
+    })
+
 class WebConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.printer_id = self.scope['url_route']['kwargs']['printer_id']
         try:
-            printer = Printer.objects.get(user=self.current_user(), id=self.printer_id)     # Exception for un-authenticated or un-authorized access
+            self.printer = Printer.objects.get(user=self.current_user(), id=self.printer_id)     # Exception for un-authenticated or un-authorized access
 
             async_to_sync(self.channel_layer.group_add)(
                 channels.status_group_name(self.printer_id),
                 self.channel_name
             )
             self.accept()
-            channels.send_status_to_web(printer.id)
+            channels.send_status_to_web(self.printer.id)
+            send_remote_status(self.printer, viewing=True)
         except:
             self.close()
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
+        send_remote_status(self.printer, viewing=False)
         async_to_sync(self.channel_layer.group_discard)(
             channels.status_group_name(self.printer_id),
             self.channel_name
@@ -52,6 +61,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
                 self.channel_name
             )
             self.accept()
+            send_remote_status(self.current_printer(), viewing=False) # TODO: assuming user is not viewing. If user is viewing a page refresh is required
         else:
             self.close()
 
@@ -79,7 +89,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
             self.close()
             sentryClient.captureException()
 
-    def printer_commands(self, command):
+    def printer_message(self, command):
         self.send_json(command)
 
     def current_printer(self):

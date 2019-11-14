@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'bootstrap_pagination',
     'jstemplate',
     'pushbullet',
+    'safedelete',
     'app',  # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',

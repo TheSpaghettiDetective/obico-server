@@ -12,8 +12,13 @@ If you otherwise prefer textual instructions, follow the steps below.
 
 ## Prerequisites
 
-The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). On that server, make sure
-the following software is installed:
+### Hardware minimum spec
+
+The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). If you have an old PC with at least 2GB of memory, you will be probably be fine.
+
+### Software requirements
+
+The following softwares are required before you start installing the server:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
@@ -22,6 +27,8 @@ the following software is installed:
 <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png" width="409" height="200"></img>
 
 - git ([how to install](https://git-scm.com/downloads)).
+
+### Email delivery
 
 You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
 should also work but we haven't tried them.

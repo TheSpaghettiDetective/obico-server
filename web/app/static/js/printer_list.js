@@ -226,7 +226,7 @@ $(document).ready(function () {
         // Gauge
         var gaugeDiv = printerCard.find('.gauge-container');
         updateGauge(gaugeDiv.find('.tangle-index'), _.get(printer, 'printerprediction.ewm_mean', 0));
-        if (printer.should_watch) {
+        if (printer.should_watch && _.get(printer, 'status.state.flags.printing')) {
             gaugeDiv.removeClass('overlay');
             gaugeDiv.find('.overlay-top').hide();
         } else {

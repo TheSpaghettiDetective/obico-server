@@ -16,13 +16,20 @@ from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 
 from config.celery import celery_app
-from lib import redis
+from lib import redis, channels
 from lib.utils import dict_or_none
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 
 def dh_is_unlimited(dh):
     return dh >= UNLIMITED_DH
+
+def send_remote_status(printer, viewing=None):
+    printer.refresh_from_db()
+    status = {'should_watch': printer.should_watch(),}
+    if viewing != None:
+        status['viewing'] = viewing
+    channels.send_remote_status_to_printer(printer.id, status)
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -164,9 +171,11 @@ class Printer(SafeDeleteModel):
         if not self.watching or self.user.dh_balance < 0:
             return False
 
+        return self.current_print != None and self.current_print.alert_muted_at == None
+
+    def actively_printing(self):
         printer_cur_state = redis.printer_status_get(self.id, 'state')
-        return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False) and \
-            self.current_print and self.current_print.alert_muted_at == None
+        return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False)
 
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing
@@ -196,6 +205,7 @@ class Printer(SafeDeleteModel):
 
         celery_app.send_task('app.tasks.compile_timelapse', args=[print.id])
         PrintEvent.create(print, PrintEvent.ENDED)
+        send_remote_status(self)
 
     def set_current_print(self, filename, current_print_ts):
         if current_print_ts and current_print_ts != -1:
@@ -219,8 +229,9 @@ class Printer(SafeDeleteModel):
         self.current_print = cur_print
         self.save()
 
-        PrintEvent.create(cur_print, PrintEvent.STARTED)
         self.printerprediction.reset_for_new_print()
+        PrintEvent.create(cur_print, PrintEvent.STARTED)
+        send_remote_status(self)
 
     ## return: succeeded, user_credited ##
     def resume_print(self, mute_alert=False):
@@ -298,6 +309,8 @@ class Printer(SafeDeleteModel):
             PrintEvent.create(self.current_print, PrintEvent.ALERT_MUTED)
         else:
             PrintEvent.create(self.current_print, PrintEvent.ALERT_UNMUTED)
+
+        send_remote_status(self)
 
     def queue_octoprint_command(self, command, args={}, abort_existing=True):
         if abort_existing:

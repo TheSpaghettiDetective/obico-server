@@ -10,7 +10,7 @@ from app.models import *
 from lib import redis
 from .serializers import *
 from config.celery import celery_app
-from lib.channels import send_commands_to_printer
+from lib.octoprint_comm import *
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -52,10 +52,12 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
-        return self.send_command_response(self.current_printer_or_404(pk), True, False)
+        printer = self.current_printer_or_404(pk)
+        send_remote_status(printer)
+        return self.send_command_response(printer, True, False)
 
     def send_command_response(self, printer, succeeded, user_credited):
-        send_commands_to_printer(printer.id)
+        send_commands_to_printer_if_needed(printer.id)
         serializer = self.serializer_class(printer)
         return Response(dict(succeeded=succeeded, user_credited=user_credited, printer=serializer.data))
 

@@ -2,7 +2,6 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from . import redis
-from app.models import *
 
 def commands_group_name(printer_id):
     return 'p_cmd_{}'.format(printer_id)
@@ -13,11 +12,7 @@ def status_group_name(printer_id):
 def janus_web_group_name(printer_id):
     return 'janus_web_{}'.format(printer_id)
 
-def send_commands_to_printer(printer_id):
-    commands = PrinterCommand.objects.filter(printer_id=printer_id, status=PrinterCommand.PENDING)
-    if not commands:
-        return
-
+def send_commands_to_printer(printer_id, commands):
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         commands_group_name(printer_id),
@@ -26,8 +21,6 @@ def send_commands_to_printer(printer_id):
             'commands': [ json.loads(c.command) for c in commands ],
         }
     )
-
-    commands.update(status=PrinterCommand.SENT)
 
 def send_janus_msg_to_printer(printer_id, msg):
     layer = get_channel_layer()

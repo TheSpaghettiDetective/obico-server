@@ -15,7 +15,7 @@ from .view_helpers import *
 from .models import *
 from .forms import *
 from lib import redis
-from lib.channels import send_commands_to_printer
+from lib.octoprint_comm import *
 from .telegram_bot import bot_name
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
@@ -91,7 +91,7 @@ def cancel_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     succeeded, user_credited = printer.cancel_print()
     if succeeded:
-        send_commands_to_printer(printer.id)
+        send_commands_to_printer_if_needed(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'cancel', 'succeeded': succeeded, 'user_credited': user_credited})
 
 @login_required
@@ -99,7 +99,7 @@ def resume_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     succeeded, user_credited = printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
     if succeeded:
-        send_commands_to_printer(printer.id)
+        send_commands_to_printer_if_needed(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
 
 

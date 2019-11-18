@@ -19,7 +19,7 @@ from lib.utils import ml_api_auth_headers
 from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
-from lib.channels import send_commands_to_printer, send_status_to_web
+from lib.channels import send_status_to_web
 from .octoprint_messages import STATUS_TTL_SECONDS
 from config.celery import celery_app
 
@@ -61,13 +61,6 @@ def pause_if_needed(printer):
         printer.set_alert()
         send_failure_alert(printer, is_warning=False, print_paused=False)
 
-def command_response(printer):
-    send_commands_to_printer(printer.id)
-    send_status_to_web(printer.id)
-    commands = PrinterCommand.objects.filter(printer=printer, status=PrinterCommand.PENDING)
-    resp = Response({'commands': [ json.loads(c.command) for c in commands ]})
-    commands.update(status=PrinterCommand.SENT)
-    return resp
 
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -83,9 +76,9 @@ class OctoPrintPicView(APIView):
         pic_id = int(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
-        if not printer.should_watch():
+        if not printer.should_watch() or not printer.actively_printing():
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
-            return command_response(printer)
+            return Response({'result': 'ok'})
 
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
@@ -113,7 +106,7 @@ class OctoPrintPicView(APIView):
             alert_if_needed(printer)
 
         redis.print_num_predictions_incr(printer.current_print.id)
-        return command_response(printer)
+        return Response({'result': 'ok'})
 
 
 class OctoPrintPingView(APIView):

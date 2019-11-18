@@ -12,13 +12,6 @@ from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
 
-def send_remote_status(printer, viewing):
-    printer.refresh_from_db()
-    channels.send_remote_status_to_printer(printer.id, {
-        'viewing': viewing,
-        'should_watch': printer.should_watch(),
-    })
-
 class WebConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.printer_id = self.scope['url_route']['kwargs']['printer_id']
@@ -61,7 +54,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
                 self.channel_name
             )
             self.accept()
-            send_remote_status(self.current_printer(), viewing=False) # TODO: assuming user is not viewing. If user is viewing a page refresh is required
+            send_remote_status(self.current_printer())
         else:
             self.close()
 

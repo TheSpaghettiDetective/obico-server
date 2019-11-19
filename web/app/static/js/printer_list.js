@@ -207,13 +207,8 @@ $(document).ready(function () {
         taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
         if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
             taggedJpgEle.removeClass('hide').show();
-            expandThumbnailToFull(taggedJpgEle);
         }
-        if (taggedJpgEle.is(':visible') && printerCard.find("video.remote-video").is(':visible')) {
-            printerCard.find('.pic-in-pic-expand').show();
-        } else {
-            printerCard.find('.pic-in-pic-expand').hide();
-        }
+        showPicInPicExpandIfNeeded(taggedJpgEle);
 
         // Alert section
         var pauseResumeBtn = printerCard.find("#print-pause-resume");
@@ -263,7 +258,13 @@ $(document).ready(function () {
         } else {
             printerCard.find('#detailed-controls').hide();
         }
-        printerCard.find('input[name=pause_on_failure]').prop('checked', printer.action_on_failure == 'PAUSE' );
+        if (printer.action_on_failure == 'PAUSE') {
+            printerCard.find('input[name=pause_on_failure]').prop('checked', true);
+            printerCard.find('label[for^=pause-toggle-] .text-muted').hide();
+        } else {
+            printerCard.find('input[name=pause_on_failure]').prop('checked', false);
+            printerCard.find('label[for^=pause-toggle-] .text-muted').show();
+        }
 
         if (printer.current_print) {
             printerCard.find("input.alert-toggle").removeAttr('disabled');

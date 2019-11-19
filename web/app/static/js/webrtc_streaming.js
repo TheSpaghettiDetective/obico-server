@@ -187,7 +187,8 @@ $(document).ready(function () {
         var taggedJpgEle = parentView.find('.tagged-jpg');
         if (taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
             taggedJpgEle.addClass('hide').hide();
-            expandThumbnailToFull(ele);
         }
+        expandThumbnailToFull(ele);
+        showPicInPicExpandIfNeeded(ele);
     }
 });

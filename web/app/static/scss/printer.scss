@@ -26,7 +26,9 @@
           img, video {
             height: 18.75%;
             top: initial;
+            left: initial;
             bottom: 0px;
+            right: 0px;
           }
         }
       }
@@ -35,8 +37,10 @@
         .thumbnail {
           img, video {
             height: 14.06%;
+            left: initial;
             top: initial;
             bottom: 0px;
+            right: 0px;
           }
         }
       }
@@ -50,12 +54,9 @@
       }
 
       .pic-in-pic-expand {
-        position: absolute;
         right: 6px;
         top: initial;
         bottom: 4px;
-        z-index: 2;
-        pointer-events: none;
       }
     }
   }
@@ -88,17 +89,15 @@
       }
 
       .pic-in-pic-expand {
-        position: absolute;
-        right: 4px;
+        left: 4px;
         top: 4px;
-        z-index: 2;
-        pointer-events: none;
       }
     }
   }
 
   img, video {
     object-fit: contain;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   }
 
   .full {
@@ -114,10 +113,16 @@
       width: 25%;
       height: 25%;
       position: absolute;
-      right: 0px;
+      left: 0px;
       top: 0px;
       z-index: 1;
     }
+  }
+
+  .pic-in-pic-expand {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
   }
 }
 

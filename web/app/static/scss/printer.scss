@@ -48,6 +48,15 @@
           height: 100%;
         }
       }
+
+      .pic-in-pic-expand {
+        position: absolute;
+        right: 6px;
+        top: initial;
+        bottom: 4px;
+        z-index: 2;
+        pointer-events: none;
+      }
     }
   }
 
@@ -76,6 +85,14 @@
         bottom: 0;
         left: 0;
         right: 0;
+      }
+
+      .pic-in-pic-expand {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        z-index: 2;
+        pointer-events: none;
       }
     }
   }

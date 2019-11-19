@@ -209,6 +209,11 @@ $(document).ready(function () {
             taggedJpgEle.removeClass('hide').show();
             expandThumbnailToFull(taggedJpgEle);
         }
+        if (taggedJpgEle.is(':visible') && printerCard.find("video.remote-video").is(':visible')) {
+            printerCard.find('.pic-in-pic-expand').show();
+        } else {
+            printerCard.find('.pic-in-pic-expand').hide();
+        }
 
         // Alert section
         var pauseResumeBtn = printerCard.find("#print-pause-resume");

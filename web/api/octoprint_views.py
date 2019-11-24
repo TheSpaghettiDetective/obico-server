@@ -78,6 +78,7 @@ class OctoPrintPicView(APIView):
 
         if not printer.should_watch() or not printer.actively_printing():
             redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
+            send_status_to_web(printer.id)
             return Response({'result': 'ok'})
 
         req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
@@ -106,6 +107,7 @@ class OctoPrintPicView(APIView):
             alert_if_needed(printer)
 
         redis.print_num_predictions_incr(printer.current_print.id)
+        send_status_to_web(printer.id)
         return Response({'result': 'ok'})
 
 

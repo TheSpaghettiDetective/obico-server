@@ -18,10 +18,8 @@ def process_octoprint_status(printer, status):
     set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
     redis.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
-    if status.get('current_print_ts'): # New plugin version that passes current_print_ts
+    if status.get('current_print_ts'):
         process_octoprint_status_with_ts(status, printer)
-        channels.send_status_to_web(printer.id)
-        return
 
     channels.send_status_to_web(printer.id)
 

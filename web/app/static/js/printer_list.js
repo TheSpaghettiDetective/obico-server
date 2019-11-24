@@ -118,14 +118,6 @@ $(document).ready(function () {
             });
         });
 
-        printerCard.find('input.alert-toggle').on('change', function (e) {
-            var muteAlert = $(this).is(':checked');
-            printerGet(printerId, '/mute_current_print/?mute_alert=' + muteAlert, function(result) {
-                printerList[printerId] = result.printer;
-                updatePrinterCard(printerCard);
-            });
-        });
-
         printerCard.find('#delete-print').click(function () {
             Confirm.fire({
             }).then(function (result) {
@@ -156,11 +148,20 @@ $(document).ready(function () {
                     type: 'GET',
                     dataType: 'json',
                 });
-                Swal.fire({
-                    html: '<h6>Noted!</h6><p>Thank you for your feedback.</p><p><a href="/ent/detective_hours/">You just earned ' +
-                        '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a></p>',
-                    timer: 2500
-                })
+                Confirm.fire({
+                    title: 'Noted!',
+                    html: '<p>Thank you for your feedback.</p><p><a href="/ent/detective_hours/">You just earned ' +
+                    '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a></p><p>Do you want to turn off watching for this print?</p>',
+                    confirmButtonText: 'No. Keep on watching',
+                    cancelButtonText: 'Yes. Stop watching this print',
+                }).then(function (result) {
+                    if (!result.value) {
+                        printerGet(printerId, '/mute_current_print/?mute_alert=true', function(result) {
+                            printerList[printerId] = result.printer;
+                            updatePrinterCard(printerCard);
+                        });
+                    }
+                });
             }
 
             e.preventDefault();
@@ -265,13 +266,6 @@ $(document).ready(function () {
             printerCard.find('input[name=pause_on_failure]').prop('checked', false);
             printerCard.find('label[for^=pause-toggle-] .text-muted').show();
         }
-
-        if (printer.current_print) {
-            printerCard.find("input.alert-toggle").removeAttr('disabled');
-        } else {
-            printerCard.find("input.alert-toggle").attr('disabled', 'disabled');
-        }
-        printerCard.find("input.alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
 
         // Print status
         var secondsLeft = _.get(printer, 'status.progress.printTimeLeft');

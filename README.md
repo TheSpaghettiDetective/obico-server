@@ -1,8 +1,8 @@
 # TheSpaghettiDetective
 
-This repo is everything you need to run a server for [The Spaghetti Detective](https://thespaghettidetective.com), the coolest, AI-based solution for 3D printer remote management and monitoring.
+This repo is everything you need to run a server for [The Spaghetti Detective](https://thespaghettidetective.com?utm_source=github), the coolest, AI-based solution for 3D printer remote management and monitoring.
 
-The core of this project is based on a Deep Learning model. [See how the model works on real data](https://app.thespaghettidetective.com/publictimelapses/).
+The core of this project is based on a Deep Learning model. [See how the model works on real data](https://app.thespaghettidetective.com/publictimelapses/?utm_source=github).
 
 # Install and run the server
 
@@ -105,7 +105,7 @@ Before you can configure The Spaghetti Detective OctoPrint Plugin to use your ow
 
 1. Pointing your browser to `http://your_server_ip:3334/`.
 
-1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-setup.html#step-1-sign-up-the-spaghetti-detective-beta-account) and obtain the secret token.
+1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-setup.html?utm_source=github#step-1-sign-up-the-spaghetti-detective-beta-account) and obtain the secret token.
 
 Then, on The Spaghetti Detective plugin settings page:
 

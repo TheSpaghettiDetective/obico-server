@@ -52,7 +52,7 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         'is_warning': is_warning,
         'view_link': site.build_full_url('/printers/'),
         'cancel_link': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
-        'resume_link': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)),
+        'resume_link': site.build_full_url('/printers/{}/resume/'.format(printer.id)),
         'insert_img': len(attachments) == 0,
     }
 

@@ -102,6 +102,12 @@ def resume_printer(request, pk):
         send_commands_to_printer_if_needed(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
 
+@login_required
+def toggle_watching(request, pk):
+    printer = get_printer_or_404(pk, request)
+    printer.watching = not printer.watching
+    printer.save()
+    return redirect('/printers/')
 
 # User preferences
 

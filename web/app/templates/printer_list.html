@@ -19,7 +19,11 @@
           <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
             aria-haspopup="true" aria-label="{{ printer.name }} Controls"><i class="fas fa-ellipsis-v"></i></button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="/printers/{{ printer.id }}/toggle_watching/"><i class="fas {% if printer.watching %} fa-eye-slash {% else %} fa-eye {% endif %} fa-lg"></i>Watching: {% if printer.watching %} OFF {% else %} ON {% endif %}</a>
+            {% if printer.watching %}
+            <a class="dropdown-item" href="/printers/{{ printer.id }}/toggle_watching/"><i class="fas fa-eye fa-lg"></i>Watching: <span class="color-success"> ON</span></a>
+            {% else %}
+            <a class="dropdown-item" href="/printers/{{ printer.id }}/toggle_watching/"><i class="fas fa-eye-slash fa-lg"></i>Watching: <span class="color-error"> OFF</span></a>
+            {% endif %}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
             <a id="delete-print" class="dropdown-item text-danger" href="#"><i
@@ -82,12 +86,12 @@
         <div class="info-section container">
           <div id="panel-settings">
             <div class="pt-2 pb-3">
-            <div class="row justify-content-center px-3">
+            <div class="alert-toggle-container row justify-content-center px-3" style="display: none;">
               <div class="col-12 setting-item">
-                  <label for="watching-toggle-{{ printer.id }}">Watch for failures</label>
+                  <label for="alert-toggle-{{ printer.id }}">Do NOT watch current print</label>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" name="watching" class="custom-control-input update-printer" id="watching-toggle-{{ printer.id }}">
-                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
+                    <input type="checkbox" class="custom-control-input alert-toggle" id="alert-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="alert-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
                   </div>
               </div>
             </div>

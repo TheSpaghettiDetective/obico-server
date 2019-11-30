@@ -171,7 +171,6 @@ class Printer(SafeDeleteModel):
         if not self.watching or self.user.dh_balance < 0:
             return False
 
-        print(self.current_print != None and self.current_print.alert_muted_at == None)
         return self.current_print != None and self.current_print.alert_muted_at == None
 
     def actively_printing(self):

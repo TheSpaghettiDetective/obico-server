@@ -71,6 +71,10 @@ $(document).ready(function () {
 
                 var janus = new Janus({
                     server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/ws/janus/' + printerId + '/',
+                    iceServers: [{url: 'turn:34.74.9.97:3478?transport=udp',
+                        credential: 'user11',
+                        username: 'root'
+                    }],
                     success: function () {
                         janus.attach(
                             {

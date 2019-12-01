@@ -118,14 +118,6 @@ $(document).ready(function () {
             });
         });
 
-        printerCard.find('input.alert-toggle').on('change', function (e) {
-            var muteAlert = $(this).is(':checked');
-            printerGet(printerId, '/mute_current_print/?mute_alert=' + muteAlert, function(result) {
-                printerList[printerId] = result.printer;
-                updatePrinterCard(printerCard);
-            });
-        });
-
         printerCard.find('#delete-print').click(function () {
             Confirm.fire({
             }).then(function (result) {
@@ -260,13 +252,8 @@ $(document).ready(function () {
         }
 
         // Panel settings
-        if (printer.current_print ) {
-            printerCard.find(".alert-toggle-container").show();
-        } else {
-            printerCard.find(".alert-toggle-container").hide();
-        }
-        printerCard.find("input.alert-toggle").prop("checked", printer.current_print && printer.current_print.alert_muted_at);
-
+        printerCard.find('input[name=watching]').prop('checked', printer.watching);
+        printerCard.find('#watching-status').text(printer.watching ? 'ON' : 'OFF');
         if (printer.watching) {
             printerCard.find('#detailed-controls').show();
         } else {

@@ -28,8 +28,8 @@ server {<br>
   ssl_session_timeout 4h;<br>
   add_header Strict-Transport-Security "max-age=63072000;";<br>
   server_name tsd.playtfg.com;<br>
-  access_log /var/log/tsd.playtfg_access.log;<br>
-  error_log /var/log/tsd.playtfg_error.log;<br>
+  access_log /var/log/tsd.access.log;<br>
+  error_log /var/log/tsd.error.log;<br>
   location / {<br>
     proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/;<br>
     proxy_set_header X-Real-IP $remote_addr;<br>

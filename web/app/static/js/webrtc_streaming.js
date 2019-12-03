@@ -71,10 +71,8 @@ $(document).ready(function () {
 
                 var janus = new Janus({
                     server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/ws/janus/' + printerId + '/',
-                    iceServers: [{url: 'turn:34.74.9.97:3478?transport=udp',
-                        credential: 'user11',
-                        username: 'root'
-                    }],
+                    // iceServers: [ {url:'turn:numb.viagenie.ca',credential: 'vbX3Pe4U%', username: 'kenneth.jiang@gmail.com'}],
+                    iceServers: [ {urls:'turn:34.74.9.97:3478?transport=udp',credential: 'root', username: 'user'}],
                     success: function () {
                         janus.attach(
                             {

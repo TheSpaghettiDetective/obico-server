@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load jstemplate %}
+
+{% block content %}
+
+{% mustachejs '(.*)'  %}
+
+<div class="row justify-content-center">
+  {% for printer in printers %}
+  <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card">
+    <div class="card">
+      <div class="card-header">
+        <div class="title-box">
+          <div class="primary-title print-filename"></div>
+          <div class="printer-name">{{ printer.name }}</div>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-secondary icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-label="{{ printer.name }} Controls"><i class="fas fa-ellipsis-v"></i></button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
+            <a id="delete-print" class="dropdown-item text-danger" href="#"><i
+                class="fas fa-trash-alt fa-lg"></i>Delete</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-img-top webcam_container">
+        <div class="{{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">
+          <div class="webcam_fixed_ratio {{ printer.settings.ratio169|yesno:'ratio169, ratio43, ratio43' }}">
+            <div class="webcam_fixed_ratio_inner full">
+              <img
+                class="tagged-jpg {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                src="{% static 'img/3d_printer.png' %}" alt="{{ printer.name }} current image" />
+            </div>
+            <div id="webrtc-stream" class="webcam_fixed_ratio_inner thumbnail">
+              <video
+                class="remote-video hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay muted playsinline>
+              </video>
+            </div>
+            <i class="fa fa-expand fa-2x pic-in-pic-expand" aria-hidden="true" style="display: none;"></i>
+          </div>
+        </div>
+      </div>
+      <div class="failure-alert card-body bg-warning px-2 py-1" style="display: none">
+        <i class="fas fa-exclamation-triangle align-middle"></i>
+        <span class="align-middle">Failure Detected!</span>
+        <button type="button" id="not-a-failure" class="btn btn-outline-primary btn-sm float-right">Not a failure?
+          <img class="dh-icon" src="{% static 'img/detective-hour-inverse.png' %}" /></button>
+      </div>
+      <div class="card-body gauge-container">
+          <div class="overlay-top hint"
+          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px; display: none"
+          data-toggle="popover" data-trigger="hover" data-placement="top" data-html=true
+          data-content="Possible reasons why The Detectiving is not watching:<ul><li>The printer is idle or paused.</li><li>You turned off 'watch for failures'.</li><li>You told The Detective not to alert for this print.</li><li>You have run out of Detective Hours.</li></ul>">
+          The Detective Is Not Watching</div>
+        <div class="text-center gauge">
+          <canvas class='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="0" data-width="240"
+            data-height="240" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
+            data-max-value="100" data-major-ticks='["","","",""]' data-minor-ticks="4" data-highlights='[
+                              { "from": 0, "to": 33, "color": "#5cb85c" },
+                              { "from": 33, "to": 67, "color": "#f0ad4e" },
+                              { "from": 67, "to": 100, "color": "#d9534f" }
+                          ]' data-color-plate="rgba(255,255,255,.0)" data-color-title="#5cb85c"
+            data-color-stroke-ticks="#EBEBEB" data-color-numbers="#eee" data-color-needle-start="rgba(240, 128, 128, 1)"
+            data-color-needle-end="rgba(255, 160, 122, .9)" data-value-box="true" data-animation-rule="bounce"
+            data-animation-duration="500" data-animated-value="true" data-start-angle="90" data-ticks-angle="180"
+            data-borders="false"></canvas>
+        </div>
+        <hr />
+
+      </div>
+      <div style="text-align: center; margin-bottom: 20px; margin-top: -10px; padding: 5px;">
+        <button type="button" class="info-section-toggle btn btn-sm mx-2 pressed" data-target-div="panel-settings"><i class="fas fa-cog fa-lg"></i></button>
+        <button type="button" class="info-section-toggle btn btn-sm mx-2" data-target-div="print-time"><i class="fas fa-clock fa-lg"></i></button>
+        <button type="button" class="info-section-toggle btn btn-sm mx-2 pressed" data-target-div="status_temp_block"><i class="fas fa-thermometer-half fa-lg"></i></button>
+      </div>
+      <div>
+        <div class="info-section container">
+          <div id="panel-settings">
+            <div class="pt-2 pb-3">
+            <div class="row justify-content-center px-3">
+              <div class="col-12 setting-item">
+                  <label for="watching-toggle-{{ printer.id }}">Watch for failures</label>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" name="watching" class="custom-control-input update-printer" id="watching-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
+                  </div>
+              </div>
+            </div>
+            <div class="row justify-content-center px-3">
+              <div class="col-12 setting-item">
+                  <label for="pause-toggle-{{ printer.id }}">Pause on detected failures<div class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications</div></label>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer" id="pause-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="pause-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
+                  </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <div id="print-time" style="display: none;">
+            <div class="py-2">
+            <div class="row text-subscript text-muted">
+              <div class="col-5 offset-2">
+                Remaining
+              </div>
+              <div class="col-5">
+                Total
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-2 text-muted">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div id="print-time-remaining" class="col-5 numbers"></div>
+              <div id="print-time-total" class="col-5 numbers"></div>
+              <div class="col-12">
+                <div class="progress" style="height: 2px;">
+                  <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                    role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <div id="status_temp_block">
+          </div>
+        </div>
+        <div class="print-actions container">
+          <div class="row">
+            <div class="col-sm-6">
+              <button id="print-pause-resume" type="button" class="btn btn-warning btn-block mt-2" disabled><span>Pause
+                </span><img class="dh-icon" style="display: none;"
+                  src="{% static 'img/detective-hour-inverse.png' %}" /></button>
+            </div>
+            <div class="col-sm-6">
+              <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" disabled><span>Cancel
+                </span><img class="dh-icon" style="display: none;"
+                  src="{% static 'img/detective-hour-inverse.png' %}" /></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="row justify-content-center">
+  <div id="new-printer" class="col-sm-12 col-lg-6">
+    <div class="new-printer-container">
+      <a href="/printers/new">
+        <i class="fa fa-plus fa-2x"></i>
+        <div>Add Printer</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+
+<script type="text/javascript">
+  var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
+</script>
+
+<script src="{% static 'js/printer_list.js' %}"></script>
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
+<script src="{% static 'js/janus.js' %}"></script>
+<script src="{% static 'js/webrtc_streaming_turn.js' %}"></script>
+
+{% endblock page_js %}

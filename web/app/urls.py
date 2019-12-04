@@ -12,6 +12,7 @@ urlpatterns = [
     path('printers/<int:pk>/delete/', views.delete_printer, name='printers_delete'),
     path('printers/<int:pk>/cancel/', views.cancel_printer, name='printers_cancel'),
     path('printers/<int:pk>/resume/', views.resume_printer, name='printers_resume'),
+    path('printers/shared/<share_token>/', views.printer_shared, name='printer_shared'),
     path('publictimelapses/', views.publictimelapse_list, name='publictimelapse_list'),
     path('user_preferences/', views.user_preferences, name='user_preferences'),
     path('prints/', views.prints, name='prints'),

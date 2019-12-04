@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils.safestring import mark_safe
 
@@ -101,6 +102,10 @@ def resume_printer(request, pk):
     if succeeded:
         send_commands_to_printer_if_needed(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
+
+def printer_shared(request, share_token=None):
+    printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
+    return render(request, 'printer_shared.html', {'printer': printer, 'share_token': share_token})
 
 
 # User preferences

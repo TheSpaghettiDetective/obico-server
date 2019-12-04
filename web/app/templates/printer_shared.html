@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load jstemplate %}
+
+{% block content %}
+
+{% mustachejs '(.*)'  %}
+
+<div class="row justify-content-center">
+    <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card" data-share-token="{{ share_token }}">
+        <div class="card">
+            <div class="card-header">
+              <div class="title-box">
+                <div class="primary-title print-filename"></div>
+                <div class="printer-name">{{ printer.name }}</div>
+              </div>
+            </div>
+            <div class="card-img-top webcam_container">
+              <div class="{{ printer.settings.webcam_rotate90|yesno:'webcam_rotated, webcam_unrotated, webcam_unrotated' }}">
+                <div class="webcam_fixed_ratio {{ printer.settings.ratio169|yesno:'ratio169, ratio43, ratio43' }}">
+                  <div class="webcam_fixed_ratio_inner full">
+                    <img
+                      class="tagged-jpg {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                      src="{% static 'img/3d_printer.png' %}" alt="{{ printer.name }} current image" />
+                  </div>
+                  <div id="webrtc-stream" class="webcam_fixed_ratio_inner thumbnail">
+                    <video
+                      class="remote-video hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
+                      width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay muted playsinline>
+                    </video>
+                  </div>
+                  <i class="fa fa-expand fa-2x pic-in-pic-expand" aria-hidden="true" style="display: none;"></i>
+                </div>
+              </div>
+            </div>
+        </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+
+<script type="text/javascript">
+  var printer_stock_img_src = "{% static 'img/3d_printer.png' %}";
+  var isProAccount = true;    // Only Pro account can share. So overwrite the global var
+</script>
+
+<script src="{% static 'js/printer_list.js' %}"></script>
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
+<script src="{% static 'js/janus.js' %}"></script>
+<script src="{% static 'js/webrtc_streaming.js' %}"></script>
+
+{% endblock page_js %}

@@ -476,3 +476,11 @@ class PrintEvent(models.Model):
         )
         if event_type in PrintEvent.ENDED:
             celery_app.send_task('app_ent.tasks.process_print_events', args=[print.id])
+
+
+class SharedResource(models.Model):
+    printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
+    share_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)

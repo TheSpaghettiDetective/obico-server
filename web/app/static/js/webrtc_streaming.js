@@ -69,8 +69,10 @@ $(document).ready(function () {
 
                 var streaming;
 
+                var wsUri = printerCard.data('share-token') ?
+                    '/ws/shared/janus/' + printerCard.data('share-token') + '/' : '/ws/janus/' + printerId + '/';
                 var janus = new Janus({
-                    server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/ws/janus/' + printerId + '/',
+                    server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
                     iceServers: [{url: 'turn:34.74.9.97:3478?transport=udp',
                         credential: 'user11',
                         username: 'root'

@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils.safestring import mark_safe
 
@@ -79,7 +80,7 @@ def edit_printer(request, pk):
         template = 'printer_wizard.html'
     else:
         printer = get_printer_or_404(int(pk), request)
-        template = 'printer_wizard.html' if request.GET.get('wizard', False) else 'printer_edit.html'
+        template = 'printer_wizard.html' if request.GET.get('wizard', False) else 'edit_printer.html'
 
     form = PrinterForm(request.POST or None, request.FILES or None, instance=printer)
     if request.method == "POST":
@@ -117,6 +118,23 @@ def resume_printer(request, pk):
     if succeeded:
         send_commands_to_printer_if_needed(printer.id)
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
+
+@login_required
+def share_printer(request, pk):
+    printer = get_printer_or_404(pk, request)
+    if request.method == "POST":
+        if request.POST.get('shared') == 'on':
+            if not hasattr(printer, 'sharedresource'):
+                SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
+        else:
+            SharedResource.objects.get(printer=printer).delete()
+            messages.success(request, 'You have disabled printer feed sharing. Previous share link has now been revoked.')
+
+    return render(request, 'share_printer.html', dict(printer=printer, user=request.user))
+
+def printer_shared(request, share_token=None):
+    printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
+    return render(request, 'printer_shared.html', {'printer': printer, 'share_token': share_token})
 
 
 # User preferences

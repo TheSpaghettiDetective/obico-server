@@ -19,10 +19,10 @@ $(document).ready(function () {
         $('.printer-card').each(function () {
             var printerCard = $(this);
             var printerId = printerCard.attr('id');
-            var printerSocket = new WebSocket(
-                window.location.protocol.replace('http', 'ws') + '//' + window.location.host +
-                '/ws/web/' + printerId + '/');
 
+            var wsUri = printerCard.data('share-token') ?
+            '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
+            var printerSocket = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri);
             wsList.push(printerSocket);
             printerSocket.onmessage = function (e) {
                 var printer = JSON.parse(e.data);

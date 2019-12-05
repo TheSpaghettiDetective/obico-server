@@ -5,7 +5,7 @@ from channels.auth import AuthMiddlewareStack
 
 from django.db import close_old_connections
 
-from app.models import Printer
+from app.models import Printer, SharedResource
 
 class PrinterAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key, request=None):
@@ -29,15 +29,19 @@ class PrinterWSAuthMiddleWare:
         close_old_connections()
 
         headers = dict(scope['headers'])
-        if b'authorization' in headers:
-            try:
+        try:
+            if b'authorization' in headers:
                 token_name, token_key = headers[b'authorization'].decode().split()
                 if token_name == 'bearer':
                     printer = Printer.objects.select_related('user').get(auth_token=token_key)
                     printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
                     scope['user'] = printer
-            except ObjectDoesNotExist:
-                pass
+            elif scope['path'].startswith('/ws/shared/'):
+                printer = SharedResource.objects.select_related('printer').get(share_token=scope['path'].split('/')[-2]).printer # scope['path'].split('/')[-2] is the share_token in uri
+                printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
+                scope['user'] = printer
+        except ObjectDoesNotExist:
+            pass
         return self.inner(scope)
 
 TokenAuthMiddlewareStack = lambda inner: PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))

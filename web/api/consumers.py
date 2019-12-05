@@ -14,25 +14,29 @@ LOGGER = logging.getLogger(__name__)
 
 class WebConsumer(JsonWebsocketConsumer):
     def connect(self):
-        self.printer_id = self.scope['url_route']['kwargs']['printer_id']
         try:
-            self.printer = Printer.objects.get(user=self.current_user(), id=self.printer_id)     # Exception for un-authenticated or un-authorized access
+            if self.scope['path'].startswith('/ws/shared/'):
+                self.printer = self.current_user()
+            else:
+                # Exception for un-authenticated or un-authorized access
+                self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
             async_to_sync(self.channel_layer.group_add)(
-                channels.status_group_name(self.printer_id),
+                channels.status_group_name(self.printer.id),
                 self.channel_name
             )
             self.accept()
             channels.send_status_to_web(self.printer.id)
             send_remote_status(self.printer, viewing=True)
         except:
+            LOGGER.exception("Websocket failed to connect")
             self.close()
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
         send_remote_status(self.printer, viewing=False)
         async_to_sync(self.channel_layer.group_discard)(
-            channels.status_group_name(self.printer_id),
+            channels.status_group_name(self.printer.id),
             self.channel_name
         )
 
@@ -40,7 +44,7 @@ class WebConsumer(JsonWebsocketConsumer):
         pass # This websocket is used only to get status update for now. not receiving anything
 
     def printer_status(self, data):
-        serializer = PrinterSerializer(Printer.objects.get(id=self.printer_id))
+        serializer = PrinterSerializer(Printer.objects.get(id=self.printer.id))
         self.send_json(serializer.data)
 
     def current_user(self):
@@ -90,26 +94,32 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
 
 class JanusWebConsumer(WebsocketConsumer):
     def connect(self):
-        self.printer_id = self.scope['url_route']['kwargs']['printer_id']
         try:
+            if self.scope['path'].startswith('/ws/shared/'):
+                self.printer = self.scope['user']
+            else:
+                # Exception for un-authenticated or un-authorized access
+                self.printer = Printer.objects.get(user=self.scope['user'], id=self.scope['url_route']['kwargs']['printer_id'])
+
             async_to_sync(self.channel_layer.group_add)(
-                channels.janus_web_group_name(self.printer_id),
+                channels.janus_web_group_name(self.printer.id),
                 self.channel_name
             )
             self.accept('janus-protocol')
         except:
+            LOGGER.exception("Websocket failed to connect")
             self.close()
 
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
-            channels.janus_web_group_name(self.printer_id),
+            channels.janus_web_group_name(self.printer.id),
             self.channel_name
         )
 
     def receive(self, text_data=None, bytes_data=None):
-        channels.send_janus_msg_to_printer(self.printer_id, text_data)
+        channels.send_janus_msg_to_printer(self.printer.id, text_data)
 
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))

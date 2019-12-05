@@ -67,12 +67,28 @@ $(document).ready(function () {
                     expandThumbnailToFull($(this));
                 });
 
-                var streaming;
+                var streaming, wsUri, turnToken, turnId;
 
-                var wsUri = printerCard.data('share-token') ?
-                    '/ws/shared/janus/' + printerCard.data('share-token') + '/' : '/ws/janus/' + printerId + '/';
+                if (printerCard.data('share-token')) {
+                    wsUri = '/ws/shared/janus/' + printerCard.data('share-token') + '/';
+                    turnToken = printerCard.data('share-token');
+                    turnId = 's' + printerCard.data('resource-id');
+                } else {
+                    wsUri = '/ws/janus/' + printerId + '/';
+                    turnToken = printerCard.data('auth-token');
+                    turnId = 'p' + printerCard.attr('id');
+                }
+
+                var iceServers = [{urls:["stun:stun.l.google.com:19302"]}];
+                if (turnToken) {
+                    var turnServer = window.location.hostname.replace('app', 'turn');
+                    iceServers.push({urls:'turn:' + turnServer + ':80?transport=udp',credential: turnToken, username: turnId});
+                    iceServers.push({urls:'turn:' + turnServer + ':80?transport=tcp',credential: turnToken, username: turnId});
+                }
+
                 var janus = new Janus({
                     server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
+                    iceServers: iceServers,
                     success: function () {
                         janus.attach(
                             {

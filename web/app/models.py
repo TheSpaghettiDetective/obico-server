@@ -480,7 +480,7 @@ class PrintEvent(models.Model):
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
-    share_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
+    share_token = models.CharField(max_length=40, unique=True, null=False, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)

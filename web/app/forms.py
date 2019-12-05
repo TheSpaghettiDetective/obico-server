@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput
+from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput, BooleanField
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
 
@@ -16,6 +16,7 @@ class PrinterForm(ModelForm):
         widgets = {
             'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }
+
 
 class UserPreferencesForm(ModelForm):
     telegram_chat_id = CharField(widget=HiddenInput(), validators=[validate_telegram_login], required=False)
@@ -55,3 +56,15 @@ class UserPreferencesForm(ModelForm):
                                'Invalid pushbullet access token.')
 
         data['telegram_chat_id'] = json.loads(data['telegram_chat_id'])['id'] if telebot and data['telegram_chat_id'] else None
+
+
+class SharedResourceForm(ModelForm):
+    shared = BooleanField(required=True)
+
+    class Meta:
+        model = SharedResource
+        fields = ['share_token']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        shared = bool(self.instance.share_token)

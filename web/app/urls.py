@@ -9,7 +9,6 @@ urlpatterns = [
     path('printer_auth_token/<int:pk>/', views.priner_auth_token, name='priner_auth_token'),
     path('printers/', views.printers, name='printers'),
     path('printers/<pk>/', views.edit_printer, name='edit_printer'),
-    path('printers_turn/', views.printers_turn, name='printers_turn'),
     path('printers/<int:pk>/delete/', views.delete_printer, name='delete_printer'),
     path('printers/<int:pk>/cancel/', views.cancel_printer, name='cancel_printer'),
     path('printers/<int:pk>/resume/', views.resume_printer, name='resume_printer'),

@@ -72,7 +72,7 @@ $(document).ready(function () {
                 var wsUri = printerCard.data('share-token') ?
                     '/ws/shared/janus/' + printerCard.data('share-token') + '/' : '/ws/janus/' + printerId + '/';
                 var janus = new Janus({
-                    server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/ws/janus/' + printerId + '/',
+                    server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
                     success: function () {
                         janus.attach(
                             {

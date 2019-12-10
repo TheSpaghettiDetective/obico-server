@@ -40,7 +40,6 @@ def compile_timelapse(self, print_id):
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
 
-    import ipdb; ipdb.set_trace()
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
 
     print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, end_time)

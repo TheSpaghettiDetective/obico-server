@@ -8,7 +8,7 @@
 
 {% if print_paused %}
 <p>
-  <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a href="https://app.thespaghettidetective.com/printers/{{printer.id}}/">Change the settings.</a></span>
+  <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a href="{{edit_link}}">Change the settings.</a></span>
 </p>
 {% elif printer.action_on_failure == Printer.PAUSE and is_warning %}
 <p>

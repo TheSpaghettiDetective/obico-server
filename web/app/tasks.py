@@ -24,6 +24,7 @@ from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import redis
+from lib import site
 
 LOGGER = logging.getLogger(__name__)
 
@@ -213,6 +214,7 @@ def send_timelapse_detection_done_email(_print):
 
     ctx = {
         'print': _print,
+        'prints_link': site.build_full_url('/prints/'),
         'unsub_url': 'https://app.thespaghettidetective.com/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
     }
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]

@@ -167,6 +167,13 @@ class Printer(SafeDeleteModel):
         pic_data = redis.printer_pic_get(self.id)
         return dict_or_none(pic_data)
 
+    @property
+    def settings(self):
+        p_settings = redis.printer_settings_get(self.id)
+        settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
+        settings.update(dict(ratio169=p_settings.get('webcam_streamRatio', '4:3') == '16:9'))
+        return settings
+
     def should_watch(self):
         if not self.watching or self.user.dh_balance < 0:
             return False

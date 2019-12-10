@@ -14,3 +14,22 @@ def set_as_str_if_present(target_dict, source_dict, key, target_key=None):
 
 def ml_api_auth_headers():
     return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
+
+def orientation_to_ffmpeg_options(printer_settings):
+    orientation = (printer_settings['webcam_flipV'], printer_settings['webcam_flipH'],printer_settings['webcam_rotate90'])
+    if orientation == (False, False, True):
+        return '-vf transpose=2'
+    elif orientation == (False, True, False):
+        return '-vf hflip'
+    elif orientation == (False, True, True):
+        return '-vf transpose=0'
+    elif orientation == (True, False, False):
+        return '-vf vflip'
+    elif orientation == (True, False, True):
+        return '-vf transpose=3'
+    elif orientation == (True, True, True):
+        return '-vf transpose=1'
+    elif orientation == (True, True, False):
+        return '-vf hflip,vflip'
+    else:
+        return ''

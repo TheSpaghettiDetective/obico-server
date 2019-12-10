@@ -47,11 +47,6 @@ def printers(request):
         return redirect('/consent/')
 
     printers = request.user.printer_set.order_by('-created_at').all()
-    for printer in printers:
-        p_settings = redis.printer_settings_get(printer.id)
-        printer.settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
-        printer.settings.update(dict(ratio169=p_settings.get('webcam_streamRatio', '4:3') == '16:9'))
-
     if Printer.with_archived.filter(user=request.user, archived_at__isnull=False).count() > 0:
         messages.warning(request, mark_safe('Some of your printers have been archived. <a href="/ent/printers/archived/">Find them here.</a>'))
 

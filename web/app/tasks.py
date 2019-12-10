@@ -20,52 +20,60 @@ from django.core.mail import EmailMessage
 
 from .models import *
 from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
-from lib.utils import ml_api_auth_headers
+from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
+from lib import redis
 
 LOGGER = logging.getLogger(__name__)
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def compile_timelapse(self, print_id):
-    print = Print.objects.get(id=print_id)
-    end_time = print.finished_at or print.cancelled_at
+    _print = Print.objects.select_related('printer').get(id=print_id)
+    end_time = _print.finished_at or _print.cancelled_at
 
-    if (end_time - print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
-        print.delete()
+    if (end_time - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
+        _print.delete()
         return
 
-    to_dir = os.path.join(tempfile.gettempdir(), str(print.id))
+    to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
 
-    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(print.printer.id), settings.PICS_CONTAINER), print.started_at, end_time)
+    import ipdb; ipdb.set_trace()
+    ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
+
+    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, end_time)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
-        last_pic = local_pics[-1]
-        mp4_filename = '{}.mp4'.format(print.id)
+        mp4_filename = '{}.mp4'.format(_print.id)
         output_mp4 = os.path.join(to_dir, mp4_filename)
-        subprocess.run('ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p {}'.format(last_pic.parent, output_mp4).split(' '), check=True)
-        shutil.copyfile(last_pic, os.path.join(to_dir, '{}.jpg'.format(print.id)))
+        cmd = 'ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p {} {}'.format(local_pics[-1].parent, ffmpeg_extra_options, output_mp4)
+        subprocess.run(cmd.split(), check=True)
 
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
-        with open(last_pic, 'rb') as poster_file:
-            _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(print.id), poster_file, settings.TIMELAPSE_CONTAINER)
 
-        print.video_url = mp4_file_url
-        print.poster_url = poster_file_url
-        print.save()
+        last_pic = os.path.join(to_dir, 'ss.jpg')
+        # https://superuser.com/questions/1448665/ffmpeg-how-to-get-last-frame-from-a-video
+        subprocess.run('ffmpeg -y -i {} -sseof -1 -update 1 -vframes 1 -q:v 2 {}'.format(output_mp4, last_pic).split(' '), check=True)
+        with open(last_pic, 'rb') as poster_file:
+            _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)
+
+        _print.video_url = mp4_file_url
+        _print.poster_url = poster_file_url
+        _print.save()
 
     # build tagged timelapse
-    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(print.printer.id), settings.PICS_CONTAINER), print.started_at, end_time)
+    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, end_time)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
-        mp4_filename = '{}_tagged.mp4'.format(print.id)
+        mp4_filename = '{}_tagged.mp4'.format(_print.id)
         output_mp4 = os.path.join(to_dir, mp4_filename)
-        subprocess.run('ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p {}'.format(local_pics[0].parent, output_mp4).split(' '), check=True)
+        cmd = 'ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p {} {}'.format(local_pics[0].parent, ffmpeg_extra_options, output_mp4)
+        subprocess.run(cmd.split(), check=True)
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
@@ -80,11 +88,11 @@ def compile_timelapse(self, print_id):
         preidction_json_io = io.BytesIO()
         preidction_json_io.write(json.dumps(preidction_json).encode('UTF-8'))
         preidction_json_io.seek(0)
-        _, json_url = save_file_obj('private/{}_p.json'.format(print.id), preidction_json_io, settings.TIMELAPSE_CONTAINER)
+        _, json_url = save_file_obj('private/{}_p.json'.format(_print.id), preidction_json_io, settings.TIMELAPSE_CONTAINER)
 
-        print.tagged_video_url = mp4_file_url
-        print.prediction_json_url = json_url
-        print.save()
+        _print.tagged_video_url = mp4_file_url
+        _print.prediction_json_url = json_url
+        _print.save()
 
     shutil.rmtree(to_dir, ignore_errors=True)
 

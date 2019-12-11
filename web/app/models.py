@@ -1,5 +1,6 @@
 from allauth.account.admin import EmailAddress
 from datetime import datetime, timedelta
+import logging
 import os
 import json
 from django.db import models
@@ -19,7 +20,10 @@ from config.celery import celery_app
 from lib import redis, channels
 from lib.utils import dict_or_none
 
+LOGGER = logging.getLogger(__name__)
+
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
+
 
 def dh_is_unlimited(dh):
     return dh >= UNLIMITED_DH
@@ -187,13 +191,19 @@ class Printer(SafeDeleteModel):
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
-                self.unset_current_print()
+                if self.current_print.started_at < (timezone.now() - timezone.timedelta(hours=10)):
+                    self.unset_current_print()
+                else:
+                    LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
 
             return
 
         # currently printing
         if self.current_print:
-            if self.current_print.ext_id != current_print_ts:
+            # Unknown bug in plugin that causes current_print_ts not unique
+            if not self.current_print.ext_id in range(current_print_ts-20, current_print_ts+20) or self.current_print.filename != filename:
+                if self.current_print.ext_id != current_print_ts:
+                    LOGGER.warn(f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
                 self.unset_current_print()
                 self.set_current_print(filename, current_print_ts)
         else:

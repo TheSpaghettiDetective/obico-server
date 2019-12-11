@@ -40,6 +40,8 @@ def process_octoprint_status_with_ts(op_status, printer):
     if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()
+    elif op_event.get('event_type') in ('PrintFailed', 'PrintDone'):
+        printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused_at = timezone.now()
         printer.current_print.save()

@@ -199,6 +199,7 @@ class Printer(SafeDeleteModel):
             return
 
         # currently printing
+        import ipdb; ipdb.set_trace()
         if self.current_print:
             # Unknown bug in plugin that causes current_print_ts not unique
             if not self.current_print.ext_id in range(current_print_ts-20, current_print_ts+20) or self.current_print.filename != filename:

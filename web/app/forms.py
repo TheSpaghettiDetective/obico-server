@@ -9,21 +9,27 @@ from .validators import validate_telegram_login
 from .models import *
 from .telegram_bot import bot as telebot
 
+
 class PrinterForm(ModelForm):
     class Meta:
         model = Printer
-        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause', 'detective_sensitivity', 'retract_on_pause', 'lift_z_on_pause']
+        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause',
+                  'detective_sensitivity', 'retract_on_pause', 'lift_z_on_pause']
         widgets = {
             'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
         }
 
 
 class UserPreferencesForm(ModelForm):
-    telegram_chat_id = CharField(widget=HiddenInput(), validators=[validate_telegram_login], required=False)
+    telegram_chat_id = CharField(widget=HiddenInput(), validators=[
+                                 validate_telegram_login], required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token', 'telegram_chat_id']
+        fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token',
+                  'telegram_chat_id', 'notify_on_done', 'notify_on_canceled', 'account_notification_by_email',
+                  'print_notification_by_email', 'print_notification_by_pushbullet', 'print_notification_by_telegram',
+                  'alert_by_sms',]
         widgets = {
             'phone_country_code': PhoneCountryCodeWidget()
         }
@@ -37,9 +43,11 @@ class UserPreferencesForm(ModelForm):
     def clean(self):
         data = self.cleaned_data
 
-        phone_number = (data['phone_country_code'] or '') + (data['phone_number'] or '')
+        phone_number = (data['phone_country_code'] or '') + \
+            (data['phone_number'] or '')
 
-        if phone_number:
+        if data['phone_country_code'] and data['phone_number']:
+            phone_number = data['phone_country_code'] + data['phone_number']
             try:
                 phone_number = phonenumbers.parse(phone_number, None)
                 if not phonenumbers.is_valid_number(phone_number):
@@ -55,7 +63,8 @@ class UserPreferencesForm(ModelForm):
                 self.add_error('pushbullet_access_token',
                                'Invalid pushbullet access token.')
 
-        data['telegram_chat_id'] = json.loads(data['telegram_chat_id'])['id'] if telebot and data['telegram_chat_id'] else None
+        data['telegram_chat_id'] = json.loads(data['telegram_chat_id'])[
+            'id'] if telebot and data['telegram_chat_id'] else None
 
 
 class SharedResourceForm(ModelForm):

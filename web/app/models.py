@@ -5,12 +5,14 @@ import os
 import json
 from django.db import models
 from jsonfield import JSONField
+import uuid
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.conf import settings
 from simple_history.models import HistoricalRecords
 from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
@@ -79,6 +81,14 @@ class User(AbstractUser):
     consented_at = models.DateTimeField(null=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
     dh_balance = models.FloatField(null=False, default=0)
+    unsub_token = models.UUIDField(null=True, blank=True, unique=True, db_index=True, default=uuid.uuid4, editable=False)
+    notify_on_done = models.BooleanField(null=False, blank=False, default=True)
+    notify_on_canceled = models.BooleanField(null=False, blank=False, default=False)
+    print_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
+    account_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
+    print_notification_by_pushbullet = models.BooleanField(null=False, blank=False, default=True)
+    print_notification_by_telegram = models.BooleanField(null=False, blank=False, default=True)
+    alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -223,7 +233,6 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        celery_app.send_task('app.tasks.compile_timelapse', args=[print.id])
         PrintEvent.create(print, PrintEvent.ENDED)
         send_remote_status(self)
 
@@ -498,7 +507,7 @@ class PrintEvent(models.Model):
             alert_muted = (print.alert_muted_at is not None)
         )
         if event_type in PrintEvent.ENDED:
-            celery_app.send_task('app_ent.tasks.process_print_events', args=[print.id])
+            celery_app.send_task(settings.PRINT_EVENT_HANDLER, args=[print.id])
 
 
 class SharedResource(models.Model):

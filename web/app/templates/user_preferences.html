@@ -16,12 +16,6 @@
         {% csrf_token %}
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
         <h2>Profile</h2>
-        <div class="form-group row">
-          <label for="id_email" class="col-sm-2 col-form-label">Email</label>
-          <div class="col-sm-10 col-form-label text-muted">{{form.instance.email}} ({% if form.instance.is_primary_email_verified %}Verified{% else %}Unverified{% endif %})
-            <p class="form-text"><a href="/accounts/email">Manage email addresses</a></p>
-          </div>
-        </div>
         {% get_social_accounts user as accounts %}
         {% if not accounts  %}
         <div class="form-group row">
@@ -46,12 +40,59 @@
         </div>
         <br />
         <h2>Notifications</h2>
+        <div class="row">
+          <div class="col-sm-10 offset-sm-2 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.notify_on_done class="custom-control-input" %}
+              <label class="custom-control-label" for="id_notify_on_done">
+                Notify me when print job is done
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10 offset-sm-2 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.notify_on_canceled class="custom-control-input" %}
+              <label class="custom-control-label" for="id_notify_on_canceled">
+                Notify me when print job is canceled
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10 offset-sm-2 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.account_notification_by_email class="custom-control-input" %}
+              <label class="custom-control-label" for="id_account_notification_by_email">
+                Notify me on account events (such as running out of Detective Hours)
+              </label>
+            </div>
+          </div>
+        </div>
         <br />
-        <h3>SMS</h3>
-        <small class="form-text text-muted">You will be alerted via text (SMS) on your phone number.</small>
-        <br />
+        <h2>Email</h2>
+        <div class="row">
+          <label for="id_email" class="col-sm-2 col-form-label">Primary Email</label>
+          <div class="col-sm-10 col-form-label text-muted">{{form.instance.email}} ({% if form.instance.is_primary_email_verified %}Verified{% else %}Unverified{% endif %})
+            <div class="form-text"><a href="/accounts/email">Manage email addresses</a></div>
+          </div>
+        </div>
         <div class="form-group row">
-          <label class="col-sm-2 col-form-label">Phone</label>
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.print_notification_by_email class="custom-control-input" %}
+              <label class="custom-control-label" for="id_print_notification_by_email">
+                Send print job notifications to all verified email addresses
+              </label>
+            </div>
+          </div>
+        </div>
+        <br />
+        <h2>SMS</h2>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">Phone Number</label>
           <div class="col-sm-10 col-form-label">
             {% if settings.TWILIO_ENABLED %}
             <div class="form-group row">
@@ -81,12 +122,26 @@
             {% endif %}
           </div>
         </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.alert_by_sms class="custom-control-input" %}
+              <label class="custom-control-label" for="id_alert_by_sms">
+                Alert me via SMS when print failures are detected
+              </label>
+            </div>
+            {% if not form.instance.is_pro %}
+            <small class="text-warning">Note: You won't be alerted via SMS because this is a Pro feature and you are on the Free plan.</small>
+            {% endif %}
+          </div>
+        </div>
         <br />
-        <h3>Pushbullet</h3>
+        <h2>Pushbullet</h2>
         <small class="form-text text-muted">
           If you have a Pushbullet account, you can
           <a href="https://www.pushbullet.com/#settings">generate an access token</a>
-          and enter it here to be alerted on pushbullet.
+          and enter it here.
         </small>
         <br />
         <div class="form-group row">
@@ -102,9 +157,21 @@
             {% endif %}
           </div>
         </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.print_notification_by_pushbullet class="custom-control-input" %}
+              <label class="custom-control-label" for="id_print_notification_by_pushbullet">
+                Send print job notifications via PushPullet
+              </label>
+            </div>
+            <small class="text-muted">You will always be alerted via PushPullet on print failures.</small>
+          </div>
+        </div>
         <br />
         {% if bot_name %}
-        <h3>Telegram</h3>
+        <h2>Telegram</h2>
         <small class="form-text text-muted">
           Login to be notified by our Telegram bot.
         </small>
@@ -135,6 +202,18 @@
             document.getElementById("preference_form").submit()
           }
         </script>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10 col-form-label">
+            <div class="custom-control custom-checkbox form-check-inline">
+              {% render_field form.print_notification_by_telegram class="custom-control-input" %}
+              <label class="custom-control-label" for="id_print_notification_by_telegram">
+                Send print job notifications via Telegram
+              </label>
+            </div>
+            <small class="text-muted">You will always be alerted via Telegram on print failures.</small>
+          </div>
         </div>
         {% endif %}
         <br /><br />

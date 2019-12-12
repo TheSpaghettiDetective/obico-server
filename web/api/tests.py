@@ -327,6 +327,7 @@ class PrintTestCase(TestCase):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
 
+        process_octoprint_status_with_ts(self.msg_without_event(-1,'1.gcode'), self.printer)
         process_octoprint_status_with_ts(self.msg(100,'1.gcode', 'PrintPaused'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
         self.assertEqual(self.printer.current_print.ext_id, 100)

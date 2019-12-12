@@ -206,6 +206,7 @@ class Printer(SafeDeleteModel):
             if self.current_print.ext_id in range(current_print_ts-20, current_print_ts+20) and self.current_print.filename == filename:
                 LOGGER.warn(f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
                 return
+            LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
             self.unset_current_print()
             self.set_current_print(filename, current_print_ts)
         else:

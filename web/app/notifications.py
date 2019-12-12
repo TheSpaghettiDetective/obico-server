@@ -21,10 +21,13 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
 
     # Fixme: any exception will cause subsequent notification channel to be tried at all.
     # This is also why SMS is currently at the end, since it'll fail with exception when area code is not allowed.
-    send_failure_alert_email(printer, is_warning, print_paused)
+    if printer.user.alert_by_email:
+        send_failure_alert_email(printer, is_warning, print_paused)
+
     send_failure_alert_pushbullet(printer, is_warning, print_paused)
     send_failure_alert_telegram(printer, is_warning, print_paused)
-    if printer.user.is_pro:
+
+    if printer.user.is_pro and printer.user.alert_by_sms:
         send_failure_alert_sms(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
@@ -46,8 +49,7 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         'resume_link': site.build_full_url('/printers/{}/resume/'.format(printer.id)),
     }
 
-    # TODO: unsub link for alert emails
-    unsub_url = site.build_full_url('/unsub/{}/'.format(printer.user.unsub_token))
+    unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={printer.user.unsub_token}&list=alert')
     send_email(
         printer.user,
         subject,
@@ -150,7 +152,8 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 
 def send_print_notification(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
-    send_print_notification_email(_print)
+    if _print.printer.user.print_notification_by_email:
+        send_print_notification_email(_print)
 
 def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_cancelled() else f'🙌 {_print.filename} is ready.'
@@ -159,8 +162,7 @@ def send_print_notification_email(_print):
         'print_time': _print.ended_at() - _print.started_at,
         'timelapse_link': site.build_full_url('/prints/'),
     }
-    # TODO: unsub link for alert emails
-    unsub_url = site.build_full_url('/unsub/{}/'.format(_print.printer.user.unsub_token))
+    unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={_print.printer.user.unsub_token}&list=print_notification')
     send_email(
         _print.printer.user,
         subject,

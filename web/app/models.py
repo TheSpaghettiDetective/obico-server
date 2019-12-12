@@ -86,6 +86,7 @@ class User(AbstractUser):
     notify_on_canceled = models.BooleanField(null=False, blank=False, default=False)
     print_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
     account_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
+    alert_by_email = models.BooleanField(null=False, blank=False, default=True)
     print_notification_by_pushbullet = models.BooleanField(null=False, blank=False, default=True)
     print_notification_by_telegram = models.BooleanField(null=False, blank=False, default=True)
     alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
@@ -139,8 +140,8 @@ class Printer(SafeDeleteModel):
     PAUSE = 'PAUSE'
     NONE = 'NONE'
     ACTION_ON_FAILURE = (
-        (NONE, 'Just notify me.'),
-        (PAUSE, 'Pause the printer and notify me.'),
+        (NONE, 'Just notify me'),
+        (PAUSE, 'Pause the printer and notify me'),
     )
 
     name = models.CharField(max_length=200, null=False)

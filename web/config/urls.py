@@ -21,6 +21,5 @@ urlpatterns = [
     path('', include('app.urls')),
     path('accounts/', include('allauth.urls')),
     path('api/', include('api.urls')),
-    path('hijack/', include('hijack.urls', namespace='hijack')),
     path('admin/', admin.site.urls),
 ]

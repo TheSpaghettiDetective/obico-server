@@ -107,8 +107,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-HIJACK_ALLOW_GET_REQUESTS = True
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 

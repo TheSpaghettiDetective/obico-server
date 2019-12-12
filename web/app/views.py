@@ -128,6 +128,14 @@ def user_preferences(request):
 
     return render(request, 'user_preferences.html', dict(form=form, bot_name=bot_name))
 
+def unsubscribe_email(request):
+    unsub_token = request.GET['unsub_token']
+    email_list = request.GET['list']
+    user = get_object_or_404(User.objects, unsub_token=unsub_token)
+    setattr(user, f'{email_list}_by_email', False)
+    user.save()
+    return render(request, 'unsubscribe_email.html', dict(email_list=email_list))
+
 ### Prints and public time lapse ###
 
 @login_required
@@ -180,9 +188,6 @@ def consent(request):
         return redirect('/printers/')
     else:
         return render(request, 'consent.html')
-
-def webrtc(request):
-    return render(request, 'webrtc.html')
 
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 

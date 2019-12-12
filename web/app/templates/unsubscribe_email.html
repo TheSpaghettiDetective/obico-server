@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center p-5">
+    <div class="col-12">
+        <div class="p-5">
+            <h4 class="text-center">Got it! You will no longer receive emails on
+              {% if email_list == 'print_notification' %}
+              print job notifications.
+              {% elif email_list == 'alert' %}
+              failure notifications.
+              {% else %}
+              account notifications.
+              {% endif %}
+            </h4>
+            <br />
+            <p class="text-center"><a href="/user_preferences/">Change notification preferences >>></a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

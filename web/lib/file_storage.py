@@ -25,7 +25,7 @@ def list_file_obj(dir_path, container):
     else:
         return _list_file_obj_from_file_system(dir_path, container)
 
-# Note: sliently ignore error if src_path does not exist
+# Note: silently ignore error if src_path does not exist
 def retrieve_to_file_obj(src_path, file_obj, container):
     if settings.GOOGLE_APPLICATION_CREDENTIALS:
         return _retrieve_to_file_obj_from_gcp(src_path, file_obj, container)

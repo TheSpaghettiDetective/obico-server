@@ -1,0 +1,46 @@
+
+{% extends 'email/layout.html' %}
+
+{% block email_content %}
+
+<p>Hi {{ print.printer.user.first_name|default:"" }},</p>
+
+<p>
+  {% if print.is_cancelled %}
+  Heads up! Your print job has been canceled.
+  {% else %}
+  Your print job is done.
+  {% endif %}
+<p>
+
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>File name:</b> {{ print.filename }}</td>
+  </tr>
+  <tr>
+    <td><b>Print time:</b> {{ print_time }}</td>
+  </tr>
+</table>
+{% if print.printer.should_watch %}
+<p><b>
+  {% if print.alerted_at %}
+  The Detective found possible failures for this print.
+  {% else %}
+  The Detective didn't find any problems with this print.
+  {% endif %}
+</b>Help her get better by <a href="{{ timelapse_link }}">telling her if she got it right</a> and earn some Detective Hours for yourself (<a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">how does it work?</a>).
+</p>
+
+{% endif %}
+{% if print.printer.user.dh_balance < 5 %}
+You are running low on Detective Hours. <a href="https://app.thespaghettidetective.com/ent/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get more</a> if you want The Detective to keep watching your prints.
+{% endif %}
+{% if img_url %}
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><img style="width: 100%;" src="{{ img_url }}" /></td>
+  </tr>
+</table>
+{% endif %}
+
+{% endblock %}

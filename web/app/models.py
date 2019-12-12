@@ -201,7 +201,7 @@ class Printer(SafeDeleteModel):
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
-                if self.current_print.started_at < (timezone.now() - timezone.timedelta(hours=10)):
+                if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
                     self.unset_current_print()
                 else:
                     LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
@@ -253,7 +253,7 @@ class Printer(SafeDeleteModel):
                 )
 
         if cur_print.ended_at():
-            if cur_print.ended_at() > (timezone.now() - timezone.timedelta(seconds=30)): # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
+            if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)): # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
                 return
             else:
                 raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
@@ -471,6 +471,9 @@ class Print(SafeDeleteModel):
 
     def has_alerted(self):
         return self.alerted_at
+
+    def is_cancelled(self):
+        return bool(self.cancelled_at)
 
 class PrintEvent(models.Model):
     STARTED = 'STARTED'

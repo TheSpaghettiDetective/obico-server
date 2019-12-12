@@ -15,11 +15,11 @@
   Printer is NOT paused because The Detective is not very sure about it.
 </p>
 {% endif %}
-{% if insert_img %}
-<table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0">
+{% if img_url %}
+<table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-    <td><img style="width: 100%;" src="{{ printer.pic.img_url }}" />
+    <td><img style="width: 100%;" src="{{ img_url }}" />
     </td>
   </tr>
 </table>
@@ -96,11 +96,15 @@
       <ul>
         <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it failed. Cancel the print!" button above. You may be asked to sign into The Spaghetti
           Detective web app.</li>
+        {% if print_paused %}
         <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you can suppress alerts for the
           resest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
+        {% endif %}
         <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click "Go to The Spaghetti Detecitve to take a closer look" to go to the real time webcam view. From there you can see the webcam in real time,
-          and decide if you want to resume or cancel the print.</li>
+          and decide if you want to cancel the print.</li>
+        {% if print_paused %}
         <li>If you can directly access your OctoPrint right now, you can also resume the print from there. Just remember that The Spaghetti Detective has turned off the heaters for your safety. Remember to turn them back on before resumeing it in OctoPrint.</li>
+        {% endif %}
       </ul>
     </td>
   </tr>
@@ -109,7 +113,7 @@
       <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What is <img src="https://www.thespaghettidetective.com/img/detective-hour-primary.png" style="height: 20px; vertical-align: text-bottom;" />?</span></span></h2>
       <ul>
         <li>It means that this is an action you can take to help The Detective get better.
-          And you will earn 4 DG credits by doing so. Check out <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">how DG credit works.</a></li>
+          And you will earn 1 Detective Hour by doing so. Check out <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">how Detective Hour credit works.</a></li>
       </ul>
     </td>
   </tr>

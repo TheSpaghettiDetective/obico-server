@@ -1,6 +1,7 @@
 from allauth.account.admin import EmailAddress
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
+from datetime import datetime, timedelta
 from twilio.rest import Client
 from django.conf import settings
 from pushbullet import Pushbullet, PushbulletError, PushError
@@ -9,7 +10,7 @@ import logging
 from urllib.parse import urlparse
 import ipaddress
 
-from app.models import Printer
+from app.models import Printer, Print
 from app.telegram_bot import send_notification as send_telegram_notification
 from lib import site
 
@@ -31,20 +32,10 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
-    # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
-    try:
-        if ipaddress.ip_address(urlparse(printer.pic['img_url']).hostname).is_global:
-            attachments = []
-        else:
-            attachments = [('Detected Failure.jpg', requests.get(printer.pic['img_url']).content, 'image/jpeg')]
-    except:
-        attachments = []
-
     subject = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
         printer.name,
         'smells fishy' if is_warning else 'is probably failing')
-    from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
         'printer': printer,
@@ -53,26 +44,18 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         'view_link': site.build_full_url('/printers/'),
         'cancel_link': site.build_full_url('/printers/{}/cancel/'.format(printer.id)),
         'resume_link': site.build_full_url('/printers/{}/resume/'.format(printer.id)),
-        'insert_img': len(attachments) == 0,
     }
 
-    # By default email verification should be required for notifications but
-    # maybe users will want to disable it on private servers
-    if settings.ACCOUNT_EMAIL_VERIFICATION != 'none':
-        emails = EmailAddress.objects.filter(user=printer.user, verified=True)
-    else:
-        emails = EmailAddress.objects.filter(user=printer.user)
-    for email in emails:
-        unsub_url = 'https://app.thespaghettidetective.com/ent/email_unsubscribe/?list=notification&email={}'.format(email)
-        ctx['unsub_url'] = unsub_url
-        message = get_template('email/failure_alert.html').render(ctx)
-        msg = EmailMessage(subject, message,
-            to=(email.email,),
-            from_email=from_email,
-            attachments=attachments,
-            headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(unsub_url)},)
-        msg.content_subtype = 'html'
-        msg.send()
+    # TODO: unsub link for alert emails
+    unsub_url = site.build_full_url('/unsub/{}/'.format(printer.user.unsub_token))
+    send_email(
+        printer.user,
+        subject,
+        unsub_url,
+        'email/failure_alert.html',
+        ctx,
+        img_url=printer.pic['img_url'],
+        )
 
 def send_failure_alert_sms(printer, is_warning, print_paused):
     if not settings.TWILIO_ENABLED:
@@ -163,3 +146,62 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 {action}"""
 
     send_telegram_notification(printer, button_list, notification_text, photo)
+
+
+def send_print_notification(print_id):
+    _print = Print.objects.select_related('printer__user').get(id=print_id)
+    send_print_notification_email(_print)
+
+def send_print_notification_email(_print):
+    subject = f'{_print.filename} is canceled.' if _print.is_cancelled() else f'🙌 {_print.filename} is ready.'
+    ctx = {
+        'print': _print,
+        'print_time': _print.ended_at() - _print.started_at,
+        'timelapse_link': site.build_full_url('/prints/'),
+    }
+    # TODO: unsub link for alert emails
+    unsub_url = site.build_full_url('/unsub/{}/'.format(_print.printer.user.unsub_token))
+    send_email(
+        _print.printer.user,
+        subject,
+        unsub_url,
+        'email/print_notification.html',
+        ctx,
+        img_url=_print.printer.pic['img_url'] if _print.printer.pic else None,
+        )
+
+# Helpers
+
+def send_email(user, subject, unsub_url, template_path, ctx, img_url=None):
+    if not settings.EMAIL_HOST:
+        LOGGER.warn("Email settings are missing. Ignored send requests")
+        return
+
+    attachments = []
+    if img_url:
+        # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
+        try:
+            if not ipaddress.ip_address(urlparse(img_url).hostname).is_global:
+                attachments = [('Image.jpg', requests.get(img_url).content, 'image/jpeg')]
+        except:
+            pass
+
+        ctx['img_url'] = None if attachments else img_url
+
+    # By default email verification should be required for notifications but
+    # maybe users will want to disable it on private servers
+    if settings.ACCOUNT_EMAIL_VERIFICATION != 'none':
+        emails = EmailAddress.objects.filter(user=user, verified=True)
+    else:
+        emails = EmailAddress.objects.filter(user=user)
+
+    for email in emails:
+        ctx['unsub_url'] = unsub_url
+        message = get_template(template_path).render(ctx)
+        msg = EmailMessage(subject, message,
+            to=(email.email,),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            attachments=attachments,
+            headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(unsub_url)},)
+        msg.content_subtype = 'html'
+        msg.send()

@@ -24,13 +24,14 @@ from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import redis
+from app.notifications import send_print_notification
 
 LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(print_id):
-    compile_timelapse.delay(print_id)
     send_print_notification(print_id)
+    compile_timelapse.delay(print_id)
 
 @shared_task(acks_late=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def compile_timelapse(print_id):

@@ -200,12 +200,14 @@ class Printer(SafeDeleteModel):
 
         # currently printing
         if self.current_print:
+            if self.current_print.ext_id == current_print_ts:
+                return
             # Unknown bug in plugin that causes current_print_ts not unique
-            if not self.current_print.ext_id in range(current_print_ts-20, current_print_ts+20) or self.current_print.filename != filename:
-                if self.current_print.ext_id != current_print_ts:
-                    LOGGER.warn(f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
-                self.unset_current_print()
-                self.set_current_print(filename, current_print_ts)
+            if self.current_print.ext_id in range(current_print_ts-20, current_print_ts+20) and self.current_print.filename == filename:
+                LOGGER.warn(f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
+                return
+            self.unset_current_print()
+            self.set_current_print(filename, current_print_ts)
         else:
             self.set_current_print(filename, current_print_ts)
 

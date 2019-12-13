@@ -57,7 +57,6 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_command_response(printer, True, False)
 
     def send_command_response(self, printer, succeeded, user_credited):
-        send_commands_to_printer_if_needed(printer.id)
         serializer = self.serializer_class(printer)
         return Response(dict(succeeded=succeeded, user_credited=user_credited, printer=serializer.data))
 

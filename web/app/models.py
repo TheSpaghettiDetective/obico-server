@@ -271,11 +271,6 @@ class Printer(SafeDeleteModel):
         if self.current_print == None: # when a link on an old email is clicked
             return False, False
 
-        # TODO: find a more elegant way to prevent rage clicking
-        last_commands = self.printercommand_set.order_by('-id')[:1]
-        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=10):
-            return False, False
-
         self.current_print.paused_at = None
         self.current_print.save()
 
@@ -283,17 +278,12 @@ class Printer(SafeDeleteModel):
         if mute_alert:
             self.mute_current_print(True)
 
-        self.queue_octoprint_command('resume')
+        self.send_octoprint_command('resume')
         return True, user_credited
 
     ## return: succeeded, user_credited ##
     def pause_print(self):
         if self.current_print == None:
-            return False, False
-
-        # TODO: find a more elegant way to prevent rage clicking
-        last_commands = self.printercommand_set.order_by('-id')[:1]
-        if len(last_commands) > 0 and last_commands[0].created_at > timezone.now() - timedelta(seconds=10):
             return False, False
 
         self.current_print.paused_at = timezone.now()
@@ -304,7 +294,7 @@ class Printer(SafeDeleteModel):
             args['tools_off'] = True
         if self.bed_off_on_pause:
             args['bed_off'] = True
-        self.queue_octoprint_command('pause', args=args)
+        self.send_octoprint_command('pause', args=args)
 
         return True, False
 
@@ -314,7 +304,7 @@ class Printer(SafeDeleteModel):
             return False, False
 
         user_credited = self.acknowledge_alert(Print.FAILED)
-        self.queue_octoprint_command('cancel')
+        self.send_octoprint_command('cancel')
         return True, user_credited
 
     def set_alert(self):
@@ -345,10 +335,8 @@ class Printer(SafeDeleteModel):
 
         send_remote_status(self)
 
-    def queue_octoprint_command(self, command, args={}, abort_existing=True):
-        if abort_existing:
-            PrinterCommand.objects.filter(printer=self, status=PrinterCommand.PENDING).update(status=PrinterCommand.ABORTED)
-        PrinterCommand.objects.create(printer=self, command=json.dumps({'cmd': command, 'args': args}), status=PrinterCommand.PENDING)
+    def send_octoprint_command(self, command, args={}, abort_existing=True):
+        channels.send_commands_to_printer(self.id, {'cmd': command, 'args': args})
 
     def __str__(self):
         return self.name

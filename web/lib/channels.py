@@ -13,13 +13,13 @@ def status_group_name(printer_id):
 def janus_web_group_name(printer_id):
     return 'janus_web_{}'.format(printer_id)
 
-def send_commands_to_printer(printer_id, commands):
+def send_commands_to_printer(printer_id, cmd):
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         commands_group_name(printer_id),
         {
             'type': 'printer.message',    # mapped to -> printer_message in consumer
-            'commands': [ json.loads(c.command) for c in commands ],
+            'commands': [ cmd ],
         }
     )
 

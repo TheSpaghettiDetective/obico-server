@@ -46,7 +46,7 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
     - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
     - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
 
-3. Go grab a coffee. Step 2 would take up to 30 minutes. BTW, we need help to shorten this process. Let us know if you can pitch in.
+3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
 4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
 

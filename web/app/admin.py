@@ -21,6 +21,7 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
+    ordering = ('email',)
 
 
 @admin.register(Printer)

@@ -159,7 +159,7 @@ def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_cancelled() else f'🙌 {_print.filename} is ready.'
     ctx = {
         'print': _print,
-        'print_time': _print.ended_at() - _print.started_at,
+        'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
         'timelapse_link': site.build_full_url('/prints/'),
     }
     unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={_print.printer.user.unsub_token}&list=print_notification')

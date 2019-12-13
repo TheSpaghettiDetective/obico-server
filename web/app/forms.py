@@ -59,6 +59,8 @@ class UserPreferencesForm(ModelForm):
                 self.add_error('pushbullet_access_token',
                                'Invalid pushbullet access token.')
 
+        data['telegram_chat_id'] = data['telegram_chat_id'] if data['telegram_chat_id'] else None
+
 class SharedResourceForm(ModelForm):
     shared = BooleanField(required=True)
 

@@ -5,10 +5,7 @@ import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
 
 from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
-from .validators import validate_telegram_login
 from .models import *
-from .telegram_bot import bot as telebot
-
 
 class PrinterForm(ModelForm):
     class Meta:
@@ -21,8 +18,7 @@ class PrinterForm(ModelForm):
 
 
 class UserPreferencesForm(ModelForm):
-    telegram_chat_id = CharField(widget=HiddenInput(), validators=[
-                                 validate_telegram_login], required=False)
+    telegram_chat_id = CharField(widget=HiddenInput(), required=False)
 
     class Meta:
         model = User
@@ -62,10 +58,6 @@ class UserPreferencesForm(ModelForm):
             except PushbulletError:
                 self.add_error('pushbullet_access_token',
                                'Invalid pushbullet access token.')
-
-        data['telegram_chat_id'] = json.loads(data['telegram_chat_id'])[
-            'id'] if telebot and data['telegram_chat_id'] else None
-
 
 class SharedResourceForm(ModelForm):
     shared = BooleanField(required=True)

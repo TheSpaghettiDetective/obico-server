@@ -203,7 +203,7 @@
 
         <script type="text/javascript">
           function onTelegramAuth(user) {
-            document.getElementById("id_telegram_chat_id").value = JSON.stringify(user);
+            document.getElementById("id_telegram_chat_id").value = JSON.stringify(user.id);
             document.getElementById("preference_form").submit()
           }
 

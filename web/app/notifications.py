@@ -152,11 +152,18 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 
 def send_print_notification(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
+    if _print.is_canceled():
+        if not _print.printer.user.notify_on_canceled:
+            return
+    else:
+        if not _print.printer.user.notify_on_done:
+            return
+
     if _print.printer.user.print_notification_by_email:
         send_print_notification_email(_print)
 
 def send_print_notification_email(_print):
-    subject = f'{_print.filename} is canceled.' if _print.is_cancelled() else f'🙌 {_print.filename} is ready.'
+    subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
     ctx = {
         'print': _print,
         'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],

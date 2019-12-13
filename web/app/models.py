@@ -473,7 +473,7 @@ class Print(SafeDeleteModel):
     def has_alerted(self):
         return self.alerted_at
 
-    def is_cancelled(self):
+    def is_canceled(self):
         return bool(self.cancelled_at)
 
 class PrintEvent(models.Model):

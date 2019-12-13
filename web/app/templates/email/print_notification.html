@@ -6,7 +6,7 @@
 <p>Hi {{ print.printer.user.first_name|default:"" }},</p>
 
 <p>
-  {% if print.is_cancelled %}
+  {% if print.is_canceled %}
   Heads up! Your print job has been canceled.
   {% else %}
   Your print job is done.

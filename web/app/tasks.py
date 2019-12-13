@@ -180,10 +180,6 @@ def detect_timelapse(self, print_id):
     shutil.rmtree(tmp_dir, ignore_errors=True)
     send_timelapse_detection_done_email(_print)
 
-@shared_task
-def send_print_notification(print_id):
-    compile_timelapse.delay(print_id)
-
 # helper functions
 
 def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):

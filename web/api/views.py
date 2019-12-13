@@ -10,7 +10,6 @@ from app.models import *
 from lib import redis
 from .serializers import *
 from config.celery import celery_app
-from lib.octoprint_comm import *
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

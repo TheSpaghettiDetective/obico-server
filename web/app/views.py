@@ -16,7 +16,6 @@ from .view_helpers import *
 from .models import *
 from .forms import *
 from lib import redis
-from lib.octoprint_comm import *
 from .telegram_bot import bot_name
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse

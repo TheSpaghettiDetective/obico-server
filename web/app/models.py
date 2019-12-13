@@ -81,7 +81,7 @@ class User(AbstractUser):
     consented_at = models.DateTimeField(null=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
     dh_balance = models.FloatField(null=False, default=0)
-    unsub_token = models.UUIDField(null=True, blank=True, unique=True, db_index=True, default=uuid.uuid4, editable=False)
+    unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)
     notify_on_done = models.BooleanField(null=False, blank=False, default=True)
     notify_on_canceled = models.BooleanField(null=False, blank=False, default=False)
     print_notification_by_email = models.BooleanField(null=False, blank=False, default=True)

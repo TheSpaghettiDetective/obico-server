@@ -141,13 +141,13 @@ def send_failure_alert_telegram(printer, is_warning, print_paused):
         action = 'Printer is NOT paused because The Detective is not very sure about it.'
         button_list = ['cancel', 'more_info']
 
-    notification_text = f"""Hi *{printer.user.first_name or ''}*,
+    notification_text = f"""Hi {printer.user.first_name or ''},
 
 _The Spaghetti Detective_ spotted some suspicious activity on your printer *{printer.name}*.
 
 {action}"""
 
-    send_telegram_notification(printer, button_list, notification_text, photo)
+    send_telegram_notification(printer, notification_text, photo, buttons=button_list)
 
 
 def send_print_notification(print_id):
@@ -161,6 +161,9 @@ def send_print_notification(print_id):
 
     if _print.printer.user.print_notification_by_email:
         send_print_notification_email(_print)
+
+    if _print.printer.user.print_notification_by_telegram:
+        send_print_notification_telegram(_print)
 
 def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
@@ -178,6 +181,22 @@ def send_print_notification_email(_print):
         ctx,
         img_url=_print.printer.pic['img_url'] if _print.printer.pic else None,
         )
+
+def send_print_notification_telegram(_print):
+    if not _print.printer.user.telegram_chat_id:
+        return
+
+    try:
+        photo = requests.get(_print.printer.pic['img_url']).content
+    except:
+        photo = None
+
+    notification_text = f"""Hi {_print.printer.user.first_name or ''},
+
+Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on your printer {_print.printer.name}.
+"""
+    send_telegram_notification(_print.printer, notification_text, photo)
+
 
 # Helpers
 

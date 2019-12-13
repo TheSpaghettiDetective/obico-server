@@ -35,13 +35,15 @@ def inline_markup(printer, buttons=['more_info']):
 
     return markup
 
-def send_notification(printer, buttons, notification, photo):
+def send_notification(printer, notification, photo, buttons=None):
     if not bot:
         return
 
     chat_id = printer.user.telegram_chat_id
     telegram_user = bot.get_chat(chat_id)
-    keyboard = inline_markup(printer, buttons) if photo else default_markup()
+    keyboard = None
+    if buttons:
+        keyboard = inline_markup(printer, buttons) if photo else default_markup()
 
     if photo:
         bot.send_photo(chat_id, photo, caption=notification, parse_mode='Markdown', reply_markup=keyboard)

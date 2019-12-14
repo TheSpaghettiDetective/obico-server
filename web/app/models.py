@@ -78,7 +78,7 @@ class User(AbstractUser):
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
-    consented_at = models.DateTimeField(null=True)
+    consented_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
     dh_balance = models.FloatField(null=False, default=0)
     unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)

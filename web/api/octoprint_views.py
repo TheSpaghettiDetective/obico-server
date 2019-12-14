@@ -68,6 +68,7 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
+        printer.refresh_from_db() # Connection is keep-alive, which means printer object can be stale.
 
         if not request.path.startswith('/api/v1'):
             LOGGER.warn(f'Beta plugin connecting from {printer.id}')

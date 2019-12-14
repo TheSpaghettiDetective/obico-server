@@ -98,12 +98,14 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
         pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
     pb = Pushbullet(printer.user.pushbullet_access_token)
-    title = 'The Spaghetti Detective - Your print {} on {} {}.'.format(
+    title = 'The Spaghetti Detective - Failure alert!'
+
+    msg = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
         printer.name,
         'smells fishy' if is_warning else 'is probably failing')
     link = site.build_full_url('/')
-    body = '{}\nGo check it at: {}'.format(pausing_msg, link)
+    body = '{}\n{}\nGo check it at: {}'.format(msg, pausing_msg, link)
 
     try:
         file_url = None
@@ -162,6 +164,9 @@ def send_print_notification(print_id):
     if _print.printer.user.print_notification_by_email:
         send_print_notification_email(_print)
 
+    if _print.printer.user.print_notification_by_pushbullet:
+        send_print_notification_pushbullet(_print)
+
     if _print.printer.user.print_notification_by_telegram:
         send_print_notification_telegram(_print)
 
@@ -193,10 +198,31 @@ def send_print_notification_telegram(_print):
 
     notification_text = f"""Hi {_print.printer.user.first_name or ''},
 
-Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on your printer {_print.printer.name}.
+Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
 """
     send_telegram_notification(_print.printer, notification_text, photo)
 
+def send_print_notification_pushbullet(_print):
+    if not _print.printer.user.has_valid_pushbullet_token():
+        return
+
+    pb = Pushbullet(_print.printer.user.pushbullet_access_token)
+
+    title = 'The Spaghetti Detective - Print job notification'
+    link = site.build_full_url('/')
+    body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
+    file_url = None
+    try:
+        file_url = _print.printer.pic['img_url']
+        if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
+            pb.upload_file(requests.get(file_url).content, 'Snapshot.jpg')
+    except:
+        pass
+
+    if file_url:
+        pb.push_file(file_url=file_url, file_name="Snapshot.jpg", file_type="image/jpeg", body=body, title=title)
+    else:
+        pb.push_link(title, link, body)
 
 # Helpers
 

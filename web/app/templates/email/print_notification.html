@@ -25,7 +25,6 @@
   </tr>
 </table>
 
-
 <table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
   {% if print.alerted_at or print.printer.should_watch %}
     <tr>
@@ -40,18 +39,6 @@
       </td>
     </tr>
   {% endif %}
-  {% if print.printer.user.dh_balance < 5 %}
-  <tr>
-      <td class="mobile-cta-button-row" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; ">
-          👉 You are running low on Detective Hours. <a href="https://app.thespaghettidetective.com/ent/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get more</a> if you want The Detective to keep watching your prints.
-      </td>
-    </tr>
-  {% endif %}
-  <tr>
-    <td class="mobile-cta-button-row" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; ">
-        👉 No longer want to receive print notifications by email? <a href="{{ unsub_url }}">Unsubscribe</a> or <a href="https://app.thespaghettidetective.com/user_preferences/">change notification preferences.</a>
-    </td>
-  </tr>
   </table>
 
 
@@ -62,5 +49,21 @@
   </tr>
 </table>
 {% endif %}
+
+
+<table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+{% if print.printer.user.dh_balance < 5 %}
+<tr>
+    <td class="mobile-cta-button-row" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; ">
+        👉 You are running low on Detective Hours. <a href="https://app.thespaghettidetective.com/ent/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get more</a> if you want The Detective to keep watching your prints.
+    </td>
+  </tr>
+{% endif %}
+<tr>
+  <td class="mobile-cta-button-row" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; ">
+      👉 No longer want to receive print notifications by email? <a href="{{ unsub_url }}">Unsubscribe</a> or <a href="https://app.thespaghettidetective.com/user_preferences/">change notification preferences.</a>
+  </td>
+</tr>
+</table>
 
 {% endblock %}

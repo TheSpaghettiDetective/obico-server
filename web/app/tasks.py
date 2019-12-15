@@ -30,17 +30,17 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(print_id):
+    _print = Print.objects.get(id=print_id)
+    if (_print.ended_at() - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
+        _print.delete()
+        return
+
     send_print_notification(print_id)
     compile_timelapse.delay(print_id)
 
 @shared_task(acks_late=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def compile_timelapse(print_id):
     _print = Print.objects.select_related('printer').get(id=print_id)
-    end_time = _print.finished_at or _print.cancelled_at
-
-    if (end_time - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
-        _print.delete()
-        return
 
     to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
@@ -48,7 +48,7 @@ def compile_timelapse(print_id):
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
 
-    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, end_time)
+    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -71,7 +71,7 @@ def compile_timelapse(print_id):
         _print.save()
 
     # build tagged timelapse
-    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, end_time)
+    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)

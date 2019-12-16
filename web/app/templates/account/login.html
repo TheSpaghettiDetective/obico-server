@@ -40,6 +40,12 @@
         <div class="input-group">
           {% render_field form.password class="form-control" placeholder="Password" %}
         </div>
+        <div style="padding-top: 0.5rem;">
+          <div class="custom-control custom-checkbox form-check-inline">
+            <input type="checkbox" name="remember" class="custom-control-input" id="remember-checkbox">
+            <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">Remember me</label>
+          </div>
+        </div>
         {% endwith %}
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
@@ -48,7 +54,7 @@
         <div class="pt-2">
           <a class="button secondaryAction float-left"
             href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-          <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >></a>
+          <a class="button secondaryAction float-right" href="{% url 'account_signup' %}">{% trans "Sign up" %} >>></a>
         </div>
       </form>
     </div>

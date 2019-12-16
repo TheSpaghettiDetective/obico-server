@@ -238,20 +238,15 @@ class Printer(SafeDeleteModel):
         send_remote_status(self)
 
     def set_current_print(self, filename, current_print_ts):
-        if current_print_ts and current_print_ts != -1:
-            cur_print, _ = Print.objects.get_or_create(
-                user=self.user,
-                printer=self,
-                ext_id=current_print_ts,
-                defaults={'filename': filename, 'started_at': timezone.now()},
-                )
-        else:
-            cur_print = Print.objects.create(
-                user=self.user,
-                printer=self,
-                filename=filename,
-                started_at=timezone.now(),
-                )
+        if not current_print_ts or current_print_ts == -1:
+            raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
+
+        cur_print, _ = Print.objects.get_or_create(
+            user=self.user,
+            printer=self,
+            ext_id=current_print_ts,
+            defaults={'filename': filename, 'started_at': timezone.now()},
+            )
 
         if cur_print.ended_at():
             if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)): # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
@@ -412,6 +407,10 @@ class PublicTimelapse(models.Model):
 
 
 class Print(SafeDeleteModel):
+
+    class Meta:
+        unique_together = [['printer', 'ext_id']]
+
     FAILED = 'FAILED'
     NOT_FAILED = 'NOT_FAILED'
     PARTIALY_FAILED = 'PARTIALY_FAILED'

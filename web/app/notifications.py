@@ -120,9 +120,7 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
             pb.push_file(file_url=file_url, file_name="Detected Failure.jpg", file_type="image/jpeg", body=body, title=title)
         else:
             pb.push_link(title, link, body)
-    except PushError as e:
-        LOGGER.error(e)
-    except PushbulletError as e:
+    except (PushError, PushbulletError) as e:
         LOGGER.error(e)
 
 def send_failure_alert_telegram(printer, is_warning, print_paused):
@@ -149,8 +147,10 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 
 {action}"""
 
-    send_telegram_notification(printer, notification_text, photo, buttons=button_list)
-
+    try:
+        send_telegram_notification(printer, notification_text, photo, buttons=button_list)
+    except requests.ConnectionError as e:
+        LOGGER.error(e)
 
 def send_print_notification(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
@@ -200,7 +200,10 @@ def send_print_notification_telegram(_print):
 
 Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
 """
-    send_telegram_notification(_print.printer, notification_text, photo)
+    try:
+        send_telegram_notification(_print.printer, notification_text, photo)
+    except requests.ConnectionError as e:
+        LOGGER.error(e)
 
 def send_print_notification_pushbullet(_print):
     if not _print.printer.user.has_valid_pushbullet_token():
@@ -219,10 +222,13 @@ def send_print_notification_pushbullet(_print):
     except:
         pass
 
-    if file_url:
-        pb.push_file(file_url=file_url, file_name="Snapshot.jpg", file_type="image/jpeg", body=body, title=title)
-    else:
-        pb.push_link(title, link, body)
+    try:
+        if file_url:
+            pb.push_file(file_url=file_url, file_name="Snapshot.jpg", file_type="image/jpeg", body=body, title=title)
+        else:
+            pb.push_link(title, link, body)
+    except (PushError, PushbulletError) as e:
+        LOGGER.error(e)
 
 # Helpers
 

@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
+import newrelic.agent
 
 from lib import redis
 from lib import channels
@@ -13,6 +14,7 @@ from .serializers import *
 LOGGER = logging.getLogger(__name__)
 
 class WebConsumer(JsonWebsocketConsumer):
+    @newrelic.agent.background_task()
     def connect(self):
         try:
             if self.scope['path'].startswith('/ws/shared/'):
@@ -51,6 +53,7 @@ class WebConsumer(JsonWebsocketConsumer):
         return self.scope['user']
 
 class OctoPrintConsumer(JsonWebsocketConsumer):
+    @newrelic.agent.background_task()
     def connect(self):
         if self.current_printer().is_authenticated:
             async_to_sync(self.channel_layer.group_add)(
@@ -93,6 +96,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
         return self.scope['user']
 
 class JanusWebConsumer(WebsocketConsumer):
+    @newrelic.agent.background_task()
     def connect(self):
         try:
             if self.scope['path'].startswith('/ws/shared/'):
@@ -118,6 +122,8 @@ class JanusWebConsumer(WebsocketConsumer):
             self.channel_name
         )
 
+
+    @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):
         channels.send_janus_msg_to_printer(self.printer.id, text_data)
 

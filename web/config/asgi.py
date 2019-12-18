@@ -6,6 +6,8 @@ defined in the ASGI_APPLICATION setting.
 import os
 import django
 from channels.routing import get_default_application
+import newrelic.agent
+newrelic.agent.initialize()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()

@@ -119,33 +119,6 @@ table.pricing {
             }
         }
     }
-
-    #accordion {
-        .card {
-            background: $color-bg;
-        }
-        .card-header {
-            a {
-                color: inherit;
-                text-decoration: none;
-            }
-        }
-        .card-link {
-            p{position:absolute;top:5px;right:20px;font-size:20px;color:white;
-            -webkit-animation: minus 0.5s;}
-
-            @keyframes minus {
-                from {
-                    transform:rotate(0deg);
-                }
-                to {
-                    transform:rotate(360deg);
-                }
-            }
-    }
-    [aria-expanded="false"] > .expanded, [aria-expanded="true"] > .collapsed {display: none;}
-    }
-
 }
 .subcribe-dlg {
     font-weight: normal;

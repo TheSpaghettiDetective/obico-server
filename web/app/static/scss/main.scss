@@ -169,7 +169,8 @@ a.link {
 
   .form-control {
     &[readonly] {
-      background-color: $color-disabled;
+      background-color: darken($color-disabled, 20);
+      color: white;
       border: 1px solid $color-form-bg;
     }
   }
@@ -275,6 +276,37 @@ a.link {
   bottom: -10px;
   border: transparent 5px solid;
   border-top: #000 5px solid;
+}
+
+#accordion {
+  .card {
+      background: $color-bg;
+  }
+  .card-header {
+      a {
+          color: inherit;
+          text-decoration: none;
+      }
+  }
+  .card-link {
+      p {
+        position:absolute;
+        top:8px;
+        right:20px;
+        font-size:20px;
+        color:white;
+        -webkit-animation: minus 0.5s;
+      }
+      @keyframes minus {
+          from {
+              transform:rotate(0deg);
+          }
+          to {
+              transform:rotate(360deg);
+          }
+      }
+}
+[aria-expanded="false"] > .expanded, [aria-expanded="true"] > .collapsed {display: none;}
 }
 
 /** Shared styles for printer and print cards */

@@ -101,7 +101,7 @@ def share_printer(request, pk):
             if not hasattr(printer, 'sharedresource'):
                 SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
         else:
-            SharedResource.objects.get(printer=printer).delete()
+            SharedResource.objects.filter(printer=printer).delete()
             messages.success(request, 'You have disabled printer feed sharing. Previous share link has now been revoked.')
 
     return render(request, 'share_printer.html', dict(printer=printer, user=request.user))

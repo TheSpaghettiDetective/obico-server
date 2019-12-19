@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from unittest.mock import *
 from django.utils import timezone
 from datetime import timedelta
@@ -263,8 +263,9 @@ class AlertTestCase(TestCase):
         self.assertIsNone(self.printer.current_print.paused_at)
 
 
-EVENT_CALLS = [call('app.tasks.compile_timelapse', args=ANY), call('app_ent.tasks.process_print_events', args=ANY)]
+EVENT_CALLS = [call('app.tasks.process_print_events', args=ANY)]
 
+@override_settings(PRINT_EVENT_HANDLER = 'app.tasks.process_print_events')
 @patch('app.models.celery_app')
 class PrintTestCase(TestCase):
 
@@ -309,7 +310,7 @@ class PrintTestCase(TestCase):
         self.assertIsNone(self.printer.current_print)
         self.assertIsNotNone(Print.objects.first().finished_at)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 2)
+        self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_print_is_canceled_normally(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
@@ -321,7 +322,7 @@ class PrintTestCase(TestCase):
         self.assertIsNone(Print.objects.first().finished_at)
         self.assertIsNotNone(Print.objects.first().cancelled_at)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 2)
+        self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_lost_end_event(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
@@ -334,10 +335,10 @@ class PrintTestCase(TestCase):
         self.assertIsNotNone(self.printer.current_print.started_at)
         self.assertEqual(Print.objects.all_with_deleted().count(), 2)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 2)
+        self.assertEqual(celery_app.send_task.call_count, 1)
 
         process_octoprint_status_with_ts(self.msg(100,'1.gcode', 'PrintDone'), self.printer)
-        self.assertEqual(celery_app.send_task.call_count, 4)
+        self.assertEqual(celery_app.send_task.call_count, 2)
 
     def test_plugin_send_neg_print_ts_while_printing(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
@@ -358,7 +359,7 @@ class PrintTestCase(TestCase):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintCancelled'), self.printer)
         self.assertIsNone(self.printer.current_print)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 2)
+        self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_plugin_send_diff_print_ts_while_printing(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
@@ -370,4 +371,4 @@ class PrintTestCase(TestCase):
 
         process_octoprint_status_with_ts(self.msg_without_event(100,'1.gcode'), self.printer)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 2)
+        self.assertEqual(celery_app.send_task.call_count, 1)

@@ -294,7 +294,7 @@ $(document).ready(function () {
             var temp = _.get(printer, 'status.temperatures.' + tempKey);
             if (temp) {
                 temp.actual = parseFloat(temp.actual).toFixed(1);
-                temp.target = parseFloat(temp.target).toFixed();
+                temp.target = Math.round(temp.target);
                 Object.assign(temp, {toolName: _.capitalize(tempKey)});
                 temp.id = printerId + '-' + tempKey;
                 temperatures.push(temp);

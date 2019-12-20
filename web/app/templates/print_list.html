@@ -29,12 +29,12 @@
                 id="select-print-{{ print.id }}">
               <label class="custom-control-label" for="select-print-{{ print.id }}"></label>
             </div>
-            <a role="button" class="btn btn-outline-danger float-right btn-sm borderless"
+            <a role="button" class="btn btn-outline-danger float-right btn-sm borderless" data-toggle="tooltip" data-placement="top" title="Delete"
               href="{{ request.path }}delete/{{ print.id }}/">
               <i class="fas fa-trash-alt fa-lg"></i>
             </a>
             {% if print.video_url %}
-            <a role="button" class="btn float-right btn-sm borderless"
+            <a role="button" class="btn float-right btn-sm borderless" data-toggle="tooltip" data-placement="top" title="Download"
               href="{{ print.video_url }}" download="{{ print.filename }}.mp4">
               <i class="fas fa-download"></i>
             </a>

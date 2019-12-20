@@ -122,6 +122,8 @@ $(document).ready(function () {
                 html: html,
             });
         });
-    })
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
 });
 

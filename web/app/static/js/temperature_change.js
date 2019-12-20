@@ -25,11 +25,7 @@ function initTempEditIcon(tempDiv, temperatures, tempProfiles){
                             '/send_command/',
                             printerId,
                             {cmd: 'set_temperature', args: [tempKey, targetTemp]}
-                            ).done(function(result) {
-                                console.log(result);
-                                // printerList[printerId] = result.printer;
-                                // updatePrinterCard(printerCard);
-                            });
+                        );
                     }
                 });
             })(_.split($(ele.currentTarget).attr('id'), '-'));
@@ -37,18 +33,23 @@ function initTempEditIcon(tempDiv, temperatures, tempProfiles){
     })
 }
 
-function initTempChangeDiv(tempChangeDiv, temperature) {
+function initTempChangeDiv(tempChangeDiv, temperature, presets) {
     tempChangeDiv.find('select.selectpicker').selectpicker();
     tempChangeDiv.find('select.selectpicker').on('change', function(e){
+        if (this.value == -1) {
+            return;
+        }
         updateTargetTemp(this.value);
         updateSlider(this.value);
     })
     var slider = tempChangeDiv.find('#target-temp').slider();
     slider.slider('on', 'change', function(v){
         updateTargetTemp(v.newValue);
+        updateSelect(v.newValue);
     });
     updateSlider(temperature.target);
     updateTargetTemp(temperature.target);
+    updateSelect(temperature.target);
 
     function updateTargetTemp(target){
         var targetText = 'OFF';
@@ -60,5 +61,15 @@ function initTempChangeDiv(tempChangeDiv, temperature) {
 
     function updateSlider(target) {
         slider.slider('setValue', target);
+    }
+
+    function updateSelect(target) {
+        var presetTemps = _.concat(_.map(presets, 'target'), [0]);
+        var selectVal = -1
+        if (_.indexOf(presetTemps, target)!=-1) {
+            selectVal = target;
+        }
+        tempChangeDiv.find('select.selectpicker').val(selectVal);
+        tempChangeDiv.find('select.selectpicker').selectpicker('refresh');
     }
 }

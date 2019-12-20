@@ -26,7 +26,7 @@
 </table>
 
 <table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
-  {% if print.alerted_at or print.printer.should_watch %}
+  {% if print.alerted_at or print.printer.watching and print.user.dh_balance > 0 %}
     <tr>
       <td class="mobile-cta-button-row" style="padding: 6px 18px 6px 18px; height:40px; width: 100%; ">
           👉 <b>

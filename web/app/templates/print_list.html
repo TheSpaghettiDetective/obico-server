@@ -33,10 +33,14 @@
               href="{{ request.path }}delete/{{ print.id }}/">
               <i class="fas fa-trash-alt fa-lg"></i>
             </a>
+            {% if print.video_url %}
+            <a role="button" class="btn float-right btn-sm borderless"
+              href="{{ print.video_url }}" download="{{ print.filename }}.mp4">
+              <i class="fas fa-download"></i>
+            </a>
+            {% endif %}
           </div>
-
           <div class="card-img-top plain-view" style="display: none">
-
             <video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
               poster="{{ print.poster_url }}"
               data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>

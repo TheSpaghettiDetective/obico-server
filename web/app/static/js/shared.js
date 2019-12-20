@@ -72,6 +72,20 @@ var Confirm = Swal.mixin({
     cancelButtonText: 'No',
 });
 
+
+/**** AJAX calls ***/
+
+function printerPostApi(path, printerId, data) {
+    return $.ajax({
+        url: '/api/v1/printers/' + printerId + path,
+        type: 'POST',
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(data),
+    });
+}
+
+
 /**** Streaming */
 
 function expandThumbnailToFull(ele) {

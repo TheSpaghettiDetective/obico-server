@@ -296,14 +296,20 @@ $(document).ready(function () {
                 temp.actual = parseFloat(temp.actual).toFixed(1);
                 temp.target = parseFloat(temp.target).toFixed();
                 Object.assign(temp, {toolName: _.capitalize(tempKey)});
+                temp.id = printerId + '-' + tempKey;
                 temperatures.push(temp);
             }
         });
-        printerCard.find("#status_temp_block").html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0}));
+        var tempDiv = printerCard.find("#status_temp_block");
+        var editable = _.get(printer, 'settings.temp_profiles') != undefined; //If temp_profiles is missing, it's a plugin version too old to change temps
+        tempDiv.html(Mustache.template('status_temp').render({temperatures: temperatures, show: temperatures.length > 0, editable: editable}));
         if (isInfoSectionOn("status_temp_block")) {
-            printerCard.find("#status_temp_block").show();
+            tempDiv.show();
         } else {
-            printerCard.find("#status_temp_block").hide();
+            tempDiv.hide();
+        }
+        if (editable) {
+            initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []));
         }
 
         function isInfoSectionOn(sectionId) {

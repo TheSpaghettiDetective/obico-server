@@ -49,6 +49,12 @@ class PrinterViewSet(viewsets.ModelViewSet):
         user_credited = printer.acknowledge_alert(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer, user_credited, user_credited)
 
+    @action(detail=True, methods=['post'])
+    def send_command(self, request, pk=None):
+        printer = self.current_printer_or_404(pk)
+        printer.send_octoprint_command(request.data['cmd'], request.data['args'])
+        return self.send_command_response(printer, True, False)
+
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
         printer = self.current_printer_or_404(pk)

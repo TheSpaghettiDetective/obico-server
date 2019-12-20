@@ -1,15 +1,15 @@
 {{#show}}
 <div class="py-2">
-<div class="row text-subscript text-muted">
+<div class="row text-muted">
     <div class="col-2">
     <i class="fas fa-thermometer-half fa-lg"></i>
     </div>
-    <div class="col-5">
+    <small class="col-5">
         Actual
-    </div>
-    <div class="col-5">
+    </small>
+    <small class="col-5">
         Target
-    </div>
+    </small>
 </div>
 {{#temperatures}}
 <div class="row">
@@ -19,8 +19,8 @@
 <div class="col-5 numbers">
     {{actual}}<span class="text-subscript text-muted">°C</span>
 </div>
-<div class="col-5 numbers">
-    {{target}}<span class="text-subscript text-muted">°C</span>
+<div id="{{id}}" class="col-5 numbers">
+    {{target}}<span class="text-subscript text-muted">°C</span>{{#editable}}&nbsp;<i class="fas fa-pencil-alt" style="font-size: 0.6em;"></i>{{/editable}}
 </div>
 </div>
 {{/temperatures}}

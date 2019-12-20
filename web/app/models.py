@@ -187,6 +187,8 @@ class Printer(SafeDeleteModel):
         p_settings = redis.printer_settings_get(self.id)
         settings = dict((key, p_settings.get(key, 'False') == 'True') for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'))
         settings.update(dict(ratio169=p_settings.get('webcam_streamRatio', '4:3') == '16:9'))
+        if p_settings.get('temp_profiles'):
+            settings.update(dict(temp_profiles=json.loads(p_settings.get('temp_profiles'))))
         return settings
 
     def should_watch(self):
@@ -330,7 +332,7 @@ class Printer(SafeDeleteModel):
 
         send_remote_status(self)
 
-    def send_octoprint_command(self, command, args={}, abort_existing=True):
+    def send_octoprint_command(self, command, args={}):
         channels.send_commands_to_printer(self.id, {'cmd': command, 'args': args})
 
     def __str__(self):

@@ -1,4 +1,5 @@
 from django.utils import timezone
+import json
 
 from lib import redis
 from lib import channels
@@ -24,7 +25,10 @@ def process_octoprint_status(printer, status):
     channels.send_status_to_web(printer.id)
 
 def settings_dict(octoprint_settings):
-    return dict(('webcam_'+k, str(v)) for k, v in octoprint_settings['webcam'].items())
+    settings = dict(('webcam_'+k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
+    if 'temperature' in octoprint_settings:
+        settings.update(dict(temp_profiles=json.dumps(octoprint_settings['temperature'].get('profiles', []))))
+    return settings
 
 def process_octoprint_status_with_ts(op_status, printer):
     op_event = op_status.get('octoprint_event', {})

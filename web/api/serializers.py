@@ -15,9 +15,10 @@ class PrintSerializer(serializers.ModelSerializer):
 class PrinterSerializer(serializers.ModelSerializer):
     pic = serializers.DictField(read_only=True)
     status = serializers.DictField(read_only=True)
+    settings = serializers.DictField(read_only=True)
     printerprediction = PrinterPredictionSerializer(read_only=True)
     current_print = PrintSerializer(read_only=True)
 
     class Meta:
         model = Printer
-        fields = ('name', 'action_on_failure', 'watching', 'should_watch', 'pic', 'status', 'current_print', 'printerprediction')
+        fields = ('name', 'action_on_failure', 'watching', 'should_watch', 'pic', 'status', 'settings', 'current_print', 'printerprediction')

@@ -66,6 +66,10 @@ footer {
   }
 }
 
+.text-subscript {
+  font-size: 0.53em;
+}
+
 .navbar {
   padding: 0.5rem 1rem;
   a.navbar-brand {
@@ -80,7 +84,6 @@ footer {
   .user-menu {
     text-transform: none;
   }
-
   a.glowing {
     text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px $color-primary, 0 0 70px $color-primary, 0 0 80px $color-primary, 0 0 100px $color-primary, 0 0 150px $color-primary;
   }
@@ -250,6 +253,9 @@ a.link {
 }
 
 .slider {
+  &.slider-horizontal {
+    width: 100% !important;
+  }
   .slider-selection {
     background: lighten($color-primary, 10);
   }
@@ -328,9 +334,6 @@ a.link {
     }
     .numbers {
       font-size: 1.5em;
-    }
-    .text-subscript {
-      font-size: 0.8rem;
     }
     .setting-item {
       display: flex;

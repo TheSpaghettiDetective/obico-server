@@ -248,7 +248,7 @@ class PhoneCountryCodeWidget(forms.Select):
             )
         super().render(name, value, attrs)
         html = ''
-        html += '<select name="{}" class="{}" id="{}">'.format(
+        html += '<select name="{}" class="{} selectpicker" id="{}" data-live-search="true">'.format(
             name,
             attrs['class'],
             'id_'+name,

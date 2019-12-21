@@ -336,7 +336,7 @@ class Printer(SafeDeleteModel):
         channels.send_commands_to_printer(self.id, {'cmd': command, 'args': args})
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class PrinterCommand(models.Model):

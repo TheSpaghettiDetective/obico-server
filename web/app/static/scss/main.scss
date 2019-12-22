@@ -70,6 +70,13 @@ footer {
   font-size: 0.53em;
 }
 
+.bootstrap-select {
+  button.dropdown-toggle {
+    background-color: $color-primary;
+    border-color: $color-primary;
+  }
+}
+
 .navbar {
   padding: 0.5rem 1rem;
   a.navbar-brand {

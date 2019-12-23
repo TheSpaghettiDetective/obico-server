@@ -31,7 +31,7 @@ class WebConsumer(JsonWebsocketConsumer):
             )
             self.accept()
             Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
-            channels.send_status_to_web(self.printer.id)
+            self.printer_status(None)   # Send printer status to web frontend as soon as it connects
         except:
             LOGGER.exception("Websocket failed to connect")
             self.close()
@@ -65,6 +65,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
             )
             self.accept()
             Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
+            # Send remote status to OctoPrint as soon as it connects
             self.current_printer().send_should_watch_status()
             channels.send_viewing_status(self.current_printer().id)
         else:

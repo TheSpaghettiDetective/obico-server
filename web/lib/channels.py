@@ -70,6 +70,10 @@ def broadcast_ws_connection_change(sender, room, **kwargs):
     (group, printer_id) = room.channel_name.split('.')  # room.channel_name is actually the room name (= group name)
     if group == 'p_web':
         send_viewing_status(printer_id, room.get_anonymous_count())
+    if group == 'p_octo':
+        if num_ws_connections(octo_group_name(printer_id)) <= 0:
+            redis.printer_status_delete(printer_id)
+        send_status_to_web(printer_id)
 
 def send_viewing_status(printer_id, viewing_count=None):
     if viewing_count == None:

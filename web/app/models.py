@@ -30,13 +30,6 @@ UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
 def dh_is_unlimited(dh):
     return dh >= UNLIMITED_DH
 
-def send_remote_status(printer, viewing=None):
-    printer.refresh_from_db()
-    status = {'should_watch': printer.should_watch(),}
-    if viewing != None:
-        status['viewing'] = viewing
-    channels.send_remote_status_to_printer(printer.id, status)
-
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -237,7 +230,7 @@ class Printer(SafeDeleteModel):
             print.save()
 
         PrintEvent.create(print, PrintEvent.ENDED)
-        send_remote_status(self)
+        self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
         if not current_print_ts or current_print_ts == -1:
@@ -261,7 +254,7 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
         PrintEvent.create(cur_print, PrintEvent.STARTED)
-        send_remote_status(self)
+        self.send_should_watch_status()
 
     ## return: succeeded, user_credited ##
     def resume_print(self, mute_alert=False):
@@ -330,10 +323,17 @@ class Printer(SafeDeleteModel):
         else:
             PrintEvent.create(self.current_print, PrintEvent.ALERT_UNMUTED)
 
-        send_remote_status(self)
+        self.send_should_watch_status()
+
+    ## messages to printer
 
     def send_octoprint_command(self, command, args={}):
         channels.send_commands_to_printer(self.id, {'cmd': command, 'args': args})
+
+    def send_should_watch_status(self):
+        self.refresh_from_db()
+        channels.send_remote_status_to_printer(self.id, {'should_watch': self.should_watch()})
+
 
     def __str__(self):
         return str(self.id)

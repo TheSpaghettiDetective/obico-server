@@ -58,7 +58,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
         printer = self.current_printer_or_404(pk)
-        send_remote_status(printer)
+        printer.send_should_watch_status()
         return self.send_command_response(printer, True, False)
 
     def send_command_response(self, printer, succeeded, user_credited):

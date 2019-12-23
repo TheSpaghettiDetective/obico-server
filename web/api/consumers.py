@@ -4,6 +4,8 @@ import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
 import newrelic.agent
+from channels_presence.models import Room
+from channels_presence.models import Presence
 
 from lib import redis
 from lib import channels
@@ -24,25 +26,26 @@ class WebConsumer(JsonWebsocketConsumer):
                 self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
             async_to_sync(self.channel_layer.group_add)(
-                channels.status_group_name(self.printer.id),
+                channels.web_group_name(self.printer.id),
                 self.channel_name
             )
             self.accept()
+            Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
             channels.send_status_to_web(self.printer.id)
-            send_remote_status(self.printer, viewing=True)
         except:
             LOGGER.exception("Websocket failed to connect")
             self.close()
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
-        send_remote_status(self.printer, viewing=False)
         async_to_sync(self.channel_layer.group_discard)(
-            channels.status_group_name(self.printer.id),
+            channels.web_group_name(self.printer.id),
             self.channel_name
         )
+        Room.objects.remove(channels.web_group_name(self.printer.id), self.channel_name)
 
     def receive_json(self, data, **kwargs):
+        Presence.objects.touch(self.channel_name)
         pass # This websocket is used only to get status update for now. not receiving anything
 
     def printer_status(self, data):
@@ -57,22 +60,26 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
     def connect(self):
         if self.current_printer().is_authenticated:
             async_to_sync(self.channel_layer.group_add)(
-                channels.commands_group_name(self.current_printer().id),
+                channels.octo_group_name(self.current_printer().id),
                 self.channel_name
             )
             self.accept()
-            send_remote_status(self.current_printer())
+            Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
+            self.current_printer().send_should_watch_status()
+            channels.send_viewing_status(self.current_printer().id)
         else:
             self.close()
 
     def disconnect(self, close_code):
         LOGGER.warn("OctoPrintConsumer: Closed websocket with code: {}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
-            channels.commands_group_name(self.current_printer().id),
+            channels.octo_group_name(self.current_printer().id),
             self.channel_name
         )
+        Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
 
     def receive_json(self, data, **kwargs):
+        Presence.objects.touch(self.channel_name)
         try:
             printer = Printer.objects.get(id=self.current_printer().id)
 

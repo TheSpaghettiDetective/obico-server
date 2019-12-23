@@ -11,12 +11,15 @@ import logging
 from django.conf import settings
 from django.core import serializers
 from celery import shared_task
+from celery.decorators import periodic_task
+from datetime import timedelta
 import tempfile
 import requests
 from PIL import Image
 import copy
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
+from channels_presence.models import Room
 
 from .models import *
 from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
@@ -183,6 +186,16 @@ def detect_timelapse(self, print_id):
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
     send_timelapse_detection_done_email(_print)
+
+## Websocket connection count house upkeep jobs
+
+@periodic_task(run_every=timedelta(seconds=120))
+def prune_channel_presence():
+    Room.objects.prune_presences(age=120)
+
+@periodic_task(run_every=timedelta(seconds=1200))
+def prune_channel_rooms():
+    Room.objects.prune_rooms()
 
 # helper functions
 

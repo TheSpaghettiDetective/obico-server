@@ -31,6 +31,17 @@ $(document).ready(function () {
             };
 
             ensureWebsocketClosed(printerSocket);
+
+            // Heartbeat to maintain the presence of connection
+            // Adapted from https://stackoverflow.com/questions/50876766/how-to-implement-ping-pong-request-for-websocket-connection-alive-in-javascript
+
+            function heartbeat() {
+                if (!printerSocket) return;
+                if (printerSocket.readyState !== 1) return;
+                printerSocket.send(JSON.stringify({}));
+                setTimeout(heartbeat, 30*1000);
+            }
+            setTimeout(heartbeat, 30*1000);
         });
     }
 

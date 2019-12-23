@@ -228,13 +228,15 @@ $(document).ready(function () {
         }
 
         // Pause/Resume/Cancel buttons
+        var printerState = _.get(printer, 'status.state.text');
         var actionsDiv = printerCard.find("#print-actions ");
         actionsDiv.html(Mustache.template('printer_actions').render({
             dhInverseIconSrc: dhInverseIconSrc,
             alertShowing: shouldShowAlert(printer),
             status: printer.status,
-            printerPaused: _.get(printer, 'status.state.text') === 'Paused',
-            printing: printer.current_print,
+            printerPaused: printerState === 'Paused',
+            idle: printerState === 'Operational',
+            disconnected: printerState === 'Offline',
         }));
 
         actionsDiv.find("#print-pause-resume").click(function () {

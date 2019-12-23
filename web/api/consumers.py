@@ -133,7 +133,7 @@ class JanusWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):
-        channels.send_janus_msg_to_printer(self.printer.id, text_data)
+        channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))

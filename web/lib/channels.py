@@ -16,24 +16,12 @@ def web_group_name(printer_id):
 def janus_web_group_name(printer_id):
     return 'janus_web.{}'.format(printer_id)
 
-def send_commands_to_printer(printer_id, cmd):
+def send_msg_to_printer(printer_id, msg_dict):
+    msg_dict.update({'type': 'printer.message'})    # mapped to -> printer_message in consumer
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         octo_group_name(printer_id),
-        {
-            'type': 'printer.message',    # mapped to -> printer_message in consumer
-            'commands': [ cmd ],
-        }
-    )
-
-def send_janus_msg_to_printer(printer_id, msg):
-    layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
-        octo_group_name(printer_id),
-        {
-            'type': 'printer.message',    # mapped to -> printer_message in consumer
-            'janus': msg
-        }
+        msg_dict,
     )
 
 def send_remote_status_to_printer(printer_id, msg):
@@ -79,7 +67,7 @@ def send_viewing_status(printer_id, viewing_count=None):
     if viewing_count == None:
         viewing_count = num_ws_connections(web_group_name(printer_id))
 
-    send_remote_status_to_printer(printer_id, {'viewing': viewing_count > 0})
+    send_msg_to_printer(printer_id, {'remote_status': {'viewing': viewing_count > 0}})
 
 def num_ws_connections(group_name):
     rooms = Room.objects.filter(channel_name=group_name)      # room.channel_name is actually the room name (= group name)

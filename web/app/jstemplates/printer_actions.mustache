@@ -1,0 +1,33 @@
+<div class="row">
+{{#status}}
+<div class="col-sm-6">
+    <button id="print-pause-resume" type="button"
+        class="btn {{^printerPaused}}btn-warning{{/printerPaused}} {{#printerPaused}}btn-success{{/printerPaused}} btn-block mt-2"
+        {{^printing}}disabled>{{/printing}} >
+    <span>
+    {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
+    </span>
+        {{#alertShowing}}
+        <img class="dh-icon" style="display: none;"
+        src="{{dhInverseIconSrc}}" />
+        {{/alertShowing}}
+    </button>
+</div>
+<div class="col-sm-6">
+    <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2"
+        {{^printing}}disabled>{{/printing}} >
+    <span>Cancel
+    </span>
+        {{#alertShowing}}
+        <img class="dh-icon" style="display: none;"
+        src="{{dhInverseIconSrc}}" />
+        {{/alertShowing}}
+    </button>
+</div>
+{{/status}}
+{{^status}}
+<div class="col-12 text-center py-3">
+<div>OctoPrint is not powered on, or is offline. <a href="https://www.thespaghettidetective.com/docs/octoprint-is-offline/">Why?</a></div>
+</div>
+{{/status}}
+</div>

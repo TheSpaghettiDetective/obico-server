@@ -97,21 +97,6 @@ $(document).ready(function () {
         var printerCard = $(this);
         var printerId = printerCard.attr('id');
 
-        printerCard.find("#print-pause-resume").click(function () {
-            var btn = $(this);
-            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
-        });
-
-        printerCard.find('#print-cancel').click(function () {
-            Confirm.fire({
-                text: 'Once cancelled, the print can no longer be resumed.',
-            }).then(function (result) {
-                if (result.value) {  // When it is confirmed
-                    sendPrinterCommand(printerId, '/cancel_print/');
-                }
-            });
-        });
-
         printerCard.find('input.update-printer').on('change', function (e) {
             var formInputs = {
                 action_on_failure: printerCard.find('input[name="pause_on_failure"]').prop('checked') ? 'PAUSE': 'NONE',
@@ -216,8 +201,8 @@ $(document).ready(function () {
 
         // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
         var taggedJpgEle = printerCard.find("img.tagged-jpg");
-        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printer_stock_img_src));
-        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printer_stock_img_src)) {
+        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printerStockImgSrc));
+        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printerStockImgSrc)) {
             taggedJpgEle.removeClass('hide').show();
         }
         showPicInPicExpandIfNeeded(taggedJpgEle);
@@ -227,12 +212,8 @@ $(document).ready(function () {
         var cancelBtn = printerCard.find('#print-cancel');
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
-            pauseResumeBtn.find("img").show();
-            cancelBtn.find("img").show();
         } else {
             printerCard.find(".failure-alert").hide();
-            pauseResumeBtn.find("img").hide();
-            cancelBtn.find("img").hide();
         }
 
         // Gauge
@@ -246,21 +227,30 @@ $(document).ready(function () {
             gaugeDiv.find('.overlay-top').show();
         }
 
-
         // Pause/Resume/Cancel buttons
-        if (printer.status && printer.current_print) {
-            printerCard.find('.print-actions button').prop('disabled', false);
-        } else {
-            printerCard.find('.print-actions button').prop('disabled', true);
-        }
+        var actionsDiv = printerCard.find("#print-actions ");
+        actionsDiv.html(Mustache.template('printer_actions').render({
+            dhInverseIconSrc: dhInverseIconSrc,
+            alertShowing: shouldShowAlert(printer),
+            status: printer.status,
+            printerPaused: _.get(printer, 'status.state.text') === 'Paused',
+            printing: printer.current_print,
+        }));
 
-        if (_.get(printer, 'status.state.text') === 'Paused') {
-            pauseResumeBtn.addClass('btn-success').removeClass('btn-warning');
-            pauseResumeBtn.find('span').text('Resume');
-        } else {
-            pauseResumeBtn.removeClass('btn-success').addClass('btn-warning');
-            pauseResumeBtn.find('span').text('Pause ');
-        }
+        actionsDiv.find("#print-pause-resume").click(function () {
+            var btn = $(this);
+            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
+        });
+
+        actionsDiv.find('#print-cancel').click(function () {
+            Confirm.fire({
+                text: 'Once cancelled, the print can no longer be resumed.',
+            }).then(function (result) {
+                if (result.value) {  // When it is confirmed
+                    sendPrinterCommand(printerId, '/cancel_print/');
+                }
+            });
+        });
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);

@@ -46,11 +46,15 @@ class WebConsumer(JsonWebsocketConsumer):
 
     def receive_json(self, data, **kwargs):
         Presence.objects.touch(self.channel_name)
-        pass # This websocket is used only to get status update for now. not receiving anything
+        if 'passthru' in data:
+            channels.send_msg_to_printer(self.printer.id, data)
 
     def printer_status(self, data):
         serializer = PrinterSerializer(Printer.objects.get(id=self.printer.id))
         self.send_json(serializer.data)
+
+    def web_message(self, msg):
+        self.send_json(msg)
 
     def current_user(self):
         return self.scope['user']
@@ -84,8 +88,10 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
         try:
             printer = Printer.objects.get(id=self.current_printer().id)
 
-            if (data.get('janus')):
+            if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
+            elif 'passthru' in data:
+                channels.send_message_to_web(printer.id, data)
             else:
                 process_octoprint_status(printer, data)
 
@@ -97,8 +103,8 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
             self.close()
             sentryClient.captureException()
 
-    def printer_message(self, command):
-        self.send_json(command)
+    def printer_message(self, msg):
+        self.send_json(msg)
 
     def current_printer(self):
         return self.scope['user']

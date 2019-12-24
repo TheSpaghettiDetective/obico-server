@@ -32,8 +32,11 @@
         {{/idle}}
     {{/disconnected}}
     {{#disconnected}}
-        <div class="col-12 text-center py-3 text-warning">
-        Printer is not connected to OctoPrint.
+        <div class="col-12 text-center py-2 text-warning">
+            <div>Printer is not connected to OctoPrint.</div>
+            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2" >
+            Connect
+            </button>
         </div>
     {{/disconnected}}
 {{/status}}

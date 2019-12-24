@@ -1,14 +1,17 @@
 $(document).ready(function () {
-    var wsList = [];
     var printerList = [];
 
     /*** Websocket messaging */
+    var wsList = new Map();
+    var passthruQueue = new Map();
 
     function ensureWebsocketClosed(ws) {
         ws.onclose = function (e) {
-            _.remove(wsList, function(ele) {
-                return ele === ws;
-            })
+            wsList.forEach( function(v, k) {
+                if (v == ws) {
+                    wsList.delete(k);
+                }
+            });
         };
         ws.onerror = function (e) {
             ws.close();
@@ -23,11 +26,20 @@ $(document).ready(function () {
             var wsUri = printerCard.data('share-token') ?
             '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
             var printerSocket = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri);
-            wsList.push(printerSocket);
+            wsList.set(printerId, printerSocket);
             printerSocket.onmessage = function (e) {
-                var printer = JSON.parse(e.data);
-                printerList[printerId] = printer;
-                updatePrinterCard(printerCard);
+                var msg = JSON.parse(e.data)
+                if ('passthru' in msg) {
+                    var refId = msg.passthru.ref;
+                    if (refId && passthruQueue.get(refId)) {
+                        var callback = passthruQueue.get(refId);
+                        passthruQueue.delete(refId);
+                        callback(null, msg.passthru.ret);
+                    }
+                } else {
+                    printerList[printerId] = msg;
+                    updatePrinterCard(printerCard);
+                }
             };
 
             ensureWebsocketClosed(printerSocket);
@@ -46,17 +58,21 @@ $(document).ready(function () {
     }
 
     function closeWebSockets() {
-        _.forEach(wsList, function(ws) {
-            ws.close();
+        wsList.forEach( function(v) {
+            v.close();
         });
     }
 
-    function shouldShowAlert(printer) {
-        if (!printer.current_print || !printer.current_print.alerted_at) {
-            return false;
+    function passThruToPrinter(printerId, msgObj, callback) {
+        var pSocket = wsList.get(printerId);
+        if (pSocket) {
+            var refId = Math.random().toString();
+            passthruQueue.set(refId, callback);
+            _.assign(msgObj, {ref: refId});
+            pSocket.send(JSON.stringify({passthru: msgObj}));
+        } else {
+            callback("Message not passed through. No suitable WebSocket.");
         }
-        return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at || 0));
-
     }
 
     ifvisible.on("blur", function(){
@@ -70,6 +86,15 @@ $(document).ready(function () {
     /*** End of websocket messaging */
 
     /** Printer cards */
+
+    function shouldShowAlert(printer) {
+        if (!printer.current_print || !printer.current_print.alerted_at) {
+            return false;
+        }
+        return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at || 0));
+
+    }
+
     function printerGet(printerId, uri, callback) {
         $.ajax({
             url: '/api/v1/printers/' + printerId + uri,
@@ -227,7 +252,7 @@ $(document).ready(function () {
             gaugeDiv.find('.overlay-top').show();
         }
 
-        // Pause/Resume/Cancel buttons
+        // Action section. Pause/Resume/Cancel and Connect buttons
         var printerState = _.get(printer, 'status.state.text');
         var actionsDiv = printerCard.find("#print-actions ");
         actionsDiv.html(Mustache.template('printer_actions').render({
@@ -239,20 +264,9 @@ $(document).ready(function () {
             disconnected: printerState === 'Offline',
         }));
 
-        actionsDiv.find("#print-pause-resume").click(function () {
-            var btn = $(this);
-            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
-        });
-
-        actionsDiv.find('#print-cancel').click(function () {
-            Confirm.fire({
-                text: 'Once cancelled, the print can no longer be resumed.',
-            }).then(function (result) {
-                if (result.value) {  // When it is confirmed
-                    sendPrinterCommand(printerId, '/cancel_print/');
-                }
-            });
-        });
+        actionsDiv.find("#print-pause-resume").click(pauseResumeBtnClicked);
+        actionsDiv.find('#print-cancel').click(cancelBtnClicked);
+        actionsDiv.find('#connect-printer').click(connectBtnClicked);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
@@ -340,6 +354,29 @@ $(document).ready(function () {
             } else {
                 printerCard.find("#panel-settings").hide();
             }
+        }
+
+        // Event handlers
+
+        function pauseResumeBtnClicked() {
+            var btn = $(this);
+            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
+        }
+
+        function cancelBtnClicked() {
+            Confirm.fire({
+                text: 'Once cancelled, the print can no longer be resumed.',
+            }).then(function (result) {
+                if (result.value) {  // When it is confirmed
+                    sendPrinterCommand(printerId, '/cancel_print/');
+                }
+            });
+        }
+
+        function connectBtnClicked() {
+            passThruToPrinter(printerId, {func: 'get_connection_options'}, function(err, ret) {
+                console.log(err, ret);
+            });
         }
     }
 

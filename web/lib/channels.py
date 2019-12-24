@@ -24,14 +24,12 @@ def send_msg_to_printer(printer_id, msg_dict):
         msg_dict,
     )
 
-def send_remote_status_to_printer(printer_id, msg):
+def send_message_to_web(printer_id, msg_dict):
+    msg_dict.update({'type': 'web.message'})    # mapped to -> web_message in consumer
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
-        octo_group_name(printer_id),
-        {
-            'type': 'printer.message',    # mapped to -> printer_message in consumer
-            'remote_status': msg
-        }
+        web_group_name(printer_id),
+        msg_dict,
     )
 
 def send_status_to_web(printer_id):

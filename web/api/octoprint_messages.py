@@ -28,8 +28,6 @@ def settings_dict(octoprint_settings):
     settings = dict(('webcam_'+k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
     if 'temperature' in octoprint_settings:
         settings.update(dict(temp_profiles=json.dumps(octoprint_settings['temperature'].get('profiles', []))))
-    if 'plugin_version' in octoprint_settings:
-        settings.update(dict(plugin_version=octoprint_settings['plugin_version']))
     return settings
 
 def process_octoprint_status_with_ts(op_status, printer):

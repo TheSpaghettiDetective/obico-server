@@ -70,6 +70,14 @@ $(document).ready(function () {
                 var refId = Math.random().toString();
                 passthruQueue.set(refId, callback);
                 _.assign(msgObj, {ref: refId});
+                setTimeout(function() {
+                    if (passthruQueue.has(refId)) {
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Failed to contact OctoPrint, or you have NOT upgraded to the latest TSD plugin version.',
+                        });
+                    }
+                }, 10*1000);
             }
             pSocket.send(JSON.stringify({passthru: msgObj}));
         } else {

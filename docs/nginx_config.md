@@ -48,14 +48,14 @@ server {<br>
     proxy_redirect off;<br>
     client_max_body_size 10m;<br>
   }<br>
- location /ws/web/2/ {<br>
-    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/web/2/;<br>
+ location /ws/web/ {<br>
+    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/web/;<br>
     proxy_http_version 1.1;<br>
     proxy_set_header Upgrade $http_upgrade;<br>
     proxy_set_header Connection "Upgrade";<br>
   }<br>
- location /ws/janus/2/ {<br>
-    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/janus/2/;<br>
+ location /ws/janus/ {<br>
+    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/janus/;<br>
     proxy_http_version 1.1;<br>
     proxy_set_header Upgrade $http_upgrade;<br>
     proxy_set_header Connection "Upgrade";<br>

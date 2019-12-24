@@ -50,8 +50,11 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.send_msg_to_printer(self.printer.id, data)
 
     def printer_status(self, data):
-        serializer = PrinterSerializer(Printer.objects.get(id=self.printer.id))
-        self.send_json(serializer.data)
+        try:
+            serializer = PrinterSerializer(Printer.objects.get(id=self.printer.id))
+            self.send_json(serializer.data)
+        except:
+            sentryClient.captureException()
 
     def web_message(self, msg):
         self.send_json(msg)

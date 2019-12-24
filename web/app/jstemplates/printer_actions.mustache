@@ -1,5 +1,10 @@
 <div class="row">
 {{#status}}
+    {{#error}}
+    <div class="col-12 text-danger text-center">
+    OctoPrint error!
+    </div>
+    {{/error}}
     {{^disconnected}}
         {{^idle}}
             <div class="col-sm-6">
@@ -34,8 +39,8 @@
     {{#disconnected}}
         <div class="col-12 text-center py-2 text-warning">
             <div>Printer is not connected to OctoPrint.</div>
-            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2" >
-            Connect
+            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2" {{#connectBtnBusy}}disabled{{/connectBtnBusy}} >
+            Connect {{#connectBtnBusy}}<i class="fas fa-spinner fa-spin"></i>{{/connectBtnBusy}}
             </button>
         </div>
     {{/disconnected}}

@@ -66,12 +66,16 @@ $(document).ready(function () {
     function passThruToPrinter(printerId, msgObj, callback) {
         var pSocket = wsList.get(printerId);
         if (pSocket) {
-            var refId = Math.random().toString();
-            passthruQueue.set(refId, callback);
-            _.assign(msgObj, {ref: refId});
+            if (callback) {
+                var refId = Math.random().toString();
+                passthruQueue.set(refId, callback);
+                _.assign(msgObj, {ref: refId});
+            }
             pSocket.send(JSON.stringify({passthru: msgObj}));
         } else {
-            callback("Message not passed through. No suitable WebSocket.");
+            if (callback){
+                callback("Message not passed through. No suitable WebSocket.");
+            }
         }
     }
 
@@ -203,7 +207,7 @@ $(document).ready(function () {
 
     function updatePrinterCard(printerCard) {
         var printerId = printerCard.attr('id');
-        updateUI();
+        updateInfoSections();
 
         var printer = printerList[printerId];
 
@@ -253,20 +257,7 @@ $(document).ready(function () {
         }
 
         // Action section. Pause/Resume/Cancel and Connect buttons
-        var printerState = _.get(printer, 'status.state.text');
-        var actionsDiv = printerCard.find("#print-actions ");
-        actionsDiv.html(Mustache.template('printer_actions').render({
-            dhInverseIconSrc: dhInverseIconSrc,
-            alertShowing: shouldShowAlert(printer),
-            status: printer.status,
-            printerPaused: printerState === 'Paused',
-            idle: printerState === 'Operational',
-            disconnected: printerState === 'Offline',
-        }));
-
-        actionsDiv.find("#print-pause-resume").click(pauseResumeBtnClicked);
-        actionsDiv.find('#print-cancel').click(cancelBtnClicked);
-        actionsDiv.find('#connect-printer').click(connectBtnClicked);
+        updateActionsSection(printerCard.find("#print-actions"), printer);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
@@ -329,6 +320,7 @@ $(document).ready(function () {
             initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []));
         }
 
+        // Info Section helpers
         function isInfoSectionOn(sectionId) {
             return getPrinterLocalPref(sectionId,
                 printerId,
@@ -336,7 +328,7 @@ $(document).ready(function () {
                 );
         }
 
-        function updateUI() {
+        function updateInfoSections() {
 
             // Section visibility controls
             printerCard.find('button.info-section-toggle').each( function(index, element) {
@@ -356,6 +348,29 @@ $(document).ready(function () {
             }
         }
 
+        // End of Info sections
+
+        // Actions section helpers
+
+        function updateActionsSection(actionsDiv, printer, busyButton) {
+            var printerState = _.get(printer, 'status.state.flags');
+            actionsDiv.html(Mustache.template('printer_actions').render({
+                dhInverseIconSrc: dhInverseIconSrc,
+                alertShowing: shouldShowAlert(printer),
+                status: printer.status,
+                printerPaused: _.get(printerState, 'paused'),
+                idle: _.get(printerState, 'ready'),
+                error: _.get(printerState, 'error'),
+                disconnected: _.get(printerState, 'closedOrError'),
+                connectBtnBusy: busyButton && busyButton === 'connect',
+            }));
+
+            actionsDiv.find("#print-pause-resume").click(pauseResumeBtnClicked);
+            actionsDiv.find('#print-cancel').click(cancelBtnClicked);
+            actionsDiv.find('#connect-printer').click(connectBtnClicked);
+        }
+        // End of actions section
+
         // Event handlers
 
         function pauseResumeBtnClicked() {
@@ -374,8 +389,31 @@ $(document).ready(function () {
         }
 
         function connectBtnClicked() {
-            passThruToPrinter(printerId, {func: 'get_connection_options'}, function(err, ret) {
-                console.log(err, ret);
+            updateActionsSection(printerCard.find("#print-actions"), printer, 'connect');
+            passThruToPrinter(printerId, {func: 'get_connection_options'}, function(err, connectionOptions) {
+                if (err) {
+                    Toast.fire({
+                        type: 'error',
+                        title: 'Failed to contact OctoPrint!',
+                    });
+                } else {
+                    Swal.fire({
+                        html: Mustache.template('connect_printer').render({connectionOptions}),
+                        confirmButtonText: 'Connect',
+                        showCancelButton: true,
+                        onOpen: function(e){
+                            $(e).find('select.selectpicker').selectpicker();
+                        },
+                    }).then((result) => {
+                        if (result.value) {
+                            passThruToPrinter(printerId, {func: 'connect', args: [
+                                $('select#id-port').val(),
+                                $('select#id-baudrate').val(),
+                            ]});
+                        }
+                    });
+                    updateActionsSection(printerCard.find("#print-actions"), printer);
+                }
             });
         }
     }

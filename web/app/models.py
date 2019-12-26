@@ -93,18 +93,16 @@ class User(AbstractUser):
         return self.phone_number and self.phone_country_code
 
     def is_primary_email_verified(self):
-        """Checks if the users primary email address is verified"""
         if EmailAddress.objects.filter(user=self, email=self.email,
                                        verified=True).exists():
             return True
         return False
 
     def has_verified_email(self):
-        """Checks if the user has at least one verified email address"""
-        return EmailAddress.objects.filter(user=self, verified=True).exists()
+        # Give user 1 day before bugging them to verify their email addresses
+        return timezone.now() - timedelta(days=1) < self.date_joined or EmailAddress.objects.filter(user=self, verified=True).exists()
 
     def has_valid_pushbullet_token(self):
-        """Checks if the user has a pushbullet access token that Pushbullet recognizes"""
         if not self.pushbullet_access_token:
             return False
 

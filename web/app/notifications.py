@@ -232,7 +232,7 @@ def send_print_notification_pushbullet(_print):
 
 # Helpers
 
-def send_email(user, subject, unsub_url, template_path, ctx, img_url=None):
+def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verified_only=True):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -250,7 +250,7 @@ def send_email(user, subject, unsub_url, template_path, ctx, img_url=None):
 
     # By default email verification should be required for notifications but
     # maybe users will want to disable it on private servers
-    if settings.ACCOUNT_EMAIL_VERIFICATION != 'none':
+    if settings.ACCOUNT_EMAIL_VERIFICATION != 'none' and verified_only:
         emails = EmailAddress.objects.filter(user=user, verified=True)
     else:
         emails = EmailAddress.objects.filter(user=user)

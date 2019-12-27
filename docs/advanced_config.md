@@ -1,9 +1,12 @@
+
 # Advanced server configuration
 
 ## Using a reverse proxy
 
+### NGINX
+[Config Here](docs/nginx_config.md)
+### Traefik
 We are using the reverse proxy traefik.
-
  1. [Follow these instructions on how to setup Traefik (First two steps)](https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-debian-9)
  2. Navigate to your directory of TheSpaghettiDetective `cd TheSpaghettiDetective`
  3. Edit the docker-compose.yml file with your favorite editor: `nano docker-compose.yml`
@@ -37,6 +40,29 @@ We are using the reverse proxy traefik.
       ```
  5. Start TheSpaghettiDetective with `docker-compose up -d`
  6. You should now be able to browse to `spaghetti.your.domain`
+
+## Running TSD with Nvidia GPU acceleration
+
+This is only available on Linux based host machine
+In addition to the steps in [README](../README.md), you will need to:
+
+- [Install Cuda driver](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on your server.
+- [Install nvidia-docker](https://github.com/NVIDIA/nvidia-docker).
+- Run this command in `TheSpaghettiDetective` directory:
+```
+cat >docker-compose.override.yml <<EOF
+version: '2.4'
+
+services:
+  ml_api:
+    runtime: nvidia
+EOF
+```
+- Restart the docker cluster by running `docker-compose down && docker-compose up -d`
+
+## Running on Nvidia Jetson hardware
+
+[Document Here](docs/jetson_guide.md)
 
 ## Enable telegram notifications
 

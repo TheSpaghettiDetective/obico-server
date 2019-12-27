@@ -43,7 +43,8 @@ We are using the reverse proxy traefik.
 
 ## Running TSD with Nvidia GPU acceleration
 
-This is only available on Linux based host machine
+This is only available on Linux based host machines
+
 In addition to the steps in [README](../README.md), you will need to:
 
 - [Install Cuda driver](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on your server.

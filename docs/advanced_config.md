@@ -4,7 +4,7 @@
 ## Using a reverse proxy
 
 ### NGINX
-[Config Here](docs/nginx_config.md)
+[Config Here](nginx_config.md)
 ### Traefik
 We are using the reverse proxy traefik.
  1. [Follow these instructions on how to setup Traefik (First two steps)](https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-debian-9)
@@ -62,7 +62,7 @@ EOF
 
 ## Running on Nvidia Jetson hardware
 
-[Document Here](docs/jetson_guide.md)
+[Document Here](jetson_guide.md)
 
 ## Enable telegram notifications
 

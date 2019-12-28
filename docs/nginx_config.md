@@ -40,18 +40,11 @@ server {
     proxy_redirect off;
     client_max_body_size 10m;
   }
- location /ws/web/ {
-    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/web/;
+ location /ws/ {
+    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
   }
- location /ws/janus/ {
-    proxy_pass http://YOUR BACKEND IP/HOSTNAME:3334/ws/janus/;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "Upgrade";
-  }
-
 }
 ```

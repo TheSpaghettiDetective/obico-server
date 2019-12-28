@@ -6,11 +6,18 @@ from .models import Printer
 import logging
 
 LOGGER = logging.getLogger(__name__)
-bot = None
-bot_name = None
 
-if settings.TELEGRAM_BOT_TOKEN:
-    bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
+def telegram_bot():
+    bot = None
+
+    if settings.TELEGRAM_BOT_TOKEN:
+        bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
+
+    return bot
+
+bot_name = None
+bot = telegram_bot()
+if bot:
     bot_name = bot.get_me().username
 
 def default_markup():
@@ -36,12 +43,14 @@ def inline_markup(printer, buttons=['more_info']):
     return markup
 
 def send_notification(printer, notification, photo, buttons=None):
+    bot = telegram_bot()
     if not bot:
         return
 
     chat_id = printer.user.telegram_chat_id
-    telegram_user = bot.get_chat(chat_id)
+    
     keyboard = None
+
     if buttons:
         keyboard = inline_markup(printer, buttons) if photo else default_markup()
 

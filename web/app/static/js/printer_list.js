@@ -63,29 +63,7 @@ $(document).ready(function () {
         });
     }
 
-    function passThruToPrinter(printerId, msgObj, callback) {
-        var pSocket = wsList.get(printerId);
-        if (pSocket) {
-            if (callback) {
-                var refId = Math.random().toString();
-                passthruQueue.set(refId, callback);
-                _.assign(msgObj, {ref: refId});
-                setTimeout(function() {
-                    if (passthruQueue.has(refId)) {
-                        Toast.fire({
-                            type: 'error',
-                            title: 'Failed to contact OctoPrint, or you have NOT upgraded to the latest TSD plugin version.',
-                        });
-                    }
-                }, 10*1000);
-            }
-            pSocket.send(JSON.stringify({passthru: msgObj}));
-        } else {
-            if (callback){
-                callback("Message not passed through. No suitable WebSocket.");
-            }
-        }
-    }
+
 
     ifvisible.on("blur", function(){
         closeWebSockets();
@@ -325,7 +303,7 @@ $(document).ready(function () {
             tempDiv.hide();
         }
         if (editable) {
-            initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []));
+            initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []), wsList.get(printerId));
         }
 
         // Info Section helpers
@@ -398,7 +376,7 @@ $(document).ready(function () {
 
         function connectBtnClicked() {
             updateActionsSection(printerCard.find("#print-actions"), printer, 'connect');
-            passThruToPrinter(printerId, {func: 'get_connection_options'}, function(err, connectionOptions) {
+            passThruToPrinter(printerId, {func: 'get_connection_options'}, wsList.get(printerId), passthruQueue, function(err, connectionOptions) {
                 if (err) {
                     Toast.fire({
                         type: 'error',
@@ -417,7 +395,8 @@ $(document).ready(function () {
                             passThruToPrinter(printerId, {func: 'connect', args: [
                                 $('select#id-port').val(),
                                 $('select#id-baudrate').val(),
-                            ]});
+                            ]},
+                            wsList.get(printerId));
                         }
                     });
                     updateActionsSection(printerCard.find("#print-actions"), printer);

@@ -1,4 +1,4 @@
-function initTempEditIcon(tempDiv, temperatures, tempProfiles){
+function initTempEditIcon(tempDiv, temperatures, tempProfiles, pSocket){
     temperatures.forEach( function(temperature){
         tempDiv.find('#'+temperature.id).on('click', function(ele) {
             _.spread(function(printerId, tempKey) {
@@ -21,11 +21,7 @@ function initTempEditIcon(tempDiv, temperatures, tempProfiles){
                 }).then((result) => {
                     if (result.value) {
                         var targetTemp = parseInt($('input#target-temp').val());
-                        printerPostApi(
-                            '/send_command/',
-                            printerId,
-                            {cmd: 'set_temperature', args: [tempKey, targetTemp]}
-                        );
+                        passThruToPrinter(printerId, {func: 'set_temperature', args: [tempKey, targetTemp]}, pSocket);
                     }
                 });
             })(_.split($(ele.currentTarget).attr('id'), '-'));

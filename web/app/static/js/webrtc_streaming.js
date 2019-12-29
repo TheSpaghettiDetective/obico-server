@@ -3,6 +3,13 @@ $(document).ready(function () {
         return;
     }
 
+    $('video.remote-video').on('loadstart', function (event) {
+        $(this).attr("poster", loadingIcon);
+    });
+    $('video.remote-video').on('canplay', function (event) {
+        $(this).removeAttr("poster");
+    });
+
     var streamList = [];
 
     function removeFromList(janus) {

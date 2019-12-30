@@ -139,3 +139,7 @@ Just make a copy of `TheSpaghettiDetective/web/db.sqlite`
 # Difficulties at getting The Spaghetti Detective server up and running?
 
 Check out the [FAQ document](docs/faq.md). If you can't find the answer there, [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
+
+# Thanks
+![BrowserStack](https://lh4.googleusercontent.com/wyCKLuED8i1E6mvA8Moiwd5VSq2jXHXPOel85bqnW-rUU_tXBr0c1aSIhY7SHH1jKTaf7AF7vA=s50-h50-e365 "BrowserStack") BrowserStack generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.
+

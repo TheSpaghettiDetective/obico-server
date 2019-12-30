@@ -232,7 +232,7 @@ def send_print_notification_pushbullet(_print):
 
 # Helpers
 
-def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verified_only=True):
+def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verified_only=True, attachment=None):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -264,4 +264,6 @@ def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verif
             attachments=attachments,
             headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(unsub_url)},)
         msg.content_subtype = 'html'
+        if attachment:
+            msg.attach_file(attachment)
         msg.send()

@@ -11,8 +11,6 @@ router.register(r'prints', views.PrintViewSet, 'Print')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    path('octo/pic/', octoprint_views.OctoPrintPicView.as_view()),
-    path('octo/ping/', octoprint_views.OctoPrintPingView.as_view()),
     path('v1/octo/pic/', octoprint_views.OctoPrintPicView.as_view()),
     path('v1/octo/ping/', octoprint_views.OctoPrintPingView.as_view()),
 ]

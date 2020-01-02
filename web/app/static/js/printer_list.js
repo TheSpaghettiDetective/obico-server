@@ -340,12 +340,13 @@ $(document).ready(function () {
 
         function updateActionsSection(actionsDiv, printer, busyButton) {
             var printerState = _.get(printer, 'status.state.flags');
+            var printerStateTxt = _.get(printer, 'status.state.text');
             actionsDiv.html(Mustache.template('printer_actions').render({
                 dhInverseIconSrc: dhInverseIconSrc,
                 alertShowing: shouldShowAlert(printer),
                 status: printer.status,
                 printerPaused: _.get(printerState, 'paused'),
-                idle: _.get(printerState, 'ready'),
+                idle: printerStateTxt == 'Operational',
                 error: _.get(printerState, 'error'),
                 disconnected: _.get(printerState, 'closedOrError'),
                 connectBtnBusy: busyButton && busyButton === 'connect',

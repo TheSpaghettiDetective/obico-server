@@ -384,6 +384,13 @@ $(document).ready(function () {
                         title: 'Failed to contact OctoPrint!',
                     });
                 } else {
+                    if (connectionOptions.ports.length < 1) {
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Uh-Oh. No printer is found on the serial port.',
+                        });
+                        return;
+                    }
                     Swal.fire({
                         html: Mustache.template('connect_printer').render({connectionOptions}),
                         confirmButtonText: 'Connect',

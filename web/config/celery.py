@@ -23,6 +23,10 @@ celery_app = MyCelery('config')
 celery_app.conf.task_ignore_result = True
 celery_app.conf.task_store_errors_even_if_ignored = True
 celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
+celery_app.conf.task_routes = {
+    'app.tasks.prune_channel_presence': {'queue': 'slow_tasks'},
+    'app.tasks.compile_timelapse': {'queue': 'slow_tasks'},
+}
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

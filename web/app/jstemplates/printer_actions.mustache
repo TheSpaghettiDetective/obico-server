@@ -14,7 +14,7 @@
                 {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
                 </span>
                     {{#alertShowing}}
-                    <img class="dh-icon" style="display: none;"
+                    <img class="dh-icon"
                     src="{{dhInverseIconSrc}}" />
                     {{/alertShowing}}
                 </button>
@@ -24,7 +24,7 @@
                 <span>Cancel
                 </span>
                     {{#alertShowing}}
-                    <img class="dh-icon" style="display: none;"
+                    <img class="dh-icon"
                     src="{{dhInverseIconSrc}}" />
                     {{/alertShowing}}
                 </button>
@@ -39,8 +39,8 @@
     {{#disconnected}}
         <div class="col-12 text-center py-2 text-warning">
             <div>Printer is not connected to OctoPrint.</div>
-            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2" {{#connectBtnBusy}}disabled{{/connectBtnBusy}} >
-            Connect {{#connectBtnBusy}}<i class="fas fa-spinner fa-spin"></i>{{/connectBtnBusy}}
+            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2">
+            Connect <i class="fas fa-spinner fa-spin" style="display: none;"></i>
             </button>
         </div>
     {{/disconnected}}

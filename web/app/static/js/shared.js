@@ -62,6 +62,30 @@ function setPrinterLocalPref(prefix, printerId, value) {
     return localStorage.setItem(itemId, value);
 }
 
+
+function printerGet(printerId, uri, callback) {
+    $.ajax({
+        url: '/api/v1/printers/' + printerId + uri,
+        type: 'GET',
+        dataType: 'json',
+    }).done(function(result) { callback(result); });
+}
+
+function sendPrinterCommand(printerId, command) {
+    printerGet(printerId, command, function (result) {
+        var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
+        '<p>It may take a while to be executed by OctoPrint.</p>';
+        if (result.user_credited) {
+            toastHtml += '<p>BTW <a href="/ent/detective_hours/">You just earned ' +
+            '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>';
+        }
+        Toast.fire({
+            type: 'success',
+            html: toastHtml,
+        });
+    });
+}
+
 /*** Swal Mixins */
 
 var Toast = Swal.mixin({

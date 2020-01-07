@@ -3,6 +3,7 @@
 function PrinterWebSocket() {
     var self = this;
 
+    self.desiredWsList = new Map();
     self.wsList = new Map();
     self.passthruQueue = new Map();
 
@@ -10,10 +11,14 @@ function PrinterWebSocket() {
         closeWebSockets();
     });
     ifvisible.on("focus", function(){
-        openPrinterWebSockets();
+        self.desiredWsList.forEach( function(args, printerId) {
+            self.openPrinterWebSockets(printerId, args[0], args[1]);
+        });
     });
 
     self.openPrinterWebSockets = function(printerId, wsUri, onMessageReceived) {
+
+        self.desiredWsList.set(printerId, [wsUri, onMessageReceived]);
 
         var printerSocket = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri);
         self.wsList.set(printerId, printerSocket);
@@ -39,7 +44,7 @@ function PrinterWebSocket() {
     self.passThruToPrinter = function(printerId, msgObj, callback) {
         var pSocket = self.wsList.get(printerId);
         if (pSocket) {
-            if (self.passthruQueue) {
+            if (callback) {
                 var refId = Math.random().toString();
                 self.passthruQueue.set(refId, callback);
                 _.assign(msgObj, {ref: refId});

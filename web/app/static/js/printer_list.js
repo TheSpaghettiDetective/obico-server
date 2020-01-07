@@ -2,7 +2,6 @@
 
 $(document).ready(function () {
     var printerList = [];
-
     var printerWs = new PrinterWebSocket();
 
     /*** Establish websocket connections and callbacks */
@@ -26,29 +25,6 @@ $(document).ready(function () {
         }
         return moment(printer.current_print.alerted_at).isAfter(moment(printer.current_print.alert_acknowledged_at || 0));
 
-    }
-
-    function printerGet(printerId, uri, callback) {
-        $.ajax({
-            url: '/api/v1/printers/' + printerId + uri,
-            type: 'GET',
-            dataType: 'json',
-        }).done(function(result) { callback(result); });
-    }
-
-    function sendPrinterCommand(printerId, command) {
-        printerGet(printerId, command, function (result) {
-            var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
-            '<p>It may take a while to be executed by OctoPrint.</p>';
-            if (result.user_credited) {
-                toastHtml += '<p>BTW <a href="/ent/detective_hours/">You just earned ' +
-                '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>';
-            }
-            Toast.fire({
-                type: 'success',
-                html: toastHtml,
-            });
-        });
     }
 
     $('.printer-card').each(function () {
@@ -190,7 +166,7 @@ $(document).ready(function () {
         }
 
         // Action section. Pause/Resume/Cancel and Connect buttons
-        updateActionsSection(printerCard.find("#printer-actions"), printer);
+        updateActionsSection(printerCard.find("#printer-actions"), printer, printerId, shouldShowAlert(printer), printerWs);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
@@ -282,82 +258,6 @@ $(document).ready(function () {
         }
 
         // End of Info sections
-
-        // Actions section helpers
-
-        function updateActionsSection(actionsDiv, printer, busyButton) {
-            var printerState = _.get(printer, 'status.state.flags');
-            var printerStateTxt = _.get(printer, 'status.state.text');
-            actionsDiv.html(Mustache.template('printer_actions').render({
-                dhInverseIconSrc: dhInverseIconSrc,
-                alertShowing: shouldShowAlert(printer),
-                status: printer.status,
-                printerPaused: _.get(printerState, 'paused'),
-                idle: printerStateTxt == 'Operational',
-                error: _.get(printerState, 'error'),
-                disconnected: _.get(printerState, 'closedOrError'),
-                connectBtnBusy: busyButton && busyButton === 'connect',
-            }));
-
-            actionsDiv.find("#print-pause-resume").click(pauseResumeBtnClicked);
-            actionsDiv.find('#print-cancel').click(cancelBtnClicked);
-            actionsDiv.find('#connect-printer').click(connectBtnClicked);
-        }
-        // End of actions section
-
-        // Event handlers
-
-        function pauseResumeBtnClicked() {
-            var btn = $(this);
-            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
-        }
-
-        function cancelBtnClicked() {
-            Confirm.fire({
-                text: 'Once cancelled, the print can no longer be resumed.',
-            }).then(function (result) {
-                if (result.value) {  // When it is confirmed
-                    sendPrinterCommand(printerId, '/cancel_print/');
-                }
-            });
-        }
-
-        function connectBtnClicked() {
-            updateActionsSection(printerCard.find("#printer-actions"), printer, 'connect');
-            passThruToPrinter(printerId, {func: 'get_connection_options'}, wsList.get(printerId), passthruQueue, function(err, connectionOptions) {
-                if (err) {
-                    Toast.fire({
-                        type: 'error',
-                        title: 'Failed to contact OctoPrint!',
-                    });
-                } else {
-                    if (connectionOptions.ports.length < 1) {
-                        Toast.fire({
-                            type: 'error',
-                            title: 'Uh-Oh. No printer is found on the serial port.',
-                        });
-                        return;
-                    }
-                    Swal.fire({
-                        html: Mustache.template('connect_printer').render({connectionOptions}),
-                        confirmButtonText: 'Connect',
-                        showCancelButton: true,
-                        onOpen: function(e){
-                            $(e).find('select.selectpicker').selectpicker();
-                        },
-                    }).then((result) => {
-                        if (result.value) {
-                            passThruToPrinter(printerId, {func: 'connect', args: [
-                                $('select#id-port').val(),
-                                $('select#id-baudrate').val(),
-                            ]},
-                            wsList.get(printerId));
-                        }
-                    });
-                    updateActionsSection(printerCard.find("#printer-actions"), printer);
-                }
-            });
-        }
     }
 
     function toDurationBlock(seconds) {

@@ -1,3 +1,5 @@
+"use strict";
+
 /****** Gauge */
 var ALERT_THRESHOLD = 0.4;
 
@@ -49,29 +51,6 @@ function hideTooltip(btn) {
 
 
 /**** Printer functions */
-
-function passThruToPrinter(printerId, msgObj, pSocket, passthruQueue, callback) {
-    if (pSocket) {
-        if (passthruQueue) {
-            var refId = Math.random().toString();
-            passthruQueue.set(refId, callback);
-            _.assign(msgObj, {ref: refId});
-            setTimeout(function() {
-                if (passthruQueue.has(refId)) {
-                    Toast.fire({
-                        type: 'error',
-                        title: 'Failed to contact OctoPrint, or you have NOT upgraded to the latest TSD plugin version.',
-                    });
-                }
-            }, 10*1000);
-        }
-        pSocket.send(JSON.stringify({passthru: msgObj}));
-    } else {
-        if (callback){
-            callback("Message not passed through. No suitable WebSocket.");
-        }
-    }
-}
 
 function getPrinterLocalPref(prefix, printerId, defaultValue) {
     var itemId = prefix + String(printerId);

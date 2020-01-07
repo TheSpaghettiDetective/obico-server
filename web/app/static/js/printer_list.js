@@ -1,79 +1,22 @@
+"use strict";
+
 $(document).ready(function () {
     var printerList = [];
 
-    /*** Websocket messaging */
-    var wsList = new Map();
-    var passthruQueue = new Map();
+    var printerWs = new PrinterWebSocket();
 
-    function ensureWebsocketClosed(ws) {
-        ws.onclose = function (e) {
-            wsList.forEach( function(v, k) {
-                if (v == ws) {
-                    wsList.delete(k);
-                }
-            });
-        };
-        ws.onerror = function (e) {
-            ws.close();
-        };
-    }
+    /*** Establish websocket connections and callbacks */
+    $('.printer-card').each(function () {
+        var printerCard = $(this);
+        var printerId = printerCard.attr('id');
+        var wsUri = printerCard.data('share-token') ?
+        '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
 
-    function openPrinterWebSockets() {
-        $('.printer-card').each(function () {
-            var printerCard = $(this);
-            var printerId = printerCard.attr('id');
-
-            var wsUri = printerCard.data('share-token') ?
-            '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
-            var printerSocket = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri);
-            wsList.set(printerId, printerSocket);
-            printerSocket.onmessage = function (e) {
-                var msg = JSON.parse(e.data)
-                if ('passthru' in msg) {
-                    var refId = msg.passthru.ref;
-                    if (refId && passthruQueue.get(refId)) {
-                        var callback = passthruQueue.get(refId);
-                        passthruQueue.delete(refId);
-                        callback(null, msg.passthru.ret);
-                    }
-                } else {
-                    printerList[printerId] = msg;
-                    updatePrinterCard(printerCard);
-                }
-            };
-
-            ensureWebsocketClosed(printerSocket);
-
-            // Heartbeat to maintain the presence of connection
-            // Adapted from https://stackoverflow.com/questions/50876766/how-to-implement-ping-pong-request-for-websocket-connection-alive-in-javascript
-
-            function heartbeat() {
-                if (!printerSocket) return;
-                if (printerSocket.readyState !== 1) return;
-                printerSocket.send(JSON.stringify({}));
-                setTimeout(heartbeat, 30*1000);
-            }
-            setTimeout(heartbeat, 30*1000);
+        printerWs.openPrinterWebSockets(printerId, wsUri, function(msg) {
+            printerList[printerId] = msg;
+            updatePrinterCard(printerCard);
         });
-    }
-
-    function closeWebSockets() {
-        wsList.forEach( function(v) {
-            v.close();
-        });
-    }
-
-
-
-    ifvisible.on("blur", function(){
-        closeWebSockets();
     });
-    ifvisible.on("focus", function(){
-        openPrinterWebSockets();
-    });
-    openPrinterWebSockets();
-
-    /*** End of websocket messaging */
 
     /** Printer cards */
 
@@ -222,6 +165,10 @@ $(document).ready(function () {
         }
         showPicInPicExpandIfNeeded(taggedJpgEle);
 
+        // Nothing else needs to be done if it's a shared page. A bit hacky.
+        if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
+            return;
+
         // Alert section
         var pauseResumeBtn = printerCard.find("#print-pause-resume");
         var cancelBtn = printerCard.find('#print-cancel');
@@ -243,7 +190,7 @@ $(document).ready(function () {
         }
 
         // Action section. Pause/Resume/Cancel and Connect buttons
-        updateActionsSection(printerCard.find("#print-actions"), printer);
+        updateActionsSection(printerCard.find("#printer-actions"), printer);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
@@ -303,7 +250,7 @@ $(document).ready(function () {
             tempDiv.hide();
         }
         if (editable) {
-            initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []), wsList.get(printerId));
+            initTempEditIcon(tempDiv, temperatures, _.get(printer, 'settings.temp_profiles', []), printerWs);
         }
 
         // Info Section helpers
@@ -376,7 +323,7 @@ $(document).ready(function () {
         }
 
         function connectBtnClicked() {
-            updateActionsSection(printerCard.find("#print-actions"), printer, 'connect');
+            updateActionsSection(printerCard.find("#printer-actions"), printer, 'connect');
             passThruToPrinter(printerId, {func: 'get_connection_options'}, wsList.get(printerId), passthruQueue, function(err, connectionOptions) {
                 if (err) {
                     Toast.fire({
@@ -407,7 +354,7 @@ $(document).ready(function () {
                             wsList.get(printerId));
                         }
                     });
-                    updateActionsSection(printerCard.find("#print-actions"), printer);
+                    updateActionsSection(printerCard.find("#printer-actions"), printer);
                 }
             });
         }

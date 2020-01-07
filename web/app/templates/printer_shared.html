@@ -53,8 +53,10 @@
   var dhInverseIconSrc = "{% static 'img/detective-hour-inverse.png' %}";
   var loadingIcon = "{% static 'img/loading.gif' %}";
   var isProAccount = true;    // Only Pro account can share. So overwrite the global var
+  var isOnSharedPage = true;
 </script>
 
+<script src="{% static 'js/printer_ws.js' %}"></script>
 <script src="{% static 'js/printer_list.js' %}"></script>
 <script type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>

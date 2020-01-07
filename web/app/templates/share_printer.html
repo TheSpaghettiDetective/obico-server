@@ -19,7 +19,11 @@
             <div class="form-group">
             <div class="custom-control custom-checkbox form-check-inline">
               <input type="checkbox" name="shared" class="custom-control-input" id="share-checkbox" {% if printer.sharedresource.share_token %}checked{% endif %}>
-              <label class="custom-control-label" style="font-size: 16px;" for="share-checkbox">Share my printer feed via a secure link.</label>
+              {% if printer.sharedresource.share_token %}
+              <label class="custom-control-label" style="font-size: 16px;" for="share-checkbox">Uncheck to stop printer feed sharing. Click "Save" to de-activate the link.</label>
+              {% else %}
+              <label class="custom-control-label" style="font-size: 16px;" for="share-checkbox">Check to share printer feed via a secure link. Click "Save" to activate the link.</label>
+              {% endif %}
             </div>
             {% if printer.sharedresource.share_token %}
             <div class="mt-4">Click the icon to copy secure share link to clipboard</div>

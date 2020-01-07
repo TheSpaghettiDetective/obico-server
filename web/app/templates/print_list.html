@@ -50,7 +50,7 @@
           <div class="card-img-top plain-view" style="display: none">
             <video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
               poster="{{ print.poster_url }}"
-              data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+              data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
               <source src="{{ print.video_url }}" type='video/mp4'>
 
               <p class="vjs-no-js">
@@ -68,7 +68,7 @@
             {% if print.tagged_video_url %}
             <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
               poster="{{ print.poster_url }}"
-              data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+              data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
               <source src="{{ print.tagged_video_url }}" type='video/mp4'>
 
               <p class="vjs-no-js">
@@ -87,9 +87,8 @@
           </div>
           <div class="px-3 pt-2">
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle-{{ print.id }}"
-                checked="">
-              <label class="custom-control-label" for="view-toggle-{{ print.id }}">Detective View</label>
+              <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle-{{ print.id }}">
+              <label class="custom-control-label" for="view-toggle-{{ print.id }}">Show Print Info</label>
             </div>
           </div>
           <div class="card-body plain-view gauge-container pt-3" style="display: none">
@@ -200,7 +199,7 @@
               <div class="video-player">
                 <video id="tl-fullscreen-vjs" class="video-js vjs-default-skin vjs-big-play-centered" controls
                   preload="auto"
-                  data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": false}}'>
+                  data-setup='{"fill": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
                   <source type='video/mp4'>
                   <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a web browser that

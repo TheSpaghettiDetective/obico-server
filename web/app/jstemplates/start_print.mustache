@@ -1,0 +1,24 @@
+<div>
+  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <br>
+  <div>
+    {{#gcodeFiles}}
+        <div class="card">
+        <div class="card-body" style="display: flex; justify-content: space-between;">
+            <div>
+                <div class="gcode-filename">
+                {{filename}}
+                </div>
+                <div class="gcode-info">
+                    <div>Size: 1.2MB</div>
+                    <div>Uploaded: {{craetedAt}}</div>
+                </div>
+            </div>
+            <button type="button" class="send-print btn btn-primary" data-gcode-file-id="{{id}}">
+                Print <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+            </button>
+        </div>
+        </div>
+    {{/gcodeFiles}}
+  </div>
+</div>

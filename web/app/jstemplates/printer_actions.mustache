@@ -2,7 +2,7 @@
 {{#status}}
     {{#error}}
     <div class="col-12 text-danger text-center">
-    Failed to Connect to OctoPrint! Please try it again without using "Auto" for Serial Port and/or Baudrate.
+    OctoPrint ran into an error!
     </div>
     {{/error}}
     {{^disconnected}}
@@ -33,6 +33,9 @@
         {{#idle}}
             <div class="col-12 text-center py-3">
             Printer is idle.
+            <button id="start-print" type="button" class="btn btn-primary btn-block mt-2">
+            Print
+            </button>
             </div>
         {{/idle}}
     {{/disconnected}}

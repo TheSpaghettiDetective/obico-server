@@ -88,3 +88,10 @@ class PrintViewSet(viewsets.ModelViewSet):
         print.save()
 
         return Response(dict(user_credited=user_credited))
+
+class GCodeFileViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = GCodeFileSerializer
+
+    def get_queryset(self):
+        return GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')

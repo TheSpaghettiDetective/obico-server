@@ -508,3 +508,13 @@ class SharedResource(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class GCodeFile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    filename = models.CharField(max_length=1000, null=False, blank=False)
+    safe_filename = models.CharField(max_length=1000, null=False, blank=False)
+    url = models.CharField(max_length=2000, null=False, blank=False)
+    num_bytes = models.BigIntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

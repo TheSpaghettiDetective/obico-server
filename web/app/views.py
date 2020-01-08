@@ -184,6 +184,8 @@ def consent(request):
     else:
         return render(request, 'consent.html')
 
+### GCode File page ###
+
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
 def serve_jpg_file(request, file_path):

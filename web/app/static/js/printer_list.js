@@ -86,7 +86,7 @@ $(document).ready(function () {
                     cancelButtonText: 'Yes. Stop watching this print',
                 }).then(function (result) {
                     if (!result.value) {
-                        printerGet(printerId, '/mute_current_print/?mute_alert=true', function(result) {
+                        printerPost(printerId, '/mute_current_print/?mute_alert=true', function(result) {
                             printerList[printerId] = result.printer;
                             updatePrinterCard(printerCard);
                         });
@@ -166,7 +166,7 @@ $(document).ready(function () {
         }
 
         // Action section. Pause/Resume/Cancel and Connect buttons
-        updateActionsSection(printerCard.find("#printer-actions"), printer, printerId, shouldShowAlert(printer), printerWs);
+        updateActionsSection(printerCard.find("#printer-actions"), printerList, printerId, shouldShowAlert(printer), printerWs);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);

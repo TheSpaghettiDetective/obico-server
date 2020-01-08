@@ -17,6 +17,7 @@ def process_octoprint_status(printer, status):
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
     set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
+    set_as_str_if_present(octoprint_data, status, 'tsd_gcode_file_id')
     redis.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
     if status.get('current_print_ts'):

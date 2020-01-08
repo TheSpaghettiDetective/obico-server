@@ -9,6 +9,18 @@
 
 {% block content %}
 
+{% if user.is_pro %}
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container printer-settings">
+      <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
+      <p>G-Code remote upload and printing is a Pro feature.</p>
+      <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
+      <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
+    </div>
+  </div>
+</div>
+{% else %}
 <div>
   <div class="row my-3 justify-content-center">
     <div class="col-12">
@@ -48,6 +60,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% endblock content %}
 
@@ -74,7 +87,10 @@
         }
       },
     ],
-    "order": [[ 2, "desc" ]]
+    "order": [[ 2, "desc" ]],
+    "language": {
+      "emptyTable": "No G-Codes found. Upload some. 👆"
+    }
   });
 
   // Can't be put inside document.ready(). https://github.com/enyo/dropzone/issues/1423

@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% load humanize %}
+
+{% block page_css %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.css"/>
+{% endblock %}
+
+{% block content %}
+
+<div>
+  <div class="row my-3 justify-content-center">
+    <div class="col-12">
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-lg-8">
+          <form action="upload/" id="gcode-upload" class="dropzone upload-box">
+            {% csrf_token %}
+            <div class="dz-message needsclick">
+              <i class="fas fa-upload fa-2x"></i> <br />
+              Drop files here or click to upload.<br />
+              G-Code files only. Up to 200MB each.
+              <div class="fallback">
+                <input name="file" type="file" multiple />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-sm-12 col-lg-8">
+      <div class="form-container" style="margin-top: 0rem;">
+      <table id="dtOrderExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th class="th-sm">File name
+            </th>
+            <th class="th-sm">File size (bytes)
+            </th>
+            <th class="th-sm">Uploaded
+            </th>
+          </tr>
+        </thead>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
+<script type="text/javascript" src="https://cdn.filesizejs.com/filesize.min.js"></script>
+
+<script type="text/javascript">
+  $.fn.dataTable.moment( 'MMMM Do, YYYY' );
+  var table = $('#dtOrderExample').DataTable({
+    ajax: {
+      url: '/api/v1/gcodes/',
+      dataSrc: ''
+    },
+    columns: [
+      { data: 'filename' },
+      { data: 'num_bytes' },
+      {
+        data: 'created_at',
+        render: function (data) {
+          return moment(data).format('MMMM Do, YYYY');
+        }
+      },
+    ],
+    "order": [[ 2, "desc" ]]
+  });
+
+  // Can't be put inside document.ready(). https://github.com/enyo/dropzone/issues/1423
+  // Also https://stackoverflow.com/questions/33672327/dropzone-events-not-working-need-a-success-call-back
+  Dropzone.autoDiscover = false;
+
+  Dropzone.options.gcodeUpload = {
+    paramName: "file", // The name that will be used to transfer the file
+    withCredentials: true,
+    maxFilesize: 200, // MB
+    timeout: 60 * 60 * 1000, // For large files
+    // acceptedFiles: "*",
+    init: function () {
+      this.on("success", function (file) {
+        table.ajax.reload();
+      });
+    },
+  };
+
+  $('#gcode-upload').dropzone();
+
+</script>
+
+{% endblock page_js %}

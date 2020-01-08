@@ -1,18 +1,18 @@
 <div>
-  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <input class="form-control" id="myInput" type="text" placeholder="Search file name ...">
   <br>
   <div>
     {{#gcodeFiles}}
         <div class="card">
         <div class="card-body" style="display: flex; justify-content: space-between;">
-            <div>
-                <div class="gcode-filename">
+            <div style="width: 100%;">
+                <strong class="gcode-filename">
                 {{filename}}
-                </div>
-                <div class="gcode-info">
-                    <div>Size: 1.2MB</div>
-                    <div>Uploaded: {{craetedAt}}</div>
-                </div>
+                </strong>
+                <small class="gcode-info mt-1" style="display: flex; flex-wrap: wrap;">
+                    <div class="pr-3"><span class="text-muted">Size: </span> {{num_bytes}}</div>
+                    <div><span class="text-muted">Uploaded: </span> {{created_at}}</div>
+                </small>
             </div>
             <button type="button" class="send-print btn btn-primary" data-gcode-file-id="{{id}}">
                 Print <i class="fas fa-spinner fa-spin" style="display: none;"></i>
@@ -20,5 +20,14 @@
         </div>
         </div>
     {{/gcodeFiles}}
+
+    <div class="card">
+    <div class="card-body" style="display: flex; justify-content: space-between;">
+            <a type="button" href="/gcodes/" class="btn btn-primary btn-block">
+            <i class="fas fa-upload"></i>
+                &nbsp;Upload more G-Code
+            </a>
+    </div>
+    </div>
   </div>
 </div>

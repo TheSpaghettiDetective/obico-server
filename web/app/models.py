@@ -509,7 +509,7 @@ class SharedResource(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class GCodeFile(models.Model):
+class GCodeFile(SafeDeleteModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     filename = models.CharField(max_length=1000, null=False, blank=False)
     safe_filename = models.CharField(max_length=1000, null=False, blank=False)

@@ -89,14 +89,20 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
             type: 'GET',
             dataType: 'json',
         }).done(function(gcodeFiles) {
+            gcodeFiles.forEach(function(gcodeFile) {
+                gcodeFile.created_at = moment(gcodeFile.created_at).fromNow();
+                gcodeFile.num_bytes = filesize(gcodeFile.num_bytes);
+            });
+
             Swal.fire({
+                title: 'Print on ' + printer.name,
                 html: Mustache.template('start_print').render({gcodeFiles: gcodeFiles}),
                 showConfirmButton: false,
                 showCancelButton: true,
                 onOpen: function(gcodeDiv){
                     $(gcodeDiv).find("#myInput").on("keyup", function() {
                         var value = $(this).val().toLowerCase();
-                        $(e).find(".card").filter(function() {
+                        $(gcodeDiv).find(".card").filter(function() {
                             $(this).toggle($(this).find(".gcode-filename").text().toLowerCase().indexOf(value) > -1)
                         });
                     });
@@ -108,15 +114,16 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
                         printerWs.passThruToPrinter(printerId,
                             {func: 'download', target: 'file_downloader', args: _.filter(gcodeFiles, {id: gcodeFileId})},
                             function(err, ret) {
-                                if (err) {
+                                if (ret.error){
                                     Toast.fire({
                                         type: 'error',
-                                        title: 'Failed to contact OctoPrint!',
+                                        title: ret.error,
                                     });
                                     return;
                                 }
+
                                 Swal.fire({
-                                    html: Mustache.template('waiting_download').render({gcodeFiles: gcodeFiles, targetPath: ret, printer: printer}),
+                                    html: Mustache.template('waiting_download').render({gcodeFiles: gcodeFiles, targetPath: ret.target_path, printer: printer}),
                                     showConfirmButton: false
                                 });
 

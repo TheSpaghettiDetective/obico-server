@@ -1,6 +1,7 @@
 import os
 from binascii import hexlify
 import tempfile
+import re
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -185,6 +186,28 @@ def consent(request):
         return render(request, 'consent.html')
 
 ### GCode File page ###
+
+@login_required
+def gcodes(request):
+    gcodes = GCodeFile.objects.filter(user=request.user)
+    return render(request, 'gcode_files.html', dict(gcodes=gcodes))
+
+@login_required
+def upload_gcode_file(request):
+    if request.method == 'POST':
+        _, file_extension = os.path.splitext(request.FILES['file'].name)
+        gcode_file = GCodeFile.objects.create(
+            user=request.user,
+            filename=request.FILES['file'].name,
+            safe_filename=re.sub(r'[^\w\.]', '_', request.FILES['file'].name),
+            num_bytes=request.FILES['file'].size,
+        )
+        _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
+        gcode_file.url = ext_url
+        gcode_file.save()
+        return JsonResponse(dict(status='Ok'))
+    else:
+        return render(request, 'upload_print.html')
 
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 

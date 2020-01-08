@@ -72,11 +72,15 @@
         <ul class="navbar-nav">
           {% if user.is_authenticated %}
           <li class="nav-item {% if  'printers' in view_name %}active{% endif %}">
-            <a class="nav-link" href="/printers/">Printers
+            <a class="nav-link" href="/printers/">Printer
             </a>
           </li>
           <li class="nav-item {% if  'prints' in view_name %}active{% endif %}">
-            <a class="nav-link" href="/prints/">Time-lapses
+            <a class="nav-link" href="/prints/">Time-lapse
+            </a>
+          </li>
+          <li class="nav-item {% if  'gcodes' in view_name %}active{% endif %}">
+            <a class="nav-link" href="/gcodes/">G-Code
             </a>
           </li>
           {% else %}

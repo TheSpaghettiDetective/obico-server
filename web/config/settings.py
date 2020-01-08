@@ -276,6 +276,7 @@ MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
 INTERNAL_MEDIA_HOST = os.environ.get('INTERNAL_MEDIA_HOST')
 PICS_CONTAINER = 'tsd-pics'
 TIMELAPSE_CONTAINER = 'tsd-timelapses'
+GCODE_CONTAINER = 'tsd-gcodes'
 
 BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')

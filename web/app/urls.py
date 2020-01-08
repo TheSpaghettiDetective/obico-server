@@ -20,4 +20,6 @@ urlpatterns = [
     path('prints/', views.prints, name='prints'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
+    path('gcodes/', views.gcodes, name='gcodes'),
+    path('gcodes/upload/', views.upload_gcode_file, name='upload_gcode_file'),
 ]

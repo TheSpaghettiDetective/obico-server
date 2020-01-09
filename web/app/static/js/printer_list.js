@@ -283,12 +283,12 @@ $(document).ready(function () {
             dataType: 'json',
         }).done(function(result) {
             if (result.length > 0) {
-                msg = result[0];
-                opt = {
+                var msg = result[0];
+                var opt = {
                     position: 'top-end',
                     confirmButtonText: "Gotcha! Don't show this again.",
                 };
-                msg_obj = JSON.parse(msg.message);
+                var msg_obj = JSON.parse(msg.message);
                 _.assign(opt, msg_obj);
                 Swal.fire(opt)
                 .then(function (result) {

@@ -60,10 +60,11 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
                     },
                 }).then((result) => {
                     if (result.value) {
-                        printerWs.passThruToPrinter(printerId, {func: 'connect', args: [
-                            $('select#id-port').val(),
-                            $('select#id-baudrate').val(),
-                        ]});
+                        var args = [$('select#id-port').val(),];
+                        if ($('select#id-baudrate').val()) {
+                            args.push($('select#id-baudrate').val());
+                        }
+                        printerWs.passThruToPrinter(printerId, {func: 'connect', args: args});
                     }
                 });
 

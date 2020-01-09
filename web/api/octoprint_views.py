@@ -71,7 +71,7 @@ class OctoPrintPicView(APIView):
         printer.refresh_from_db() # Connection is keep-alive, which means printer object can be stale.
 
         pic = request.FILES['pic']
-        pic_id = int(timezone.now().timestamp())
+        pic_id = str(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
         if not printer.should_watch() or not printer.actively_printing():

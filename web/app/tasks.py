@@ -216,10 +216,10 @@ def filter_pics_by_start_end(pic_files, start_time, end_time):
     end_ts = end_time.timestamp()
     filtered_pic_files = []
     for pic_file in pic_files:
-        matched = re.search('/(\d+).jpg', pic_file)
+        matched = re.search('/([\d\.]+).jpg', pic_file)
         if not matched:
             continue
-        timestamp = int(matched[1])
+        timestamp = float(matched[1])
         if start_ts <= timestamp <= end_ts:
             filtered_pic_files += [pic_file]
 

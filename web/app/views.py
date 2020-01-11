@@ -17,7 +17,7 @@ from .view_helpers import *
 from .models import *
 from .forms import *
 from lib import redis
-from .telegram_bot import bot_name
+from .telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
@@ -123,6 +123,16 @@ def user_preferences(request):
             messages.success(request, 'Your preferences have been updated successfully!')
 
     return render(request, 'user_preferences.html', dict(form=form, bot_name=bot_name))
+
+@login_required
+def test_telegram(request):
+    if request.method == 'POST':
+        user = request.user
+        bot = telegram_bot()
+        if bot and user.telegram_chat_id:
+            bot.send_message(user.telegram_chat_id, 'Test from TSD', parse_mode='Markdown') #errors throw
+            return JsonResponse(dict(status='Ok'))
+    return JsonResponse(dict(status='API error'), status=400)
 
 def unsubscribe_email(request):
     unsub_token = request.GET['unsub_token']

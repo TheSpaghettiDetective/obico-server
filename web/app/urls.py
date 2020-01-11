@@ -16,6 +16,7 @@ urlpatterns = [
     path('printers/shared/<share_token>/', views.printer_shared, name='printer_shared'),
     path('publictimelapses/', views.publictimelapse_list, name='publictimelapse_list'),
     path('user_preferences/', views.user_preferences, name='user_preferences'),
+    path('test_telegram', views.test_telegram, name='test_telegram'),
     path('unsubscribe_email/', views.unsubscribe_email, name='unsubscribe_email'),
     path('prints/', views.prints, name='prints'),
     path('prints/upload/', views.upload_print, name='upload_print'),

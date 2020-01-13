@@ -57,7 +57,7 @@ services:
   tasks:
     <<: *web-defaults
     hostname: tasks
-    command: sh -c "celery -A config worker --beat -l info"
+    command: sh -c "celery -A config worker --beat -l info -c 2 -Q realtime,celery"
 
   redis:
     restart: unless-stopped

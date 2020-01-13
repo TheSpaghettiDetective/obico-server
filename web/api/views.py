@@ -91,6 +91,7 @@ class PrintViewSet(viewsets.ModelViewSet):
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = GCodeFileSerializer
 
     def get_queryset(self):

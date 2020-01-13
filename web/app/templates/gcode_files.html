@@ -23,9 +23,7 @@
 {% else %}
 <div>
   <div class="row my-3 justify-content-center">
-    <div class="col-12">
-      <div class="row justify-content-center">
-        <div class="col-sm-12 col-lg-8">
+    <div class="col-sm-12 col-lg-10">
           <form action="upload/" id="gcode-upload" class="dropzone upload-box">
             {% csrf_token %}
             <div class="dz-message needsclick">
@@ -37,21 +35,21 @@
               </div>
             </div>
           </form>
-        </div>
-      </div>
     </div>
   </div>
   <div class="row justify-content-center">
-    <div class="col-sm-12 col-lg-8">
+    <div class="col-sm-12 col-lg-10">
       <div class="form-container" style="margin-top: 0rem;">
-      <table id="dtOrderExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+      <table id="dtOrderExample" class="table table-striped" cellspacing="0" width="100%">
         <thead>
           <tr>
-            <th class="th-sm">File name
+            <th>File name
             </th>
-            <th class="th-sm">File size (bytes)
+            <th>File size (bytes)
             </th>
-            <th class="th-sm">Uploaded
+            <th>Uploaded
+            </th>
+            <th>
             </th>
           </tr>
         </thead>
@@ -86,6 +84,12 @@
           return moment(data).format('MMMM Do, YYYY');
         }
       },
+      { data: null,
+        orderable: false,
+        render: function (data) {
+          return '<a role="button" class="btn btn-outline-danger btn-sm borderless" onclick="deleteGCode(' + data.id + ')"><i class="fas fa-trash-alt fa-lg"></i></a>';
+        }
+      }
     ],
     "order": [[ 2, "desc" ]],
     "language": {
@@ -112,6 +116,19 @@
 
   $('#gcode-upload').dropzone();
 
+  function deleteGCode(gcodeFileId) {
+    $.ajax({
+        url: '/api/v1/gcodes/' + gcodeFileId + '/',
+        type: 'DELETE',
+        dataType: 'json',
+    }).done(function (result) {
+        Toast.fire({
+            type: 'success',
+            text: 'G-Code deleted successfully!',
+        });
+        table.ajax.reload();
+    });
+  }
 </script>
 
 {% endblock page_js %}

@@ -189,9 +189,11 @@
         {{ form.telegram_chat_id }}
         <div class="form-group row">
         {% if user.telegram_chat_id %}
-        <div class="col-sm-12" id="id_telegram_logout_btn">
-        <div class="btn btn-primary float-left"
-          onclick="onTelegramLogout()">Unlink Telegram</div>
+        <div class="col-sm-6" id="id_telegram_logout_btn">
+          <div class="btn btn-primary float-left" onclick="onTelegramLogout()">Unlink Telegram</div>
+        </div>
+        <div class="col-sm-6" id="id_telegram_test_btn">
+          <div class="btn btn-primary float-left" onclick="onTelegramTest(this)">Test Telegram Notification</div>
         </div>
         {% else %}
         <script async src="https://telegram.org/js/telegram-widget.js?7"
@@ -210,6 +212,13 @@
           function onTelegramLogout() {
             document.getElementById("id_telegram_chat_id").value = "";
             document.getElementById("preference_form").submit()
+          }
+          function onTelegramTest(el) {
+            token = $("#preference_form").find('input[name=csrfmiddlewaretoken]').val();
+            $(el).addClass('disabled');
+            $.post("/test_telegram", {csrfmiddlewaretoken: token}, function(data, status) {
+                $(el).addClass('btn-success');
+            });
           }
         </script>
         </div>

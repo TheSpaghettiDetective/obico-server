@@ -18,7 +18,10 @@ def telegram_bot():
 bot_name = None
 bot = telegram_bot()
 if bot:
-    bot_name = bot.get_me().username
+    try:
+        bot_name = bot.get_me().username
+    except Exception as e:
+        LOGGER.warn("Couldn't get telegram bot name: " + str(e))
 
 def default_markup():
     markup = types.InlineKeyboardMarkup(row_width=1)

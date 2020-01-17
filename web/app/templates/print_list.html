@@ -39,9 +39,9 @@
                 <i class="fas fa-download"></i>
               </a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="{{ print.video_url }}" download="{{ print.filename }}.mp4">Download Original Time-lapse</a>
+                <a class="download dropdown-item" data-video-url="{{ print.video_url }}" data-filename="{{ print.filename }}.mp4" data-mime-type="video/mp4">Download Original Time-lapse</a>
                 {% if print.tagged_video_url %}
-                <a class="dropdown-item" href="{{ print.tagged_video_url }}" download="{{ print.filename }}_detective_view.mp4">Download Detective View</a>
+                <a class="download dropdown-item" data-video-url="{{ print.tagged_video_url }}" data-filename="{{ print.filename }}_detective_view.mp4" data-mime-type="video/mp4">Download Detective View</a>
                 {% endif %}
               </div>
             </div>

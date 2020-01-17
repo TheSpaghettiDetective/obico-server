@@ -93,6 +93,16 @@ $(document).ready(function () {
         updateBtns();
     });
 
+    $('.download.dropdown-item').on('click', function () {
+        var x=new XMLHttpRequest();
+        var filename = $(this).data('filename');
+        var mimeType = $(this).data('mime-type');
+        x.open( "GET", $(this).data('video-url'), true);
+        x.responseType="blob";
+        x.onload= function(e){download(e.target.response, filename, mimeType);};
+        x.send();
+    });
+
     $('#delete-prints-btn').on('click', function () {
         var numSelected = $('input[id^="select-print-"]:checked').length;
 

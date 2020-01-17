@@ -226,4 +226,4 @@ def serve_jpg_file(request, file_path):
     if not os.path.exists(full_path):
         raise Http404("Requested file does not exist")
     with open(full_path, 'rb') as fh:
-        return HttpResponse(fh, content_type='image/jpeg')
+        return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))

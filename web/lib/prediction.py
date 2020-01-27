@@ -19,7 +19,6 @@ def update_prediction_with_detections(prediction, detections):
     prediction.rolling_mean_long = next_rolling_mean(p, prediction.rolling_mean_long, prediction.lifetime_frame_num, ROLLING_WIN_LONG)
 
 def is_failing(prediction, detective_sensitivity, escalating_factor=1):
-    LOGGER.info(prediction)
     if prediction.current_frame_num < settings.INIT_SAFE_FRAME_NUM:
         return False
 

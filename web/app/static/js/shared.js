@@ -62,15 +62,6 @@ function setPrinterLocalPref(prefix, printerId, value) {
     return localStorage.setItem(itemId, value);
 }
 
-
-function printerGet(printerId, uri, callback) {
-    $.ajax({
-        url: '/api/v1/printers/' + printerId + uri,
-        type: 'GET',
-        dataType: 'json',
-    }).done(function(result) { callback(result); });
-}
-
 function sendPrinterCommand(printerId, command) {
     printerGet(printerId, command, function (result) {
         var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
@@ -115,6 +106,13 @@ function printerPostApi(path, printerId, data) {
     });
 }
 
+function printerGet(printerId, uri, callback) {
+    $.ajax({
+        url: '/api/v1/printers/' + printerId + uri,
+        type: 'GET',
+        dataType: 'json',
+    }).done(function(result) { callback(result); });
+}
 
 /**** Streaming */
 

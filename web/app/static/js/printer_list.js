@@ -57,46 +57,6 @@ $(document).ready(function () {
             });
         });
 
-        printerCard.find('#not-a-failure').click(function (e) {
-            if (printerCard.find("#print-pause-resume").text() == 'Resume') {
-                Confirm.fire({
-                    title: 'Noted!',
-                    html: '<a href="/ent/detective_hours/">You just earned ' + '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a>' +
-                    '<p /><p>What do you want to do now?</p>',
-                    confirmButtonText: 'Resume print',
-                    cancelButtonText: 'Resume, and don\'t alert again for this print',
-                }).then(function (result) {
-                    if (result.value) {
-                        sendPrinterCommand(printerId, '/resume_print/');
-                    } else if (result.dismiss == 'cancel') {
-                        sendPrinterCommand(printerId, '/resume_print/?mute_alert=true');
-                    }
-                });
-            } else {
-                $.ajax({
-                    url: '/api/v1/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
-                    type: 'GET',
-                    dataType: 'json',
-                });
-                Confirm.fire({
-                    title: 'Noted!',
-                    html: '<p>Thank you for your feedback.</p><p><a href="/ent/detective_hours/">You just earned ' +
-                    '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />' + '.</a></p><p>Do you want to turn off watching for this print?</p>',
-                    confirmButtonText: 'No. Keep on watching',
-                    cancelButtonText: 'Yes. Stop watching this print',
-                }).then(function (result) {
-                    if (!result.value) {
-                        printerPost(printerId, '/mute_current_print/?mute_alert=true', function(result) {
-                            printerList[printerId] = result.printer;
-                            updatePrinterCard(printerCard);
-                        });
-                    }
-                });
-            }
-
-            e.preventDefault();
-        });
-
         printerCard.find('.tagged-jpg').on('click', function () {
             expandThumbnailToFull($(this));
         });

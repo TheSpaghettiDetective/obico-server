@@ -8,6 +8,7 @@ from rest_framework import status
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
 from lib import redis
+from lib.channels import send_status_to_web
 from .serializers import *
 from config.celery import celery_app
 
@@ -34,7 +35,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
-        succeeded, user_credited = printer.resume_print(mute_alert=request.GET.get('mute_alert', None))
+        succeeded, user_credited = printer.resume_print()
         return self.send_command_response(printer, succeeded, user_credited)
 
     @action(detail=True, methods=['get'])
@@ -62,6 +63,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return self.send_command_response(printer, True, False)
 
     def send_command_response(self, printer, succeeded, user_credited):
+        send_status_to_web(printer.id)
         serializer = self.serializer_class(printer)
         return Response(dict(succeeded=succeeded, user_credited=user_credited, printer=serializer.data))
 

@@ -264,9 +264,6 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         user_credited = self.acknowledge_alert(Print.NOT_FAILED)
-        if mute_alert:
-            self.mute_current_print(True)
-
         self.send_octoprint_command('resume')
         return True, user_credited
 

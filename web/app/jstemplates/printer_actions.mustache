@@ -8,7 +8,7 @@
     {{^disconnected}}
         {{^idle}}
             {{#alertShowing}}
-                <div class="col-12 {{^printerPaused}}bg-warning{{/printerPaused}} {{#printerPaused}}bg-danger{{/printerPaused}} text-center py-1 mb-2" style="margin-top: -12px;">
+                <div class="col-12 {{^printerPaused}}bg-warning{{/printerPaused}} {{#printerPaused}}bg-danger{{/printerPaused}} text-center py-1 mb-2">
                     <i class="fas fa-exclamation-triangle align-middle"></i>
                     <span class="align-middle">{{^printerPaused}}Smelling fishy! Printer Not Paused.{{/printerPaused}}{{#printerPaused}}Failure Detected! Printer Paused!{{/printerPaused}}</span>
                 </div>

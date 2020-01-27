@@ -124,14 +124,6 @@ function expandThumbnailToFull(ele) {
         currentThumbnail.removeClass("thumbnail").addClass("full");
     }
 }
-function showPicInPicExpandIfNeeded(ele) {
-    var eleParent = ele.parent().parent();
-    if (eleParent.find("img.tagged-jpg").is(':visible') && eleParent.find("video.remote-video").is(':visible')) {
-        eleParent.find('.pic-in-pic-expand').show();
-    } else {
-        eleParent.find('.pic-in-pic-expand').hide();
-    }
-}
 
 /******** End of streaming functions */
 

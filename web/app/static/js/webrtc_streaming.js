@@ -204,14 +204,11 @@ $(document).ready(function () {
     function showRemoteStream(ele) {
         var parentView = ele.parent().parent();
         if (!ele.is(':visible')) {
-            parentView.find('[class^=remote-]').addClass('hide').hide();
             ele.removeClass('hide').show();
         }
         var taggedJpgEle = parentView.find('.tagged-jpg');
         if (taggedJpgEle.attr('src').endsWith(printerStockImgSrc)) {
             taggedJpgEle.addClass('hide').hide();
         }
-        expandThumbnailToFull(ele);
-        showPicInPicExpandIfNeeded(ele);
     }
 });

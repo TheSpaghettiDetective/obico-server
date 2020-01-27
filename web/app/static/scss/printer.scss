@@ -52,12 +52,6 @@
           height: 100%;
         }
       }
-
-      .pic-in-pic-expand {
-        right: 6px;
-        top: initial;
-        bottom: 4px;
-      }
     }
   }
 
@@ -87,11 +81,6 @@
         left: 0;
         right: 0;
       }
-
-      .pic-in-pic-expand {
-        left: 4px;
-        top: 4px;
-      }
     }
   }
 
@@ -117,12 +106,6 @@
       top: 0px;
       z-index: 1;
     }
-  }
-
-  .pic-in-pic-expand {
-    position: absolute;
-    z-index: 2;
-    pointer-events: none;
   }
 }
 

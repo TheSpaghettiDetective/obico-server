@@ -99,7 +99,6 @@ $(document).ready(function () {
         if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printerStockImgSrc)) {
             taggedJpgEle.removeClass('hide').show();
         }
-        showPicInPicExpandIfNeeded(taggedJpgEle);
 
         // Nothing else needs to be done if it's a shared page. A bit hacky.
         if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)

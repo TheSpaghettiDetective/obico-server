@@ -18,11 +18,11 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
     actionsDiv.find('#start-print').click(startPrintBtnClicked);
 
     function pauseResumeBtnClicked() {
-        if (alertShowing) {
+        var toResume = _.lowerCase(_.trim($(this).text())) === 'resume';
+        if (alertShowing && toResume) {
             notFailedBtnClicked(event, printerId, true);
         } else {
-            var btn = $(this);
-            sendPrinterAction(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/', true);
+            sendPrinterAction(printerId, toResume ? '/resume_print/' : '/pause_print/', true);
         }
     }
 

@@ -20,9 +20,9 @@ from app.models import *
 from app.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
-from .octoprint_messages import STATUS_TTL_SECONDS
 from config.celery import celery_app
 
+IMG_URL_TTL_SECONDS = 60*30
 ALERT_COOLDOWN_SECONDS = 120
 
 LOGGER = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class OctoPrintPicView(APIView):
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
         if not printer.should_watch() or not printer.actively_printing():
-            redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
+            redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
             send_status_to_web(printer.id)
             return Response({'result': 'ok'})
 
@@ -94,7 +94,7 @@ class OctoPrintPicView(APIView):
         overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
         tagged_img.seek(0)
         _, external_url = save_file_obj('tagged/{}/{}.jpg'.format(printer.id, pic_id), tagged_img, settings.PICS_CONTAINER)
-        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=STATUS_TTL_SECONDS)
+        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])
         redis.printer_p_json_set(printer.id, pic_id, prediction_json, ex=60*60*24*2)

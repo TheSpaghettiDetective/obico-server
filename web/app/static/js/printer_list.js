@@ -116,25 +116,31 @@ $(document).ready(function () {
             printFilenameDiv.hide();
             printerNameDiv.removeClass("secondary-title");
         }
-
-        // Show and expand tagged jpg view to full view if it was previously hidden automatically by stream views
-        var taggedJpgEle = printerCard.find("img.tagged-jpg");
-        taggedJpgEle.attr('src', _.get(printer, 'pic.img_url', printerStockImgSrc));
-        if (!taggedJpgEle.is(':visible') && !taggedJpgEle.attr('src').endsWith(printerStockImgSrc)) {
-            taggedJpgEle.removeClass('hide').show();
-        }
-
         // Nothing else needs to be done if it's a shared page. A bit hacky.
         if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
             return;
 
-        // Alert section
-        var pauseResumeBtn = printerCard.find("#print-pause-resume");
-        var cancelBtn = printerCard.find('#print-cancel');
+        // Video streaming and tagged jpg display logics
+        var taggedJpgEle = printerCard.find('.tagged-jpg');
+        var imgUrl = _.get(printer, 'pic.img_url', printerStockImgSrc);
+        if (imgUrl !== printerStockImgSrc) {
+            taggedJpgEle.removeClass('hide').show();
+        }
+
+        var videoEle = printerCard.find("video.remote-video");
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
+
+            // Shrink video stream view to thumbnail to reveal tagged jpg if it's failing
+            if (imgUrl !== printerStockImgSrc) {
+                videoEle.parent().addClass("thumbnail").removeClass("full");
+            }
         } else {
             printerCard.find(".failure-alert").hide();
+            expandThumbnailToFull(videoEle);
+        }
+        if (!videoEle.is(':visible') || !videoEle.parent().hasClass('full')) {
+            taggedJpgEle.attr('src', imgUrl);
         }
 
         // Gauge

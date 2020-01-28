@@ -1,5 +1,37 @@
 "use strict";
 
+function notFailedBtnClicked(event, printerId, resumePrint) {
+    Confirm.fire({
+        title: 'Noted!',
+        html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+    }).then(function (result) {
+        if (result.dismiss == 'cancel') {
+            // Hack: So that 2 APIs are not called at the same time
+            setTimeout(function() {
+                sendPrinterCommand(printerId, '/mute_current_print/?mute_alert=true');
+            }, 1000);
+        }
+        if (resumePrint) {
+            sendPrinterCommand(printerId, '/resume_print/');
+        } else {
+            $.ajax({
+                url: '/api/v1/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
+                type: 'GET',
+                dataType: 'json',
+            }).then(function (result) {
+                Toast.fire({
+                    type: 'success',
+                    html: '<p><a href="/ent/detective_hours/">You just earned ' +
+                    '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>',
+                });
+            });
+        }
+    });
+    event.preventDefault();
+}
+
 $(document).ready(function () {
     var printerList = [];
     var printerWs = new PrinterWebSocket();
@@ -56,6 +88,8 @@ $(document).ready(function () {
                 }
             });
         });
+
+        printerCard.find('#not-a-failure').click(function (e) { notFailedBtnClicked(e, printerId, false); });
 
         printerCard.find('.tagged-jpg').on('click', function () {
             expandThumbnailToFull($(this));

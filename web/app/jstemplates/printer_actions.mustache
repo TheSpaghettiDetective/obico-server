@@ -7,66 +7,20 @@
     {{/error}}
     {{^disconnected}}
         {{^idle}}
-            {{#alertShowing}}
-                <div class="col-12 {{^printerPaused}}bg-warning{{/printerPaused}} {{#printerPaused}}bg-danger{{/printerPaused}} text-center py-1 mb-2">
-                    <i class="fas fa-exclamation-triangle align-middle"></i>
-                    <span class="align-middle">{{^printerPaused}}Smelling fishy! Printer Not Paused.{{/printerPaused}}{{#printerPaused}}Failure Detected! Printer Paused!{{/printerPaused}}</span>
-                </div>
-                {{#printerPaused}}
-                <div class="col-sm-6">
-                    <button id="resume-not-failed" type="button"
-                        class="btn btn-success btn-block mt-2" >
-                    <span>
-                    Not Failed - Resume Print
-                    </span>
-                    <img class="dh-icon"
-                    src="{{dhInverseIconSrc}}" />
-                    </button>
-                </div>
-                {{/printerPaused}}
-                {{^printerPaused}}
-                    <div class="col-12">
-                        <button id="not-failed" type="button" class="btn btn-success btn-block mt-2" >
-                        <span>Not Failed - It Is A False Alarm
-                        </span>
-                        <img class="dh-icon"
-                        src="{{dhInverseIconSrc}}" />
-                        </button>
-                    </div>
-                    <div class="col-sm-6">
-                        <button id="print-pause-resume" type="button"
-                            class="btn btn-warning btn-block mt-2" >
-                        <span>
-                        Pause
-                        </span>
-                        </button>
-                    </div>
-                {{/printerPaused}}
-                <div class="col-sm-6">
-                    <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" >
-                    <span>Did Fail - Cancel Print
-                    </span>
-                    <img class="dh-icon"
-                    src="{{dhInverseIconSrc}}" />
-                    </button>
-                </div>
-            {{/alertShowing}}
-            {{^alertShowing}}
-                <div class="col-sm-6">
-                    <button id="print-pause-resume" type="button"
-                        class="btn {{^printerPaused}}btn-warning{{/printerPaused}} {{#printerPaused}}btn-success{{/printerPaused}} btn-block mt-2" >
-                    <span>
-                    {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
-                    </span>
-                    </button>
-                </div>
-                <div class="col-sm-6">
-                    <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" >
-                    <span>Cancel
-                    </span>
-                    </button>
-                </div>
-            {{/alertShowing}}
+            <div class="col-sm-6">
+                <button id="print-pause-resume" type="button"
+                    class="btn {{^printerPaused}}btn-warning{{/printerPaused}} {{#printerPaused}}btn-success{{/printerPaused}} btn-block mt-2" >
+                <span>
+                {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
+                </span>
+                </button>
+            </div>
+            <div class="col-sm-6">
+                <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" >
+                <span>Cancel
+                </span>
+                </button>
+            </div>
         {{/idle}}
         {{#idle}}
             <div class="col-12 text-center py-3">

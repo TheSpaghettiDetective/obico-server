@@ -44,6 +44,12 @@
           </div>
         </div>
       </div>
+      <div class="failure-alert card-body bg-warning px-2 py-1" style="display: none">
+        <i class="fas fa-exclamation-triangle align-middle"></i>
+        <span class="align-middle">Failure Detected!</span>
+        <button type="button" id="not-a-failure" class="btn btn-outline-primary btn-sm float-right">Not a failure?
+        </button>
+      </div>
       <div class="card-body gauge-container">
           <div class="overlay-top text-center"
           style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px; display: none">
@@ -156,6 +162,7 @@
 <script src="{% static 'js/printer_list.js' %}"></script>
 <script src="{% static 'js/temperature_change.js' %}"></script>
 <script src="{% static 'js/printer_actions.js' %}"></script>
+
 <script type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
 <script src="{% static 'js/janus.js' %}"></script>

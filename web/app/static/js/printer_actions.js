@@ -5,7 +5,6 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
 
     actionsDiv.html(Mustache.template('printer_actions').render({
         dhInverseIconSrc: dhInverseIconSrc,
-        alertShowing: alertShowing,
         status: printer.status,
         printerPaused: _.get(printerState, 'paused'),
         idle: printerStateTxt == 'Operational',
@@ -17,12 +16,14 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
     actionsDiv.find('#print-cancel').click(cancelBtnClicked);
     actionsDiv.find('#connect-printer').click(connectBtnClicked);
     actionsDiv.find('#start-print').click(startPrintBtnClicked);
-    actionsDiv.find('#not-failed').click(notFailedBtnClicked);
-    actionsDiv.find('#resume-not-failed').click(resumeNotFailedBtnClicked);
 
     function pauseResumeBtnClicked() {
-        var btn = $(this);
-        sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
+        if (alertShowing) {
+            notFailedBtnClicked(event, printerId, true);
+        } else {
+            var btn = $(this);
+            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
+        }
     }
 
     function cancelBtnClicked() {
@@ -33,36 +34,6 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
                 sendPrinterCommand(printerId, '/cancel_print/');
             }
         });
-    }
-
-    function notFailedBtnClicked(event, resumePrint) {
-        Confirm.fire({
-            title: 'Noted!',
-            html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-        }).then(function (result) {
-            if (result.dismiss == 'cancel') {
-                // Hack: So that 2 APIs are not called at the same time
-                setTimeout(function() {
-                    sendPrinterCommand(printerId, '/mute_current_print/?mute_alert=true');
-                }, 1000);
-            }
-            if (resumePrint) {
-                sendPrinterCommand(printerId, '/resume_print/');
-            } else {
-                $.ajax({
-                    url: '/api/v1/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
-                    type: 'GET',
-                    dataType: 'json',
-                });
-            }
-        });
-        event.preventDefault();
-    }
-
-    function resumeNotFailedBtnClicked(event) {
-        notFailedBtnClicked(event, true);
     }
 
     function connectBtnClicked() {

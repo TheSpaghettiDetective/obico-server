@@ -155,7 +155,6 @@
     }
 
     button.info-section-toggle {
-      border-radius: 25px;
       width: 33px;
       height: 33px;
       position: relative;
@@ -168,6 +167,7 @@
       }
       &.pressed {
         color: lighten($color-primary, 5);
+        border-bottom: solid thin $color-primary;
       }
     }
   }

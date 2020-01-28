@@ -329,8 +329,13 @@ a.link {
     padding: 0 16px;
   }
   .info-section {
+    &.settings {
+      text-align: center;
+      padding-top: 7px;
+      border-bottom: solid thin $color-gray;
+    }
+
     background: darken($color-bg, 1);
-    margin-top: -18px;
     .row {
       padding: 0.3em 0em 0.1em;
       text-align: center;

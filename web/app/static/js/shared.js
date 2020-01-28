@@ -62,18 +62,23 @@ function setPrinterLocalPref(prefix, printerId, value) {
     return localStorage.setItem(itemId, value);
 }
 
-function sendPrinterCommand(printerId, command) {
-    printerGet(printerId, command, function (result) {
-        var toastHtml = '<h6>Successfully sent command to OctoPrint!</h6>' +
-        '<p>It may take a while to be executed by OctoPrint.</p>';
+function sendPrinterAction(printerId, action, octoprintCommand) {
+    printerGet(printerId, action, function (result) {
+        var toastHtml = '';
+        if (octoprintCommand) {
+            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
+            '<p>It may take a while to be executed by OctoPrint.</p>';
+        }
         if (result.user_credited) {
-            toastHtml += '<p>BTW <a href="/ent/detective_hours/">You just earned ' +
+            toastHtml += '<p><a href="/ent/detective_hours/">You just earned ' +
             '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>';
         }
-        Toast.fire({
-            type: 'success',
-            html: toastHtml,
-        });
+        if (toastHtml != '') {
+            Toast.fire({
+                type: 'success',
+                html: toastHtml,
+            });
+        }
     });
 }
 

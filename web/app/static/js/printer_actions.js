@@ -22,7 +22,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
             notFailedBtnClicked(event, printerId, true);
         } else {
             var btn = $(this);
-            sendPrinterCommand(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/');
+            sendPrinterAction(printerId, _.lowerCase(_.trim(btn.text())) === 'pause' ? '/pause_print/' : '/resume_print/', true);
         }
     }
 
@@ -31,7 +31,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
             text: 'Once cancelled, the print can no longer be resumed.',
         }).then(function (result) {
             if (result.value) {  // When it is confirmed
-                sendPrinterCommand(printerId, '/cancel_print/');
+                sendPrinterAction(printerId, '/cancel_print/', true);
             }
         });
     }

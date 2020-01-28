@@ -10,23 +10,13 @@ function notFailedBtnClicked(event, printerId, resumePrint) {
         if (result.dismiss == 'cancel') {
             // Hack: So that 2 APIs are not called at the same time
             setTimeout(function() {
-                sendPrinterCommand(printerId, '/mute_current_print/?mute_alert=true');
+                sendPrinterAction(printerId, '/mute_current_print/?mute_alert=true', false);
             }, 1000);
         }
         if (resumePrint) {
-            sendPrinterCommand(printerId, '/resume_print/');
+            sendPrinterAction(printerId, '/resume_print/', true);
         } else {
-            $.ajax({
-                url: '/api/v1/printers/' + printerId + '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
-                type: 'GET',
-                dataType: 'json',
-            }).then(function (result) {
-                Toast.fire({
-                    type: 'success',
-                    html: '<p><a href="/ent/detective_hours/">You just earned ' +
-                    '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>',
-                });
-            });
+            sendPrinterAction(printerId, '/acknowledge_alert/?alert_overwrite=NOT_FAILED', false);
         }
     });
     event.preventDefault();

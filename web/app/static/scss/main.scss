@@ -27,6 +27,7 @@ body {
 }
 
 button, .btn {
+  border-width: 2px;
   border-radius: 300px;
   &.no-corner {
     border-radius: 0;

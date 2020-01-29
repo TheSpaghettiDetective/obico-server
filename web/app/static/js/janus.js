@@ -1793,17 +1793,18 @@ function Janus(gatewayCallbacks) {
 						config.remoteStream.removeTrack(ev.target);
 						pluginHandle.onremotestream(config.remoteStream);
 					}
-				};
-				event.track.onmute = event.track.onended;
-				event.track.onunmute = function(ev) {
-					Janus.log("Remote track flowing again:", ev);
-					try {
-						config.remoteStream.addTrack(ev.target);
-						pluginHandle.onremotestream(config.remoteStream);
-					} catch(e) {
-						Janus.error(e);
-					};
-				};
+                };
+                // Some Chrome-related streaming issues seem to be related to mute/unmute events
+				// event.track.onmute = event.track.onended;
+				// event.track.onunmute = function(ev) {
+				// 	Janus.log("Remote track flowing again:", ev);
+				// 	try {
+				// 		config.remoteStream.addTrack(ev.target);
+				// 		pluginHandle.onremotestream(config.remoteStream);
+				// 	} catch(e) {
+				// 		Janus.error(e);
+				// 	};
+				// };
 			};
 		}
 		if(addTracks && stream !== null && stream !== undefined) {

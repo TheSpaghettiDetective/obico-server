@@ -35,7 +35,7 @@
                 class="tagged-jpg {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 src="{% static 'img/3d_printer.png' %}" alt="{{ printer.name }} current image" />
             </div>
-            <div id="webrtc-stream" class="webcam_fixed_ratio_inner full">
+            <div id="webrtc-stream" class="webcam_fixed_ratio_inner full ontop">
               <video
                 class="remote-video hide {{ printer.settings.webcam_flipH|yesno:'flipH,,' }} {{ printer.settings.webcam_flipV|yesno:'flipV,,' }}"
                 width=960 height={{ printer.settings.ratio169|yesno:'540,720,720' }} autoplay muted playsinline>

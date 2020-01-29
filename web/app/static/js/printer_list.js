@@ -132,7 +132,7 @@ $(document).ready(function () {
             printerCard.find(".failure-alert").show();
 
             // Shrink video stream view to thumbnail to reveal tagged jpg if it's failing
-            if (imgUrl !== printerStockImgSrc) {
+            if (imgUrl !== printerStockImgSrc && taggedJpgEle.parent().hasClass("full")) {
                 videoEle.parent().addClass("thumbnail").removeClass("full");
             }
         } else {

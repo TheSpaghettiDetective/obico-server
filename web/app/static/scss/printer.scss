@@ -50,6 +50,11 @@
 
         &.full {
           height: 100%;
+
+          &.ontop {
+            position: absolute;
+            top: 0;
+          }
         }
       }
     }

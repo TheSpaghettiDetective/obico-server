@@ -214,7 +214,9 @@ class AlertTestCase(TestCase):
             pause_if_needed(self.printer)
         with patch('django.utils.timezone.now', return_value=timezone.now() - timedelta(hours=0.5)):
             self.client.get(
-                '/api/v1/printers/{}/resume_print/'.format(self.printer.id), {'mute_alert': 'true'})
+                '/api/v1/printers/{}/resume_print/'.format(self.printer.id))
+            self.client.get(
+            '/api/v1/printers/{}/mute_current_print/'.format(self.printer.id), {'mute_alert': 'true'})
 
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alert_muted_at)

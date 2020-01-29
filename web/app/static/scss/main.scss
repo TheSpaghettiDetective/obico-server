@@ -26,6 +26,13 @@ body {
   border: none !important;
 }
 
+button, .btn {
+  border-radius: 300px;
+  &.no-corner {
+    border-radius: 0;
+  }
+}
+
 .custom-control-label {
   &::before {
     border: $color-primary solid 2px;
@@ -71,9 +78,12 @@ footer {
 }
 
 .bootstrap-select {
-  button.dropdown-toggle {
-    background-color: $color-primary;
-    border-color: $color-primary;
+  button {
+    &.dropdown-toggle {
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+    border-radius: 0;
   }
 }
 
@@ -235,7 +245,7 @@ a.link {
       font-size: 1.4rem !important;
     }
     button {
-      border-radius: unset !important;
+      border-radius: 300px !important;
       border: none !important;
 
       &.swal2-confirm {
@@ -244,6 +254,11 @@ a.link {
 
       &.swal2-cancel {
         background-color: $color-secondary !important;
+      }
+    }
+    .bootstrap-select {
+      button {
+        border-radius: 0 !important;
       }
     }
   }

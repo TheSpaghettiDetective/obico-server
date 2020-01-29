@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row my-2">
 {{#status}}
     {{#error}}
     <div class="col-12 text-danger text-center">
@@ -9,14 +9,14 @@
         {{^idle}}
             <div class="col-sm-6">
                 <button id="print-pause-resume" type="button"
-                    class="btn {{^printerPaused}}btn-warning{{/printerPaused}} {{#printerPaused}}btn-success{{/printerPaused}} btn-block mt-2" >
+                    class="btn {{^printerPaused}}btn-outline-warning{{/printerPaused}} {{#printerPaused}}btn-outline-success{{/printerPaused}} btn-block mt-2" >
                 <span>
                 {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
                 </span>
                 </button>
             </div>
             <div class="col-sm-6">
-                <button id="print-cancel" type="button" class="btn btn-danger btn-block mt-2 mb-2" >
+                <button id="print-cancel" type="button" class="btn btn-outline-danger btn-block mt-2 mb-2" >
                 <span>Cancel
                 </span>
                 </button>
@@ -25,7 +25,7 @@
         {{#idle}}
             <div class="col-12 text-center py-3">
             Printer is idle.
-            <button id="start-print" type="button" class="btn btn-primary btn-block mt-2">
+            <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
             Send G-Code and Start Printing
             </button>
             </div>
@@ -34,7 +34,7 @@
     {{#disconnected}}
         <div class="col-12 text-center py-2 text-warning">
             <div>Printer is not connected to OctoPrint.</div>
-            <button id="connect-printer" type="button" class="btn btn-success btn-block mt-2">
+            <button id="connect-printer" type="button" class="btn btn-outline-success btn-block mt-2">
             Connect <i class="fas fa-spinner fa-spin" style="display: none;"></i>
             </button>
         </div>

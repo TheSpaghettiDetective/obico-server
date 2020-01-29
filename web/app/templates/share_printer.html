@@ -31,7 +31,7 @@
                 <input type="text" id="secret-token-input" class="form-control" value="{{ request.scheme }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/"
                        readonly aria-label="Secret token">
                 <div class="input-group-append">
-                  <button id="copy-to-clipboard" class="btn btn-outline-primary" type="button"
+                  <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
                     data-clipboard-target="#secret-token-input" aria-label="Copy secure link to clipboard">
                     <i class="fas fa-clipboard"></i>
                   </button>

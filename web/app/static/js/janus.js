@@ -1794,8 +1794,7 @@ function Janus(gatewayCallbacks) {
 						pluginHandle.onremotestream(config.remoteStream);
 					}
                 };
-                // Some Chrome-related streaming issues seem to be related to mute/unmute events
-				// event.track.onmute = event.track.onended;
+				event.track.onmute = event.track.onended;
 				event.track.onunmute = function(ev) {
 					Janus.log("Remote track flowing again:", ev);
 					try {

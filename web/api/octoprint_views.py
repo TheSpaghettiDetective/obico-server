@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
 from django.core import serializers
+from django.core.files.uploadedfile import InMemoryUploadedFile
 import requests
 import json
 import io
@@ -71,6 +72,7 @@ class OctoPrintPicView(APIView):
         printer.refresh_from_db() # Connection is keep-alive, which means printer object can be stale.
 
         pic = request.FILES['pic']
+        pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
         internal_url, external_url = save_file_obj('raw/{}/{}.jpg'.format(printer.id, pic_id), pic, settings.PICS_CONTAINER)
 
@@ -119,3 +121,20 @@ class OctoPrintPingView(APIView):
                 'is_pro': user.is_pro,
             }
         })
+
+def cap_image_size(pic):
+    im = Image.open(pic.file)
+    if max(im.size) <= 1296:
+        pic.file.seek(0)
+        return pic
+
+    im.thumbnail((1280, 960), Image.ANTIALIAS)
+    output = io.BytesIO()
+    im.save(output, format='JPEG')
+    output.seek(0)
+    return InMemoryUploadedFile(output,
+                                    u"pic",
+                                    'pic',
+                                    pic.content_type,
+                                    len(output.getbuffer()),
+                                    None)

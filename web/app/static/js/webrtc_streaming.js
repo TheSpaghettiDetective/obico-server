@@ -206,9 +206,5 @@ $(document).ready(function () {
         if (!ele.is(':visible')) {
             ele.removeClass('hide').show();
         }
-        var taggedJpgEle = parentView.find('.tagged-jpg');
-        if (taggedJpgEle.attr('src').endsWith(printerStockImgSrc)) {
-            taggedJpgEle.addClass('hide').hide();
-        }
     }
 });

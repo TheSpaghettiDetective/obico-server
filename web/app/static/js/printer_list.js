@@ -116,17 +116,17 @@ $(document).ready(function () {
             printFilenameDiv.hide();
             printerNameDiv.removeClass("secondary-title");
         }
+
+        // Tagged jpg from webcam
+        var imgUrl = _.get(printer, 'pic.img_url', printerStockImgSrc);
+        var taggedJpgEle = printerCard.find('.tagged-jpg');
+        taggedJpgEle.attr('src', imgUrl);
+
         // Nothing else needs to be done if it's a shared page. A bit hacky.
         if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
             return;
 
         // Video streaming and tagged jpg display logics
-        var taggedJpgEle = printerCard.find('.tagged-jpg');
-        var imgUrl = _.get(printer, 'pic.img_url', printerStockImgSrc);
-        if (imgUrl !== printerStockImgSrc) {
-            taggedJpgEle.removeClass('hide').show();
-        }
-
         var videoEle = printerCard.find("video.remote-video");
         if (shouldShowAlert(printer)) {
             printerCard.find(".failure-alert").show();
@@ -138,9 +138,6 @@ $(document).ready(function () {
         } else {
             printerCard.find(".failure-alert").hide();
             expandThumbnailToFull(videoEle);
-        }
-        if (!videoEle.is(':visible') || !videoEle.parent().hasClass('full')) {
-            taggedJpgEle.attr('src', imgUrl);
         }
 
         // Gauge

@@ -12,7 +12,7 @@ import logging
 from datetime import datetime
 from auth import token_required
 from lib.detection_model import load_net, detect
-import ptvsd
+#import ptvsd
 from io import BytesIO
 from PIL import Image
 
@@ -25,7 +25,7 @@ if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.info')
     app.logger.handlers.extend(gunicorn_logger.handlers)
     # setup remote debugger
-    ptvsd.enable_attach(address = ('0.0.0.0', 3002), redirect_output=True)
+    # ptvsd.enable_attach(address = ('0.0.0.0', 3002), redirect_output=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = (environ.get('DEBUG') == 'True')

@@ -1,0 +1,4064 @@
+<?xml version="1.0" ?>
+<net batch="1" name="tsd" version="6">
+	<layers>
+		<layer id="0" name="inputs" precision="FP32" type="Input">
+			<output>
+				<port id="0">
+					<dim>1</dim>
+					<dim>3</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="1" name="detector/darknet-53/Conv/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="32" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>3</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="0" size="3456"/>
+				<biases offset="3456" size="128"/>
+			</blobs>
+		</layer>
+		<layer id="2" name="detector/darknet-53/Conv/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="3" name="detector/darknet-53/Conv_1/Conv2D" precision="FP32" type="Convolution">
+			<data dilations="1,1" group="1" kernel="3,3" output="64" pads_begin="1,1" pads_end="1,1" strides="2,2"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>416</dim>
+					<dim>416</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="3584" size="73728"/>
+				<biases offset="77312" size="256"/>
+			</blobs>
+		</layer>
+		<layer id="4" name="detector/darknet-53/Conv_1/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="5" name="detector/darknet-53/Conv_2/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="32" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="77568" size="8192"/>
+				<biases offset="85760" size="128"/>
+			</blobs>
+		</layer>
+		<layer id="6" name="detector/darknet-53/Conv_2/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="7" name="detector/darknet-53/Conv_3/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="64" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="85888" size="73728"/>
+				<biases offset="159616" size="256"/>
+			</blobs>
+		</layer>
+		<layer id="8" name="detector/darknet-53/Conv_3/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="9" name="detector/darknet-53/add" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="10" name="detector/darknet-53/Conv_4/Conv2D" precision="FP32" type="Convolution">
+			<data dilations="1,1" group="1" kernel="3,3" output="128" pads_begin="1,1" pads_end="1,1" strides="2,2"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>208</dim>
+					<dim>208</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="159872" size="294912"/>
+				<biases offset="454784" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="11" name="detector/darknet-53/Conv_4/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="12" name="detector/darknet-53/Conv_5/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="455296" size="32768"/>
+				<biases offset="488064" size="256"/>
+			</blobs>
+		</layer>
+		<layer id="13" name="detector/darknet-53/Conv_5/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="14" name="detector/darknet-53/Conv_6/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="128" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="488320" size="294912"/>
+				<biases offset="783232" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="15" name="detector/darknet-53/Conv_6/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="16" name="detector/darknet-53/add_1" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="17" name="detector/darknet-53/Conv_7/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="783744" size="32768"/>
+				<biases offset="816512" size="256"/>
+			</blobs>
+		</layer>
+		<layer id="18" name="detector/darknet-53/Conv_7/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="19" name="detector/darknet-53/Conv_8/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="128" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="816768" size="294912"/>
+				<biases offset="1111680" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="20" name="detector/darknet-53/Conv_8/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="21" name="detector/darknet-53/add_2" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="22" name="detector/darknet-53/Conv_9/Conv2D" precision="FP32" type="Convolution">
+			<data dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="2,2"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>104</dim>
+					<dim>104</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="1112192" size="1179648"/>
+				<biases offset="2291840" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="23" name="detector/darknet-53/Conv_9/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="24" name="detector/darknet-53/Conv_10/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="2292864" size="131072"/>
+				<biases offset="2423936" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="25" name="detector/darknet-53/Conv_10/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="26" name="detector/darknet-53/Conv_11/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="2424448" size="1179648"/>
+				<biases offset="3604096" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="27" name="detector/darknet-53/Conv_11/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="28" name="detector/darknet-53/add_3" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="29" name="detector/darknet-53/Conv_12/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="3605120" size="131072"/>
+				<biases offset="3736192" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="30" name="detector/darknet-53/Conv_12/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="31" name="detector/darknet-53/Conv_13/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="3736704" size="1179648"/>
+				<biases offset="4916352" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="32" name="detector/darknet-53/Conv_13/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="33" name="detector/darknet-53/add_4" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="34" name="detector/darknet-53/Conv_14/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="4917376" size="131072"/>
+				<biases offset="5048448" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="35" name="detector/darknet-53/Conv_14/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="36" name="detector/darknet-53/Conv_15/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="5048960" size="1179648"/>
+				<biases offset="6228608" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="37" name="detector/darknet-53/Conv_15/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="38" name="detector/darknet-53/add_5" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="39" name="detector/darknet-53/Conv_16/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="6229632" size="131072"/>
+				<biases offset="6360704" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="40" name="detector/darknet-53/Conv_16/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="41" name="detector/darknet-53/Conv_17/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="6361216" size="1179648"/>
+				<biases offset="7540864" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="42" name="detector/darknet-53/Conv_17/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="43" name="detector/darknet-53/add_6" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="44" name="detector/darknet-53/Conv_18/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="7541888" size="131072"/>
+				<biases offset="7672960" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="45" name="detector/darknet-53/Conv_18/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="46" name="detector/darknet-53/Conv_19/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="7673472" size="1179648"/>
+				<biases offset="8853120" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="47" name="detector/darknet-53/Conv_19/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="48" name="detector/darknet-53/add_7" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="49" name="detector/darknet-53/Conv_20/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="8854144" size="131072"/>
+				<biases offset="8985216" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="50" name="detector/darknet-53/Conv_20/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="51" name="detector/darknet-53/Conv_21/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="8985728" size="1179648"/>
+				<biases offset="10165376" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="52" name="detector/darknet-53/Conv_21/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="53" name="detector/darknet-53/add_8" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="54" name="detector/darknet-53/Conv_22/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="10166400" size="131072"/>
+				<biases offset="10297472" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="55" name="detector/darknet-53/Conv_22/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="56" name="detector/darknet-53/Conv_23/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="10297984" size="1179648"/>
+				<biases offset="11477632" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="57" name="detector/darknet-53/Conv_23/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="58" name="detector/darknet-53/add_9" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="59" name="detector/darknet-53/Conv_24/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="11478656" size="131072"/>
+				<biases offset="11609728" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="60" name="detector/darknet-53/Conv_24/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="61" name="detector/darknet-53/Conv_25/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="11610240" size="1179648"/>
+				<biases offset="12789888" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="62" name="detector/darknet-53/Conv_25/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="63" name="detector/darknet-53/add_10" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="64" name="detector/darknet-53/Conv_26/Conv2D" precision="FP32" type="Convolution">
+			<data dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="2,2"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="12790912" size="4718592"/>
+				<biases offset="17509504" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="65" name="detector/darknet-53/Conv_26/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="66" name="detector/darknet-53/Conv_27/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="17511552" size="524288"/>
+				<biases offset="18035840" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="67" name="detector/darknet-53/Conv_27/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="68" name="detector/darknet-53/Conv_28/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="18036864" size="4718592"/>
+				<biases offset="22755456" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="69" name="detector/darknet-53/Conv_28/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="70" name="detector/darknet-53/add_11" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="71" name="detector/darknet-53/Conv_29/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="22757504" size="524288"/>
+				<biases offset="23281792" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="72" name="detector/darknet-53/Conv_29/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="73" name="detector/darknet-53/Conv_30/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="23282816" size="4718592"/>
+				<biases offset="28001408" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="74" name="detector/darknet-53/Conv_30/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="75" name="detector/darknet-53/add_12" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="76" name="detector/darknet-53/Conv_31/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="28003456" size="524288"/>
+				<biases offset="28527744" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="77" name="detector/darknet-53/Conv_31/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="78" name="detector/darknet-53/Conv_32/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="28528768" size="4718592"/>
+				<biases offset="33247360" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="79" name="detector/darknet-53/Conv_32/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="80" name="detector/darknet-53/add_13" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="81" name="detector/darknet-53/Conv_33/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="33249408" size="524288"/>
+				<biases offset="33773696" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="82" name="detector/darknet-53/Conv_33/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="83" name="detector/darknet-53/Conv_34/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="33774720" size="4718592"/>
+				<biases offset="38493312" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="84" name="detector/darknet-53/Conv_34/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="85" name="detector/darknet-53/add_14" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="86" name="detector/darknet-53/Conv_35/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="38495360" size="524288"/>
+				<biases offset="39019648" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="87" name="detector/darknet-53/Conv_35/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="88" name="detector/darknet-53/Conv_36/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="39020672" size="4718592"/>
+				<biases offset="43739264" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="89" name="detector/darknet-53/Conv_36/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="90" name="detector/darknet-53/add_15" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="91" name="detector/darknet-53/Conv_37/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="43741312" size="524288"/>
+				<biases offset="44265600" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="92" name="detector/darknet-53/Conv_37/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="93" name="detector/darknet-53/Conv_38/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="44266624" size="4718592"/>
+				<biases offset="48985216" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="94" name="detector/darknet-53/Conv_38/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="95" name="detector/darknet-53/add_16" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="96" name="detector/darknet-53/Conv_39/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="48987264" size="524288"/>
+				<biases offset="49511552" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="97" name="detector/darknet-53/Conv_39/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="98" name="detector/darknet-53/Conv_40/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="49512576" size="4718592"/>
+				<biases offset="54231168" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="99" name="detector/darknet-53/Conv_40/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="100" name="detector/darknet-53/add_17" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="101" name="detector/darknet-53/Conv_41/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="54233216" size="524288"/>
+				<biases offset="54757504" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="102" name="detector/darknet-53/Conv_41/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="103" name="detector/darknet-53/Conv_42/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="54758528" size="4718592"/>
+				<biases offset="59477120" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="104" name="detector/darknet-53/Conv_42/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="105" name="detector/darknet-53/add_18" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="106" name="detector/darknet-53/Conv_43/Conv2D" precision="FP32" type="Convolution">
+			<data dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="2,2"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="59479168" size="18874368"/>
+				<biases offset="78353536" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="107" name="detector/darknet-53/Conv_43/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="108" name="detector/darknet-53/Conv_44/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="78357632" size="2097152"/>
+				<biases offset="80454784" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="109" name="detector/darknet-53/Conv_44/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="110" name="detector/darknet-53/Conv_45/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="80456832" size="18874368"/>
+				<biases offset="99331200" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="111" name="detector/darknet-53/Conv_45/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="112" name="detector/darknet-53/add_19" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="113" name="detector/darknet-53/Conv_46/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="99335296" size="2097152"/>
+				<biases offset="101432448" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="114" name="detector/darknet-53/Conv_46/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="115" name="detector/darknet-53/Conv_47/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="101434496" size="18874368"/>
+				<biases offset="120308864" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="116" name="detector/darknet-53/Conv_47/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="117" name="detector/darknet-53/add_20" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="118" name="detector/darknet-53/Conv_48/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="120312960" size="2097152"/>
+				<biases offset="122410112" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="119" name="detector/darknet-53/Conv_48/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="120" name="detector/darknet-53/Conv_49/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="122412160" size="18874368"/>
+				<biases offset="141286528" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="121" name="detector/darknet-53/Conv_49/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="122" name="detector/darknet-53/add_21" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="123" name="detector/darknet-53/Conv_50/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="141290624" size="2097152"/>
+				<biases offset="143387776" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="124" name="detector/darknet-53/Conv_50/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="125" name="detector/darknet-53/Conv_51/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="143389824" size="18874368"/>
+				<biases offset="162264192" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="126" name="detector/darknet-53/Conv_51/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="127" name="detector/darknet-53/add_22" precision="FP32" type="Eltwise">
+			<data operation="sum"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="128" name="detector/yolo-v3/Conv/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="162268288" size="2097152"/>
+				<biases offset="164365440" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="129" name="detector/yolo-v3/Conv/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="130" name="detector/yolo-v3/Conv_1/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="164367488" size="18874368"/>
+				<biases offset="183241856" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="131" name="detector/yolo-v3/Conv_1/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="132" name="detector/yolo-v3/Conv_2/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="183245952" size="2097152"/>
+				<biases offset="185343104" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="133" name="detector/yolo-v3/Conv_2/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="134" name="detector/yolo-v3/Conv_3/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="185345152" size="18874368"/>
+				<biases offset="204219520" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="135" name="detector/yolo-v3/Conv_3/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="136" name="detector/yolo-v3/Conv_4/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="512" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="204223616" size="2097152"/>
+				<biases offset="206320768" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="137" name="detector/yolo-v3/Conv_4/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="138" name="detector/yolo-v3/Conv_7/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="206322816" size="524288"/>
+				<biases offset="206847104" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="139" name="detector/yolo-v3/Conv_7/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="140" name="detector/yolo-v3/ResizeNearestNeighbor" precision="FP32" type="Resample">
+			<data antialias="0" factor="2.0" height="0" type="caffe.ResampleParameter.NEAREST" width="0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="141" name="detector/yolo-v3/concat_3" precision="FP32" type="Concat">
+			<data axis="1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>768</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="142" name="detector/yolo-v3/Conv_8/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>768</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="206848128" size="786432"/>
+				<biases offset="207634560" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="143" name="detector/yolo-v3/Conv_8/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="144" name="detector/yolo-v3/Conv_9/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="207635584" size="4718592"/>
+				<biases offset="212354176" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="145" name="detector/yolo-v3/Conv_9/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="146" name="detector/yolo-v3/Conv_10/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="212356224" size="524288"/>
+				<biases offset="212880512" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="147" name="detector/yolo-v3/Conv_10/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="148" name="detector/yolo-v3/Conv_11/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="212881536" size="4718592"/>
+				<biases offset="217600128" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="149" name="detector/yolo-v3/Conv_11/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="150" name="detector/yolo-v3/Conv_12/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="217602176" size="524288"/>
+				<biases offset="218126464" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="151" name="detector/yolo-v3/Conv_12/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="152" name="detector/yolo-v3/Conv_13/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="512" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="218127488" size="4718592"/>
+				<biases offset="222846080" size="2048"/>
+			</blobs>
+		</layer>
+		<layer id="153" name="detector/yolo-v3/Conv_13/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="154" name="detector/yolo-v3/Conv_14/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="18" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="222848128" size="36864"/>
+				<biases offset="222884992" size="72"/>
+			</blobs>
+		</layer>
+		<layer id="155" name="detector/yolo-v3/Conv_14/BiasAdd/YoloRegion" precision="FP32" type="RegionYolo">
+			<data anchors="10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326" axis="1" classes="1" coords="4" do_softmax="0" end_axis="3" mask="3,4,5" num="9"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="156" name="detector/yolo-v3/Conv_15/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="222885064" size="131072"/>
+				<biases offset="223016136" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="157" name="detector/yolo-v3/Conv_15/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="158" name="detector/yolo-v3/ResizeNearestNeighbor_1" precision="FP32" type="Resample">
+			<data antialias="0" factor="2.0" height="0" type="caffe.ResampleParameter.NEAREST" width="0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>26</dim>
+					<dim>26</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="159" name="detector/yolo-v3/concat_7" precision="FP32" type="Concat">
+			<data axis="1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2">
+					<dim>1</dim>
+					<dim>384</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="160" name="detector/yolo-v3/Conv_16/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>384</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="223016648" size="196608"/>
+				<biases offset="223213256" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="161" name="detector/yolo-v3/Conv_16/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="162" name="detector/yolo-v3/Conv_17/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="223213768" size="1179648"/>
+				<biases offset="224393416" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="163" name="detector/yolo-v3/Conv_17/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="164" name="detector/yolo-v3/Conv_18/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="224394440" size="131072"/>
+				<biases offset="224525512" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="165" name="detector/yolo-v3/Conv_18/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="166" name="detector/yolo-v3/Conv_19/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="224526024" size="1179648"/>
+				<biases offset="225705672" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="167" name="detector/yolo-v3/Conv_19/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="168" name="detector/yolo-v3/Conv_20/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="225706696" size="131072"/>
+				<biases offset="225837768" size="512"/>
+			</blobs>
+		</layer>
+		<layer id="169" name="detector/yolo-v3/Conv_20/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="170" name="detector/yolo-v3/Conv_21/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="225838280" size="1179648"/>
+				<biases offset="227017928" size="1024"/>
+			</blobs>
+		</layer>
+		<layer id="171" name="detector/yolo-v3/Conv_21/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="172" name="detector/yolo-v3/Conv_22/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="18" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="227018952" size="18432"/>
+				<biases offset="227037384" size="72"/>
+			</blobs>
+		</layer>
+		<layer id="173" name="detector/yolo-v3/Conv_22/BiasAdd/YoloRegion" precision="FP32" type="RegionYolo">
+			<data anchors="10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326" axis="1" classes="1" coords="4" do_softmax="0" end_axis="3" mask="0,1,2" num="9"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>52</dim>
+					<dim>52</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="174" name="detector/yolo-v3/Conv_5/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="3,3" output="1024" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>512</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="227037456" size="18874368"/>
+				<biases offset="245911824" size="4096"/>
+			</blobs>
+		</layer>
+		<layer id="175" name="detector/yolo-v3/Conv_5/LeakyRelu" precision="FP32" type="ReLU">
+			<data negative_slope="0.10000000149011612"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="176" name="detector/yolo-v3/Conv_6/Conv2D" precision="FP32" type="Convolution">
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="18" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1024</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="3">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+			<blobs>
+				<weights offset="245915920" size="73728"/>
+				<biases offset="245989648" size="72"/>
+			</blobs>
+		</layer>
+		<layer id="177" name="detector/yolo-v3/Conv_6/BiasAdd/YoloRegion" precision="FP32" type="RegionYolo">
+			<data anchors="10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326" axis="1" classes="1" coords="4" do_softmax="0" end_axis="3" mask="6,7,8" num="9"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1">
+					<dim>1</dim>
+					<dim>18</dim>
+					<dim>13</dim>
+					<dim>13</dim>
+				</port>
+			</output>
+		</layer>
+	</layers>
+	<edges>
+		<edge from-layer="0" from-port="0" to-layer="1" to-port="0"/>
+		<edge from-layer="1" from-port="3" to-layer="2" to-port="0"/>
+		<edge from-layer="2" from-port="1" to-layer="3" to-port="0"/>
+		<edge from-layer="3" from-port="3" to-layer="4" to-port="0"/>
+		<edge from-layer="4" from-port="1" to-layer="5" to-port="0"/>
+		<edge from-layer="5" from-port="3" to-layer="6" to-port="0"/>
+		<edge from-layer="6" from-port="1" to-layer="7" to-port="0"/>
+		<edge from-layer="7" from-port="3" to-layer="8" to-port="0"/>
+		<edge from-layer="8" from-port="1" to-layer="9" to-port="0"/>
+		<edge from-layer="4" from-port="1" to-layer="9" to-port="1"/>
+		<edge from-layer="9" from-port="2" to-layer="10" to-port="0"/>
+		<edge from-layer="10" from-port="3" to-layer="11" to-port="0"/>
+		<edge from-layer="11" from-port="1" to-layer="12" to-port="0"/>
+		<edge from-layer="12" from-port="3" to-layer="13" to-port="0"/>
+		<edge from-layer="13" from-port="1" to-layer="14" to-port="0"/>
+		<edge from-layer="14" from-port="3" to-layer="15" to-port="0"/>
+		<edge from-layer="15" from-port="1" to-layer="16" to-port="0"/>
+		<edge from-layer="11" from-port="1" to-layer="16" to-port="1"/>
+		<edge from-layer="16" from-port="2" to-layer="17" to-port="0"/>
+		<edge from-layer="17" from-port="3" to-layer="18" to-port="0"/>
+		<edge from-layer="18" from-port="1" to-layer="19" to-port="0"/>
+		<edge from-layer="19" from-port="3" to-layer="20" to-port="0"/>
+		<edge from-layer="20" from-port="1" to-layer="21" to-port="0"/>
+		<edge from-layer="16" from-port="2" to-layer="21" to-port="1"/>
+		<edge from-layer="21" from-port="2" to-layer="22" to-port="0"/>
+		<edge from-layer="22" from-port="3" to-layer="23" to-port="0"/>
+		<edge from-layer="23" from-port="1" to-layer="24" to-port="0"/>
+		<edge from-layer="24" from-port="3" to-layer="25" to-port="0"/>
+		<edge from-layer="25" from-port="1" to-layer="26" to-port="0"/>
+		<edge from-layer="26" from-port="3" to-layer="27" to-port="0"/>
+		<edge from-layer="27" from-port="1" to-layer="28" to-port="0"/>
+		<edge from-layer="23" from-port="1" to-layer="28" to-port="1"/>
+		<edge from-layer="28" from-port="2" to-layer="29" to-port="0"/>
+		<edge from-layer="29" from-port="3" to-layer="30" to-port="0"/>
+		<edge from-layer="30" from-port="1" to-layer="31" to-port="0"/>
+		<edge from-layer="31" from-port="3" to-layer="32" to-port="0"/>
+		<edge from-layer="32" from-port="1" to-layer="33" to-port="0"/>
+		<edge from-layer="28" from-port="2" to-layer="33" to-port="1"/>
+		<edge from-layer="33" from-port="2" to-layer="34" to-port="0"/>
+		<edge from-layer="34" from-port="3" to-layer="35" to-port="0"/>
+		<edge from-layer="35" from-port="1" to-layer="36" to-port="0"/>
+		<edge from-layer="36" from-port="3" to-layer="37" to-port="0"/>
+		<edge from-layer="37" from-port="1" to-layer="38" to-port="0"/>
+		<edge from-layer="33" from-port="2" to-layer="38" to-port="1"/>
+		<edge from-layer="38" from-port="2" to-layer="39" to-port="0"/>
+		<edge from-layer="39" from-port="3" to-layer="40" to-port="0"/>
+		<edge from-layer="40" from-port="1" to-layer="41" to-port="0"/>
+		<edge from-layer="41" from-port="3" to-layer="42" to-port="0"/>
+		<edge from-layer="42" from-port="1" to-layer="43" to-port="0"/>
+		<edge from-layer="38" from-port="2" to-layer="43" to-port="1"/>
+		<edge from-layer="43" from-port="2" to-layer="44" to-port="0"/>
+		<edge from-layer="44" from-port="3" to-layer="45" to-port="0"/>
+		<edge from-layer="45" from-port="1" to-layer="46" to-port="0"/>
+		<edge from-layer="46" from-port="3" to-layer="47" to-port="0"/>
+		<edge from-layer="47" from-port="1" to-layer="48" to-port="0"/>
+		<edge from-layer="43" from-port="2" to-layer="48" to-port="1"/>
+		<edge from-layer="48" from-port="2" to-layer="49" to-port="0"/>
+		<edge from-layer="49" from-port="3" to-layer="50" to-port="0"/>
+		<edge from-layer="50" from-port="1" to-layer="51" to-port="0"/>
+		<edge from-layer="51" from-port="3" to-layer="52" to-port="0"/>
+		<edge from-layer="52" from-port="1" to-layer="53" to-port="0"/>
+		<edge from-layer="48" from-port="2" to-layer="53" to-port="1"/>
+		<edge from-layer="53" from-port="2" to-layer="54" to-port="0"/>
+		<edge from-layer="54" from-port="3" to-layer="55" to-port="0"/>
+		<edge from-layer="55" from-port="1" to-layer="56" to-port="0"/>
+		<edge from-layer="56" from-port="3" to-layer="57" to-port="0"/>
+		<edge from-layer="57" from-port="1" to-layer="58" to-port="0"/>
+		<edge from-layer="53" from-port="2" to-layer="58" to-port="1"/>
+		<edge from-layer="58" from-port="2" to-layer="59" to-port="0"/>
+		<edge from-layer="59" from-port="3" to-layer="60" to-port="0"/>
+		<edge from-layer="60" from-port="1" to-layer="61" to-port="0"/>
+		<edge from-layer="61" from-port="3" to-layer="62" to-port="0"/>
+		<edge from-layer="62" from-port="1" to-layer="63" to-port="0"/>
+		<edge from-layer="58" from-port="2" to-layer="63" to-port="1"/>
+		<edge from-layer="63" from-port="2" to-layer="64" to-port="0"/>
+		<edge from-layer="64" from-port="3" to-layer="65" to-port="0"/>
+		<edge from-layer="65" from-port="1" to-layer="66" to-port="0"/>
+		<edge from-layer="66" from-port="3" to-layer="67" to-port="0"/>
+		<edge from-layer="67" from-port="1" to-layer="68" to-port="0"/>
+		<edge from-layer="68" from-port="3" to-layer="69" to-port="0"/>
+		<edge from-layer="69" from-port="1" to-layer="70" to-port="0"/>
+		<edge from-layer="65" from-port="1" to-layer="70" to-port="1"/>
+		<edge from-layer="70" from-port="2" to-layer="71" to-port="0"/>
+		<edge from-layer="71" from-port="3" to-layer="72" to-port="0"/>
+		<edge from-layer="72" from-port="1" to-layer="73" to-port="0"/>
+		<edge from-layer="73" from-port="3" to-layer="74" to-port="0"/>
+		<edge from-layer="74" from-port="1" to-layer="75" to-port="0"/>
+		<edge from-layer="70" from-port="2" to-layer="75" to-port="1"/>
+		<edge from-layer="75" from-port="2" to-layer="76" to-port="0"/>
+		<edge from-layer="76" from-port="3" to-layer="77" to-port="0"/>
+		<edge from-layer="77" from-port="1" to-layer="78" to-port="0"/>
+		<edge from-layer="78" from-port="3" to-layer="79" to-port="0"/>
+		<edge from-layer="79" from-port="1" to-layer="80" to-port="0"/>
+		<edge from-layer="75" from-port="2" to-layer="80" to-port="1"/>
+		<edge from-layer="80" from-port="2" to-layer="81" to-port="0"/>
+		<edge from-layer="81" from-port="3" to-layer="82" to-port="0"/>
+		<edge from-layer="82" from-port="1" to-layer="83" to-port="0"/>
+		<edge from-layer="83" from-port="3" to-layer="84" to-port="0"/>
+		<edge from-layer="84" from-port="1" to-layer="85" to-port="0"/>
+		<edge from-layer="80" from-port="2" to-layer="85" to-port="1"/>
+		<edge from-layer="85" from-port="2" to-layer="86" to-port="0"/>
+		<edge from-layer="86" from-port="3" to-layer="87" to-port="0"/>
+		<edge from-layer="87" from-port="1" to-layer="88" to-port="0"/>
+		<edge from-layer="88" from-port="3" to-layer="89" to-port="0"/>
+		<edge from-layer="89" from-port="1" to-layer="90" to-port="0"/>
+		<edge from-layer="85" from-port="2" to-layer="90" to-port="1"/>
+		<edge from-layer="90" from-port="2" to-layer="91" to-port="0"/>
+		<edge from-layer="91" from-port="3" to-layer="92" to-port="0"/>
+		<edge from-layer="92" from-port="1" to-layer="93" to-port="0"/>
+		<edge from-layer="93" from-port="3" to-layer="94" to-port="0"/>
+		<edge from-layer="94" from-port="1" to-layer="95" to-port="0"/>
+		<edge from-layer="90" from-port="2" to-layer="95" to-port="1"/>
+		<edge from-layer="95" from-port="2" to-layer="96" to-port="0"/>
+		<edge from-layer="96" from-port="3" to-layer="97" to-port="0"/>
+		<edge from-layer="97" from-port="1" to-layer="98" to-port="0"/>
+		<edge from-layer="98" from-port="3" to-layer="99" to-port="0"/>
+		<edge from-layer="99" from-port="1" to-layer="100" to-port="0"/>
+		<edge from-layer="95" from-port="2" to-layer="100" to-port="1"/>
+		<edge from-layer="100" from-port="2" to-layer="101" to-port="0"/>
+		<edge from-layer="101" from-port="3" to-layer="102" to-port="0"/>
+		<edge from-layer="102" from-port="1" to-layer="103" to-port="0"/>
+		<edge from-layer="103" from-port="3" to-layer="104" to-port="0"/>
+		<edge from-layer="104" from-port="1" to-layer="105" to-port="0"/>
+		<edge from-layer="100" from-port="2" to-layer="105" to-port="1"/>
+		<edge from-layer="105" from-port="2" to-layer="106" to-port="0"/>
+		<edge from-layer="106" from-port="3" to-layer="107" to-port="0"/>
+		<edge from-layer="107" from-port="1" to-layer="108" to-port="0"/>
+		<edge from-layer="108" from-port="3" to-layer="109" to-port="0"/>
+		<edge from-layer="109" from-port="1" to-layer="110" to-port="0"/>
+		<edge from-layer="110" from-port="3" to-layer="111" to-port="0"/>
+		<edge from-layer="111" from-port="1" to-layer="112" to-port="0"/>
+		<edge from-layer="107" from-port="1" to-layer="112" to-port="1"/>
+		<edge from-layer="112" from-port="2" to-layer="113" to-port="0"/>
+		<edge from-layer="113" from-port="3" to-layer="114" to-port="0"/>
+		<edge from-layer="114" from-port="1" to-layer="115" to-port="0"/>
+		<edge from-layer="115" from-port="3" to-layer="116" to-port="0"/>
+		<edge from-layer="116" from-port="1" to-layer="117" to-port="0"/>
+		<edge from-layer="112" from-port="2" to-layer="117" to-port="1"/>
+		<edge from-layer="117" from-port="2" to-layer="118" to-port="0"/>
+		<edge from-layer="118" from-port="3" to-layer="119" to-port="0"/>
+		<edge from-layer="119" from-port="1" to-layer="120" to-port="0"/>
+		<edge from-layer="120" from-port="3" to-layer="121" to-port="0"/>
+		<edge from-layer="121" from-port="1" to-layer="122" to-port="0"/>
+		<edge from-layer="117" from-port="2" to-layer="122" to-port="1"/>
+		<edge from-layer="122" from-port="2" to-layer="123" to-port="0"/>
+		<edge from-layer="123" from-port="3" to-layer="124" to-port="0"/>
+		<edge from-layer="124" from-port="1" to-layer="125" to-port="0"/>
+		<edge from-layer="125" from-port="3" to-layer="126" to-port="0"/>
+		<edge from-layer="126" from-port="1" to-layer="127" to-port="0"/>
+		<edge from-layer="122" from-port="2" to-layer="127" to-port="1"/>
+		<edge from-layer="127" from-port="2" to-layer="128" to-port="0"/>
+		<edge from-layer="128" from-port="3" to-layer="129" to-port="0"/>
+		<edge from-layer="129" from-port="1" to-layer="130" to-port="0"/>
+		<edge from-layer="130" from-port="3" to-layer="131" to-port="0"/>
+		<edge from-layer="131" from-port="1" to-layer="132" to-port="0"/>
+		<edge from-layer="132" from-port="3" to-layer="133" to-port="0"/>
+		<edge from-layer="133" from-port="1" to-layer="134" to-port="0"/>
+		<edge from-layer="134" from-port="3" to-layer="135" to-port="0"/>
+		<edge from-layer="135" from-port="1" to-layer="136" to-port="0"/>
+		<edge from-layer="136" from-port="3" to-layer="137" to-port="0"/>
+		<edge from-layer="137" from-port="1" to-layer="138" to-port="0"/>
+		<edge from-layer="138" from-port="3" to-layer="139" to-port="0"/>
+		<edge from-layer="139" from-port="1" to-layer="140" to-port="0"/>
+		<edge from-layer="140" from-port="1" to-layer="141" to-port="0"/>
+		<edge from-layer="105" from-port="2" to-layer="141" to-port="1"/>
+		<edge from-layer="141" from-port="2" to-layer="142" to-port="0"/>
+		<edge from-layer="142" from-port="3" to-layer="143" to-port="0"/>
+		<edge from-layer="143" from-port="1" to-layer="144" to-port="0"/>
+		<edge from-layer="144" from-port="3" to-layer="145" to-port="0"/>
+		<edge from-layer="145" from-port="1" to-layer="146" to-port="0"/>
+		<edge from-layer="146" from-port="3" to-layer="147" to-port="0"/>
+		<edge from-layer="147" from-port="1" to-layer="148" to-port="0"/>
+		<edge from-layer="148" from-port="3" to-layer="149" to-port="0"/>
+		<edge from-layer="149" from-port="1" to-layer="150" to-port="0"/>
+		<edge from-layer="150" from-port="3" to-layer="151" to-port="0"/>
+		<edge from-layer="151" from-port="1" to-layer="152" to-port="0"/>
+		<edge from-layer="152" from-port="3" to-layer="153" to-port="0"/>
+		<edge from-layer="153" from-port="1" to-layer="154" to-port="0"/>
+		<edge from-layer="154" from-port="3" to-layer="155" to-port="0"/>
+		<edge from-layer="151" from-port="1" to-layer="156" to-port="0"/>
+		<edge from-layer="156" from-port="3" to-layer="157" to-port="0"/>
+		<edge from-layer="157" from-port="1" to-layer="158" to-port="0"/>
+		<edge from-layer="158" from-port="1" to-layer="159" to-port="0"/>
+		<edge from-layer="63" from-port="2" to-layer="159" to-port="1"/>
+		<edge from-layer="159" from-port="2" to-layer="160" to-port="0"/>
+		<edge from-layer="160" from-port="3" to-layer="161" to-port="0"/>
+		<edge from-layer="161" from-port="1" to-layer="162" to-port="0"/>
+		<edge from-layer="162" from-port="3" to-layer="163" to-port="0"/>
+		<edge from-layer="163" from-port="1" to-layer="164" to-port="0"/>
+		<edge from-layer="164" from-port="3" to-layer="165" to-port="0"/>
+		<edge from-layer="165" from-port="1" to-layer="166" to-port="0"/>
+		<edge from-layer="166" from-port="3" to-layer="167" to-port="0"/>
+		<edge from-layer="167" from-port="1" to-layer="168" to-port="0"/>
+		<edge from-layer="168" from-port="3" to-layer="169" to-port="0"/>
+		<edge from-layer="169" from-port="1" to-layer="170" to-port="0"/>
+		<edge from-layer="170" from-port="3" to-layer="171" to-port="0"/>
+		<edge from-layer="171" from-port="1" to-layer="172" to-port="0"/>
+		<edge from-layer="172" from-port="3" to-layer="173" to-port="0"/>
+		<edge from-layer="137" from-port="1" to-layer="174" to-port="0"/>
+		<edge from-layer="174" from-port="3" to-layer="175" to-port="0"/>
+		<edge from-layer="175" from-port="1" to-layer="176" to-port="0"/>
+		<edge from-layer="176" from-port="3" to-layer="177" to-port="0"/>
+	</edges>
+	<meta_data>
+		<MO_version value="2019.3.0-408-gac8584cb7"/>
+		<cli_parameters>
+			<blobs_as_inputs value="False"/>
+			<data_type value="float"/>
+			<disable_nhwc_to_nchw value="False"/>
+			<disable_resnet_optimization value="False"/>
+			<enable_concat_optimization value="False"/>
+			<extensions value="DIR"/>
+			<framework value="tf"/>
+			<freeze_placeholder_with_value value="{}"/>
+			<generate_experimental_IR_V10 value="False"/>
+			<input_model value="DIR/tsd.pb"/>
+			<input_model_is_text value="False"/>
+			<input_shape value="[1,416,416,3]"/>
+			<keep_quantize_ops_in_IR value="False"/>
+			<keep_shape_ops value="False"/>
+			<log_level value="ERROR"/>
+			<mean_scale_values value="{}"/>
+			<mean_values value="()"/>
+			<move_to_preprocess value="False"/>
+			<output_dir value="DIR"/>
+			<placeholder_shapes value="[  1 416 416   3]"/>
+			<reverse_input_channels value="False"/>
+			<scale_values value="()"/>
+			<silent value="False"/>
+			<steps value="False"/>
+			<tensorflow_use_custom_operations_config value="DIR/yolo_v3.json"/>
+			<version value="False"/>
+			<unset unset_cli_parameters="batch, disable_fusing, disable_gfusing, finegrain_fusing, generate_deprecated_IR_V2, input, input_checkpoint, input_meta_graph, model_name, output, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_operation_patterns, tensorflow_subgraph_patterns"/>
+		</cli_parameters>
+	</meta_data>
+</net>

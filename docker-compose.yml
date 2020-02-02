@@ -41,9 +41,12 @@ services:
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
-        # ML_API_TOKEN:
-        # HAS_GPU: 'False'
-    command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 2 wsgi"
+        OPENVINO_DEVICE: 'CPU'
+        OPENVINO_CPU_EXTENSION: '/opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_avx2.so'
+
+    # only start 1 worker if you want to use ptvsd for debugging into container
+    command: bash -c "source /opt/intel/openvino/bin/setupvars.sh; gunicorn --bind 0.0.0.0:3333 --log-level=debug --workers 2 wsgi"
+
 
   web:
     <<: *web-defaults

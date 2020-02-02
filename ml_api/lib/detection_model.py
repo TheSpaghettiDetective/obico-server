@@ -1,247 +1,372 @@
-#!python3
-
-#pylint: disable=R, W0401, W0614, W0703
-from ctypes import *
-import math
-import random
 import os, sys
 import cv2
-
-def sample(probs):
-    s = sum(probs)
-    probs = [a/s for a in probs]
-    r = random.uniform(0, 1)
-    for i in range(len(probs)):
-        r = r - probs[i]
-        if r <= 0:
-            return i
-    return len(probs)-1
-
-def c_array(ctype, values):
-    arr = (ctype*len(values))()
-    arr[:] = values
-    return arr
-
-class BOX(Structure):
-    _fields_ = [("x", c_float),
-                ("y", c_float),
-                ("w", c_float),
-                ("h", c_float)]
-
-class DETECTION(Structure):
-    _fields_ = [("bbox", BOX),
-                ("classes", c_int),
-                ("prob", POINTER(c_float)),
-                ("mask", POINTER(c_float)),
-                ("objectness", c_float),
-                ("sort_class", c_int)]
+from openvino.inference_engine import IENetwork, IECore
+from argparse import ArgumentParser, SUPPRESS
+import logging
+from math import exp as exp
+from time import time
 
 
-class IMAGE(Structure):
-    _fields_ = [("w", c_int),
-                ("h", c_int),
-                ("c", c_int),
-                ("data", POINTER(c_float))]
+OPENVINO_SCALARS = [2.75, 1.5]
 
-class METADATA(Structure):
-    _fields_ = [("classes", c_int),
-                ("names", POINTER(c_char_p))]
+class YoloParams:
+    # ------------------------------------------- Extracting layer parameters ------------------------------------------
+    # Magic numbers are copied from yolo samples
+    def __init__(self, param, side, logger):
+        self.num = 3 if 'num' not in param else int(param['num'])
+        self.coords = 4 if 'coords' not in param else int(param['coords'])
+        self.classes = 80 if 'classes' not in param else int(param['classes'])
+        self.anchors = [10.0, 13.0, 16.0, 30.0, 33.0, 23.0, 30.0, 61.0, 62.0, 45.0, 59.0, 119.0, 116.0, 90.0, 156.0,
+                        198.0,
+                        373.0, 326.0] if 'anchors' not in param else [float(a) for a in param['anchors'].split(',')]
+
+        if 'mask' in param:
+            mask = [int(idx) for idx in param['mask'].split(',')]
+            self.num = len(mask)
+
+            maskedAnchors = []
+            for idx in mask:
+                maskedAnchors += [self.anchors[idx * 2], self.anchors[idx * 2 + 1]]
+            self.anchors = maskedAnchors
+
+        self.side = side
+        self.isYoloV3 = 'mask' in param  # Weak way to determine but the only one.
+        self.logger = logger
 
 
-if os.environ.get('HAS_GPU', 'False') == 'True':
-    hasGPU = True
-    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model_gpu.so")
-else:
-    hasGPU = False
-    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model.so")
+    def log_params(self):
+        params_to_print = {'classes': self.classes, 'num': self.num, 'coords': self.coords, 'anchors': self.anchors}
+        [self.logger.info("         {:8}: {}".format(param_name, param)) for param_name, param in params_to_print.items()]
 
-lib = CDLL(so_path, RTLD_GLOBAL)
-lib.network_width.argtypes = [c_void_p]
-lib.network_width.restype = c_int
-lib.network_height.argtypes = [c_void_p]
-lib.network_height.restype = c_int
 
-predict = lib.network_predict
-predict.argtypes = [c_void_p, POINTER(c_float)]
-predict.restype = POINTER(c_float)
+def entry_index(side, coord, classes, location, entry):
+    side_power_2 = side ** 2
+    n = location // side_power_2
+    loc = location % side_power_2
+    return int(side_power_2 * (n * (coord + classes + 1) + entry) + loc)
 
-if hasGPU:
-    set_gpu = lib.cuda_set_device
-    set_gpu.argtypes = [c_int]
 
-make_image = lib.make_image
-make_image.argtypes = [c_int, c_int, c_int]
-make_image.restype = IMAGE
+def scale_bbox(x, y, h, w, class_id, confidence, h_scale, w_scale):
+    xmin = int((x - w / 2) * w_scale)
+    ymin = int((y - h / 2) * h_scale)
+    xmax = int(xmin + w * w_scale)
+    ymax = int(ymin + h * h_scale)
+    return dict(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, class_id=class_id, confidence=confidence)
 
-get_network_boxes = lib.get_network_boxes
-get_network_boxes.argtypes = [c_void_p, c_int, c_int, c_float, c_float, POINTER(c_int), c_int, POINTER(c_int), c_int]
-get_network_boxes.restype = POINTER(DETECTION)
 
-make_network_boxes = lib.make_network_boxes
-make_network_boxes.argtypes = [c_void_p]
-make_network_boxes.restype = POINTER(DETECTION)
+def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, threshold):
+    # ------------------------------------------ Validating output parameters ------------------------------------------
+    _, _, out_blob_h, out_blob_w = blob.shape
+    assert out_blob_w == out_blob_h, "Invalid size of output blob. It sould be in NCHW layout and height should " \
+                                     "be equal to width. Current height = {}, current width = {}" \
+                                     "".format(out_blob_h, out_blob_w)
 
-free_detections = lib.free_detections
-free_detections.argtypes = [POINTER(DETECTION), c_int]
+    # ------------------------------------------ Extracting layer parameters -------------------------------------------
+    orig_im_h, orig_im_w = original_im_shape
+    resized_image_h, resized_image_w = resized_image_shape
+    objects = list()
+    predictions = blob.flatten()
+    side_square = params.side * params.side
 
-free_ptrs = lib.free_ptrs
-free_ptrs.argtypes = [POINTER(c_void_p), c_int]
+    # ------------------------------------------- Parsing YOLO Region output -------------------------------------------
+    for i in range(side_square):
+        row = i // params.side
+        col = i % params.side
+        for n in range(params.num):
+            obj_index = entry_index(params.side, params.coords, params.classes, n * side_square + i, params.coords)
+            scale = predictions[obj_index]
+            if scale < threshold:
+                continue
+            box_index = entry_index(params.side, params.coords, params.classes, n * side_square + i, 0)
+            # Network produces location predictions in absolute coordinates of feature maps.
+            # Scale it to relative coordinates.
+            x = (col + predictions[box_index + 0 * side_square]) / params.side
+            y = (row + predictions[box_index + 1 * side_square]) / params.side
+            # Value for exp is very big number in some cases so following construction is using here
+            try:
+                w_exp = exp(predictions[box_index + 2 * side_square])
+                h_exp = exp(predictions[box_index + 3 * side_square])
+            except OverflowError:
+                continue
+            # Depends on topology we need to normalize sizes by feature maps (up to YOLOv3) or by input shape (YOLOv3)
+            w = w_exp * params.anchors[2 * n] / (resized_image_w if params.isYoloV3 else params.side)
+            h = h_exp * params.anchors[2 * n + 1] / (resized_image_h if params.isYoloV3 else params.side)
+            for j in range(params.classes):
+                class_index = entry_index(params.side, params.coords, params.classes, n * side_square + i,
+                                          params.coords + 1 + j)
+                confidence = scale * predictions[class_index]
+                if confidence < threshold:
+                    continue
 
-network_predict = lib.network_predict
-network_predict.argtypes = [c_void_p, POINTER(c_float)]
+                # scale OpenVINO model more to get closer to YOLO2 model
+                if confidence < .3:
+                    confidence = confidence * OPENVINO_SCALARS[0]
+                elif confidence < .6:
+                    confidence = confidence * OPENVINO_SCALARS[1]
 
-reset_rnn = lib.reset_rnn
-reset_rnn.argtypes = [c_void_p]
+                objects.append(scale_bbox(x=x, y=y, h=h, w=w, class_id=j, confidence=confidence,
+                                          h_scale=orig_im_h, w_scale=orig_im_w))
+    return objects
 
-load_net = lib.load_network
-load_net.argtypes = [c_char_p, c_char_p, c_int]
-load_net.restype = c_void_p
 
-load_net_custom = lib.load_network_custom
-load_net_custom.argtypes = [c_char_p, c_char_p, c_int, c_int]
-load_net_custom.restype = c_void_p
+def intersection_over_union(box_1, box_2):
+    width_of_overlap_area = min(box_1['xmax'], box_2['xmax']) - max(box_1['xmin'], box_2['xmin'])
+    height_of_overlap_area = min(box_1['ymax'], box_2['ymax']) - max(box_1['ymin'], box_2['ymin'])
+    if width_of_overlap_area < 0 or height_of_overlap_area < 0:
+        area_of_overlap = 0
+    else:
+        area_of_overlap = width_of_overlap_area * height_of_overlap_area
+    box_1_area = (box_1['ymax'] - box_1['ymin']) * (box_1['xmax'] - box_1['xmin'])
+    box_2_area = (box_2['ymax'] - box_2['ymin']) * (box_2['xmax'] - box_2['xmin'])
+    area_of_union = box_1_area + box_2_area - area_of_overlap
+    if area_of_union == 0:
+        return 0
+    return area_of_overlap / area_of_union
 
-do_nms_obj = lib.do_nms_obj
-do_nms_obj.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
 
-do_nms_sort = lib.do_nms_sort
-do_nms_sort.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
+class OpenVinoModel:
+    def __init__(self, net, exec_net, labels_map, n, c, w, h, input_blob):
+        self.net = net
+        self.exec_net = exec_net
+        self.labels_map = labels_map
+        self.n = n
+        self.c = c
+        self.w = w
+        self.h = h
+        self.input_blob = input_blob
+        self.shape = (n, c, h, w)
 
-free_image = lib.free_image
-free_image.argtypes = [IMAGE]
+    def params(self):
+        return (self.net, self.exec_net, self.labels_map, self.n, self.c, self.w, self.h, self.input_blob)
 
-letterbox_image = lib.letterbox_image
-letterbox_image.argtypes = [IMAGE, c_int, c_int]
-letterbox_image.restype = IMAGE
 
-load_meta = lib.get_metadata
-lib.get_metadata.argtypes = [c_char_p]
-lib.get_metadata.restype = METADATA
+openvino_model = None
 
-load_image = lib.load_image_color
-load_image.argtypes = [c_char_p, c_int, c_int]
-load_image.restype = IMAGE
 
-rgbgr_image = lib.rgbgr_image
-rgbgr_image.argtypes = [IMAGE]
+def load_net(model_xml, labels_path, device, cpu_extension, log=None):
+    global openvino_model
 
-predict_image = lib.network_predict_image
-predict_image.argtypes = [c_void_p, IMAGE]
-predict_image.restype = POINTER(c_float)
+    if not os.path.exists(model_xml):
+        raise ValueError("Invalid model xml path `"+os.path.abspath(model_xml)+"`")
+    if not os.path.exists(labels_path):
+        raise ValueError("Invalid model label path `"+os.path.abspath(labels_path)+"`")
+    if device == "CPU" and (cpu_extension is None or not os.path.exists(cpu_extension)):
+        raise ValueError("Invalid cpu extension path `"+os.path.abspath(cpu_extension)+"`")
 
-def array_to_image(arr):
-    import numpy as np
-    # need to return old values to avoid python freeing memory
-    arr = arr.transpose(2,0,1)
-    c = arr.shape[0]
-    h = arr.shape[1]
-    w = arr.shape[2]
-    arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
-    data = arr.ctypes.data_as(POINTER(c_float))
-    im = IMAGE(w,h,c,data)
-    return im, arr
+    if log is None:
+        log = logging.getLogger()
 
-def classify(net, meta, im):
-    out = predict_image(net, im)
-    res = []
-    for i in range(meta.classes):
-        if alt_names is None:
-            nameTag = meta.names[i]
+    if openvino_model is None:
+        # plugin initialization for specified device and load extensions library if specified
+        model_bin = os.path.splitext(model_xml)[0] + ".bin"
+        if not os.path.exists(model_xml):
+            raise ValueError("Invalid model bin path `"+os.path.abspath(model_bin)+"`")
+
+        log.info("Creating Inference Engine...")
+        ie = IECore()
+        if device == "CPU" and cpu_extension is not None:
+            ie.add_extension(cpu_extension, "CPU")
+
+        # load the IR generated by the Model Optimizer (.xml and .bin files)
+        print("Loading network files:\n\t{}\n\t{}".format(model_xml, model_bin))
+        net = IENetwork(model=model_xml, weights=model_bin)
+
+        # load the CPU extension for support specific layer
+        if device == "CPU":
+            supported_layers = ie.query_network(net, "CPU")
+            not_supported_layers = [l for l in net.layers.keys() if l not in supported_layers]
+            if len(not_supported_layers) != 0:
+                log.error("Following layers are not supported by the plugin for specified device {}:\n {}".
+                        format(device, ', '.join(not_supported_layers)))
+                log.error("Please try to specify cpu extensions library path in sample's command line parameters using -l "
+                        "or --cpu_extension command line argument")
+                sys.exit(1)
+
+        assert len(net.inputs.keys()) == 1, "Sample supports only YOLO V3 based single input topologies"
+
+        # prepare inputs
+        log.info("Preparing inputs")
+        input_blob = next(iter(net.inputs))
+
+        # defaulf batch_size is 1
+        net.batch_size = 1
+
+        # read and pre-process input images
+        n, c, h, w = net.inputs[input_blob].shape
+
+        # create map from labels
+        if labels_path:
+            with open(labels_path, 'r') as f:
+                labels_map = [x.strip() for x in f]
         else:
-            nameTag = alt_names[i]
-        res.append((nameTag, out[i]))
-    res = sorted(res, key=lambda x: -x[1])
-    return res
+            labels_map = None
 
-def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
-    #pylint: disable= C0321
-    custom_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    im, arr = array_to_image(custom_image)             # you should comment line below: free_image(im)
-    if debug: print("Loaded image")
-    num = c_int(0)
-    if debug: print("Assigned num")
-    pnum = pointer(num)
-    if debug: print("Assigned pnum")
-    predict_image(net, im)
-    if debug: print("did prediction")
-    dets = get_network_boxes(net, custom_image.shape[1], custom_image.shape[0], thresh, hier_thresh, None, 0, pnum, 0) # OpenCV
-    if debug: print("Got dets")
-    num = pnum[0]
-    if debug: print("got zeroth index of pnum")
-    if nms:
-        do_nms_sort(dets, num, meta.classes, nms)
-    if debug: print("did sort")
-    res = []
-    if debug: print("about to range")
-    for j in range(num):
-        if debug: print("Ranging on "+str(j)+" of "+str(num))
-        if debug: print("Classes: "+str(meta), meta.classes, meta.names)
-        for i in range(meta.classes):
-            if debug: print("Class-ranging on "+str(i)+" of "+str(meta.classes)+"= "+str(dets[j].prob[i]))
-            if dets[j].prob[i] > 0:
-                b = dets[j].bbox
-                if alt_names is None:
-                    nameTag = meta.names[i]
-                else:
-                    nameTag = alt_names[i]
-                if debug:
-                    print("Got bbox", b)
-                    print(nameTag)
-                    print(dets[j].prob[i])
-                    print((b.x, b.y, b.w, b.h))
-                res.append((nameTag, dets[j].prob[i], (b.x, b.y, b.w, b.h)))
-    if debug: print("did range")
-    res = sorted(res, key=lambda x: -x[1])
-    if debug: print("did sort")
-    free_detections(dets, num)
-    if debug: print("freed detections")
-    return res
+        # load model to the plugin
+        num_requests = 2
+        log.info("Loading model to the plugin: num requests = %d" % num_requests)
+        exec_net = ie.load_network(network=net, num_requests=num_requests, device_name=device)
+
+        # create model class into global variable
+        openvino_model = OpenVinoModel(net, exec_net, labels_map, n, c, w, h, input_blob)
+
+    return openvino_model
 
 
-net_main = None
-meta_main = None
-alt_names = None
+def detect(model, frame, thresh=.5, iou_threshold=0.60, raw_output_message=False, logger=None, show=False):
+    if logger is None:
+        logger = logging.getLogger()
 
-def load_net(config_path, weight_path, meta_path):
-    global meta_main, net_main, alt_names #pylint: disable=W0603
-    if not os.path.exists(config_path):
-        raise ValueError("Invalid config path `"+os.path.abspath(config_path)+"`")
-    if not os.path.exists(weight_path):
-        raise ValueError("Invalid weight path `"+os.path.abspath(weight_path)+"`")
-    if not os.path.exists(meta_path):
-        raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
-    if net_main is None:
-        net_main = load_net_custom(config_path.encode("ascii"), weight_path.encode("ascii"), 0, 1)  # batch size = 1
-    if meta_main is None:
-        meta_main = load_meta(meta_path.encode("ascii"))
-    if alt_names is None:
-        # In Python 3, the metafile default access craps out on Windows (but not Linux)
-        # Read the names file and create a list to feed to detect
-        try:
-            with open(meta_path) as metaFH:
-                metaContents = metaFH.read()
-                import re
-                match = re.search("names *= *(.*)$", metaContents, re.IGNORECASE | re.MULTILINE)
-                if match:
-                    result = match.group(1)
-                else:
-                    result = None
-                try:
-                    if os.path.exists(result):
-                        with open(result) as namesFH:
-                            namesList = namesFH.read().strip().split("\n")
-                            alt_names = [x.strip() for x in namesList]
-                except TypeError:
-                    pass
-        except Exception:
-            pass
+    render_time = 0
+    parsing_time = 0
+    cur_request_id = 0
 
-    return net_main, meta_main
+    net, exec_net, labels_map, n, c, w, h, input_blob = model.params()
+
+    # begin inference
+    logger.info("Starting inference...")
+    in_frame = cv2.resize(frame, (w, h))
+
+    # resize input_frame to network size
+    in_frame = in_frame.transpose((2, 0, 1))  # Change data layout from HWC to CHW
+    in_frame = in_frame.reshape((n, c, h, w))
+
+    # start inference
+    start_time = time()
+    #start = datetime.now()
+    exec_net.start_async(request_id=cur_request_id, inputs={input_blob: in_frame})
+
+    # collect object detection results
+    objects = list()
+    if exec_net.requests[cur_request_id].wait(-1) == 0:
+        output = exec_net.requests[cur_request_id].outputs
+        det_time = time() - start_time
+
+        start_time = time()
+        for layer_name, out_blob in output.items():
+            out_blob = out_blob.reshape(net.layers[net.layers[layer_name].parents[0]].shape)
+            layer_params = YoloParams(net.layers[layer_name].params, out_blob.shape[2], logger)
+            #logger.info("Layer {} parameters: ".format(layer_name))
+            #layer_params.log_params()
+            objects += parse_yolo_region(out_blob, in_frame.shape[2:],
+                                        frame.shape[:-1], layer_params,
+                                        thresh)
+        parsing_time = time() - start_time
+
+    # filter overlapping boxes with respect to the --iou_threshold CLI parameter
+    objects = sorted(objects, key=lambda obj : obj['confidence'], reverse=True)
+    for i in range(len(objects)):
+        if objects[i]['confidence'] == 0:
+            continue
+        for j in range(i + 1, len(objects)):
+            if intersection_over_union(objects[i], objects[j]) > iou_threshold:
+                objects[j]['confidence'] = 0
+
+    # Drawing objects with respect to the --prob_threshold CLI parameter
+    objects = [obj for obj in objects if obj['confidence'] >= thresh]
+
+    if len(objects) and raw_output_message:
+        logger.info("\nDetected boxes for batch {}:".format(1))
+        logger.info(" Class ID | Confidence | XMIN | YMIN | XMAX | YMAX | COLOR ")
+
+    detections = []
+
+    origin_im_size = frame.shape[:-1]
+
+    for obj in objects:
+        # Validation bbox of detected object
+        if obj['xmax'] > origin_im_size[1] or obj['ymax'] > origin_im_size[0] or obj['xmin'] < 0 or obj['ymin'] < 0:
+            continue
+
+        # convert bounding to yolo values
+        w = obj['xmax'] - obj['xmin']
+        h = obj['ymax'] - obj['ymin']
+        w2 = w//2
+        h2 = h//2
+
+        # get matching label - always 'falure'
+        det_label = labels_map[obj['class_id']] if labels_map and len(labels_map) >= obj['class_id'] else str(obj['class_id'])
+
+        # create next detection value and add to list
+        d = (det_label, float(obj['confidence']), (obj['xmin'] + w2, obj['ymin'] + h2, w, h))
+        detections.append(d)
+
+        color = (int(min(obj['class_id'] * 12.5, 255)), min(obj['class_id'] * 7, 255), min(obj['class_id'] * 5, 255))
+
+        if raw_output_message:
+            logger.info(
+                "{:^9} | {:10f} | {:4} | {:4} | {:4} | {:4} | {} ".format(det_label, obj['confidence'], obj['xmin'],
+                                                                            obj['ymin'], obj['xmax'], obj['ymax'],
+                                                                            color))
+
+        # draw bounding box, and label
+        if show:
+            (xc, yc, w, h) = map(int, d[2])
+            cv2.rectangle(frame,(xc-w//2,yc-h//2),(xc+w//2,yc+h//2), (0,255,0), 2)
+            #cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), color, 2)
+            cv2.putText(frame, det_label + ' ' + str(round(obj['confidence'] * 100, 1)) + ' %', (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0,255,0), 1)
+
+    if show:
+        # Draw performance stats over frame
+        inf_time_message = "Inference time: {:.3f} ms".format(det_time * 1e3)
+        parsing_message = "YOLO parsing time is {:.3f} ms".format(parsing_time * 1e3)
+        cv2.putText(frame, inf_time_message, (15, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 1)
+        cv2.putText(frame, parsing_message, (15, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 1)
+        #render_time_message = "OpenCV rendering time: {:.3f} ms".format(render_time * 1e3)
+        #async_mode_message = "Async mode is off. Processing request {}".format(cur_request_id)
+        #cv2.putText(frame, render_time_message, (15, 45), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 1)
+        #cv2.putText(frame, async_mode_message, (10, int(origin_im_size[0] - 20)), cv2.FONT_HERSHEY_COMPLEX, 0.5, (10, 10, 200), 1)
+        return frame
+
+    if len(detections) > 1:
+        detections = sorted(detections, key=lambda x: -x[1])
+
+    return detections
+
+def build_argparser():
+    parser = ArgumentParser(add_help=False)
+    args = parser.add_argument_group('Options')
+    args.add_argument('-h', '--help', action='help', default=SUPPRESS, help='Show this help message and exit.')
+
+    # model args
+    args.add_argument("-m", "--model", help="Required. Path to an .xml file with a trained model.",
+                      required=True, type=str, default=os.environ.get("MODEL_XML", None))
+    args.add_argument("--labels", help="Optional. Labels mapping file", default=os.environ.get("MODEL_LABELS", None), type=str)
+    args.add_argument("-d", "--device",
+                      help="Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL or MYRIAD is"
+                           " acceptable. The sample will look for a suitable plugin for device specified. "
+                           "Default value is CPU", default=os.environ.get("OPENVINO_DEVICE", "CPU"), type=str)
+    args.add_argument("-l", "--cpu_extension",
+                      help="Optional. Required for CPU custom layers. Absolute path to a shared library with "
+                           "the kernels implementations.", type=str, default=os.environ.get("OPENVINO_CPU_EXTENSION", None))
+
+    # input
+    args.add_argument("-i", "--input", help="Required. Path to a image file.", required=True, type=str)
+    # output
+    args.add_argument("-o", "--output", help="Optional. Path to a image file.", required=False, default=None, type=str)
+
+    # detection args
+    args.add_argument("-t", "--prob_threshold", help="Optional. Probability threshold for detections filtering",
+                      default=0.2, type=float)
+    args.add_argument("-iout", "--iou_threshold", help="Optional. Intersection over union threshold for overlapping "
+                                                       "detections filtering", default=0.45, type=float)
+    args.add_argument("-ni", "--number_iter", help="Optional. Number of inference iterations", default=1, type=int)
+    args.add_argument("-pc", "--perf_counts", help="Optional. Report performance counters", default=False,
+                      action="store_true")
+    args.add_argument("-r", "--raw_output_message", help="Optional. Output inference results raw values showing",
+                      default=False, action="store_true")
+
+    return parser
 
 
 if __name__ == "__main__":
-    net_main_1, meta_main_1 = load_net("../model/model.cfg", "../model/model.weights", "../model/model.meta")
+    logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
+    logger = logging.getLogger()
 
-    import cv2
-    custom_image_bgr = cv2.imread(sys.argv[1]) # use: detect(,,imagePath,)
-    print(detect(net_main_1, meta_main_1, custom_image_bgr, thresh=0.25))
+    args = build_argparser().parse_args()
+
+    model = load_net(args.model, args.labels, args.device, args.cpu_extension, logger)
+
+    custom_image_bgr = cv2.imread(args.input)
+
+    print(detect(model, custom_image_bgr, thresh=args.prob_threshold, iou_threshold=args.iou_threshold, raw_output_message=args.raw_output_message))
+

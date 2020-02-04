@@ -78,3 +78,12 @@ def print_num_predictions_get(print_id):
 def print_num_predictions_delete(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     return REDIS.delete(key)
+
+# TODO: remove me after transition is over
+def print_pic_subdir_set(print_id):
+    key = f'use_subdir:{print_key_prefix(print_id)}'
+    REDIS.set(key, 't', ex=60*60*24*5)
+
+def print_pic_subdir_get(print_id):
+    key = f'use_subdir:{print_key_prefix(print_id)}'
+    return REDIS.get(key)

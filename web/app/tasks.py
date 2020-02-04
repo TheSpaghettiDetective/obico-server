@@ -55,7 +55,13 @@ def compile_timelapse(print_id):
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
 
-    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
+    # TODO: remove me after transition is over
+    pic_dir = f'{_print.printer.id}'
+    use_subdir = redis.print_pic_subdir_get(_print.id)
+    if use_subdir and use_subdir == 't':
+            pic_dir = f'{_print.printer.id}/{_print.id}'
+
+    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -78,7 +84,7 @@ def compile_timelapse(print_id):
         _print.save()
 
     # build tagged timelapse
-    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(_print.printer.id), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
+    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -89,10 +95,16 @@ def compile_timelapse(print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
+        import ipdb; ipdb.set_trace()
         preidction_json = []
         for print_pic_filename in print_pics:
             try:
-                m = re.search('tagged/(\d+)/(\d+).jpg', print_pic_filename)
+                re_parttern = 'tagged/(\d+)/([\d.]+).jpg'
+                # TODO: remove me after transition is over
+                if use_subdir and use_subdir == 't':
+                    re_parttern = 'tagged/(\d+)/\d+/([\d.]+).jpg'
+
+                m = re.search(re_parttern, print_pic_filename)
                 p_json = json.loads(redis.printer_p_json_get(m[1], m[2]))
             except (json.decoder.JSONDecodeError, TypeError):    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
                 p_json = [{}]

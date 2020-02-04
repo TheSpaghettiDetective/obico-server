@@ -95,7 +95,6 @@ def compile_timelapse(print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
-        import ipdb; ipdb.set_trace()
         preidction_json = []
         for print_pic_filename in print_pics:
             try:

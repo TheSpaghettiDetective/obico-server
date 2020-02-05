@@ -18,7 +18,7 @@ def overlay_detections(img, detections):
     for d in detections:
         score = '%.2f' % d[1]
         (xc, yc, w, h) = map(int, d[2])
-        img = cv2.rectangle(img,(xc-w//2,yc-h//2),(xc+w//2,yc+w//2),(0,255,0),3)
+        img = cv2.rectangle(img,(xc-w//2,yc-h//2),(xc+w//2,yc+h//2),(0,255,0),3)
         #font = cv2.FONT_HERSHEY_SIMPLEX
         #img = cv2.putText(img,score,(xc-w//2,yc-h//2-10), font, 1,(255,0,0),3,cv2.LINE_AA)
     return img

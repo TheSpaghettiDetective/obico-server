@@ -49,11 +49,10 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         'resume_link': site.build_full_url('/printers/{}/resume/'.format(printer.id)),
     }
 
-    unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={printer.user.unsub_token}&list=alert')
     send_email(
         printer.user,
         subject,
-        unsub_url,
+        'alert',
         'email/failure_alert.html',
         ctx,
         img_url=printer.pic['img_url'],
@@ -177,11 +176,10 @@ def send_print_notification_email(_print):
         'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
         'timelapse_link': site.build_full_url('/prints/'),
     }
-    unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={_print.printer.user.unsub_token}&list=print_notification')
     send_email(
         _print.printer.user,
         subject,
-        unsub_url,
+        'print_notification',
         'email/print_notification.html',
         ctx,
         img_url=_print.printer.pic['img_url'] if _print.printer.pic else None,
@@ -232,7 +230,7 @@ def send_print_notification_pushbullet(_print):
 
 # Helpers
 
-def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verified_only=True, attachment=None):
+def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, verified_only=True, attachment=None):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -255,6 +253,7 @@ def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verif
     else:
         emails = EmailAddress.objects.filter(user=user)
 
+    unsub_url = site.build_full_url(f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}')
     for email in emails:
         ctx['unsub_url'] = unsub_url
         message = get_template(template_path).render(ctx)
@@ -262,7 +261,7 @@ def send_email(user, subject, unsub_url, template_path, ctx, img_url=None, verif
             to=(email.email,),
             from_email=settings.DEFAULT_FROM_EMAIL,
             attachments=attachments,
-            headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(unsub_url)},)
+            headers = {'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'},)
         msg.content_subtype = 'html'
         if attachment:
             msg.attach_file(attachment)

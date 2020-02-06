@@ -54,7 +54,9 @@
         <div class="pt-2">
           <a class="button secondaryAction float-left"
             href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
           <a class="button secondaryAction float-right" href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "Sign up" %} >>></a>
+          {% endif %}
         </div>
       </form>
     </div>

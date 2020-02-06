@@ -157,15 +157,14 @@ $(document).ready(function () {
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
         if (printer.watching) {
-            printerCard.find('#not-watching-text').hide();
+            printerCard.find('label[for^=watching-toggle-] .text-muted').hide();
         } else {
-            printerCard.find('#not-watching-text').show();
+            printerCard.find('label[for^=watching-toggle-] .text-muted').show();
         }
+        printerCard.find('input[name=pause_on_failure]').prop('checked', printer.action_on_failure == 'PAUSE');
         if (printer.action_on_failure == 'PAUSE') {
-            printerCard.find('input[name=pause_on_failure]').prop('checked', true);
             printerCard.find('label[for^=pause-toggle-] .text-muted').hide();
         } else {
-            printerCard.find('input[name=pause_on_failure]').prop('checked', false);
             printerCard.find('label[for^=pause-toggle-] .text-muted').show();
         }
 

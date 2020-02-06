@@ -78,14 +78,16 @@
         <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2" data-target-div="print-time"><i class="fas fa-clock fa-lg"></i></button>
         <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2 pressed" data-target-div="status_temp_block"><i class="fas fa-thermometer-half fa-lg"></i></button>
       </div>
-      <div class="info-section" style="height: 0.7rem;"></div>
+      <div class="info-section" style="height: 0.3rem;"></div>
       <div>
         <div class="info-section container">
           <div id="panel-settings">
             <div class="pt-2 pb-3">
             <div class="row justify-content-center px-3">
               <div class="col-12 setting-item">
-                  <label for="watching-toggle-{{ printer.id }}">Watch for failures</label>
+                  <label class="toggle-label" for="watching-toggle-{{ printer.id }}">Watch for failures
+                    <div id="not-watching-text"><small class="text-muted">Subsequent prints NOT watched until turned on.</small></div>
+                  </label>
                   <div class="custom-control custom-switch">
                     <input type="checkbox" name="watching" class="custom-control-input update-printer" id="watching-toggle-{{ printer.id }}">
                     <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
@@ -94,7 +96,7 @@
             </div>
             <div class="row justify-content-center px-3">
               <div class="col-12 setting-item">
-                  <label for="pause-toggle-{{ printer.id }}">Pause on detected failures<div class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications</div></label>
+                  <label class="toggle-label" for="pause-toggle-{{ printer.id }}">Pause on detected failures<div class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications</div></label>
                   <div class="custom-control custom-switch">
                     <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer" id="pause-toggle-{{ printer.id }}">
                     <label class="custom-control-label" for="pause-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>

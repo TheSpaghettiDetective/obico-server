@@ -156,11 +156,10 @@ $(document).ready(function () {
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
-        printerCard.find('#watching-status').text(printer.watching ? 'ON' : 'OFF');
         if (printer.watching) {
-            printerCard.find('#detailed-controls').show();
+            printerCard.find('#not-watching-text').hide();
         } else {
-            printerCard.find('#detailed-controls').hide();
+            printerCard.find('#not-watching-text').show();
         }
         if (printer.action_on_failure == 'PAUSE') {
             printerCard.find('input[name=pause_on_failure]').prop('checked', true);

@@ -47,7 +47,7 @@
             </div>
             {% endif %}
           </div>
-          <div class="card-img-top plain-view" style="display: none">
+          <div class="card-img-top plain-view" {% if print.expecting_detective_view %} style="display: none" {% endif %}>
             <video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
               poster="{{ print.poster_url }}"
               data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
@@ -64,34 +64,37 @@
             </a>
           </div>
 
-          <div class="card-img-top detective-view">
-            {% if print.tagged_video_url %}
-            <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
-              poster="{{ print.poster_url }}"
-              data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
-              <source src="{{ print.tagged_video_url }}" type='video/mp4'>
+          {% if print.expecting_detective_view %}
+            <div class="card-img-top detective-view">
+              {% if print.tagged_video_url %}
+              <video id="tl-{{print.id}}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
+                poster="{{ print.poster_url }}"
+                data-setup='{"fluid": true, "playbackRates": [0.5, 1, 1.5, 2], "controlBar": {"fullscreenToggle": true}}'>
+                <source src="{{ print.tagged_video_url }}" type='video/mp4'>
 
-              <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-              </p>
-            </video>
-            <a id="fullscreen-btn-{{print.id}}-d" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
-              data-toggle="modal">
-              <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
-            </a>
-            {% else %}
-            <img class="card-img" src="{% static 'img/detective-working.gif' %}" style="width: 100%;" />
-            <div class="card-img-overlay">The Detective is busy looking at the uploaded time-lapse. Check back later.</div>
-            {% endif %}
-          </div>
-          <div class="px-3 pt-2">
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle-{{ print.id }}">
-              <label class="custom-control-label" for="view-toggle-{{ print.id }}">Show Print Info</label>
+                <p class="vjs-no-js">
+                  To view this video please enable JavaScript, and consider upgrading to a web browser that
+                  <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+              </video>
+              <a id="fullscreen-btn-{{print.id}}-d" class="fullscreen-btn" href="#tl-fullscreen-modal" role="button"
+                data-toggle="modal">
+                <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
+              </a>
+              {% else %}
+              <img class="card-img" src="{% static 'img/detective-working.gif' %}" style="width: 100%;" />
+              <div class="card-img-overlay">The Detective is busy looking at the uploaded time-lapse. Check back later.</div>
+              {% endif %}
             </div>
-          </div>
-          <div class="card-body plain-view gauge-container pt-3" style="display: none">
+            <div class="px-3 pt-2">
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input view-toggle" id="view-toggle-{{ print.id }}">
+                <label class="custom-control-label" for="view-toggle-{{ print.id }}">Show Print Info</label>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="card-body plain-view gauge-container pt-3" {% if print.expecting_detective_view %} style="display: none" {% endif %}>
             <div class="container">
               <div class="row">
                 <div class="text-muted col-4">
@@ -116,6 +119,7 @@
             </div>
           </div>
 
+          {% if print.expecting_detective_view %}
           <div class="card-body detective-view gauge-container">
             <div class="text-center gauge">
               <canvas id="gauge-{{print.id}}" data-type="radial-gauge" data-value-dec="0" data-value-int="0"
@@ -173,6 +177,7 @@
               {% endif %}
             </div>
           </div>
+          {% endif %}
         </div>
       </div>
       {% endfor %}

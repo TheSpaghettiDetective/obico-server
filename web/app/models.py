@@ -465,6 +465,10 @@ class Print(SafeDeleteModel):
     def is_canceled(self):
         return bool(self.cancelled_at)
 
+    @property
+    def expecting_detective_view(self):
+        return self.tagged_video_url or self.uploaded_at
+
 class PrintEvent(models.Model):
     STARTED = 'STARTED'
     ENDED = 'ENDED'

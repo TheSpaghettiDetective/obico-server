@@ -260,38 +260,6 @@ $(document).ready(function () {
 
     /*** End of printer card */
 
-    function showNotificationMsgIfExisted() {
-        $.ajax({
-            url: '/ent/api/messages/',
-            type: 'GET',
-            dataType: 'json',
-        }).done(function(result) {
-            if (result.length > 0) {
-                var msg = result[0];
-                var opt = {
-                    position: 'top-end',
-                    confirmButtonText: "Gotcha! Don't show this again.",
-                };
-                var msg_obj = JSON.parse(msg.message);
-                _.assign(opt, msg_obj);
-                Swal.fire(opt)
-                .then(function (result) {
-                    if (result.value) {
-                        $.ajax({
-                            url: '/ent/api/messages/' + msg.id + '/dismiss/',
-                            type: 'GET',
-                            dataType: 'json',
-                        });
-                    }
-                });
-            }
-         });
-    }
-
-    if (isEnt) {
-        showNotificationMsgIfExisted();
-    }
-
     $('.hint').popover({
         container: 'body'
     });

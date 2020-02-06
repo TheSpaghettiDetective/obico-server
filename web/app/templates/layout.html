@@ -1,6 +1,4 @@
 {% load static %}
-{% load hijack_tags %}
-
 {% load account_status %}
 
 <!DOCTYPE html>
@@ -51,14 +49,11 @@
   <!-- Mustache should be loaded before html body or else there will be errors. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
   <script type="text/javascript" src="{% static 'vendor/js/django.mustache.js' %}"></script>
-
-  {% for extrajs in settings.EXTRA_JS %}
-  <script async src={{extrajs}}></script>
-  {% endfor %}
+  {% block header_ext %}{% endblock header_ext %}
 </head>
 
 <body>
-  {% hijack_notification %}
+  {% block body_top_ext %}{% endblock body_top_ext %}
   {% with view_name=request.resolver_match.view_name %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
@@ -88,11 +83,7 @@
             <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
           </li>
           {% endif %}
-          {% if settings.IS_ENT %}
-          <li class="nav-item">
-              <a class="nav-link" href="/ent/pricing/">Pricing</a>
-            </li>
-          {% endif %}
+          {% block nav_item_pricing %}{% endblock nav_item_pricing %}
           <li class="nav-item">
             <a class="nav-link" href="https://www.thespaghettidetective.com/help">Help</a>
           </li>
@@ -121,9 +112,7 @@
               <span class="caret"></span></a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes">
               <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-cog"></i>Preferences</a>
-              {% if settings.IS_ENT %}
-              <a class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
-              {% endif %}
+              {% block nav_item_account %}{% endblock nav_item_account %}
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
             </div>
@@ -135,9 +124,7 @@
   </nav>
   {% endwith %}
   <main>
-    {% if settings.ACCOUNT_EMAIL_VERIFICATION != 'none' and user.is_authenticated and not user.has_verified_email %}
-    {% include 'snippets/no_email_verified.html' %}
-    {% endif %}
+    {% block main_top_ext %}{% endblock main_top_ext %}
     <div id="content-wrapper" class="container">
       {% include 'snippets/messages.html' %}
       {% block content %}{% endblock content %}
@@ -181,7 +168,6 @@
 
   <script type="text/javascript">
     var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
-    var isEnt = {{ settings.IS_ENT |yesno:"true,false" }};
     {% if user.is_authenticated and user.is_pro %}
       var isProAccount = true;
     {% else %}
@@ -190,6 +176,7 @@
   </script>
   <script src="{% static 'js/shared.js' %}"></script>
   {% block page_js %}{% endblock page_js %}
+  {% block body_bottom_ext %}{% endblock body_bottom_ext %}
 </body>
 
 </html>

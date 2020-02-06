@@ -214,15 +214,14 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Layout
+TEMPLATE_LAYOUT = "layout.html"
+
 # Sentry
 if os.environ.get('SENTRY_DSN'):
     INSTALLED_APPS = INSTALLED_APPS + [
         'raven.contrib.django.raven_compat',
     ]
-
-# Extra js
-EXTRA_JS = [s for s in os.environ.get('EXTRA_JS', '').split('|') if s]
-IS_ENT = False
 
 # REDIS client
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')
@@ -246,11 +245,10 @@ TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 
 # settings export
 SETTINGS_EXPORT = [
-    'EXTRA_JS',
     'TWILIO_ENABLED',
     'ACCOUNT_EMAIL_VERIFICATION',
     'TELEGRAM_BOT_TOKEN',
-    'IS_ENT',
+    'TEMPLATE_LAYOUT',
 ]
 
 # Celery

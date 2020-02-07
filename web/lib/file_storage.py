@@ -65,7 +65,7 @@ def _retrieve_to_file_obj_from_file_system(src_path, file_obj, container):
 
 def _delete_dir_from_file_system(dir_path, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dir_path)
-    rmtree(fqp)
+    rmtree(fqp, ignore_errors=True)
 
 def _save_to_gcp(dest_path, file_obj, container, return_url):
     bucket, real_container_name = _gcp_bucket(container)

@@ -22,7 +22,7 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
-from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj
+from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
@@ -36,6 +36,7 @@ def process_print_events(print_id):
     _print = Print.objects.get(id=print_id)
     if (_print.ended_at() - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
         _print.delete()
+        clean_up_print_pics(_print)
         return
 
     print_notification.delay(print_id)
@@ -108,6 +109,7 @@ def compile_timelapse(print_id):
         _print.save()
 
     shutil.rmtree(to_dir, ignore_errors=True)
+    clean_up_print_pics(_print)
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
 def preprocess_timelapse(self, user_id, video_path, filename):
@@ -225,6 +227,11 @@ def filter_pics_by_start_end(pic_files, start_time, end_time):
             filtered_pic_files += [pic_file]
 
     return filtered_pic_files
+
+def clean_up_print_pics(_print):
+    pic_dir = f'{_print.printer.id}/{_print.id}'
+    delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER)
+    delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER)
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:

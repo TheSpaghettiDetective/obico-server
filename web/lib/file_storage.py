@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 import os
 from os import path
-from shutil import copyfileobj
+from shutil import copyfileobj, rmtree
 from google.cloud import storage
 from oauth2client.service_account import ServiceAccountCredentials
 import base64
@@ -32,6 +32,12 @@ def retrieve_to_file_obj(src_path, file_obj, container):
     else:
         return _retrieve_to_file_obj_from_file_system(src_path, file_obj, container)
 
+def delete_dir(dir_path, container):
+    if settings.GOOGLE_APPLICATION_CREDENTIALS:
+        return _delete_dir_from_gcp(dir_path, container)
+    else:
+        return _delete_dir_from_file_system(dir_path, container)
+
 def _save_to_file_system(dest_path, file_obj, container, return_url):
     fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
     if not path.exists(path.dirname(fqp)):
@@ -56,6 +62,10 @@ def _retrieve_to_file_obj_from_file_system(src_path, file_obj, container):
         return
     with open(fqp, 'rb') as src_file:
         copyfileobj(src_file, file_obj)
+
+def _delete_dir_from_file_system(dir_path, container):
+    fqp = path.join(settings.MEDIA_ROOT, container, dir_path)
+    rmtree(fqp)
 
 def _save_to_gcp(dest_path, file_obj, container, return_url):
     bucket, real_container_name = _gcp_bucket(container)
@@ -109,3 +119,8 @@ def _gcp_bucket(container_name):
     if settings.BUCKET_PREFIX:
         container_name = settings.BUCKET_PREFIX + container_name
     return GCP_CLIENT.bucket(container_name), container_name
+
+def _delete_dir_from_gcp(dir_path, container):
+    bucket, _ = _gcp_bucket(container)
+    for blob in bucket.list_blobs(prefix=dir_path):
+        blob.delete()

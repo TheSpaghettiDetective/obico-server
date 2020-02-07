@@ -54,12 +54,7 @@ def compile_timelapse(print_id):
     os.mkdir(to_dir)
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
-
-    # TODO: remove me after transition is over
-    pic_dir = f'{_print.printer.id}'
-    use_subdir = redis.print_pic_subdir_get(_print.id)
-    if use_subdir and use_subdir == 't':
-            pic_dir = f'{_print.printer.id}/{_print.id}'
+    pic_dir = f'{_print.printer.id}/{_print.id}'
 
     print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
     print_pics.sort()
@@ -98,12 +93,7 @@ def compile_timelapse(print_id):
         preidction_json = []
         for print_pic_filename in print_pics:
             try:
-                re_parttern = 'tagged/(\d+)/([\d.]+).jpg'
-                # TODO: remove me after transition is over
-                if use_subdir and use_subdir == 't':
-                    re_parttern = 'tagged/(\d+)/\d+/([\d.]+).jpg'
-
-                m = re.search(re_parttern, print_pic_filename)
+                m = re.search('tagged/(\d+)/\d+/([\d.]+).jpg', print_pic_filename)
                 p_json = json.loads(redis.printer_p_json_get(m[1], m[2]))
             except (json.decoder.JSONDecodeError, TypeError):    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
                 p_json = [{}]

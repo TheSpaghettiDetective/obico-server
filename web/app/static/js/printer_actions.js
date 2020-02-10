@@ -4,6 +4,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
     var printerStateTxt = _.get(printer, 'status.state.text');
 
     actionsDiv.html(Mustache.template('printer_actions').render({
+        printerId: printerId,
         dhInverseIconSrc: dhInverseIconSrc,
         status: printer.status,
         printerPaused: _.get(printerState, 'paused'),
@@ -40,7 +41,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
         actionsDiv.find('button#connect-printer').attr("disabled", true);
         actionsDiv.find('button#connect-printer i.fa-spin').show();
 
-        printerWs.passThruToPrinter(printerId, {func: 'get_connection_options'}, function(err, connectionOptions) {
+        printerWs.passThruToPrinter(printerId, {func: 'get_connection_options', target: '_printer'}, function(err, connectionOptions) {
             if (err) {
                 Toast.fire({
                     type: 'error',
@@ -67,7 +68,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
                         if ($('select#id-baudrate').val()) {
                             args.push($('select#id-baudrate').val());
                         }
-                        printerWs.passThruToPrinter(printerId, {func: 'connect', args: args});
+                        printerWs.passThruToPrinter(printerId, {func: 'connect', target: '_printer', args: args});
                     }
                 });
 

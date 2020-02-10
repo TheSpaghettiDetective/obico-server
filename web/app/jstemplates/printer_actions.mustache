@@ -10,23 +10,24 @@
             <div class="col-sm-6">
                 <button id="print-pause-resume" type="button"
                     class="btn {{^printerPaused}}btn-outline-warning{{/printerPaused}} {{#printerPaused}}btn-outline-success{{/printerPaused}} btn-block mt-2" >
-                <span>
                 {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
-                </span>
                 </button>
             </div>
             <div class="col-sm-6">
-                <button id="print-cancel" type="button" class="btn btn-outline-danger btn-block mt-2 mb-2" >
-                <span>Cancel
-                </span>
+                <button id="print-cancel" type="button" class="btn btn-outline-danger btn-block mt-2 mb-2" >Cancel
                 </button>
             </div>
         {{/idle}}
         {{#idle}}
-            <div class="col-12 text-center py-3">
-            Printer is idle.
+            <div class="col-sm-6">
+                <a href="/printers/{{printerId}}/control/" type="button" role="button"
+                    class="btn btn-block mt-2">
+                <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
+                </a>
+            </div>
+            <div class="col-sm-6">
             <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
-            Send G-Code and Start Printing
+            Start Printing
             </button>
             </div>
         {{/idle}}

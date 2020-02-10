@@ -23,7 +23,7 @@ function initTempEditIcon(tempDiv, temperatures, tempProfiles, printerWs){
                 }).then((result) => {
                     if (result.value) {
                         var targetTemp = parseInt($('input#target-temp').val());
-                        printerWs.passThruToPrinter(printerId, {func: 'set_temperature', args: [tempKey, targetTemp]});
+                        printerWs.passThruToPrinter(printerId, {func: 'set_temperature', target: '_printer', args: [tempKey, targetTemp]});
                     }
                 });
             })(_.split($(ele.currentTarget).attr('id'), '-'));

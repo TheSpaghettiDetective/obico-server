@@ -175,6 +175,54 @@
         border-bottom: solid thin $color-primary;
       }
     }
+
+    .printer-controls {
+      display: flex;
+      flex-flow: row nowrap;
+
+      .btn {
+        width: 60px !important;
+        height: 60px !important;
+        margin: 8px !important;
+        // border: solid thick;
+        background: $color-primary;
+      }
+
+      .xy-controls {
+        flex: 0 1 70%;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+
+        .x-controls {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-evenly;
+          align-items: center;
+        }
+      }
+
+      .z-controls {
+        display: flex;
+        flex: 0 5 30%;
+        flex-flow: column nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+      }
+    }
+
+    .control-options {
+      .btn-group-toggle {
+        width: 100%;
+        .btn {
+          border: solid thin;
+          &.active {
+            background: $color-primary;
+          }
+        }
+      }
+    }
   }
 
   .overlay {

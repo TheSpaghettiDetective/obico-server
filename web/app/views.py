@@ -111,6 +111,10 @@ def printer_shared(request, share_token=None):
     printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
     return render(request, 'printer_shared.html', {'printer': printer, 'share_token': share_token})
 
+@login_required
+def control_printer(request, pk):
+    return render(request, 'printer_control.html', {'printer': get_printer_or_404(pk, request)})
+
 
 # User preferences
 

@@ -2,6 +2,8 @@
 
 
 $(document).ready(function () {
+    var MM_PER_STEP_PREF = 'mm-per-step';
+
     var printerCard = $('.printer-card');
     var printerId = printerCard.attr('id');
     var wsUri = printerCard.data('share-token') ?
@@ -37,4 +39,14 @@ $(document).ready(function () {
             printerWs.passThruToPrinter(printerId, {func: 'jog', target: '_printer', args: [jogArgs]});
         }
     });
+
+
+    $(".control-options :input").change(function() {
+        setPrinterLocalPref(MM_PER_STEP_PREF, printerId, $(this).val());
+    });
+
+    var mmPerStep = getPrinterLocalPref(MM_PER_STEP_PREF, printerId, "10");
+    var toToggleOn = printerCard.find('.btn-group-toggle input[value=' + mmPerStep + ']')
+    toToggleOn.prop('checked', true);
+    toToggleOn.parent().addClass('active').siblings().removeClass('active');
 });

@@ -20,15 +20,15 @@
         {{/idle}}
         {{#idle}}
             <div class="col-sm-6">
-                <a href="/printers/{{printerId}}/control/" type="button" role="button"
-                    class="btn btn-block mt-2">
-                <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
-                </a>
+                <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
+                Start Printing
+                </button>
             </div>
             <div class="col-sm-6">
-            <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
-            Start Printing
-            </button>
+                <a href="/printers/{{printerId}}/control/" type="button" role="button"
+                    class="btn btn-outline-secondary btn-block mt-2">
+                <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
+                </a>
             </div>
         {{/idle}}
     {{/disconnected}}

@@ -15,52 +15,59 @@
         </div>
       </div>
       {% include 'includes/_webcam_stream.html' %}
-      <div class="card-body printer-controls">
-        <div class="xy-controls">
-        <button class="btn" type="button" data-axis="y" data-dir="up">
-            <i class="fas fa-angle-up fa-2x"></i>
-          </button>
-          <div class="x-controls">
-            <button class="btn" type="button" data-axis="x" data-dir="down">
-              <i class="fas fa-angle-left fa-2x"></i>
+      <div class="card-body">
+        <div class="overlay-top text-center"
+        style="left: 50%; margin-left: -102px; top: 50%; margin-top: -85px; display: none">
+          <div>Printer controls are disabled</div>
+          <div>because the printer is not idle.</div>
+        </div>
+        <div class="printer-controls">
+          <div class="xy-controls">
+            <button class="btn" type="button" data-axis="y" data-dir="up">
+              <i class="fas fa-angle-up fa-2x"></i>
             </button>
-            <button class="btn" type="button" data-axis="xy" data-dir="home">
-              <i class="fas fa-home fa-2x"></i>
-            </button>
-            <button class="btn" type="button" data-axis="x" data-dir="up">
-              <i class="fas fa-angle-right fa-2x"></i>
+            <div class="x-controls">
+              <button class="btn" type="button" data-axis="x" data-dir="down">
+                <i class="fas fa-angle-left fa-2x"></i>
+              </button>
+              <button class="btn" type="button" data-axis="xy" data-dir="home">
+                <i class="fas fa-home fa-2x"></i>
+              </button>
+              <button class="btn" type="button" data-axis="x" data-dir="up">
+                <i class="fas fa-angle-right fa-2x"></i>
+              </button>
+            </div>
+            <button class="btn" type="button" data-axis="y" data-dir="down">
+              <i class="fas fa-angle-down fa-2x"></i>
             </button>
           </div>
-          <button class="btn" type="button" data-axis="y" data-dir="down">
-            <i class="fas fa-angle-down fa-2x"></i>
-          </button>
+          <div class="z-controls">
+            <button class="btn" type="button" data-axis="z" data-dir="up">
+              <i class="fas fa-angle-up fa-2x"></i>
+            </button>
+            <button class="btn" type="button" data-axis="z" data-dir="home">
+              <i class="fas fa-home fa-2x"></i>
+            </button>
+            <button class="btn" type="button" data-axis="z" data-dir="down">
+              <i class="fas fa-angle-down fa-2x"></i>
+            </button>
+          </div>
         </div>
-        <div class="z-controls">
-          <button class="btn" type="button" data-axis="z" data-dir="up">
-            <i class="fas fa-angle-up fa-2x"></i>
-          </button>
-          <button class="btn" type="button" data-axis="z" data-dir="home">
-            <i class="fas fa-home fa-2x"></i>
-          </button>
-          <button class="btn" type="button" data-axis="z" data-dir="down">
-            <i class="fas fa-angle-down fa-2x"></i>
-          </button>
-        </div>
-      </div>
-      <div class="card-body control-options">
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn active">
-            <input type="radio" name="jog-distance" value="0.1" autocomplete="off" checked>0.1mm
-          </label>
-          <label class="btn">
-            <input type="radio" name="jog-distance" value="1" autocomplete="off">1mm
-          </label>
-          <label class="btn">
-            <input type="radio" name="jog-distance" value="10" autocomplete="off">10mm
-          </label>
-          <label class="btn">
-            <input type="radio" name="jog-distance" value="100" autocomplete="off">100mm
-          </label>
+        <div class="control-options">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn">
+              <input type="radio" name="jog-distance" value="0.1" autocomplete="off">0.1mm
+            </label>
+            <label class="btn">
+              <input type="radio" name="jog-distance" value="1" autocomplete="off">1mm
+            </label>
+            <label class="btn active">
+              <input type="radio" name="jog-distance" value="10" autocomplete="off" checked>10mm
+            </label>
+            <label class="btn">
+              <input type="radio" name="jog-distance" value="100" autocomplete="off">100mm
+            </label>
+          </div>
         </div>
       </div>
     </div>

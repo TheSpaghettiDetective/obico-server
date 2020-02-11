@@ -151,9 +151,9 @@
 
       &.failure-alert {
         a {
-          color: darken($color-primary, 20);
+          color: darken($primary, 20);
           &:hover {
-            color: darken($color-primary, 35);
+            color: darken($primary, 35);
           }
         }
       }
@@ -163,7 +163,7 @@
       width: 33px;
       height: 33px;
       position: relative;
-      color: lighten($color-gray, 25);
+      color: $gray-200;
       font-size: 1rem;
       padding: 0rem 1.5rem;
       i {
@@ -171,8 +171,8 @@
         transform: translate(-50%, -50%);
       }
       &.pressed {
-        color: lighten($color-primary, 5);
-        border-bottom: solid thin $color-primary;
+        color: lighten($primary, 5);
+        border-bottom: solid thin $primary;
       }
     }
 
@@ -185,7 +185,7 @@
         height: 60px !important;
         margin: 8px !important;
         // border: solid thick;
-        background: $color-primary;
+        background: $primary;
       }
 
       .xy-controls {
@@ -218,7 +218,7 @@
         .btn {
           border: solid thin;
           &.active {
-            background: $color-primary;
+            background: $primary;
           }
         }
       }
@@ -258,7 +258,7 @@
     a {
       text-align: center;
       border: thin dashed;
-      border-color: darken($color-primary, 10);
+      border-color: darken($primary, 10);
       padding: 5em 3em;
 
       &:hover {
@@ -289,7 +289,7 @@ form#printer_form {
     }
   }
   .form-control {
-    border: 1px solid $color-gray;
+    border: 1px solid $gray-200;
   }
 
   .sensitivity {
@@ -319,10 +319,10 @@ form#printer_form {
       color: #EBEBEB !important;
     }
     > ul.step-anchor > li.active > a {
-      color: $color-primary !important;
+      color: $primary !important;
 
       &:after {
-        background: $color-primary;
+        background: $primary;
       }
     }
   }
@@ -359,7 +359,7 @@ form#printer_form {
 
       #connected {
         i {
-          color: $color-success;
+          color: $success;
         }
       }
     }
@@ -449,15 +449,15 @@ form#printer_form {
   .card-img-overlay {
     top: initial;
     padding: 0.5rem;
-    background-color: rgba($color-gray, 0.7);
+    background-color: rgba($gray-200, 0.7);
   }
 }
 
 .upload-box {
   &.dropzone {
     border: thin dashed;
-    border-color: darken($color-primary, 10);
-    color: $color-primary;
+    border-color: darken($primary, 10);
+    color: $primary;
     background: none;
     margin: auto;
     min-height: 194px;

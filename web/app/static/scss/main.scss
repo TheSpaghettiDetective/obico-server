@@ -7,19 +7,7 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
-  background: repeating-linear-gradient(45deg, darken($color-bg, 3) 0%, darken($color-bg, 3) 10%, $color-bg 0%, $color-bg 50%) 0 / 15px 15px;
-}
-
-.color-secondary {
-  color: $color-secondary;
-}
-
-.color-success {
-  color: $color-success;
-}
-
-.color-error {
-  color: $color-error;
+  background: repeating-linear-gradient(45deg, darken($body-bg, 3) 0%, darken($body-bg, 3) 10%, $body-bg 0%, $body-bg 50%) 0 / 15px 15px;
 }
 
 .borderless {
@@ -31,12 +19,13 @@ button, .btn {
   border-radius: 300px;
   &.no-corner {
     border-radius: 0;
+    border-width: 1px;
   }
 }
 
 .custom-control-label {
   &::before {
-    border: $color-primary solid 2px;
+    border: $primary solid 2px;
   }
 }
 
@@ -86,8 +75,8 @@ footer {
 .bootstrap-select {
   button {
     &.dropdown-toggle {
-      background-color: $color-primary;
-      border-color: $color-primary;
+      background-color: $primary;
+      border-color: $primary;
     }
     border-radius: 0;
   }
@@ -101,14 +90,14 @@ footer {
   .nav-item {
     text-transform: uppercase;
     &.active, &:hover {
-      background-color: lighten($color-gray, 5);
+      background-color: lighten($gray-200, 5);
     }
   }
   .user-menu {
     text-transform: none;
   }
   a.glowing {
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px $color-primary, 0 0 70px $color-primary, 0 0 80px $color-primary, 0 0 100px $color-primary, 0 0 150px $color-primary;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px $primary, 0 0 70px $primary, 0 0 80px $primary, 0 0 100px $primary, 0 0 150px $primary;
   }
 
   .badge-btn {
@@ -124,7 +113,7 @@ footer {
       top: 1px;
       height: 18px;
       border-radius: 4px;
-      background-color: $color-primary;
+      background-color: $primary;
       transition: transform 0.2s; /* Animation */
       &:hover {
         transform: scale(1.3);
@@ -146,12 +135,12 @@ hr {
 }
 
 a.link {
-  color: lighten($color-primary, 7) !important;
+  color: lighten($primary, 7) !important;
   text-decoration: none;
   background-color: transparent;
 
   &:hover {
-      color: $color-primary !important;
+      color: $primary !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }
@@ -184,7 +173,7 @@ a.link {
 .form-container {
   margin: 3em 0em;
   padding: 2.5em;
-  background: $color-bg;
+  background: $body-bg;
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
   border: none !important;
@@ -234,20 +223,20 @@ a.link {
 }
 
 .swal2-popup {
-  background-color: darken($color-bg, 5) !important;
+  background-color: darken($body-bg, 5) !important;
   border-radius: unset !important;
   .swal2-title, .swal2-content, #swal2-content {
-    color: $color-text !important;
+    color: $gray-100 !important;
     text-align: left !important;
   }
 
   &.swal2-modal {
     .swal2-content {
-      color: $color-text !important;
+      color: $gray-100 !important;
       font-size: 1rem !important;
     }
     .swal2-title {
-      color: $color-text !important;
+      color: $gray-100 !important;
       font-size: 1.4rem !important;
     }
     button {
@@ -255,11 +244,7 @@ a.link {
       border: none !important;
 
       &.swal2-confirm {
-        background-color: $color-primary !important;
-      }
-
-      &.swal2-cancel {
-        background-color: $color-secondary !important;
+        background-color: $primary !important;
       }
     }
     .bootstrap-select {
@@ -285,10 +270,10 @@ a.link {
     width: 100% !important;
   }
   .slider-selection {
-    background: lighten($color-primary, 10);
+    background: lighten($primary, 10);
   }
   .slider-handle {
-    background: $color-primary;
+    background: $primary;
   }
 }
 .slider.slider-horizontal:hover, .slider.slider-vertical:hover {
@@ -314,7 +299,7 @@ a.link {
 
 #accordion {
   .card {
-      background: $color-bg;
+      background: $body-bg;
   }
   .card-header {
       a {
@@ -353,10 +338,10 @@ a.link {
     &.settings {
       text-align: center;
       padding-top: 7px;
-      border-bottom: solid thin $color-gray;
+      border-bottom: solid thin $gray-200;
     }
 
-    background: darken($color-bg, 1);
+    background: darken($body-bg, 1);
     .row {
       padding: 0.3em 0em 0.1em;
       text-align: center;
@@ -371,7 +356,7 @@ a.link {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: solid thin $color-gray;
+      border-bottom: solid thin $gray-200;
       label {
         font-size: 1rem;
         text-align: left;

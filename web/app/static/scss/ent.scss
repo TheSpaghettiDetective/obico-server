@@ -2,7 +2,7 @@
 @import 'mixin';
 
 table.pricing {
-    background: darken($color-bg, 10);
+    background: darken($body-bg, 10);
     th {
         font-size: 1.2em;
     }
@@ -11,7 +11,7 @@ table.pricing {
 .pricing {
 
     .btn-group-toggle {
-        background: $color-bg;
+        background: $body-bg;
         .btn {
             border: solid thin darken(white, 60);
         }
@@ -23,7 +23,7 @@ table.pricing {
             border-top: solid thin darken(white, 60);
             border-bottom: solid thin darken(white, 60);
             border-right: solid thin darken(white, 60);
-            background: $color-bg;
+            background: $body-bg;
 
             >div {
                 padding-left: 1rem;
@@ -32,7 +32,7 @@ table.pricing {
 
             .price-header {
                 height: 15rem;
-                background: darken($color-bg, 8);
+                background: darken($body-bg, 8);
                 &.dh-pack-header {
                     height: 12rem;
                 }
@@ -59,7 +59,7 @@ table.pricing {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                color: darken($color-text, 30);
+                color: darken($gray-100, 30);
             }
 
             .features {
@@ -84,7 +84,7 @@ table.pricing {
                 i {
                     padding-right: 0.7rem;
                     padding-top: 0.35rem;
-                    color: lighten($color-primary, 12);
+                    color: lighten($primary, 12);
                 }
             }
         }
@@ -115,7 +115,7 @@ table.pricing {
 
             .price-unit {
                 font-size: 18px;
-                color: darken($color-text, 30);
+                color: darken($gray-100, 30);
             }
         }
     }

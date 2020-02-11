@@ -8,8 +8,17 @@ $(document).ready(function () {
     '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
     var printerWs = new PrinterWebSocket();
 
-    printerWs.openPrinterWebSockets(printerId, wsUri, function(msg) {
-        printerList[printerId] = msg;
+    printerWs.openPrinterWebSockets(printerId, wsUri, function(printer) {
+        var controlsDiv = printerCard.find('.card-body');
+        var idle = _.get(printer, 'status.state.text') == "Operational";
+        if (idle) {
+            controlsDiv.removeClass('overlay');
+            controlsDiv.find('.overlay-top').hide();
+        } else {
+            controlsDiv.addClass('overlay');
+            controlsDiv.find('.overlay-top').show();
+        }
+
     });
 
     $('.printer-controls button').on('click', function() {
@@ -22,10 +31,9 @@ $(document).ready(function () {
             }
             printerWs.passThruToPrinter(printerId, {func: 'home', target: '_printer', args: [axes]});
         } else {
-            var a = ele.data('dir') == 'up' ? 1 : -1;
             var distance = parseFloat(printerCard.find('.btn-group-toggle input:checked').val());
             var jogArgs = {}
-            jogArgs[axes] = a*distance;
+            jogArgs[axes] = distance * (ele.data('dir') == 'up' ? 1 : -1);
             printerWs.passThruToPrinter(printerId, {func: 'jog', target: '_printer', args: [jogArgs]});
         }
     });

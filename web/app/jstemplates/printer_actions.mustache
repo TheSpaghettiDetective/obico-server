@@ -10,18 +10,18 @@
             <div class="col-sm-6">
                 <button id="print-pause-resume" type="button"
                     class="btn {{^printerPaused}}btn-outline-warning{{/printerPaused}} {{#printerPaused}}btn-outline-success{{/printerPaused}} btn-block mt-2" >
-                {{^printerPaused}}Pause{{/printerPaused}} {{#printerPaused}}Resume{{/printerPaused}}
+                {{^printerPaused}}<i class="fas fa-pause"></i>&nbsp;&nbsp;Pause{{/printerPaused}} {{#printerPaused}}<i class="fas fa-play"></i>&nbsp;&nbsp;Resume{{/printerPaused}}
                 </button>
             </div>
             <div class="col-sm-6">
-                <button id="print-cancel" type="button" class="btn btn-outline-danger btn-block mt-2 mb-2" >Cancel
+                <button id="print-cancel" type="button" class="btn btn-outline-danger btn-block mt-2 mb-2" ><i class="fas fa-stop"></i>&nbsp;&nbsp;Cancel
                 </button>
             </div>
         {{/idle}}
         {{#idle}}
             <div class="col-sm-12">
                 <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
-                Start Printing
+                <i class="fas fa-star"></i>&nbsp;&nbsp;Start Printing
                 </button>
             </div>
             <!-- div class="col-sm-6">
@@ -35,8 +35,8 @@
     {{#disconnected}}
         <div class="col-12 text-center py-2 text-warning">
             <div>Printer is not connected to OctoPrint.</div>
-            <button id="connect-printer" type="button" class="btn btn-outline-success btn-block mt-2">
-            Connect <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+            <button id="connect-printer" type="button" class="btn btn-outline-primary btn-block mt-2">
+            <i class="fab fa-usb"></i>&nbsp;&nbsp;Connect <i class="fas fa-spinner fa-spin" style="display: none;"></i>
             </button>
         </div>
     {{/disconnected}}

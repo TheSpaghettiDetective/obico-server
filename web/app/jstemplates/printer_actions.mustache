@@ -1,8 +1,8 @@
 <div class="row my-2">
 {{#status}}
     {{#error}}
-    <div class="col-12 text-danger text-center">
-    OctoPrint ran into an error!
+    <div class="col-12 bg-danger text-center">
+    <div>OctoPrint Error</div><div>{{ printerStateTxt }}</div>
     </div>
     {{/error}}
     {{^disconnected}}
@@ -19,17 +19,17 @@
             </div>
         {{/idle}}
         {{#idle}}
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <button id="start-print" type="button" class="btn btn-outline-primary btn-block mt-2">
                 Start Printing
                 </button>
             </div>
-            <div class="col-sm-6">
+            <!-- div class="col-sm-6">
                 <a href="/printers/{{printerId}}/control/" type="button" role="button"
                     class="btn btn-outline-secondary btn-block mt-2">
                 <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
                 </a>
-            </div>
+            </div -->
         {{/idle}}
     {{/disconnected}}
     {{#disconnected}}

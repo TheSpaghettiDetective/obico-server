@@ -1,15 +1,16 @@
 function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, printerWs) {
     var printer = printerList[printerId];
     var printerState = _.get(printer, 'status.state.flags');
-    var printerStateTxt = _.get(printer, 'status.state.text');
+    var printerStateTxt = _.get(printer, 'status.state.text', '');
 
     actionsDiv.html(Mustache.template('printer_actions').render({
         printerId: printerId,
         dhInverseIconSrc: dhInverseIconSrc,
         status: printer.status,
+        printerStateTxt: printerStateTxt,
         printerPaused: _.get(printerState, 'paused'),
         idle: printerStateTxt == 'Operational',
-        error: _.get(printerState, 'error'),
+        error: _.get(printerState, 'error') || printerStateTxt.toLowerCase().includes('error'),
         disconnected: _.get(printerState, 'closedOrError'),
     }));
 

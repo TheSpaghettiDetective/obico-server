@@ -232,6 +232,7 @@ def clean_up_print_pics(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
     delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER)
     delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER)
+    delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER)  # the pics that may have come in before current_print is set.
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:

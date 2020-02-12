@@ -63,7 +63,6 @@ def compile_timelapse(print_id):
         local_pics = download_files(print_pics, to_dir)
         mp4_filename = '{}.mp4'.format(_print.id)
         output_mp4 = os.path.join(to_dir, mp4_filename)
-        import ipdb; ipdb.set_trace()
         cmd = 'ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {} {}'.format(local_pics[-1].parent, ffmpeg_extra_options, output_mp4)
         subprocess.run(cmd.split(), check=True)
 

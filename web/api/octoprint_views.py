@@ -75,6 +75,9 @@ class OctoPrintPicView(APIView):
         pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
 
+        if not self.current_print:
+            Response({'result': 'ok'})
+
         pic_path = f'{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
         internal_url, external_url = save_file_obj(f'raw/{pic_path}', pic, settings.PICS_CONTAINER)
 

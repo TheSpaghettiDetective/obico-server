@@ -75,7 +75,7 @@ class OctoPrintPicView(APIView):
         pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
 
-        if not self.current_print:     # Some times pics come in when current_print is not set - maybe because printer status is out of sync between plugin and server?
+        if not printer.current_print:     # Some times pics come in when current_print is not set - maybe because printer status is out of sync between plugin and server?
             pic_path = f'{printer.id}/0/{pic_id}.jpg'
         else:
             pic_path = f'{printer.id}/{printer.current_print.id}/{pic_id}.jpg'

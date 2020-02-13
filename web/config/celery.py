@@ -31,6 +31,7 @@ celery_app.conf.task_routes = {
     'app_ent.tasks.send_welcome_email': {'queue': 'realtime'},
     'app_ent.tasks.set_coturn_credential': {'queue': 'realtime'},
     'app_ent.tasks.sync_account_status': {'queue': 'realtime'},
+    'app_ent.tasks.send_free_trial_expiring_message': {'queue': 'realtime'},
 }
 
 # Using a string here means the worker doesn't have to serialize

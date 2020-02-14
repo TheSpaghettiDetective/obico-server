@@ -16,20 +16,21 @@ def ml_api_auth_headers():
     return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
 
 def orientation_to_ffmpeg_options(printer_settings):
+    options = '-vf pad=ceil(iw/2)*2:ceil(ih/2)*2'
     orientation = (printer_settings['webcam_flipV'], printer_settings['webcam_flipH'],printer_settings['webcam_rotate90'])
     if orientation == (False, False, True):
-        return '-vf transpose=2'
+        options += ',transpose=2'
     elif orientation == (False, True, False):
-        return '-vf hflip'
+        options += ',hflip'
     elif orientation == (False, True, True):
-        return '-vf transpose=0'
+        options += ',transpose=0'
     elif orientation == (True, False, False):
-        return '-vf vflip'
+        options += ',vflip'
     elif orientation == (True, False, True):
-        return '-vf transpose=3'
+        options += ',transpose=3'
     elif orientation == (True, True, True):
-        return '-vf transpose=1'
+        options += ',transpose=1'
     elif orientation == (True, True, False):
-        return '-vf hflip,vflip'
-    else:
-        return ''
+        options += ',hflip,vflip'
+
+    return options

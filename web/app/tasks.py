@@ -34,6 +34,7 @@ LOGGER = logging.getLogger(__name__)
 @shared_task
 def process_print_events(print_id):
     _print = Print.objects.get(id=print_id)
+    generate_print_poster(_print)
     if (_print.ended_at() - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
         _print.delete()
         clean_up_print_pics(_print)
@@ -57,7 +58,7 @@ def compile_timelapse(print_id):
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
     pic_dir = f'{_print.printer.id}/{_print.id}'
 
-    print_pics = filter_pics_by_start_end(list_file_obj('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
+    print_pics = list_file_obj(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -69,18 +70,11 @@ def compile_timelapse(print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
-        last_pic = os.path.join(to_dir, 'ss.jpg')
-        # https://superuser.com/questions/1448665/ffmpeg-how-to-get-last-frame-from-a-video
-        subprocess.run('ffmpeg -y -i {} -sseof -1 -update 1 -vframes 1 -q:v 2 {}'.format(output_mp4, last_pic).split(' '), check=True)
-        with open(last_pic, 'rb') as poster_file:
-            _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)
-
-        _print.video_url = mp4_file_url
-        _print.poster_url = poster_file_url
-        _print.save()
+    _print.video_url = mp4_file_url
+    _print.save()
 
     # build tagged timelapse
-    print_pics = filter_pics_by_start_end(list_file_obj('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER), _print.started_at, _print.ended_at())
+    print_pics = list_file_obj(f'tagged/{pic_dir}/', settings.PICS_CONTAINER)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -148,7 +142,7 @@ def detect_timelapse(self, print_id):
     ffprobe_cmd = subprocess.run(f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
     frame_num = int(ffprobe_cmd.stdout.strip())
     fps = 30*MAX_FRAME_NUM/frame_num if frame_num > MAX_FRAME_NUM else 30
-    subprocess.run(f'ffmpeg -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/{print_id}-%5d.jpg'.split())
+    subprocess.run(f'ffmpeg -y -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/{print_id}-%5d.jpg'.split())
 
     predictions = []
     last_prediction = PrinterPrediction()
@@ -214,25 +208,37 @@ def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
 
     return output_files
 
-def filter_pics_by_start_end(pic_files, start_time, end_time):
-    start_ts = start_time.timestamp()
-    end_ts = end_time.timestamp()
-    filtered_pic_files = []
-    for pic_file in pic_files:
-        matched = re.search('/([\d\.]+).jpg', pic_file)
-        if not matched:
-            continue
-        timestamp = float(matched[1])
-        if start_ts <= timestamp <= end_ts:
-            filtered_pic_files += [pic_file]
-
-    return filtered_pic_files
-
 def clean_up_print_pics(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
     delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER)
     delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER)
     delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER)  # the pics that may have come in before current_print is set.
+
+def generate_print_poster(_print):
+    pic_dir = f'{_print.printer.id}/{_print.id}'
+    print_pics = list_file_obj(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
+    if not print_pics:
+        return
+    print_pics.sort()
+
+    to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
+    shutil.rmtree(to_dir, ignore_errors=True)
+    os.mkdir(to_dir)
+    raw_jpg = os.path.join(to_dir, 'raw.jpg')
+    with open(raw_jpg, 'wb') as file_obj:
+        retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER)
+
+    ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
+    rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
+    cmd = f'ffmpeg -y -i {raw_jpg} -qscale:v 2 {ffmpeg_extra_options} {rotated_jpg}'
+    subprocess.run(cmd.split(), check=True)
+    with open(rotated_jpg, 'rb') as poster_file:
+        _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)
+
+    _print.poster_url = poster_file_url
+    _print.save()
+
+    shutil.rmtree(to_dir, ignore_errors=True)
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:

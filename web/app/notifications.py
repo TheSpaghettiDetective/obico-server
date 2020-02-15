@@ -50,11 +50,11 @@ def send_failure_alert_email(printer, is_warning, print_paused):
     }
 
     send_email(
-        printer.user,
-        subject,
-        'alert',
-        'email/failure_alert.html',
-        ctx,
+        user=printer.user,
+        subject=subject,
+        mailing_list='alert',
+        template_path='email/failure_alert.html',
+        ctx=ctx,
         img_url=printer.pic['img_url'],
         )
 
@@ -177,12 +177,12 @@ def send_print_notification_email(_print):
         'timelapse_link': site.build_full_url('/prints/'),
     }
     send_email(
-        _print.printer.user,
-        subject,
-        'print_notification',
-        'email/print_notification.html',
-        ctx,
-        img_url=_print.printer.pic['img_url'] if _print.printer.pic else None,
+        user=_print.printer.user,
+        subject=subject,
+        mailing_list='print_notification',
+        template_path='email/print_notification.html',
+        ctx=ctx,
+        img_url=_print.poster_url,
         )
 
 def send_print_notification_telegram(_print):

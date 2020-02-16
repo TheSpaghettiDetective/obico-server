@@ -28,6 +28,7 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.image import overlay_detections
 from lib import redis
 from app.notifications import send_print_notification
+from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -224,13 +225,17 @@ def generate_print_poster(_print):
     to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
-    raw_jpg = os.path.join(to_dir, 'raw.jpg')
-    with open(raw_jpg, 'wb') as file_obj:
+    unrotated_jpg = os.path.join(to_dir, 'ss.jpg')
+    with open(unrotated_jpg, 'wb') as file_obj:
         retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER)
+
+    with open(unrotated_jpg, 'rb') as unrotated_jpg_file:
+        _, ss_url = save_file_obj(f'raw/{_print.printer.id}/ss.jpg', unrotated_jpg_file, settings.PICS_CONTAINER)
+    redis.printer_pic_set(_print.printer.id, {'img_url': ss_url}, ex=IMG_URL_TTL_SECONDS)
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
     rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
-    cmd = f'ffmpeg -y -i {raw_jpg} -qscale:v 2 {ffmpeg_extra_options} {rotated_jpg}'
+    cmd = f'ffmpeg -y -i {unrotated_jpg} -qscale:v 2 {ffmpeg_extra_options} {rotated_jpg}'
     subprocess.run(cmd.split(), check=True)
     with open(rotated_jpg, 'rb') as poster_file:
         _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)

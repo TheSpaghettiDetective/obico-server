@@ -35,12 +35,13 @@ LOGGER = logging.getLogger(__name__)
 @shared_task
 def process_print_events(print_id):
     _print = Print.objects.get(id=print_id)
+    generate_print_poster(_print)
+
     if (_print.ended_at() - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
         _print.delete()
         clean_up_print_pics(_print)
         return
 
-    generate_print_poster(_print)
     print_notification.delay(print_id)
     compile_timelapse.delay(print_id)
 

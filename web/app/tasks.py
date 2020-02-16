@@ -72,8 +72,8 @@ def compile_timelapse(print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
-    _print.video_url = mp4_file_url
-    _print.save()
+        _print.video_url = mp4_file_url
+        _print.save()
 
     # build tagged timelapse
     print_pics = list_file_obj(f'tagged/{pic_dir}/', settings.PICS_CONTAINER)

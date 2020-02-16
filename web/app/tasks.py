@@ -49,7 +49,7 @@ def process_print_events(print_id):
 def print_notification(print_id):
     send_print_notification(print_id)
 
-@shared_task(acks_late=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
+@shared_task
 def compile_timelapse(print_id):
     _print = Print.objects.select_related('printer').get(id=print_id)
 

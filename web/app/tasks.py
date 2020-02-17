@@ -236,7 +236,7 @@ def generate_print_poster(_print):
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
     rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
-    cmd = f'ffmpeg -y -i {unrotated_jpg} -qscale:v 2 {ffmpeg_extra_options} {rotated_jpg}'
+    cmd = f'ffmpeg -y -i {unrotated_jpg} {ffmpeg_extra_options} {rotated_jpg}'
     subprocess.run(cmd.split(), check=True)
     with open(rotated_jpg, 'rb') as poster_file:
         _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)

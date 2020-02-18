@@ -22,7 +22,7 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
-from lib.file_storage import list_file_obj, retrieve_to_file_obj, save_file_obj, delete_dir
+from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
@@ -60,7 +60,7 @@ def compile_timelapse(print_id):
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
     pic_dir = f'{_print.printer.id}/{_print.id}'
 
-    print_pics = list_file_obj(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -76,7 +76,7 @@ def compile_timelapse(print_id):
         _print.save()
 
     # build tagged timelapse
-    print_pics = list_file_obj(f'tagged/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'tagged/{pic_dir}/', settings.PICS_CONTAINER)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -218,7 +218,7 @@ def clean_up_print_pics(_print):
 
 def generate_print_poster(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
-    print_pics = list_file_obj(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
     if not print_pics:
         return
     print_pics.sort()

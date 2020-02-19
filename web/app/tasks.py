@@ -134,6 +134,7 @@ def detect_timelapse(self, print_id):
     tmp_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     mp4_filepath = f'private/{_print.id}.mp4'
     tl_path = os.path.join(tmp_dir, mp4_filepath)
+    Path(tl_path).parent.mkdir(parents=True, exist_ok=True)
     with open(tl_path, 'wb') as file_obj:
         retrieve_to_file_obj(mp4_filepath, file_obj, settings.TIMELAPSE_CONTAINER)
 

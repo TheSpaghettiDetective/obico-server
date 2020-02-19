@@ -60,7 +60,7 @@ def compile_timelapse(print_id):
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
     pic_dir = f'{_print.printer.id}/{_print.id}'
 
-    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -76,7 +76,7 @@ def compile_timelapse(print_id):
         _print.save()
 
     # build tagged timelapse
-    print_pics = list_dir(f'tagged/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'tagged/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
     print_pics.sort()
     if print_pics:
         local_pics = download_files(print_pics, to_dir)
@@ -132,7 +132,10 @@ def detect_timelapse(self, print_id):
 
     _print = Print.objects.get(pk=print_id)
     tmp_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
-    tl_path = download_files([f'private/{_print.id}.mp4'], tmp_dir, container=settings.TIMELAPSE_CONTAINER)[0]
+    mp4_filepath = f'private/{_print.id}.mp4'
+    tl_path = os.path.join(tmp_dir, mp4_filepath)
+    with open(tl_path, 'wb') as file_obj:
+        retrieve_to_file_obj(mp4_filepath, file_obj, settings.TIMELAPSE_CONTAINER)
 
     jpgs_dir = os.path.join(tmp_dir, 'jpgs')
     shutil.rmtree(jpgs_dir, ignore_errors=True)
@@ -204,7 +207,7 @@ def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
         output_path = Path(os.path.join(to_dir, filename))
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'wb') as file_obj:
-            retrieve_to_file_obj(filename, file_obj, container)
+            retrieve_to_file_obj(filename, file_obj, container, long_term_storage=False)
 
         output_files += [output_path]
 
@@ -212,13 +215,13 @@ def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
 
 def clean_up_print_pics(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
-    delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER)
-    delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER)
-    delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER)  # the pics that may have come in before current_print is set.
+    delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
+    delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
+    delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER, long_term_storage=False)  # the pics that may have come in before current_print is set.
 
 def generate_print_poster(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
-    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER)
+    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:
         return
     print_pics.sort()
@@ -228,10 +231,10 @@ def generate_print_poster(_print):
     os.mkdir(to_dir)
     unrotated_jpg = os.path.join(to_dir, 'ss.jpg')
     with open(unrotated_jpg, 'wb') as file_obj:
-        retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER)
+        retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER, long_term_storage=False)
 
     with open(unrotated_jpg, 'rb') as unrotated_jpg_file:
-        _, ss_url = save_file_obj(f'raw/{_print.printer.id}/ss.jpg', unrotated_jpg_file, settings.PICS_CONTAINER)
+        _, ss_url = save_file_obj(f'raw/{_print.printer.id}/ss.jpg', unrotated_jpg_file, settings.PICS_CONTAINER, long_term_storage=False)
     redis.printer_pic_set(_print.printer.id, {'img_url': ss_url}, ex=IMG_URL_TTL_SECONDS)
 
     ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)

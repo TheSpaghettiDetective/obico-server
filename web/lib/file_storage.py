@@ -10,9 +10,9 @@ import importlib
 lt_file_storage = importlib.import_module(getattr(settings, 'LT_FILE_STORAGE_MODULE', 'lib.fs_file_storage'))
 st_file_storage = importlib.import_module(getattr(settings, 'ST_FILE_STORAGE_MODULE', 'lib.fs_file_storage'))
 
-def save_file_obj(dest_path, file_obj, container, return_url=True, long_term_storage=True):
+def save_file_obj(dest_path, file_obj, container, long_term_storage=True):
     file_storage = lt_file_storage if long_term_storage else st_file_storage
-    return file_storage.save_file_obj(dest_path, file_obj, container, return_url)
+    return file_storage.save_file_obj(dest_path, file_obj, container)
 
 def list_dir(dir_path, container, long_term_storage=True):
     file_storage = lt_file_storage if long_term_storage else st_file_storage

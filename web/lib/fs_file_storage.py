@@ -5,16 +5,13 @@ from shutil import copyfileobj, rmtree
 
 from lib import site
 
-def save_file_obj(dest_path, file_obj, container, return_url):
+def save_file_obj(dest_path, file_obj, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
     if not path.exists(path.dirname(fqp)):
         os.makedirs(path.dirname(fqp))
 
     with open(fqp, 'wb+') as dest_file:
         copyfileobj(file_obj, dest_file)
-
-    if not return_url:
-        return
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)

@@ -218,6 +218,7 @@ def clean_up_print_pics(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
     delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
     delete_dir('tagged/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
+    delete_dir('p/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
     delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER, long_term_storage=False)  # the pics that may have come in before current_print is set.
 
 def generate_print_poster(_print):

@@ -173,7 +173,7 @@ def send_failure_alert_slack(printer, is_warning, print_paused):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Spaghetti Detective - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smell fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n{site.build_full_url('/printers/')}|Check it out.>"
+                        "text": f"*The Spaghetti Detective - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smell fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n<{site.build_full_url('/printers/')}|Check it out.>"
                     }
                 }
             ]

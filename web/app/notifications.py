@@ -30,6 +30,8 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     if printer.user.is_pro and printer.user.alert_by_sms:
         send_failure_alert_sms(printer, is_warning, print_paused)
 
+    send_failure_alert_slack(printer, is_warning, print_paused)
+
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
@@ -151,6 +153,50 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
     except requests.ConnectionError as e:
         LOGGER.error(e)
 
+def send_failure_alert_slack(printer, is_warning, print_paused):
+    if not printer.user.slack_access_token:
+        return
+
+    req = requests.get(
+        url='https://slack.com/api/channels.list',
+        params={
+            'token': printer.user.slack_access_token
+        })
+    req.raise_for_status()
+    slack_channel_ids = [ c['id'] for c in req.json()['channels'] if c['is_member'] ]
+
+    for slack_channel_id in slack_channel_ids:
+        msg = {
+            "channel": slack_channel_id,
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*The Spaghetti Detective - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smell fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n{site.build_full_url('/printers/')}|Check it out.>"
+                    }
+                }
+            ]
+        }
+        try:
+            msg['blocks'].append(
+                {
+                        "type": "image",
+                        "image_url": printer.pic['img_url'],
+                        "alt_text": "Print snapshot"
+                }
+            )
+        except:
+            pass
+
+        req = requests.post(
+            url='https://slack.com/api/chat.postMessage',
+            headers={'Authorization': f'Bearer {_print.user.slack_access_token}'},
+            json=msg
+            )
+        req.raise_for_status()
+
+
 def send_print_notification(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
     if _print.is_canceled():
@@ -168,6 +214,8 @@ def send_print_notification(print_id):
 
     if _print.printer.user.print_notification_by_telegram:
         send_print_notification_telegram(_print)
+
+    send_print_notification_slack(_print)
 
 def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
@@ -254,7 +302,6 @@ def send_print_notification_slack(_print):
             ]
         }
         try:
-            file_url = _print.printer.pic['img_url']
             msg['blocks'].append(
                 {
                         "type": "image",

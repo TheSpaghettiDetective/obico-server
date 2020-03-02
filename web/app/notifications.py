@@ -191,7 +191,7 @@ def send_failure_alert_slack(printer, is_warning, print_paused):
 
         req = requests.post(
             url='https://slack.com/api/chat.postMessage',
-            headers={'Authorization': f'Bearer {_print.user.slack_access_token}'},
+            headers={'Authorization': f'Bearer {printer.user.slack_access_token}'},
             json=msg
             )
         req.raise_for_status()

@@ -228,6 +228,51 @@ def send_print_notification_pushbullet(_print):
     except (PushError, PushbulletError) as e:
         LOGGER.error(e)
 
+def send_print_notification_slack(_print):
+    if not _print.printer.user.slack_access_token:
+        return
+
+    req = requests.get(
+        url='https://slack.com/api/channels.list',
+        params={
+            'token': _print.user.slack_access_token
+        })
+    req.raise_for_status()
+    slack_channel_ids = [ c['id'] for c in req.json()['channels'] if c['is_member'] ]
+
+    for slack_channel_id in slack_channel_ids:
+        msg = {
+            "channel": slack_channel_id,
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*The Spaghetti Detective - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {'Canceled' if _print.is_canceled() else 'Finished'}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
+                    }
+                }
+            ]
+        }
+        try:
+            file_url = _print.printer.pic['img_url']
+            msg['blocks'].append(
+                {
+                        "type": "image",
+                        "image_url": _print.printer.pic['img_url'],
+                        "alt_text": "Print snapshot"
+                }
+            )
+        except:
+            pass
+
+        req = requests.post(
+            url='https://slack.com/api/chat.postMessage',
+            headers={'Authorization': f'Bearer {_print.user.slack_access_token}'},
+            json=msg
+            )
+        req.raise_for_status()
+
+
 # Helpers
 
 def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, verified_only=True, attachment=None):

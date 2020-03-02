@@ -235,6 +235,10 @@
           </div>
         </div>
         {% endif %}
+        {% if settings.SLACK_CLIENT_ID %}
+        <h2>Slack</h2>
+        <a href="/ent/slack_setup/">Set Up Slack Notification</a>
+        {% endif %}
         <br /><br />
         <div class="form-group row">
           <div class="col-sm-12">

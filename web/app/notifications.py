@@ -216,7 +216,7 @@ def send_print_notification(print_id):
     if _print.printer.user.print_notification_by_telegram:
         send_print_notification_telegram(_print)
 
-    if printer.user.is_pro:
+    if _print.printer.user.is_pro:
         send_print_notification_slack(_print)
 
 def send_print_notification_email(_print):

@@ -30,7 +30,8 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     if printer.user.is_pro and printer.user.alert_by_sms:
         send_failure_alert_sms(printer, is_warning, print_paused)
 
-    send_failure_alert_slack(printer, is_warning, print_paused)
+    if printer.user.is_pro:
+        send_failure_alert_slack(printer, is_warning, print_paused)
 
 def send_failure_alert_email(printer, is_warning, print_paused):
     if not settings.EMAIL_HOST:
@@ -215,7 +216,8 @@ def send_print_notification(print_id):
     if _print.printer.user.print_notification_by_telegram:
         send_print_notification_telegram(_print)
 
-    send_print_notification_slack(_print)
+    if printer.user.is_pro:
+        send_print_notification_slack(_print)
 
 def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'

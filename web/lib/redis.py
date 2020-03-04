@@ -55,15 +55,6 @@ def printer_settings_get(printer_id, key=None):
     else:
         return REDIS.hgetall(prefix)
 
-
-def printer_p_json_set(printer_id, pic_id, json_str, ex=None):
-    key = f'{printer_key_prefix(printer_id)}:p_json:{pic_id}'
-    REDIS.set(key, json_str, ex=ex)
-
-def printer_p_json_get(printer_id, pic_id):
-    key = f'{printer_key_prefix(printer_id)}:p_json:{pic_id}'
-    return REDIS.get(key)
-
 def print_num_predictions_incr(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     with REDIS.pipeline() as pipe:

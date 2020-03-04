@@ -109,7 +109,6 @@ class OctoPrintPicView(APIView):
         p_out.write(prediction_json.encode('UTF-8'))
         p_out.seek(0)
         save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, long_term_storage=False)
-        redis.printer_p_json_set(printer.id, pic_id, prediction_json, ex=60*60*24*2)
 
         if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
             pause_if_needed(printer)

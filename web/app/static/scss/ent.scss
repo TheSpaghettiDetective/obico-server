@@ -125,6 +125,9 @@ table.pricing {
     .input-group {
         width: 7.5rem;
         border: solid thin darken(white, 60);
+        button.btn-outline-primary {
+            border-radius: 0px !important;
+        }
     }
     label.custom-control-label {
         line-height: 25px;
@@ -137,6 +140,16 @@ table.pricing {
             border: solid thin darken(white, 60);
             font-size: 0.9rem;
             box-shadow: none;
+        }
+    }
+
+    .custom-radio.recommended {
+        .tag {
+            margin-left: 0.5em;
+            background: $primary;
+            border: solid thin;
+            border-radius: 4px;
+            padding: 0px 3px;
         }
     }
 }

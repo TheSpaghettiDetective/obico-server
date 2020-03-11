@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 from django.conf import settings
-from google.cloud import storage
-from oauth2client.service_account import ServiceAccountCredentials
 import base64
 from six.moves.urllib.parse import urlencode, quote
 

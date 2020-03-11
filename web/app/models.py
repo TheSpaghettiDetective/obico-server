@@ -398,9 +398,9 @@ class PublicTimelapse(models.Model):
     priority = models.IntegerField(null=False, default=1000000)
     video_url = models.CharField(max_length=2000, null=False, blank=False)
     poster_url = models.CharField(max_length=2000, null=False, blank=False)
+    p_json_url = models.CharField(max_length=2000, null=False, blank=False)
     creator_name = models.CharField(max_length=500, null=False, blank=False)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    frame_p = JSONField(default=list)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

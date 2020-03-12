@@ -114,7 +114,7 @@ def preprocess_timelapse(self, user_id, video_path, filename):
         tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
         converted_mp4_path = tmp_file_path + '.mp4'
         with open(tmp_file_path, 'wb') as file_obj:
-            retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER)
+            retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.TIMELAPSE_CONTAINER)
 
         subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 
@@ -150,7 +150,7 @@ def detect_timelapse(self, print_id):
     ffprobe_cmd = subprocess.run(f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
     frame_num = int(ffprobe_cmd.stdout.strip())
     fps = 30*MAX_FRAME_NUM/frame_num if frame_num > MAX_FRAME_NUM else 30
-    subprocess.run(f'ffmpeg -y -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/{print_id}-%5d.jpg'.split())
+    subprocess.run(f'ffmpeg -y -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/%5d.jpg'.split())
 
     predictions = []
     last_prediction = PrinterPrediction()
@@ -158,7 +158,8 @@ def detect_timelapse(self, print_id):
     for jpg_path in jpg_filenames:
         jpg_abs_path = os.path.join(jpgs_dir, jpg_path)
         with open(jpg_abs_path, 'rb') as pic:
-            internal_url, _ = save_file_obj(f'raw/uploaded_prints/{jpg_path}', pic, settings.PICS_CONTAINER)
+            pic_path = f'{_print.user.id}/{_print.id}/{jpg_path}'
+            internal_url, _ = save_file_obj(f'uploaded/{pic_path}', pic, settings.PICS_CONTAINER, long_term_storage=False)
             req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
             req.raise_for_status()
             detections = req.json()['detections']
@@ -191,6 +192,8 @@ def detect_timelapse(self, print_id):
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
     send_timelapse_detection_done_email(_print)
+    delete_dir(f'uploaded/{_print.user.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
+
 
 ## Websocket connection count house upkeep jobs
 

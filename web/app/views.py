@@ -173,7 +173,7 @@ def upload_print(request):
     if request.method == 'POST':
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER)
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.TIMELAPSE_CONTAINER)
         celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[request.user.id, 1, 'Credit | Upload "{}"'.format(request.FILES['file'].name[:100])])
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 

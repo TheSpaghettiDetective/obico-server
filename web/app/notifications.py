@@ -240,7 +240,7 @@ def send_print_notification_telegram(_print):
         return
 
     try:
-        photo = requests.get(_print.printer.pic['img_url']).content
+        photo = requests.get(_print.poster_url).content
     except:
         photo = None
 
@@ -264,7 +264,7 @@ def send_print_notification_pushbullet(_print):
     body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
     file_url = None
     try:
-        file_url = _print.printer.pic['img_url']
+        file_url = _print.poster_url
         if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
             pb.upload_file(requests.get(file_url).content, 'Snapshot.jpg')
     except:
@@ -307,7 +307,7 @@ def send_print_notification_slack(_print):
             msg['blocks'].append(
                 {
                         "type": "image",
-                        "image_url": _print.printer.pic['img_url'],
+                        "image_url": _print.poster_url,
                         "alt_text": "Print snapshot"
                 }
             )

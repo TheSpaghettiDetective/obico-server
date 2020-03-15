@@ -41,13 +41,7 @@ def orientation_to_ffmpeg_options(printer_settings):
 
     return options
 
-def save_print_snapshot(_print, rotated_jpg_path=None, rotated_jpg_container=None, rotated_jpg_long_term=False):
-    """ rotated_jpg_path and rotated_jpg_container need to be both specified if any of them is given """
-
-    if not rotated_jpg_path or not rotated_jpg_container:
-        rotated_jpg_path = f'raw/{_print.printer.id}/rotated.jpg'
-        rotated_jpg_container = settings.PICS_CONTAINER
-
+def save_print_snapshot(_print, rotated_jpg_path, rotated_jpg_container, rotated_jpg_long_term):
     pic_dir = f'{_print.printer.id}/{_print.id}'
     print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:

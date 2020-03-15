@@ -173,8 +173,8 @@ $(document).ready(function () {
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
         if (isInfoSectionOn('print-time')) {
             printerCard.find("#print-time").show();
-            printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft));
-            printerCard.find("#print-time-total").html(toDurationBlock(secondsPrinted + secondsLeft));
+            printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft, _.get(printer, 'status.state.text')));
+            printerCard.find("#print-time-total").html(toDurationBlock((secondsPrinted && secondsLeft) ? (secondsPrinted + secondsLeft) : null, _.get(printer, 'status.state.text')));
         } else {
             printerCard.find("#print-time").hide();
         }
@@ -244,16 +244,16 @@ $(document).ready(function () {
         // End of Info sections
     }
 
-    function toDurationBlock(seconds) {
+    function toDurationBlock(seconds, printerState) {
         var durationObj;
         if (seconds == null || seconds == 0) {
-            durationObj = {valid: false};
+            durationObj = {valid: false, printing: printerState && printerState !== 'Operational',};
         } else {
             var d = moment.duration(seconds, 'seconds')
             var h = Math.floor(d.asHours());
             var m = d.minutes();
             var s = d.seconds();
-            durationObj = {valid: true, hours: h, showHours: (h>0), minutes: m, showMinutes: (h>0 || m>0), seconds: s, showSeconds: (h==0 && m==0)}
+            durationObj = {valid: true, printing: true, hours: h, showHours: (h>0), minutes: m, showMinutes: (h>0 || m>0), seconds: s, showSeconds: (h==0 && m==0)}
         }
         return Mustache.template('duration_block').render(durationObj);
     }

@@ -23,7 +23,7 @@ from channels_presence.models import Room
 
 from .models import *
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
-from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options
+from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import redis
@@ -227,34 +227,17 @@ def clean_up_print_pics(_print):
     delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER, long_term_storage=False)  # the pics that may have come in before current_print is set.
 
 def generate_print_poster(_print):
-    pic_dir = f'{_print.printer.id}/{_print.id}'
-    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
-    if not print_pics:
-        return
-    print_pics.sort()
+    (unrotated_jpg_url, rotated_jpg_url) = save_print_snapshot(_print,
+        rotated_jpg_path=f'private/{_print.id}_poster.jpg',
+        rotated_jpg_container=settings.TIMELAPSE_CONTAINER,
+        rotated_jpg_long_term=True)
 
-    to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
-    shutil.rmtree(to_dir, ignore_errors=True)
-    os.mkdir(to_dir)
-    unrotated_jpg = os.path.join(to_dir, 'ss.jpg')
-    with open(unrotated_jpg, 'wb') as file_obj:
-        retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER, long_term_storage=False)
+    if unrotated_jpg_url:
+        redis.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
-    with open(unrotated_jpg, 'rb') as unrotated_jpg_file:
-        _, ss_url = save_file_obj(f'raw/{_print.printer.id}/ss.jpg', unrotated_jpg_file, settings.PICS_CONTAINER, long_term_storage=False)
-    redis.printer_pic_set(_print.printer.id, {'img_url': ss_url}, ex=IMG_URL_TTL_SECONDS)
-
-    ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
-    rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
-    cmd = f'ffmpeg -y -i {unrotated_jpg} {ffmpeg_extra_options} {rotated_jpg}'
-    subprocess.run(cmd.split(), check=True)
-    with open(rotated_jpg, 'rb') as poster_file:
-        _, poster_file_url = save_file_obj('private/{}_poster.jpg'.format(_print.id), poster_file, settings.TIMELAPSE_CONTAINER)
-
-    _print.poster_url = poster_file_url
-    _print.save()
-
-    shutil.rmtree(to_dir, ignore_errors=True)
+    if rotated_jpg_url:
+        _print.poster_url = rotated_jpg_url
+        _print.save()
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:

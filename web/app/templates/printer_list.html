@@ -6,9 +6,38 @@
 
 {% mustachejs '(.*)'  %}
 
-<div class="row justify-content-center">
+<div id="printers" class="row justify-content-center">
+
+  <div class="option-drawer">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingOne">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <i class="fas fa-angle-down"></i></a>
+        </h4>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+          <div class="sorting-and-filter row">
+            <select id="printer-sorting" class="form-control selectpicker col-6">
+                <option value="by-name">By Name</option>
+                <option value="by-date">By Date</option>
+            </select>
+            <select id="printer-sorting" class="form-control selectpicker col-6">
+                <option value="-1">All Printers</option>
+                <option value="0">Online Printers</option>
+                <option value="0">Active Printers</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
   {% for printer in printers %}
-  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" class="col-sm-12 col-lg-6 printer-card">
+  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" data-created-at="{{ printer.created_at|date:'c' }}" class="col-sm-12 col-lg-6 printer-card">
     <div class="card">
       <div class="card-header">
         <div class="title-box">

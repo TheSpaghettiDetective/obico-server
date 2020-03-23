@@ -486,3 +486,30 @@ form#printer_form {
     }
   }
 }
+
+.option-drawer{
+  width:100%;
+  background: darken($body-bg, 1);
+  .panel-heading {
+    padding: 0;
+    border:0;
+
+    .panel-title {
+      a {
+        text-align: center;
+        display:block;
+        font-size:16px;
+        text-decoration:none;
+        transition: all 0.5s;
+      }
+    }
+    &.active {
+      i {
+        -webkit-transform: rotate(180deg);
+        -moz-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+}

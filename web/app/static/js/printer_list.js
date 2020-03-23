@@ -23,7 +23,7 @@ function notFailedBtnClicked(event, printerId, resumePrint) {
 }
 
 $(document).ready(function () {
-    var printerList = [];
+    var printerMap = new Map();
     var printerWs = new PrinterWebSocket();
 
     /*** Establish websocket connections and callbacks */
@@ -34,7 +34,7 @@ $(document).ready(function () {
         '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
 
         printerWs.openPrinterWebSockets(printerId, wsUri, function(msg) {
-            printerList[printerId] = msg;
+            printerMap.set(printerId, msg);
             updatePrinterCard(printerCard);
         });
     });
@@ -65,7 +65,7 @@ $(document).ready(function () {
                 dataType: "json",
                 data: JSON.stringify(formInputs),
             }).done(function(result) {
-                printerList[printerId] = result.printer;
+                printerMap.set(printerId, result.printer);
                 updatePrinterCard(printerCard);
             });
         });
@@ -98,7 +98,7 @@ $(document).ready(function () {
         var printerId = printerCard.attr('id');
         updateInfoSections();
 
-        var printer = printerList[printerId];
+        var printer = printerMap.get(printerId);
 
         if (!printer) {
             return;
@@ -152,7 +152,7 @@ $(document).ready(function () {
         }
 
         // Action section. Pause/Resume/Cancel and Connect buttons
-        updateActionsSection(printerCard.find("#printer-actions"), printerList, printerId, shouldShowAlert(printer), printerWs);
+        updateActionsSection(printerCard.find("#printer-actions"), printerMap, printerId, shouldShowAlert(printer), printerWs);
 
         // Panel settings
         printerCard.find('input[name=watching]').prop('checked', printer.watching);
@@ -259,6 +259,21 @@ $(document).ready(function () {
     }
 
     /*** End of printer card */
+
+    /**** sorting and filtering */
+    $('.panel-collapse').on('show.bs.collapse', function () {
+        $(this).siblings('.panel-heading').addClass('active');
+    });
+
+    $('.panel-collapse').on('hide.bs.collapse', function () {
+        $(this).siblings('.panel-heading').removeClass('active');
+    });
+
+    $('#printer-sorting').on('change', function(e) {
+        var sorting = $(this).val();
+
+    });
+    /**** End of sorting and filtering */
 
     $('.hint').popover({
         container: 'body'

@@ -1,5 +1,5 @@
-function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, printerWs) {
-    var printer = printerList[printerId];
+function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, printerWs) {
+    var printer = printerMap.get(printerId);
     var printerState = _.get(printer, 'status.state.flags');
     var printerStateTxt = _.get(printer, 'status.state.text', '');
 
@@ -134,7 +134,7 @@ function updateActionsSection(actionsDiv, printerList, printerId, alertShowing, 
                                 });
 
                                 function checkPrinterStatus() {
-                                    var updatedPrinter = printerList[printerId];
+                                    var updatedPrinter = printerMap.get(printerId);
                                     if (_.get(updatedPrinter, 'status.state.text') == 'Operational') {
                                         setTimeout(checkPrinterStatus, 1000);
                                     } else {

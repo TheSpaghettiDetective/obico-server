@@ -303,7 +303,7 @@ def send_print_notification_slack(_print):
                 }
             ]
         }
-        try:
+        if _print.poster_url:
             msg['blocks'].append(
                 {
                         "type": "image",
@@ -311,8 +311,6 @@ def send_print_notification_slack(_print):
                         "alt_text": "Print snapshot"
                 }
             )
-        except:
-            pass
 
         req = requests.post(
             url='https://slack.com/api/chat.postMessage',

@@ -24,6 +24,7 @@ function notFailedBtnClicked(event, printerId, resumePrint) {
 
 $(document).ready(function () {
     var PRINTER_SORTING_PREF = 'printer-sorting';
+    var PRINTER_FILTERING_PREF = 'printer-filtering';
 
     var printerMap = new Map();
     var printerWs = new PrinterWebSocket();
@@ -265,7 +266,7 @@ $(document).ready(function () {
 
     /**** sorting and filtering */
 
-    function reflowPrinterCards() {
+    function sortPrinterCards() {
         var sorting = $('select#printer-sorting').val();
         var outerDiv = $('#printers');
         var sortedPrinterCards;
@@ -276,6 +277,31 @@ $(document).ready(function () {
         }
         _.forEach(sortedPrinterCards, function(card) {
             $(card).detach().appendTo(outerDiv);
+        });
+    }
+
+    function filterPrinterCards() {
+        var filtering = $('select#printer-filtering').val();
+        _.forEach($('#printers>.printer-card'), function (ele) {
+            var printerId = $(ele).attr('id');
+            var printerState = _.get(printerMap.get(printerId), 'status.state');
+            var shouldShow = true;
+
+            if (filtering === 'online' && isPrinterDisconnected(printerState)) {
+                shouldShow = false;
+            }
+            if (filtering === 'active' && !printInProgress(printerState)) {
+                shouldShow = false;
+            }
+            if (shouldShow) {
+                if (! $(ele).is(":visible")) {
+                    $(ele).show();
+                }
+            } else {
+                if ($(ele).is(":visible")) {
+                    $(ele).hide();
+                }
+            }
         });
     }
 
@@ -290,11 +316,19 @@ $(document).ready(function () {
     $('#printer-sorting').on('change', function(e) {
         var sorting = $('select#printer-sorting').val();
         setLocalPref(PRINTER_SORTING_PREF, sorting);
-        reflowPrinterCards();
+        sortPrinterCards();
+    });
+
+    $('#printer-filtering').on('change', function(e) {
+        var filtering = $('select#printer-filtering').val();
+        setLocalPref(PRINTER_FILTERING_PREF, filtering);
+        filterPrinterCards();
     });
 
     $('select#printer-sorting').val(getLocalPref(PRINTER_SORTING_PREF, 'by-date'));
-    reflowPrinterCards();
+    sortPrinterCards();
+    $('select#printer-sorting').val(getLocalPref(PRINTER_FILTERING_PREF, 'all'));
+    filterPrinterCards();
 
     /**** End of sorting and filtering */
 

@@ -7,7 +7,7 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
-  background: repeating-linear-gradient(45deg, darken($body-bg, 3) 0%, darken($body-bg, 3) 10%, $body-bg 0%, $body-bg 50%) 0 / 15px 15px;
+  background: repeating-linear-gradient(45deg, darken($body-bg, 8) 0%, darken($body-bg, 8) 10%, darken($body-bg, 5) 0%, darken($body-bg, 5) 50%) 0 / 15px 15px;
 }
 
 .borderless {
@@ -253,6 +253,9 @@ a.link {
       }
     }
   }
+}
+.swal2-container.swal2-shown {
+  background-color: rgba(0,0,0,.6) !important;
 }
 
 .gauge {

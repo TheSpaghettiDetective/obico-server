@@ -116,7 +116,7 @@
 
 /*** Printer Card *****/
 .printer-card {
-  margin-top: 2em;
+  margin-top: 1.5em;
 
   .card {
     .card-header {
@@ -489,18 +489,22 @@ form#printer_form {
 
 .option-drawer{
   width:100%;
-  // background: darken($body-bg, 1);
+  margin-bottom: -0.5rem;
+  background: darken($body-bg, 1);
   .panel-heading {
     padding: 0;
     border:0;
 
     .panel-title {
-      a {
+      button {
         text-align: center;
         display:block;
-        font-size:16px;
-        text-decoration:none;
-        transition: all 0.5s;
+        padding: 0;
+        color: $primary;
+        line-height: 0.8;
+        &:hover {
+          color: darken($primary, 8);
+        }
       }
     }
     &.active {

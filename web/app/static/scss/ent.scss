@@ -32,7 +32,7 @@ table.pricing {
 
             .price-header {
                 height: 15rem;
-                background: darken($body-bg, 8);
+                background: lighten($body-bg, 3);
                 &.dh-pack-header {
                     height: 12rem;
                 }

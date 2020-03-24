@@ -9,12 +9,6 @@
 <div class="option-drawer">
   <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
-      <div class="panel-heading" role="tab" id="headingOne">
-        <h4 class="panel-title">
-          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            <i class="fas fa-angle-down"></i></a>
-        </h4>
-      </div>
       <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
         <div class="panel-body">
           <div>
@@ -37,6 +31,12 @@
           <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm printer-link"><i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
           {% endfor %}
         </div>
+        </div>
+      </div>
+      <div class="panel-heading" role="tab" id="headingOne">
+        <div class="panel-title">
+        <button class="btn btn-block shadow-none" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <i class="fas fa-angle-down"></i></button>
         </div>
       </div>
     </div>

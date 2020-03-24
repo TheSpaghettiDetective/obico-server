@@ -487,6 +487,8 @@ form#printer_form {
   }
 }
 
+/**** Option drawer **/
+
 .option-drawer{
   width:100%;
   margin-bottom: -0.5rem;
@@ -519,5 +521,7 @@ form#printer_form {
     -webkit-transition-duration: 0.2s;
     transition-duration: 0.2s;
   }
-
+  hr {
+    background-color: lighten($body-bg, 10);
+  }
 }

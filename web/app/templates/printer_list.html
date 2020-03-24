@@ -10,25 +10,26 @@
   <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
       <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-        <div class="panel-body">
+        <div class="panel-body p-3">
           <div>
-          <div class="sorting-and-filter" style="padding: 0rem 1.5rem;">
-            <select id="printer-sorting" class="selectpicker">
+          <div class="sorting-and-filter">
+            <select id="printer-sorting" class="selectpicker my-1 mx-2">
                 <option value="by-date-asc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-up'></i>">Sort By Date Up</option>
                 <option value="by-date-desc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-down'></i>">Sort By Date Down</option>
                 <option value="by-name-asc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-up'></i>">Sort By Name Up</option>
                 <option value="by-name-desc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-down'></i>">Sort By Name Down</option>
             </select>
-            <select id="printer-filtering" class="selectpicker">
+            <select id="printer-filtering" class="selectpicker my-1 mx-2">
                 <option value="all">All Printers</option>
                 <option value="online">Online Printers Only</option>
                 <option value="active">Active Printers Only</option>
             </select>
           </div>
         </div>
+        <hr />
         <div>
           {% for printer in printers %}
-          <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm printer-link"><i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
+          <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link"><i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
           {% endfor %}
         </div>
         </div>

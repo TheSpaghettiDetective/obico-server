@@ -8,35 +8,44 @@
 
 <div class="option-drawer">
   <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
-        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          <i class="fas fa-angle-down"></i></a>
-      </h4>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-        <div class="sorting-and-filter row">
-          <select id="printer-sorting" class="form-control selectpicker col-6">
-              <option value="by-name">By Name</option>
-              <option value="by-date">By Date</option>
-          </select>
-          <select id="printer-filtering" class="form-control selectpicker col-6">
-              <option value="all">All Printers</option>
-              <option value="online">Online Printers</option>
-              <option value="active">Active Printers</option>
-          </select>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingOne">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <i class="fas fa-angle-down"></i></a>
+        </h4>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+          <div>
+          <div class="sorting-and-filter" style="padding: 0rem 1.5rem;">
+            <select id="printer-sorting" class="selectpicker">
+                <option value="by-date-asc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-up'></i>">Sort By Date Up</option>
+                <option value="by-date-desc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-down'></i>">Sort By Date Down</option>
+                <option value="by-name-asc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-up'></i>">Sort By Name Up</option>
+                <option value="by-name-desc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-down'></i>">Sort By Name Down</option>
+            </select>
+            <select id="printer-filtering" class="selectpicker">
+                <option value="all">All Printers</option>
+                <option value="online">Online Printers Only</option>
+                <option value="active">Active Printers Only</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          {% for printer in printers %}
+          <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm printer-link"><i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
+          {% endfor %}
+        </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-</div>
 
 <div id="printers" class="row justify-content-center">
   {% for printer in printers %}
-  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" data-name="{{ printer.name }}" data-created-at="{{ printer.created_at|date:'c' }}" class="col-sm-12 col-lg-6 printer-card">
+  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" data-name="{{ printer.name }}" data-created-at="{{ printer.created_at|date:'c' }}" class="col-sm-12 col-lg-6 printer-card" style="display: none;">
     <div class="card">
       <div class="card-header">
         <div class="title-box">
@@ -160,6 +169,7 @@
     </div>
   </div>
 </div>
+<div id="printers-hidden-warning" style="display: none;" class="text-warning border-warning text-center border my-3 py-2"><span id="printers-hidden">0</span> printers are hidden by the filtering settings.&nbsp;&nbsp;<a href="#" id="show-all-printers-btn">Show all printers >>></a></div>
 
 {% endblock content %}
 

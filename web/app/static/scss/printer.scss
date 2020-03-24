@@ -489,7 +489,7 @@ form#printer_form {
 
 .option-drawer{
   width:100%;
-  background: darken($body-bg, 1);
+  // background: darken($body-bg, 1);
   .panel-heading {
     padding: 0;
     border:0;
@@ -510,6 +510,10 @@ form#printer_form {
         transform: rotate(180deg);
       }
     }
+  }
+  .collapsing {
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
   }
 
 }

@@ -39,6 +39,7 @@ $(document).ready(function () {
         printerWs.openPrinterWebSockets(printerId, wsUri, function(msg) {
             printerMap.set(printerId, msg);
             updatePrinterCard(printerCard);
+            filterPrinterCards();
         });
     });
 
@@ -270,11 +271,15 @@ $(document).ready(function () {
         var sorting = $('select#printer-sorting').val();
         var outerDiv = $('#printers');
         var sortedPrinterCards;
-        if (sorting == 'by-date') {
+        if (_.startsWith(sorting, 'by-date-')) {
             sortedPrinterCards = _.sortBy($('#printers>.printer-card'), function(ele) { return moment($(ele).data('created-at')); });
         } else  {
             sortedPrinterCards = _.sortBy($('#printers>.printer-card'), function(ele) { return $(ele).data('name'); });
         }
+        if (_.endsWith(sorting, '-desc')) {
+            _.reverse(sortedPrinterCards);
+        }
+
         _.forEach(sortedPrinterCards, function(card) {
             $(card).detach().appendTo(outerDiv);
         });
@@ -282,6 +287,8 @@ $(document).ready(function () {
 
     function filterPrinterCards() {
         var filtering = $('select#printer-filtering').val();
+        var printersHidden = 0;
+
         _.forEach($('#printers>.printer-card'), function (ele) {
             var printerId = $(ele).attr('id');
             var printerState = _.get(printerMap.get(printerId), 'status.state');
@@ -297,12 +304,21 @@ $(document).ready(function () {
                 if (! $(ele).is(":visible")) {
                     $(ele).show();
                 }
+                $('.option-drawer a[href="#' + printerId + '"]').removeClass("disabled");
             } else {
                 if ($(ele).is(":visible")) {
                     $(ele).hide();
                 }
+                $('.option-drawer a[href="#' + printerId + '"]').addClass("disabled");
+                printersHidden ++;
             }
         });
+        if (printersHidden > 0) {
+            $('#printers-hidden-warning').show();
+            $('#printers-hidden-warning #printers-hidden').text(printersHidden);
+        } else {
+            $('#printers-hidden-warning').hide();
+        }
     }
 
     $('.panel-collapse').on('show.bs.collapse', function () {
@@ -317,18 +333,30 @@ $(document).ready(function () {
         var sorting = $('select#printer-sorting').val();
         setLocalPref(PRINTER_SORTING_PREF, sorting);
         sortPrinterCards();
+        $('.panel-collapse').collapse('hide');
     });
 
     $('#printer-filtering').on('change', function(e) {
         var filtering = $('select#printer-filtering').val();
         setLocalPref(PRINTER_FILTERING_PREF, filtering);
         filterPrinterCards();
+        $('.panel-collapse').collapse('hide');
     });
 
-    $('select#printer-sorting').val(getLocalPref(PRINTER_SORTING_PREF, 'by-date'));
+    $('select#printer-sorting').val(getLocalPref(PRINTER_SORTING_PREF, 'by-date-desc'));
     sortPrinterCards();
-    $('select#printer-sorting').val(getLocalPref(PRINTER_FILTERING_PREF, 'all'));
+    $('select#printer-filtering').val(getLocalPref(PRINTER_FILTERING_PREF, 'all'));
     filterPrinterCards();
+
+    $('.option-drawer .printer-link').on('click', function() {
+        $('.panel-collapse').collapse('hide');
+    });
+
+    $('#show-all-printers-btn').on('click', function() {
+        $('select#printer-filtering').val('all');
+        setLocalPref(PRINTER_FILTERING_PREF, 'all');
+        filterPrinterCards();
+    });
 
     /**** End of sorting and filtering */
 

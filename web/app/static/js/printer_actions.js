@@ -1,17 +1,14 @@
 function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, printerWs) {
     var printer = printerMap.get(printerId);
-    var printerState = _.get(printer, 'status.state.flags');
-    var printerStateTxt = _.get(printer, 'status.state.text', '');
-
     actionsDiv.html(Mustache.template('printer_actions').render({
         printerId: printerId,
         dhInverseIconSrc: dhInverseIconSrc,
         status: printer.status,
-        printerStateTxt: printerStateTxt,
-        printerPaused: _.get(printerState, 'paused'),
-        idle: printerStateTxt == 'Operational',
-        error: _.get(printerState, 'error') || printerStateTxt.toLowerCase().includes('error'),
-        disconnected: _.get(printerState, 'closedOrError'),
+        printerStateTxt: _.get(printer, 'status.state.text', ''),
+        printerPaused: isPrinterPaused(_.get(printer, 'status.state')),
+        idle: isPrinterIdle(_.get(printer, 'status.state')),
+        error: printerHasError(_.get(printer, 'status.state')),
+        disconnected: isPrinterDisconnected(_.get(printer, 'status.state')),
     }));
 
     actionsDiv.find("#print-pause-resume").click(pauseResumeBtnClicked);

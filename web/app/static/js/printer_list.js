@@ -23,6 +23,8 @@ function notFailedBtnClicked(event, printerId, resumePrint) {
 }
 
 $(document).ready(function () {
+    var PRINTER_SORTING_PREF = 'printer-sorting';
+
     var printerMap = new Map();
     var printerWs = new PrinterWebSocket();
 
@@ -173,8 +175,8 @@ $(document).ready(function () {
         var secondsPrinted = _.get(printer, 'status.progress.printTime');
         if (isInfoSectionOn('print-time')) {
             printerCard.find("#print-time").show();
-            printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft, _.get(printer, 'status.state.text')));
-            printerCard.find("#print-time-total").html(toDurationBlock((secondsPrinted && secondsLeft) ? (secondsPrinted + secondsLeft) : null, _.get(printer, 'status.state.text')));
+            printerCard.find("#print-time-remaining").html(toDurationBlock(secondsLeft, _.get(printer, 'status.state')));
+            printerCard.find("#print-time-total").html(toDurationBlock((secondsPrinted && secondsLeft) ? (secondsPrinted + secondsLeft) : null, _.get(printer, 'status.state')));
         } else {
             printerCard.find("#print-time").hide();
         }
@@ -247,7 +249,7 @@ $(document).ready(function () {
     function toDurationBlock(seconds, printerState) {
         var durationObj;
         if (seconds == null || seconds == 0) {
-            durationObj = {valid: false, printing: printerState && printerState !== 'Operational',};
+            durationObj = {valid: false, printing: printInProgress(printerState),};
         } else {
             var d = moment.duration(seconds, 'seconds')
             var h = Math.floor(d.asHours());
@@ -260,7 +262,23 @@ $(document).ready(function () {
 
     /*** End of printer card */
 
+
     /**** sorting and filtering */
+
+    function reflowPrinterCards() {
+        var sorting = $('select#printer-sorting').val();
+        var outerDiv = $('#printers');
+        var sortedPrinterCards;
+        if (sorting == 'by-date') {
+            sortedPrinterCards = _.sortBy($('#printers>.printer-card'), function(ele) { return moment($(ele).data('created-at')); });
+        } else  {
+            sortedPrinterCards = _.sortBy($('#printers>.printer-card'), function(ele) { return $(ele).data('name'); });
+        }
+        _.forEach(sortedPrinterCards, function(card) {
+            $(card).detach().appendTo(outerDiv);
+        });
+    }
+
     $('.panel-collapse').on('show.bs.collapse', function () {
         $(this).siblings('.panel-heading').addClass('active');
     });
@@ -270,9 +288,14 @@ $(document).ready(function () {
     });
 
     $('#printer-sorting').on('change', function(e) {
-        var sorting = $(this).val();
-
+        var sorting = $('select#printer-sorting').val();
+        setLocalPref(PRINTER_SORTING_PREF, sorting);
+        reflowPrinterCards();
     });
+
+    $('select#printer-sorting').val(getLocalPref(PRINTER_SORTING_PREF, 'by-date'));
+    reflowPrinterCards();
+
     /**** End of sorting and filtering */
 
     $('.hint').popover({

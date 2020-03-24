@@ -52,9 +52,28 @@ function hideTooltip(btn) {
 
 /**** Printer functions */
 
+function getLocalPref(prefId, defaultValue) {
+    var val = localStorage.getItem(prefId) || defaultValue;
+    // Hack to deal with data type such as boolean and number
+    try {
+        return JSON.parse(val);
+    } catch(e) {
+        return val;
+    }
+}
+
+function setLocalPref(prefId, value) {
+    return localStorage.setItem(prefId, value);
+}
+
 function getPrinterLocalPref(prefix, printerId, defaultValue) {
     var itemId = prefix + String(printerId);
-    return JSON.parse(localStorage.getItem(itemId) || defaultValue);
+    var val = localStorage.getItem(itemId) || defaultValue;
+    try {
+        return JSON.parse(val);
+    } catch(e) {
+        return val;
+    }
 }
 
 function setPrinterLocalPref(prefix, printerId, value) {
@@ -80,6 +99,28 @@ function sendPrinterAction(printerId, action, octoprintCommand) {
             });
         }
     });
+}
+
+/**** Printer state  */
+
+function isPrinterIdle(printerState) {
+    return _.get(printerState, 'text', '') === 'Operational';
+}
+
+function isPrinterPaused(printerState) {
+    return _.get(printerState, 'flags.paused', false);
+}
+
+function isPrinterDisconnected(printerState) {
+    return _.get(printerState, 'flags.closedOrError', true);
+}
+
+function printerHasError(printerState) {
+    return _.get(printerState, 'flags.error') || _.get(printerState, 'text', '').toLowerCase().includes('error');
+}
+
+function printInProgress(printerState) {
+    return !isPrinterDisconnected(printerState) && _.get(printerState, 'text', '') !== 'Operational';
 }
 
 /*** Swal Mixins */

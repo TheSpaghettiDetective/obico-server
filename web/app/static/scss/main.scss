@@ -134,6 +134,10 @@ hr {
   background-color: $color-form-bg;
 }
 
+.alert {
+  margin-bottom: 0;
+}
+
 a.link {
   color: lighten($primary, 7) !important;
   text-decoration: none;

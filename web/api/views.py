@@ -68,7 +68,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return Response(dict(succeeded=succeeded, user_credited=user_credited, printer=serializer.data))
 
     def current_printer_or_404(self, pk):
-        return get_object_or_404(self.get_queryset(), pk=pk)
+        return get_object_or_404(Printer.with_archived.filter(user=self.request.user), pk=pk)
 
 
 class PrintViewSet(viewsets.ModelViewSet):

@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import *
 
 def get_printer_or_404(pk, request):
-    return get_object_or_404(Printer, pk=pk, user=request.user)
+    return get_object_or_404(Printer.with_archived, pk=pk, user=request.user)
 
 def get_printers(request):
     return Printer.objects.filter(user=request.user)

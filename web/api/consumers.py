@@ -51,7 +51,7 @@ class WebConsumer(JsonWebsocketConsumer):
 
     def printer_status(self, data):
         try:
-            serializer = PrinterSerializer(Printer.objects.get(id=self.printer.id))
+            serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
             self.send_json(serializer.data)
         except:
             sentryClient.captureException()
@@ -89,7 +89,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
     def receive_json(self, data, **kwargs):
         Presence.objects.touch(self.channel_name)
         try:
-            printer = Printer.objects.get(id=self.current_printer().id)
+            printer = Printer.with_archived.get(id=self.current_printer().id)
 
             if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))

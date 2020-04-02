@@ -283,9 +283,10 @@ def send_print_notification_slack(_print):
         return
 
     req = requests.get(
-        url='https://slack.com/api/channels.list',
+        url='https://slack.com/api/conversations.list',
         params={
-            'token': _print.user.slack_access_token
+            'token': _print.user.slack_access_token,
+            'types':'public_channel,private_channel'
         })
     req.raise_for_status()
     slack_channel_ids = [ c['id'] for c in req.json()['channels'] if c['is_member'] ]

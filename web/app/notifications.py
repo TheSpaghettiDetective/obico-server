@@ -171,9 +171,10 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
         return
 
     req = requests.get(
-        url='https://slack.com/api/channels.list',
+        url='https://slack.com/api/conversations.list',
         params={
             'token': printer.user.slack_access_token
+            'types':'public_channel,private_channel'
         })
     req.raise_for_status()
     slack_channel_ids = [ c['id'] for c in req.json()['channels'] if c['is_member'] ]

@@ -173,7 +173,7 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
     req = requests.get(
         url='https://slack.com/api/conversations.list',
         params={
-            'token': printer.user.slack_access_token
+            'token': printer.user.slack_access_token,
             'types':'public_channel,private_channel'
         })
     req.raise_for_status()

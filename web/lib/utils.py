@@ -49,6 +49,9 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg_path=None):
+    if not input_path:
+        return (None, None)
+
     to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)

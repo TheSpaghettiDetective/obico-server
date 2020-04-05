@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 import shutil
 import logging
+from django.utils import timezone
 from django.conf import settings
 from django.core import serializers
 from celery import shared_task
@@ -23,7 +24,7 @@ from channels_presence.models import Room
 
 from .models import *
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
-from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot
+from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import redis
@@ -227,10 +228,11 @@ def clean_up_print_pics(_print):
     delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER, long_term_storage=False)  # the pics that may have come in before current_print is set.
 
 def generate_print_poster(_print):
+
     (unrotated_jpg_url, rotated_jpg_url) = save_print_snapshot(_print,
-        rotated_jpg_path=f'private/{_print.id}_poster.jpg',
-        rotated_jpg_container=settings.TIMELAPSE_CONTAINER,
-        rotated_jpg_long_term=True)
+        last_pic_of_print(_print, 'raw'),
+        unrotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
+        rotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
 
     if unrotated_jpg_url:
         redis.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)

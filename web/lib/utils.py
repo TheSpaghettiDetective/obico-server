@@ -41,30 +41,35 @@ def orientation_to_ffmpeg_options(printer_settings):
 
     return options
 
-def save_print_snapshot(_print, rotated_jpg_path, rotated_jpg_container, rotated_jpg_long_term):
-    pic_dir = f'{_print.printer.id}/{_print.id}'
-    print_pics = list_dir(f'raw/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
+def last_pic_of_print(_print, path_prefix):
+    print_pics = list_dir(f'{path_prefix}/{_print.printer.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:
-        return (None, None)
+        return None
     print_pics.sort()
+    return print_pics[-1]
 
+def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg_path=None):
     to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
     unrotated_jpg = os.path.join(to_dir, 'unrotated.jpg')
     with open(unrotated_jpg, 'wb') as file_obj:
-        retrieve_to_file_obj(print_pics[-1], file_obj, settings.PICS_CONTAINER, long_term_storage=False)
+        retrieve_to_file_obj(input_path, file_obj, settings.PICS_CONTAINER, long_term_storage=False)
 
-    with open(unrotated_jpg, 'rb') as file_obj:
-        _, unrotated_jpg_url = save_file_obj(f'raw/{_print.printer.id}/unrotated.jpg', file_obj, settings.PICS_CONTAINER, long_term_storage=False)
+    (unrotated_jpg_url, rotated_jpg_url) = (None, None)
 
-    ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
-    rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
-    cmd = f'ffmpeg -y -i {unrotated_jpg} {ffmpeg_extra_options} {rotated_jpg}'
-    subprocess.run(cmd.split(), check=True)
-    with open(rotated_jpg, 'rb') as file_obj:
-        _, rotated_jpg_url = save_file_obj(rotated_jpg_path, file_obj, rotated_jpg_container, long_term_storage=rotated_jpg_long_term)
+    if unrotated_jpg_path:
+        with open(unrotated_jpg, 'rb') as file_obj:
+            _, unrotated_jpg_url = save_file_obj(unrotated_jpg_path, file_obj, settings.TIMELAPSE_CONTAINER)
 
-    shutil.rmtree(to_dir, ignore_errors=True)
+    if rotated_jpg_path:
+        ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
+        rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
+        cmd = f'ffmpeg -y -i {unrotated_jpg} {ffmpeg_extra_options} {rotated_jpg}'
+        subprocess.run(cmd.split(), check=True)
+        with open(rotated_jpg, 'rb') as file_obj:
+            _, rotated_jpg_url = save_file_obj(rotated_jpg_path, file_obj, settings.TIMELAPSE_CONTAINER)
+
+        shutil.rmtree(to_dir, ignore_errors=True)
 
     return (unrotated_jpg_url, rotated_jpg_url)

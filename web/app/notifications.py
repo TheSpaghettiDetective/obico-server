@@ -2,6 +2,7 @@ from allauth.account.admin import EmailAddress
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
+from django.utils import timezone
 from twilio.rest import Client
 from django.conf import settings
 from pushbullet import Pushbullet, PushbulletError, PushError
@@ -10,6 +11,8 @@ import logging
 from urllib.parse import urlparse
 import ipaddress
 
+from lib.file_storage import save_file_obj
+from lib.utils import save_print_snapshot, last_pic_of_print
 from app.models import Printer, Print
 from app.telegram_bot import send_notification as send_telegram_notification
 from lib import site
@@ -19,21 +22,30 @@ LOGGER = logging.getLogger(__name__)
 def send_failure_alert(printer, is_warning=True, print_paused=False):
     LOGGER.info(f'Sending alerts to {printer.user.id}')
 
+    if not printer.current_print:
+        LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
+        return
+
+    (_, rotated_jpg_url) = save_print_snapshot(printer.current_print,
+        last_pic_of_print(printer.current_print, 'tagged'),
+        unrotated_jpg_path=None,
+        rotated_jpg_path=f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
+
     # Fixme: any exception will cause subsequent notification channel to be tried at all.
     # This is also why SMS is currently at the end, since it'll fail with exception when area code is not allowed.
     if printer.user.alert_by_email:
-        send_failure_alert_email(printer, is_warning, print_paused)
+        send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused)
 
-    send_failure_alert_pushbullet(printer, is_warning, print_paused)
-    send_failure_alert_telegram(printer, is_warning, print_paused)
+    send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
+    send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
 
     if printer.user.is_pro and printer.user.alert_by_sms:
         send_failure_alert_sms(printer, is_warning, print_paused)
 
     if printer.user.is_pro:
-        send_failure_alert_slack(printer, is_warning, print_paused)
+        send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
 
-def send_failure_alert_email(printer, is_warning, print_paused):
+def send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
@@ -58,7 +70,7 @@ def send_failure_alert_email(printer, is_warning, print_paused):
         mailing_list='alert',
         template_path='email/failure_alert.html',
         ctx=ctx,
-        img_url=printer.pic['img_url'],
+        img_url=rotated_jpg_url,
         )
 
 def send_failure_alert_sms(printer, is_warning, print_paused):
@@ -89,7 +101,7 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
     twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
 
 
-def send_failure_alert_pushbullet(printer, is_warning, print_paused):
+def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused):
     if not printer.user.has_valid_pushbullet_token():
         return
 
@@ -112,7 +124,7 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
     try:
         file_url = None
         try:
-            file_url = printer.pic['img_url']
+            file_url = rotated_jpg_url
             if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
                 pb.upload_file(requests.get(file_url).content, 'Detected Failure.jpg')
         except:
@@ -125,12 +137,12 @@ def send_failure_alert_pushbullet(printer, is_warning, print_paused):
     except (PushError, PushbulletError) as e:
         LOGGER.error(e)
 
-def send_failure_alert_telegram(printer, is_warning, print_paused):
+def send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused):
     if not printer.user.telegram_chat_id:
         return
 
     try:
-        photo = requests.get(printer.pic['img_url']).content
+        photo = requests.get(rotated_jpg_url).content
     except:
         photo = None
 
@@ -154,7 +166,7 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
     except requests.ConnectionError as e:
         LOGGER.error(e)
 
-def send_failure_alert_slack(printer, is_warning, print_paused):
+def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused):
     if not printer.user.slack_access_token:
         return
 
@@ -183,7 +195,7 @@ def send_failure_alert_slack(printer, is_warning, print_paused):
             msg['blocks'].append(
                 {
                         "type": "image",
-                        "image_url": printer.pic['img_url'],
+                        "image_url": rotated_jpg_url,
                         "alt_text": "Print snapshot"
                 }
             )

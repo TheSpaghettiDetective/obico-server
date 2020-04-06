@@ -20,8 +20,7 @@ from lib import site
 LOGGER = logging.getLogger(__name__)
 
 def send_failure_alert(printer, is_warning=True, print_paused=False):
-    LOGGER.info(f'Sending alerts to {printer.user.id}')
-
+    LOGGER.info(f'Printer {printer.user.id} {"smells fishy" if is_warning else "is probably failing"}. Sending Alerts')
     if not printer.current_print:
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return

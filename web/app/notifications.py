@@ -10,6 +10,7 @@ import requests
 import logging
 from urllib.parse import urlparse
 import ipaddress
+from raven.contrib.django.raven_compat.models import client as sentryClient
 
 from lib.file_storage import save_file_obj
 from lib.utils import save_print_snapshot, last_pic_of_print
@@ -30,19 +31,35 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
         unrotated_jpg_path=None,
         rotated_jpg_path=f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
 
-    # Fixme: any exception will cause subsequent notification channel to be tried at all.
-    # This is also why SMS is currently at the end, since it'll fail with exception when area code is not allowed.
-    if printer.user.alert_by_email:
-        send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused)
+    # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
 
-    send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
-    send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
+    try:
+        if printer.user.alert_by_email:
+            send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
 
-    if printer.user.is_pro and printer.user.alert_by_sms:
-        send_failure_alert_sms(printer, is_warning, print_paused)
+    try:
+        send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
 
-    if printer.user.is_pro:
-        send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
+    try:
+        send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
+
+    try:
+        if printer.user.is_pro and printer.user.alert_by_sms:
+            send_failure_alert_sms(printer, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
+
+    try:
+        if printer.user.is_pro:
+            send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
 
 def send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused):
     if not settings.EMAIL_HOST:
@@ -219,17 +236,31 @@ def send_print_notification(print_id):
         if not _print.printer.user.notify_on_done:
             return
 
-    if _print.printer.user.print_notification_by_email:
-        send_print_notification_email(_print)
+    # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
 
-    if _print.printer.user.print_notification_by_pushbullet:
-        send_print_notification_pushbullet(_print)
+    try:
+        if _print.printer.user.print_notification_by_email:
+            send_print_notification_email(_print)
+    except:
+        sentryClient.captureException()
 
-    if _print.printer.user.print_notification_by_telegram:
-        send_print_notification_telegram(_print)
+    try:
+        if _print.printer.user.print_notification_by_pushbullet:
+            send_print_notification_pushbullet(_print)
+    except:
+        sentryClient.captureException()
 
-    if _print.printer.user.is_pro:
-        send_print_notification_slack(_print)
+    try:
+        if _print.printer.user.print_notification_by_telegram:
+            send_print_notification_telegram(_print)
+    except:
+        sentryClient.captureException()
+
+    try:
+        if _print.printer.user.is_pro:
+            send_print_notification_slack(_print)
+    except:
+        sentryClient.captureException()
 
 def send_print_notification_email(_print):
     subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'

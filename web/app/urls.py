@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('consent/', views.consent, name='consent'),
     path('media/<path:file_path>', views.serve_jpg_file, name='serve_jpg_file'), # semi hacky solution to serve image files
-    path('printer_auth_token/<int:pk>/', views.priner_auth_token, name='priner_auth_token'),
+    path('printer_auth_token/<int:pk>/', views.printer_auth_token, name='printer_auth_token'),
     path('printers/', views.printers, name='printers'),
     path('printers/<pk>/', views.edit_printer, name='edit_printer'),
     path('printers/<int:pk>/delete/', views.delete_printer, name='delete_printer'),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
     path('gcodes/', views.gcodes, name='gcodes'),
     path('gcodes/upload/', views.upload_gcode_file, name='upload_gcode_file'),
+    path('secure_redirect/', views.secure_redirect, name='secure_redirect'),
 ]

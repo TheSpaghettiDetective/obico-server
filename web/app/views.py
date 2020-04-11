@@ -21,7 +21,6 @@ from .telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
-# Create your views here.
 def index(request):
     if request.user.is_authenticated and not request.user.consented_at:
         return redirect('/consent/')
@@ -29,7 +28,7 @@ def index(request):
         return redirect('/printers/')
 
 @login_required
-def priner_auth_token(request, pk):
+def printer_auth_token(request, pk):
     pk_filter = {}
     if pk != 0:
         pk_filter = dict(pk=pk)
@@ -223,6 +222,8 @@ def upload_gcode_file(request):
     else:
         return render(request, 'upload_print.html')
 
+### Misc ####
+
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
 def serve_jpg_file(request, file_path):
@@ -231,3 +232,9 @@ def serve_jpg_file(request, file_path):
         raise Http404("Requested file does not exist")
     with open(full_path, 'rb') as fh:
         return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))
+
+def secure_redirect(request):
+    target = request.GET.get('target')
+    source = request.GET.get('source')
+    dest = settings.SECURE_REDIRECTS.get((target, source), target)
+    return redirect(dest)

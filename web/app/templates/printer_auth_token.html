@@ -10,7 +10,7 @@
           <p>You have more than one printers. Which printer do you want to get secret token for?</p>
           <ul>
           {% for printer in printers %}
-            <li><a href={% url 'priner_auth_token' printer.id %}>{{ printer.name }} >></a></li>
+            <li><a href={% url 'printer_auth_token' printer.id %}>{{ printer.name }} >></a></li>
           {% endfor %}
         </ul>
     </div>

@@ -300,3 +300,6 @@ TIMELAPSE_MINIMUM_SECONDS = 5 if DEBUG else 300
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
+
+# Secure redirects
+SECURE_REDIRECTS = {}

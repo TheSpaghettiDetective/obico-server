@@ -88,16 +88,17 @@ def compile_timelapse(print_id):
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
-        json_files = [ print_pic.replace('tagged/', 'p/').replace('.jpg', '.json') for print_pic in print_pics ]
+        json_files = list_dir(f'p/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
         local_jsons = download_files(json_files, to_dir)
         preidction_json = []
-        for p_json_file in local_jsons:
-            with open(p_json_file, 'r') as f:
-                try:
+        for pic_path in local_pics:
+            try:
+                with open(str(pic_path).replace('tagged/', 'p/').replace('.jpg', '.json'), 'r') as f:
                     p_json = json.load(f)
-                except json.decoder.JSONDecodeError:    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
-                    p_json = [{}]
-                preidction_json += p_json
+            except (FileNotFoundError, json.decoder.JSONDecodeError) as e:    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
+                LOGGER.error(e)
+                p_json = [{}]
+            preidction_json += p_json
         preidction_json_io = io.BytesIO()
         preidction_json_io.write(json.dumps(preidction_json).encode('UTF-8'))
         preidction_json_io.seek(0)

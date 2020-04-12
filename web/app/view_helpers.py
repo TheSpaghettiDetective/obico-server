@@ -22,3 +22,6 @@ def get_paginator(objs, request, num_per_page):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
     return page_obj
+
+def get_print_or_404(pk, request):
+    return get_object_or_404(Print, pk=pk, user=request.user)

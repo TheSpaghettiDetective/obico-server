@@ -94,6 +94,24 @@ def resume_printer(request, pk):
     return render(request, 'printer_acted.html', {'printer': printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
 
 @login_required
+def cancel_print(request, pk):
+    _print = get_print_or_404(pk, request)
+    if _print.id != _print.printer.current_print_id:
+        succeeded, user_credited = (False, False)
+    else:
+        succeeded, user_credited = _print.printer.cancel_print()
+    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'cancel', 'succeeded': succeeded, 'user_credited': user_credited})
+
+@login_required
+def resume_print(request, pk):
+    _print = get_print_or_404(pk, request)
+    if _print.id != _print.printer.current_print_id:
+        succeeded, user_credited = (False, False)
+    else:
+        succeeded, user_credited = _print.printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
+
+@login_required
 def share_printer(request, pk):
     printer = get_printer_or_404(pk, request)
     if request.method == "POST":

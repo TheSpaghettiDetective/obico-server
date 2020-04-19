@@ -28,7 +28,7 @@
             {% if printer.sharedresource.share_token %}
             <div class="mt-4">Click the icon to copy secure share link to clipboard</div>
             <div class="input-group my-1">
-                <input type="text" id="secret-token-input" class="form-control" value="{{ request.scheme }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/"
+                <input type="text" id="secret-token-input" class="form-control" value="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/"
                        readonly aria-label="Secret token">
                 <div class="input-group-append">
                   <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
@@ -39,7 +39,7 @@
               </div>
               <br />
               <p>You can send this secure share link to anyone you want to share your printer feed with. That person does NOT need to sign up for a TSD account to view your printer feed.</p>
-              <i>You can test this link by right click <a href="{{ request.scheme }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/">here</a> and select "Open Link in Incognito Window".</i>
+              <i>You can test this link by right click <a href="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/">here</a> and select "Open Link in Incognito Window".</i>
             {% endif %}
           </div>
           <br />

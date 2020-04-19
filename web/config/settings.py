@@ -248,10 +248,10 @@ SLACK_CLIENT_ID = None
 # settings export
 SETTINGS_EXPORT = [
     'TWILIO_ENABLED',
-    'TELEGRAM_BOT_TOKEN',
     'TEMPLATE_LAYOUT',
     'ACCOUNT_ALLOW_SIGN_UP',
     'SLACK_CLIENT_ID',
+    'SITE_USES_HTTPS',
 ]
 
 # Celery

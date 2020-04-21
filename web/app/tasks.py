@@ -233,7 +233,7 @@ def generate_print_poster(_print):
     (unrotated_jpg_url, rotated_jpg_url) = save_print_snapshot(_print,
         last_pic_of_print(_print, 'raw'),
         unrotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
-        rotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
+        rotated_jpg_path=f'private/{_print.id}_poster.jpg')
 
     if unrotated_jpg_url:
         redis.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)

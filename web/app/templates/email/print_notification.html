@@ -54,8 +54,8 @@
     <td style="padding: 18px 0px 18px 0px;width:100%;">
       <div><b>File name:</b> {{ print.filename }}</div>
       <div><b>Printer:</b> {{ print.printer.name }}</div>
-      <div><b>Print time:</b> {{ print_time }} {% if dh_consumed %} ({{ dh_consumed }} watched by The Detective){% endif %}</div>
-      <div><b>DH balance (<a href="#https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">?</a>):</b> {{ print.user.dh_balance|floatformat:1 }} hour(s)</div>
+      <div><b>Print time:</b> {{ print_time }} {% if dh_consumed and not unlimited_dh %} ({{ dh_consumed }} watched by The Detective){% endif %}</div>
+      {% if not unlimited_dh %} <div><b>DH balance (<a href="#https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">?</a>):</b> {{ print.user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
     </td>
   </tr>
 </table>

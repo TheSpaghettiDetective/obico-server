@@ -90,6 +90,8 @@ class OctoPrintPicView(APIView):
         req.raise_for_status()
         resp = req.json()
 
+        redis.print_num_predictions_incr(printer.current_print.id)
+
         detections = resp['detections']
         prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
         update_prediction_with_detections(prediction, detections)
@@ -115,7 +117,6 @@ class OctoPrintPicView(APIView):
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
 
-        redis.print_num_predictions_incr(printer.current_print.id)
         send_status_to_web(printer.id)
         return Response({'result': 'ok'})
 

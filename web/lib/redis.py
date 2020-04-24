@@ -59,7 +59,7 @@ def print_num_predictions_incr(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     with REDIS.pipeline() as pipe:
         pipe.incr(key)
-        pipe.expire(key, 60*60*24*5)     # Assuming it'll be processed in 5 days.
+        pipe.expire(key, 60*60*24*30)     # Assuming it'll be processed in 30 days.
         pipe.execute()
 
 def print_num_predictions_get(print_id):

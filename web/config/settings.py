@@ -296,8 +296,6 @@ ROLLING_MEAN_SHORT_MULTIPLE = float(
 # The multiplication factor to escalate "warning" to "error"
 ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
-TIMELAPSE_MINIMUM_SECONDS = 5 if DEBUG else 300
-
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 

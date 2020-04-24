@@ -227,7 +227,7 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
         req.raise_for_status()
 
 
-def send_print_notification(print_id):
+def send_print_notification(print_id, extra_ctx={}):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
     if _print.is_canceled():
         if not _print.printer.user.notify_on_canceled:
@@ -240,7 +240,7 @@ def send_print_notification(print_id):
 
     try:
         if _print.printer.user.print_notification_by_email:
-            send_print_notification_email(_print)
+            send_print_notification_email(_print, extra_ctx)
     except:
         sentryClient.captureException()
 
@@ -262,13 +262,14 @@ def send_print_notification(print_id):
     except:
         sentryClient.captureException()
 
-def send_print_notification_email(_print):
+def send_print_notification_email(_print, extra_ctx={}):
     subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
     ctx = {
         'print': _print,
         'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
         'timelapse_link': site.build_full_url('/prints/'),
     }
+    ctx.update(extra_ctx)
     send_email(
         user=_print.printer.user,
         subject=subject,

@@ -35,20 +35,8 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(print_id):
-    _print = Print.objects.get(id=print_id)
-    generate_print_poster(_print)
-
-    if (_print.ended_at() - _print.started_at).total_seconds() < settings.TIMELAPSE_MINIMUM_SECONDS:
-        _print.delete()
-        clean_up_print_pics(_print)
-        return
-
-    print_notification.delay(print_id)
-    compile_timelapse.delay(print_id)
-
-@shared_task
-def print_notification(print_id):
     send_print_notification(print_id)
+    compile_timelapse.delay(print_id)
 
 @shared_task
 def compile_timelapse(print_id):
@@ -90,19 +78,24 @@ def compile_timelapse(print_id):
 
         json_files = list_dir(f'p/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
         local_jsons = download_files(json_files, to_dir)
-        preidction_json = []
+        prediction_json = []
+        num_missing_p_json = 0
         for pic_path in local_pics:
             try:
                 with open(str(pic_path).replace('tagged/', 'p/').replace('.jpg', '.json'), 'r') as f:
                     p_json = json.load(f)
             except (FileNotFoundError, json.decoder.JSONDecodeError) as e:    # In case there is no corresponding json, the file will be empty and JSONDecodeError will be thrown
-                LOGGER.error(e)
+                LOGGER.warn(e)
                 p_json = [{}]
-            preidction_json += p_json
-        preidction_json_io = io.BytesIO()
-        preidction_json_io.write(json.dumps(preidction_json).encode('UTF-8'))
-        preidction_json_io.seek(0)
-        _, json_url = save_file_obj('private/{}_p.json'.format(_print.id), preidction_json_io, settings.TIMELAPSE_CONTAINER)
+                num_missing_p_json += 1
+                if num_missing_p_json > 5:
+                    LOGGER.error('Too many missing p_json files.')
+
+            prediction_json += p_json
+        prediction_json_io = io.BytesIO()
+        prediction_json_io.write(json.dumps(prediction_json).encode('UTF-8'))
+        prediction_json_io.seek(0)
+        _, json_url = save_file_obj('private/{}_p.json'.format(_print.id), prediction_json_io, settings.TIMELAPSE_CONTAINER)
 
         _print.tagged_video_url = mp4_file_url
         _print.prediction_json_url = json_url

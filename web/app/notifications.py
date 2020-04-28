@@ -11,6 +11,8 @@ import logging
 from urllib.parse import urlparse
 import ipaddress
 from raven.contrib.django.raven_compat.models import client as sentryClient
+import smtplib
+import backoff
 
 from lib.file_storage import save_file_obj
 from lib.utils import save_print_snapshot, last_pic_of_print
@@ -366,7 +368,10 @@ def send_print_notification_slack(_print):
 
 
 # Helpers
-
+@backoff.on_exception(backoff.expo,
+                      (smtplib.SMTPServerDisconnected,
+                      smtplib.SMTPSenderRefused),
+                      max_tries=3)
 def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, verified_only=True, attachment=None):
     if not settings.EMAIL_HOST:
         LOGGER.warn("Email settings are missing. Ignored send requests")

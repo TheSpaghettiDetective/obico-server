@@ -370,7 +370,8 @@ def send_print_notification_slack(_print):
 # Helpers
 @backoff.on_exception(backoff.expo,
                       (smtplib.SMTPServerDisconnected,
-                      smtplib.SMTPSenderRefused),
+                      smtplib.SMTPSenderRefused,
+                      smtplib.SMTPResponseException,),
                       max_tries=3)
 def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, verified_only=True, attachment=None):
     if not settings.EMAIL_HOST:

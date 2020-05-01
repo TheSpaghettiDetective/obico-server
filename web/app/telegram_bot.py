@@ -31,9 +31,9 @@ def default_markup():
 
 def inline_markup(printer, buttons=['more_info']):
     links = {
-        'cancel': { 'text': 'Yes it failed. Cancel the print!', 'url': site.build_full_url('/printers/{}/cancel/'.format(printer.id)) },
-        'resume': { 'text': 'It is a false alarm. Resume the print!', 'url': site.build_full_url('/printers/{}/resume/'.format(printer.id)) },
-        'do_not_ask': { 'text': 'Resume the print, and don\'t alert me for the rest of this print.', 'url': site.build_full_url('/printers/{}/resume/?mute_alert=true'.format(printer.id)) },
+        'cancel': { 'text': 'Yes it failed. Cancel the print!', 'url': site.build_full_url('/prints/{}/cancel/'.format(printer.current_print_id)) },
+        'resume': { 'text': 'It is a false alarm. Resume the print!', 'url': site.build_full_url('/prints/{}/resume/'.format(printer.current_print_id)) },
+        'do_not_ask': { 'text': 'Resume the print, and don\'t alert me for the rest of this print.', 'url': site.build_full_url('/prints/{}/resume/?mute_alert=true'.format(printer.current_print_id)) },
         'more_info': { 'text': 'Go to The Spaghetti Detective to take a closer look.', 'url': site.build_full_url('/printers/') }
     }
 
@@ -51,7 +51,7 @@ def send_notification(printer, notification, photo, buttons=None):
         return
 
     chat_id = printer.user.telegram_chat_id
-    
+
     keyboard = None
 
     if buttons:

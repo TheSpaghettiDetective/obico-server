@@ -89,7 +89,7 @@ def compile_timelapse(print_id):
                 p_json = [{}]
                 num_missing_p_json += 1
                 if num_missing_p_json > 5:
-                    LOGGER.error('Too many missing p_json files.')
+                    raise Exception('Too many missing p_json files.')
 
             prediction_json += p_json
         prediction_json_io = io.BytesIO()

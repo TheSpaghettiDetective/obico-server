@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'api',
+    'frontend.apps.FrontendConfig',  # added by aal
 ]
 
 if os.environ.get('SOCIAL_LOGIN') == 'True':

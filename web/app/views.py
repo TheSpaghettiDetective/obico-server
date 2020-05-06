@@ -21,11 +21,14 @@ from .telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
+# def index(request):
+#     if request.user.is_authenticated and not request.user.consented_at:
+#         return redirect('/consent/')
+#     else:
+#         return redirect('/printers/')
+
 def index(request):
-    if request.user.is_authenticated and not request.user.consented_at:
-        return redirect('/consent/')
-    else:
-        return redirect('/printers/')
+    return render(request, 'frontend/index.html')
 
 @login_required
 def printer_auth_token(request, pk):
@@ -153,14 +156,18 @@ def unsubscribe_email(request):
 
 ### Prints and public time lapse ###
 
-@login_required
+# @login_required
+# def prints(request):
+#     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
+#     if request.GET.get('deleted', False):
+#         prints = prints.all(force_visibility=True)
+#     page_obj = get_paginator(prints, request, 9)
+#     prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
+#     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
+
 def prints(request):
-    prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
-    if request.GET.get('deleted', False):
-        prints = prints.all(force_visibility=True)
-    page_obj = get_paginator(prints, request, 9)
-    prediction_urls = [ dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
-    return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
+    print("prints page")
+    return render(request, 'frontend/index.html')
 
 @login_required
 def delete_prints(request, pk):

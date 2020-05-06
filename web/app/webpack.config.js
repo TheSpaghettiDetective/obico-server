@@ -8,8 +8,8 @@ const cssModuleRegex = /\.module\.css$/;
 const cssRegex = /\.css$/;
 
 module.exports = function(webpackEnv) {
-	const isEnvDevelopment = webpackEnv === 'development';
-	const isEnvProduction = webpackEnv === 'production';
+	// const isEnvDevelopment = webpackEnv === 'development';
+	// const isEnvProduction = webpackEnv === 'production';
 	
 	return {
 		module: {
@@ -79,15 +79,16 @@ module.exports = function(webpackEnv) {
 			]
 			},
 		resolve: {
-		alias: {
-				'vue$': 'vue/dist/vue.esm.js',
-				'jquery': 'jquery/src/jquery.js'
-		},
-		extensions: ['*', '.js', '.vue', '.json']
+			alias: {
+					'vue$': 'vue/dist/vue.esm.js',
+					'jquery': 'jquery/src/jquery.js'
+			},
+			extensions: ['*', '.js', '.vue', '.json']
 		},
 		plugins: [
 			// make sure to include the plugin for the magic
 			new VueLoaderPlugin()
-		]
+		],
+		devtool: '#eval-source-map'
 	}
 };

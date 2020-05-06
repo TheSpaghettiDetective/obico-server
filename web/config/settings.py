@@ -31,6 +31,9 @@ SESSION_COOKIE_AGE = 60*60*24*60 # User login session is 2 months
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
 
+DEBUG = True
+print("[Debug]", DEBUG)
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -60,8 +63,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'api',
-    'frontend.apps.FrontendConfig',  # added by aal
+    'api'
 ]
 
 if os.environ.get('SOCIAL_LOGIN') == 'True':

@@ -11,9 +11,9 @@
 		<form id="prints-form" method="POST" ></form>
 		<div class="row">
 			<div class="col-sm-12 text-center pb-3">
-				<button type="button" id="delete-prints-btn" class="btn btn-light float-right ml-3" disabled><i
-					class="fas fa-trash-alt"></i> Delete</button>
-				<button type="button" id="select-all-btn" class="btn btn-primary float-right">Select All</button>
+				<button type="button" id="delete-prints-btn" class="btn btn-light float-right ml-3" disabled>
+					<i class="fas fa-trash-alt"></i> Delete</button>
+				<button type="button" id="select-all-btn" class="btn btn-primary float-right" @click="debugTest">Select All</button>
 			</div>
 		</div>
 	</div>
@@ -26,6 +26,13 @@ export default {
 	data(){
 		return{
 			detectHourPrimaryImg
+		}
+	},
+	methods:{
+		debugTest(){
+			console.log("this is debug test111");
+			console.log("this is debug test222");
+			
 		}
 	}
 }

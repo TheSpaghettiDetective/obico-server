@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "gulp sass",
-    "watch": "yarn build && gulp watch"
+    "watch": "yarn build && gulp watch",
+    "front": "cd app",
+    "dev": "cd app && npm run dev",
+    "frontbuild": "cd app && npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +19,5 @@
     "gulp-sourcemaps": "^2.6.4",
     "merge-stream": "^1.0.1"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

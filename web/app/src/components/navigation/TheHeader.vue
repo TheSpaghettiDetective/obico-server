@@ -17,7 +17,7 @@
 				</li>
 				<li class="nav-item {% if  'prints' in view_name %}active{% endif %}">
 					<!-- <a class="nav-link" href="/prints/">Time-lapse</a> -->
-					<router-link to="/prints" class="nav-link">Time-lapsesss</router-link>
+					<router-link to="/prints" class="nav-link">Time-lapse</router-link>
 				</li>
 				<li class="nav-item {% if  'gcodes' in view_name %}active{% endif %}">
 					<a class="nav-link" href="/gcodes/">G-Code
@@ -77,8 +77,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import logoInverted from '../../assets/img/logo-inverted.png';
-import detectHourInverseImg from '../../assets/img/detective-hour-inverse.png';
+// import logoInverted from '../../assets/img/logo-inverted.png';
+import logoInverted from '../../../static/img/logo-inverted.png';
+import detectHourInverseImg from '../../../static/img/detective-hour-inverse.png';
 export default {
 	name: "Header",
 	data(){

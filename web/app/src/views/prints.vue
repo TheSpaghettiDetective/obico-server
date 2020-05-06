@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import detectHourPrimaryImg from '../assets/img/detective-hour-primary.png';
+import detectHourPrimaryImg from '../../static/img/detective-hour-primary.png';
 export default {
 	name: 'prints',
 	data(){

@@ -129,8 +129,9 @@
     {% block main_top_ext %}{% endblock main_top_ext %}
     <div id="content-wrapper" class="container">
       {% include 'snippets/messages.html' %}
-      {% block content %}{% endblock content %}
-
+      <div id='app' style="height: 100%;">
+  		  {% block content %}{% endblock content %}
+      </div>
     </div>
     <!-- /.content-wrapper -->
   </main>
@@ -139,7 +140,7 @@
       <p>&copy; The Spaghetti Detective 2019. All Rights Reserved.</p>
     </div>
   </footer>
-
+  <script src="{% static 'frontend/main.js' %}"></script>
   <!-- Optional JavaScript -->
   <!-- Optional: include a polyfill for ES6 Promises for IE11 and Android browser -->
   <script href="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>

@@ -5,8 +5,9 @@
 
 {% block content %}
 
-<div class="timelapse-gallery">
-  <div class="row my-5 justify-content-center">
+<!-- <div class="timelapse-gallery"> -->
+  <prints />
+  <!-- <div class="row my-5 justify-content-center">
     <div class="col-12">
       <a role="button" class="btn btn-outline-primary btn-block" href="/prints/upload/">Upload time-lapses and earn some <img class="dh-icon" src="{% static 'img/detective-hour-primary.png' %}" /></a>
     </div>
@@ -234,8 +235,8 @@
           </div>
         </div>
       </div>
-    </div>
-</div>
+    </div> -->
+<!-- </div> -->
 
 {{ prediction_urls|json_script:"prediction_urls" }}
 {% endblock content %}

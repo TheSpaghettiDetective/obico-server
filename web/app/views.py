@@ -21,14 +21,11 @@ from .telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
-# def index(request):
-#     if request.user.is_authenticated and not request.user.consented_at:
-#         return redirect('/consent/')
-#     else:
-#         return redirect('/printers/')
-
 def index(request):
-    return render(request, 'frontend/index.html')
+    if request.user.is_authenticated and not request.user.consented_at:
+        return redirect('/consent/')
+    else:
+        return redirect('/printers/')
 
 @login_required
 def printer_auth_token(request, pk):

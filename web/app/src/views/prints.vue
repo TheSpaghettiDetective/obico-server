@@ -32,7 +32,7 @@ export default {
 		debugTest(){
 			console.log("this is debug test111");
 			console.log("this is debug test222");
-			
+		
 		}
 	}
 }

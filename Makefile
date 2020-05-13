@@ -1,7 +1,4 @@
-CUR_UID = $(shell id -u)
-CUR_GID = $(shell id -g)
+.PHONY: build-frontdev
 
-.PHONY: env
-
-env:
-	printf '%s\n%s\n' "UID=${CUR_UID}" "GID=${CUR_GID}" > .env
+build-frontdev:
+	docker-compose build --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g) frontdev

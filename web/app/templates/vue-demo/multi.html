@@ -1,6 +1,6 @@
 {% extends settings.TEMPLATE_LAYOUT %}
 
-{% load render_bundle from webpack_loader %}
+{% load bundle from vue %}
 
 
 {% block content %}
@@ -12,6 +12,6 @@
   <counter-example/>
 </div>
 
-{% render_bundle 'multi' %}
+{% bundle 'multi' %}
 
 {% endblock content%}

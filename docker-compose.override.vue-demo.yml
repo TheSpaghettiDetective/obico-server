@@ -1,0 +1,29 @@
+version: '2.4'
+
+volumes:
+    node_modules:
+      driver:
+        local
+
+services:
+
+  frontdev:
+    build:
+      context: web/frontend
+      args:
+        - uid
+        - gid
+      dockerfile: Dockerfile
+    command: bash -c "yarn install; yarn serve"
+    volumes:
+      - ./web/frontend:/code/
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  web:
+    environment:
+      DEBUG: "True"
+    depends_on:
+      - frontdev
+    volumes:
+      - ./web/frontend/builds:/app/static_build/builds

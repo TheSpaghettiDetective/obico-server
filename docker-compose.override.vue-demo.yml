@@ -16,13 +16,15 @@ services:
       dockerfile: Dockerfile
     command: bash -c "yarn install; yarn serve"
     volumes:
-      - ./web/frontend:/code/
+      - ./web/frontend:/app/
+      - ./web/frontend/builds:/app/static_build
     ports:
       - "127.0.0.1:8080:8080"
 
   web:
     environment:
-      DEBUG: "True"
+      WEBPACK_LOADER_ENABLED:
+      VUE_DEMO_ENABLED: "True"
     depends_on:
       - frontdev
     volumes:

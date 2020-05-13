@@ -30,7 +30,7 @@ urlpatterns = [
 ]
 
 
-if settings.DEBUG:
+if settings.VUE_DEMO_ENABLED:
     urlpatterns += [
         path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),
         path('vue-demo/multi/', vue_demo.MultiAppView.as_view(), name='vue-demo-multi'),

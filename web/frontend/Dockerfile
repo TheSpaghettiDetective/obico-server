@@ -8,10 +8,10 @@ ARG group=frontdev
 RUN groupadd -o -g $gid $group && useradd -o -g $gid -u $uid $user && \
     mkdir -p /home/$user && chown -R $user:$group /home/$user
 
-RUN mkdir /code && mkdir /code/node_modules 
+RUN mkdir /app && mkdir /app/node_modules && mkdir -p /app/static_build
 
-RUN chown -R $user:$group /code
+RUN chown -R $user:$group /app
 
-WORKDIR /code
+WORKDIR /app
 
 USER $user

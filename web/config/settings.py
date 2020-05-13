@@ -181,6 +181,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 200*1024*1024
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend/builds'),
+]
 
 # Allauth
 
@@ -304,12 +307,19 @@ PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 # Secure redirects
 SECURE_REDIRECTS = {}
 
+# Vue demo feature
+VUE_DEMO_ENABLED = os.environ.get('VUE_DEMO_ENABLED') == 'True'
+
 # webpack bundle stats
+WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
+STATIC_BUNDLE_PREFIX = 'vue-demo'
+WEBPACK_STATS_PATH = os.path.join(
+    BASE_DIR, 'frontend/webpack-stats.json')
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, 'static_build/builds/webpack-stats.json'),
+        'STATS_FILE': WEBPACK_STATS_PATH,
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],

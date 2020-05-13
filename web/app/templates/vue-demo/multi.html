@@ -1,0 +1,17 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% load render_bundle from webpack_loader %}
+
+
+{% block content %}
+<div class="vue-container">
+   <welcome-example/>
+</div>
+
+<div class="vue-container">
+  <counter-example/>
+</div>
+
+{% render_bundle 'multi' %}
+
+{% endblock content%}

@@ -1,6 +1,8 @@
 from django.urls import path
+from django.conf import settings
 
 from . import views
+from . import vue_demo
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -26,3 +28,10 @@ urlpatterns = [
     path('gcodes/upload/', views.upload_gcode_file, name='upload_gcode_file'),
     path('secure_redirect/', views.secure_redirect, name='secure_redirect'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += [
+        path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),
+        path('vue-demo/multi/', vue_demo.MultiAppView.as_view(), name='vue-demo-multi'),
+    ]

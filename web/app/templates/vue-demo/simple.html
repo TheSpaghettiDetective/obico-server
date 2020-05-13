@@ -1,0 +1,10 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+<div id="vue-app-simple"></div>
+
+{% render_bundle 'simple' %}
+
+{% endblock content%}

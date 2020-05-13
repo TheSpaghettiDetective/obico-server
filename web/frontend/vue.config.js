@@ -1,9 +1,14 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
 let vueConfig = {
-    publicPath: "http://localhost:8080/", // The base URL your application bundle will be deployed at
-    outputDir: './builds', //The directory where the production build files will be generated in when running vue-cli-service build
+    publicPath: process.env.NODE_ENV === 'production'
+      ? '/static/vue-demo'
+      : 'http://localhost:8080/',
+    outputDir: process.env.NODE_ENV === 'production'
+      ? '/app/static_build/vue-demo'
+      : '/app/dev-builds/vue-demo',
     runtimeCompiler: true,
+    filenameHashing: false,
 
     pages: {
         simple: {
@@ -21,9 +26,14 @@ let vueConfig = {
         config.optimization
             .splitChunks(false)
 
-        config
-            .plugin('BundleTracker')
-            .use(BundleTracker, [{filename: 'webpack-stats.json', path: '/code/builds/'}])
+        if (process.env.NODE_ENV != 'production') {
+            config
+                .plugin('BundleTracker')
+                .use(BundleTracker, [{
+                    name: 'webpack-stats.json',
+                    path: '/app/'
+                }])
+        }
 
         config.resolve.alias
             .set('__STATIC__', 'static')

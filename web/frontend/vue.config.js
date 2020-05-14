@@ -11,6 +11,9 @@ let vueConfig = {
     filenameHashing: false,
 
     pages: {
+        main: {
+            entry: 'src/main/main.js',
+        },
         simple: {
             entry: 'src/simple/main.js',
         },

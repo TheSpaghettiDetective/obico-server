@@ -307,9 +307,6 @@ PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 # Secure redirects
 SECURE_REDIRECTS = {}
 
-# Vue demo feature
-VUE_DEMO_ENABLED = os.environ.get('VUE_DEMO_ENABLED') == 'True'
-
 # webpack bundle stats
 WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
 STATIC_BUNDLE_PREFIX = 'vue-demo'

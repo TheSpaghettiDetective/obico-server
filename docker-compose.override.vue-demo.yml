@@ -14,9 +14,9 @@ services:
         - uid
         - gid
       dockerfile: Dockerfile
-    command: bash -c "yarn install; yarn serve"
+    command: bash -c "yarn install && yarn serve"
     volumes:
-      - ./web/frontend:/app/
+      - ./web:/app/
       - ./web/frontend/builds:/app/static_build
     ports:
       - "127.0.0.1:8080:8080"

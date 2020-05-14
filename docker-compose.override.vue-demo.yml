@@ -28,3 +28,4 @@ services:
       - frontdev
     volumes:
       - ./web/frontend/builds:/app/static_build/builds
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"

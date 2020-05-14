@@ -7,7 +7,7 @@ build-static:
 	docker-compose -f docker-compose.yml -f docker-compose.override.vue-demo.yml run --rm frontdev bash -c "yarn install && yarn build"
 
 vue-live:
-	WEBPACK_LOADER_ENABLED=True docker-compose -f docker-compose.yml -f docker-compose.override.vue-demo.yml up
+	WEBPACK_LOADER_ENABLED=True DEBUG=True docker-compose -f docker-compose.yml -f docker-compose.override.vue-demo.yml up
 
 vue-static:
 	WEBPACK_LOADER_ENABLED=False docker-compose -f docker-compose.yml -f docker-compose.override.vue-demo.yml up

@@ -46,7 +46,7 @@ let vueConfig = {
             .clientLogLevel("debug")
             .progress(true)
             .hotOnly(true)
-            .watchOptions({poll: true})
+            .watchOptions({poll: 1000})
             .https(false)
             .headers({"Access-Control-Allow-Origin": "*"})
             }

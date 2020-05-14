@@ -320,7 +320,7 @@ WEBPACK_LOADER = {
         'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
         'STATS_FILE': WEBPACK_STATS_PATH,
-        'POLL_INTERVAL': 0.1,
+        'POLL_INTERVAL': 0.5,
         'TIMEOUT': None,
         'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',

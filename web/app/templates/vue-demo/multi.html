@@ -5,11 +5,17 @@
 
 {% block content %}
 <div class="vue-container">
-   <welcome-example/>
+   <welcome></welcome>
 </div>
 
 <div class="vue-container">
-  <counter-example/>
+  <welcome
+     v-bind:data='{id: {{ request.user.id|default:"null" }}, last_login: "{{ request.user.last_login }}"}'
+     username="{{ request.user.email|default:"dear guest" }}"
+  ></welcome>
+</div>
+
+<div id="local-vue-container">
 </div>
 
 {% bundle 'multi' %}

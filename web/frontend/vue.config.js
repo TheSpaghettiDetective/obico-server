@@ -17,6 +17,9 @@ let vueConfig = {
         simple: {
             entry: 'src/simple/main.js',
         },
+        multi: {
+            entry: 'src/multi/main.js',
+        },
     },
 
     chainWebpack: config => {

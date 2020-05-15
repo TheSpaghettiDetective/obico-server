@@ -1,5 +1,6 @@
 {% load static %}
 {% load account_status %}
+{% load bundle from vue %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +35,7 @@
   <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/css/smart_wizard.css' %}">
 
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% bundle 'main' %}
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->

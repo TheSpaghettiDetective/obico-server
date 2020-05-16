@@ -37,7 +37,7 @@ let vueConfig = {
                 .plugin('BundleTracker')
                 .use(BundleTracker, [{
                     name: 'webpack-stats.json',
-                    path: '/app/frontend/'
+                    path: '.'
                 }])
         }
 

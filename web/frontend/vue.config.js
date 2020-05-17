@@ -3,7 +3,7 @@ const BundleTracker = require("webpack-bundle-tracker");
 let vueConfig = {
     publicPath: process.env.NODE_ENV === 'production'
       ? '/static/vue-demo'
-      : 'http://localhost:8080/',
+      : 'http://localhost:7070/',
     outputDir: process.env.NODE_ENV === 'production'
       ? '/app/static_build/vue-demo'
       : '/app/dev-builds/vue-demo',
@@ -45,9 +45,9 @@ let vueConfig = {
             .set('__STATIC__', 'static')
 
         config.devServer
-            .public('http://0.0.0.0:8080')
+            .public('http://0.0.0.0:7070')
             .host('0.0.0.0')
-            .port(8080)
+            .port(7070)
             .inline(true)
             .clientLogLevel("debug")
             .progress(true)

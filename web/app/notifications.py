@@ -99,9 +99,6 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
     if not printer.user.sms_eligible():
         return
 
-    twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-    from_number = settings.TWILIO_FROM_NUMBER
-
     to_number = printer.user.phone_country_code + printer.user.phone_number
 
     pausing_msg = ''
@@ -116,8 +113,8 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
         'smells fishy' if is_warning else 'is probably failing',
         pausing_msg,
         site.build_full_url('/'))
-    twilio_client.messages.create(body=msg, to=to_number, from_=from_number)
 
+    send_sms(msg, to_number)
 
 def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused):
     if not printer.user.has_valid_pushbullet_token():
@@ -409,3 +406,9 @@ def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, ve
         if attachment:
             msg.attach_file(attachment)
         msg.send()
+
+def send_sms(msg, to_number):
+    twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    from_number = settings.TWILIO_FROM_NUMBER
+
+    twilio_client.messages.create(body=msg, to=to_number, from_=from_number)

@@ -15,6 +15,7 @@ from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
 
+
 class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
@@ -61,6 +62,7 @@ class WebConsumer(JsonWebsocketConsumer):
 
     def current_user(self):
         return self.scope['user']
+
 
 class OctoPrintConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
@@ -112,6 +114,7 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
     def current_printer(self):
         return self.scope['user']
 
+
 class JanusWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
@@ -131,14 +134,12 @@ class JanusWebConsumer(WebsocketConsumer):
             LOGGER.exception("Websocket failed to connect")
             self.close()
 
-
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
             channels.janus_web_group_name(self.printer.id),
             self.channel_name
         )
-
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):

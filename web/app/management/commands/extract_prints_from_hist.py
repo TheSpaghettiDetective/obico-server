@@ -5,7 +5,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from app.models import *
 
-class Command( BaseCommand ):
+
+class Command(BaseCommand):
     help = 'Extract prints from history table'
 
     def handle(self, *args, **options):
@@ -30,11 +31,9 @@ class Command( BaseCommand ):
                 video_url=pprint.video_url,
                 tagged_video_url=pprint.tagged_video_url,
                 prediction_json_url=pprint.prediction_json_url,
-                )
+            )
             if not header_written:
                 w = csv.DictWriter(sys.stdout, row.keys())
                 w.writeheader()
                 header_written = True
             w.writerow(row)
-
-

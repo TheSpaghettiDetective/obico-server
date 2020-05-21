@@ -22,6 +22,7 @@ def init_data():
     printer.save()
     client = Client()
     client.login(email='test@tsd.com', password='test')
+
     return (user, printer, client)
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "app.notifications.send_failure_alert"
@@ -216,7 +217,7 @@ class AlertTestCase(TestCase):
             self.client.get(
                 '/api/v1/printers/{}/resume_print/'.format(self.printer.id))
             self.client.get(
-            '/api/v1/printers/{}/mute_current_print/'.format(self.printer.id), {'mute_alert': 'true'})
+                '/api/v1/printers/{}/mute_current_print/'.format(self.printer.id), {'mute_alert': 'true'})
 
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alert_muted_at)
@@ -267,21 +268,22 @@ class AlertTestCase(TestCase):
 
 EVENT_CALLS = [call('app.tasks.process_print_events', args=ANY)]
 
-@override_settings(PRINT_EVENT_HANDLER = 'app.tasks.process_print_events')
+
+@override_settings(PRINT_EVENT_HANDLER='app.tasks.process_print_events')
 @patch('app.models.celery_app')
 class PrintTestCase(TestCase):
 
     def msg(self, print_ts, filename, event):
         return {
             "current_print_ts": print_ts,
-            "octoprint_event": {"data": {"origin": "local", "name": filename}, "event_type": event,},
-            "octoprint_data": {"job": { "file": {"origin": "local", "name": filename}}},
+            "octoprint_event": {"data": {"origin": "local", "name": filename}, "event_type": event, },
+            "octoprint_data": {"job": {"file": {"origin": "local", "name": filename}}},
         }
 
     def msg_without_event(self, print_ts, filename):
         return {
             "current_print_ts": print_ts,
-            "octoprint_data": {"job": { "file": {"origin": "local", "name": filename}}},
+            "octoprint_data": {"job": {"file": {"origin": "local", "name": filename}}},
         }
 
     def setUp(self):
@@ -291,35 +293,35 @@ class PrintTestCase(TestCase):
         Print.objects.all().delete(force_policy=HARD_DELETE)
 
     def test_neg_print_ts_is_ignored_when_no_current_print(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(-1,'1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintStarted'), self.printer)
         self.assertIsNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg(-1,'1.gcode', 'PrintFailed'), self.printer)
+        process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintFailed'), self.printer)
         self.assertIsNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg(-1,'1.gcode', 'PrintCancelled'), self.printer)
+        process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintCancelled'), self.printer)
         self.assertIsNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg(-1,'1.gcode', 'PrintPaused'), self.printer)
+        process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintPaused'), self.printer)
         self.assertIsNone(self.printer.current_print)
         celery_app.send_task.assert_not_called()
 
     def test_print_is_done_normally(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintDone'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintDone'), self.printer)
         self.assertIsNone(self.printer.current_print)
         self.assertIsNotNone(Print.objects.first().finished_at)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_print_is_canceled_normally(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintCancelled'), self.printer)
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintFailed'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintCancelled'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintFailed'), self.printer)
         self.assertIsNone(self.printer.current_print)
         self.assertIsNone(Print.objects.first().finished_at)
         self.assertIsNotNone(Print.objects.first().cancelled_at)
@@ -327,11 +329,11 @@ class PrintTestCase(TestCase):
         self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_lost_end_event(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
 
-        process_octoprint_status_with_ts(self.msg_without_event(-1,'1.gcode'), self.printer)
-        process_octoprint_status_with_ts(self.msg(100,'1.gcode', 'PrintPaused'), self.printer)
+        process_octoprint_status_with_ts(self.msg_without_event(-1, '1.gcode'), self.printer)
+        process_octoprint_status_with_ts(self.msg(100, '1.gcode', 'PrintPaused'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
         self.assertEqual(self.printer.current_print.ext_id, 100)
         self.assertIsNotNone(self.printer.current_print.started_at)
@@ -339,14 +341,14 @@ class PrintTestCase(TestCase):
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
 
-        process_octoprint_status_with_ts(self.msg(100,'1.gcode', 'PrintDone'), self.printer)
+        process_octoprint_status_with_ts(self.msg(100, '1.gcode', 'PrintDone'), self.printer)
         self.assertEqual(celery_app.send_task.call_count, 2)
 
     def test_plugin_send_neg_print_ts_while_printing(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
-        process_octoprint_status_with_ts(self.msg(-1,'1.gcode', 'PrintPaused'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintPaused'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
-        process_octoprint_status_with_ts(self.msg_without_event(1,'1.gcode'), self.printer)
+        process_octoprint_status_with_ts(self.msg_without_event(1, '1.gcode'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
         self.assertEqual(Print.objects.all_with_deleted().count(), 1)
         self.assertEqual(celery_app.send_task.call_count, 0)
@@ -354,23 +356,23 @@ class PrintTestCase(TestCase):
     def test_race_condition_at_end_of_print(self, celery_app):
         eleven_hour_ago = timezone.now() - timedelta(hours=11)
         with patch('django.utils.timezone.now', return_value=eleven_hour_ago):
-            process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
+            process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
 
-        process_octoprint_status_with_ts(self.msg_without_event(-1,'1.gcode'), self.printer)
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintFailed'), self.printer)
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintCancelled'), self.printer)
+        process_octoprint_status_with_ts(self.msg_without_event(-1, '1.gcode'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintFailed'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintCancelled'), self.printer)
         self.assertIsNone(self.printer.current_print)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
 
     def test_plugin_send_diff_print_ts_while_printing(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1,'1.gcode', 'PrintStarted'), self.printer)
-        process_octoprint_status_with_ts(self.msg(5,'1.gcode', 'PrintPaused'), self.printer)
-        process_octoprint_status_with_ts(self.msg_without_event(1,'1.gcode'), self.printer)
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(5, '1.gcode', 'PrintPaused'), self.printer)
+        process_octoprint_status_with_ts(self.msg_without_event(1, '1.gcode'), self.printer)
         self.assertIsNotNone(self.printer.current_print)
         self.assertEqual(Print.objects.all_with_deleted().count(), 1)
         self.assertEqual(celery_app.send_task.call_count, 0)
 
-        process_octoprint_status_with_ts(self.msg_without_event(100,'1.gcode'), self.printer)
+        process_octoprint_status_with_ts(self.msg_without_event(100, '1.gcode'), self.printer)
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)

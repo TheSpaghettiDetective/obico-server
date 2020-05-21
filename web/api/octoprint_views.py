@@ -23,17 +23,19 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 
-IMG_URL_TTL_SECONDS = 60*30
+IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
 
 LOGGER = logging.getLogger(__name__)
 
+
 def alert_suppressed(printer):
-    if not printer.watching or printer.current_print == None or printer.current_print.alert_muted_at:
+    if not printer.watching or printer.current_print is None or printer.current_print.alert_muted_at:
         return True
 
     last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
     return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
+
 
 def alert_if_needed(printer):
     if alert_suppressed(printer):
@@ -46,6 +48,7 @@ def alert_if_needed(printer):
 
     printer.set_alert()
     send_failure_alert(printer, is_warning=True, print_paused=False)
+
 
 def pause_if_needed(printer):
     if alert_suppressed(printer):
@@ -69,7 +72,7 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
-        printer.refresh_from_db() # Connection is keep-alive, which means printer object can be stale.
+        printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
         pic = request.FILES['pic']
         pic = cap_image_size(pic)
@@ -132,6 +135,7 @@ class OctoPrintPingView(APIView):
             }
         })
 
+
 def cap_image_size(pic):
     im = Image.open(pic.file)
     if max(im.size) <= 1296:
@@ -142,9 +146,10 @@ def cap_image_size(pic):
     output = io.BytesIO()
     im.save(output, format='JPEG')
     output.seek(0)
-    return InMemoryUploadedFile(output,
-                                    u"pic",
-                                    'pic',
-                                    pic.content_type,
-                                    len(output.getbuffer()),
-                                    None)
+    return InMemoryUploadedFile(
+        output,
+        u"pic",
+        'pic',
+        pic.content_type,
+        len(output.getbuffer()),
+        None)

@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
+
 class CustomRadioSelectWidget(forms.RadioSelect):
     def __init__(self, choices=None, attrs={}):
         super()
@@ -30,9 +31,11 @@ class CustomRadioSelectWidget(forms.RadioSelect):
 
         return mark_safe(html)
 
+
 class PhoneCountryCodeWidget(forms.Select):
     def render(self, name, value, attrs=None, renderer=None):
-        CODES = (('+1', 'USA/Canada (+1)'),
+        CODES = (
+            ('+1', 'USA/Canada (+1)'),
             # ('+213', 'Algeria (+213)'),
             ('+376', 'Andorra (+376)'),
             # ('+244', 'Angola (+244)'),
@@ -245,13 +248,14 @@ class PhoneCountryCodeWidget(forms.Select):
             # ('+967', 'Yemen (South)(+967)'),
             # ('+260', 'Zambia (+260)'),
             ('+263', 'Zimbabwe (+263)'),
-            )
+        )
+
         super().render(name, value, attrs)
         html = ''
         html += '<select name="{}" class="{} selectpicker" id="{}" data-live-search="true">'.format(
             name,
             attrs['class'],
-            'id_'+name,
+            'id_' + name,
         )
 
         for (code, display) in CODES:

@@ -8,6 +8,7 @@ from app.models import PrintEvent
 
 STATUS_TTL_SECONDS = 240
 
+
 def process_octoprint_status(printer, status):
     octoprint_settings = status.get('octoprint_settings')
     if octoprint_settings:
@@ -24,11 +25,13 @@ def process_octoprint_status(printer, status):
 
     channels.send_status_to_web(printer.id)
 
+
 def settings_dict(octoprint_settings):
-    settings = dict(('webcam_'+k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
+    settings = dict(('webcam_' + k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
     if 'temperature' in octoprint_settings:
         settings.update(dict(temp_profiles=json.dumps(octoprint_settings['temperature'].get('profiles', []))))
     return settings
+
 
 def process_octoprint_status_with_ts(op_status, printer):
     op_event = op_status.get('octoprint_event', {})

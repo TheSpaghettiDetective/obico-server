@@ -7,7 +7,8 @@ from django.core.management.base import BaseCommand, CommandError
 from app.models import PublicTimelapse
 from lib.file_storage import save_file_obj
 
-class Command( BaseCommand ):
+
+class Command(BaseCommand):
     help = 'Create PublicTimeLpase using video and p json'
 
     def add_arguments(self, parser):

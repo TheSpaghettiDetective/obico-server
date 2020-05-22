@@ -3,7 +3,10 @@
 {% load bundle from vue %}
 
 {% block content %}
-<div id="vue-app"></div>
+<div id="print-shot-feedback-mount">
+  <App v-bind:data='{"print_id": {{ object.id }}, "poster_url": "{{ object.poster_url }}"}, "shots": []}'>
+  </App>
+</div>
 
 {% bundle 'print_shot_feedback' %}
 

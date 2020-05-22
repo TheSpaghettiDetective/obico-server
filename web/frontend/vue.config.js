@@ -20,6 +20,9 @@ let vueConfig = {
         multi: {
             entry: 'src/multi/main.js',
         },
+        print_shot_feedback: {
+            entry: 'src/print_shot_feedback/main.js',
+        },
     },
 
     chainWebpack: config => {

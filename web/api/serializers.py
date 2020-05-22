@@ -47,7 +47,7 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if 'answer' in validated_data:
-            if validated_data['answer'] is not None:
+            if validated_data['answer'] != PrintShotFeedback.UNANSWERED:
                 instance.answered_at = now()
             else:
                 instance.answered_at = None

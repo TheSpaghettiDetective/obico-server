@@ -555,17 +555,21 @@ class GCodeFile(SafeDeleteModel):
 
 
 class PrintShotFeedback(models.Model):
+    LOOKS_BAD = 'LOOKS_BAD'
+    LOOKS_OK = 'LOOKS_OK'
+    UNANSWERED = ''
+
     ANSWER_CHOICES = (
-        (True, "It contains spaghetti"),
-        (False, "It does NOT contain spaghetti"),
-        (None, "I'll decide later"),
+        (LOOKS_BAD, "It contains spaghetti"),
+        (LOOKS_OK, "It does NOT contain spaghetti"),
+        (UNANSWERED, "I'll decide later"),
     )
 
     print = models.ForeignKey(Print, on_delete=models.CASCADE)
 
     image_url = models.CharField(max_length=2000, null=False, blank=False)
 
-    answer = models.BooleanField(choices=ANSWER_CHOICES, null=True)
+    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True)
     answered_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

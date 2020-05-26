@@ -12,12 +12,23 @@
 
       <card v-if="currentShot && !loading">
         <div class="card-header">
-          <div class="float-left">
-            Displaying Shot #{{ currentIndex + 1 }}
+          <div class="clearfix">
+            <div class="float-left">
+              Feedback for #{{ currentIndex + 1 }} of
+              <strong>{{ this.shots.length }}</strong>
+            </div>
+            <div class="float-right">
+              <strong v-if="progress == 100">All answered!</strong>
+              <strong v-if="progress != 100">{{ progress }}% answered</strong>
+            </div>
           </div>
-          <div class="float-right">
-            <strong>{{ this.shots.length }}</strong> shots in total
-          </div>
+          <progress-bar
+            class="clearfix"
+            :max="100"
+            :value="progress"
+          >
+            {{ progress }} %
+          </progress-bar>
         </div>
         <div class="current-shot-container">
           <img
@@ -83,6 +94,7 @@
   import axios from 'axios'
 
   import AnswerButton from './components/AnswerButton.vue'
+  import ProgressBar from './components/ProgressBar.vue'
   import Card from './components/Card.vue'
 
   const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedback/?print_id=${printId}`
@@ -99,6 +111,7 @@
     components: {
       AnswerButton,
       Card,
+      ProgressBar,
     },
     props: {
       config: {
@@ -156,6 +169,11 @@
 
         return index + 1 >= this.shots.length ? 0 : index + 1
       },
+      progress() {
+        let answered = this.shots.filter((shot) => shot.answer !== null).length
+        let total = this.shots.length
+        return parseInt((answered / total) * 100)
+      }
     },
 
     created() {
@@ -217,6 +235,10 @@
 
           .then((response) => {
             this.shots = response.data
+            this.shots.forEach((item) => {
+              item.answer = item.answer === consts.UNANSWERED ? null : consts.UNANSWERED
+            })
+
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id
             }

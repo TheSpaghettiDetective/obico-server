@@ -1,6 +1,17 @@
 <template>
-  <div class="progress" style="height: 5px;">
-    <div class="progress-bar" :class="{'bg-success': value === 100}" role="progressbar" :style="{width: valuePercent}" :aria-valuenow="value" aria-valuemin="0" aria-valuemax="100"></div>
+  <div
+    class="progress"
+    style="height: 5px;"
+  >
+    <div
+      class="progress-bar"
+      role="progressbar"
+      :class="{'bg-success': value === 100}"
+      :style="{width: valuePercent}"
+      :aria-valuenow="value"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    />
   </div>
 </template>
 
@@ -26,9 +37,4 @@ export default {
 </script>
 
 <style>
- .progress-bar {
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 9999px;
- }
 </style>

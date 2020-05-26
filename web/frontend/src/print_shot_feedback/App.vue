@@ -21,8 +21,8 @@
         </div>
         <div class="current-shot-container">
           <img
-            v-if="currentShot.image_url"
             class="card-img-top"
+            @click="next"
             :src="currentShot.image_url"
           >
           <button
@@ -80,23 +80,19 @@
 </template>
 
 <script>
-  import AnswerButton from './components/AnswerButton.vue';
-  import Card from './components/Card.vue';
-  const axios = require('axios');
+  import axios from 'axios'
 
-  function printShotFeedbackListUrl(print_id) {
-    return `/api/v1/printshotfeedback/?print_id=${print_id}`;
-  }
+  import AnswerButton from './components/AnswerButton.vue'
+  import Card from './components/Card.vue'
 
-  function printShotFeedbackUrl(id) {
-    return `/api/v1/printshotfeedback/${id}/`;
-  }
+  const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedback/?print_id=${printId}`
+  const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedback/${shotId}/`
 
   const consts = {
     LOOKS_OK: 'LOOKS_OK',
     LOOKS_BAD: 'LOOKS_BAD',
     UNANSWERED: '',
-  };
+  }
 
   export default {
     name: "App",
@@ -106,9 +102,7 @@
     },
     props: {
       config: {
-        default: function() {
-          return {};
-        },
+        default: () => {},
         type: Object,
       },
     },
@@ -120,133 +114,148 @@
         updating: false,
         inFlightAnswer: null,
         shots: [],
-      };
+      }
     },
     computed: {
-      currentIndex: function() {
-        const currentShotId = this.currentShotId;
+      currentIndex() {
+        const currentShotId = this.currentShotId
 
         if (currentShotId === null || this.shots.length < 1) {
-          return null;
+          return null
         }
 
-        return this.shots.findIndex(function(item) {
-          return currentShotId == item.id;
-        });
+        return this.shots.findIndex((item) => currentShotId == item.id)
       },
-      currentShot: function() {
-        const index = this.currentIndex;
-        if (index === null) {
-          return null;
-        }
-        return this.shots[index];
-      },
-      prevIndex: function() {
-        const index = this.currentIndex;
+
+      currentShot() {
+        const index = this.currentIndex
 
         if (index === null) {
-          return null;
+          return null
         }
 
-        return index == 0 ? this.shots.length - 1 : index - 1;
+        return this.shots[index]
       },
-      nextIndex: function() {
-        const index = this.currentIndex;
+
+      prevIndex() {
+        const index = this.currentIndex
 
         if (index === null) {
-          return null;
+          return null
         }
 
-        return index + 1 >= this.shots.length ? 0 : index + 1;
+        return index == 0 ? this.shots.length - 1 : index - 1
+      },
+
+      nextIndex() {
+        const index = this.currentIndex
+
+        if (index === null) {
+          return null
+        }
+
+        return index + 1 >= this.shots.length ? 0 : index + 1
       },
     },
-    created: function() {
-      this.consts = consts;
+
+    created() {
+      this.consts = consts
     },
-    mounted: function() {
-      var vm = this;
 
-      this.fetchShots();
+    mounted() {
+      this.fetchShots()
 
-      this.$el.addEventListener('keydown', function(e) {
-        if (vm.updating) {
-          return;
+      this.$el.addEventListener('keydown', (e) => {
+        if (this.updating) {
+          return
         }
+
         switch (e.key) {
           case 'ArrowLeft':
-            vm.prev();
-            break;
+            this.prev()
+            break
+
           case 'ArrowRight':
-            vm.next();
-            break;
+            this.next()
+            break
+
           default:
-            break;
+            break
         }
-      });
+      })
     },
     methods: {
-      looksOk: function() {
-        this.updateShot(this.currentShotId, consts.LOOKS_OK);
+      looksOk() {
+        this.updateShot(this.currentShotId, consts.LOOKS_OK)
       },
-      looksBad: function() {
-        this.updateShot(this.currentShotId, consts.LOOKS_BAD);
+
+      looksBad() {
+        this.updateShot(this.currentShotId, consts.LOOKS_BAD)
       },
-      willDecideLater: function() {
-        this.updateShot(this.currentShotId, '');
+
+      willDecideLater() {
+        this.updateShot(this.currentShotId, '')
       },
-      next: function() {
+
+      next() {
         if (this.nextIndex !== null) {
-          this.currentShotId = this.shots[this.nextIndex].id;
+          this.currentShotId = this.shots[this.nextIndex].id
         }
       },
-      prev: function() {
+
+      prev() {
         if (this.prevIndex !== null) {
-          this.currentShotId = this.shots[this.prevIndex].id;
+          this.currentShotId = this.shots[this.prevIndex].id
         }
       },
-      fetchShots: function() {
-        this.loading = true;
-        var vm = this;
+
+      fetchShots() {
+        this.loading = true
+
         axios
           .get(printShotFeedbackListUrl(this.config.printId))
-          .then(function(response) {
-            vm.shots = response.data;
-            if (vm.shots.length > 0) {
-              vm.currentShotId = vm.shots[0].id;
+
+          .then((response) => {
+            this.shots = response.data
+            if (this.shots.length > 0) {
+              this.currentShotId = this.shots[0].id
             }
           })
-          .catch(function(error) {
-            console.log(error);
-            vm.$swal('Ops', 'Something went wrong!', 'error').then(function() {
-              location.reload();
-            });
+
+          .catch((error) => {
+            console.log(error)
+            this.$swal('Ops', 'Something went wrong!', 'error').then(() => location.reload())
           })
-          .finally(function() {
-            vm.loading = false;
-          });
+
+          .finally(() => {
+            this.loading = false
+          })
       },
 
       updateShot: function(id, answer) {
-        this.updating = true;
-        this.inFlightAnswer = answer;
-        var vm = this;
+        this.updating = true
+        this.inFlightAnswer = answer
+
         axios
           .put(printShotFeedbackUrl(id), { answer: answer })
-          .then(function(response) {
-            vm.shots = vm.shots.map(function(shot) {
-              return shot.id === response.data.id ? response.data : shot;
-            });
+
+          .then((response) => {
+            this.shots = this.shots.map((shot) => {
+              return shot.id === response.data.id ? response.data : shot
+            })
           })
-          .catch(function() {
-            vm.$swal('Ops', 'Could not save answer! Please retry!', 'error');
+
+          .catch(() => {
+            this.$swal('Ops', 'Could not save answer! Please retry!', 'error')
           })
-          .finally(function() {
-            vm.updating = false;
-            vm.inFlightAnswer = null;
-          });
+
+          .finally(() => {
+            this.updating = false
+            this.inFlightAnswer = null
+          })
       },
     },
-  };
+  }
 </script>
 
 <style>

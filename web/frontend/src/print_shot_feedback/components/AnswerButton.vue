@@ -52,7 +52,7 @@ export default {
       return `btn ${this.defaultClass}`
     }
   }
-};
+}
 </script>
 
 <style></style>

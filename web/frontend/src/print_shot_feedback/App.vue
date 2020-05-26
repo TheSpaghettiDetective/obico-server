@@ -104,6 +104,7 @@
     LOOKS_OK: 'LOOKS_OK',
     LOOKS_BAD: 'LOOKS_BAD',
     UNANSWERED: '',
+    UNSET: null,
   }
 
   export default {
@@ -170,7 +171,7 @@
         return index + 1 >= this.shots.length ? 0 : index + 1
       },
       progress() {
-        let answered = this.shots.filter((shot) => shot.answer !== null).length
+        let answered = this.shots.filter((shot) => shot.answer !== consts.UNSET).length
         let total = this.shots.length
         return parseInt((answered / total) * 100)
       }
@@ -235,8 +236,9 @@
 
           .then((response) => {
             this.shots = response.data
-            this.shots.forEach((item) => {
-              item.answer = item.answer === consts.UNANSWERED ? null : consts.UNANSWERED
+            this.shots.map((item) => {
+              item.answer = item.answer == consts.UNANSWERED ? consts.UNSET : item.answer
+              return item
             })
 
             if (this.shots.length > 0) {

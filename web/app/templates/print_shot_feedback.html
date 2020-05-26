@@ -4,7 +4,7 @@
 
 {% block content %}
 <div id="print-shot-feedback-mount">
-  <App v-bind:data='{"print_id": {{ object.id }}, "poster_url": "{{ object.poster_url }}"}, "shots": []}'>
+  <App v-bind:config='{"printId": {{ object.id }}}'>
   </App>
 </div>
 

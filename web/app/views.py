@@ -271,3 +271,9 @@ def secure_redirect(request):
     dest = settings.SECURE_REDIRECTS.get((target, source), target)
 
     return redirect(dest)
+
+
+@login_required
+def print_shot_feedback(request, pk):
+    _print = get_print_or_404(pk, request)
+    return render(request, 'print_shot_feedback.html', {'object': _print})

@@ -9,6 +9,10 @@ router = DefaultRouter()
 router.register(r'printers', views.PrinterViewSet, 'Printer')
 router.register(r'prints', views.PrintViewSet, 'Print')
 router.register(r'gcodes', views.GCodeFileViewSet, 'GCodeFile')
+router.register(
+    r'printshotfeedback',
+    views.PrintShotFeedbackViewSet,
+    'PrintShotFeedback')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

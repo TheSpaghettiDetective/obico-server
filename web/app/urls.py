@@ -23,6 +23,7 @@ urlpatterns = [
     path('prints/', views.prints, name='prints'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
+    path('prints/shot-feedback/<pk>/', views.print_shot_feedback, name='print_shot_feedback'),
     path('gcodes/', views.gcodes, name='gcodes'),
     path('gcodes/upload/', views.upload_gcode_file, name='upload_gcode_file'),
     path('secure_redirect/', views.secure_redirect, name='secure_redirect'),

@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,9 +7,11 @@ from rest_framework import status
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
+from app.models import PrintShotFeedback
 from lib import redis
 from lib.channels import send_status_to_web
 from .serializers import *
+from .serializers import PrintShotFeedbackSerializer
 from config.celery import celery_app
 
 
@@ -109,3 +111,27 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin,
+                               mixins.ListModelMixin,
+                               viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = PrintShotFeedbackSerializer
+
+    def get_queryset(self):
+        try:
+            print_id = int(self.request.query_params.get('print_id'))
+        except (ValueError, TypeError):
+            print_id = None
+
+        qs = PrintShotFeedback.objects.filter(
+            print__user=self.request.user
+        ).order_by('-created_at')
+
+        if print_id:
+            qs = qs.filter(print_id=print_id)
+
+        return qs

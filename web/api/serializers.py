@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.utils.timezone import now
 
 from app.models import *
+from app.models import PrintShotFeedback
 
 
 class PrinterPredictionSerializer(serializers.ModelSerializer):
@@ -34,3 +36,20 @@ class GCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
+
+
+class PrintShotFeedbackSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PrintShotFeedback
+        fields = ('id', 'print_id', 'image_url', 'answer', 'answered_at')
+        read_only_fields = ('id', 'url', 'image_url', 'answered_at')
+
+    def update(self, instance, validated_data):
+        if 'answer' in validated_data:
+            if validated_data['answer'] != PrintShotFeedback.UNANSWERED:
+                instance.answered_at = now()
+            else:
+                instance.answered_at = None
+
+        return super().update(instance, validated_data)

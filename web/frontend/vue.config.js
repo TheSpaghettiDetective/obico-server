@@ -2,11 +2,11 @@ const BundleTracker = require("webpack-bundle-tracker");
 
 let vueConfig = {
     publicPath: process.env.NODE_ENV === 'production'
-      ? '/static/vue-demo'
-      : 'http://localhost:7070/',
+        ? '/static/frontend'
+        : 'http://localhost:7070/',
     outputDir: process.env.NODE_ENV === 'production'
-      ? '/app/static_build/vue-demo'
-      : '/app/dev-builds/vue-demo',
+        ? '../static_build/frontend'
+        : '../dev-builds/frontend',
     runtimeCompiler: true,
     filenameHashing: false,
 
@@ -55,11 +55,11 @@ let vueConfig = {
             .clientLogLevel("debug")
             .progress(true)
             .hotOnly(true)
-            .watchOptions({poll: 1000})
+            .watchOptions({ poll: 1000 })
             .https(false)
-            .headers({"Access-Control-Allow-Origin": "*"})
-            }
+            .headers({ "Access-Control-Allow-Origin": "*" })
+    }
 
-        };
+};
 
 module.exports = vueConfig;

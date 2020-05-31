@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
-SESSION_COOKIE_AGE = 60*60*24*60 # User login session is 2 months
+SESSION_COOKIE_AGE = 60*60*24*60  # User login session is 2 months
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
@@ -309,7 +309,7 @@ SECURE_REDIRECTS = {}
 
 # webpack bundle stats
 WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
-STATIC_BUNDLE_PREFIX = 'vue-demo'
+STATIC_BUNDLE_PREFIX = 'frontend'
 WEBPACK_STATS_PATH = os.path.join(
     BASE_DIR, 'frontend/webpack-stats.json')
 WEBPACK_LOADER = {

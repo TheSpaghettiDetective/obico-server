@@ -309,13 +309,12 @@ SECURE_REDIRECTS = {}
 
 # webpack bundle stats
 WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
-STATIC_BUNDLE_PREFIX = 'vue-demo'
 WEBPACK_STATS_PATH = os.path.join(
     BASE_DIR, 'frontend/webpack-stats.json')
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
+        'BUNDLE_DIR_NAME': 'frontend/',  # must end with slash
         'STATS_FILE': WEBPACK_STATS_PATH,
         'POLL_INTERVAL': 0.5,
         'TIMEOUT': None,

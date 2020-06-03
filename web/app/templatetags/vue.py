@@ -7,7 +7,6 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
 
 register = template.Library()
 
-STATIC_BUNDLE_PREFIX = settings.STATIC_BUNDLE_PREFIX
 TEMPLATES = {
     'js': '<script type="text/javascript" src="{0}" {1}></script>',
     'css': '<link type="text/css" href="{0}" rel="stylesheet" {1}/>'
@@ -23,8 +22,11 @@ def bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
         tags = []
         extensions = (extension, ) if extension is not None else ('js', 'css')
 
+        prefix = settings.WEBPACK_LOADER[config]['BUNDLE_DIR_NAME']
+        prefix = prefix.rstrip("/")
+
         for ext in extensions:
-            url = static(f'{STATIC_BUNDLE_PREFIX}/{ext}/{bundle_name}.{ext}')
+            url = static(f'{prefix}/{ext}/{bundle_name}.{ext}')
 
             t = TEMPLATES.get(ext)
 

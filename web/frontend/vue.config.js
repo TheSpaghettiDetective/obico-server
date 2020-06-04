@@ -1,14 +1,20 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
+let publicPath = process.env.NODE_ENV === 'production'
+  ? '/static/frontend' : 'http://localhost:7070/'
+
+let outputDir = process.env.NODE_ENV === 'production'
+  ? './builds/frontend' : './dev-builds/frontend'
+
+publicPath = process.env.PUBLIC_PATH || publicPath
+outputDir = process.env.OUTPUT_DIR || outputDir
+
 let vueConfig = {
-    publicPath: process.env.NODE_ENV === 'production'
-      ? '/static/vue-demo'
-      : 'http://localhost:7070/',
-    outputDir: process.env.NODE_ENV === 'production'
-      ? '/app/static_build/vue-demo'
-      : '/app/dev-builds/vue-demo',
+    publicPath: publicPath,
+    outputDir: outputDir,
     runtimeCompiler: true,
     filenameHashing: false,
+    css: {sourceMap: true},
 
     pages: {
         main: {

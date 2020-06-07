@@ -1,16 +1,7 @@
 <template>
   <div class="printshots-container row justify-content-center">
     <div class="col-sm-12 col-lg-6">
-      <card v-if="loading">
-        <div class="card-body">
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin" />
-            Loading...
-          </div>
-        </div>
-      </card>
-
-      <card v-if="currentShot && !loading">
+      <card v-if="currentShot">
         <div class="card-header">
           <div class="clearfix">
             <div class="float-left">
@@ -22,20 +13,10 @@
               <strong v-if="progress != 100">{{ progress }}% answered</strong>
             </div>
           </div>
-          <progress-bar
-            class="clearfix"
-            :max="100"
-            :value="progress"
-          >
-            {{ progress }} %
-          </progress-bar>
+          <progress-bar class="clearfix" :max="100" :value="progress">{{ progress }} %</progress-bar>
         </div>
         <div class="current-shot-container">
-          <img
-            class="card-img-top"
-            @click="next"
-            :src="currentShot.image_url"
-          >
+          <img class="card-img-top" @click="next" :src="currentShot.image_url" />
           <button
             if-v="currentIndex !== prevIndex"
             class="prev-btn btn btn-primary"
@@ -62,27 +43,21 @@
               :disabled="updating"
               checked-class="btn-danger"
               @click="looksBad"
-            >
-              It contains spaghetti
-            </answer-button>
+            >It contains spaghetti</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.LOOKS_OK"
               :updating="inFlightAnswer === consts.LOOKS_OK && updating"
               :disabled="updating"
               checked-class="btn-success"
               @click="looksOk"
-            >
-              It does NOT contain spaghetti
-            </answer-button>
+            >It does NOT contain spaghetti</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.UNANSWERED"
               :updating="inFlightAnswer === consts.UNANSWERED && updating"
               :disabled="updating"
               checked-class="btn-warning"
               @click="willDecideLater"
-            >
-              I'll decide later
-            </answer-button>
+            >I'll decide later</answer-button>
           </div>
         </div>
       </card>
@@ -123,7 +98,6 @@
     data: function() {
       return {
         currentShotId: null,
-        loading: true,
         imageLoading : true,
         updating: false,
         inFlightAnswer: null,
@@ -229,8 +203,6 @@
       },
 
       fetchShots() {
-        this.loading = true
-
         axios
           .get(printShotFeedbackListUrl(this.config.printId))
 
@@ -249,10 +221,6 @@
           .catch((error) => {
             console.log(error)
             this.$swal('Ops', 'Something went wrong!', 'error').then(() => location.reload())
-          })
-
-          .finally(() => {
-            this.loading = false
           })
       },
 
@@ -283,27 +251,27 @@
 </script>
 
 <style>
-  .printshots-container {
-    margin-top: 1.5em;
-  }
+.printshots-container {
+  margin-top: 1.5em;
+}
 
-  .current-shot-container {
-    position: relative;
-  }
+.current-shot-container {
+  position: relative;
+}
 
-  .prev-btn {
-    display: inline;
-    position: absolute;
-    left: 2%;
-    top: 40%;
-    opacity: 0.5;
-  }
+.prev-btn {
+  display: inline;
+  position: absolute;
+  left: 2%;
+  top: 40%;
+  opacity: 0.5;
+}
 
-  .next-btn {
-    display: inline;
-    position: absolute;
-    right: 2%;
-    top: 40%;
-    opacity: 0.5;
-  }
+.next-btn {
+  display: inline;
+  position: absolute;
+  right: 2%;
+  top: 40%;
+  opacity: 0.5;
+}
 </style>

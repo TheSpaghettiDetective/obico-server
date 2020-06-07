@@ -9,10 +9,10 @@ x-web-defaults: &web-defaults
   depends_on:
     - redis
   environment:
-    EMAIL_HOST:     # -> such as smtp.gmail.com
+    EMAIL_HOST:     # -> such as 'smtp.gmail.com'
     EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
     EMAIL_HOST_PASSWORD:    # -> your email account password
-    EMAIL_PORT: 587
+    EMAIL_PORT: 587  # DO NOT surround it with quotes. Otherwise email won't be sent!
     EMAIL_USE_TLS: 'True'
     DEFAULT_FROM_EMAIL: 'changeme@example.com'
     DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh

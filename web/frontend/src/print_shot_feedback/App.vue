@@ -71,201 +71,213 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import find from 'lodash/find'
-  import get from 'lodash/get'
+import axios from "axios";
+import find from "lodash/find";
+import get from "lodash/get";
 
-  import AnswerButton from './components/AnswerButton.vue'
-  import ProgressBar from './components/ProgressBar.vue'
-  import Card from './components/Card.vue'
-  import Entrance from './components/Entrance'
+import AnswerButton from "./components/AnswerButton.vue";
+import ProgressBar from "./components/ProgressBar.vue";
+import Entrance from "./components/Entrance";
+import Card from "../common/Card.vue";
 
-  const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedbacks/?print_id=${printId}`
-  const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedbacks/${shotId}/`
-  const printUrl = printId => `/api/v1/prints/${printId}/`
+const printShotFeedbackListUrl = printId =>
+  `/api/v1/printshotfeedbacks/?print_id=${printId}`;
+const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedbacks/${shotId}/`;
+const printUrl = printId => `/api/v1/prints/${printId}/`;
 
-  const consts = {
-    LOOKS_OK: 'LOOKS_OK',
-    LOOKS_BAD: 'LOOKS_BAD',
-    UNANSWERED: '',
-    UNSET: null,
-  }
+const consts = {
+  LOOKS_OK: "LOOKS_OK",
+  LOOKS_BAD: "LOOKS_BAD",
+  UNANSWERED: "",
+  UNSET: null
+};
 
-  export default {
-    name: "App",
-    components: {
-      AnswerButton,
-      Card,
-      ProgressBar,
-      Entrance,
+export default {
+  name: "App",
+  components: {
+    AnswerButton,
+    Card,
+    ProgressBar,
+    Entrance
+  },
+  props: {
+    config: {
+      default: () => {},
+      type: Object
+    }
+  },
+  data: function() {
+    return {
+      currentShotId: null,
+      imageLoading: true,
+      updating: false,
+      inFlightAnswer: null,
+      shots: [],
+      print: null,
+      continueBtnPressed: false
+    };
+  },
+  computed: {
+    currentIndex() {
+      const currentShotId = this.currentShotId;
+
+      if (currentShotId === null || this.shots.length < 1) {
+        return null;
+      }
+
+      return this.shots.findIndex(item => currentShotId == item.id);
     },
-    props: {
-      config: {
-        default: () => {},
-        type: Object,
-      },
+
+    currentShot() {
+      const index = this.currentIndex;
+
+      if (index === null) {
+        return null;
+      }
+
+      return this.shots[index];
     },
-    data: function() {
-      return {
-        currentShotId: null,
-        imageLoading : true,
-        updating: false,
-        inFlightAnswer: null,
-        shots: [],
-        print: null,
-        continueBtnPressed: false,
+
+    prevIndex() {
+      const index = this.currentIndex;
+
+      if (index === null) {
+        return null;
+      }
+
+      return index == 0 ? this.shots.length - 1 : index - 1;
+    },
+
+    nextIndex() {
+      const index = this.currentIndex;
+
+      if (index === null) {
+        return null;
+      }
+
+      return index + 1 >= this.shots.length ? 0 : index + 1;
+    },
+
+    progress() {
+      let answered = this.shots.filter(shot => shot.answer !== consts.UNSET)
+        .length;
+      let total = this.shots.length;
+      return parseInt((answered / total) * 100);
+    },
+
+    consented() {
+      return (
+        find(this.shots, shot => get(shot, "answered_at", null) !== null) ||
+        this.continueBtnPressed
+      );
+    }
+  },
+
+  created() {
+    this.consts = consts;
+  },
+
+  mounted() {
+    this.fetchShots();
+
+    this.$el.addEventListener("keydown", e => {
+      if (this.updating) {
+        return;
+      }
+
+      switch (e.key) {
+        case "ArrowLeft":
+          this.prev();
+          break;
+
+        case "ArrowRight":
+          this.next();
+          break;
+
+        default:
+          break;
+      }
+    });
+  },
+  methods: {
+    looksOk() {
+      this.updateShot(this.currentShotId, consts.LOOKS_OK);
+    },
+
+    looksBad() {
+      this.updateShot(this.currentShotId, consts.LOOKS_BAD);
+    },
+
+    willDecideLater() {
+      this.updateShot(this.currentShotId, "");
+    },
+
+    next() {
+      if (this.nextIndex !== null) {
+        this.currentShotId = this.shots[this.nextIndex].id;
       }
     },
-    computed: {
-      currentIndex() {
-        const currentShotId = this.currentShotId
 
-        if (currentShotId === null || this.shots.length < 1) {
-          return null
-        }
-
-        return this.shots.findIndex((item) => currentShotId == item.id)
-      },
-
-      currentShot() {
-        const index = this.currentIndex
-
-        if (index === null) {
-          return null
-        }
-
-        return this.shots[index]
-      },
-
-      prevIndex() {
-        const index = this.currentIndex
-
-        if (index === null) {
-          return null
-        }
-
-        return index == 0 ? this.shots.length - 1 : index - 1
-      },
-
-      nextIndex() {
-        const index = this.currentIndex
-
-        if (index === null) {
-          return null
-        }
-
-        return index + 1 >= this.shots.length ? 0 : index + 1
-      },
-
-      progress() {
-        let answered = this.shots.filter((shot) => shot.answer !== consts.UNSET).length
-        let total = this.shots.length
-        return parseInt((answered / total) * 100)
-      },
-
-      consented() {
-        return find(this.shots, shot => get(shot, 'answered_at', null) !== null) || this.continueBtnPressed
+    prev() {
+      if (this.prevIndex !== null) {
+        this.currentShotId = this.shots[this.prevIndex].id;
       }
     },
 
-    created() {
-      this.consts = consts
-    },
-
-    mounted() {
-      this.fetchShots()
-
-      this.$el.addEventListener('keydown', (e) => {
-        if (this.updating) {
-          return
-        }
-
-        switch (e.key) {
-          case 'ArrowLeft':
-            this.prev()
-            break
-
-          case 'ArrowRight':
-            this.next()
-            break
-
-          default:
-            break
-        }
-      })
-    },
-    methods: {
-      looksOk() {
-        this.updateShot(this.currentShotId, consts.LOOKS_OK)
-      },
-
-      looksBad() {
-        this.updateShot(this.currentShotId, consts.LOOKS_BAD)
-      },
-
-      willDecideLater() {
-        this.updateShot(this.currentShotId, '')
-      },
-
-      next() {
-        if (this.nextIndex !== null) {
-          this.currentShotId = this.shots[this.nextIndex].id
-        }
-      },
-
-      prev() {
-        if (this.prevIndex !== null) {
-          this.currentShotId = this.shots[this.prevIndex].id
-        }
-      },
-
-      fetchShots() {
-        axios.all([
+    fetchShots() {
+      axios
+        .all([
           axios.get(printShotFeedbackListUrl(this.config.printId)),
-          axios.get(printUrl(this.config.printId)),
-        ]).then(axios.spread( (printShots, print) => {
-            this.shots = printShots.data
-            this.shots.map((item) => {
-              item.answer = item.answer == consts.UNANSWERED ? consts.UNSET : item.answer
-              return item
-            })
+          axios.get(printUrl(this.config.printId))
+        ])
+        .then(
+          axios.spread((printShots, print) => {
+            this.shots = printShots.data;
+            this.shots.map(item => {
+              item.answer =
+                item.answer == consts.UNANSWERED ? consts.UNSET : item.answer;
+              return item;
+            });
 
             if (this.shots.length > 0) {
-              this.currentShotId = this.shots[0].id
+              this.currentShotId = this.shots[0].id;
             }
-            this.print = print.data
-          }))
-
-          .catch((error) => {
-            console.log(error)
-            this.$swal('Ops', 'Something went wrong!', 'error').then(() => location.reload())
+            this.print = print.data;
           })
-      },
+        )
 
-      updateShot: function(id, answer) {
-        this.updating = true
-        this.inFlightAnswer = answer
-
-        axios
-          .put(printShotFeedbackUrl(id), { answer: answer })
-
-          .then((response) => {
-            this.shots = this.shots.map((shot) => {
-              return shot.id === response.data.id ? response.data : shot
-            })
-          })
-
-          .catch(() => {
-            this.$swal('Ops', 'Could not save answer! Please retry!', 'error')
-          })
-
-          .finally(() => {
-            this.updating = false
-            this.inFlightAnswer = null
-          })
-      },
+        .catch(error => {
+          console.log(error);
+          this.$swal("Ops", "Something went wrong!", "error").then(() =>
+            location.reload()
+          );
+        });
     },
+
+    updateShot: function(id, answer) {
+      this.updating = true;
+      this.inFlightAnswer = answer;
+
+      axios
+        .put(printShotFeedbackUrl(id), { answer: answer })
+
+        .then(response => {
+          this.shots = this.shots.map(shot => {
+            return shot.id === response.data.id ? response.data : shot;
+          });
+        })
+
+        .catch(() => {
+          this.$swal("Ops", "Could not save answer! Please retry!", "error");
+        })
+
+        .finally(() => {
+          this.updating = false;
+          this.inFlightAnswer = null;
+        });
+    }
   }
+};
 </script>
 
 <style>

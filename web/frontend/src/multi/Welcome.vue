@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>
-      Welcome <b>{{username}}</b>!
+      Welcome <b>{{ username }}</b>!
       <span v-if="data.id">Your user id is <code>{{ data.id }}</code>!</span>
     </p>
   </div>
@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: 'welcome',
+  name: 'Welcome',
   props: {
     username: {
       default: "friend",

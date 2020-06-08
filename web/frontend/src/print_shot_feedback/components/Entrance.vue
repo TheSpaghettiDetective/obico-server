@@ -19,20 +19,20 @@
 </template>
 
 <script>
-import { videoPlayer } from 'vue-video-player'
-import get from 'lodash/get'
-import Card from './Card.vue'
+import { videoPlayer } from "vue-video-player";
+import get from "lodash/get";
+import Card from "../../common/Card.vue";
 
 export default {
   name: "Entrance",
 
   props: {
-      print: Object,
+    print: Object
   },
 
   components: {
     videoPlayer,
-    Card,
+    Card
   },
 
   computed: {
@@ -40,20 +40,21 @@ export default {
       return {
         // videojs options
         muted: true,
-        language: 'en',
+        language: "en",
         playbackRates: [0.5, 1, 1.5, 2],
         fluid: true,
-        sources: [{
-          type: "video/mp4",
-          src: get(this, 'print.video_url', null),
-        }],
-        controlBar: {fullscreenToggle: true},
-        poster: get(this, 'print.poster_url', null),
-      }
-    },
-  },
-
-}
+        sources: [
+          {
+            type: "video/mp4",
+            src: get(this, "print.video_url", null)
+          }
+        ],
+        controlBar: { fullscreenToggle: true },
+        poster: get(this, "print.poster_url", null)
+      };
+    }
+  }
+};
 </script>
 
 <style></style>

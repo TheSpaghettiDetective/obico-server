@@ -1,6 +1,8 @@
 <template>
   <div>
-  <div class="example">{{ msg }}</div>
+    <div class="example">
+      {{ msg }}
+    </div>
   </div>
 </template>
 
@@ -14,8 +16,10 @@ export default {
 }
 </script>
 
-<style>
-.example {
-  color: red;
-}
+<style lang="sass">
+@import "../main/main.sass"
+
+.example
+  color: $primary
+
 </style>

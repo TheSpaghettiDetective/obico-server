@@ -16,8 +16,10 @@ export default {
 }
 </script>
 
-<style>
-.example {
-  color: red;
-}
+<style lang="sass">
+@import "../main/main.sass"
+
+.example
+  color: $primary
+
 </style>

@@ -7,11 +7,10 @@ from rest_framework import status
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
+from .serializers import *
 from app.models import PrintShotFeedback
 from lib import redis
 from lib.channels import send_status_to_web
-from .serializers import *
-from .serializers import PrintShotFeedbackSerializer
 from config.celery import celery_app
 
 
@@ -84,6 +83,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
 class PrintViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
+    serializer_class = PrintSerializer
 
     def get_queryset(self):
         return Print.objects.filter(user=self.request.user)

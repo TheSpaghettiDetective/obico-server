@@ -1,7 +1,12 @@
 <template>
   <div class="printshots-container row justify-content-center">
     <div class="col-sm-12 col-lg-6">
-      <card v-if="currentShot">
+      <entrance
+        v-if="!consented"
+        :print="this.print"
+        @continue-btn-pressed="continueBtnPressed = true"
+      />
+      <card v-if="currentShot && consented">
         <div class="card-header">
           <div class="clearfix">
             <div class="float-left">
@@ -67,13 +72,17 @@
 
 <script>
   import axios from 'axios'
+  import find from 'lodash/find'
+  import get from 'lodash/get'
 
   import AnswerButton from './components/AnswerButton.vue'
   import ProgressBar from './components/ProgressBar.vue'
   import Card from './components/Card.vue'
+  import Entrance from './components/Entrance'
 
-  const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedback/?print_id=${printId}`
-  const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedback/${shotId}/`
+  const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedbacks/?print_id=${printId}`
+  const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedbacks/${shotId}/`
+  const printUrl = printId => `/api/v1/prints/${printId}/`
 
   const consts = {
     LOOKS_OK: 'LOOKS_OK',
@@ -88,6 +97,7 @@
       AnswerButton,
       Card,
       ProgressBar,
+      Entrance,
     },
     props: {
       config: {
@@ -102,6 +112,8 @@
         updating: false,
         inFlightAnswer: null,
         shots: [],
+        print: null,
+        continueBtnPressed: false,
       }
     },
     computed: {
@@ -144,10 +156,15 @@
 
         return index + 1 >= this.shots.length ? 0 : index + 1
       },
+
       progress() {
         let answered = this.shots.filter((shot) => shot.answer !== consts.UNSET).length
         let total = this.shots.length
         return parseInt((answered / total) * 100)
+      },
+
+      consented() {
+        return find(this.shots, shot => get(shot, 'answered_at', null) !== null) || this.continueBtnPressed
       }
     },
 
@@ -203,11 +220,11 @@
       },
 
       fetchShots() {
-        axios
-          .get(printShotFeedbackListUrl(this.config.printId))
-
-          .then((response) => {
-            this.shots = response.data
+        axios.all([
+          axios.get(printShotFeedbackListUrl(this.config.printId)),
+          axios.get(printUrl(this.config.printId)),
+        ]).then(axios.spread( (printShots, print) => {
+            this.shots = printShots.data
             this.shots.map((item) => {
               item.answer = item.answer == consts.UNANSWERED ? consts.UNSET : item.answer
               return item
@@ -216,7 +233,8 @@
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id
             }
-          })
+            this.print = print.data
+          }))
 
           .catch((error) => {
             console.log(error)

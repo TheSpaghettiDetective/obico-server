@@ -10,8 +10,10 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "lodash": "^4.17.15",
     "vue": "^2.6.11",
-    "vue-swal": "^1.0.0"
+    "vue-swal": "^1.0.0",
+    "vue-video-player": "^5.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",

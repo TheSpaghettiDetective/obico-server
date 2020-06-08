@@ -10,7 +10,7 @@ router.register(r'printers', views.PrinterViewSet, 'Printer')
 router.register(r'prints', views.PrintViewSet, 'Print')
 router.register(r'gcodes', views.GCodeFileViewSet, 'GCodeFile')
 router.register(
-    r'printshotfeedback',
+    r'printshotfeedbacks',
     views.PrintShotFeedbackViewSet,
     'PrintShotFeedback')
 

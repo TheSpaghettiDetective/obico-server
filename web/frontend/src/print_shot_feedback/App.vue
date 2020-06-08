@@ -95,7 +95,7 @@
 
   import AnswerButton from './components/AnswerButton.vue'
   import ProgressBar from './components/ProgressBar.vue'
-  import Card from './components/Card.vue'
+  import Card from '../common/Card.vue'
 
   const printShotFeedbackListUrl = printId => `/api/v1/printshotfeedback/?print_id=${printId}`
   const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedback/${shotId}/`

@@ -1,8 +1,26 @@
 FROM thespaghettidetective/web:base-1.2
 
-WORKDIR /app
-EXPOSE 3334
+ARG uid=0
+ARG gid=0
+ARG user=root
+ARG group=root
 
-ADD . /app
-RUN pip install -U pip
-RUN pip install -r requirements.txt
+RUN if [[ "$uid" != 0 ]]; then \
+    addgroup --gid $gid $group && \
+    adduser --disabled-password --uid $uid --ingroup $group $user && \
+    mkdir -p /home/$user /home/$user/.cache /home/$user/.ipython /home/$user/.local && \
+    mkdir -p /app/ /app/frontend /app/static_build && \
+    chown -R $user:$group /app /home/$user \
+    ; fi
+
+VOLUME /app
+VOLUME /home/$user/.cache
+VOLUME /home/$user/.ipython
+VOLUME /home/$user/.local
+
+WORKDIR /app
+
+ENV PYTHONPATH "/home/$user/.local:${PYTHONPATH}"
+ENV PATH "/home/$user/.local/bin:${PATH}"
+
+USER $user

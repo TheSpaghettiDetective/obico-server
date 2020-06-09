@@ -13,6 +13,12 @@ RUN if [[ "$uid" != 0 ]]; then \
     chown -R $user:$group /app /home/$user \
     ; fi
 
+USER $user
+
+EXPOSE 3334
+ADD . /app
+RUN pip install -U pip && pip install -r requirements.txt
+
 VOLUME /app
 VOLUME /home/$user/.cache
 VOLUME /home/$user/.ipython
@@ -22,5 +28,3 @@ WORKDIR /app
 
 ENV PYTHONPATH "/home/$user/.local:${PYTHONPATH}"
 ENV PATH "/home/$user/.local/bin:${PATH}"
-
-USER $user

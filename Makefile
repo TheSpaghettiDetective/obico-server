@@ -6,6 +6,9 @@ build-web-base-1.2:
 build-images:
 	docker-compose build --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g)
 
+build-web-and-tasks:
+	docker-compose build --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g) web tasks
+
 build-static:
 	docker-compose run --rm --name frontbuilder --no-deps                    web bash -c "cd frontend && yarn install && yarn build"
 

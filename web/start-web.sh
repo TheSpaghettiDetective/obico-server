@@ -4,8 +4,9 @@ cd frontend
 
 # Move cached node_modules over if on its 1st bootup to speed up the build process
 
-if [[ -f /var/frontend/node_modules && ! -d frontend/node_modules ]]; then
-    mv /var/frontend/node_modules .
+if [ -d /var/frontend/node_modules -a ! -d /app/frontend/node_modules ]; then
+    rm -rf /app/frontend/node_modules
+    mv /var/frontend/node_modules /app/frontend/
 fi
 
 yarn && yarn build && cd ..

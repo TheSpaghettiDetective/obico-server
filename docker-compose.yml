@@ -23,6 +23,7 @@ x-web-defaults: &web-defaults
     INTERNAL_MEDIA_HOST: 'http://web:3334'
     ML_API_HOST: 'http://ml_api:3333'
     ACCOUNT_ALLOW_SIGN_UP: 'False'  # -> set to 'True' if you want to open sign up form
+    WEBPACK_LOADER_ENABLED:
 
     #### Optional env vars below this line ###
     # TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
@@ -53,7 +54,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
+    command: ./start-web.sh
 
   tasks:
     <<: *web-defaults

@@ -5,7 +5,6 @@ EXPOSE 3334
 RUN apk -U add bash vim ffmpeg postgresql-libs git inotify-tools && \
     apk add --virtual .build-deps gcc musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev
 RUN pip install --upgrade pip
-RUN apk add --update nodejs npm && npm install -g yarn
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt

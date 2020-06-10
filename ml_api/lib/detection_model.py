@@ -6,6 +6,8 @@ import math
 import random
 import os, sys
 import cv2
+import platform
+
 
 def sample(probs):
     s = sum(probs)
@@ -48,12 +50,27 @@ class METADATA(Structure):
                 ("names", POINTER(c_char_p))]
 
 
+DIRNAME = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin")
+)
+
 if os.environ.get('HAS_GPU', 'False') == 'True':
     hasGPU = True
-    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model_gpu.so")
+    so_paths = [
+        os.path.join(DIRNAME, "model_gpu.so"),
+        os.path.join(DIRNAME, "model_gpu_{}.so".format(platform.machine())),
+    ]
 else:
     hasGPU = False
-    so_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin", "model.so")
+    so_paths = [
+        os.path.join(DIRNAME, "model.so"),
+        os.path.join(DIRNAME, "model_{}.so".format(platform.machine())),
+    ]
+
+try:
+    so_path = [path for path in so_paths if os.path.exists(path)][0]
+except IndexError:
+    raise FileNotFoundError("Missing model files at {}".format(DIRNAME))
 
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]

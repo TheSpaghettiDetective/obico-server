@@ -1,10 +1,11 @@
 #!python3
 
-#pylint: disable=R, W0401, W0614, W0703
+# pylint: disable=R, W0401, W0614, W0703
 from ctypes import *
 import math
 import random
-import os, sys
+import os
+import sys
 import cv2
 import platform
 
@@ -19,16 +20,19 @@ def sample(probs):
             return i
     return len(probs)-1
 
+
 def c_array(ctype, values):
     arr = (ctype*len(values))()
     arr[:] = values
     return arr
+
 
 class BOX(Structure):
     _fields_ = [("x", c_float),
                 ("y", c_float),
                 ("w", c_float),
                 ("h", c_float)]
+
 
 class DETECTION(Structure):
     _fields_ = [("bbox", BOX),
@@ -45,6 +49,7 @@ class IMAGE(Structure):
                 ("c", c_int),
                 ("data", POINTER(c_float))]
 
+
 class METADATA(Structure):
     _fields_ = [("classes", c_int),
                 ("names", POINTER(c_char_p))]
@@ -54,23 +59,8 @@ DIRNAME = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin")
 )
 
-if os.environ.get('HAS_GPU', 'False') == 'True':
-    hasGPU = True
-    so_paths = [
-        os.path.join(DIRNAME, "model_gpu.so"),
-        os.path.join(DIRNAME, "model_gpu_{}.so".format(platform.machine())),
-    ]
-else:
-    hasGPU = False
-    so_paths = [
-        os.path.join(DIRNAME, "model.so"),
-        os.path.join(DIRNAME, "model_{}.so".format(platform.machine())),
-    ]
-
-try:
-    so_path = [path for path in so_paths if os.path.exists(path)][0]
-except IndexError:
-    raise FileNotFoundError("Missing model files at {}".format(DIRNAME))
+hasGPU = os.environ.get('HAS_GPU', 'False') == 'True'
+so_path = os.path.join(DIRNAME, "model_{}{}.so".format('gpu_' if hasGPU else '', platform.machine()))
 
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
@@ -146,17 +136,19 @@ predict_image = lib.network_predict_image
 predict_image.argtypes = [c_void_p, IMAGE]
 predict_image.restype = POINTER(c_float)
 
+
 def array_to_image(arr):
     import numpy as np
     # need to return old values to avoid python freeing memory
-    arr = arr.transpose(2,0,1)
+    arr = arr.transpose(2, 0, 1)
     c = arr.shape[0]
     h = arr.shape[1]
     w = arr.shape[2]
     arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
     data = arr.ctypes.data_as(POINTER(c_float))
-    im = IMAGE(w,h,c,data)
+    im = IMAGE(w, h, c, data)
     return im, arr
+
 
 def classify(net, meta, im):
     out = predict_image(net, im)
@@ -170,31 +162,43 @@ def classify(net, meta, im):
     res = sorted(res, key=lambda x: -x[1])
     return res
 
-def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
+
+def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     #pylint: disable= C0321
     custom_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     im, arr = array_to_image(custom_image)             # you should comment line below: free_image(im)
-    if debug: print("Loaded image")
+    if debug:
+        print("Loaded image")
     num = c_int(0)
-    if debug: print("Assigned num")
+    if debug:
+        print("Assigned num")
     pnum = pointer(num)
-    if debug: print("Assigned pnum")
+    if debug:
+        print("Assigned pnum")
     predict_image(net, im)
-    if debug: print("did prediction")
-    dets = get_network_boxes(net, custom_image.shape[1], custom_image.shape[0], thresh, hier_thresh, None, 0, pnum, 0) # OpenCV
-    if debug: print("Got dets")
+    if debug:
+        print("did prediction")
+    dets = get_network_boxes(net, custom_image.shape[1], custom_image.shape[0], thresh, hier_thresh, None, 0, pnum, 0)  # OpenCV
+    if debug:
+        print("Got dets")
     num = pnum[0]
-    if debug: print("got zeroth index of pnum")
+    if debug:
+        print("got zeroth index of pnum")
     if nms:
         do_nms_sort(dets, num, meta.classes, nms)
-    if debug: print("did sort")
+    if debug:
+        print("did sort")
     res = []
-    if debug: print("about to range")
+    if debug:
+        print("about to range")
     for j in range(num):
-        if debug: print("Ranging on "+str(j)+" of "+str(num))
-        if debug: print("Classes: "+str(meta), meta.classes, meta.names)
+        if debug:
+            print("Ranging on "+str(j)+" of "+str(num))
+        if debug:
+            print("Classes: "+str(meta), meta.classes, meta.names)
         for i in range(meta.classes):
-            if debug: print("Class-ranging on "+str(i)+" of "+str(meta.classes)+"= "+str(dets[j].prob[i]))
+            if debug:
+                print("Class-ranging on "+str(i)+" of "+str(meta.classes)+"= "+str(dets[j].prob[i]))
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
                 if alt_names is None:
@@ -207,11 +211,14 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
                     print(dets[j].prob[i])
                     print((b.x, b.y, b.w, b.h))
                 res.append((nameTag, dets[j].prob[i], (b.x, b.y, b.w, b.h)))
-    if debug: print("did range")
+    if debug:
+        print("did range")
     res = sorted(res, key=lambda x: -x[1])
-    if debug: print("did sort")
+    if debug:
+        print("did sort")
     free_detections(dets, num)
-    if debug: print("freed detections")
+    if debug:
+        print("freed detections")
     return res
 
 
@@ -219,8 +226,9 @@ net_main = None
 meta_main = None
 alt_names = None
 
+
 def load_net(config_path, weight_path, meta_path):
-    global meta_main, net_main, alt_names #pylint: disable=W0603
+    global meta_main, net_main, alt_names  # pylint: disable=W0603
     if not os.path.exists(config_path):
         raise ValueError("Invalid config path `"+os.path.abspath(config_path)+"`")
     if not os.path.exists(weight_path):
@@ -260,5 +268,5 @@ if __name__ == "__main__":
     net_main_1, meta_main_1 = load_net("../model/model.cfg", "../model/model.weights", "../model/model.meta")
 
     import cv2
-    custom_image_bgr = cv2.imread(sys.argv[1]) # use: detect(,,imagePath,)
+    custom_image_bgr = cv2.imread(sys.argv[1])  # use: detect(,,imagePath,)
     print(detect(net_main_1, meta_main_1, custom_image_bgr, thresh=0.25))

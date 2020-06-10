@@ -10,8 +10,4 @@ RUN apk add --update nodejs npm && npm install -g yarn
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 
-# Cache npm packages to speed up bootstrap time
-ADD frontend /var/frontend
-RUN cd /var/frontend && yarn
-
 RUN apk --purge del .build-deps

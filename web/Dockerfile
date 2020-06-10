@@ -1,4 +1,4 @@
-FROM thespaghettidetective/web:base-1.2
+FROM thespaghettidetective/web:base-1.1
 
 ARG uid=0
 ARG gid=0

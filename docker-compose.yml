@@ -54,7 +54,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: ./start-web.sh
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
 
   tasks:
     <<: *web-defaults

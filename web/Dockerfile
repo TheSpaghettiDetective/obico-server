@@ -20,7 +20,7 @@ ADD . /app
 RUN if [[ "$uid" != 0 ]]; then \
     pip install -U pip && pip install -r requirements.txt --src /home/$user/.local/src \
     ; else \
-    pip install -U pip && pip install -r requirements.txt
+    pip install -U pip && pip install -r requirements.txt \
     ; fi
 
 

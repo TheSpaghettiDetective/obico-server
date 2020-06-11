@@ -4,6 +4,11 @@ ARG uid=0
 ARG gid=0
 ARG user=root
 ARG group=root
+ARG with_node=0
+
+RUN if [[ "$with_node" == 1 ]]; then \
+    apk add --no-cache --update inotify-tools nodejs npm && npm install -g yarn \
+    ; fi
 
 RUN if [[ "$uid" != 0 ]]; then \
     addgroup --gid $gid $group && \

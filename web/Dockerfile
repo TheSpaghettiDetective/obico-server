@@ -7,7 +7,7 @@ ARG group=root
 ARG with_node=0
 
 RUN if [[ "$with_node" == 1 ]]; then \
-    apk add --no-cache --update nodejs npm && npm install -g yarn \
+    apk add --no-cache --update inotify-tools nodejs npm && npm install -g yarn \
     ; fi
 
 RUN if [[ "$uid" != 0 ]]; then \

@@ -23,3 +23,8 @@
 *.gif           binary
 *.jpg           binary
 *.png           binary
+
+web/frontend/builds/frontend/css/*.css     binary
+web/frontend/builds/frontend/css/*.css.map binary
+web/frontend/builds/frontend/js/*.js       binary
+web/frontend/builds/frontend/js/*.js.map   binary

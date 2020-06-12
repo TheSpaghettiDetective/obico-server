@@ -1,17 +1,23 @@
 <template>
   <div class="printshots-container row justify-content-center">
     <div class="col-sm-12 col-lg-6">
+      <content-placeholders v-if="print === null">
+        <content-placeholders-img />
+        <content-placeholders-img />
+        <content-placeholders-text :lines="5" />
+      </content-placeholders>
+
       <entrance
-        v-if="!consented"
+        v-if="print !== null && !print.access_consented_at"
         :print="this.print"
-        @continue-btn-pressed="continueBtnPressed = true"
+        @continue-btn-pressed="this.consentBtnPressed"
       />
-      <card v-if="currentShot && consented">
+      <card v-if="print !== null && currentShot && print.access_consented_at">
         <div class="card-header">
           <div class="clearfix">
             <div class="float-left">
-              Feedback for #{{ currentIndex + 1 }} of
-              <strong>{{ this.shots.length }}</strong>
+              #{{ currentIndex + 1 }} of
+              <strong>{{ this.shots.length }}</strong> pictures
             </div>
             <div class="float-right">
               <strong v-if="progress == 100">All answered!</strong>
@@ -48,14 +54,14 @@
               :disabled="updating"
               checked-class="btn-danger"
               @click="looksBad"
-            >It contains spaghetti</answer-button>
+            >Yes I do see spaghetti in this picture</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.LOOKS_OK"
               :updating="inFlightAnswer === consts.LOOKS_OK && updating"
               :disabled="updating"
               checked-class="btn-success"
               @click="looksOk"
-            >It does NOT contain spaghetti</answer-button>
+            >No I don't see spaghetti in this picture</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.UNANSWERED"
               :updating="inFlightAnswer === consts.UNANSWERED && updating"
@@ -72,23 +78,17 @@
 
 <script>
 import axios from "axios";
-import find from "lodash/find";
-import get from "lodash/get";
-
+import moment from "moment";
 import AnswerButton from "./components/AnswerButton.vue";
 import ProgressBar from "./components/ProgressBar.vue";
 import Entrance from "./components/Entrance";
 import Card from "../common/Card.vue";
-
-const printShotFeedbackListUrl = printId =>
-  `/api/v1/printshotfeedbacks/?print_id=${printId}`;
-const printShotFeedbackUrl = shotId => `/api/v1/printshotfeedbacks/${shotId}/`;
-const printUrl = printId => `/api/v1/prints/${printId}/`;
+import url from "../lib/url";
 
 const consts = {
   LOOKS_OK: "LOOKS_OK",
   LOOKS_BAD: "LOOKS_BAD",
-  UNANSWERED: "",
+  UNANSWERED: "UNDECIDED",
   UNSET: null
 };
 
@@ -109,7 +109,6 @@ export default {
   data: function() {
     return {
       currentShotId: null,
-      imageLoading: true,
       updating: false,
       inFlightAnswer: null,
       shots: [],
@@ -163,13 +162,6 @@ export default {
         .length;
       let total = this.shots.length;
       return parseInt((answered / total) * 100);
-    },
-
-    consented() {
-      return (
-        find(this.shots, shot => get(shot, "answered_at", null) !== null) ||
-        this.continueBtnPressed
-      );
     }
   },
 
@@ -178,7 +170,7 @@ export default {
   },
 
   mounted() {
-    this.fetchShots();
+    this.fetchData();
 
     this.$el.addEventListener("keydown", e => {
       if (this.updating) {
@@ -209,7 +201,7 @@ export default {
     },
 
     willDecideLater() {
-      this.updateShot(this.currentShotId, "");
+      this.updateShot(this.currentShotId, consts.UNANSWERED);
     },
 
     next() {
@@ -224,34 +216,22 @@ export default {
       }
     },
 
-    fetchShots() {
+    fetchData() {
       axios
         .all([
-          axios.get(printShotFeedbackListUrl(this.config.printId)),
-          axios.get(printUrl(this.config.printId))
+          axios.get(url.printShotFeedbackList(this.config.printId)),
+          axios.get(url.print(this.config.printId))
         ])
         .then(
           axios.spread((printShots, print) => {
             this.shots = printShots.data;
-            this.shots.map(item => {
-              item.answer =
-                item.answer == consts.UNANSWERED ? consts.UNSET : item.answer;
-              return item;
-            });
-
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id;
             }
             this.print = print.data;
+            this.print.started_at = moment(this.print.started_at);
           })
-        )
-
-        .catch(error => {
-          console.log(error);
-          this.$swal("Ops", "Something went wrong!", "error").then(() =>
-            location.reload()
-          );
-        });
+        );
     },
 
     updateShot: function(id, answer) {
@@ -259,7 +239,7 @@ export default {
       this.inFlightAnswer = answer;
 
       axios
-        .put(printShotFeedbackUrl(id), { answer: answer })
+        .put(url.printShotFeedback(id), { answer: answer })
 
         .then(response => {
           this.shots = this.shots.map(shot => {
@@ -267,41 +247,45 @@ export default {
           });
         })
 
-        .catch(() => {
-          this.$swal("Ops", "Could not save answer! Please retry!", "error");
-        })
-
         .finally(() => {
           this.updating = false;
           this.inFlightAnswer = null;
+          this.next();
         });
+    },
+
+    updatePrint: function(data) {
+      axios
+        .patch(url.print(this.print.id), data)
+
+        .then(response => (this.print = response.data));
+    },
+
+    consentBtnPressed: function() {
+      this.updatePrint({ access_consented_at: moment() });
     }
   }
 };
 </script>
 
-<style>
-.printshots-container {
-  margin-top: 1.5em;
-}
+<style lang="sass" scoped>
+.printshots-container
+  margin-top: 1.5em
 
-.current-shot-container {
-  position: relative;
-}
+.current-shot-container
+  position: relative
 
-.prev-btn {
-  display: inline;
-  position: absolute;
-  left: 2%;
-  top: 40%;
-  opacity: 0.5;
-}
+.prev-btn
+  display: inline
+  position: absolute
+  left: 2%
+  top: 40%
+  opacity: 0.5
 
-.next-btn {
-  display: inline;
-  position: absolute;
-  right: 2%;
-  top: 40%;
-  opacity: 0.5;
-}
+.next-btn
+  display: inline
+  position: absolute
+  right: 2%
+  top: 40%
+  opacity: 0.5
 </style>

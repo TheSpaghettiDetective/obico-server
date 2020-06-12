@@ -1,19 +1,17 @@
 <template>
   <div>
-    <div class="example">
-      {{ msg }}
-    </div>
+    <div class="example">{{ msg }}</div>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      msg: 'Hello from vue!'
-    }
+      msg: "Hello from vue!"
+    };
   }
-}
+};
 </script>
 
 <style lang="sass">
@@ -21,5 +19,4 @@ export default {
 
 .example
   color: $primary
-
 </style>

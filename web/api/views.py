@@ -83,6 +83,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
 class PrintViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrintSerializer
 
     def get_queryset(self):

@@ -231,7 +231,8 @@ class Printer(SafeDeleteModel):
             # Unknown bug in plugin that causes current_print_ts not unique
 
             if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
-                LOGGER.warn(f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
+                LOGGER.warn(
+                    f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
 
                 return
             LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
@@ -351,7 +352,7 @@ class Printer(SafeDeleteModel):
 
         self.send_should_watch_status()
 
-    ## messages to printer
+    # messages to printer
 
     def send_octoprint_command(self, command, args={}):
         channels.send_msg_to_printer(self.id, {'commands': [{'cmd': command, 'args': args}]})
@@ -470,6 +471,7 @@ class Print(SafeDeleteModel):
         choices=ALERT_OVERWRITE,
         null=True
     )
+    access_consented_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -557,7 +559,7 @@ class GCodeFile(SafeDeleteModel):
 class PrintShotFeedback(models.Model):
     LOOKS_BAD = 'LOOKS_BAD'
     LOOKS_OK = 'LOOKS_OK'
-    UNANSWERED = ''
+    UNANSWERED = 'UNDECIDED'
 
     ANSWER_CHOICES = (
         (LOOKS_BAD, "It contains spaghetti"),
@@ -569,7 +571,7 @@ class PrintShotFeedback(models.Model):
 
     image_url = models.CharField(max_length=2000, null=False, blank=False)
 
-    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True)
+    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True, null=True)
     answered_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

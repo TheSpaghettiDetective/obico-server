@@ -16,7 +16,9 @@ class PrintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Print
-        fields = '__all__'
+        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at', 'cancelled_at', 'uploaded_at', 'alerted_at', 'alert_acknowledged_at',
+                  'alert_muted_at', 'paused_at', 'video_url', 'tagged_video_url', 'poster_url', 'prediction_json_url', 'alert_overwrite', 'access_consented_at')
+        read_only_fields = ('id', 'printer')
 
 
 class PrinterSerializer(serializers.ModelSerializer):
@@ -47,9 +49,6 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if 'answer' in validated_data:
-            if validated_data['answer'] != PrintShotFeedback.UNANSWERED:
-                instance.answered_at = now()
-            else:
-                instance.answered_at = None
+            instance.answered_at = now()
 
         return super().update(instance, validated_data)

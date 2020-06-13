@@ -492,7 +492,7 @@ form#printer_form {
 .option-drawer{
   width:100%;
   margin-bottom: -0.5rem;
-  background: darken($body-bg, 1);
+  background: $color-bg-dark;
   .panel-heading {
     padding: 0;
     border:0;

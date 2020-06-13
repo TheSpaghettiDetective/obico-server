@@ -332,7 +332,7 @@ class Printer(SafeDeleteModel):
         user_credited = False
 
         if self.current_print.alert_overwrite is None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit | Tag "{}"'.format(self.current_print.filename[:100])])
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit | Tag "{}"'.format(self.current_print.filename[:100]), ''])
             user_credited = True
 
         self.current_print.alert_acknowledged_at = timezone.now()
@@ -571,8 +571,8 @@ class PrintShotFeedback(models.Model):
 
     image_url = models.CharField(max_length=2000, null=False, blank=False)
 
-    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True, null=True)
-    answered_at = models.DateTimeField(null=True, blank=True)
+    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True, null=True, db_index=True)
+    answered_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

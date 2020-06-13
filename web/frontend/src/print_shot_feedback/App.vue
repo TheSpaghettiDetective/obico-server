@@ -13,19 +13,6 @@
         @continue-btn-pressed="this.consentBtnPressed"
       />
       <card v-if="print !== null && currentShot && print.access_consented_at">
-        <div class="card-header">
-          <div class="clearfix">
-            <div class="float-left">
-              #{{ currentIndex + 1 }} of
-              <strong>{{ this.shots.length }}</strong> pictures
-            </div>
-            <div class="float-right">
-              <strong v-if="progress == 100">All answered!</strong>
-              <strong v-if="progress != 100">{{ progress }}% answered</strong>
-            </div>
-          </div>
-          <progress-bar class="clearfix" :max="100" :value="progress">{{ progress }} %</progress-bar>
-        </div>
         <div class="current-shot-container">
           <img class="card-img-top" @click="next" :src="currentShot.image_url" />
           <button
@@ -52,24 +39,43 @@
               :checked="currentShot.answer === consts.LOOKS_BAD"
               :updating="inFlightAnswer === consts.LOOKS_BAD && updating"
               :disabled="updating"
-              checked-class="btn-danger"
+              checked-class="btn-primary"
               @click="looksBad"
-            >Yes I do see spaghetti in this picture</answer-button>
+            >Yes, I do see spaghetti</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.LOOKS_OK"
               :updating="inFlightAnswer === consts.LOOKS_OK && updating"
               :disabled="updating"
-              checked-class="btn-success"
+              checked-class="btn-primary"
               @click="looksOk"
-            >No I don't see spaghetti in this picture</answer-button>
+            >No, I don't see spaghetti</answer-button>
             <answer-button
               :checked="currentShot.answer === consts.UNANSWERED"
               :updating="inFlightAnswer === consts.UNANSWERED && updating"
               :disabled="updating"
-              checked-class="btn-warning"
+              checked-class="btn-primary"
               @click="willDecideLater"
-            >I'll decide later</answer-button>
+            >Hmmm, I am not sure</answer-button>
           </div>
+        </div>
+        <div class="progress-info p-3">
+          <div class="clearfix">
+            <div class="float-left">
+              #{{ currentIndex + 1 }} of
+              <strong>{{ this.shots.length }}</strong> pictures
+            </div>
+            <div class="float-right">
+              <strong v-if="progress == 100">All answered!</strong>
+              <strong v-if="progress != 100">{{ progress }}% answered</strong>
+            </div>
+          </div>
+          <progress-bar class="clearfix" :max="100" :value="progress">{{ progress }} %</progress-bar>
+          <a
+            v-if="progress == 100"
+            type="button"
+            class="btn btn-success btn-block my-3"
+            href="/prints/"
+          >Done</a>
         </div>
       </card>
     </div>
@@ -112,8 +118,7 @@ export default {
       updating: false,
       inFlightAnswer: null,
       shots: [],
-      print: null,
-      continueBtnPressed: false
+      print: null
     };
   },
   computed: {
@@ -239,12 +244,23 @@ export default {
       this.inFlightAnswer = answer;
 
       axios
-        .put(url.printShotFeedback(id), { answer: answer })
+        .put(url.printShotFeedback(id, this.print.id), { answer: answer })
 
         .then(response => {
+          const { instance, credited_dhs } = response.data;
           this.shots = this.shots.map(shot => {
-            return shot.id === response.data.id ? response.data : shot;
+            return shot.id === instance.id ? instance : shot;
           });
+          if (credited_dhs >= 0) {
+            this.$swal({
+              text:
+                "You just earned 2 Detective Hours by completeing the Focused Feedback for The Detective! Thank you!",
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 5000
+            });
+          }
         })
 
         .finally(() => {
@@ -269,6 +285,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@import "../main/main.sass"
+
 .printshots-container
   margin-top: 1.5em
 
@@ -288,4 +306,7 @@ export default {
   right: 2%
   top: 40%
   opacity: 0.5
+
+.progress-info
+  background: $color-bg-dark
 </style>

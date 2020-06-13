@@ -96,7 +96,7 @@ class PrintViewSet(viewsets.ModelViewSet):
         user_credited = False
 
         if print.alert_overwrite is None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.user.id, 1, 'Credit | Tag "{}"'.format(print.filename[:100])])
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.user.id, 1, 'Credit | Tag "{}"'.format(print.filename[:100]), ''])
             user_credited = True
 
         print.alert_overwrite = request.GET.get('value', None)
@@ -130,9 +130,23 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         qs = PrintShotFeedback.objects.filter(
             print__user=self.request.user
-        ).order_by('-created_at')
+        ).select_related('print').order_by('-created_at')
 
         if print_id:
             qs = qs.filter(print_id=print_id)
 
         return qs
+
+    def update(self, request, *args, **kwargs):
+        unanswered_print_shots = self.get_queryset().filter(answered_at__isnull=True)
+        should_credit = len(unanswered_print_shots) == 1 and unanswered_print_shots.first().id == int(kwargs['pk'])
+
+        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
+
+        if should_credit:
+            _print = unanswered_print_shots.first().print
+            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution',
+                                 args=[request.user.id, 1, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
+                                 )
+
+        return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})

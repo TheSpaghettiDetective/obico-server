@@ -100,5 +100,5 @@ export default {
 @import "../../main/main.sass"
 
 .consent-section
-  background: darken($body-bg, 1)
+  background: $color-bg-dark
 </style>

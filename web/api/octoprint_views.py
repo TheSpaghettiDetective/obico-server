@@ -100,6 +100,9 @@ class OctoPrintPicView(APIView):
         update_prediction_with_detections(prediction, detections)
         prediction.save()
 
+        if prediction.current_p > settings.THRESHOLD_LOW * 0.2:  # Select predictions high enough for focused feedback
+            redis.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
+
         pic.file.seek(0)  # Reset file object pointer so that we can load it again
         tagged_img = io.BytesIO()
         detections_to_visualize = [d for d in detections if d[1] > VISUALIZATION_THRESH]

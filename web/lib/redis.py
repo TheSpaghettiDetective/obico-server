@@ -80,3 +80,18 @@ def print_num_predictions_get(print_id):
 def print_num_predictions_delete(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     return REDIS.delete(key)
+
+
+def print_high_prediction_add(print_id, prediction, timestamp, maxsize=180):
+
+    key = f'{print_key_prefix(print_id)}:hp'
+    with REDIS.pipeline() as pipe:
+        pipe.zadd(key, {timestamp: prediction})
+        pipe.zremrangebyrank(key, 0, (-1*maxsize+1))
+        pipe.expire(key, 60*60*24*3)     # Assuming it'll be processed in 3 days.
+        pipe.execute()
+
+
+def print_highest_predictions_get(print_id):
+    key = f'{print_key_prefix(print_id)}:hp'
+    return REDIS.zrevrange(key, 0, -1, withscores=True)

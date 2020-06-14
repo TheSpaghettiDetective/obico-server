@@ -33,16 +33,21 @@ from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
 
+
 @shared_task
 def process_print_events(print_id):
-    send_print_notification(print_id)
+    _print = Print.objects.select_related('printer__user').get(id=print_id)
+
+    select_print_shots_for_feedback(_print)
+    send_print_notification(_print)
     compile_timelapse.delay(print_id)
+
 
 @shared_task
 def compile_timelapse(print_id):
     _print = Print.objects.select_related('printer').get(id=print_id)
 
-    to_dir = os.path.join(tempfile.gettempdir(), str(_print.id))
+    to_dir = os.path.join(tempfile.gettempdir(), 'tl_' + str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
 
@@ -71,7 +76,8 @@ def compile_timelapse(print_id):
         local_pics = download_files(print_pics, to_dir)
         mp4_filename = '{}_tagged.mp4'.format(_print.id)
         output_mp4 = os.path.join(to_dir, mp4_filename)
-        cmd = 'ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {} {}'.format(local_pics[0].parent, ffmpeg_extra_options, output_mp4)
+        cmd = 'ffmpeg -y -r 30 -pattern_type glob -i {}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {} {}'.format(
+            local_pics[0].parent, ffmpeg_extra_options, output_mp4)
         subprocess.run(cmd.split(), check=True)
         with open(output_mp4, 'rb') as mp4_file:
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
@@ -104,24 +110,26 @@ def compile_timelapse(print_id):
     shutil.rmtree(to_dir, ignore_errors=True)
     clean_up_print_pics(_print)
 
+
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
 def preprocess_timelapse(self, user_id, video_path, filename):
-        tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
-        converted_mp4_path = tmp_file_path + '.mp4'
-        with open(tmp_file_path, 'wb') as file_obj:
-            retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.TIMELAPSE_CONTAINER)
+    tmp_file_path = os.path.join(tempfile.gettempdir(), video_path)
+    converted_mp4_path = tmp_file_path + '.mp4'
+    with open(tmp_file_path, 'wb') as file_obj:
+        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.TIMELAPSE_CONTAINER)
 
-        subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
+    subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 
-        _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now())
-        with open(converted_mp4_path, 'rb') as mp4_file:
-            _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER)
-        _print.video_url = video_url
-        _print.save()
+    _print = Print.objects.create(user_id=user_id, filename=filename, uploaded_at=timezone.now())
+    with open(converted_mp4_path, 'rb') as mp4_file:
+        _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER)
+    _print.video_url = video_url
+    _print.save()
 
-        detect_timelapse.delay(_print.id)
-        os.remove(tmp_file_path)
-        os.remove(converted_mp4_path)
+    detect_timelapse.delay(_print.id)
+    os.remove(tmp_file_path)
+    os.remove(converted_mp4_path)
+
 
 @shared_task(acks_late=True, bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 2}, retry_backoff=True)
 def detect_timelapse(self, print_id):
@@ -142,7 +150,8 @@ def detect_timelapse(self, print_id):
     shutil.rmtree(tagged_jpgs_dir, ignore_errors=True)
     os.makedirs(tagged_jpgs_dir)
 
-    ffprobe_cmd = subprocess.run(f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
+    ffprobe_cmd = subprocess.run(
+        f'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 {tl_path}'.split(), stdout=subprocess.PIPE)
     frame_num = int(ffprobe_cmd.stdout.strip())
     fps = 30*MAX_FRAME_NUM/frame_num if frame_num > MAX_FRAME_NUM else 30
     subprocess.run(f'ffmpeg -y -i {tl_path} -vf fps={fps} -qscale:v 2 {jpgs_dir}/%5d.jpg'.split())
@@ -173,7 +182,8 @@ def detect_timelapse(self, print_id):
 
     mp4_filename = f'{_print.id}_tagged.mp4'
     output_mp4 = os.path.join(tmp_dir, mp4_filename)
-    subprocess.run(f'ffmpeg -y -r 30 -pattern_type glob -i {tagged_jpgs_dir}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {output_mp4}'.split(), check=True)
+    subprocess.run(
+        f'ffmpeg -y -r 30 -pattern_type glob -i {tagged_jpgs_dir}/*.jpg -c:v libx264 -pix_fmt yuv420p -vf pad=ceil(iw/2)*2:ceil(ih/2)*2 {output_mp4}'.split(), check=True)
     with open(output_mp4, 'rb') as mp4_file:
         _, mp4_file_url = save_file_obj(f'private/{mp4_filename}', mp4_file, settings.TIMELAPSE_CONTAINER)
 
@@ -190,17 +200,19 @@ def detect_timelapse(self, print_id):
     delete_dir(f'uploaded/{_print.user.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
 
 
-## Websocket connection count house upkeep jobs
+# Websocket connection count house upkeep jobs
 
 @periodic_task(run_every=timedelta(seconds=120))
 def prune_channel_presence():
     Room.objects.prune_presences(age=120)
+
 
 @periodic_task(run_every=timedelta(seconds=1200))
 def prune_channel_rooms():
     Room.objects.prune_rooms()
 
 # helper functions
+
 
 def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
     output_files = []
@@ -214,6 +226,7 @@ def download_files(filenames, to_dir, container=settings.PICS_CONTAINER):
 
     return output_files
 
+
 def clean_up_print_pics(_print):
     pic_dir = f'{_print.printer.id}/{_print.id}'
     delete_dir('raw/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
@@ -221,12 +234,13 @@ def clean_up_print_pics(_print):
     delete_dir('p/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
     delete_dir(f'raw/{_print.printer.id}/0/', settings.PICS_CONTAINER, long_term_storage=False)  # the pics that may have come in before current_print is set.
 
+
 def generate_print_poster(_print):
 
     (unrotated_jpg_url, rotated_jpg_url) = save_print_snapshot(_print,
-        last_pic_of_print(_print, 'raw'),
-        unrotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
-        rotated_jpg_path=f'private/{_print.id}_poster.jpg')
+                                                               last_pic_of_print(_print, 'raw'),
+                                                               unrotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
+                                                               rotated_jpg_path=f'private/{_print.id}_poster.jpg')
 
     if unrotated_jpg_url:
         redis.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
@@ -234,6 +248,7 @@ def generate_print_poster(_print):
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
         _print.save()
+
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:
@@ -250,9 +265,39 @@ def send_timelapse_detection_done_email(_print):
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
     message = get_template('email/upload_print_processed.html').render(ctx)
     msg = EmailMessage(subject, message,
-        to=emails,
-        from_email=from_email,
-        headers = {'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
-        )
+                       to=emails,
+                       from_email=from_email,
+                       headers={'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
+                       )
     msg.content_subtype = 'html'
     msg.send()
+
+
+def select_print_shots_for_feedback(_print):
+
+    # Select up to 7 highest predictions that are apart from each other for at least 2 minutes
+    def highest_7_predictions(prediction_list):
+        selected_timestamps = []
+
+        for pred in prediction_list:
+            pred_ts = float(pred[0])
+            if len([ts for ts in selected_timestamps if abs(ts - pred_ts) < 120]) > 0:   # timestamp is within 2 minutes from one other selected predictions
+                continue
+
+            selected_timestamps += [pred_ts]
+            if len(selected_timestamps) >= 7:
+                break
+
+        return sorted(selected_timestamps)
+
+    selected_predictions = highest_7_predictions(redis.print_highest_predictions_get(_print.id))
+
+    to_dir = os.path.join(tempfile.gettempdir(), 'ff_' + str(_print.id))
+    shutil.rmtree(to_dir, ignore_errors=True)
+    os.mkdir(to_dir)
+
+    local_imgs = download_files([f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg' for ts in selected_predictions], to_dir)
+    for local_img in local_imgs:
+        with open(local_img, 'rb') as local_img_file:
+            _, img_url = save_file_obj(f'ff_printshots/raw/{_print.printer.id}/{_print.id}/{local_img.name}', local_img_file, settings.TIMELAPSE_CONTAINER)
+            PrintShotFeedback.objects.create(print=_print, image_url=img_url)

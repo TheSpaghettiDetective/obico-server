@@ -233,8 +233,7 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
         req.raise_for_status()
 
 
-def send_print_notification(print_id, extra_ctx={}):
-    _print = Print.objects.select_related('printer__user').get(id=print_id)
+def send_print_notification(_print, extra_ctx={}):
     if _print.is_canceled():
         if not _print.printer.user.notify_on_canceled:
             return

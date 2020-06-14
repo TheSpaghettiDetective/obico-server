@@ -5,12 +5,16 @@ import subprocess
 import tempfile
 import os
 import shutil
+from operator import itemgetter
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
 # Return dict if not empty, otherwise None.
+
+
 def dict_or_none(dict_value):
     return dict_value if dict_value else None
+
 
 def set_as_str_if_present(target_dict, source_dict, key, target_key=None):
     if source_dict.get(key):
@@ -18,12 +22,14 @@ def set_as_str_if_present(target_dict, source_dict, key, target_key=None):
             target_key = key
         target_dict[target_key] = json.dumps(source_dict.get(key))
 
+
 def ml_api_auth_headers():
     return {"Authorization": "Bearer {}".format(settings.ML_API_TOKEN)} if settings.ML_API_TOKEN else {}
 
+
 def orientation_to_ffmpeg_options(printer_settings):
     options = '-vf pad=ceil(iw/2)*2:ceil(ih/2)*2'
-    orientation = (printer_settings['webcam_flipV'], printer_settings['webcam_flipH'],printer_settings['webcam_rotate90'])
+    orientation = (printer_settings['webcam_flipV'], printer_settings['webcam_flipH'], printer_settings['webcam_rotate90'])
     if orientation == (False, False, True):
         options += ',transpose=2'
     elif orientation == (False, True, False):
@@ -41,12 +47,14 @@ def orientation_to_ffmpeg_options(printer_settings):
 
     return options
 
+
 def last_pic_of_print(_print, path_prefix):
     print_pics = list_dir(f'{path_prefix}/{_print.printer.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:
         return None
     print_pics.sort()
     return print_pics[-1]
+
 
 def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg_path=None):
     if not input_path:

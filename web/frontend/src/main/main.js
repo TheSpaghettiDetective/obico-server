@@ -1,1 +1,1 @@
-require("./main.sass");
+import './main.sass'

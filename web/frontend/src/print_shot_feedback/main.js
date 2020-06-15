@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import VueSwal from 'vue-swal'
-import VueContentPlaceholders from "vue-content-placeholders";
+import VueSwal from 'vue-sweetalert2'
+import VueContentPlaceholders from "vue-content-placeholders"
 
 Vue.use(VueSwal)
 Vue.use(VueContentPlaceholders);

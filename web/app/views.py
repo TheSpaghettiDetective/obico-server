@@ -186,6 +186,7 @@ def unsubscribe_email(request):
 
 @login_required
 def prints(request):
+    return render(request, 'print_shot_feedback.html', {'object': _print})
     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
 
     if request.GET.get('deleted', False):
@@ -194,6 +195,11 @@ def prints(request):
     prediction_urls = [dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
 
     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
+
+
+@login_required
+def prints_new(request):
+    return render(request, 'prints_new.html')
 
 
 @login_required
@@ -221,6 +227,12 @@ def upload_print(request):
         return JsonResponse(dict(status='Ok'))
     else:
         return render(request, 'upload_print.html')
+
+
+@login_required
+def print_shot_feedback(request, pk):
+    _print = get_print_or_404(pk, request)
+    return render(request, 'print_shot_feedback.html', {'object': _print})
 
 
 def publictimelapse_list(request):
@@ -291,9 +303,3 @@ def secure_redirect(request):
     dest = settings.SECURE_REDIRECTS.get((target, source), target)
 
     return redirect(dest)
-
-
-@login_required
-def print_shot_feedback(request, pk):
-    _print = get_print_or_404(pk, request)
-    return render(request, 'print_shot_feedback.html', {'object': _print})

@@ -1,13 +1,18 @@
 <template>
-  <div class="card">
+  <div class="card tsd-card">
     <slot />
   </div>
 </template>
 
 <script>
 export default {
-  name: "Card",
-}
+  name: "Card"
+};
 </script>
 
-<style></style>
+<style lang="sass" scoped>
+@import "../main/main.sass"
+
+.tsd-card
+  position: relative
+</style>

@@ -104,6 +104,11 @@ class PrintViewSet(viewsets.ModelViewSet):
 
         return Response(dict(user_credited=user_credited))
 
+    def list(self, request):
+        queryset = self.get_queryset().order_by('-id')
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

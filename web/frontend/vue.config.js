@@ -1,10 +1,10 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
 let publicPath = process.env.NODE_ENV === 'production'
-  ? '/static/frontend' : 'http://localhost:7070/'
+    ? '/static/frontend' : 'http://localhost:7070/'
 
 let outputDir = process.env.NODE_ENV === 'production'
-  ? './builds/frontend' : './dev-builds/frontend'
+    ? './builds/frontend' : './dev-builds/frontend'
 
 publicPath = process.env.PUBLIC_PATH || publicPath
 outputDir = process.env.OUTPUT_DIR || outputDir
@@ -14,7 +14,7 @@ let vueConfig = {
     outputDir: outputDir,
     runtimeCompiler: true,
     filenameHashing: false,
-    css: {sourceMap: true},
+    css: { sourceMap: true },
 
     pages: {
         main: {
@@ -28,6 +28,9 @@ let vueConfig = {
         },
         print_shot_feedback: {
             entry: 'src/print_shot_feedback/main.js',
+        },
+        prints: {
+            entry: 'src/prints/main.js',
         },
     },
 
@@ -61,11 +64,11 @@ let vueConfig = {
             .clientLogLevel("debug")
             .progress(true)
             .hotOnly(true)
-            .watchOptions({poll: 1000})
+            .watchOptions({ poll: 1000 })
             .https(false)
-            .headers({"Access-Control-Allow-Origin": "*"})
-            }
+            .headers({ "Access-Control-Allow-Origin": "*" })
+    }
 
-        };
+};
 
 module.exports = vueConfig;

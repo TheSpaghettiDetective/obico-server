@@ -6,7 +6,7 @@ from . import vue_demo
 urlpatterns = [
     path('', views.index, name='index'),
     path('consent/', views.consent, name='consent'),
-    path('media/<path:file_path>', views.serve_jpg_file, name='serve_jpg_file'), # semi hacky solution to serve image files
+    path('media/<path:file_path>', views.serve_jpg_file, name='serve_jpg_file'),  # semi hacky solution to serve image files
     path('printer_auth_token/<int:pk>/', views.printer_auth_token, name='printer_auth_token'),
     path('printers/', views.printers, name='printers'),
     path('printers/<pk>/', views.edit_printer, name='edit_printer'),
@@ -21,6 +21,7 @@ urlpatterns = [
     path('test_telegram', views.test_telegram, name='test_telegram'),
     path('unsubscribe_email/', views.unsubscribe_email, name='unsubscribe_email'),
     path('prints/', views.prints, name='prints'),
+    path('prints_new/', views.prints_new, name='prints_new'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
     path('prints/shot-feedback/<pk>/', views.print_shot_feedback, name='print_shot_feedback'),

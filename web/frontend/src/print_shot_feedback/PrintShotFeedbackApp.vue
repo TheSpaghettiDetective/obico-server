@@ -99,7 +99,7 @@ const consts = {
 };
 
 export default {
-  name: "App",
+  name: "PrintShotFeedbackApp",
   components: {
     AnswerButton,
     Card,

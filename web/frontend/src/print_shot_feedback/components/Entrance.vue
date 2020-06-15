@@ -1,5 +1,5 @@
 <template>
-  <card>
+  <div class="card">
     <div class="card-header">
       <div>
         <span class="text-muted">File:</span>
@@ -48,13 +48,12 @@
         :playsinline="true"
       />
     </div>
-  </card>
+  </div>
 </template>
 
 <script>
 import { videoPlayer } from "vue-video-player";
 import get from "lodash/get";
-import Card from "../../common/Card.vue";
 
 export default {
   name: "Entrance",
@@ -64,8 +63,7 @@ export default {
   },
 
   components: {
-    videoPlayer,
-    Card
+    videoPlayer
   },
 
   data() {

@@ -12,7 +12,7 @@
         :print="this.print"
         @continue-btn-pressed="this.consentBtnPressed"
       />
-      <card v-if="print !== null && currentShot && print.access_consented_at">
+      <div class="card" v-if="print !== null && currentShot && print.access_consented_at">
         <div class="current-shot-container">
           <img class="card-img-top" @click="next" :src="currentShot.image_url" />
           <button
@@ -77,7 +77,7 @@
             href="/prints/"
           >Done</a>
         </div>
-      </card>
+      </div>
     </div>
   </div>
 </template>
@@ -88,8 +88,8 @@ import moment from "moment";
 import AnswerButton from "./components/AnswerButton.vue";
 import ProgressBar from "./components/ProgressBar.vue";
 import Entrance from "./components/Entrance";
-import Card from "../common/Card.vue";
 import url from "../lib/url";
+import { normalizedPrint } from "../lib/normalizers";
 
 const consts = {
   LOOKS_OK: "LOOKS_OK",
@@ -102,7 +102,6 @@ export default {
   name: "PrintShotFeedbackApp",
   components: {
     AnswerButton,
-    Card,
     ProgressBar,
     Entrance
   },
@@ -233,8 +232,7 @@ export default {
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id;
             }
-            this.print = print.data;
-            this.print.started_at = moment(this.print.started_at);
+            this.print = normalizedPrint(print);
           })
         );
     },

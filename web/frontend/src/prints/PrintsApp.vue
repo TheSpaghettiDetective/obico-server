@@ -6,7 +6,7 @@
           Upload time-lapses and earn some
           <img
             class="dh-icon"
-            src="{% static 'img/detective-hour-primary.png' %}"
+            :src="require('../../../app/static/img/detective-hour-primary.png')"
           />
         </a>
       </div>
@@ -25,29 +25,39 @@
       </div>
     </div>
     <div class="row">
-      <print-card v-for="print of prints" :key="print.id"></print-card>
+      <print-card v-for="print of displayedPrints" :key="print.id" :print="print"></print-card>
     </div>
+    <infinite-loading v-if="prints.length > 0" @infinite="infiniteHandler"></infinite-loading>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import url from "../lib/url";
+import { normalizedPrint } from "../lib/normalizers";
+import filter from "lodash/filter";
+import InfiniteLoading from "vue-infinite-loading";
 
 import PrintCard from "./PrintCard.vue";
 
 export default {
   name: "PrintsApp",
   components: {
+    InfiniteLoading,
     PrintCard
   },
   data: function() {
     return {
-      prints: []
+      prints: [],
+      lastDisplayedIndex: 9
     };
   },
 
-  computed: {},
+  computed: {
+    displayedPrints() {
+      return this.prints.slice(0, this.lastDisplayedIndex);
+    }
+  },
 
   mounted() {
     this.fetchData();
@@ -55,8 +65,19 @@ export default {
   methods: {
     fetchData() {
       axios.get(url.prints()).then(response => {
-        this.prints = response.data;
+        this.prints = filter(
+          response.data.map(p => normalizedPrint(p)),
+          p => p.video_url !== null
+        );
       });
+    },
+    infiniteHandler($state) {
+      this.lastDisplayedIndex += 9;
+      if (this.lastDisplayedIndex <= this.prints.length) {
+        $state.loaded();
+      } else {
+        $state.complete();
+      }
     }
   }
 };

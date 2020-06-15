@@ -1,7 +1,7 @@
 <template>
   <div class="col-sm-12 col-md-6 col-lg-4 timelapse-card">
-    <card>
-      <card-header>
+    <div class="card">
+      <div class="card-header">
         <div
           class="custom-control custom-checkbox form-check-inline float-left"
           style="padding-top: 2px;"
@@ -43,23 +43,53 @@
             <a class="download dropdown-item" data-mime-type="video/mp4">Download Detective View</a>
           </div>
         </div>
-      </card-header>
-    </card>
+      </div>
+      <div class="card-img-top">
+        <video-player
+          class="vjs-default-skin vjs-big-play-centered px-4"
+          ref="videoPlayer"
+          :options="playerOptions"
+          :playsinline="true"
+        />
+        <a class="fullscreen-btn" href="#tl-fullscreen-modal" role="button" data-toggle="modal">
+          <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from "../common/Card.vue";
-import CardHeader from "../common/CardHeader.vue";
+import { videoPlayer } from "vue-video-player";
+import get from "lodash/get";
 
 export default {
   name: "PrintCard",
   components: {
-    Card,
-    CardHeader
+    videoPlayer
   },
-  props: {},
-  computed: {}
+  props: {
+    print: Object
+  },
+  computed: {
+    playerOptions() {
+      return {
+        // videojs options
+        muted: true,
+        language: "en",
+        playbackRates: [0.5, 1, 1.5, 2],
+        fluid: true,
+        sources: [
+          {
+            type: "video/mp4",
+            src: get(this, "print.video_url", null)
+          }
+        ],
+        controlBar: { fullscreenToggle: true },
+        poster: get(this, "print.poster_url", null)
+      };
+    }
+  }
 };
 </script>
 

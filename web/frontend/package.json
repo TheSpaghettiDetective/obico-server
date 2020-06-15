@@ -15,6 +15,7 @@
     "vue": "^2.6.11",
     "vue-content-placeholders": "^0.2.1",
     "vue-sweetalert2": "^3.0.5",
+    "vue-infinite-loading": "^2.4.5",
     "vue-video-player": "^5.0.2"
   },
   "devDependencies": {

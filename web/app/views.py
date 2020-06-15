@@ -186,7 +186,6 @@ def unsubscribe_email(request):
 
 @login_required
 def prints(request):
-    return render(request, 'print_shot_feedback.html', {'object': _print})
     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
 
     if request.GET.get('deleted', False):

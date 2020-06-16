@@ -2077,6 +2077,10 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001039, caniuse-lite@^1.0.30001043:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001055.tgz#7b52c3537f7a8c0408aca867e83d2b04268b54cd"
   integrity sha512-MbwsBmKrBSKIWldfdIagO5OJWZclpJtS4h0Jrk/4HFrXJxTdVdH23Fd+xCiHriVGvYcWyW8mR/CPsYajlH8Iuw==
 
+"canvas-gauges@github:mikhus/canvas-gauges":
+  version "2.1.7"
+  resolved "https://codeload.github.com/mikhus/canvas-gauges/tar.gz/6b179f83b7f03926a4d58ac09e15525d19fad3d1"
+
 case-sensitive-paths-webpack-plugin@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.3.0.tgz#23ac613cc9a856e4f88ff8bb73bbb5e989825cf7"
@@ -8315,6 +8319,13 @@ vue-video-player@^5.0.2:
     videojs-contrib-hls "^5.12.2"
     videojs-flash "^2.1.0"
     videojs-hotkeys "^0.2.20"
+
+vue2-canvas-gauges@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/vue2-canvas-gauges/-/vue2-canvas-gauges-0.0.0.tgz#3a635c9831b9e928eea5ca1f575d0a4dc99a712c"
+  integrity sha1-OmNcmDG56SjupcofV10KTcmacSw=
+  dependencies:
+    canvas-gauges Mikhus/canvas-gauges
 
 vue@^2.6.11:
   version "2.6.11"

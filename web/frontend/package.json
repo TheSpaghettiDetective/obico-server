@@ -14,9 +14,10 @@
     "moment": "^2.26.0",
     "vue": "^2.6.11",
     "vue-content-placeholders": "^0.2.1",
-    "vue-sweetalert2": "^3.0.5",
     "vue-infinite-loading": "^2.4.5",
-    "vue-video-player": "^5.0.2"
+    "vue-sweetalert2": "^3.0.5",
+    "vue-video-player": "^5.0.2",
+    "vue2-canvas-gauges": "^0.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",

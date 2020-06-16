@@ -44,50 +44,45 @@
           </div>
         </div>
       </div>
-      <div class="card-img-top">
-        <video-player
-          class="vjs-default-skin vjs-big-play-centered px-4"
-          ref="videoPlayer"
-          :options="playerOptions"
-          :playsinline="true"
-        />
-        <a class="fullscreen-btn" href="#tl-fullscreen-modal" role="button" data-toggle="modal">
-          <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
-        </a>
+      <video-box :videoUrl="print.tagged_video_url" @timeupdate="onTimeUpdate" />
+      <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
+      <div class="text-center">
+        <div
+          class="lead"
+          :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
+        >{{ print.alerted_at ? 'Spaghetti was detected on this print' : 'The Detective thought it was successful' }}</div>
+        <div>
+          <radio-group :options="['She was right!', 'She got it wrong!']" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { videoPlayer } from "vue-video-player";
-import get from "lodash/get";
+import VideoBox from "../common/VideoBox";
+import Gauge from "../common/Gauge";
+import RadioGroup from "../common/RadioGroup";
 
 export default {
   name: "PrintCard",
   components: {
-    videoPlayer
+    VideoBox,
+    Gauge,
+    RadioGroup
+  },
+  data: () => {
+    return {
+      currentPosition: 0
+    };
   },
   props: {
     print: Object
   },
-  computed: {
-    playerOptions() {
-      return {
-        // videojs options
-        muted: true,
-        language: "en",
-        playbackRates: [0.5, 1, 1.5, 2],
-        fluid: true,
-        sources: [
-          {
-            type: "video/mp4",
-            src: get(this, "print.video_url", null)
-          }
-        ],
-        controlBar: { fullscreenToggle: true },
-        poster: get(this, "print.poster_url", null)
-      };
+  computed: {},
+  methods: {
+    onTimeUpdate(currentPosition) {
+      this.currentPosition = currentPosition;
     }
   }
 };

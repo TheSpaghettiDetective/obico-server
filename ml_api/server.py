@@ -11,7 +11,7 @@ import requests
 from auth import token_required
 from lib.detection_model import load_net, detect
 
-THRESH = 0.08  # The threshold for a box to be considered a positive detection
+THRESH = 0.22  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
 
 app = flask.Flask(__name__)
@@ -26,6 +26,7 @@ if environ.get('SENTRY_DSN'):
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
+
 
 @app.route('/p/', methods=['GET'])
 @token_required
@@ -45,6 +46,7 @@ def get_p():
         app.logger.warn("Invalid request params: {}".format(request.args))
 
     return jsonify({'detections': []})
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3333, threaded=False)

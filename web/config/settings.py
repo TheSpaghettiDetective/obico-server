@@ -289,17 +289,17 @@ ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
 # Hyper parameters for prediction model
-# Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
-THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.38'))
-# Definitely failing if ewm mean is above this level. =(0.8 - 0.02): 0.8 - optimal THRESHOLD_HIGH in hyper params grid search; 0.02 - average of rolling_mean_short
-THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.78'))
+# Definitely not failing if ewm mean is below this level. =(0.35 - 0.026): 0.35 - optimal THRESHOLD_LOW in hyper params grid search; 0.026 - average of rolling_mean_short
+THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.324'))
+# Definitely failing if ewm mean is above this level. =(0.7 - 0.026): 0.7 - optimal THRESHOLD_HIGH in hyper params grid search; 0.026 - average of rolling_mean_short
+THRESHOLD_HIGH = float(os.environ.get('THRESHOLD_HIGH', '0.674'))
 # The number of frames at the beginning of the print that are considered "safe"
 INIT_SAFE_FRAME_NUM = int(os.environ.get('INIT_SAFE_FRAME_NUM', 30))
 # Print is failing is ewm mean is this many times over the short rolling mean
 ROLLING_MEAN_SHORT_MULTIPLE = float(
-    os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 3.8))
+    os.environ.get('ROLLING_MEAN_SHORT_MULTIPLE', 6.6))
 # The multiplication factor to escalate "warning" to "error"
-ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
+ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 3.6))
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'

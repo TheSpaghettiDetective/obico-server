@@ -11,11 +11,13 @@
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.4",
+    "js-file-download": "^0.4.12",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
     "vue": "^2.6.11",
     "vue-content-placeholders": "^0.2.1",
     "vue-infinite-loading": "^2.4.5",
+    "vue-loading-overlay": "^3.3.2",
     "vue-sweetalert2": "^3.0.5",
     "vue-video-player": "^5.0.2",
     "vue2-canvas-gauges": "^0.0.0"

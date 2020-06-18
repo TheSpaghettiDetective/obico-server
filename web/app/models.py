@@ -481,6 +481,7 @@ class Print(SafeDeleteModel):
     def ended_at(self):
         return self.cancelled_at or self.finished_at
 
+    # TODO: remove me after print page switches to Vue
     def end_status(self):
         return '(Cancelled)' if self.cancelled_at else ''
 

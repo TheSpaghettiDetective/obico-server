@@ -32,13 +32,20 @@
 </template>
 
 <script>
+import Vue from "vue";
 import axios from "axios";
-import url from "../lib/url";
-import { normalizedPrint } from "../lib/normalizers";
 import filter from "lodash/filter";
 import InfiniteLoading from "vue-infinite-loading";
 
+import url from "../lib/url";
+import { normalizedPrint } from "../lib/normalizers";
 import PrintCard from "./PrintCard.vue";
+
+Vue.use(InfiniteLoading, {
+  slots: {
+    noMore: "End of your time-apse list."
+  }
+});
 
 export default {
   name: "PrintsApp",

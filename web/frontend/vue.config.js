@@ -1,4 +1,5 @@
-const BundleTracker = require("webpack-bundle-tracker");
+const BundleTracker = require('webpack-bundle-tracker');
+const webpack = require('webpack')
 
 let publicPath = process.env.NODE_ENV === 'production'
     ? '/static/frontend' : 'http://localhost:7070/'
@@ -41,6 +42,8 @@ let vueConfig = {
             config.plugins.delete('prefetch-' + key);
         });
 
+        config.plugin('ignore-plugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
+
         config.optimization
             .splitChunks(false)
 
@@ -61,12 +64,12 @@ let vueConfig = {
             .host('0.0.0.0')
             .port(7070)
             .inline(true)
-            .clientLogLevel("debug")
+            .clientLogLevel('debug')
             .progress(true)
             .hotOnly(true)
-            .watchOptions({ poll: 1000 })
+            .watchOptions({ignore: /node_modules/})
             .https(false)
-            .headers({ "Access-Control-Allow-Origin": "*" })
+            .headers({ 'Access-Control-Allow-Origin': '*' })
     }
 
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="timelapse">
+  <div class="timelapse" sticky-container>
     <div class="my-5 row justify-content-center">
       <div class="col-12">
         <a role="button" class="btn btn-outline-primary btn-block" href="/prints/upload/">
@@ -11,21 +11,42 @@
         </a>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm-12 text-center pb-3">
-        <button
-          type="button"
-          id="delete-prints-btn"
-          class="btn btn-light float-right ml-3"
-          disabled
-        >
-          <i class="fas fa-trash-alt"></i> Delete
-        </button>
-        <button type="button" id="select-all-btn" class="btn btn-primary float-right">Select All</button>
-      </div>
+    <div v-sticky sticky-offset="{top: 0, bottom: 30}" sticky-side="both" on-stick="onMenuStick">
+      <b-dropdown toggle-class="text-decoration-none" no-caret>
+        <template v-slot:button-content>
+          <i class="fas fa-filter"></i>
+        </template>
+        <b-dropdown-item @click="onFilterClick('none')">
+          <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
+        </b-dropdown-item>
+        <b-dropdown-divider></b-dropdown-divider>
+        <b-dropdown-item @click="onFilterClick('finished')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
+          ></i>Finished prints
+        </b-dropdown-item>
+        <b-dropdown-item @click="onFilterClick('cancelled')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
+          ></i>Cancelled prints
+        </b-dropdown-item>
+        <b-dropdown-item @click="onFilterClick('pendingReview')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: filter === 'pendingReview' ? 'visible' : 'hidden'}"
+          ></i>Prints pending review
+        </b-dropdown-item>
+      </b-dropdown>
     </div>
     <div class="row">
-      <print-card v-for="print of displayedPrints" :key="print.id" :print="print"></print-card>
+      <print-card
+        v-for="print of displayedPrints"
+        :key="print.id"
+        :print="print"
+        @selectedChange="onSelectedChange"
+      ></print-card>
     </div>
     <infinite-loading v-if="prints.length > 0" @infinite="infiniteHandler"></infinite-loading>
   </div>
@@ -43,7 +64,7 @@ import PrintCard from "./PrintCard.vue";
 
 Vue.use(InfiniteLoading, {
   slots: {
-    noMore: "End of your time-apse list."
+    noMore: "End of your time-lapse list."
   }
 });
 
@@ -56,13 +77,17 @@ export default {
   data: function() {
     return {
       prints: [],
-      lastDisplayedIndex: 9
+      selectedPrintIds: new Set(),
+      lastDisplayedIndex: 9,
+      filter: "none"
     };
   },
 
   computed: {
     displayedPrints() {
-      return this.prints.slice(0, this.lastDisplayedIndex);
+      return filter(this.prints, p => {
+        return !this.cancelledPrintsOnly || p.is_cancelled;
+      }).slice(0, this.lastDisplayedIndex);
     }
   },
 
@@ -78,6 +103,7 @@ export default {
         );
       });
     },
+
     infiniteHandler($state) {
       this.lastDisplayedIndex += 9;
       if (this.lastDisplayedIndex <= this.prints.length) {
@@ -85,6 +111,22 @@ export default {
       } else {
         $state.complete();
       }
+    },
+
+    onSelectedChange(printId, selected) {
+      if (selected) {
+        this.selectedPrintIds.add(printId);
+      } else {
+        this.selectedPrintIds.delete(printId);
+      }
+    },
+
+    onMenuStick(data) {
+      console.log(data);
+    },
+
+    onFilterClick(filter) {
+      this.filter = filter;
     }
   }
 };
@@ -92,6 +134,7 @@ export default {
 
 <style lang="sass" scoped>
 @import "../main/main.sass"
+
 .timelapse
   margin-top: 1.5rem
 </style>

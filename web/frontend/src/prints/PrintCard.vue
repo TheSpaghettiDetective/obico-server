@@ -3,17 +3,8 @@
     <div class="card vld-parent">
       <loading :active="videoDownloading" :is-full-page="true"></loading>
       <div class="card-header">
-        <div
-          class="custom-control custom-checkbox form-check-inline float-left"
-          style="padding-top: 2px;"
-        >
-          <input
-            type="checkbox"
-            name="selected_print_ids"
-            class="custom-control-input"
-            form="prints-form"
-          />
-          <label class="custom-control-label"></label>
+        <div>
+          <b-form-checkbox v-model="selected" @change="onSelectedChange" size="lg"></b-form-checkbox>
         </div>
 
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -71,12 +62,12 @@
               <div class="col-8">{{ print.filename }}</div>
             </div>
             <div class="row">
-              <div class="text-muted col-4">{{ uploadedTimelapse ? "Uploaded" : "Printed" }}:</div>
+              <div class="text-muted col-4">{{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}:</div>
               <div
                 class="col-8"
-              >{{ uploadedTimelapse ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
+              >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
             </div>
-            <div class="row" v-if="!uploadedTimelapse">
+            <div class="row" v-if="!wasTimelapseUploaded">
               <div class="text-muted col-4">Duration:</div>
               <div class="col-8">{{ duration.humanize() }}</div>
             </div>
@@ -151,7 +142,8 @@ export default {
     return {
       videoDownloading: false,
       currentPosition: 0,
-      cardView: "detective"
+      cardView: "detective",
+      selected: false
     };
   },
 
@@ -160,8 +152,8 @@ export default {
   },
 
   computed: {
-    uploadedTimelapse() {
-      return this.print.uploaded_at === null;
+    wasTimelapseUploaded() {
+      return this.print.uploaded_at !== null;
     },
 
     endStatus() {
@@ -176,6 +168,10 @@ export default {
   methods: {
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition;
+    },
+
+    onSelectedChange() {
+      this.$emit("selectedChange", this.print.id, !this.selected); // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
     },
 
     downloadVideo(detectiveVideo) {

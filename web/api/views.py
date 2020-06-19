@@ -105,7 +105,7 @@ class PrintViewSet(viewsets.ModelViewSet):
         return Response(dict(user_credited=user_credited))
 
     def list(self, request):
-        queryset = self.get_queryset().order_by('-id')
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').order_by('-id')
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 

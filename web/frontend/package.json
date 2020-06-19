@@ -18,6 +18,7 @@
     "vue-content-placeholders": "^0.2.1",
     "vue-infinite-loading": "^2.4.5",
     "vue-loading-overlay": "^3.3.2",
+    "vue-sticky-directive": "^0.0.10",
     "vue-sweetalert2": "^3.0.5",
     "vue-video-player": "^5.0.2",
     "vue2-canvas-gauges": "^0.0.0"

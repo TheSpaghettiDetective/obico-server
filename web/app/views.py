@@ -201,6 +201,7 @@ def prints_new(request):
     return render(request, 'prints_new.html')
 
 
+# TODO: remove after /prints/ switched to Vue
 @login_required
 def delete_prints(request, pk):
     if request.method == 'POST':

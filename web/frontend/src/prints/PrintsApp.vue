@@ -11,8 +11,18 @@
         </a>
       </div>
     </div>
-    <div v-sticky sticky-offset="{top: 0, bottom: 30}" sticky-side="both" on-stick="onMenuStick">
-      <b-dropdown toggle-class="text-decoration-none" no-caret>
+    <div
+      class="menu-bar text-right"
+      v-sticky
+      sticky-offset="{top: 0, bottom: 30}"
+      sticky-side="both"
+      on-stick="onMenuStick"
+    >
+      <b-dropdown
+        toggle-class="text-decoration-none btn-sm square-btn"
+        :variant="filterBtnVariant"
+        no-caret
+      >
         <template v-slot:button-content>
           <i class="fas fa-filter"></i>
         </template>
@@ -24,28 +34,45 @@
           <i
             class="fas fa-check"
             :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
-          ></i>Finished prints
+          ></i>Finished
         </b-dropdown-item>
         <b-dropdown-item @click="onFilterClick('cancelled')">
           <i
             class="fas fa-check"
             :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
-          ></i>Cancelled prints
+          ></i>Cancelled
         </b-dropdown-item>
         <b-dropdown-item @click="onFilterClick('pendingReview')">
           <i
             class="fas fa-check"
             :style="{visibility: filter === 'pendingReview' ? 'visible' : 'hidden'}"
-          ></i>Prints pending review
+          ></i>Review needed
+        </b-dropdown-item>
+        <b-dropdown-item @click="onFilterClick('pendingFocusedReview')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: filter === 'pendingFocusedReview' ? 'visible' : 'hidden'}"
+          ></i>Focused-review needed
         </b-dropdown-item>
       </b-dropdown>
+      <button
+        type="button"
+        class="btn ml-3"
+        :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
+        :disabled="!anyPrintsSelected"
+        @click="onDeleteBtnClick"
+      >
+        <i class="fas fa-trash-alt"></i>
+        Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
+      </button>
     </div>
     <div class="row">
       <print-card
-        v-for="print of displayedPrints"
+        v-for="print of visiblePrints"
         :key="print.id"
         :print="print"
         @selectedChange="onSelectedChange"
+        @printDeleted="fetchData"
       ></print-card>
     </div>
     <infinite-loading v-if="prints.length > 0" @infinite="infiniteHandler"></infinite-loading>
@@ -78,16 +105,34 @@ export default {
     return {
       prints: [],
       selectedPrintIds: new Set(),
-      lastDisplayedIndex: 9,
+      lastDisplayedIndex: 12,
       filter: "none"
     };
   },
 
   computed: {
-    displayedPrints() {
+    visiblePrints() {
       return filter(this.prints, p => {
-        return !this.cancelledPrintsOnly || p.is_cancelled;
+        if (this.filter === "cancelled") {
+          return p.is_cancelled;
+        } else if (this.filter === "finished") {
+          return p.is_finished;
+        } else if (this.filter === "pendingReview") {
+          return p.has_detective_view && p.alert_overwrite === null;
+        } else if (this.filter === "pendingFocusedReview") {
+          return p.focused_review_pending;
+        } else {
+          return true;
+        }
       }).slice(0, this.lastDisplayedIndex);
+    },
+
+    filterBtnVariant() {
+      return this.filter === "none" ? "outline-secondary" : "outline-primary";
+    },
+
+    anyPrintsSelected() {
+      return this.selectedPrintIds.size > 0;
     }
   },
 
@@ -101,12 +146,13 @@ export default {
           response.data.map(p => normalizedPrint(p)),
           p => p.video_url !== null
         );
+        this.selectedPrintIds = new Set();
       });
     },
 
     infiniteHandler($state) {
-      this.lastDisplayedIndex += 9;
-      if (this.lastDisplayedIndex <= this.prints.length) {
+      this.lastDisplayedIndex += 12;
+      if (this.lastDisplayedIndex <= this.visiblePrints.length) {
         $state.loaded();
       } else {
         $state.complete();
@@ -114,11 +160,13 @@ export default {
     },
 
     onSelectedChange(printId, selected) {
+      const selectedPrintIdsClone = new Set(this.selectedPrintIds);
       if (selected) {
-        this.selectedPrintIds.add(printId);
+        selectedPrintIdsClone.add(printId);
       } else {
-        this.selectedPrintIds.delete(printId);
+        selectedPrintIdsClone.delete(printId);
       }
+      this.selectedPrintIds = selectedPrintIdsClone;
     },
 
     onMenuStick(data) {
@@ -127,14 +175,38 @@ export default {
 
     onFilterClick(filter) {
       this.filter = filter;
+    },
+
+    onDeleteBtnClick() {
+      const selectedPrintIds = this.selectedPrintIds;
+      this.$swal({
+        title: "Are you sure?",
+        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No"
+      }).then(userAction => {
+        if (userAction.isConfirmed) {
+          axios
+            .post(url.printsBulkDelete(), { print_ids: selectedPrintIds })
+            .then(() => {
+              this.fetchData();
+            });
+        }
+      });
     }
   }
 };
 </script>
 
-<style lang="sass" scoped>
+ <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
+<style lang="sass">
 @import "../main/main.sass"
 
 .timelapse
   margin-top: 1.5rem
+
+.menu-bar
+  background-color: darken($color-bg-dark, 10)
+  padding: 0.75rem
 </style>

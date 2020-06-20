@@ -4,25 +4,32 @@
       <loading :active="videoDownloading" :is-full-page="true"></loading>
       <div class="card-header">
         <div>
-          <b-form-checkbox v-model="selected" @change="onSelectedChange" size="lg"></b-form-checkbox>
+          <b-form-checkbox
+            v-model="selected"
+            @change="onSelectedChange"
+            size="lg"
+            class="text-decoration-none"
+          ></b-form-checkbox>
         </div>
-
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn" :class="[cardView === 'detective' ? 'btn-primary' : '']">
-            <input type="radio" id="detective" value="detective" v-model="cardView" />
+        <b-form-radio-group
+          v-model="cardView"
+          buttons
+          button-variant="outline-primary"
+          name="radio-btn-outline"
+        >
+          <b-form-radio value="detective" class="square-btn" :disabled="!print.has_detective_view">
             <img
               class="seg-control-icon"
               :src="require('../../../app/static/img/logo-square-inverted.png')"
             />
-          </label>
-          <label class="btn" :class="[cardView === 'info' ? 'btn-primary' : '']">
-            <input type="radio" id="info" value="info" v-model="cardView" />
+          </b-form-radio>
+          <b-form-radio value="info" class="square-btn">
             <img
               class="seg-control-icon"
               :src="require('../../../app/static/img/info-inverted.png')"
             />
-          </label>
-        </div>
+          </b-form-radio>
+        </b-form-radio-group>
 
         <div class="dropdown">
           <button
@@ -53,7 +60,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div v-show="cardView == 'info'">
         <video-box :videoUrl="print.video_url" />
         <div class="card-body">
           <div class="container">
@@ -74,7 +81,7 @@
           </div>
         </div>
       </div>
-      <div v-if="false">
+      <div v-show="cardView == 'detective' && print.has_detective_view">
         <video-box :videoUrl="print.tagged_video_url" @timeupdate="onTimeUpdate" />
         <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
         <div class="text-center">
@@ -142,7 +149,7 @@ export default {
     return {
       videoDownloading: false,
       currentPosition: 0,
-      cardView: "detective",
+      selectedCardView: "detective",
       selected: false
     };
   },
@@ -162,6 +169,10 @@ export default {
 
     duration() {
       return moment.duration(this.print.ended_at.diff(this.print.started_at));
+    },
+
+    cardView() {
+      return this.print.has_detective_view ? this.selectedCardView : "info";
     }
   },
 
@@ -194,7 +205,7 @@ export default {
     },
 
     deleteVideo() {
-      axios.get(url.print(this.print.id)).then(() => {
+      axios.delete(url.print(this.print.id)).then(() => {
         this.$emit("printDeleted");
       });
     }

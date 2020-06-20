@@ -4,4 +4,5 @@ export default {
     printShotFeedback: (shotId, printId) => `/api/v1/printshotfeedbacks/${shotId}/?print_id=${printId}`,
     print: printId => `/api/v1/prints/${printId}/`,
     prints: () => `/api/v1/prints/`,
+    printsBulkDelete: () => `/api/v1/prints/bulk_delete/`,
 }

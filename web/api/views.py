@@ -109,6 +109,12 @@ class PrintViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['post'])
+    def bulk_delete(self, request):
+        select_prints_ids = request.data.get('print_ids', [])
+        self.get_queryset().filter(id__in=select_prints_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

@@ -3135,6 +3135,11 @@ electron-to-chromium@^1.3.413:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.435.tgz#22a7008e8f5a317a6d2d80802bddacebb19ae025"
   integrity sha512-BVXnq+NCefidU7GOFPx4CPBfPcccLCRBKZYSbvBJMSn2kwGD7ML+eUA9tqfHAumRqy3oX5zaeTI1Bpt7qVat0Q==
 
+element-in-view@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/element-in-view/-/element-in-view-0.1.0.tgz#662f41f9a8d3b8ca4587c1ddb427b7d27af88bc9"
+  integrity sha1-Zi9B+ajTuMpFh8HdtCe30nr4i8k=
+
 elliptic@^6.0.0, elliptic@^6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.2.tgz#05c5678d7173c049d8ca433552224a495d0e3762"
@@ -7788,6 +7793,11 @@ thread-loader@^2.1.3:
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
 
+throttleit@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-1.0.0.tgz#9e785836daf46743145a5984b6268d828528ac6c"
+  integrity sha1-nnhYNtr0Z0MUWlmEtiaNgoUorGw=
+
 through2@^2.0.0:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.5.tgz#01c1e39eb31d07cb7d03a96a70823260b23132cd"
@@ -8320,11 +8330,6 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
-vue-infinite-loading@^2.4.5:
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/vue-infinite-loading/-/vue-infinite-loading-2.4.5.tgz#cc20fd40af7f20188006443c99b60470cf1de1b3"
-  integrity sha512-xhq95Mxun060bRnsOoLE2Be6BR7jYwuC89kDe18+GmCLVrRA/dU0jrGb12Xu6NjmKs+iTW0AA6saSEmEW4cR7g==
-
 vue-loader@^15.9.1:
   version "15.9.2"
   resolved "https://registry.yarnpkg.com/vue-loader/-/vue-loader-15.9.2.tgz#ae01f5f4c9c6a04bff4483912e72ef91a402c1ae"
@@ -8340,6 +8345,14 @@ vue-loading-overlay@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/vue-loading-overlay/-/vue-loading-overlay-3.3.2.tgz#9853c90d9583ac2ec322da29bb90942bf65449af"
   integrity sha512-5nBsaeb3quOBVXCgbSu9VNWkBVEsbDCupahv8dqkgbtJ00uKoNOPyw38+reWGHKNDBDl+x7x8wT8u3dV7ali7g==
+
+vue-mugen-scroll@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/vue-mugen-scroll/-/vue-mugen-scroll-0.2.6.tgz#f1c90a8363a8966b3217524f3e97f76b0b817303"
+  integrity sha512-6FOBzotc8p/GDQZYkEdenxPydDvABUuxqMese6Zv4fpEZf7CjNSabRtAeBUtg+339Z9iKMdpzussbqFHCRXVqA==
+  dependencies:
+    element-in-view "^0.1.0"
+    throttleit "^1.0.0"
 
 vue-sticky-directive@^0.0.10:
   version "0.0.10"

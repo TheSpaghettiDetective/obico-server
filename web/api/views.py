@@ -105,7 +105,27 @@ class PrintViewSet(viewsets.ModelViewSet):
         return Response(dict(user_credited=user_credited))
 
     def list(self, request):
-        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').order_by('-id')
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)
+        filter = request.GET.get('filter', 'none')
+        if filter == 'cancelled':
+            queryset = queryset.filter(cancelled_at__isnull=False)
+        if filter == 'finished':
+            queryset = queryset.filter(finished_at__isnull=False)
+        if filter == 'need_alert_overwrite':
+            queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
+        if filter == 'need_print_shot_feedback':
+            queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        sorting = request.GET.get('sorting', 'date_desc')
+        if sorting == 'date_asc':
+            queryset = queryset.order_by('id')
+        else:
+            queryset = queryset.order_by('-id')
+
+        start = int(request.GET.get('start', '0'))
+        limit = int(request.GET.get('limit', '10'))
+        queryset = queryset[start:start+limit]
+
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 

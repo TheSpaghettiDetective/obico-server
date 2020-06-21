@@ -42,19 +42,41 @@
             :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
           ></i>Cancelled
         </b-dropdown-item>
-        <b-dropdown-item @click="onFilterClick('pendingReview')">
+        <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
           <i
             class="fas fa-check"
-            :style="{visibility: filter === 'pendingReview' ? 'visible' : 'hidden'}"
+            :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
           ></i>Review needed
         </b-dropdown-item>
-        <b-dropdown-item @click="onFilterClick('pendingFocusedReview')">
+        <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
           <i
             class="fas fa-check"
-            :style="{visibility: filter === 'pendingFocusedReview' ? 'visible' : 'hidden'}"
+            :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
           ></i>Focused-review needed
         </b-dropdown-item>
       </b-dropdown>
+      <b-dropdown
+        toggle-class="text-decoration-none btn-sm square-btn"
+        variant="outline-secondary"
+        no-caret
+      >
+        <template v-slot:button-content>
+          <i class="fas" :class="sortingBtnClasses"></i>
+        </template>
+        <b-dropdown-item @click="onSortingClick('date_desc')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
+          ></i>Newest to oldest
+        </b-dropdown-item>
+        <b-dropdown-item @click="onSortingClick('date_asc')">
+          <i
+            class="fas fa-check"
+            :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
+          ></i>Oldest to newest
+        </b-dropdown-item>
+      </b-dropdown>
+
       <button
         type="button"
         class="btn ml-3"
@@ -68,95 +90,90 @@
     </div>
     <div class="row">
       <print-card
-        v-for="print of visiblePrints"
+        v-for="print of prints"
         :key="print.id"
         :print="print"
         @selectedChange="onSelectedChange"
-        @printDeleted="fetchData"
+        @printDeleted="printDeleted(print.id)"
       ></print-card>
     </div>
-    <infinite-loading v-if="prints.length > 0" @infinite="infiniteHandler"></infinite-loading>
+
+    <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
+      <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+      <i v-if="!noMoreData" class="fa fa-spinner fa-pulse"></i>
+    </mugen-scroll>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
 import axios from "axios";
-import filter from "lodash/filter";
-import InfiniteLoading from "vue-infinite-loading";
+import findIndex from "lodash/findIndex";
+import MugenScroll from "vue-mugen-scroll";
 
 import url from "../lib/url";
 import { normalizedPrint } from "../lib/normalizers";
 import PrintCard from "./PrintCard.vue";
 
-Vue.use(InfiniteLoading, {
-  slots: {
-    noMore: "End of your time-lapse list."
-  }
-});
-
 export default {
   name: "PrintsApp",
   components: {
-    InfiniteLoading,
+    MugenScroll,
     PrintCard
   },
   data: function() {
     return {
       prints: [],
       selectedPrintIds: new Set(),
-      lastDisplayedIndex: 12,
-      filter: "none"
+      loading: false,
+      noMoreData: false,
+      filter: "none",
+      sorting: "date_desc"
     };
   },
 
   computed: {
-    visiblePrints() {
-      return filter(this.prints, p => {
-        if (this.filter === "cancelled") {
-          return p.is_cancelled;
-        } else if (this.filter === "finished") {
-          return p.is_finished;
-        } else if (this.filter === "pendingReview") {
-          return p.has_detective_view && p.alert_overwrite === null;
-        } else if (this.filter === "pendingFocusedReview") {
-          return p.focused_review_pending;
-        } else {
-          return true;
-        }
-      }).slice(0, this.lastDisplayedIndex);
-    },
-
     filterBtnVariant() {
       return this.filter === "none" ? "outline-secondary" : "outline-primary";
+    },
+
+    sortingBtnClasses() {
+      return this.sorting === "date_asc"
+        ? " fa-sort-amount-up"
+        : "fa-sort-amount-down";
     },
 
     anyPrintsSelected() {
       return this.selectedPrintIds.size > 0;
     }
   },
-
-  mounted() {
-    this.fetchData();
-  },
   methods: {
-    fetchData() {
-      axios.get(url.prints()).then(response => {
-        this.prints = filter(
-          response.data.map(p => normalizedPrint(p)),
-          p => p.video_url !== null
-        );
-        this.selectedPrintIds = new Set();
-      });
+    fetchMoreData() {
+      if (this.noMoreData) {
+        return;
+      }
+
+      this.loading = true;
+      axios
+        .get(url.prints(), {
+          params: {
+            start: this.prints.length,
+            limit: 12,
+            filter: this.filter,
+            sorting: this.sorting
+          }
+        })
+        .then(response => {
+          this.loading = false;
+          this.noMoreData = response.data.length < 12;
+          this.prints.push(...response.data.map(p => normalizedPrint(p)));
+        });
     },
 
-    infiniteHandler($state) {
-      this.lastDisplayedIndex += 12;
-      if (this.lastDisplayedIndex <= this.visiblePrints.length) {
-        $state.loaded();
-      } else {
-        $state.complete();
-      }
+    refetchData() {
+      this.prints = [];
+      this.selectedPrintIds = [];
+      this.noMoreData = false;
+      this.fetchMoreData();
     },
 
     onSelectedChange(printId, selected) {
@@ -175,10 +192,16 @@ export default {
 
     onFilterClick(filter) {
       this.filter = filter;
+      this.refetchData();
+    },
+
+    onSortingClick(sorting) {
+      this.sorting = sorting;
+      this.refetchData();
     },
 
     onDeleteBtnClick() {
-      const selectedPrintIds = this.selectedPrintIds;
+      const selectedPrintIds = Array.from(this.selectedPrintIds);
       this.$swal({
         title: "Are you sure?",
         text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
@@ -190,10 +213,16 @@ export default {
           axios
             .post(url.printsBulkDelete(), { print_ids: selectedPrintIds })
             .then(() => {
-              this.fetchData();
+              selectedPrintIds.forEach(printId => this.printDeleted(printId));
+              this.selectedPrintIds = [];
             });
         }
       });
+    },
+
+    printDeleted(printId) {
+      const i = findIndex(this.prints, p => p.id == printId);
+      this.$delete(this.prints, i);
     }
   }
 };

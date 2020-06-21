@@ -30,6 +30,7 @@ export default {
       return {
         // videojs options
         muted: true,
+        preload: "none",
         language: "en",
         playbackRates: [0.5, 1, 1.5, 2],
         fluid: true,

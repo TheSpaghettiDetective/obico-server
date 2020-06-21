@@ -12,6 +12,8 @@ import axios from "axios";
 import get from "lodash/get";
 import RadialGauge from "vue2-canvas-gauges/src/RadialGauge";
 
+const ALERT_THRESHOLD = 0.4;
+
 export default {
   components: {
     RadialGauge
@@ -73,15 +75,8 @@ export default {
   computed: {
     value() {
       const num = Math.round(this.predictions.length * this.currentPosition);
-      return get(this.predictions[num], "fields.ewm_mean");
+      return this.scaleP(get(this.predictions[num], "fields.ewm_mean"));
     }
-  },
-
-  watch: {
-    // currentPosition: pos => {
-    // const num = Math.round(this.predictions.length * pos);
-    // this.currentValue = get(this.predictions[num], "fields.ewm_mean");
-    // }
   },
 
   mounted() {
@@ -93,6 +88,16 @@ export default {
       axios.get(this.predictionJsonUrl).then(response => {
         this.predictions = response.data;
       });
+    },
+
+    scaleP(p) {
+      var scaleAboveCutOff = 100.0 / 3.0 / (1 - ALERT_THRESHOLD);
+      var scaleBelowCutOff = 200.0 / 3.0 / ALERT_THRESHOLD;
+      if (p > ALERT_THRESHOLD) {
+        return (p - ALERT_THRESHOLD) * scaleAboveCutOff + 200.0 / 3.0;
+      } else {
+        return p * scaleBelowCutOff;
+      }
     }
   }
 };

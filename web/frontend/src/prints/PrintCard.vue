@@ -12,7 +12,7 @@
           ></b-form-checkbox>
         </div>
         <b-form-radio-group
-          v-model="cardView"
+          v-model="selectedCardView"
           buttons
           button-variant="outline-primary"
           name="radio-btn-outline"
@@ -61,7 +61,7 @@
         </div>
       </div>
       <div v-show="cardView == 'info'">
-        <video-box :videoUrl="print.video_url" />
+        <video-box :videoUrl="print.video_url" :posterUrl="print.poster_url" />
         <div class="card-body">
           <div class="container">
             <div class="row">
@@ -82,7 +82,11 @@
         </div>
       </div>
       <div v-show="cardView == 'detective' && print.has_detective_view">
-        <video-box :videoUrl="print.tagged_video_url" @timeupdate="onTimeUpdate" />
+        <video-box
+          :videoUrl="print.tagged_video_url"
+          :posterUrl="print.poster_url"
+          @timeupdate="onTimeUpdate"
+        />
         <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
         <div class="text-center">
           <div
@@ -222,11 +226,6 @@ export default {
   justify-content: space-between
   align-items: center
 
-.btn-group-toggle
-  border-radius: 300px
-  .btn
-    border: solid thin darken(white, 25)
-
 .seg-control-icon
-  height: 1.5rem
+  height: 1.2rem
 </style>

@@ -27,7 +27,7 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
 
 
 class PrintSerializer(serializers.ModelSerializer):
-    printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
+    # printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Print

@@ -7,7 +7,7 @@
       </div>
       <div>
         <span class="text-muted">Printed:</span>
-        {{ print.started_at.fromNow() }}
+        {{ print.started_at && print.started_at.fromNow() }}
       </div>
     </div>
     <div class="card-body consent-section">

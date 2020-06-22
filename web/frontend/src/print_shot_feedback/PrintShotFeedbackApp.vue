@@ -232,7 +232,7 @@ export default {
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id;
             }
-            this.print = normalizedPrint(print);
+            this.print = normalizedPrint(print.data);
           })
         );
     },

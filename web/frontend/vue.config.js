@@ -1,5 +1,6 @@
 const BundleTracker = require('webpack-bundle-tracker')
 const path = require('path')
+const webpack = require('webpack')
 
 let publicPath = process.env.NODE_ENV === 'production'
     ? '/static/frontend' : 'http://localhost:7070/'
@@ -22,7 +23,8 @@ let vueConfig = {
         alias: {
           main: path.join(__dirname, 'src/main'),
         }
-      }
+      },
+
     },
 
     pages: {
@@ -50,8 +52,12 @@ let vueConfig = {
             config.plugins.delete('prefetch-' + key);
         });
 
-        config.optimization
-            .splitChunks(false)
+        config.plugin('ignore-plugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
+
+        if (process.env.NODE_ENV != 'production') {
+            config.optimization
+                .splitChunks(false)
+        }
 
         if (process.env.NODE_ENV != 'production') {
             config

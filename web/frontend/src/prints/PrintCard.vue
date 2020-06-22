@@ -88,39 +88,56 @@
           @timeupdate="onTimeUpdate"
         />
         <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
-        <div class="text-center">
-          <div
-            class="lead pt-3"
-            :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
-          >{{ print.alerted_at ? 'The Detective found spaghetti' : 'The Detective found nothing fishy' }}</div>
-        </div>
-        <small>Help The Detective get better by giving her feedback.</small>
-        <div>
-          <div class="custom-control custom-radio">
-            <input
-              type="radio"
-              name="alert_overwrite"
-              value="FAILED"
-              class="custom-control-input"
-              :id="print.id+'_FAILED'"
-            />
-            <label
-              class="custom-control-label"
-              :for="print.id+'_FAILED'"
-            >Yes, The Detective was right!</label>
+        <div class="feedback-section">
+          <div class="text-center py-2 px-3">
+            <div
+              class="lead"
+              :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
+            >{{ print.alerted_at ? 'The Detective found spaghetti' : 'The Detective found nothing fishy' }}</div>
+            <div class="py-2">
+              Did she get it right?
+              <b-button
+                :variant="thumbedUp ? 'primary' : 'outline'"
+                @click="onThumbUpClick"
+                class="mx-2 btn-sm"
+              >
+                <i class="fas fa-thumbs-up"></i>
+              </b-button>
+              <b-button
+                :variant="thumbedDown ? 'primary' : 'outline'"
+                @click="onThumbDownClick"
+                class="mx-2 btn-sm"
+              >
+                <i class="fas fa-thumbs-down"></i>
+              </b-button>
+            </div>
+            <transition name="bounce">
+              <div v-if="focusedFeedbackEligible" class="pt-2">
+                <a
+                  role="button"
+                  class="btn btn-sm btn-outline-primary px-4"
+                  :href="focusedFeedbackLink"
+                >
+                  F
+                  <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+                  <img
+                    class="seg-control-icon ml-1"
+                    :src="require('../../../app/static/img/detective-hour-2-primary.png')"
+                  />
+                </a>
+              </div>
+            </transition>
           </div>
-          <div class="custom-control custom-radio">
-            <input
-              type="radio"
-              name="alert_overwrite"
-              value="FAILED"
-              class="custom-control-input"
-              :id="print.id+'_FAILED'"
-            />
-            <label
-              class="custom-control-label"
-              :for="print.id+'_FAILED'"
-            >No, The Detective got it wrong!</label>
+          <div class="text-muted py-2 px-3 help-text">
+            <small v-if="!focusedFeedbackEligible">
+              Every time you give The Detective feedback by telling her if she got it right, you help her get better at detecting spaghetti.
+              <a
+                href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
+              >Learn more!</a>
+            </small>
+            <small
+              v-if="focusedFeedbackEligible"
+            >With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. You will earn 2 Detective Hours once you finnish the Focused Feedback.</small>
           </div>
         </div>
       </div>
@@ -154,7 +171,8 @@ export default {
       videoDownloading: false,
       currentPosition: 0,
       selectedCardView: "detective",
-      selected: false
+      selected: false,
+      localOverwrite: null
     };
   },
 
@@ -177,6 +195,36 @@ export default {
 
     cardView() {
       return this.print.has_detective_view ? this.selectedCardView : "info";
+    },
+
+    thumbedUp() {
+      if (this.localOverwrite) {
+        return this.localOverwrite === "thumbedUp";
+      }
+      if (!this.print.alert_overwrite) {
+        return false;
+      }
+      return (
+        this.print.has_alerts ^ (this.print.alert_overwrite === "NOT_FAILED")
+      );
+    },
+
+    thumbedDown() {
+      if (this.localOverwrite) {
+        return this.localOverwrite === "thumbedDown";
+      }
+      if (!this.print.alert_overwrite) {
+        return false;
+      }
+      return this.print.has_alerts ^ (this.print.alert_overwrite === "FAILED");
+    },
+
+    focusedFeedbackEligible() {
+      return this.print.printshotfeedback_set.length > 0 && this.thumbedDown;
+    },
+
+    focusedFeedbackLink() {
+      return `/prints/shot-feedback/${this.print.id}/`;
     }
   },
 
@@ -212,6 +260,20 @@ export default {
       axios.delete(url.print(this.print.id)).then(() => {
         this.$emit("printDeleted");
       });
+    },
+
+    onThumbUpClick() {
+      this.localOverwrite = "thumbedUp";
+      this.alertOverwrite(this.print.has_alerts ? "FAILED" : "NOT_FAILED");
+    },
+
+    onThumbDownClick() {
+      this.localOverwrite = "thumbedDown";
+      this.alertOverwrite(this.print.has_alerts ? "NOT_FAILED" : "FAILED");
+    },
+
+    alertOverwrite(value) {
+      axios.post(url.printAlertOverwrite(this.print.id), { value });
     }
   }
 };
@@ -228,4 +290,24 @@ export default {
 
 .seg-control-icon
   height: 1.2rem
+
+.feedback-section
+  background-color: $color-bg-dark
+
+.bounce-enter-active
+  animation: bounce-in .5s
+
+.bounce-leave-active
+  animation: bounce-in .5s reverse
+
+@keyframes bounce-in
+  0%
+    transform: scale(0)
+  50%
+    transform: scale(1.5)
+  100%
+    transform: scale(1)
+
+.help-text
+  line-height: 1.2
 </style>

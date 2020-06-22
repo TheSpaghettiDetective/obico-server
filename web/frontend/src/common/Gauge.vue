@@ -1,7 +1,7 @@
 <template>
   <div class="tsd-gauge-container">
     <div class="tsd-gauge">
-      <radial-gauge :value="value" :title="title" :options="options"></radial-gauge>
+      <radial-gauge :value="value" :title="titleText" :options="options"></radial-gauge>
     </div>
     <hr />
   </div>
@@ -25,11 +25,6 @@ export default {
     };
   },
   props: {
-    title: {
-      type: String,
-      default: "Looking Good"
-    },
-
     currentPosition: {
       type: Number,
       default: 0
@@ -76,6 +71,19 @@ export default {
     value() {
       const num = Math.round(this.predictions.length * this.currentPosition);
       return this.scaleP(get(this.predictions[num], "fields.ewm_mean"));
+    },
+
+    titleText() {
+      switch (this.level()) {
+        case 0:
+          return "Looking Good";
+        case 1:
+          return "Fishy...";
+        case 2:
+          return "Failing!";
+        default:
+          return "Looking Good";
+      }
     }
   },
 
@@ -98,6 +106,16 @@ export default {
       } else {
         return p * scaleBelowCutOff;
       }
+    },
+
+    level() {
+      if (this.value > 66) {
+        return 2;
+      } else if (this.value > 33) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 };
@@ -112,6 +130,7 @@ export default {
     text-align: center
     padding: 8px
     margin-bottom: -150px
+    pointer-events: none
   hr
     background-color: #EBEBEB
     height: 1px

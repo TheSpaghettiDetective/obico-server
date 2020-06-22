@@ -89,20 +89,26 @@ class PrintViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Print.objects.filter(user=self.request.user)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get', 'post'])
     def alert_overwrite(self, request, pk=None):
         print = get_object_or_404(self.get_queryset(), pk=pk)
 
-        user_credited = False
+        # TODO: remove this after switching to focused feedback
+        if request.method == "GET":
+            user_credited = False
+            if print.alert_overwrite is None:
+                celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.user.id, 1, 'Credit | Tag "{}"'.format(print.filename[:100]), ''])
+                user_credited = True
 
-        if print.alert_overwrite is None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[print.user.id, 1, 'Credit | Tag "{}"'.format(print.filename[:100]), ''])
-            user_credited = True
+            print.alert_overwrite = request.GET.get('value', None)
+            print.save()
 
-        print.alert_overwrite = request.GET.get('value', None)
-        print.save()
-
-        return Response(dict(user_credited=user_credited))
+            return Response(dict(user_credited=user_credited))
+        else:
+            print.alert_overwrite = request.data.get('value', None)
+            print.save()
+            serializer = self.serializer_class(print, many=False)
+            return Response(serializer.data)
 
     def list(self, request):
         queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)

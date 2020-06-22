@@ -96,13 +96,13 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../../main/main.sass"
+@use "~main/theme"
 
 .consent-section
-  background: $color-bg-dark
+  background: theme.$color-bg-dark
 
 .feedback-estimate
   font-size: 1.2em
   font-weight: bolder
-  color: $primary
+  color: theme.$primary
 </style>

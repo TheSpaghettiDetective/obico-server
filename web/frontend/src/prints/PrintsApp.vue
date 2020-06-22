@@ -230,12 +230,12 @@ export default {
 
  <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
 <style lang="sass">
-@import "../main/main.sass"
+@use "~main/theme"
 
 .timelapse
   margin-top: 1.5rem
 
 .menu-bar
-  background-color: darken($color-bg-dark, 10)
+  background-color: darken(theme.$color-bg-dark, 10)
   padding: 0.75rem
 </style>

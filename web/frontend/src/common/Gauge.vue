@@ -122,7 +122,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../main/main.sass"
+@use "~main/theme"
 
 .tsd-gauge-container
   padding: 0 16px

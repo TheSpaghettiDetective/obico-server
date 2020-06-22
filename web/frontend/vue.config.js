@@ -1,4 +1,6 @@
-const BundleTracker = require("webpack-bundle-tracker");
+const BundleTracker = require('webpack-bundle-tracker')
+const path = require('path')
+const webpack = require('webpack')
 
 let publicPath = process.env.NODE_ENV === 'production'
     ? '/static/frontend' : 'http://localhost:7070/'
@@ -15,6 +17,15 @@ let vueConfig = {
     runtimeCompiler: true,
     filenameHashing: false,
     css: { sourceMap: true },
+
+    configureWebpack: {
+      resolve: {
+        alias: {
+          main: path.join(__dirname, 'src/main'),
+        }
+      },
+
+    },
 
     pages: {
         main: {
@@ -41,8 +52,31 @@ let vueConfig = {
             config.plugins.delete('prefetch-' + key);
         });
 
-        config.optimization
-            .splitChunks(false)
+        config.plugin('ignore-plugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
+
+        if (process.env.NODE_ENV != 'production') {
+            config.optimization
+                .splitChunks(false)
+        } else {
+            config.optimization
+                .splitChunks({
+                     cacheGroups: {
+                       vendors: {
+                         name: 'chunk-vendors',
+                         test: /[\\/]node_modules[\\/]/,
+                         priority: -10,
+                         chunks: 'initial'
+                       },
+                       // common: {
+                       //   name: 'chunk-common',
+                       //   minChunks: 2,
+                       //   priority: -20,
+                       //   chunks: 'initial',
+                       //   reuseExistingChunk: true
+                       // }
+                     }
+                })
+        }
 
         if (process.env.NODE_ENV != 'production') {
             config

@@ -280,7 +280,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../main/main.sass"
+@use "~main/theme"
 
 .card-header
   display: flex
@@ -292,7 +292,7 @@ export default {
   height: 1.2rem
 
 .feedback-section
-  background-color: $color-bg-dark
+  background-color: theme.$color-bg-dark
 
 .bounce-enter-active
   animation: bounce-in .5s

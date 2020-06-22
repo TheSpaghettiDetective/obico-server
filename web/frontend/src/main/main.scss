@@ -1,0 +1,381 @@
+@import 'theme';
+@import 'mixin';
+
+/*** Global styles */
+body {
+  font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 74px; /* Should be equal to the height of your footer */
+  background: repeating-linear-gradient(45deg, darken($body-bg, 8) 0%, darken($body-bg, 8) 10%, darken($body-bg, 5) 0%, darken($body-bg, 5) 50%) 0 / 15px 15px;
+}
+
+.borderless {
+  border: none !important;
+}
+
+button, .btn {
+  border-width: 2px;
+  border-radius: 300px;
+  &.no-corner {
+    border-radius: 0;
+    border-width: 1px;
+  }
+}
+
+.custom-control-label {
+  &::before {
+    border: $primary solid 2px;
+  }
+}
+
+.custom-switch {
+  .custom-control-label {
+    &::before {
+      background: $color-disabled;
+    }
+  }
+}
+
+.toggle-label {
+  margin-bottom: 0;
+  padding: 0.1rem 0 0.35rem 0;
+}
+
+.hint {
+  cursor: help;
+  border-bottom: dotted thin;
+  line-height: initial;
+  margin-bottom: 0.25em;
+}
+
+.hide {
+  display: none;
+}
+
+footer {
+  padding: 25px 0;
+  text-align: center;
+  color: rgba(255,255,255,.6);
+  background-color: black;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+  }
+}
+
+.text-subscript {
+  font-size: 0.53em;
+}
+
+.bootstrap-select {
+  button {
+    &.dropdown-toggle {
+      background-color: $primary;
+      border-color: $primary;
+    }
+    border-radius: 0;
+  }
+}
+
+.navbar {
+  padding: 0.5rem 1rem;
+  a.navbar-brand {
+    margin-top: -3px;
+  }
+  .nav-item {
+    text-transform: uppercase;
+    &.active, &:hover {
+      background-color: lighten($gray-200, 5);
+    }
+  }
+  .user-menu {
+    text-transform: none;
+  }
+  a.glowing {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px $primary, 0 0 70px $primary, 0 0 80px $primary, 0 0 100px $primary, 0 0 150px $primary;
+  }
+
+  .badge-btn {
+    position: relative;
+    height: 1.8rem;
+    margin-right: 1.5em;
+    img {
+      height: 1.3rem;
+    }
+    .badge {
+      position: absolute;
+      left: 22px;
+      top: 1px;
+      height: 18px;
+      border-radius: 4px;
+      background-color: $primary;
+      transition: transform 0.2s; /* Animation */
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
+  }
+
+  @media (min-width: 992px) {
+    padding: 0rem 1rem;
+    .nav-item {
+      padding: 0.5rem 0.24rem;
+    }
+  }
+
+}
+
+hr {
+  background-color: $color-form-bg;
+}
+
+.alert {
+  margin-bottom: 0;
+}
+
+a.link {
+  color: lighten($primary, 7) !important;
+  text-decoration: none;
+  background-color: transparent;
+
+  &:hover {
+      color: $primary !important;
+      text-decoration: underline !important;
+      cursor: pointer !important;
+  }
+}
+
+.icon-btn {
+  background-color: transparent;
+  border: none;
+  color: rgba(255,255,255,0.75);
+
+  &:hover, &:active, &:focus {
+    background-color: transparent !important;
+    border: none !important;
+    color: rgba(255,255,255, 1.0) !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.dropdown-menu {
+  .dropdown-item {
+    i {
+      width: 20px;
+      margin-right: 16px;
+      text-align: center;
+    }
+  }
+}
+
+.form-container {
+  margin: 3em 0em;
+  padding: 2.5em;
+  background: $body-bg;
+  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+
+  @include respond-below(md) {
+    padding: 2.5em 1em;
+  }
+
+  .form-control {
+    &[readonly] {
+      background-color: darken($color-disabled, 20);
+      color: white;
+      border: 1px solid $color-form-bg;
+    }
+  }
+
+  h2 {
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+  }
+}
+
+.flipH {
+  -webkit-transform: scaleX(-1);
+  -moz-transform: scaleX(-1);
+  -ms-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+
+.flipV {
+  -webkit-transform: scaleY(-1);
+  -moz-transform: scaleY(-1);
+  -ms-transform: scaleY(-1);
+  transform: scaleY(-1);
+}
+
+.flipH.flipV {
+  -webkit-transform: scaleX(-1) scaleY(-1);
+  -moz-transform: scaleX(-1) scaleY(-1);
+  -ms-transform: scaleX(-1) scaleY(-1);
+  transform: scaleX(-1) scaleY(-1);
+}
+
+.rotate90 {
+  -webkit-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+
+.swal2-popup {
+  background-color: darken($body-bg, 5) !important;
+  border-radius: unset !important;
+  .swal2-title, .swal2-content, #swal2-content {
+    color: $gray-100 !important;
+    text-align: left !important;
+  }
+
+  &.swal2-modal {
+    .swal2-content {
+      color: $gray-100 !important;
+      font-size: 1rem !important;
+    }
+    .swal2-title {
+      color: $gray-100 !important;
+      font-size: 1.4rem !important;
+    }
+    button {
+      border-radius: 300px !important;
+      border: none !important;
+
+      &.swal2-confirm {
+        background-color: $primary !important;
+      }
+    }
+    .bootstrap-select {
+      button {
+        border-radius: 0 !important;
+      }
+    }
+  }
+}
+.swal2-container.swal2-shown {
+  background-color: rgba(0,0,0,.6) !important;
+}
+
+.gauge {
+  padding: 8px;
+  margin-bottom: -150px;
+}
+
+.dh-icon {
+  height: 1em;
+  vertical-align: text-bottom;
+}
+
+.slider {
+  &.slider-horizontal {
+    width: 100% !important;
+  }
+  .slider-selection {
+    background: lighten($primary, 10);
+  }
+  .slider-handle {
+    background: $primary;
+  }
+}
+.slider.slider-horizontal:hover, .slider.slider-vertical:hover {
+  .tooltip.tooltip-main {
+      opacity: 0.7 !important;
+  }
+  .tooltip-inner {
+      font-size: 90%;
+      width: auto;
+  }
+}
+.slider.slider-horizontal:hover .tooltip.tooltip-main.top .tooltip-arrow:after,
+.slider.slider-vertical:hover .tooltip.tooltip-main.top .tooltip-arrow:after {
+  content: '';
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 45%;
+  bottom: -10px;
+  border: transparent 5px solid;
+  border-top: #000 5px solid;
+}
+
+#accordion {
+  .card {
+      background: $body-bg;
+  }
+  .card-header {
+      a {
+          color: inherit;
+          text-decoration: none;
+      }
+  }
+  .card-link {
+      p {
+        position:absolute;
+        top:8px;
+        right:20px;
+        font-size:20px;
+        color:white;
+        -webkit-animation: minus 0.5s;
+      }
+      @keyframes minus {
+          from {
+              transform:rotate(0deg);
+          }
+          to {
+              transform:rotate(360deg);
+          }
+      }
+}
+[aria-expanded="false"] > .expanded, [aria-expanded="true"] > .collapsed {display: none;}
+}
+
+/** Shared styles for printer and print cards */
+
+.card {
+  .gauge-container {
+    padding: 0 16px;
+  }
+  .info-section {
+    &.settings {
+      text-align: center;
+      padding-top: 7px;
+      border-bottom: solid thin $gray-200;
+    }
+
+    background: $color-bg-dark;
+    .row {
+      padding: 0.3em 0em 0.1em;
+      text-align: center;
+      div[class^="col-"] {
+          padding: 0px 8px;
+      }
+    }
+    .numbers {
+      font-size: 1.5em;
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: solid thin $gray-200;
+      label {
+        font-size: 1rem;
+        text-align: left;
+        width: 100%;
+        .text-muted {
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}
+
+#pass-change-form button[type="submit"] {
+    margin: 1.8em 0em 0.1em 0em;
+}

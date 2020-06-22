@@ -1,0 +1,166 @@
+@import 'theme';
+@import 'mixin';
+
+table.pricing {
+    background: darken($body-bg, 10);
+    th {
+        font-size: 1.2em;
+    }
+}
+
+.pricing {
+
+    .btn-group-toggle {
+        background: $body-bg;
+        .btn {
+            border: solid thin darken(white, 60);
+        }
+    }
+
+    .price-matrix {
+        div[class^="col-"] {
+            padding: 0px;
+            border-top: solid thin darken(white, 60);
+            border-bottom: solid thin darken(white, 60);
+            border-right: solid thin darken(white, 60);
+            background: $body-bg;
+
+            >div {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .price-header {
+                height: 15rem;
+                background: lighten($body-bg, 3);
+                &.dh-pack-header {
+                    height: 12rem;
+                }
+
+                .price-sub {
+                    font-size: 0.95em;
+                    font-weight: lighter;
+                    margin-top: -0.1em;
+                }
+            }
+
+            .price-action {
+                height: 6rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-bottom: solid thin darken(white, 60);
+                border-top: solid thin darken(white, 60);
+            }
+
+            .feature-header {
+                margin-top: 2rem;
+                height: 2rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                color: darken($gray-100, 30);
+            }
+
+            .features {
+                &.keyfeatures {
+                    font-weight: bolder;
+                }
+
+                &.essentials {
+                    font-weight: lighter;
+                }
+
+                &.dh-pack {
+                    height: 14rem;
+                    font-weight: lighter;
+                }
+
+                >div {
+                    display: flex;
+                    padding-top: 0.7rem;
+                }
+
+                i {
+                    padding-right: 0.7rem;
+                    padding-top: 0.35rem;
+                    color: lighten($primary, 12);
+                }
+            }
+        }
+
+        @include respond-above(sm) {
+            >div:first-child {
+                border-left: solid thin darken(white, 60);
+            }
+        }
+
+        @include respond-below(md) {
+            >div {
+                border-left: solid thin darken(white, 60);
+            }
+        }
+
+        .plan-name {
+            font-size: 31px;
+            line-height: 43px;
+            padding-top: 1.5rem;
+        }
+
+        .plan-price {
+            font-size: 31px;
+            line-height: 43px;
+            font-weight: bold;
+            padding-top: 1.5rem;
+
+            .price-unit {
+                font-size: 18px;
+                color: darken($gray-100, 30);
+            }
+        }
+    }
+}
+.subcribe-dlg {
+    font-weight: normal;
+    .input-group {
+        width: 7.5rem;
+        border: solid thin darken(white, 60);
+        button.btn-outline-primary {
+            border-radius: 0px !important;
+        }
+    }
+    label.custom-control-label {
+        line-height: 25px;
+    }
+    th {
+        font-size: 1.5em;
+    }
+    .btn-group-toggle {
+        .btn {
+            border: solid thin darken(white, 60);
+            font-size: 0.9rem;
+            box-shadow: none;
+        }
+    }
+
+    .custom-radio.recommended {
+        .tag {
+            margin-left: 0.5em;
+            background: $primary;
+            border: solid thin;
+            border-radius: 4px;
+            padding: 0px 3px;
+        }
+    }
+}
+
+.detective-hour-log {
+    table {
+        td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 20em;
+        }
+    }
+}

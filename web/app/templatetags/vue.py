@@ -34,3 +34,14 @@ def bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
                 tags.append(t.format(url, attrs))
 
         return mark_safe("\n".join(tags))
+
+
+@register.simple_tag
+def bundlechunk(bundle_name, extension=None, config='DEFAULT', attrs=''):
+    """ Chunks are generated only for production and must be loaded only
+        when loader is disabled
+    """
+    if not settings.WEBPACK_LOADER_ENABLED:
+        return bundle(bundle_name, extension=extension, config=config,
+                      attrs=attrs)
+    return ""

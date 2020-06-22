@@ -23,10 +23,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../main/main.sass"
+@use "~main/theme"
 
 .btn-group-toggle
-  background: $body-bg
+  background: theme.$body-bg
   border-radius: 300px
   .btn
     border: solid thin darken(white, 60)

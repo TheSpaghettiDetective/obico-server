@@ -1,6 +1,7 @@
 {% load static %}
 {% load account_status %}
 {% load bundle from vue %}
+{% load bundlechunk from vue %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,6 +36,7 @@
   <link rel="stylesheet" href="{% static 'vendor/css/smart_wizard.css' %}">
 
   {% bundle 'main' %}
+  {% bundlechunk 'chunk-vendors' %}
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->

@@ -67,15 +67,15 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../main/main.sass"
+@use "~main/theme"
 
 b
-  color: $primary
+  color: theme.$primary
 
 img
   width: 200px
   display: block
 
 .example
-  color: $primary
+  color: theme.$primary
 </style>

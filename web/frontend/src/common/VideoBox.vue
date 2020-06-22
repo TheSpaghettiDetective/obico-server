@@ -54,6 +54,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@use "~main/theme"
+
 .card-img-top
   position: relative
   background-color: black

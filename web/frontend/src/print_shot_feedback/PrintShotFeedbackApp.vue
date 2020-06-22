@@ -283,7 +283,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../main/main.sass"
+@use "~main/theme"
 
 .printshots-container
   margin-top: 1.5em
@@ -306,5 +306,5 @@ export default {
   opacity: 0.5
 
 .progress-info
-  background: $color-bg-dark
+  background: theme.$color-bg-dark
 </style>

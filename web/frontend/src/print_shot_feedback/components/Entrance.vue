@@ -95,8 +95,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@import "../../main/main.sass"
+@use "~main/theme"
 
 .consent-section
-  background: $color-bg-dark
+  background: theme.$color-bg-dark
 </style>

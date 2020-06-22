@@ -7,7 +7,7 @@
         <content-placeholders-text :lines="5" />
       </content-placeholders>
 
-      <entrance
+      <consent
         v-if="print !== null && !print.access_consented_at"
         :print="this.print"
         @continue-btn-pressed="this.consentBtnPressed"
@@ -87,7 +87,7 @@ import axios from "axios";
 import moment from "moment";
 import AnswerButton from "./components/AnswerButton.vue";
 import ProgressBar from "./components/ProgressBar.vue";
-import Entrance from "./components/Entrance";
+import Consent from "./components/Consent";
 import url from "../lib/url";
 import { normalizedPrint } from "../lib/normalizers";
 
@@ -103,7 +103,7 @@ export default {
   components: {
     AnswerButton,
     ProgressBar,
-    Entrance
+    Consent
   },
   props: {
     config: {
@@ -221,20 +221,27 @@ export default {
     },
 
     fetchData() {
+      axios;
+      // .all([
+      //   axios.get(url.printShotFeedbackList(this.config.printId)),
       axios
-        .all([
-          axios.get(url.printShotFeedbackList(this.config.printId)),
-          axios.get(url.print(this.config.printId))
-        ])
+        .get(url.print(this.config.printId))
+        // ])
         .then(
-          axios.spread((printShots, print) => {
-            this.shots = printShots.data;
+          // axios.spread((printShots, print) => {
+          //   this.shots = printShots.data;
+          //   if (this.shots.length > 0) {
+          //     this.currentShotId = this.shots[0].id;
+          //   }
+          response => {
+            this.print = normalizedPrint(response.data);
+            this.shots = this.print.printshotfeedback_set;
             if (this.shots.length > 0) {
               this.currentShotId = this.shots[0].id;
             }
-            this.print = normalizedPrint(print);
-          })
+          }
         );
+      // );
     },
 
     updateShot: function(id, answer) {

@@ -7,7 +7,13 @@
       :playsinline="true"
       @timeupdate="onTimeUpdate"
     />
-    <a class="fullscreen-btn" href="#tl-fullscreen-modal" role="button" data-toggle="modal">
+    <a
+      v-if="fullScreenBtn"
+      class="fullscreen-btn"
+      href="#tl-fullscreen-modal"
+      role="button"
+      data-toggle="modal"
+    >
       <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
     </a>
   </div>
@@ -23,7 +29,13 @@ export default {
   },
   props: {
     videoUrl: String,
-    posterUrl: String
+    posterUrl: String,
+    fullScreenBtn: {
+      default() {
+        return true;
+      },
+      type: Boolean
+    }
   },
   computed: {
     playerOptions() {

@@ -46,9 +46,9 @@ export default {
   computed: {
     classes() {
       if (this.checked) {
-        return `btn ${this.checkedClass}`;
+        return `btn btn-block ${this.checkedClass}`;
       }
-      return `btn ${this.defaultClass}`;
+      return `btn btn-block ${this.defaultClass}`;
     }
   }
 };

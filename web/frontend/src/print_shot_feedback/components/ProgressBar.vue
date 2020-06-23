@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="progress"
-    style="height: 5px;"
-  >
+  <div class="progress">
     <div
       class="progress-bar"
       role="progressbar"
@@ -11,7 +8,7 @@
       :aria-valuenow="value"
       aria-valuemin="0"
       aria-valuemax="100"
-    />
+    >{{ valuePercent }}</div>
   </div>
 </template>
 
@@ -20,21 +17,27 @@ export default {
   name: "ProgressBar",
   props: {
     max: {
-      default() {return 100},
+      default() {
+        return 100;
+      },
       type: Number
     },
     value: {
       required: true,
       type: Number
-    },
+    }
   },
   computed: {
     valuePercent() {
-      return `${this.value}%`
+      return `${this.value}%`;
     }
   }
-}
+};
 </script>
 
-<style>
+<style  lang="sass" scoped>
+@use "~main/theme"
+
+.progress
+  background-color: theme.$color-bg-dark
 </style>

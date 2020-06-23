@@ -162,19 +162,9 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
     serializer_class = PrintShotFeedbackSerializer
 
     def get_queryset(self):
-        try:
-            print_id = int(self.request.query_params.get('print_id'))
-        except (ValueError, TypeError):
-            print_id = None
-
-        qs = PrintShotFeedback.objects.filter(
+        return PrintShotFeedback.objects.filter(
             print__user=self.request.user
-        ).select_related('print').order_by('-created_at')
-
-        if print_id:
-            qs = qs.filter(print_id=print_id)
-
-        return qs
+        )
 
     def update(self, request, *args, **kwargs):
         unanswered_print_shots = self.get_queryset().filter(answered_at__isnull=True)

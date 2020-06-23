@@ -93,8 +93,9 @@
         v-for="print of prints"
         :key="print.id"
         :print="print"
-        @selectedChange="onSelectedChange"
-        @printDeleted="printDeleted(print.id)"
+        @selectedChanged="onSelectedChanged"
+        @printDeleted="onPrintDeleted"
+        @printDataChanged="printDataChanged"
       ></print-card>
     </div>
 
@@ -110,7 +111,7 @@ import axios from "axios";
 import findIndex from "lodash/findIndex";
 import MugenScroll from "vue-mugen-scroll";
 
-import url from "../lib/url";
+import apis from "../lib/apis";
 import { normalizedPrint } from "../lib/normalizers";
 import PrintCard from "./PrintCard.vue";
 
@@ -154,18 +155,18 @@ export default {
 
       this.loading = true;
       axios
-        .get(url.prints(), {
+        .get(apis.prints(), {
           params: {
             start: this.prints.length,
-            limit: 12,
+            limit: 6,
             filter: this.filter,
             sorting: this.sorting
           }
         })
         .then(response => {
           this.loading = false;
-          this.noMoreData = response.data.length < 12;
-          this.prints.push(...response.data.map(p => normalizedPrint(p)));
+          this.noMoreData = response.data.length < 6;
+          this.prints.push(...response.data.map(data => normalizedPrint(data)));
         });
     },
 
@@ -176,7 +177,7 @@ export default {
       this.fetchMoreData();
     },
 
-    onSelectedChange(printId, selected) {
+    onSelectedChanged(printId, selected) {
       const selectedPrintIdsClone = new Set(this.selectedPrintIds);
       if (selected) {
         selectedPrintIdsClone.add(printId);
@@ -211,18 +212,23 @@ export default {
       }).then(userAction => {
         if (userAction.isConfirmed) {
           axios
-            .post(url.printsBulkDelete(), { print_ids: selectedPrintIds })
+            .post(apis.printsBulkDelete(), { print_ids: selectedPrintIds })
             .then(() => {
-              selectedPrintIds.forEach(printId => this.printDeleted(printId));
+              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId));
               this.selectedPrintIds = [];
             });
         }
       });
     },
 
-    printDeleted(printId) {
+    onPrintDeleted(printId) {
       const i = findIndex(this.prints, p => p.id == printId);
       this.$delete(this.prints, i);
+    },
+
+    printDataChanged(data) {
+      const i = findIndex(this.prints, p => p.id == data.id);
+      this.$set(this.prints, i, normalizedPrint(data));
     }
   }
 };

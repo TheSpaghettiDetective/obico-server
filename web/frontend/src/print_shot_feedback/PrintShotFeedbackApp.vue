@@ -1,81 +1,78 @@
 <template>
   <div class="printshots-container row justify-content-center">
     <div class="col-sm-12 col-lg-6">
-      <content-placeholders v-if="print === null">
-        <content-placeholders-img />
-        <content-placeholders-img />
-        <content-placeholders-text :lines="5" />
-      </content-placeholders>
+      <div class="card">
+        <h5 class="card-header text-center">
+          F
+          <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+        </h5>
+        <progress-bar :max="100" :value="progress">{{ progress }} %</progress-bar>
+        <content-placeholders v-if="print === null">
+          <content-placeholders-text :lines="2" />
+          <content-placeholders-text :lines="5" />
+          <content-placeholders-img />
+        </content-placeholders>
 
-      <consent
-        v-if="print !== null && !print.access_consented_at"
-        :print="this.print"
-        @continue-btn-pressed="this.consentBtnPressed"
-      />
-      <div class="card" v-if="print !== null && currentShot && print.access_consented_at">
-        <div class="current-shot-container">
-          <img class="card-img-top" @click="next" :src="currentShot.image_url" />
-          <button
-            if-v="currentIndex !== prevIndex"
-            class="prev-btn btn btn-primary"
-            :disabled="updating"
-            @click="prev"
-          >
-            <i class="fas fa-lg fa-angle-left" />
-          </button>
-          <button
-            if-v="currentIndex !== nextIndex"
-            class="next-btn btn btn-primary"
-            :disabled="updating"
-            @click="next"
-          >
-            <i class="fas fa-lg fa-angle-right" />
-          </button>
-        </div>
-        <div class="card-body">
-          <div class="text-center">
-            <answer-button
-              ref="button"
-              :checked="currentShot.answer === consts.LOOKS_BAD"
-              :updating="inFlightAnswer === consts.LOOKS_BAD && updating"
+        <consent
+          v-if="print !== null && !print.access_consented_at"
+          :print="this.print"
+          @continue-btn-pressed="this.consentBtnPressed"
+        />
+        <div class="card" v-if="print !== null && currentShot && print.access_consented_at">
+          <div class="current-shot-container">
+            <img class="card-img-top" @click="next" :src="currentShot.image_url" />
+            <button
+              v-if="currentIndex !== prevIndex"
+              class="prev-btn btn btn-primary"
               :disabled="updating"
-              checked-class="btn-primary"
-              @click="looksBad"
-            >Yes, I do see spaghetti</answer-button>
-            <answer-button
-              :checked="currentShot.answer === consts.LOOKS_OK"
-              :updating="inFlightAnswer === consts.LOOKS_OK && updating"
+              @click="prev"
+            >
+              <i class="fas fa-lg fa-angle-left" />
+            </button>
+            <button
+              v-if="currentIndex !== nextIndex"
+              class="next-btn btn btn-primary"
               :disabled="updating"
-              checked-class="btn-primary"
-              @click="looksOk"
-            >No, I don't see spaghetti</answer-button>
-            <answer-button
-              :checked="currentShot.answer === consts.UNANSWERED"
-              :updating="inFlightAnswer === consts.UNANSWERED && updating"
-              :disabled="updating"
-              checked-class="btn-primary"
-              @click="willDecideLater"
-            >Hmmm, I am not sure</answer-button>
+              @click="next"
+            >
+              <i class="fas fa-lg fa-angle-right" />
+            </button>
           </div>
-        </div>
-        <div class="progress-info p-3">
-          <div class="clearfix">
-            <div class="float-left">
-              #{{ currentIndex + 1 }} of
-              <strong>{{ this.shots.length }}</strong> pictures
+          <div class="card-body progress-info">
+            <div class="text-center">
+              <answer-button
+                ref="button"
+                :checked="currentShot.answer === consts.LOOKS_BAD"
+                :updating="inFlightAnswer === consts.LOOKS_BAD && updating"
+                :disabled="updating"
+                checked-class="btn-primary"
+                @click="looksBad"
+              >Yes, I do see spaghetti</answer-button>
+              <answer-button
+                :checked="currentShot.answer === consts.LOOKS_OK"
+                :updating="inFlightAnswer === consts.LOOKS_OK && updating"
+                :disabled="updating"
+                checked-class="btn-primary"
+                @click="looksOk"
+              >No, I don't see spaghetti</answer-button>
+              <answer-button
+                :checked="currentShot.answer === consts.UNANSWERED"
+                :updating="inFlightAnswer === consts.UNANSWERED && updating"
+                :disabled="updating"
+                checked-class="btn-primary"
+                @click="willDecideLater"
+              >Hmmm, I am not sure</answer-button>
             </div>
-            <div class="float-right">
-              <strong v-if="progress == 100">All answered!</strong>
-              <strong v-if="progress != 100">{{ progress }}% answered</strong>
-            </div>
+            <small class="float-right text-muted">
+              Not sure? Look at
+              <a href="#">some examples >>></a>
+            </small>
           </div>
-          <progress-bar class="clearfix" :max="100" :value="progress">{{ progress }} %</progress-bar>
-          <a
-            v-if="progress == 100"
-            type="button"
-            class="btn btn-success btn-block my-3"
-            href="/prints/"
-          >Done</a>
+          <div class="card-body p-3">
+            <a href="/prints/">
+              <i class="fas fa-chevron-left"></i> Time-lapse
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -85,10 +82,12 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import sortBy from "lodash/sortBy";
+
 import AnswerButton from "./components/AnswerButton.vue";
 import ProgressBar from "./components/ProgressBar.vue";
 import Consent from "./components/Consent";
-import url from "../lib/url";
+import apis from "../lib/apis";
 import { normalizedPrint } from "../lib/normalizers";
 
 const consts = {
@@ -148,7 +147,7 @@ export default {
         return null;
       }
 
-      return index == 0 ? this.shots.length - 1 : index - 1;
+      return index == 0 ? 0 : index - 1;
     },
 
     nextIndex() {
@@ -158,7 +157,7 @@ export default {
         return null;
       }
 
-      return index + 1 >= this.shots.length ? 0 : index + 1;
+      return index + 1 >= this.shots.length ? this.shots.length - 1 : index + 1;
     },
 
     progress() {
@@ -221,27 +220,13 @@ export default {
     },
 
     fetchData() {
-      axios;
-      // .all([
-      //   axios.get(url.printShotFeedbackList(this.config.printId)),
-      axios
-        .get(url.print(this.config.printId))
-        // ])
-        .then(
-          // axios.spread((printShots, print) => {
-          //   this.shots = printShots.data;
-          //   if (this.shots.length > 0) {
-          //     this.currentShotId = this.shots[0].id;
-          //   }
-          response => {
-            this.print = normalizedPrint(response.data);
-            this.shots = this.print.printshotfeedback_set;
-            if (this.shots.length > 0) {
-              this.currentShotId = this.shots[0].id;
-            }
-          }
-        );
-      // );
+      axios.get(apis.print(this.config.printId)).then(response => {
+        this.print = normalizedPrint(response.data);
+        this.shots = sortBy(this.print.printshotfeedback_set, "id");
+        if (this.shots.length > 0) {
+          this.currentShotId = this.shots[0].id;
+        }
+      });
     },
 
     updateShot: function(id, answer) {
@@ -249,21 +234,25 @@ export default {
       this.inFlightAnswer = answer;
 
       axios
-        .put(url.printShotFeedback(id, this.print.id), { answer: answer })
+        .put(apis.printShotFeedback(id, this.print.id), { answer: answer })
 
         .then(response => {
           const { instance, credited_dhs } = response.data;
           this.shots = this.shots.map(shot => {
             return shot.id === instance.id ? instance : shot;
           });
-          if (credited_dhs >= 0) {
+          if (credited_dhs > 0) {
             this.$swal({
-              text:
-                "You just earned 2 Detective Hours by completeing the Focused Feedback for The Detective! Thank you!",
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 5000
+              title: "Thank you!",
+              html:
+                "<p>The Detective just got a little smarter because of your feedback!</p><p>And you just earned 2 non-expirable Detective Hours - Yay!</p>",
+              confirmButtonText: "I'm done!",
+              showCancelButton: true,
+              cancelButtonText: "Change feedback"
+            }).then(result => {
+              if (result.isConfirmed) {
+                window.location.href = "/prints/";
+              }
             });
           }
         })
@@ -277,7 +266,7 @@ export default {
 
     updatePrint: function(data) {
       axios
-        .patch(url.print(this.print.id), data)
+        .patch(apis.print(this.print.id), data)
 
         .then(response => (this.print = response.data));
     },
@@ -293,7 +282,7 @@ export default {
 @use "~main/theme"
 
 .printshots-container
-  margin-top: 1.5em
+  margin-top: 0.5rem
 
 .current-shot-container
   position: relative

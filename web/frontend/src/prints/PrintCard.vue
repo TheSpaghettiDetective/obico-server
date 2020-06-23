@@ -101,14 +101,16 @@
                 @click="onThumbUpClick"
                 class="mx-2 btn-sm"
               >
-                <i class="fas fa-thumbs-up"></i>
+                <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                <i v-else class="fas fa-thumbs-up"></i>
               </b-button>
               <b-button
                 :variant="thumbedDown ? 'primary' : 'outline'"
                 @click="onThumbDownClick"
                 class="mx-2 btn-sm"
               >
-                <i class="fas fa-thumbs-down"></i>
+                <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                <i v-else class="fas fa-thumbs-down"></i>
               </b-button>
             </div>
             <transition name="bounce">
@@ -121,6 +123,7 @@
                   F
                   <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
                   <img
+                    v-if="!focusedFeedbackCompleted"
                     class="seg-control-icon ml-1"
                     :src="require('../../../app/static/img/detective-hour-2-primary.png')"
                   />
@@ -129,15 +132,23 @@
             </transition>
           </div>
           <div class="text-muted py-2 px-3 help-text">
-            <small v-if="!focusedFeedbackEligible">
-              Every time you give The Detective feedback by telling her if she got it right, you help her get better at detecting spaghetti.
-              <a
-                href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
-              >Learn more!</a>
-            </small>
             <small
               v-if="focusedFeedbackEligible"
-            >With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. You will earn 2 Detective Hours once you finnish the Focused Feedback.</small>
+            >
+            <span v-if="focusedFeedbackCompleted">
+              Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.
+            </span>
+            <span v-else>
+              With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. <a href="#">You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
+            </span>
+            </small>
+
+            <small v-else>
+              Every time you give The Detective feedback by telling her if she got it right,
+              <a
+                href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
+              >you help her get better at detecting spaghetti</a>.
+            </small>
           </div>
         </div>
       </div>
@@ -149,11 +160,12 @@
 import axios from "axios";
 import fileDownload from "js-file-download";
 import moment from "moment";
+import filter from "lodash/filter";
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
-import url from "../lib/url";
+import apis from "../lib/apis";
 import VideoBox from "../common/VideoBox";
 import Gauge from "../common/Gauge";
 
@@ -172,7 +184,7 @@ export default {
       currentPosition: 0,
       selectedCardView: "detective",
       selected: false,
-      localOverwrite: null
+      inflightAlertOverwrite: null
     };
   },
 
@@ -198,9 +210,6 @@ export default {
     },
 
     thumbedUp() {
-      if (this.localOverwrite) {
-        return this.localOverwrite === "thumbedUp";
-      }
       if (!this.print.alert_overwrite) {
         return false;
       }
@@ -210,9 +219,6 @@ export default {
     },
 
     thumbedDown() {
-      if (this.localOverwrite) {
-        return this.localOverwrite === "thumbedDown";
-      }
       if (!this.print.alert_overwrite) {
         return false;
       }
@@ -220,7 +226,15 @@ export default {
     },
 
     focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.thumbedDown;
+      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite;
+    },
+
+    focusedFeedbackCompleted() {
+      return (
+        this.print.printshotfeedback_set.length > 0 &&
+        filter(this.print.printshotfeedback_set, f => !f.answered_at).length ==
+          0
+      );
     },
 
     focusedFeedbackLink() {
@@ -234,7 +248,7 @@ export default {
     },
 
     onSelectedChange() {
-      this.$emit("selectedChange", this.print.id, !this.selected); // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
+      this.$emit("selectedChanged", this.print.id, !this.selected); // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
     },
 
     downloadVideo(detectiveVideo) {
@@ -257,23 +271,27 @@ export default {
     },
 
     deleteVideo() {
-      axios.delete(url.print(this.print.id)).then(() => {
-        this.$emit("printDeleted");
+      axios.delete(apis.print(this.print.id)).then(() => {
+        this.$emit("printDeleted", this.print.id);
       });
     },
 
     onThumbUpClick() {
-      this.localOverwrite = "thumbedUp";
-      this.alertOverwrite(this.print.has_alerts ? "FAILED" : "NOT_FAILED");
+      this.inflightAlertOverwrite = this.print.has_alerts ? "FAILED" : "NOT_FAILED";
+      this.alertOverwrite(this.inflightAlertOverwrite);
     },
 
     onThumbDownClick() {
-      this.localOverwrite = "thumbedDown";
-      this.alertOverwrite(this.print.has_alerts ? "NOT_FAILED" : "FAILED");
+      this.inflightAlertOverwrite = this.print.has_alerts ? "NOT_FAILED" : "FAILED";
+      this.alertOverwrite(this.inflightAlertOverwrite);
     },
 
     alertOverwrite(value) {
-      axios.post(url.printAlertOverwrite(this.print.id), { value });
+      axios.post(apis.printAlertOverwrite(this.print.id), { value })
+      .then(response => {
+        this.$emit("printDataChanged", response.data);
+        this.inflightAlertOverwrite = null;
+      });
     }
   }
 };

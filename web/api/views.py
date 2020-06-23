@@ -129,10 +129,12 @@ class PrintViewSet(viewsets.ModelViewSet):
             queryset = queryset.order_by('-id')
 
         start = int(request.GET.get('start', '0'))
-        limit = int(request.GET.get('limit', '10'))
-        queryset = queryset[start:start+limit]
+        limit = int(request.GET.get('limit', '12'))
+        # The "right" way to do it is `queryset[start:start+limit]`. However, it slows down the query by 100x because of the "offset 12 limit 12" clause. Weird.
+        # Maybe related to https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1
+        results = list(queryset)[start:start+limit]
 
-        serializer = self.serializer_class(queryset, many=True)
+        serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])

@@ -1,7 +1,7 @@
 <template>
   <div class="tsd-gauge-container">
     <div class="tsd-gauge">
-      <radial-gauge :value="value" :title="titleText" :options="options"></radial-gauge>
+      <radial-gauge :value="value" :options="{...options, title: titleText}"></radial-gauge>
     </div>
     <hr />
   </div>

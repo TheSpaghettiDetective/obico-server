@@ -60,97 +60,103 @@
           </div>
         </div>
       </div>
-      <div v-show="cardView == 'info'">
-        <video-box :videoUrl="print.video_url" :posterUrl="print.poster_url" />
-        <div class="card-body">
-          <div class="container">
-            <div class="row">
-              <div class="text-muted col-4">File:</div>
-              <div class="col-8">{{ print.filename }}</div>
-            </div>
-            <div class="row">
-              <div class="text-muted col-4">{{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}:</div>
-              <div
-                class="col-8"
-              >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
-            </div>
-            <div class="row" v-if="!wasTimelapseUploaded">
-              <div class="text-muted col-4">Duration:</div>
-              <div class="col-8">{{ duration.humanize() }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-show="cardView == 'detective' && print.has_detective_view">
+      <div>
         <video-box
-          :videoUrl="print.tagged_video_url"
+          :videoUrl="videoUrl"
           :posterUrl="print.poster_url"
+          :fluid="true"
           @timeupdate="onTimeUpdate"
+          @fullscreen="$emit('fullscreen', print.id, videoUrl)"
         />
-        <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
-        <div class="feedback-section">
-          <div class="text-center py-2 px-3">
-            <div
-              class="lead"
-              :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
-            >{{ print.alerted_at ? 'The Detective found spaghetti' : 'The Detective found nothing fishy' }}</div>
-            <div class="py-2">
-              Did she get it right?
-              <b-button
-                :variant="thumbedUp ? 'primary' : 'outline'"
-                @click="onThumbUpClick"
-                class="mx-2 btn-sm"
-              >
-                <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
-                <i v-else class="fas fa-thumbs-up"></i>
-              </b-button>
-              <b-button
-                :variant="thumbedDown ? 'primary' : 'outline'"
-                @click="onThumbDownClick"
-                class="mx-2 btn-sm"
-              >
-                <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
-                <i v-else class="fas fa-thumbs-down"></i>
-              </b-button>
-            </div>
-            <transition name="bounce">
-              <div v-if="focusedFeedbackEligible" class="pt-2">
-                <a
-                  role="button"
-                  class="btn btn-sm btn-outline-primary px-4"
-                  :href="focusedFeedbackLink"
-                >
-                  F
-                  <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
-                  <img
-                    v-if="!focusedFeedbackCompleted"
-                    class="seg-control-icon ml-1"
-                    :src="require('../../../app/static/img/detective-hour-2-primary.png')"
-                  />
-                </a>
-              </div>
-            </transition>
-          </div>
-          <div class="text-muted py-2 px-3 help-text">
-            <small
-              v-if="focusedFeedbackEligible"
-            >
-            <span v-if="focusedFeedbackCompleted">
-              Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.
-            </span>
-            <span v-else>
-              With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. <a href="#">You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
-            </span>
-            </small>
 
-            <small v-else>
-              Every time you give The Detective feedback,
-              <a
-                href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
-              >you help her get better at detecting spaghetti</a>.
-            </small>
+        <div v-show="cardView == 'info'">
+          <div class="card-body">
+            <div class="container">
+              <div class="row">
+                <div class="text-muted col-4">File:</div>
+                <div class="col-8">{{ print.filename }}</div>
+              </div>
+              <div class="row">
+                <div class="text-muted col-4">{{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}:</div>
+                <div
+                  class="col-8"
+                >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
+              </div>
+              <div class="row" v-if="!wasTimelapseUploaded">
+                <div class="text-muted col-4">Duration:</div>
+                <div class="col-8">{{ duration.humanize() }}</div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div v-show="cardView == 'detective' && print.has_detective_view">
+          <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
+          <div class="feedback-section">
+            <div class="text-center py-2 px-3">
+              <div
+                class="lead"
+                :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
+              >{{ print.alerted_at ? 'The Detective found spaghetti' : 'The Detective found nothing fishy' }}</div>
+              <div class="py-2">
+                Did she get it right?
+                <b-button
+                  :variant="thumbedUp ? 'primary' : 'outline'"
+                  @click="onThumbUpClick"
+                  class="mx-2 btn-sm"
+                >
+                  <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                  <i v-else class="fas fa-thumbs-up"></i>
+                </b-button>
+                <b-button
+                  :variant="thumbedDown ? 'primary' : 'outline'"
+                  @click="onThumbDownClick"
+                  class="mx-2 btn-sm"
+                >
+                  <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                  <i v-else class="fas fa-thumbs-down"></i>
+                </b-button>
+              </div>
+              <transition name="bounce">
+                <div v-if="focusedFeedbackEligible" class="pt-2">
+                  <a
+                    role="button"
+                    class="btn btn-sm btn-outline-primary px-4"
+                    :href="focusedFeedbackLink"
+                  >
+                    F
+                    <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+                    <img
+                      v-if="!focusedFeedbackCompleted"
+                      class="seg-control-icon ml-1"
+                      :src="require('../../../app/static/img/detective-hour-2-primary.png')"
+                    />
+                  </a>
+                </div>
+              </transition>
+            </div>
+            <div class="text-muted py-2 px-3 help-text">
+              <small
+                v-if="focusedFeedbackEligible"
+              >
+              <span v-if="focusedFeedbackCompleted">
+                Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.
+              </span>
+              <span v-else>
+                With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. <a href="#">You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
+              </span>
+              </small>
+
+              <small v-else>
+                Every time you give The Detective feedback,
+                <a
+                  href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
+                >you help her get better at detecting spaghetti</a>.
+              </small>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -207,6 +213,10 @@ export default {
 
     cardView() {
       return this.print.has_detective_view ? this.selectedCardView : "info";
+    },
+
+    videoUrl() {
+      return this.cardView == "info" ? this.print.video_url : this.print.tagged_video_url
     },
 
     thumbedUp() {

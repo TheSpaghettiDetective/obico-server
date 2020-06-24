@@ -96,6 +96,7 @@
         @selectedChanged="onSelectedChanged"
         @printDeleted="onPrintDeleted"
         @printDataChanged="printDataChanged"
+        @fullscreen="openFullScreen"
       ></print-card>
     </div>
 
@@ -103,6 +104,20 @@
       <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
       <i v-if="!noMoreData" class="fa fa-spinner fa-pulse"></i>
     </mugen-scroll>
+
+    <b-modal
+      id="tl-fullscreen-modal"
+      size="full"
+      @hidden="fullScreenClosed"
+      :hideHeader="true"
+      :hideFooter="true"
+    >
+      <FullScreenPrintCard
+        :print="fullScreenPrint"
+        :videoUrl="fullScreenPrintVideoUrl"
+        :autoplay="true"
+      />
+    </b-modal>
   </div>
 </template>
 
@@ -114,12 +129,14 @@ import MugenScroll from "vue-mugen-scroll";
 import apis from "../lib/apis";
 import { normalizedPrint } from "../lib/normalizers";
 import PrintCard from "./PrintCard.vue";
+import FullScreenPrintCard from "./FullScreenPrintCard.vue";
 
 export default {
   name: "PrintsApp",
   components: {
     MugenScroll,
-    PrintCard
+    PrintCard,
+    FullScreenPrintCard
   },
   data: function() {
     return {
@@ -128,10 +145,11 @@ export default {
       loading: false,
       noMoreData: false,
       filter: "none",
-      sorting: "date_desc"
+      sorting: "date_desc",
+      fullScreenPrint: null,
+      fullScreenPrintVideoUrl: null
     };
   },
-
   computed: {
     filterBtnVariant() {
       return this.filter === "none" ? "outline-secondary" : "outline-primary";
@@ -220,16 +238,27 @@ export default {
         }
       });
     },
-
     onPrintDeleted(printId) {
       const i = findIndex(this.prints, p => p.id == printId);
       this.$delete(this.prints, i);
     },
-
     printDataChanged(data) {
       const i = findIndex(this.prints, p => p.id == data.id);
       this.$set(this.prints, i, normalizedPrint(data));
-    }
+    },
+    openFullScreen(printId, videoUrl) {
+      const i = findIndex(this.prints, p => p.id == printId)
+      if (i != -1) {
+        this.fullScreenPrint = this.prints[i]
+        this.fullScreenPrintVideoUrl = videoUrl
+        this.$bvModal.show("tl-fullscreen-modal")
+      }
+    },
+    fullScreenClosed() {
+      this.fullScreenPrint = null
+      this.fullScreenPrintVideoUrl = null
+    },
+
   }
 };
 </script>
@@ -244,4 +273,14 @@ export default {
 .menu-bar
   background-color: darken(theme.$color-bg-dark, 10)
   padding: 0.75rem
+
+#tl-fullscreen-modal
+  .modal-full
+    max-width: 100%
+
+  .modal-body
+    padding: 0
+
+  .video-js
+    height: calc(100vh - 200px)
 </style>

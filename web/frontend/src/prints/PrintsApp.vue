@@ -19,7 +19,7 @@
       on-stick="onMenuStick"
     >
       <b-dropdown
-        toggle-class="text-decoration-none btn-sm square-btn"
+        toggle-class="text-decoration-none square-btn btn-no-boarder mr-2"
         :variant="filterBtnVariant"
         no-caret
       >
@@ -56,7 +56,7 @@
         </b-dropdown-item>
       </b-dropdown>
       <b-dropdown
-        toggle-class="text-decoration-none btn-sm square-btn"
+        toggle-class="text-decoration-none square-btn btn-no-boarder mr-2"
         variant="outline-secondary"
         no-caret
       >
@@ -247,18 +247,17 @@ export default {
       this.$set(this.prints, i, normalizedPrint(data));
     },
     openFullScreen(printId, videoUrl) {
-      const i = findIndex(this.prints, p => p.id == printId)
+      const i = findIndex(this.prints, p => p.id == printId);
       if (i != -1) {
-        this.fullScreenPrint = this.prints[i]
-        this.fullScreenPrintVideoUrl = videoUrl
-        this.$bvModal.show("tl-fullscreen-modal")
+        this.fullScreenPrint = this.prints[i];
+        this.fullScreenPrintVideoUrl = videoUrl;
+        this.$bvModal.show("tl-fullscreen-modal");
       }
     },
     fullScreenClosed() {
-      this.fullScreenPrint = null
-      this.fullScreenPrintVideoUrl = null
-    },
-
+      this.fullScreenPrint = null;
+      this.fullScreenPrintVideoUrl = null;
+    }
   }
 };
 </script>
@@ -283,4 +282,7 @@ export default {
 
   .video-js
     height: calc(100vh - 200px)
+
+.btn-no-boarder
+  border: none
 </style>

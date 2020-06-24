@@ -4,11 +4,11 @@
       class="progress-bar"
       role="progressbar"
       :class="{'bg-success': value === 100}"
-      :style="{width: valuePercent}"
+      :style="{width: `${this.value}%`}"
       :aria-valuenow="value"
       aria-valuemin="0"
       aria-valuemax="100"
-    >{{ valuePercent }}</div>
+    >{{ displayedValuePercent }}</div>
   </div>
 </template>
 
@@ -28,8 +28,8 @@ export default {
     }
   },
   computed: {
-    valuePercent() {
-      return `${this.value}%`;
+    displayedValuePercent() {
+      return this.value < 3 ? '' : `${this.value}%`;
     }
   }
 };

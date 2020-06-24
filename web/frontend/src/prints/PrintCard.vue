@@ -144,7 +144,7 @@
             </small>
 
             <small v-else>
-              Every time you give The Detective feedback by telling her if she got it right,
+              Every time you give The Detective feedback,
               <a
                 href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
               >you help her get better at detecting spaghetti</a>.
@@ -184,7 +184,7 @@ export default {
       currentPosition: 0,
       selectedCardView: "detective",
       selected: false,
-      inflightAlertOverwrite: null
+      inflightAlertOverwrite: null,
     };
   },
 

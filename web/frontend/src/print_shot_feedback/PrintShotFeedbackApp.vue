@@ -161,10 +161,8 @@ export default {
     },
 
     progress() {
-      let answered = this.shots.filter(shot => shot.answer !== consts.UNSET)
-        .length;
       let total = this.shots.length;
-      return parseInt((answered / total) * 100);
+      return parseInt((this.currentIndex / total) * 100)+1;
     }
   },
 

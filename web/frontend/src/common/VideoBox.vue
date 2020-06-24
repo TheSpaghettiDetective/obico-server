@@ -10,9 +10,8 @@
     <a
       v-if="fullScreenBtn"
       class="fullscreen-btn"
-      href="#tl-fullscreen-modal"
       role="button"
-      data-toggle="modal"
+      @click="$emit('fullscreen')"
     >
       <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
     </a>
@@ -35,7 +34,15 @@ export default {
         return true;
       },
       type: Boolean
-    }
+    },
+    fluid: {
+      type: Boolean,
+      default() {return true}
+    },
+    autoplay: {
+      type: Boolean,
+      default() {return false}
+    },
   },
   computed: {
     playerOptions() {
@@ -45,7 +52,9 @@ export default {
         preload: "none",
         language: "en",
         playbackRates: [0.5, 1, 1.5, 2],
-        fluid: true,
+        fluid: this.fluid,
+        fill: !this.fluid,
+        autoplay: this.autoplay,
         sources: [
           {
             type: "video/mp4",
@@ -53,8 +62,8 @@ export default {
           }
         ],
         controlBar: { fullscreenToggle: false },
-        poster: this.posterUrl
-      };
+        poster: this.posterUrl,
+      }
     }
   },
   methods: {

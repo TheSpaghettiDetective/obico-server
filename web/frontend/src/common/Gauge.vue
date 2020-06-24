@@ -1,7 +1,7 @@
 <template>
   <div class="tsd-gauge-container">
     <div class="tsd-gauge">
-      <radial-gauge :value="value" :options="{...options, title: titleText}"></radial-gauge>
+      <radial-gauge :value="value" :options="gaugeOptions"></radial-gauge>
     </div>
     <hr />
   </div>
@@ -62,12 +62,18 @@ export default {
         animatedValue: true,
         startAngle: 90,
         ticksAngle: 180,
-        borders: false
+        borders: false,
       })
     }
   },
 
   computed: {
+    gaugeOptions() {
+      const opts = this.options
+      opts.title = this.titleText
+      return opts
+    },
+
     value() {
       const num = Math.round(this.predictions.length * this.currentPosition);
       return this.scaleP(get(this.predictions[num], "fields.ewm_mean"));

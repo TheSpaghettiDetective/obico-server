@@ -162,15 +162,23 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
     serializer_class = PrintShotFeedbackSerializer
 
     def get_queryset(self):
-        return PrintShotFeedback.objects.filter(
+        try:
+            print_id = int(self.request.query_params.get('print_id'))
+        except (ValueError, TypeError):
+            print_id = None
+
+        qs = PrintShotFeedback.objects.filter(
             print__user=self.request.user
         )
+
+        if print_id:
+            qs = qs.filter(print_id=print_id)
+
+        return qs
 
     def update(self, request, *args, **kwargs):
         unanswered_print_shots = self.get_queryset().filter(answered_at__isnull=True)
         should_credit = len(unanswered_print_shots) == 1 and unanswered_print_shots.first().id == int(kwargs['pk'])
-
-        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
 
         if should_credit:
             _print = unanswered_print_shots.first().print
@@ -178,4 +186,5 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                  args=[request.user.id, 1, f'Credit | Focused Feedback - "{_print.filename[:100]}"', f'ff:p:{_print.id}']
                                  )
 
+        resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})

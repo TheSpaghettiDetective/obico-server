@@ -3,7 +3,7 @@
     <button type="button" :class="classes" :disabled="disabled" @click="$emit('click')">
       <i v-if="checked && !updating" class="fas fa-check px-2" />
       <slot />
-      <i v-if="updating" class="fas fa-spinner fa-spin" />
+      <i v-if="updating" class="fas fa-spinner fa-spin mx-2" />
     </button>
   </div>
 </template>

@@ -1,92 +1,86 @@
 <template>
   <div class="timelapse" sticky-container>
-    <div class="my-5 row justify-content-center">
-      <div class="col-12">
-        <a role="button" class="btn btn-outline-primary btn-block" href="/prints/upload/">
-          Upload time-lapses and earn some
-          <img
-            class="dh-icon"
-            :src="require('../../../app/static/img/detective-hour-primary.png')"
-          />
-        </a>
-      </div>
-    </div>
     <div
-      class="menu-bar text-right"
+      class="menu-bar px-sm-4 d-flex justify-content-between"
       v-sticky
       sticky-offset="{top: 0, bottom: 30}"
       sticky-side="both"
       on-stick="onMenuStick"
     >
-      <b-dropdown
-        toggle-class="text-decoration-none square-btn btn-no-boarder mr-2"
-        :variant="filterBtnVariant"
-        no-caret
-      >
-        <template v-slot:button-content>
-          <i class="fas fa-filter"></i>
-        </template>
-        <b-dropdown-item @click="onFilterClick('none')">
-          <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
-        </b-dropdown-item>
-        <b-dropdown-divider></b-dropdown-divider>
-        <b-dropdown-item @click="onFilterClick('finished')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
-          ></i>Finished
-        </b-dropdown-item>
-        <b-dropdown-item @click="onFilterClick('cancelled')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
-          ></i>Cancelled
-        </b-dropdown-item>
-        <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
-          ></i>Review needed
-        </b-dropdown-item>
-        <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
-          ></i>Focused-review needed
-        </b-dropdown-item>
-      </b-dropdown>
-      <b-dropdown
-        toggle-class="text-decoration-none square-btn btn-no-boarder mr-2"
-        variant="outline-secondary"
-        no-caret
-      >
-        <template v-slot:button-content>
-          <i class="fas" :class="sortingBtnClasses"></i>
-        </template>
-        <b-dropdown-item @click="onSortingClick('date_desc')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
-          ></i>Newest to oldest
-        </b-dropdown-item>
-        <b-dropdown-item @click="onSortingClick('date_asc')">
-          <i
-            class="fas fa-check"
-            :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
-          ></i>Oldest to newest
-        </b-dropdown-item>
-      </b-dropdown>
+      <a role="button" class="btn btn-outline-primary" href="/prints/upload/">
+        <i class="fas fa-upload fa-lg mx-2"></i>
+      </a>
+      <div>
+        <b-dropdown
+          toggle-class="text-decoration-none square-btn btn-no-boarder"
+          :variant="filterBtnVariant"
+          no-caret
+        >
+          <template v-slot:button-content>
+            <i class="fas fa-filter"></i>
+          </template>
+          <b-dropdown-item @click="onFilterClick('none')">
+            <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
+          </b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item @click="onFilterClick('finished')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
+            ></i>Finished
+          </b-dropdown-item>
+          <b-dropdown-item @click="onFilterClick('cancelled')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
+            ></i>Cancelled
+          </b-dropdown-item>
+          <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
+            ></i>Review needed
+          </b-dropdown-item>
+          <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
+            ></i>Focused-review needed
+          </b-dropdown-item>
+        </b-dropdown>
+        <b-dropdown
+          toggle-class="text-decoration-none square-btn btn-no-boarder"
+          variant="outline-secondary"
+          no-caret
+        >
+          <template v-slot:button-content>
+            <i class="fas" :class="sortingBtnClasses"></i>
+          </template>
+          <b-dropdown-item @click="onSortingClick('date_desc')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
+            ></i>Newest to oldest
+          </b-dropdown-item>
+          <b-dropdown-item @click="onSortingClick('date_asc')">
+            <i
+              class="fas fa-check"
+              :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
+            ></i>Oldest to newest
+          </b-dropdown-item>
+        </b-dropdown>
 
-      <button
-        type="button"
-        class="btn ml-3"
-        :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
-        :disabled="!anyPrintsSelected"
-        @click="onDeleteBtnClick"
-      >
-        <i class="fas fa-trash-alt"></i>
-        Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
-      </button>
+        <button
+          type="button"
+          class="btn ml-3"
+          :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
+          :disabled="!anyPrintsSelected"
+          @click="onDeleteBtnClick"
+        >
+          <i class="fas fa-trash-alt"></i>
+          Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
+        </button>
+      </div>
     </div>
     <div class="row">
       <print-card

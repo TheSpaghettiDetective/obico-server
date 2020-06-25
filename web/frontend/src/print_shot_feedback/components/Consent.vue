@@ -13,7 +13,9 @@
     <p class="text-muted font-weight-light">
       Help The Detective get better by giving her in-depth feedback on the snapshots of the print.
       You will earn
-      <strong>2 non-expirable Detective Hours</strong> after you finish this Focused Feedback.
+      <strong
+        class="text-light"
+      >2 non-expirable Detective Hours</strong> after you finish this Focused Feedback.
       <a
         href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
       >Learn more >>></a>
@@ -73,7 +75,7 @@ export default {
 
   data() {
     return {
-      consentChecked: true
+      consentChecked: false
     };
   },
 

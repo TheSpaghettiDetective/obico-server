@@ -16,7 +16,7 @@
         :disabled="updating"
         checked-class="btn-primary"
         @click="looksOk"
-      >No, I don't see spaghetti</answer-button>
+      >No, I do NOT see ANY spaghetti</answer-button>
       <answer-button
         :checked="shot.answer === consts.UNANSWERED"
         :updating="updating && inFlightAnswer === consts.UNANSWERED"
@@ -27,7 +27,9 @@
     </div>
     <div class="float-right text-muted px-2 pb-2">
       Not sure? Look at
-      <a href="#">some examples >>></a>
+      <a
+        href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#spaghetti-examples"
+      >some examples >>></a>
     </div>
   </div>
 </template>

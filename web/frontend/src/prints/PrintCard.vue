@@ -136,15 +136,16 @@
               </transition>
             </div>
             <div class="text-muted py-2 px-3 help-text">
-              <small
-                v-if="focusedFeedbackEligible"
-              >
-              <span v-if="focusedFeedbackCompleted">
-                Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.
-              </span>
-              <span v-else>
-                With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve. <a href="#">You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
-              </span>
+              <small v-if="focusedFeedbackEligible">
+                <span
+                  v-if="focusedFeedbackCompleted"
+                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.</span>
+                <span v-else>
+                  With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
+                  <a
+                    href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#you-earn-detective-hours-for-giving-focused-feedback"
+                  >You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
+                </span>
               </small>
 
               <small v-else>
@@ -156,7 +157,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -190,7 +190,7 @@ export default {
       currentPosition: 0,
       selectedCardView: "detective",
       selected: false,
-      inflightAlertOverwrite: null,
+      inflightAlertOverwrite: null
     };
   },
 
@@ -216,7 +216,9 @@ export default {
     },
 
     videoUrl() {
-      return this.cardView == "info" ? this.print.video_url : this.print.tagged_video_url
+      return this.cardView == "info"
+        ? this.print.video_url
+        : this.print.tagged_video_url;
     },
 
     thumbedUp() {
@@ -236,7 +238,10 @@ export default {
     },
 
     focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite;
+      return (
+        this.print.printshotfeedback_set.length > 0 &&
+        this.print.alert_overwrite
+      );
     },
 
     focusedFeedbackCompleted() {
@@ -287,21 +292,26 @@ export default {
     },
 
     onThumbUpClick() {
-      this.inflightAlertOverwrite = this.print.has_alerts ? "FAILED" : "NOT_FAILED";
+      this.inflightAlertOverwrite = this.print.has_alerts
+        ? "FAILED"
+        : "NOT_FAILED";
       this.alertOverwrite(this.inflightAlertOverwrite);
     },
 
     onThumbDownClick() {
-      this.inflightAlertOverwrite = this.print.has_alerts ? "NOT_FAILED" : "FAILED";
+      this.inflightAlertOverwrite = this.print.has_alerts
+        ? "NOT_FAILED"
+        : "FAILED";
       this.alertOverwrite(this.inflightAlertOverwrite);
     },
 
     alertOverwrite(value) {
-      axios.post(apis.printAlertOverwrite(this.print.id), { value })
-      .then(response => {
-        this.$emit("printDataChanged", response.data);
-        this.inflightAlertOverwrite = null;
-      });
+      axios
+        .post(apis.printAlertOverwrite(this.print.id), { value })
+        .then(response => {
+          this.$emit("printDataChanged", response.data);
+          this.inflightAlertOverwrite = null;
+        });
     }
   }
 };

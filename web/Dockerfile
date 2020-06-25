@@ -5,9 +5,13 @@ ARG gid=0
 ARG user=root
 ARG group=root
 ARG with_node=0
+ARG with_sqlite=0
 
 RUN if [[ "$with_node" == 1 ]]; then \
     apk add --no-cache --update inotify-tools nodejs npm && npm install -g yarn \
+    ; fi && \
+    if [[ "$with_sqlite" == 1 ]]; then \
+    apk add --no-cache sqlite \
     ; fi
 
 RUN if [[ "$uid" != 0 ]]; then \

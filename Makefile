@@ -1,4 +1,4 @@
-.PHONY: build-web-base-1.1 build-images build-static frontdev-up vue-live vue-static
+.PHONY: build-web-base-1.1 build-images build-static frontdev-up vue-live vue-static shell dbshell
 
 BASENAME = $(shell basename $(shell pwd) | tr '[:upper:]' '[:lower:]')
 
@@ -9,7 +9,7 @@ build-images:
 	docker-compose build --build-arg with_node=1 --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g)
 
 build-web-and-tasks:
-	docker-compose build --build-arg with_node=1 --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g) web tasks
+	docker-compose build --build-arg with_sqlite=1 --build-arg with_node=1 --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g) web tasks
 
 build-static:
 	docker-compose run --rm --name $(BASENAME)_frontbuilder --no-deps                    web bash -c "cd frontend && yarn install && yarn build"
@@ -22,3 +22,9 @@ vue-live:
 
 vue-static:
 	WEBPACK_LOADER_ENABLED=False docker-compose up
+
+shell:
+	docker-compose run --rm web python manage.py shell
+
+dbshell:
+	docker-compose run --rm web python manage.py dbshell

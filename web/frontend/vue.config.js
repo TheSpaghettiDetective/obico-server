@@ -22,6 +22,8 @@ let vueConfig = {
       resolve: {
         alias: {
           main: path.join(__dirname, 'src/main'),
+          common: path.join(__dirname, 'src/common'),
+          lib: path.join(__dirname, 'src/lib'),
         }
       },
 

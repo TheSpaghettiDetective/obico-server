@@ -26,6 +26,8 @@ def init_data():
     return (user, printer, client)
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "app.notifications.send_failure_alert"
+
+
 @patch('api.octoprint_views.send_failure_alert')
 class AlertTestCase(TestCase):
     def setUp(self):
@@ -34,7 +36,6 @@ class AlertTestCase(TestCase):
     def test_warning_once_and_cancel(self, send_failure_alert):
         response = self.client.get(
             '/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertContains(response, '"succeeded":true,"user_credited":false')
 
         alert_if_needed(self.printer)
         send_failure_alert.assert_called_once_with(
@@ -44,7 +45,6 @@ class AlertTestCase(TestCase):
 
         response = self.client.get(
             '/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
-        self.assertContains(response, '"succeeded":true,"user_credited":true')
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at >
                         self.printer.current_print.alerted_at)
@@ -60,7 +60,6 @@ class AlertTestCase(TestCase):
 
         response = self.client.get(
             '/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
-        self.assertContains(response, '"succeeded":true,"user_credited":true')
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at >
                         self.printer.current_print.alerted_at)

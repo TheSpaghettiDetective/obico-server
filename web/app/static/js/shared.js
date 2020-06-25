@@ -57,7 +57,7 @@ function getLocalPref(prefId, defaultValue) {
     // Hack to deal with data type such as boolean and number
     try {
         return JSON.parse(val);
-    } catch(e) {
+    } catch (e) {
         return val;
     }
 }
@@ -71,7 +71,7 @@ function getPrinterLocalPref(prefix, printerId, defaultValue) {
     var val = localStorage.getItem(itemId) || defaultValue;
     try {
         return JSON.parse(val);
-    } catch(e) {
+    } catch (e) {
         return val;
     }
 }
@@ -86,11 +86,7 @@ function sendPrinterAction(printerId, action, octoprintCommand) {
         var toastHtml = '';
         if (octoprintCommand) {
             toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
-            '<p>It may take a while to be executed by OctoPrint.</p>';
-        }
-        if (result.user_credited) {
-            toastHtml += '<p><a href="/ent/detective_hours/">You just earned ' +
-            '<img class="dh-icon" src="/static/img/detective-hour-inverse.png" />.</a><p>';
+                '<p>It may take a while to be executed by OctoPrint.</p>';
         }
         if (toastHtml != '') {
             Toast.fire({
@@ -157,7 +153,7 @@ function printerGet(printerId, uri, callback) {
         url: '/api/v1/printers/' + printerId + uri,
         type: 'GET',
         dataType: 'json',
-    }).done(function(result) { callback(result); });
+    }).done(function (result) { callback(result); });
 }
 
 /**** Streaming */

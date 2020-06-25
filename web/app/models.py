@@ -279,23 +279,23 @@ class Printer(SafeDeleteModel):
         PrintEvent.create(cur_print, PrintEvent.STARTED)
         self.send_should_watch_status()
 
-    ## return: succeeded, user_credited ##
+    ## return: succeeded? ##
     def resume_print(self, mute_alert=False):
         if self.current_print is None:  # when a link on an old email is clicked
-            return False, False
+            return False
 
         self.current_print.paused_at = None
         self.current_print.save()
 
-        user_credited = self.acknowledge_alert(Print.NOT_FAILED)
+        self.acknowledge_alert(Print.NOT_FAILED)
         self.send_octoprint_command('resume')
 
-        return True, user_credited
+        return True
 
-    ## return: succeeded, user_credited ##
+    ## return: succeeded? ##
     def pause_print(self):
         if self.current_print is None:
-            return False, False
+            return False
 
         self.current_print.paused_at = timezone.now()
         self.current_print.save()
@@ -309,37 +309,29 @@ class Printer(SafeDeleteModel):
             args['bed_off'] = True
         self.send_octoprint_command('pause', args=args)
 
-        return True, False
+        return True
 
-    ## return: succeeded, user_credited ##
+    ## return: succeeded? ##
     def cancel_print(self):
         if self.current_print is None:  # when a link on an old email is clicked
-            return False, False
+            return False
 
-        user_credited = self.acknowledge_alert(Print.FAILED)
+        self.acknowledge_alert(Print.FAILED)
         self.send_octoprint_command('cancel')
 
-        return True, user_credited
+        return True
 
     def set_alert(self):
         self.current_print.alerted_at = timezone.now()
         self.current_print.save()
 
     def acknowledge_alert(self, alert_overwrite):
-        if not self.current_print.alerted_at:
-            return False
-
-        user_credited = False
-
-        if self.current_print.alert_overwrite is None:
-            celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[self.user.id, 1, 'Credit | Tag "{}"'.format(self.current_print.filename[:100]), ''])
-            user_credited = True
+        if not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
+            return
 
         self.current_print.alert_acknowledged_at = timezone.now()
         self.current_print.alert_overwrite = alert_overwrite
         self.current_print.save()
-
-        return user_credited
 
     def mute_current_print(self, muted):
         self.current_print.alert_muted_at = timezone.now() if muted else None

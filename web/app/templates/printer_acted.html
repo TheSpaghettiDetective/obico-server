@@ -4,36 +4,35 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
-      <br /><br /><br />
-      {% if succeeded %}
-      <i class="far fa-check-circle fa-5x text-success"></i>
-      {% else %}
-      <i class="far fa-times-circle fa-5x text-danger"></i>
-      {% endif %}
-    </div>
+  <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
+    <br /><br /><br />
+    {% if succeeded %}
+    <i class="far fa-check-circle fa-5x text-success"></i>
+    {% else %}
+    <i class="far fa-times-circle fa-5x text-danger"></i>
+    {% endif %}
+  </div>
 </div>
 <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
-      <br />
-      {% if succeeded %}
-      <p>Successfully sent command to OctoPrint to {{ action }} print <strong>"{{ printer.current_print.filename|default:'' }}
+  <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
+    <br />
+    {% if succeeded %}
+    <p>Successfully sent command to OctoPrint to {{ action }} print
+      <strong>"{{ printer.current_print.filename|default:'' }}
       </strong>"!</p>
-      <p>It may take a while to be executed by OctoPrint.</p>
-        {% if user_credited %}
-        <p>Oh by the way, you just earned <img class="dh-icon" src="{% static 'img/detective-hour-inverse.png' %}" />. <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">What is it? </a></p>
-        {% endif %}
-      {% else %}
-      <p>You are trying to {{ action }} a print but {{ printer.name }} is not printing... maybe you clicked a link in an outdated email?</p>
-      {% endif %}
-    </div>
+    <p>It may take a while to be executed by OctoPrint.</p>
+    {% else %}
+    <p>You are trying to {{ action }} a print but {{ printer.name }} is not printing... maybe you clicked a link in an
+      outdated email?</p>
+    {% endif %}
+  </div>
 </div>
 <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
-      <br />
-      <a class="btn btn-secondary" href="/printers" role="button">Go to webcam view</a>
-      <br /><br /><br />
-    </div>
+  <div class="col-sm-11 col-md-10 col-lg-8 printer-acted">
+    <br />
+    <a class="btn btn-secondary" href="/printers" role="button">Go to webcam view</a>
+    <br /><br /><br />
+  </div>
 </div>
 
 {% endblock content %}

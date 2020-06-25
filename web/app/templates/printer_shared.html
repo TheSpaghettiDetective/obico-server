@@ -7,22 +7,24 @@
 {% mustachejs '(.*)'  %}
 
 <div class="row justify-content-center">
-    <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card" data-share-token="{{ share_token }}" data-resource-id="{{ printer.sharedresource.id }}">
-        <div class="card">
-            <div class="card-header">
-              <div class="title-box">
-                <div class="primary-title print-filename"></div>
-                <div class="printer-name">{{ printer.name }}</div>
-              </div>
-            </div>
-            {% include 'includes/_webcam_stream.html' %}
+  <div id="{{ printer.id }}" class="col-sm-12 col-lg-6 printer-card" data-share-token="{{ share_token }}"
+    data-resource-id="{{ printer.sharedresource.id }}">
+    <div class="card">
+      <div class="card-header">
+        <div class="title-box">
+          <div class="primary-title print-filename"></div>
+          <div class="printer-name">{{ printer.name }}</div>
         </div>
+      </div>
+      {% include 'includes/_webcam_stream.html' %}
+    </div>
   </div>
 </div>
 <br />
 <div class="row justify-content-center">
   <div class="col-sm-12 col-lg-6">
-    <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on <a href="https://www.thespaghettidetective.com/">The Spaghetti Detective</a></p>
+    <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on <a
+        href="https://www.thespaghettidetective.com/">The Spaghetti Detective</a></p>
     <p class="text-center"><a href="/accounts/signup/">Sign up an account for FREE >>></a></p>
   </div>
 </div>
@@ -33,7 +35,6 @@
 
 <script type="text/javascript">
   var printerStockImgSrc = "{% static 'img/3d_printer.png' %}";
-  var dhInverseIconSrc = "{% static 'img/detective-hour-inverse.png' %}";
   var loadingIcon = "{% static 'img/loading.gif' %}";
   var isProAccount = true;    // Only Pro account can share. So overwrite the global var
   var isOnSharedPage = true;

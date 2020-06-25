@@ -12,32 +12,38 @@
       <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
         <div class="panel-body p-3">
           <div>
-          <div class="sorting-and-filter">
-            <select id="printer-sorting" class="selectpicker my-1 mx-2">
-                <option value="by-date-asc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-up'></i>">Sort By Date Up</option>
-                <option value="by-date-desc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-down'></i>">Sort By Date Down</option>
-                <option value="by-name-asc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-up'></i>">Sort By Name Up</option>
-                <option value="by-name-desc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-down'></i>">Sort By Name Down</option>
-            </select>
-            <select id="printer-filtering" class="selectpicker my-1 mx-2">
+            <div class="sorting-and-filter">
+              <select id="printer-sorting" class="selectpicker my-1 mx-2">
+                <option value="by-date-asc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-up'></i>">Sort By
+                  Date Up</option>
+                <option value="by-date-desc" data-content="Sort By Date <i class='fas fa-long-arrow-alt-down'></i>">Sort
+                  By Date Down</option>
+                <option value="by-name-asc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-up'></i>">Sort By
+                  Name Up</option>
+                <option value="by-name-desc" data-content="Sort By Name <i class='fas fa-long-arrow-alt-down'></i>">Sort
+                  By Name Down</option>
+              </select>
+              <select id="printer-filtering" class="selectpicker my-1 mx-2">
                 <option value="all">All Printers</option>
                 <option value="online">Online Printers Only</option>
                 <option value="active">Active Printers Only</option>
-            </select>
+              </select>
+            </div>
           </div>
-        </div>
-        <hr />
-        <div>
-          {% for printer in printers %}
-          <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link"><i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
-          {% endfor %}
-        </div>
+          <hr />
+          <div>
+            {% for printer in printers %}
+            <a href="#{{printer.id}}" role="button" class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link"><i
+                class="fas fa-map-pin"></i>&nbsp;&nbsp;{{printer.name}}</a>
+            {% endfor %}
+          </div>
         </div>
       </div>
       <div class="panel-heading" role="tab" id="headingOne">
         <div class="panel-title">
-        <button class="btn btn-block shadow-none" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          <i class="fas fa-angle-down"></i></button>
+          <button class="btn btn-block shadow-none" role="button" data-toggle="collapse" data-parent="#accordion"
+            href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <i class="fas fa-angle-down"></i></button>
         </div>
       </div>
     </div>
@@ -46,7 +52,8 @@
 
 <div id="printers" class="row justify-content-center">
   {% for printer in printers %}
-  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" data-name="{{ printer.name }}" data-created-at="{{ printer.created_at|date:'c' }}" class="col-sm-12 col-lg-6 printer-card" style="display: none;">
+  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" data-name="{{ printer.name }}"
+    data-created-at="{{ printer.created_at|date:'c' }}" class="col-sm-12 col-lg-6 printer-card" style="display: none;">
     <div class="card">
       <div class="card-header">
         <div class="title-box">
@@ -54,10 +61,11 @@
           <div class="printer-name">{{ printer.name }}</div>
         </div>
         <div class="dropdown">
-          <button class="btn icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-            aria-haspopup="true" aria-label="{{ printer.name }} Controls"><i class="fas fa-ellipsis-v"></i></button>
+          <button class="btn icon-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+            aria-label="{{ printer.name }} Controls"><i class="fas fa-ellipsis-v"></i></button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="/printers/{{ printer.id }}/share/"><i class="fas fa-share-alt fa-lg"></i>Share</a>
+            <a class="dropdown-item" href="/printers/{{ printer.id }}/share/"><i
+                class="fas fa-share-alt fa-lg"></i>Share</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/printers/{{ printer.id }}/"><i class="fas fa-cog fa-lg"></i>Settings</a>
             <a id="delete-print" class="dropdown-item text-danger" href="#"><i
@@ -73,11 +81,11 @@
         </button>
       </div>
       <div class="card-body gauge-container">
-          <div class="overlay-top text-center"
+        <div class="overlay-top text-center"
           style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px; display: none">
-            <div>The Detective Is Not Watching</div>
-            <div>(<a href="https://www.thespaghettidetective.com/docs/detective-not-watching/">Why?</a>)</div>
-          </div>
+          <div>The Detective Is Not Watching</div>
+          <div>(<a href="https://www.thespaghettidetective.com/docs/detective-not-watching/">Why?</a>)</div>
+        </div>
         <div class="text-center gauge">
           <canvas class='tangle-index' data-type="radial-gauge" data-value-dec="0" data-value-int="0" data-width="240"
             data-height="240" data-units="false" data-title="Looking Good" data-value-box="false" data-min-value="0"
@@ -96,61 +104,72 @@
       <div id="printer-actions" class="container">
       </div>
       <div class="info-section settings">
-        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2 pressed" data-target-div="panel-settings"><i class="fas fa-cog fa-lg"></i></button>
-        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2" data-target-div="print-time"><i class="fas fa-clock fa-lg"></i></button>
-        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2 pressed" data-target-div="status_temp_block"><i class="fas fa-thermometer-half fa-lg"></i></button>
+        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2 pressed"
+          data-target-div="panel-settings"><i class="fas fa-cog fa-lg"></i></button>
+        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2" data-target-div="print-time"><i
+            class="fas fa-clock fa-lg"></i></button>
+        <button type="button" class="info-section-toggle btn btn-sm no-corner mx-2 pressed"
+          data-target-div="status_temp_block"><i class="fas fa-thermometer-half fa-lg"></i></button>
       </div>
       <div class="info-section" style="height: 0.3rem;"></div>
       <div>
         <div class="info-section container">
           <div id="panel-settings">
             <div class="pt-2 pb-3">
-            <div class="row justify-content-center px-3">
-              <div class="col-12 setting-item">
+              <div class="row justify-content-center px-3">
+                <div class="col-12 setting-item">
                   <label class="toggle-label" for="watching-toggle-{{ printer.id }}">Watch for failures
-                    <div class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned on.</div>
+                    <div class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned
+                      on.</div>
                   </label>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" name="watching" class="custom-control-input update-printer" id="watching-toggle-{{ printer.id }}">
-                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
+                    <input type="checkbox" name="watching" class="custom-control-input update-printer"
+                      id="watching-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="watching-toggle-{{ printer.id }}"
+                      style="font-size: 1rem;"></label>
                   </div>
+                </div>
               </div>
-            </div>
-            <div class="row justify-content-center px-3">
-              <div class="col-12 setting-item">
-                  <label class="toggle-label" for="pause-toggle-{{ printer.id }}">Pause on detected failures<div class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications</div></label>
+              <div class="row justify-content-center px-3">
+                <div class="col-12 setting-item">
+                  <label class="toggle-label" for="pause-toggle-{{ printer.id }}">Pause on detected failures<div
+                      class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications
+                    </div></label>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer" id="pause-toggle-{{ printer.id }}">
-                    <label class="custom-control-label" for="pause-toggle-{{ printer.id }}" style="font-size: 1rem;"></label>
+                    <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer"
+                      id="pause-toggle-{{ printer.id }}">
+                    <label class="custom-control-label" for="pause-toggle-{{ printer.id }}"
+                      style="font-size: 1rem;"></label>
                   </div>
-              </div>
-            </div>
-            </div>
-          </div>
-          <div id="print-time" style="display: none;">
-            <div class="py-2">
-            <div class="row text-muted">
-              <small class="col-5 offset-2">
-                Remaining
-              </small>
-              <small class="col-5">
-                Total
-              </small>
-            </div>
-            <div class="row">
-              <div class="col-2 text-muted">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div id="print-time-remaining" class="col-5 numbers"></div>
-              <div id="print-time-total" class="col-5 numbers"></div>
-              <div class="col-12">
-                <div class="progress" style="height: 2px;">
-                  <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated"
-                    role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
                 </div>
               </div>
             </div>
           </div>
+          <div id="print-time" style="display: none;">
+            <div class="py-2">
+              <div class="row text-muted">
+                <small class="col-5 offset-2">
+                  Remaining
+                </small>
+                <small class="col-5">
+                  Total
+                </small>
+              </div>
+              <div class="row">
+                <div class="col-2 text-muted">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div id="print-time-remaining" class="col-5 numbers"></div>
+                <div id="print-time-total" class="col-5 numbers"></div>
+                <div class="col-12">
+                  <div class="progress" style="height: 2px;">
+                    <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                      role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div id="status_temp_block">
           </div>
@@ -170,7 +189,9 @@
     </div>
   </div>
 </div>
-<div id="printers-hidden-warning" style="display: none;" class="text-warning border-warning text-center border my-3 py-2"><span id="printers-hidden">0</span> printers are hidden by the filtering settings.&nbsp;&nbsp;<a href="#" id="show-all-printers-btn">Show all printers >>></a></div>
+<div id="printers-hidden-warning" style="display: none;"
+  class="text-warning border-warning text-center border my-3 py-2"><span id="printers-hidden">0</span> printers are
+  hidden by the filtering settings.&nbsp;&nbsp;<a href="#" id="show-all-printers-btn">Show all printers >>></a></div>
 
 {% endblock content %}
 
@@ -178,7 +199,6 @@
 
 <script type="text/javascript">
   var printerStockImgSrc = "{% static 'img/3d_printer.png' %}";
-  var dhInverseIconSrc = "{% static 'img/detective-hour-inverse.png' %}";
   var loadingIcon = "{% static 'img/loading.gif' %}";
 </script>
 

@@ -99,11 +99,11 @@ def cancel_print(request, pk):
     _print = get_print_or_404(pk, request)
 
     if _print.id != _print.printer.current_print_id:
-        succeeded, user_credited = (False, False)
+        succeeded = False
     else:
-        succeeded, user_credited = _print.printer.cancel_print()
+        succeeded = _print.printer.cancel_print()
 
-    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'cancel', 'succeeded': succeeded, 'user_credited': user_credited})
+    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'cancel', 'succeeded': succeeded})
 
 
 @login_required
@@ -111,11 +111,11 @@ def resume_print(request, pk):
     _print = get_print_or_404(pk, request)
 
     if _print.id != _print.printer.current_print_id:
-        succeeded, user_credited = (False, False)
+        succeeded = False
     else:
-        succeeded, user_credited = _print.printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+        succeeded = _print.printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
 
-    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded, 'user_credited': user_credited})
+    return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded})
 
 
 @login_required
@@ -221,7 +221,6 @@ def upload_print(request):
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         video_path = f'{str(timezone.now().timestamp())}{file_extension}'
         save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.TIMELAPSE_CONTAINER)
-        celery_app.send_task('app_ent.tasks.credit_dh_for_contribution', args=[request.user.id, 1, 'Credit | Upload "{}"'.format(request.FILES['file'].name[:100]), ''])
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))

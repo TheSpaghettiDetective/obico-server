@@ -2,7 +2,6 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
     var printer = printerMap.get(printerId);
     actionsDiv.html(Mustache.template('printer_actions').render({
         printerId: printerId,
-        dhInverseIconSrc: dhInverseIconSrc,
         status: printer.status,
         printerStateTxt: _.get(printer, 'status.state.text', ''),
         printerPaused: isPrinterPaused(_.get(printer, 'status.state')),
@@ -39,7 +38,7 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
         actionsDiv.find('button#connect-printer').attr("disabled", true);
         actionsDiv.find('button#connect-printer i.fa-spin').show();
 
-        printerWs.passThruToPrinter(printerId, {func: 'get_connection_options', target: '_printer'}, function(err, connectionOptions) {
+        printerWs.passThruToPrinter(printerId, { func: 'get_connection_options', target: '_printer' }, function (err, connectionOptions) {
             if (err) {
                 Toast.fire({
                     type: 'error',
@@ -54,10 +53,10 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
                     return;
                 }
                 Swal.fire({
-                    html: Mustache.template('connect_printer').render({connectionOptions: connectionOptions}),
+                    html: Mustache.template('connect_printer').render({ connectionOptions: connectionOptions }),
                     confirmButtonText: 'Connect',
                     showCancelButton: true,
-                    onOpen: function(e){
+                    onOpen: function (e) {
                         $(e).find('select.selectpicker').selectpicker();
                     },
                 }).then((result) => {
@@ -66,7 +65,7 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
                         if ($('select#id-baudrate').val()) {
                             args.push($('select#id-baudrate').val());
                         }
-                        printerWs.passThruToPrinter(printerId, {func: 'connect', target: '_printer', args: args});
+                        printerWs.passThruToPrinter(printerId, { func: 'connect', target: '_printer', args: args });
                     }
                 });
 
@@ -91,33 +90,33 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
             url: '/api/v1/gcodes/',
             type: 'GET',
             dataType: 'json',
-        }).done(function(gcodeFiles) {
-            gcodeFiles.forEach(function(gcodeFile) {
+        }).done(function (gcodeFiles) {
+            gcodeFiles.forEach(function (gcodeFile) {
                 gcodeFile.created_at = moment(gcodeFile.created_at).fromNow();
                 gcodeFile.num_bytes = filesize(gcodeFile.num_bytes);
             });
 
             Swal.fire({
                 title: 'Print on ' + printer.name,
-                html: Mustache.template('start_print').render({gcodeFiles: gcodeFiles}),
+                html: Mustache.template('start_print').render({ gcodeFiles: gcodeFiles }),
                 showConfirmButton: false,
                 showCancelButton: true,
-                onOpen: function(gcodeDiv){
-                    $(gcodeDiv).find("#myInput").on("keyup", function() {
+                onOpen: function (gcodeDiv) {
+                    $(gcodeDiv).find("#myInput").on("keyup", function () {
                         var value = $(this).val().toLowerCase();
-                        $(gcodeDiv).find(".card").filter(function() {
+                        $(gcodeDiv).find(".card").filter(function () {
                             $(this).toggle($(this).find(".gcode-filename").text().toLowerCase().indexOf(value) > -1)
                         });
                     });
-                    $(gcodeDiv).find('button.send-print').on('click', function() {
+                    $(gcodeDiv).find('button.send-print').on('click', function () {
                         actionsDiv.find('button').attr("disabled", true);
                         $(this).find('i.fa-spin').show();
 
                         var gcodeFileId = $(this).data('gcode-file-id');
                         printerWs.passThruToPrinter(printerId,
-                            {func: 'download', target: 'file_downloader', args: _.filter(gcodeFiles, {id: gcodeFileId})},
-                            function(err, ret) {
-                                if (ret.error){
+                            { func: 'download', target: 'file_downloader', args: _.filter(gcodeFiles, { id: gcodeFileId }) },
+                            function (err, ret) {
+                                if (ret.error) {
                                     Toast.fire({
                                         type: 'error',
                                         title: ret.error,
@@ -126,7 +125,7 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
                                 }
 
                                 Swal.fire({
-                                    html: Mustache.template('waiting_download').render({gcodeFiles: gcodeFiles, targetPath: ret.target_path, printer: printer}),
+                                    html: Mustache.template('waiting_download').render({ gcodeFiles: gcodeFiles, targetPath: ret.target_path, printer: printer }),
                                     showConfirmButton: false
                                 });
 
@@ -139,7 +138,7 @@ function updateActionsSection(actionsDiv, printerMap, printerId, alertShowing, p
                                     }
                                 }
                                 checkPrinterStatus();
-                        });
+                            });
                     });
                 },
             });

@@ -1,4 +1,3 @@
-
 {% extends 'email/layout.html' %}
 
 {% block email_content %}
@@ -6,11 +5,11 @@
 <p>Hi {{ print.user.first_name|default:"" }},</p>
 <p>The Detective has finished examining <b>{{ print.filename }}</b>.</p>
 <p>
-  Curious if The Detective found any spaghetti in it? <a href="https://app.thespaghettidetective.com/prints/">Go check it out >>></a>
+  Curious if The Detective found any spaghetti in it? <a href="https://app.thespaghettidetective.com/prints/">Go check
+    it out >>></a>
 </p>
-<p>You have earned <img src="https://www.thespaghettidetective.com/img/detective-hour-primary.png" style="height: 13px; vertical-align: text-bottom;" />
-  by uploading the time-lapse.</p>
-<p>You can earn more by teaching The Detective if she made any mistakes. <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Learn more</a>.
+<p>Earn 2 Detective Hours by teaching The Detective if she got it right and helping her improve. <a
+    href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Learn more >>></a>
 </p>
 
 {% endblock %}

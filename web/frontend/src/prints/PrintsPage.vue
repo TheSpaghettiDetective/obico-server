@@ -126,7 +126,7 @@ import PrintCard from "./PrintCard.vue";
 import FullScreenPrintCard from "./FullScreenPrintCard.vue";
 
 export default {
-  name: "PrintsApp",
+  name: "PrintsPage",
   components: {
     MugenScroll,
     PrintCard,

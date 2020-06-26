@@ -22,6 +22,7 @@ urlpatterns = [
     path('unsubscribe_email/', views.unsubscribe_email, name='unsubscribe_email'),
     path('prints/', views.prints, name='prints'),
     path('prints_new/', views.prints_new, name='prints_new'),
+    path('prints/<pk>/', views.print, name='print'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),
     path('prints/shot-feedback/<pk>/', views.print_shot_feedback, name='print_shot_feedback'),

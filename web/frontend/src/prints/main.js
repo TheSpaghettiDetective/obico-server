@@ -9,8 +9,17 @@ Vue.use(VueSwal)
 Vue.use(VueContentPlaceholders);
 Vue.use(Sticky)
 
-import App from './PrintsApp.vue'
+import PrintsPage from './PrintsPage.vue'
+import PrintPage from './PrintPage.vue'
 
-new Vue({
-    components: { App }
-}).$mount("#prints-mount")
+if (document.getElementById("prints-mount")) {
+    new Vue({
+        components: { PrintsPage }
+    }).$mount("#prints-mount");
+}
+
+if (document.getElementById("print-mount")) {
+    new Vue({
+        components: { PrintPage }
+    }).$mount("#print-mount");
+}

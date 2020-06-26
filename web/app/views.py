@@ -184,6 +184,7 @@ def unsubscribe_email(request):
 ### Prints and public time lapse ###
 
 
+# TODO: Remove this after switching to Vue
 @login_required
 def prints(request):
     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
@@ -198,7 +199,13 @@ def prints(request):
 
 @login_required
 def prints_new(request):
-    return render(request, 'prints_new.html')
+    return render(request, 'prints.html')
+
+
+@login_required
+def print(request, pk):
+    _print = get_print_or_404(pk, request)
+    return render(request, 'print.html', {'object': _print})
 
 
 # TODO: remove after /prints/ switched to Vue

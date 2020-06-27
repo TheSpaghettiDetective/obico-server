@@ -62,16 +62,17 @@ export default {
         animatedValue: true,
         startAngle: 90,
         ticksAngle: 180,
-        borders: false,
+        borders: false
       })
     }
   },
 
   computed: {
     gaugeOptions() {
-      const opts = this.options
-      opts.title = this.titleText
-      return opts
+      const opts = this.options;
+      // TODO: Add titleText back when it is fixed
+      // opts.title = this.titleText
+      return opts;
     },
 
     value() {

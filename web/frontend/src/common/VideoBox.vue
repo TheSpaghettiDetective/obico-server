@@ -7,12 +7,7 @@
       :playsinline="true"
       @timeupdate="onTimeUpdate"
     />
-    <a
-      v-if="fullScreenBtn"
-      class="fullscreen-btn"
-      role="button"
-      @click="$emit('fullscreen')"
-    >
+    <a v-if="fullscreenBtn" class="fullscreen-btn" role="button" @click="$emit('fullscreen')">
       <i class="fa fa-expand fa-2x" aria-hidden="true"></i>
     </a>
   </div>
@@ -29,7 +24,7 @@ export default {
   props: {
     videoUrl: String,
     posterUrl: String,
-    fullScreenBtn: {
+    fullscreenBtn: {
       default() {
         return true;
       },
@@ -37,12 +32,16 @@ export default {
     },
     fluid: {
       type: Boolean,
-      default() {return true}
+      default() {
+        return true;
+      }
     },
     autoplay: {
       type: Boolean,
-      default() {return false}
-    },
+      default() {
+        return false;
+      }
+    }
   },
   computed: {
     playerOptions() {
@@ -62,8 +61,8 @@ export default {
           }
         ],
         controlBar: { fullscreenToggle: false },
-        poster: this.posterUrl,
-      }
+        poster: this.posterUrl
+      };
     }
   },
   methods: {

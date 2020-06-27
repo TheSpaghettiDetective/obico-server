@@ -66,6 +66,7 @@
           :videoUrl="videoUrl"
           :posterUrl="print.poster_url"
           :fluid="true"
+          :fullscreenBtn="hasFullscreenListener"
           @timeupdate="onTimeUpdate"
           @fullscreen="$emit('fullscreen', print.id, videoUrl)"
         />
@@ -285,7 +286,11 @@ export default {
     },
 
     hasSelectedChangedListener() {
-      return this.$listeners && this.$listeners.selectedChanged;
+      return Boolean(this.$listeners && this.$listeners.selectedChanged);
+    },
+
+    hasFullscreenListener() {
+      return Boolean(this.$listeners && this.$listeners.fullscreen);
     }
   },
 

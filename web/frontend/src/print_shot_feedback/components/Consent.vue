@@ -55,14 +55,23 @@
       {{ print.started_at.fromNow() }}
     </div>
     <br />
-    <video-box :videoUrl="print.video_url" :posterUrl="print.poster_url" :fullScreenBtn="false" />
+    <video-box
+      v-if="print.video_url"
+      :videoUrl="print.video_url"
+      :posterUrl="print.poster_url"
+      :fullScreenBtn="false"
+    />
+    <div v-else>
+      <detective-working />
+    </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
 
-import VideoBox from "../../common/VideoBox";
+import VideoBox from "common/VideoBox";
+import DetectiveWorking from "common/DetectiveWorking";
 
 export default {
   name: "Consent",
@@ -71,7 +80,7 @@ export default {
     print: Object
   },
 
-  components: { VideoBox },
+  components: { VideoBox, DetectiveWorking },
 
   data() {
     return {

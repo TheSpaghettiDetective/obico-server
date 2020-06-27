@@ -8,7 +8,7 @@
     <div class="card-img-overlay" style="background-color: rgba(0,0,0,0.6);">
       <h5
         class="card-title text-center"
-        style="padding-top: 120px;"
+        style="padding: 70px 0;"
       >The Detective is still busy working on your time-lapse</h5>
     </div>
   </div>

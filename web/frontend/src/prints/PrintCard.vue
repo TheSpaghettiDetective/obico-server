@@ -62,7 +62,7 @@
       </div>
       <div>
         <video-box
-          v-if="this.videoUrl"
+          v-if="videoUrl"
           :videoUrl="videoUrl"
           :posterUrl="print.poster_url"
           :fluid="true"
@@ -181,7 +181,7 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import apis from "../lib/apis";
 import VideoBox from "../common/VideoBox";
 import Gauge from "../common/Gauge";
-import DetectiveWorking from "./DetectiveWorking";
+import DetectiveWorking from "common/DetectiveWorking";
 
 export default {
   name: "PrintCard",

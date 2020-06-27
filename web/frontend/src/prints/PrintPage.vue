@@ -1,7 +1,12 @@
 <template>
-  <div class="timelapse">
-    <div class="row">
-      <print-card v-if="print" :print="print"></print-card>
+  <div class="mt-2 mb-5">
+    <div class="row justify-content-center">
+      <print-card
+        v-if="print"
+        :print="print"
+        @printDeleted="onPrintDeleted"
+        @printDataChanged="printDataChanged"
+      ></print-card>
     </div>
   </div>
 </template>
@@ -39,15 +44,19 @@ export default {
       axios.get(apis.print(this.config.printId)).then(response => {
         this.print = normalizedPrint(response.data);
       });
+    },
+
+    onPrintDeleted() {
+      window.location.href = "/prints/";
+    },
+
+    printDataChanged() {
+      this.fetchData();
     }
   }
 };
 </script>
 
  <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
-<style lang="sass">
-@use "~main/theme"
-
-.timelapse
-  margin-top: 1.5rem
+<style lang="sass" scoped>
 </style>

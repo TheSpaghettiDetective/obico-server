@@ -3,7 +3,7 @@
     <div class="card vld-parent">
       <loading :active="videoDownloading" :is-full-page="true"></loading>
       <div class="card-header">
-        <div>
+        <div :style="{visibility: hasSelectedChangedListener ? 'visible' : 'hidden'}">
           <b-form-checkbox
             v-model="selected"
             @change="onSelectedChange"
@@ -17,7 +17,7 @@
           button-variant="outline-primary"
           name="radio-btn-outline"
         >
-          <b-form-radio value="detective" class="square-btn" :disabled="!print.has_detective_view">
+          <b-form-radio value="detective" class="square-btn" :disabled="!canShowDetectiveView">
             <img
               class="seg-control-icon"
               :src="require('../../../app/static/img/logo-square-inverted.png')"
@@ -62,13 +62,16 @@
       </div>
       <div>
         <video-box
+          v-if="this.videoUrl"
           :videoUrl="videoUrl"
           :posterUrl="print.poster_url"
           :fluid="true"
           @timeupdate="onTimeUpdate"
           @fullscreen="$emit('fullscreen', print.id, videoUrl)"
         />
-
+        <div v-else>
+          <detective-working />
+        </div>
         <div v-show="cardView == 'info'">
           <div class="card-body">
             <div class="container">
@@ -90,8 +93,12 @@
           </div>
         </div>
 
-        <div v-show="cardView == 'detective' && print.has_detective_view">
-          <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
+        <div v-show="cardView == 'detective' && canShowDetectiveView">
+          <gauge
+            v-if="print.prediction_json_url"
+            :predictionJsonUrl="print.prediction_json_url"
+            :currentPosition="currentPosition"
+          />
           <div class="feedback-section">
             <div class="text-center py-2 px-3">
               <div
@@ -174,6 +181,7 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import apis from "../lib/apis";
 import VideoBox from "../common/VideoBox";
 import Gauge from "../common/Gauge";
+import DetectiveWorking from "./DetectiveWorking";
 
 export default {
   name: "PrintCard",
@@ -181,7 +189,8 @@ export default {
   components: {
     Loading,
     VideoBox,
-    Gauge
+    Gauge,
+    DetectiveWorking
   },
 
   data: () => {
@@ -211,8 +220,27 @@ export default {
       return moment.duration(this.print.ended_at.diff(this.print.started_at));
     },
 
+    canShowDetectiveView() {
+      if (
+        this.print.prediction_json_url !== null &&
+        this.print.tagged_video_url !== null
+      ) {
+        return true;
+      }
+      // Time-lapses that finished or was uploaded within the past 24 hours are presumably still be processed
+      if (
+        (this.print.ended_at &&
+          moment().diff(this.print.ended_at, "hours") < 24) ||
+        (this.print.uploaded_at &&
+          moment().diff(this.print.uploaded_at, "hours") < 24)
+      ) {
+        return true;
+      }
+      return false;
+    },
+
     cardView() {
-      return this.print.has_detective_view ? this.selectedCardView : "info";
+      return this.canShowDetectiveView ? this.selectedCardView : "info";
     },
 
     videoUrl() {
@@ -254,6 +282,10 @@ export default {
 
     focusedFeedbackLink() {
       return `/prints/shot-feedback/${this.print.id}/`;
+    },
+
+    hasSelectedChangedListener() {
+      return this.$listeners && this.$listeners.selectedChanged;
     }
   },
 

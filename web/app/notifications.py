@@ -273,7 +273,7 @@ def send_print_notification_email(_print, extra_ctx={}):
     ctx = {
         'print': _print,
         'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
-        'timelapse_link': site.build_full_url('/prints/'),
+        'timelapse_link': site.build_full_url(f'/prints/{_print.id}/'),
     }
     ctx.update(extra_ctx)
     send_email(

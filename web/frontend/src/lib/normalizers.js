@@ -12,6 +12,5 @@ export const normalizedPrint = print => {
     print.started_at = toMomentOrNull(print.started_at);
     print.uploaded_at = toMomentOrNull(print.uploaded_at);
     print.has_alerts = Boolean(print.alerted_at);
-    print.has_detective_view = print.prediction_json_url !== null && print.tagged_video_url !== null;
     return print;
 }

@@ -113,7 +113,7 @@
                   @click="onThumbUpClick"
                   class="mx-2 btn-sm"
                 >
-                  <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                  <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-up"></i>
                 </b-button>
                 <b-button
@@ -121,7 +121,7 @@
                   @click="onThumbDownClick"
                   class="mx-2 btn-sm"
                 >
-                  <i v-if="inflightAlertOverwrite" class="fas fa-spinner fa-spin"></i>
+                  <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-down"></i>
                 </b-button>
               </div>

@@ -41,7 +41,9 @@
         <span
           class="font-italic"
         >
-          <a href="#">Why is this necessary?</a>
+          <a
+            href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse"
+          >Why is this necessary?</a>
         </span>
       </label>
     </div>

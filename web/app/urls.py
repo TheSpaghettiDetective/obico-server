@@ -21,7 +21,6 @@ urlpatterns = [
     path('test_telegram', views.test_telegram, name='test_telegram'),
     path('unsubscribe_email/', views.unsubscribe_email, name='unsubscribe_email'),
     path('prints/', views.prints, name='prints'),
-    path('prints_new/', views.prints_new, name='prints_new'),
     path('prints/<pk>/', views.print, name='print'),
     path('prints/upload/', views.upload_print, name='upload_print'),
     path('prints/delete/<pk>/', views.delete_prints, name='prints_delete'),

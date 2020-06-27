@@ -185,20 +185,20 @@ def unsubscribe_email(request):
 
 
 # TODO: Remove this after switching to Vue
+# @login_required
+# def prints(request):
+#     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
+
+#     if request.GET.get('deleted', False):
+#         prints = prints.all(force_visibility=True)
+#     page_obj = get_paginator(prints, request, 9)
+#     prediction_urls = [dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
+
+#     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
+
+
 @login_required
 def prints(request):
-    prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
-
-    if request.GET.get('deleted', False):
-        prints = prints.all(force_visibility=True)
-    page_obj = get_paginator(prints, request, 9)
-    prediction_urls = [dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
-
-    return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
-
-
-@login_required
-def prints_new(request):
     return render(request, 'prints.html')
 
 

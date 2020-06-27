@@ -94,7 +94,7 @@
           </div>
         </div>
 
-        <div v-show="cardView == 'detective' && canShowDetectiveView">
+        <div v-show="cardView == 'detective'">
           <gauge
             v-if="print.prediction_json_url"
             :predictionJsonUrl="print.prediction_json_url"

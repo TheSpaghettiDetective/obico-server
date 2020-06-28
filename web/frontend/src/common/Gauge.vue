@@ -1,7 +1,8 @@
 <template>
   <div class="tsd-gauge-container">
+    <span id="title" :style="{color: titleColor}">{{ titleText }}</span>
     <div class="tsd-gauge">
-      <radial-gauge :value="value" :options="gaugeOptions"></radial-gauge>
+      <radial-gauge :value="value" :options="options"></radial-gauge>
     </div>
     <hr />
   </div>
@@ -68,13 +69,6 @@ export default {
   },
 
   computed: {
-    gaugeOptions() {
-      const opts = this.options;
-      // TODO: Add titleText back when it is fixed
-      // opts.title = this.titleText
-      return opts;
-    },
-
     value() {
       const num = Math.round(this.predictions.length * this.currentPosition);
       return this.scaleP(get(this.predictions[num], "fields.ewm_mean"));
@@ -90,6 +84,18 @@ export default {
           return "Failing!";
         default:
           return "Looking Good";
+      }
+    },
+    titleColor() {
+      switch (this.level()) {
+        case 0:
+          return '#5cb85c'
+        case 1:
+          return '#f0ad4e'
+        case 2:
+          return '#d9534f'
+        default:
+          return '#5cb85c'
       }
     }
   },
@@ -131,7 +137,15 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
+#title
+  position: absolute
+  top: 50%
+  left: 0px
+  width: 100%
+  text-align: center
+
 .tsd-gauge-container
+  position: relative
   padding: 0 16px
   .tsd-gauge
     text-align: center

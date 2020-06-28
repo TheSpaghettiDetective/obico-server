@@ -1,6 +1,7 @@
 <template>
   <div class="tsd-gauge-container">
     <span id="title" :style="{color: titleColor}">{{ titleText }}</span>
+    <span v-if="maxValue && maxValue > 0" id="max" :style="{top: maxTop, left: maxLeft}" class="badge badge-secondary" :title="maxValue + '%'">MAX</span>
     <div class="tsd-gauge">
       <radial-gauge :value="value" :options="options"></radial-gauge>
     </div>
@@ -11,24 +12,31 @@
 <script>
 import axios from "axios";
 import get from "lodash/get";
+import maxBy from "lodash/maxBy";
 import RadialGauge from "vue2-canvas-gauges/src/RadialGauge";
 
 const ALERT_THRESHOLD = 0.4;
+const CALIBRATION_DATA = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 export default {
   components: {
     RadialGauge
   },
-  data: () => {
+  data() {
+
     return {
       predictions: [],
       currentValue: 0
     };
   },
   props: {
+    calibrating: {
+      type: Boolean,
+      default() {return false}
+    },
     currentPosition: {
       type: Number,
-      default: 0
+      default() {return 0}
     },
 
     predictionJsonUrl: String,
@@ -69,9 +77,19 @@ export default {
   },
 
   computed: {
+    num() {
+      let length = this.predictions.length
+      if (this.calibrating) {
+        length = CALIBRATION_DATA.length
+      }
+      return Math.round((length-1) * this.currentPosition);
+    },
+
     value() {
-      const num = Math.round(this.predictions.length * this.currentPosition);
-      return this.scaleP(get(this.predictions[num], "fields.ewm_mean"));
+      if (this.calibrating) {
+        return CALIBRATION_DATA[this.num]
+      }
+      return this.scaleP(get(this.predictions[this.num], "fields.ewm_mean"));
     },
 
     titleText() {
@@ -86,6 +104,7 @@ export default {
           return "Looking Good";
       }
     },
+
     titleColor() {
       switch (this.level()) {
         case 0:
@@ -97,7 +116,45 @@ export default {
         default:
           return '#5cb85c'
       }
-    }
+    },
+
+    maxValue() {
+      if (this.calibrating) {
+        return CALIBRATION_DATA[this.num]
+      }
+      return this.scaleP(get(maxBy(this.predictions, (o) => o.fields.ewm_mean), 'fields.ewm_mean'))
+    },
+
+    maxTop() {
+      // 0 -> 1 -> 0
+      const w = Math.sin((this.maxValue / 100.0) * Math.PI)
+
+      // 90 -> 5 -> 90
+      const v = 90 - Math.round(85 * w)
+
+      // 90% @ 0, 5% @ 50, 90% @ 100
+      return v + "%"
+    },
+
+    maxLeft() {
+      // -1 -> 1
+      const w = Math.sin((this.maxValue / 100.0) * Math.PI - (Math.PI / 2))
+
+      // width: 240 => -120 -> 120
+      const v = Math.round(w * this.options.width / 2.0)
+
+      // manual fine tuning
+      const L_EXTRA_OFFSET = 25
+      const R_EXTRA_OFFSET = 10
+
+      // 50% - width/2 -> 50% + width/2
+      if (v <= 0) {
+        return "calc(50% - " + (Math.abs(v) + L_EXTRA_OFFSET) + "px)"
+      } else {
+        return "calc(50% + " + (v - R_EXTRA_OFFSET) + "px)"
+      }
+    },
+
   },
 
   mounted() {
@@ -136,6 +193,9 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
+
+#max
+  position: absolute
 
 #title
   position: absolute

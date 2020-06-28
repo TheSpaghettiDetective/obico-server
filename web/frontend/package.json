@@ -15,7 +15,6 @@
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
     "vue": "^2.6.11",
-    "vue-content-placeholders": "^0.2.1",
     "vue-loading-overlay": "^3.3.2",
     "vue-mugen-scroll": "^0.2.6",
     "vue-slick-carousel": "^1.0.5",

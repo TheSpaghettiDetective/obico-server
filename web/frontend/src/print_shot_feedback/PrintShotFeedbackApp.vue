@@ -6,41 +6,38 @@
           F
           <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
         </h5>
-        <content-placeholders v-if="print === null">
-          <content-placeholders-text :lines="2" />
-          <content-placeholders-text :lines="5" />
-          <content-placeholders-img />
-        </content-placeholders>
-
-        <consent
-          v-if="print !== null && !print.access_consented_at"
-          :print="this.print"
-          @continue-btn-pressed="this.consentBtnPressed"
-        />
-        <div v-if="print !== null && print.access_consented_at">
-          <div>
-            <vue-slick-carousel
-              :arrows="true"
-              :dots="true"
-              @afterChange="onNextShot"
-              ref="carousel"
-            >
-              <print-shot-card
-                v-for="(shot, i) in this.shots"
-                :key="i"
-                :shot="shot"
-                @shotChanged="onShotChanged"
-              ></print-shot-card>
-              <template #customPaging="page">
-                <div :class="pageClass(page)">&bull;</div>
-              </template>
-            </vue-slick-carousel>
-          </div>
-          <br />
-          <div class="card-body p-3">
-            <a href="/prints/">
-              <i class="fas fa-chevron-left"></i> Time-lapse
-            </a>
+        <loading :active="print === null" :is-full-page="true"></loading>
+        <div v-if="print !== null">
+          <consent
+            v-if="!print.access_consented_at"
+            :print="this.print"
+            @continue-btn-pressed="this.consentBtnPressed"
+          />
+          <div v-else>
+            <div>
+              <vue-slick-carousel
+                :arrows="true"
+                :dots="true"
+                @afterChange="onNextShot"
+                ref="carousel"
+              >
+                <print-shot-card
+                  v-for="(shot, i) in this.shots"
+                  :key="i"
+                  :shot="shot"
+                  @shotChanged="onShotChanged"
+                ></print-shot-card>
+                <template #customPaging="page">
+                  <div :class="pageClass(page)">&bull;</div>
+                </template>
+              </vue-slick-carousel>
+            </div>
+            <br />
+            <div class="card-body p-3">
+              <a href="/prints/">
+                <i class="fas fa-chevron-left"></i> Time-lapse
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -57,6 +54,9 @@ import VueSlickCarousel from "vue-slick-carousel";
 import "vue-slick-carousel/dist/vue-slick-carousel.css";
 // optional style for arrows & dots
 import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
+// TODO: this should be configured as global. But for some reason it doesn't work.
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 
 import Consent from "./components/Consent";
 import PrintShotCard from "./components/PrintShotCard";
@@ -67,6 +67,7 @@ export default {
   name: "PrintShotFeedbackApp",
   components: {
     Consent,
+    Loading,
     PrintShotCard,
     VueSlickCarousel
   },

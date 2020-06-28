@@ -77,17 +77,26 @@
           <div class="card-body">
             <div class="container">
               <div class="row">
-                <div class="text-muted col-4">File:</div>
+                <div class="text-muted col-4">
+                  File
+                  <span class="float-right">:</span>
+                </div>
                 <div class="col-8">{{ print.filename }}</div>
               </div>
               <div class="row">
-                <div class="text-muted col-4">{{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}:</div>
+                <div class="text-muted col-4">
+                  {{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}
+                  <span class="float-right">:</span>
+                </div>
                 <div
                   class="col-8"
                 >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
               </div>
               <div class="row" v-if="!wasTimelapseUploaded">
-                <div class="text-muted col-4">Duration:</div>
+                <div class="text-muted col-4">
+                  Duration
+                  <span class="float-right">:</span>
+                </div>
                 <div class="col-8">{{ duration.humanize() }}</div>
               </div>
             </div>
@@ -349,6 +358,11 @@ export default {
           this.$emit("printDataChanged", response.data);
           this.inflightAlertOverwrite = null;
         });
+    }
+  },
+  mounted() {
+    if (!this.print.tagged_video_url) {
+      this.selectedCardView = "info";
     }
   }
 };

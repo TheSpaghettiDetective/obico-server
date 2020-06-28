@@ -120,7 +120,10 @@ export default {
     },
 
     pageClass(page) {
-      return page <= this.currentShot ? "page-visited" : "page-unvisited";
+      if (page === this.currentShot) {
+        return "page-visiting";
+      }
+      return this.shots[page].answered_at ? "text-success" : "page-unvisited";
     }
   }
 };
@@ -146,7 +149,7 @@ export default {
   top: 40%
   opacity: 0.5
 
-.page-visited
+.page-visiting
   color: theme.$primary
 
 .page-unvisited

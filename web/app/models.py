@@ -17,6 +17,7 @@ from simple_history.models import HistoricalRecords
 from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
+from django.utils.html import mark_safe
 
 from config.celery import celery_app
 from lib import redis, channels
@@ -569,3 +570,8 @@ class PrintShotFeedback(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def image_tag(self):
+        return mark_safe(f'<img src="{self.image_url}" width="200" height="200" />')
+
+    image_tag.short_description = 'Image'

@@ -7,7 +7,7 @@ $(document).ready(function () {
         } else {
             $('a.btn').addClass('disabled');
             $('button.btn').addClass('disabled');
-            $('button.btn').addAttr('disabled');
+            $('button.btn').attr("disabled", true);
         }
     });
     $('.popover').popover({

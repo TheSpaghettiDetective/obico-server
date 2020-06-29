@@ -23,6 +23,14 @@ button, .btn {
   }
 }
 
+.btn {
+  &:disabled, &.disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+    pointer-events: all !important;
+  }
+}
+
 .custom-control-label {
   &::before {
     border: $primary solid 2px;

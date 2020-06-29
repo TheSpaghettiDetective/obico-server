@@ -572,6 +572,6 @@ class PrintShotFeedback(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def image_tag(self):
-        return mark_safe(f'<img src="{self.image_url}" width="200" height="200" />')
+        return mark_safe(f'<img src="{self.image_url}" width="150" height="150" />')
 
     image_tag.short_description = 'Image'

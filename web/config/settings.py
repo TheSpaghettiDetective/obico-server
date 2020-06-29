@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'jstemplate',
     'pushbullet',
     'safedelete',
+    'qr_code',
     'app',  # app has to come before allauth for template override to work
     'allauth',
     'allauth.account',

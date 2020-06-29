@@ -1,0 +1,53 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+{% load static %}
+{% load qr_code %}
+
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container">
+      <form id="printer_integration" method="POST" action="{{ request.path }}">
+        {% csrf_token %}
+        <h2 class="mb-4">3D Geeks Integration</h2>
+        {% if printer.service_token %}
+        <div class="lead">Scan this QR code in your 3D Geeks app to add this printer:</div>
+        <div class="text-center bg-white mt-3 mb-5">
+          {% qr_from_text "{{ printer.service_token }}" size="M" %}
+        </div>
+        <input type="hidden" name="enable" value="f">
+        <button role="button" type="submit" class="btn btn-primary">Turn off 3D Geeks integration</button>
+        {% else %}
+        <input type="hidden" name="enable" value="t">
+
+        <div class="custom-control custom-checkbox py-2">
+          <input type="checkbox" id="consent-checkbox" class="custom-control-input">
+          <label class="custom-control-label" for="consent-checkbox">I acknowledge that by turning on 3D Geeks
+            integration, The Spaghetti Detective will share my printer's data with 3D Geeks. My PII (Personal
+            Identifiable Information) will
+            NOT be shared.</label>
+        </div>
+        <button id="int-on-btn" role="button" type="submit" class="btn btn-primary btn-block" disabled>Turn on
+          3D Geeks
+          integration</button>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block page_js %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('input#consent-checkbox').on('change', function () {
+      if (this.checked) {
+        $('button.btn').removeAttr('disabled');
+      } else {
+        $('button.btn').attr("disabled", true);
+      }
+    });
+  });
+</script>
+{% endblock page_js %}

@@ -33,3 +33,4 @@ pytelegrambotapi==3.6.6
 git+https://github.com/ivahotin/django-channels-presence.git
 backoff==1.10.0
 django-webpack-loader==0.7.0
+ django-qr-cod==1.2.0

@@ -1,3 +1,4 @@
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -7,12 +8,13 @@ from django.db import close_old_connections
 
 from app.models import Printer, SharedResource
 
+
 class PrinterAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key, request=None):
         try:
             printer = Printer.objects.select_related('user').get(auth_token=key)
         except ObjectDoesNotExist:
-            raise AuthenticationFailed({'error':'Invalid or Inactive Token', 'is_authenticated': False})
+            raise AuthenticationFailed({'error': 'Invalid or Inactive Token', 'is_authenticated': False})
 
         return printer.user, printer
 
@@ -37,16 +39,27 @@ class PrinterWSAuthMiddleWare:
                     printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
                     scope['user'] = printer
             elif scope['path'].startswith('/ws/shared/'):
-                printer = SharedResource.objects.select_related('printer').get(share_token=scope['path'].split('/')[-2]).printer # scope['path'].split('/')[-2] is the share_token in uri
+                printer = SharedResource.objects.select_related('printer').get(share_token=scope['path'].split(
+                    '/')[-2]).printer  # scope['path'].split('/')[-2] is the share_token in uri
                 printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
                 scope['user'] = printer
         except ObjectDoesNotExist:
             pass
         return self.inner(scope)
 
-TokenAuthMiddlewareStack = lambda inner: PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+class PrinterServiceTokenAuthentication(TokenAuthentication):
+    def authenticate_credentials(self, key, request=None):
+        try:
+            printer = Printer.objects.select_related('user').get(service_token=key)
+        except ObjectDoesNotExist:
+            raise AuthenticationFailed({'error': 'Invalid or Inactive Token', 'is_authenticated': False})
+
+        return printer.user, printer
+
+
+def TokenAuthMiddlewareStack(inner): return PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))
+
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 

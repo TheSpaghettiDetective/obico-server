@@ -149,7 +149,7 @@ def integration(request, pk):
     printer = get_printer_or_404(pk, request)
     if request.method == "POST":
         if request.POST.get('enable') == 't' and not printer.service_token:
-            printer.service_token = hexlify(os.urandom(10)).decode()
+            printer.service_token = hexlify(os.urandom(24)).decode()
             printer.save()
         elif request.POST.get('enable') == 'f':
             printer.service_token = None

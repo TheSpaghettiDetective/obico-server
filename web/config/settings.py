@@ -213,13 +213,6 @@ ACCOUNT_ALLOW_SIGN_UP = os.environ.get('ACCOUNT_ALLOW_SIGN_UP') == 'True'
 
 AUTH_USER_MODEL = 'app.User'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'api.authentication.PrinterAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-}
-
 # Layout
 TEMPLATE_LAYOUT = "layout.html"
 

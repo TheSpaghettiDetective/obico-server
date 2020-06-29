@@ -13,6 +13,7 @@ import json
 import io
 from PIL import Image
 
+from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import redis
 from lib.image import overlay_detections
@@ -68,6 +69,7 @@ def pause_if_needed(printer):
 
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (PrinterAuthentication,)
     parser_classes = (MultiPartParser,)
 
     def post(self, request):
@@ -128,6 +130,7 @@ class OctoPrintPicView(APIView):
 
 
 class OctoPrintPingView(APIView):
+    authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.utils.timezone import now
 
 from app.models import *
-from app.models import PrintShotFeedback
 
 
 class PrinterPredictionSerializer(serializers.ModelSerializer):
@@ -53,3 +52,12 @@ class GCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
+
+
+# For public APIs
+
+class PublicPrinterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Printer
+        fields = ('name',)

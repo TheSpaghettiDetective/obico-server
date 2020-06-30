@@ -4,10 +4,10 @@
       <button
         type="button"
         :style="{'min-width': buttonsWidth}"
-        :class="'btn btn-decrement ' + buttonsClass"
+        :class="'btn btn-num-spinner ' + buttonsClass"
         @click="decrease"
-        @mousedown='whileMouseDown(decrease)'
-        @mouseup='clearTimer'
+        @mousedown="whileMouseDown(decrease)"
+        @mouseup="clearTimer"
       >
         <slot name="decrementButton">
           <strong>-</strong>
@@ -34,10 +34,10 @@
       <button
         type="button"
         :style="{'min-width': buttonsWidth}"
-        :class="'btn btn-increment ' + buttonsClass"
+        :class="'btn btn-num-spinner ' + buttonsClass"
         @click="increase"
-        @mousedown='whileMouseDown(increase)'
-        @mouseup='clearTimer'
+        @mousedown="whileMouseDown(increase)"
+        @mouseup="clearTimer"
       >
         <slot name="incrementButton">
           <strong>+</strong>
@@ -49,9 +49,9 @@
 
 <script>
 export default {
-  name: 'NumberSpinner',
+  name: "NumberSpinner",
   created() {
-    this.timer = null
+    this.timer = null;
   },
   props: {
     min: {
@@ -76,7 +76,7 @@ export default {
     },
     buttonsClass: {
       type: String,
-      default: () => "btn-outline-primary",
+      default: () => ""
     },
     buttonsWidth: {
       type: String,
@@ -84,57 +84,62 @@ export default {
     },
     textAlign: {
       type: String,
-      default: () => "center",
+      default: () => "center"
     },
     mouseDownSpeed: {
       default: () => 100,
       type: Number
-    },
+    }
   },
   computed: {
-    classes() {return "form-control"}
+    classes() {
+      return "form-control";
+    }
   },
   methods: {
-    increase () {
+    increase() {
       if (this.max === null || this.max > this.value) {
-        this.onNewValue(Math.min(this.max, this.value + 1))
+        this.onNewValue(Math.min(this.max, this.value + 1));
       }
     },
-    decrease () {
+    decrease() {
       if (this.min === null || this.min < this.value) {
-        this.onNewValue(Math.max(this.min, this.value - this.step))
+        this.onNewValue(Math.max(this.min, this.value - this.step));
       }
     },
     onInput(event) {
-      this.onNewValue(event.target.value)
+      this.onNewValue(event.target.value);
     },
     onNewValue(value) {
-      const v = parseFloat(value)
+      const v = parseFloat(value);
       if (v) {
-        if ((this.min === null) || (v >= this.min) &&
-           ((this.max === null) || (v <= this.max))) {
-            this.$emit('input', v)
-          }
+        if (
+          this.min === null ||
+          (v >= this.min && (this.max === null || v <= this.max))
+        ) {
+          this.$emit("input", v);
+        }
       }
     },
     clearTimer() {
       if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
+        clearInterval(this.timer);
+        this.timer = null;
       }
     },
     whileMouseDown(callback) {
       if (this.timer === null) {
         this.timer = setInterval(() => {
-          callback()
-        }, this.mouseDownSpeed)
+          callback();
+        }, this.mouseDownSpeed);
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
-input:invalid
-
+.btn-num-spinner
+  outline: none
+  box-shadow: none
 </style>

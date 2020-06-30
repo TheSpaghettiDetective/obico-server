@@ -17,13 +17,17 @@
           button-variant="outline-primary"
           name="radio-btn-outline"
         >
-          <b-form-radio value="detective" class="square-btn" :disabled="!canShowDetectiveView">
+          <b-form-radio
+            value="detective"
+            class="no-corner no-shadow"
+            :disabled="!canShowDetectiveView"
+          >
             <img
               class="seg-control-icon"
               :src="require('../../../app/static/img/logo-square-inverted.png')"
             />
           </b-form-radio>
-          <b-form-radio value="info" class="square-btn">
+          <b-form-radio value="info" class="no-corner no-shadow">
             <img
               class="seg-control-icon"
               :src="require('../../../app/static/img/info-inverted.png')"

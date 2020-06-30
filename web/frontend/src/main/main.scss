@@ -21,6 +21,13 @@ button, .btn {
     border-radius: 0;
     border-width: 1px;
   }
+  &.no-shadow {
+    outline: none;
+    box-shadow: none;
+  }
+  &.no-border {
+    border: none;
+  }
 }
 
 .btn {

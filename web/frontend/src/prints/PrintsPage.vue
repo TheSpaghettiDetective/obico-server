@@ -12,7 +12,7 @@
       </a>
       <div>
         <b-dropdown
-          toggle-class="text-decoration-none square-btn btn-no-boarder"
+          toggle-class="text-decoration-none no-corner no-border no-shadow"
           :variant="filterBtnVariant"
           no-caret
         >
@@ -49,7 +49,7 @@
           </b-dropdown-item>
         </b-dropdown>
         <b-dropdown
-          toggle-class="text-decoration-none square-btn btn-no-boarder"
+          toggle-class="text-decoration-none no-corner no-border no-shadow"
           variant="outline-secondary"
           no-caret
         >
@@ -276,7 +276,4 @@ export default {
 
   .video-js
     height: calc(100vh - 200px)
-
-.btn-no-boarder
-  border: none
 </style>

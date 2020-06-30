@@ -70,13 +70,13 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
-import VideoBox from "common/VideoBox";
-import DetectiveWorking from "common/DetectiveWorking";
+import VideoBox from 'common/VideoBox'
+import DetectiveWorking from 'common/DetectiveWorking'
 
 export default {
-  name: "Consent",
+  name: 'Consent',
 
   props: {
     print: Object
@@ -87,20 +87,20 @@ export default {
   data() {
     return {
       consentChecked: false
-    };
+    }
   },
 
   computed: {
     estimatedFeedbackTime() {
-      const seconds = this.print.printshotfeedback_set.length * 12;
+      const seconds = this.print.printshotfeedback_set.length * 12
       if (seconds < 60) {
-        return `${seconds} seconds`;
+        return `${seconds} seconds`
       } else {
-        return moment.duration(seconds, "seconds").humanize();
+        return moment.duration(seconds, 'seconds').humanize()
       }
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

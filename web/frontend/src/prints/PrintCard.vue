@@ -184,21 +184,21 @@
 </template>
 
 <script>
-import axios from "axios";
-import fileDownload from "js-file-download";
-import moment from "moment";
-import filter from "lodash/filter";
+import axios from 'axios'
+import fileDownload from 'js-file-download'
+import moment from 'moment'
+import filter from 'lodash/filter'
 // TODO: this should be configured as global. But for some reason it doesn't work.
-import Loading from "vue-loading-overlay";
-import "vue-loading-overlay/dist/vue-loading.css";
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
 
-import apis from "../lib/apis";
-import VideoBox from "../common/VideoBox";
-import Gauge from "../common/Gauge";
-import DetectiveWorking from "common/DetectiveWorking";
+import apis from '../lib/apis'
+import VideoBox from '../common/VideoBox'
+import Gauge from '../common/Gauge'
+import DetectiveWorking from 'common/DetectiveWorking'
 
 export default {
-  name: "PrintCard",
+  name: 'PrintCard',
 
   components: {
     Loading,
@@ -211,10 +211,10 @@ export default {
     return {
       videoDownloading: false,
       currentPosition: 0,
-      selectedCardView: "detective",
+      selectedCardView: 'detective',
       selected: false,
       inflightAlertOverwrite: null
-    };
+    }
   },
 
   props: {
@@ -223,15 +223,15 @@ export default {
 
   computed: {
     wasTimelapseUploaded() {
-      return this.print.uploaded_at !== null;
+      return this.print.uploaded_at !== null
     },
 
     endStatus() {
-      return this.print.cancelled_at ? "(Cancelled)" : "";
+      return this.print.cancelled_at ? '(Cancelled)' : ''
     },
 
     duration() {
-      return moment.duration(this.print.ended_at.diff(this.print.started_at));
+      return moment.duration(this.print.ended_at.diff(this.print.started_at))
     },
 
     canShowDetectiveView() {
@@ -239,51 +239,51 @@ export default {
         this.print.prediction_json_url !== null &&
         this.print.tagged_video_url !== null
       ) {
-        return true;
+        return true
       }
       // Time-lapses that finished or was uploaded within the past 24 hours are presumably still be processed
       if (
         (this.print.ended_at &&
-          moment().diff(this.print.ended_at, "hours") < 24) ||
+          moment().diff(this.print.ended_at, 'hours') < 24) ||
         (this.print.uploaded_at &&
-          moment().diff(this.print.uploaded_at, "hours") < 24)
+          moment().diff(this.print.uploaded_at, 'hours') < 24)
       ) {
-        return true;
+        return true
       }
-      return false;
+      return false
     },
 
     cardView() {
-      return this.canShowDetectiveView ? this.selectedCardView : "info";
+      return this.canShowDetectiveView ? this.selectedCardView : 'info'
     },
 
     videoUrl() {
-      return this.cardView == "info"
+      return this.cardView == 'info'
         ? this.print.video_url
-        : this.print.tagged_video_url;
+        : this.print.tagged_video_url
     },
 
     thumbedUp() {
       if (!this.print.alert_overwrite) {
-        return false;
+        return false
       }
       return (
-        this.print.has_alerts ^ (this.print.alert_overwrite === "NOT_FAILED")
-      );
+        this.print.has_alerts ^ (this.print.alert_overwrite === 'NOT_FAILED')
+      )
     },
 
     thumbedDown() {
       if (!this.print.alert_overwrite) {
-        return false;
+        return false
       }
-      return this.print.has_alerts ^ (this.print.alert_overwrite === "FAILED");
+      return this.print.has_alerts ^ (this.print.alert_overwrite === 'FAILED')
     },
 
     focusedFeedbackEligible() {
       return (
         this.print.printshotfeedback_set.length > 0 &&
         this.print.alert_overwrite
-      );
+      )
     },
 
     focusedFeedbackCompleted() {
@@ -291,85 +291,85 @@ export default {
         this.print.printshotfeedback_set.length > 0 &&
         filter(this.print.printshotfeedback_set, f => !f.answered_at).length ==
           0
-      );
+      )
     },
 
     focusedFeedbackLink() {
-      return `/prints/shot-feedback/${this.print.id}/`;
+      return `/prints/shot-feedback/${this.print.id}/`
     },
 
     hasSelectedChangedListener() {
-      return Boolean(this.$listeners && this.$listeners.selectedChanged);
+      return Boolean(this.$listeners && this.$listeners.selectedChanged)
     },
 
     hasFullscreenListener() {
-      return Boolean(this.$listeners && this.$listeners.fullscreen);
+      return Boolean(this.$listeners && this.$listeners.fullscreen)
     }
   },
 
   methods: {
     onTimeUpdate(currentPosition) {
-      this.currentPosition = currentPosition;
+      this.currentPosition = currentPosition
     },
 
     onSelectedChange() {
-      this.$emit("selectedChanged", this.print.id, !this.selected); // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
+      this.$emit('selectedChanged', this.print.id, !this.selected) // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
     },
 
     downloadVideo(detectiveVideo) {
-      this.videoDownloading = true;
-      const x = new XMLHttpRequest();
+      this.videoDownloading = true
+      const x = new XMLHttpRequest()
       const filename = `${this.print.filename}${
-        detectiveVideo ? "_detective_view" : ""
-      }.mp4`;
+        detectiveVideo ? '_detective_view' : ''
+      }.mp4`
       x.open(
-        "GET",
+        'GET',
         detectiveVideo ? this.print.tagged_video_url : this.print.video_url,
         true
-      );
-      x.responseType = "blob";
+      )
+      x.responseType = 'blob'
       x.onload = e => {
-        fileDownload(e.target.response, filename);
-        this.videoDownloading = false;
-      };
-      x.send();
+        fileDownload(e.target.response, filename)
+        this.videoDownloading = false
+      }
+      x.send()
     },
 
     deleteVideo() {
       axios.delete(apis.print(this.print.id)).then(() => {
-        this.$emit("printDeleted", this.print.id);
-      });
+        this.$emit('printDeleted', this.print.id)
+      })
     },
 
     onThumbUpClick() {
       this.inflightAlertOverwrite = this.print.has_alerts
-        ? "FAILED"
-        : "NOT_FAILED";
-      this.alertOverwrite(this.inflightAlertOverwrite);
+        ? 'FAILED'
+        : 'NOT_FAILED'
+      this.alertOverwrite(this.inflightAlertOverwrite)
     },
 
     onThumbDownClick() {
       this.inflightAlertOverwrite = this.print.has_alerts
-        ? "NOT_FAILED"
-        : "FAILED";
-      this.alertOverwrite(this.inflightAlertOverwrite);
+        ? 'NOT_FAILED'
+        : 'FAILED'
+      this.alertOverwrite(this.inflightAlertOverwrite)
     },
 
     alertOverwrite(value) {
       axios
         .post(apis.printAlertOverwrite(this.print.id), { value })
         .then(response => {
-          this.$emit("printDataChanged", response.data);
-          this.inflightAlertOverwrite = null;
-        });
+          this.$emit('printDataChanged', response.data)
+          this.inflightAlertOverwrite = null
+        })
     }
   },
   mounted() {
     if (!this.print.tagged_video_url) {
-      this.selectedCardView = "info";
+      this.selectedCardView = 'info'
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

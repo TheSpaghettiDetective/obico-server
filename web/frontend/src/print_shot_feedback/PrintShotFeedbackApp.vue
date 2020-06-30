@@ -46,25 +46,25 @@
 </template>
 
 <script>
-import axios from "axios";
-import moment from "moment";
-import sortBy from "lodash/sortBy";
-import findIndex from "lodash/findIndex";
-import VueSlickCarousel from "vue-slick-carousel";
-import "vue-slick-carousel/dist/vue-slick-carousel.css";
+import axios from 'axios'
+import moment from 'moment'
+import sortBy from 'lodash/sortBy'
+import findIndex from 'lodash/findIndex'
+import VueSlickCarousel from 'vue-slick-carousel'
+import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 // optional style for arrows & dots
-import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
+import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
-import Loading from "vue-loading-overlay";
-import "vue-loading-overlay/dist/vue-loading.css";
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
 
-import Consent from "./components/Consent";
-import PrintShotCard from "./components/PrintShotCard";
-import apis from "../lib/apis";
-import { normalizedPrint } from "../lib/normalizers";
+import Consent from './components/Consent'
+import PrintShotCard from './components/PrintShotCard'
+import apis from '../lib/apis'
+import { normalizedPrint } from '../lib/normalizers'
 
 export default {
-  name: "PrintShotFeedbackApp",
+  name: 'PrintShotFeedbackApp',
   components: {
     Consent,
     Loading,
@@ -82,51 +82,51 @@ export default {
       shots: [],
       currentShot: 0,
       print: null
-    };
+    }
   },
   computed: {},
 
   mounted() {
-    this.fetchData();
+    this.fetchData()
   },
 
   methods: {
     fetchData() {
       axios.get(apis.print(this.config.printId)).then(response => {
-        this.print = normalizedPrint(response.data);
-        this.shots = sortBy(this.print.printshotfeedback_set, "id");
-      });
+        this.print = normalizedPrint(response.data)
+        this.shots = sortBy(this.print.printshotfeedback_set, 'id')
+      })
     },
 
     updatePrint(data) {
       axios
         .patch(apis.print(this.print.id), data)
 
-        .then(response => (this.print = response.data));
+        .then(response => (this.print = response.data))
     },
 
     consentBtnPressed() {
-      this.updatePrint({ access_consented_at: moment() });
+      this.updatePrint({ access_consented_at: moment() })
     },
 
     onShotChanged(data) {
-      const i = findIndex(this.shots, shot => shot.id == data.id);
-      this.$set(this.shots, i, data);
-      this.$refs.carousel.next();
+      const i = findIndex(this.shots, shot => shot.id == data.id)
+      this.$set(this.shots, i, data)
+      this.$refs.carousel.next()
     },
 
     onNextShot(shotIndex) {
-      this.currentShot = shotIndex;
+      this.currentShot = shotIndex
     },
 
     pageClass(page) {
       if (page === this.currentShot) {
-        return "page-visiting";
+        return 'page-visiting'
       }
-      return this.shots[page].answered_at ? "text-success" : "page-unvisited";
+      return this.shots[page].answered_at ? 'text-success' : 'page-unvisited'
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

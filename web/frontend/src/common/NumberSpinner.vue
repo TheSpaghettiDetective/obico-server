@@ -49,9 +49,9 @@
 
 <script>
 export default {
-  name: "NumberSpinner",
+  name: 'NumberSpinner',
   created() {
-    this.timer = null;
+    this.timer = null
   },
   props: {
     min: {
@@ -72,70 +72,70 @@ export default {
     },
     groupClass: {
       type: String,
-      default: () => ""
+      default: () => ''
     },
     buttonsClass: {
       type: String,
-      default: () => ""
+      default: () => ''
     },
     buttonsWidth: {
       type: String,
-      default: () => "2.5rem"
+      default: () => '2.5rem'
     },
     textAlign: {
       type: String,
-      default: () => "center"
+      default: () => 'center'
     },
     mouseDownSpeed: {
-      default: () => 100,
+      default: () => 1000,
       type: Number
     }
   },
   computed: {
     classes() {
-      return "form-control";
+      return 'form-control'
     }
   },
   methods: {
     increase() {
       if (this.max === null || this.max > this.value) {
-        this.onNewValue(Math.min(this.max, this.value + 1));
+        this.onNewValue(Math.min(this.max, this.value + 1))
       }
     },
     decrease() {
       if (this.min === null || this.min < this.value) {
-        this.onNewValue(Math.max(this.min, this.value - this.step));
+        this.onNewValue(Math.max(this.min, this.value - this.step))
       }
     },
     onInput(event) {
-      this.onNewValue(event.target.value);
+      this.onNewValue(event.target.value)
     },
     onNewValue(value) {
-      const v = parseFloat(value);
+      const v = parseFloat(value)
       if (v) {
         if (
           this.min === null ||
           (v >= this.min && (this.max === null || v <= this.max))
         ) {
-          this.$emit("input", v);
+          this.$emit('input', v)
         }
       }
     },
     clearTimer() {
       if (this.timer) {
-        clearInterval(this.timer);
-        this.timer = null;
+        clearInterval(this.timer)
+        this.timer = null
       }
     },
     whileMouseDown(callback) {
       if (this.timer === null) {
         this.timer = setInterval(() => {
-          callback();
-        }, this.mouseDownSpeed);
+          callback()
+        }, this.mouseDownSpeed)
       }
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

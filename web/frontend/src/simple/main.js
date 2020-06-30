@@ -5,5 +5,5 @@ import App from './App.vue'
 Vue.use(BootstrapVue)
 
 new Vue({
-    render: h => h(App),
-}).$mount("#vue-app-simple")
+  render: h => h(App),
+}).$mount('#vue-app-simple')

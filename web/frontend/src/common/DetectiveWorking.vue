@@ -16,8 +16,8 @@
 
 <script>
 export default {
-  name: "DetectiveWorking"
-};
+  name: 'DetectiveWorking'
+}
 </script>
 
 <style></style>

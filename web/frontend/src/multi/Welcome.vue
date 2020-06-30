@@ -12,13 +12,13 @@ export default {
   name: 'Welcome',
   props: {
     username: {
-      default: "friend",
+      default: 'friend',
       type: String
     },
     data: {
       default: function() {return {}},
       type: Object
-   }
+    }
   },
 }
 </script>

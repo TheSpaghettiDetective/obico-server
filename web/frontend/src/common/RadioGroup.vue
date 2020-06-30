@@ -9,17 +9,17 @@
 
 <script>
 export default {
-  name: "RadioGroup",
+  name: 'RadioGroup',
   props: {
     options: Array,
     initChecked: Number
   },
   methods: {
     onTimeUpdate(event) {
-      this.$emit("timeupdate", event.currentTime() / event.duration());
+      this.$emit('timeupdate', event.currentTime() / event.duration())
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

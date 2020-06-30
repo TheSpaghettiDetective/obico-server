@@ -10,35 +10,35 @@
 
 <script>
 export default {
-  name: "AnswerButton",
+  name: 'AnswerButton',
   props: {
     defaultClass: {
       default() {
-        return "btn-secondary";
+        return 'btn-secondary'
       },
       type: String
     },
     checkedClass: {
       default() {
-        return "btn-secondary";
+        return 'btn-secondary'
       },
       type: String
     },
     disabled: {
       default() {
-        return false;
+        return false
       },
       type: Boolean
     },
     checked: {
       default() {
-        return false;
+        return false
       },
       type: Boolean
     },
     updating: {
       default() {
-        return false;
+        return false
       },
       type: Boolean
     }
@@ -46,12 +46,12 @@ export default {
   computed: {
     classes() {
       if (this.checked) {
-        return `btn btn-block ${this.checkedClass}`;
+        return `btn btn-block ${this.checkedClass}`
       }
-      return `btn btn-block ${this.defaultClass}`;
+      return `btn btn-block ${this.defaultClass}`
     }
   }
-};
+}
 </script>
 
 <style></style>

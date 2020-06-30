@@ -13,11 +13,11 @@
 </template>
 
 <script>
-import VideoBox from "../common/VideoBox";
-import Gauge from "../common/Gauge";
+import VideoBox from '../common/VideoBox'
+import Gauge from '../common/Gauge'
 
 export default {
-  name: "FullScreenPrintCard",
+  name: 'FullScreenPrintCard',
   components: {
     VideoBox,
     Gauge
@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     onTimeUpdate(currentPosition) {
-      this.currentPosition = currentPosition;
+      this.currentPosition = currentPosition
     },
   }
 }

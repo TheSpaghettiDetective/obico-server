@@ -6,5 +6,5 @@ Vue.use(VueSwal)
 import App from './PrintShotFeedbackApp.vue'
 
 new Vue({
-    components: { App }
-}).$mount("#print-shot-feedback-mount")
+  components: { App }
+}).$mount('#print-shot-feedback-mount')

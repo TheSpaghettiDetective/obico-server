@@ -116,17 +116,17 @@
 </template>
 
 <script>
-import axios from "axios";
-import findIndex from "lodash/findIndex";
-import MugenScroll from "vue-mugen-scroll";
+import axios from 'axios'
+import findIndex from 'lodash/findIndex'
+import MugenScroll from 'vue-mugen-scroll'
 
-import apis from "../lib/apis";
-import { normalizedPrint } from "../lib/normalizers";
-import PrintCard from "./PrintCard.vue";
-import FullScreenPrintCard from "./FullScreenPrintCard.vue";
+import apis from '../lib/apis'
+import { normalizedPrint } from '../lib/normalizers'
+import PrintCard from './PrintCard.vue'
+import FullScreenPrintCard from './FullScreenPrintCard.vue'
 
 export default {
-  name: "PrintsPage",
+  name: 'PrintsPage',
   components: {
     MugenScroll,
     PrintCard,
@@ -138,34 +138,34 @@ export default {
       selectedPrintIds: new Set(),
       loading: false,
       noMoreData: false,
-      filter: "none",
-      sorting: "date_desc",
+      filter: 'none',
+      sorting: 'date_desc',
       fullScreenPrint: null,
       fullScreenPrintVideoUrl: null
-    };
+    }
   },
   computed: {
     filterBtnVariant() {
-      return this.filter === "none" ? "outline-secondary" : "outline-primary";
+      return this.filter === 'none' ? 'outline-secondary' : 'outline-primary'
     },
 
     sortingBtnClasses() {
-      return this.sorting === "date_asc"
-        ? " fa-sort-amount-up"
-        : "fa-sort-amount-down";
+      return this.sorting === 'date_asc'
+        ? ' fa-sort-amount-up'
+        : 'fa-sort-amount-down'
     },
 
     anyPrintsSelected() {
-      return this.selectedPrintIds.size > 0;
+      return this.selectedPrintIds.size > 0
     }
   },
   methods: {
     fetchMoreData() {
       if (this.noMoreData) {
-        return;
+        return
       }
 
-      this.loading = true;
+      this.loading = true
       axios
         .get(apis.prints(), {
           params: {
@@ -176,84 +176,84 @@ export default {
           }
         })
         .then(response => {
-          this.loading = false;
-          this.noMoreData = response.data.length < 6;
-          this.prints.push(...response.data.map(data => normalizedPrint(data)));
-        });
+          this.loading = false
+          this.noMoreData = response.data.length < 6
+          this.prints.push(...response.data.map(data => normalizedPrint(data)))
+        })
     },
 
     refetchData() {
-      this.prints = [];
-      this.selectedPrintIds = [];
-      this.noMoreData = false;
-      this.fetchMoreData();
+      this.prints = []
+      this.selectedPrintIds = []
+      this.noMoreData = false
+      this.fetchMoreData()
     },
 
     onSelectedChanged(printId, selected) {
-      const selectedPrintIdsClone = new Set(this.selectedPrintIds);
+      const selectedPrintIdsClone = new Set(this.selectedPrintIds)
       if (selected) {
-        selectedPrintIdsClone.add(printId);
+        selectedPrintIdsClone.add(printId)
       } else {
-        selectedPrintIdsClone.delete(printId);
+        selectedPrintIdsClone.delete(printId)
       }
-      this.selectedPrintIds = selectedPrintIdsClone;
+      this.selectedPrintIds = selectedPrintIdsClone
     },
 
     onMenuStick(data) {
-      console.log(data);
+      console.log(data)
     },
 
     onFilterClick(filter) {
-      this.filter = filter;
-      this.refetchData();
+      this.filter = filter
+      this.refetchData()
     },
 
     onSortingClick(sorting) {
-      this.sorting = sorting;
-      this.refetchData();
+      this.sorting = sorting
+      this.refetchData()
     },
 
     onDeleteBtnClick() {
-      const selectedPrintIds = Array.from(this.selectedPrintIds);
+      const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal({
-        title: "Are you sure?",
+        title: 'Are you sure?',
         text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
         showCancelButton: true,
-        confirmButtonText: "Yes",
-        cancelButtonText: "No"
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
       }).then(userAction => {
         if (userAction.isConfirmed) {
           axios
             .post(apis.printsBulkDelete(), { print_ids: selectedPrintIds })
             .then(() => {
-              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId));
-              this.selectedPrintIds = [];
-            });
+              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId))
+              this.selectedPrintIds = []
+            })
         }
-      });
+      })
     },
     onPrintDeleted(printId) {
-      const i = findIndex(this.prints, p => p.id == printId);
-      this.$delete(this.prints, i);
+      const i = findIndex(this.prints, p => p.id == printId)
+      this.$delete(this.prints, i)
     },
     printDataChanged(data) {
-      const i = findIndex(this.prints, p => p.id == data.id);
-      this.$set(this.prints, i, normalizedPrint(data));
+      const i = findIndex(this.prints, p => p.id == data.id)
+      this.$set(this.prints, i, normalizedPrint(data))
     },
     openFullScreen(printId, videoUrl) {
-      const i = findIndex(this.prints, p => p.id == printId);
+      const i = findIndex(this.prints, p => p.id == printId)
       if (i != -1) {
-        this.fullScreenPrint = this.prints[i];
-        this.fullScreenPrintVideoUrl = videoUrl;
-        this.$bvModal.show("tl-fullscreen-modal");
+        this.fullScreenPrint = this.prints[i]
+        this.fullScreenPrintVideoUrl = videoUrl
+        this.$bvModal.show('tl-fullscreen-modal')
       }
     },
     fullScreenClosed() {
-      this.fullScreenPrint = null;
-      this.fullScreenPrintVideoUrl = null;
+      this.fullScreenPrint = null
+      this.fullScreenPrintVideoUrl = null
     }
   }
-};
+}
 </script>
 
  <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->

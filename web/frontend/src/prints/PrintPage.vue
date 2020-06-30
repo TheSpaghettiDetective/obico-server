@@ -12,14 +12,14 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 
-import apis from "../lib/apis";
-import { normalizedPrint } from "../lib/normalizers";
-import PrintCard from "./PrintCard.vue";
+import apis from '../lib/apis'
+import { normalizedPrint } from '../lib/normalizers'
+import PrintCard from './PrintCard.vue'
 
 export default {
-  name: "PrintPage",
+  name: 'PrintPage',
 
   components: {
     PrintCard
@@ -32,29 +32,29 @@ export default {
   data: function() {
     return {
       print: null
-    };
+    }
   },
 
   mounted() {
-    this.fetchData();
+    this.fetchData()
   },
 
   methods: {
     fetchData() {
       axios.get(apis.print(this.config.printId)).then(response => {
-        this.print = normalizedPrint(response.data);
-      });
+        this.print = normalizedPrint(response.data)
+      })
     },
 
     onPrintDeleted() {
-      window.location.href = "/prints/";
+      window.location.href = '/prints/'
     },
 
     printDataChanged() {
-      this.fetchData();
+      this.fetchData()
     }
   }
-};
+}
 </script>
 
  <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->

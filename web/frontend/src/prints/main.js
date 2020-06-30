@@ -10,14 +10,14 @@ Vue.use(Sticky)
 import PrintsPage from './PrintsPage.vue'
 import PrintPage from './PrintPage.vue'
 
-if (document.getElementById("prints-mount")) {
-    new Vue({
-        components: { PrintsPage }
-    }).$mount("#prints-mount");
+if (document.getElementById('prints-mount')) {
+  new Vue({
+    components: { PrintsPage }
+  }).$mount('#prints-mount')
 }
 
-if (document.getElementById("print-mount")) {
-    new Vue({
-        components: { PrintPage }
-    }).$mount("#print-mount");
+if (document.getElementById('print-mount')) {
+  new Vue({
+    components: { PrintPage }
+  }).$mount('#print-mount')
 }

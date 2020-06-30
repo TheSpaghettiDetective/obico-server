@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import logo from "./assets/logo.png";
-import { BCard, BCardText, BButton } from "bootstrap-vue";
+import logo from './assets/logo.png'
+import { BCard, BCardText, BButton } from 'bootstrap-vue'
 
 export default {
   components: {
@@ -58,12 +58,12 @@ export default {
   },
   data() {
     return {
-      msg: "Hello from vue!",
-      choice: "a",
+      msg: 'Hello from vue!',
+      choice: 'a',
       logo: logo
-    };
+    }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

@@ -14,10 +14,10 @@
 </template>
 
 <script>
-import { videoPlayer } from "vue-video-player";
+import { videoPlayer } from 'vue-video-player'
 
 export default {
-  name: "VideoBox",
+  name: 'VideoBox',
   components: {
     videoPlayer
   },
@@ -26,20 +26,20 @@ export default {
     posterUrl: String,
     fullscreenBtn: {
       default() {
-        return true;
+        return true
       },
       type: Boolean
     },
     fluid: {
       type: Boolean,
       default() {
-        return true;
+        return true
       }
     },
     autoplay: {
       type: Boolean,
       default() {
-        return false;
+        return false
       }
     }
   },
@@ -48,29 +48,29 @@ export default {
       return {
         // videojs options
         muted: true,
-        preload: "none",
-        language: "en",
+        preload: 'none',
+        language: 'en',
         playbackRates: [0.5, 1, 1.5, 2],
         fluid: this.fluid,
         fill: !this.fluid,
         autoplay: this.autoplay,
         sources: [
           {
-            type: "video/mp4",
+            type: 'video/mp4',
             src: this.videoUrl
           }
         ],
         controlBar: { fullscreenToggle: false },
         poster: this.posterUrl
-      };
+      }
     }
   },
   methods: {
     onTimeUpdate(event) {
-      this.$emit("timeupdate", event.currentTime() / event.duration());
+      this.$emit('timeupdate', event.currentTime() / event.duration())
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>

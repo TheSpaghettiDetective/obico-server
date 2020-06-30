@@ -35,26 +35,26 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 
-import apis from "../../lib/apis";
-import AnswerButton from "./AnswerButton";
+import apis from '../../lib/apis'
+import AnswerButton from './AnswerButton'
 
 const consts = {
-  LOOKS_OK: "LOOKS_OK",
-  LOOKS_BAD: "LOOKS_BAD",
-  UNANSWERED: "UNDECIDED"
-};
+  LOOKS_OK: 'LOOKS_OK',
+  LOOKS_BAD: 'LOOKS_BAD',
+  UNANSWERED: 'UNDECIDED'
+}
 
 export default {
-  name: "PrintShotCard",
+  name: 'PrintShotCard',
 
   components: {
     AnswerButton
   },
 
   created() {
-    this.consts = consts;
+    this.consts = consts
   },
 
   props: {
@@ -63,31 +63,31 @@ export default {
 
   computed: {
     updating() {
-      return Boolean(this.inFlightAnswer);
+      return Boolean(this.inFlightAnswer)
     }
   },
 
   data() {
     return {
       inFlightAnswer: null
-    };
+    }
   },
 
   methods: {
     looksOk() {
-      this.updateShot(consts.LOOKS_OK);
+      this.updateShot(consts.LOOKS_OK)
     },
 
     looksBad() {
-      this.updateShot(consts.LOOKS_BAD);
+      this.updateShot(consts.LOOKS_BAD)
     },
 
     willDecideLater() {
-      this.updateShot(consts.UNANSWERED);
+      this.updateShot(consts.UNANSWERED)
     },
 
     updateShot: function(answer) {
-      this.inFlightAnswer = answer;
+      this.inFlightAnswer = answer
 
       axios
         .put(apis.printShotFeedback(this.shot.id, this.shot.print_id), {
@@ -95,30 +95,30 @@ export default {
         })
 
         .then(response => {
-          const { instance, credited_dhs } = response.data;
-          this.$emit("shotChanged", instance);
+          const { instance, credited_dhs } = response.data
+          this.$emit('shotChanged', instance)
           if (credited_dhs > 0) {
             this.$swal({
-              title: "You are awesome!",
+              title: 'You are awesome!',
               html:
-                "<p>The Detective just got a little smarter because of your feedback!</p><p>You just earned 2 non-expirable Detective Hours - Yay!</p>",
-              confirmButtonText: "I'm done!",
+                '<p>The Detective just got a little smarter because of your feedback!</p><p>You just earned 2 non-expirable Detective Hours - Yay!</p>',
+              confirmButtonText: 'I\'m done!',
               showCancelButton: true,
-              cancelButtonText: "Change feedback"
+              cancelButtonText: 'Change feedback'
             }).then(result => {
               if (result.isConfirmed) {
-                window.location.href = "/prints/";
+                window.location.href = '/prints/'
               }
-            });
+            })
           }
         })
 
         .finally(() => {
-          this.inFlightAnswer = null;
-        });
+          this.inFlightAnswer = null
+        })
     }
   }
-};
+}
 </script>
 
 <style></style>

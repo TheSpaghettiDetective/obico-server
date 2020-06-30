@@ -87,7 +87,7 @@ export default {
       default: () => 'center'
     },
     mouseDownSpeed: {
-      default: () => 1000,
+      default: () => 500,
       type: Number
     }
   },

@@ -17,6 +17,9 @@ build-static:
 frontdev-up:
 	docker-compose run --rm --name $(BASENAME)_frontdev --no-deps -p 127.0.0.1:7070:7070 web bash -c "cd frontend && yarn install && yarn serve"
 
+frontdev-lint:
+	docker-compose run --rm --name $(BASENAME)_frontdev --no-deps web bash -c "cd frontend && yarn install && yarn eslint --ext vue --ext js --fix src"
+
 vue-live:
 	WEBPACK_LOADER_ENABLED=True DEBUG=True docker-compose up
 
@@ -28,3 +31,6 @@ shell:
 
 dbshell:
 	docker-compose run --rm web python manage.py dbshell
+
+lint:
+	cd web/frontend && yarn eslint --ext vue --ext js --fix src

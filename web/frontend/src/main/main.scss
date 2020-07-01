@@ -258,6 +258,9 @@ a.link {
       color: $gray-100 !important;
       font-size: 1.4rem !important;
     }
+    .swal2-actions {
+      display: flex;
+    }
     button {
       border-radius: 300px !important;
       border: none !important;

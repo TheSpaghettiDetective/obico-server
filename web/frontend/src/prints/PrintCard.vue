@@ -172,7 +172,7 @@
               <small v-else>
                 Every time you give The Detective feedback,
                 <a
-                  href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
+                  href="https://www.thespaghettidetective.com/docs/help-the-detective-improve/"
                 >you help her get better at detecting spaghetti</a>.
               </small>
             </div>

@@ -32,7 +32,7 @@ from app.notifications import send_print_notification
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
-
+EXT_3D_GEEKS_ENDPOINT = 'https://qx8eve27wk.execute-api.eu-west-2.amazonaws.com/prod/tsd_push'
 
 @shared_task
 def process_print_events(print_id):
@@ -200,6 +200,16 @@ def detect_timelapse(self, print_id):
     delete_dir(f'uploaded/{_print.user.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
 
 
+# Print events handler
+
+@shared_task
+def service_webhook(print_id, event_type, **kwargs):
+    _print = Print.objects.select_related('printer__user').get(id=print_id)
+    req = requests.post(
+        url=EXT_3D_GEEKS_ENDPOINT,
+        json=service_webhook_payload(event_type, _print)
+    )
+
 # Websocket connection count house upkeep jobs
 
 @periodic_task(run_every=timedelta(seconds=120))
@@ -210,6 +220,7 @@ def prune_channel_presence():
 @periodic_task(run_every=timedelta(seconds=1200))
 def prune_channel_rooms():
     Room.objects.prune_rooms()
+
 
 # helper functions
 
@@ -301,3 +312,15 @@ def select_print_shots_for_feedback(_print):
         with open(local_img, 'rb') as local_img_file:
             _, img_url = save_file_obj(f'ff_printshots/raw/{_print.printer.id}/{_print.id}/{local_img.name}', local_img_file, settings.TIMELAPSE_CONTAINER)
             PrintShotFeedback.objects.create(print=_print, image_url=img_url)
+
+
+def service_webhook_payload(event_type, _print):
+    if not _print.printer.service_token:
+        return None
+
+    return dict(
+        token=_print.printer.service_token,
+        event=event_type,
+        printer=_print.printer.name,
+        print=_print.filename
+    )

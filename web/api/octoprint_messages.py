@@ -5,9 +5,10 @@ from lib import redis
 from lib import channels
 from lib.utils import set_as_str_if_present
 from app.models import PrintEvent
+from app.tasks import service_webhook
 
 STATUS_TTL_SECONDS = 240
-
+EXT_WEBHOOK_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintFailed', 'PrintDone', 'PrintCancelled', 'PrintStarted']
 
 def process_octoprint_status(printer, status):
     octoprint_settings = status.get('octoprint_settings')
@@ -43,6 +44,11 @@ def process_octoprint_status_with_ts(op_status, printer):
     printer.update_current_print(current_filename, print_ts)
     if not printer.current_print:
         return
+
+    # Events for external service webhooks such as 3D Geeks
+
+    if printer.service_token and op_event.get('event_type') in EXT_WEBHOOK_EVENTS:
+        service_webhook.delay(printer.current_print.id, op_event.get('event_type'))
 
     if op_event.get('event_type') in ('PrintCancelled', 'PrintFailed'):
         printer.current_print.cancelled_at = timezone.now()

@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+import requests
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
@@ -63,6 +64,18 @@ class PrinterViewSet(viewsets.ModelViewSet):
         printer.send_octoprint_command(request.data['cmd'], request.data['args'])
 
         return self.send_command_response(printer, True)
+
+    @action(detail=True, methods=['get'])
+    def send_webhook_test(self, request, pk=None):
+        printer = self.current_printer_or_404(pk)
+        req = requests.post(
+            url= settings.EXT_3D_GEEKS_ENDPOINT,
+            json=dict(
+                token=printer.service_token,
+                event="test"))
+        req.raise_for_status()
+
+        return Response(dict(status='okay'))
 
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)

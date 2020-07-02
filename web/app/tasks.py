@@ -32,7 +32,6 @@ from app.notifications import send_print_notification
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
-EXT_3D_GEEKS_ENDPOINT = 'https://qx8eve27wk.execute-api.eu-west-2.amazonaws.com/prod/tsd_push'
 
 @shared_task
 def process_print_events(print_id):
@@ -208,7 +207,7 @@ def service_webhook(print_id, event_type, **kwargs):
     webhook_payload = service_webhook_payload(event_type, _print, kwargs)
     LOGGER.debug(webhook_payload)
     req = requests.post(
-        url=EXT_3D_GEEKS_ENDPOINT,
+        url= settings.EXT_3D_GEEKS_ENDPOINT,
         json=webhook_payload
     )
 

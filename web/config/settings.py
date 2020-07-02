@@ -235,6 +235,24 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
+# webpack bundle stats
+
+WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
+WEBPACK_STATS_PATH = os.path.join(
+    BASE_DIR, 'frontend/webpack-stats.json')
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'frontend/',  # must end with slash
+        'STATS_FILE': WEBPACK_STATS_PATH,
+        'POLL_INTERVAL': 0.5,
+        'TIMEOUT': None,
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
+        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
+    }
+}
+
+
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER')
@@ -301,18 +319,4 @@ PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 # Secure redirects
 SECURE_REDIRECTS = {}
 
-# webpack bundle stats
-WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
-WEBPACK_STATS_PATH = os.path.join(
-    BASE_DIR, 'frontend/webpack-stats.json')
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'frontend/',  # must end with slash
-        'STATS_FILE': WEBPACK_STATS_PATH,
-        'POLL_INTERVAL': 0.5,
-        'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-        'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
-    }
-}
+EXT_3D_GEEKS_ENDPOINT = 'https://qx8eve27wk.execute-api.eu-west-2.amazonaws.com/prod/tsd_push'

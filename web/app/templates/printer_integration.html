@@ -9,13 +9,14 @@
     <div class="form-container">
       <form id="printer_integration" method="POST" action="{{ request.path }}">
         {% csrf_token %}
-        <h2 class="mb-4">3D Geeks Integration</h2>
+        <h2 class="mb-4">3D Geeks push notification</h2>
+        <h3 class="text-center">{{ printer.name }}</h3>
         {% if printer.service_token %}
-        <div class="lead">Scan this QR code in your 3D Geeks app to add this printer:</div>
+        <div class="mt-3">Scan this QR code in your 3D Geeks app:</div>
         <div class="text-center bg-white my-3">
           {% qr_from_text printer.service_token size="M" %}
         </div>
-        <div>Or copy this secret token and paste it in 3D Geek app:</div>
+        <div>Or copy this secret token and paste it in 3D Geeks app:</div>
         <div class="input-group mb-5">
           <input id="printer-auth-token" type="text" class="form-control" value={{ printer.service_token }}>
           <div class="input-group-append">
@@ -25,8 +26,12 @@
             </button>
           </div>
         </div>
+        <div class="text-center">
+          <button id="int-test" type="button" class="btn btn-outline-primary"><i class="fas fa-spinner fa-spin" style="display: none;"></i>&nbsp;Test push notification</button>
+        </div>
+        </div>
         <input type="hidden" name="enable" value="f">
-        <button role="button" type="submit" class="btn btn-primary">Turn off 3D Geeks integration</button>
+        <button role="button" type="submit" class="btn btn-secondary btn-block">Turn off 3D Geeks integration</button>
         {% else %}
         <input type="hidden" name="enable" value="t">
 
@@ -57,6 +62,21 @@
       } else {
         $('button.btn').attr("disabled", true);
       }
+    });
+    $('button#int-test').on('click', function () {
+      $('button#int-test i.fa-spin').show();
+      $.ajax({
+            url: '/api/v1/printers/{{ printer.id }}/send_webhook_test/',
+            type: 'GET',
+            dataType: 'json',
+        })
+        .done(function () {
+          $('button#int-test i.fa-spin').hide();
+          Swal.fire({
+                title: 'Test push notification sent!',
+                text: 'You should receive it on your 3D Geeks app shortly.'
+            });
+        });
     });
   });
 </script>

@@ -19,7 +19,9 @@
       <h2 class="mb-4">Secret Token</h2>
       {% include 'includes/_secret_token.html' %}
       <h2 class="mb-4">Integration</h2>
-      <a role="button" type="button" class="btn btn-outline-primary" href="{{ request.path }}integration/">{% if printer.service_token %}Set up 3D Geeks push notification{% else %}Chagne/Remove 3D Geeks push notification{% endif %}</a>
+      <a role="button" type="button" class="btn btn-outline-primary my-2" href="{{ request.path }}integration/">{% if printer.service_token %}Set up 3D Geeks push notification{% else %}Change/Remove 3D Geeks push notification{% endif %}</a>
+      <div class="mt-2">3D Geeks mobile app can be downloaded <a href="https://www.3dgeeks.app/u/android">here</a>.</div>
+      <small class="text-muted font-italic">Disclaimer: 3D Geeks is not affiliated with The Spaghetti Detective.</small>
     </div>
   </div>
 </div>

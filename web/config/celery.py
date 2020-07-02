@@ -26,6 +26,7 @@ celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
 celery_app.conf.task_routes = {
     'app.tasks.print_notification': {'queue': 'realtime'},
     'app.tasks.process_print_events': {'queue': 'realtime'},
+    'app.tasks.service_webhook': {'queue': 'realtime'},
     'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},
     'app_ent.tasks.process_print_events_ent': {'queue': 'realtime'},
     'app_ent.tasks.send_welcome_email': {'queue': 'realtime'},

@@ -95,3 +95,14 @@ def print_high_prediction_add(print_id, prediction, timestamp, maxsize=180):
 def print_highest_predictions_get(print_id):
     key = f'{print_key_prefix(print_id)}:hp'
     return REDIS.zrevrange(key, 0, -1, withscores=True)
+
+
+def print_progress_set(print_id, progress_percent):
+    key = f'{print_key_prefix(print_id)}:pct'
+    REDIS.set(key, str(progress_percent), ex=60*60*24*2)
+
+
+def print_progress_get(print_id):
+    key = f'{print_key_prefix(print_id)}:pct'
+    return int(REDIS.get(key) or 0)
+

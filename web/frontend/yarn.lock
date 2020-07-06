@@ -6145,6 +6145,11 @@ pkg-up@^2.0.0:
   dependencies:
     find-up "^2.1.0"
 
+pluralize@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
+  integrity sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==
+
 pnp-webpack-plugin@^1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/pnp-webpack-plugin/-/pnp-webpack-plugin-1.6.4.tgz#c9711ac4dc48a685dabafc86f8b6dd9f8df84149"
@@ -8370,6 +8375,13 @@ vue-mugen-scroll@^0.2.6:
   dependencies:
     element-in-view "^0.1.0"
     throttleit "^1.0.0"
+
+vue-pluralize@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/vue-pluralize/-/vue-pluralize-0.0.2.tgz#61310447e6e7c9cdb073c164dc36b014cae96484"
+  integrity sha512-NT4Uv/j40yO+yCLIij4nZl9csaXemTqNekYxk7mH+L4t2HZhiJxcg0tc/Q3X6gKv3iaY46Vhz/edDBuH2E6F6w==
+  dependencies:
+    pluralize "^7.0.0"
 
 vue-slick-carousel@^1.0.5:
   version "1.0.5"

@@ -38,7 +38,6 @@ let openModalWithElement = (element, props, modalOptions) => {
   })
 }
 
-
 let toast = (options) => {
     return Vue.swal.fire({
         ...options,
@@ -53,9 +52,26 @@ let toast = (options) => {
 
 const install = (Vue, options) => {
   Vue.use(VueSwal, options)
+  
+  const Confirm = Vue.swal.mixin({
+    title: 'Are you sure?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+  })
+
+  const Toast = Vue.Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 5000,
+  })
+
   Vue.prototype.$swal['openModalWithComponent'] = openModalWithComponent
   Vue.prototype.$swal['openModalWithElement'] = openModalWithElement
   Vue.prototype.$swal['toast'] = toast
+  Vue.prototype.$swal['Confirm'] = Confirm
+  Vue.prototype.$swal['Toast'] = Toast // FIXME Toast vs toast: caused by parallel development
 }
 
 export default {install: install}

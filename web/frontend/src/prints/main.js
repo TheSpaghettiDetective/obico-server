@@ -4,7 +4,7 @@ import { BootstrapVue } from 'bootstrap-vue'
 import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
 
-import '@common/filters'
+import 'common/filters'
 
 Vue.use(BootstrapVue)
 Vue.use(VueSwal)

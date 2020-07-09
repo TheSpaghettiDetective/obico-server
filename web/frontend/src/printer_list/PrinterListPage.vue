@@ -18,7 +18,12 @@
                       :value="item.id"
                     >{{ item.title }}
                       <i
-                        :class="item.id == SortOrder.Asc ? 'fas fa-long-arrow-alt-up' : 'fa fa-long-arrow-alt-down'"
+                        v-if="item.order == SortOrder.Asc"
+                        class="fas fa-long-arrow-alt-up"
+                      ></i>
+                      <i
+                        v-if="item.order == SortOrder.Desc"
+                        class="fas fa-long-arrow-alt-down"
                       ></i>
                     </option>
                   </select>
@@ -207,9 +212,7 @@ export default {
         })
         .then(response => {
           this.loading = false
-          console.log(response.data)
           this.printers = response.data.map(p => normalizedPrinter(p))
-          console.log(this.printers)
         })
     },
     onDeleteClicked(printerId) {

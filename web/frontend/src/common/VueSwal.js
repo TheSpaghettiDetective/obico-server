@@ -60,7 +60,7 @@ const install = (Vue, options) => {
     cancelButtonText: 'No',
   })
 
-  const Toast = Vue.Swal.mixin({
+  const Toast = Vue.swal.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,

@@ -16,5 +16,7 @@ export const normalizedPrint = print => {
 }
 
 export const normalizedPrinter = printer => {
+  printer.name = printer.name || ('Printer #' + printer.id.toString())
+  printer.created_at = toMomentOrNull(printer.created_at)
   return printer
 }

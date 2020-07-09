@@ -14,3 +14,7 @@ export const normalizedPrint = print => {
   print.has_alerts = Boolean(print.alerted_at)
   return print
 }
+
+export const normalizedPrinter = printer => {
+  return printer
+}

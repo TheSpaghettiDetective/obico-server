@@ -16,6 +16,7 @@
     "moment": "^2.26.0",
     "vue": "^2.6.11",
     "vue-loading-overlay": "^3.3.2",
+    "vue-moment": "^4.1.0",
     "vue-mugen-scroll": "^0.2.6",
     "vue-pluralize": "^0.0.2",
     "vue-slick-carousel": "^1.0.5",

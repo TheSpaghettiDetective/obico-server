@@ -87,7 +87,7 @@
                 </div>
                 <div class="col-8">{{ print.filename }}</div>
               </div>
-              <div class="row">
+              <div class="row" v-b-tooltip.hover v-bind:title="wasTimelapseUploaded ? print.uploaded_at : print.ended_at | moment('LLLL')">
                 <div class="text-muted col-4">
                   {{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}
                   <span class="float-right">:</span>
@@ -96,7 +96,10 @@
                   class="col-8"
                 >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
               </div>
-              <div class="row" v-if="!wasTimelapseUploaded">
+              <div class="row" v-if="!wasTimelapseUploaded" :id="'dur-'+print.id">
+                <b-tooltip :target="'dur-'+print.id" triggers="hover">
+                  {{ duration | duration("asHours") | floor }}:{{ duration | duration("minutes") }}:{{ duration | duration("seconds") }}
+                </b-tooltip>
                 <div class="text-muted col-4">
                   Duration
                   <span class="float-right">:</span>

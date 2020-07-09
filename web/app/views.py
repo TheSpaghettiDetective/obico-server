@@ -46,7 +46,7 @@ def printer_auth_token(request, pk):
 
 
 @login_required
-def printers(request):
+def printers(request, template_name="printer_list.html"):
     if not request.user.consented_at:
         return redirect('/consent/')
 
@@ -55,7 +55,7 @@ def printers(request):
     if Printer.with_archived.filter(user=request.user, archived_at__isnull=False).count() > 0:
         messages.warning(request, mark_safe('Some of your printers have been archived. <a href="/ent/printers/archived/">Find them here.</a>'))
 
-    return render(request, 'printer_list.html', {'printers': printers})
+    return render(request, template_name, {'printers': printers})
 
 
 @login_required

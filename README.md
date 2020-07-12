@@ -8,6 +8,8 @@ The core of this project is based on a Deep Learning model. [See how the model w
 
 If you are on Windows 10 and prefer a video tutorial, head to LukesLaboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
 
+If you are on Windows Server, follow [this Windows Server-specific guide](docs/server_2019.md) instead.
+
 If you otherwise prefer textual instructions, follow the steps below.
 
 ## Prerequisites

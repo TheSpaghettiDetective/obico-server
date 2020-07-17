@@ -18,7 +18,7 @@
         </div>
         <div>Or copy this secret token and paste it in 3D Geeks app:</div>
         <div class="input-group mb-5">
-          <input id="printer-auth-token" type="text" class="form-control" value={{ printer.service_token }}>
+          <input id="printer-auth-token" type="text" class="form-control" value={{ printer.service_token }} readonly aria-label="Secret token">
           <div class="input-group-append">
             <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
               data-clipboard-target="#printer-auth-token">

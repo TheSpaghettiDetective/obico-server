@@ -12,7 +12,7 @@
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.4",
     "js-file-download": "^0.4.12",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.26.0",
     "vue": "^2.6.11",
     "vue-loading-overlay": "^3.3.2",

@@ -11,6 +11,7 @@
                     id="printer-sorting"
                     class="my-1 mx-2"
                     v-model="filters.sort"
+                    @change="onSortFilterChanged()"
                   >
                     <option
                       v-for="item in sortFilters"
@@ -32,6 +33,7 @@
                     id="printer-filtering"
                     class="my-1 mx-2"
                     v-model="filters.state"
+                    @change="onStateFilterChanged()"
                   >
                     <option
                       v-for="item in stateFilters"
@@ -71,10 +73,12 @@
         v-for="printer in visiblePrinters"
         :key="printer.id"
         :printer="printer"
+        :is-on-shared-page="isOnSharedPage"
         @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked(printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
+        @ExpandThumbnailToFullClicked="onExpandThumbnailToFullClicked(printer.id)"
       ></PrinterCard>
     </div>
 
@@ -99,7 +103,7 @@
       <a
         href="#"
         id="show-all-printers-btn"
-        @click="filters.state = StateFilter.All"
+        @click="onShowAllPrintersClicked()"
       >Show all printers >>></a>
     </div>
   </div>
@@ -112,6 +116,7 @@ import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
 
+import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
 import * as plib from '@lib/printers'
 import apis from '@lib/apis'
@@ -137,6 +142,22 @@ const SortFilter = {
   NameAsc: 'by-name-asc',
   NameDesc: 'by-name-desc',
 }
+
+const LocalPrefNames = {
+  StateFilter: 'printer-filtering',
+  SortFilter: 'printer-sorting',
+}
+
+let lookup = (obj, value, def)=> {
+  console.log(obj, value, def)
+  const ret = Object.entries(obj).find(pair => (pair[1] == value))
+  if (ret) {
+    return ret[1]
+  } else {
+    return def
+  }
+}
+
 export default {
   name: 'PrinterListPage',
   components: {
@@ -155,16 +176,29 @@ export default {
       {id: SortFilter.DateAsc, title: 'By Date Asc', order: SortOrder.Asc},
       {id: SortFilter.DateDesc, title: 'By Date Desc', order: SortOrder.Desc},
       {id: SortFilter.NameAsc, title: 'By Name Asc', order: SortOrder.Asc},
-      {id: SortFilter.NameDown, title: 'By Name Desc', order: SortOrder.Desc},
+      {id: SortFilter.NameDesc, title: 'By Name Desc', order: SortOrder.Desc},
     ]
   },
   data: function() {
     return {
       printers: [],
       loading: false,
+      isOnSharedPage: false,
       filters: {
-        state: StateFilter.All ,
-        sort: SortFilter.DateDesc,
+        state: lookup(
+          StateFilter,
+          getLocalPref(
+            LocalPrefNames.StateFilter,
+            StateFilter.All),
+          StateFilter.All
+        ),
+        sort: lookup(
+          SortFilter,
+          getLocalPref(
+            LocalPrefNames.SortFilter,
+            SortFilter.DateDesc),
+          SortFilter.DateDesc
+        )
       }
     }
   },
@@ -204,6 +238,11 @@ export default {
     }
   },
   methods: {
+    // TODO
+    //$('.option-drawer .printer-link').on('click', function() {
+    //
+    //    $('.panel-collapse').collapse('hide');
+    //});
     fetchPrinters() {
       this.loading = true
       axios
@@ -217,6 +256,25 @@ export default {
           this.loading = false
           this.printers = response.data.map(p => normalizedPrinter(p))
         })
+    },
+    onSortFilterChanged() {
+      setLocalPref(
+        LocalPrefNames.SortFilter,
+        this.filters.sort
+      )
+    },
+    onStateFilterChanged() {
+      setLocalPref(
+        LocalPrefNames.StateFilter,
+        this.filters.state
+      )
+    },
+    onShowAllPrintersClicked(){
+      this.filters.state = StateFilter.All
+      setLocalPref(
+        LocalPrefNames.StateFilter,
+        this.filters.state
+      )
     },
     onDeleteClicked(printerId) {
       console.log(printerId) // TODO
@@ -256,18 +314,45 @@ export default {
       })
     },
     onWatchForFailuresToggled(printerId) {
-      //FIXME
       console.log('watchtoggle', printerId)
-      this.printers.filter((p) => p.id == printerId).forEach((p) => p.watching = !p.watching)
-
+      let p = this.printers.find((p) => p.id == printerId)
+      if (p) {
+        p.watching = !p.watching
+        this.updatePrinter(p)
+      }
     },
     onPauseOnFailureToggled(printerId) {
-      //FIXME
       console.log('pausetoggle', printerId)
-      this.printers.filter((p) => p.id == printerId).forEach((p) => {
+      let p = this.printers.find((p) => p.id == printerId)
+      if (p) {
         p.action_on_failure = p.action_on_failure == PAUSE ? NOPAUSE : PAUSE
-      })
-    }
+        this.updatePrinter(p)
+      }
+    },
+    onExpandThumbnailToFullClicked(printerId) {
+      console.log('ExpandThumbnailToFullClicked', printerId) //FIXME
+    },
+    updatePrinter(printer) {
+      return axios
+        .patch(
+          apis.printer(printer.id),
+          {
+            watching: printer.watching,
+            action_on_failure: printer.action_on_failure,
+          })
+        .then(response => {
+          this.printers.map(p => {
+            if (p.id == response.data.id) {
+              return normalizedPrinter(response.data)
+            }
+            return p
+          })
+        })
+        .catch(response => {
+          console.log(response)
+          alert('Something went wrong!') // FIXME
+        })
+    },
   },
   mounted() {
     this.fetchPrinters()

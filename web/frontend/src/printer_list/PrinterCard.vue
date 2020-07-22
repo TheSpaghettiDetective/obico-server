@@ -5,8 +5,14 @@
     <div class="card">
       <div class="card-header">
         <div class="title-box">
-          <div class="primary-title print-filename"></div>
-          <div class="printer-name">{{ printer.name || 'Printer #' + printer.id }}</div>
+          <div
+            v-if="hasCurrentPrintFilename"
+            class="primary-title print-filename"
+          >{{ pinter.current_print.filename }}</div>
+          <div
+            class="printer-name"
+            :class="{'secondary-title': hasCurrentPrintFilename}"
+          >{{ printer.name }}</div>
         </div>
         <div class="dropdown">
           <button
@@ -57,8 +63,9 @@
               <img
                 class="tagged-jpg"
                 :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
-                :src="require('@static/img/3d_printer.png')"
+                :src="taggedSrc"
                 :alt="printer.name + ' current image'"
+                @click="$emit('ExpandThumbnailToFullClicked')"
             />
             </div>
             <div id="webrtc-stream" class="webcam_fixed_ratio_inner full ontop">
@@ -75,7 +82,7 @@
       </div>
 
       <div
-        v-if="failureDetected"
+        v-if="shouldShowAlert"
         class="failure-alert card-body bg-warning px-2 py-1"
       >
         <i class="fas fa-exclamation-triangle align-middle"></i>
@@ -107,19 +114,19 @@
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
           :class="{pressed: section_toggles.settings}"
-          @click="section_toggles.settings = !section_toggles.settings"
+          @click="onSettingsToggleClicked()"
         ><i class="fas fa-cog fa-lg"></i></button>
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
           :class="{pressed: section_toggles.time}"
-          @click="section_toggles.time = !section_toggles.time"
+          @click="onTimeToggleClicked()"
         ><i class="fas fa-clock fa-lg"></i></button>
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
-          :class="{pressed: section_toggles.status_temp}"
-          @click="section_toggles.status_temp = !section_toggles.status_temp"
+          :class="{pressed: section_toggles.statusTemp}"
+          @click="onStatusTempToggleClicked()"
           ><i class="fas fa-thermometer-half fa-lg"></i></button>
       </div>
       <div class="info-section" style="height: 0.3rem;"></div>
@@ -204,8 +211,16 @@
                 <div class="col-2 text-muted">
                   <i class="fas fa-clock"></i>
                 </div>
-                <div id="print-time-remaining" class="col-5 numbers">{{ time_remaining }}</div>
-                <div id="print-time-total" class="col-5 numbers">{{ time_total }}</div>
+                <DurationBlock
+                  id="print-time-remaining"
+                  class="col-5 numbers"
+                  v-bind="timeRemaining"
+                ></DurationBlock>
+                <DurationBlock
+                  id="print-time-total"
+                  class="col-5 numbers"
+                  v-bind="timeTotal"
+                ></DurationBlock>
                 <div class="col-12">
                   <div class="progress" style="height: 2px;">
                     <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated"
@@ -218,7 +233,7 @@
           </div>
           <div
             id="status_temp_block"
-            v-if="section_toggles.status_temp"
+            v-if="section_toggles.statusTemp"
           >
           </div>
         </div>
@@ -228,40 +243,84 @@
 </template>
 
 <script>
+import moment from 'moment'
+import get from 'lodash/get'
 import Gauge from '@common/Gauge'
+
+import printerStockImgSrc from '@static/img/3d_printer.png'
+
+import {setPrinterLocalPref, getPrinterLocalPref, toDuration} from '@lib/printers.js'
+
+import DurationBlock from './DurationBlock.vue'
 
 export const PAUSE = 'PAUSE'
 export const NOPAUSE = ''
+
+const Show = true
+const Hide = false
+
+const LocalPrefNames = {
+  Settings: 'panel-settings',
+  Time: 'print-time',
+  StatusTemp: 'status_temp_block',
+}
 
 export default {
   name: 'PrinterCard',
   components: {
     Gauge,
+    DurationBlock,
   },
   props: {
     printer: {
       type: Object,
+      required: true
+    },
+    isOnSharedPage: { // TODO
+      type: Boolean,
       required: true
     }
   },
   data() {
     return {
       section_toggles: {
-        settings: true,
-        time: true,
-        status_temp: true
+        settings: getPrinterLocalPref(
+          LocalPrefNames.Settings,
+          this.printer.id,
+          Show
+        ),
+        time: getPrinterLocalPref(
+          LocalPrefNames.Time,
+          this.printer.id,
+          Hide,
+        ),
+        statusTemp: getPrinterLocalPref(
+          LocalPrefNames.StatusTemp,
+          this.printer.id,
+          Show
+        )
       }
     }
   },
   computed: {
-    failureDetected() {
-      return true // FIXME
+    timeRemaining() {
+      return toDuration(
+        this.secondsLeft, get(this.printer, 'status.state'))
     },
-    time_remaining() {
-      return '-' // FIXME
+    timeTotal() {
+      let secs = null
+      if (this.secondsPrinted && this.secondsLeft) {
+        secs = this.secondsPrinted + this.secondsLeft
+      }
+      return toDuration(
+        secs,
+        get(this.printer, 'status.state'))
     },
-    time_total() {
-      return '-' // FIXME
+    secondsLeft() {
+      return get(this.printer, 'status.progress.printTimeLeft')
+    },
+    secondsPrinted() {
+      return get(this.printer, 'status.progress.printTime')
     },
     webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {
@@ -298,7 +357,26 @@ export default {
     },
     pauseOnFailure() {
       return this.printer.action_on_failure == PAUSE
-    }
+    },
+    shouldShowAlert() {
+      if (!this.printer.current_print || !this.printer.current_print.alerted_at) {
+        return false
+      }
+      return moment(
+        this.printer.current_print.alerted_at
+      ).isAfter(
+        moment(this.printer.current_print.alert_acknowledged_at || 0)
+      )
+    },
+    hasCurrentPrintFilename() {
+      if (this.printer.current_print && this.printer.curent_print.filename) {
+        return true
+      }
+      return false
+    },
+    taggedSrc() {
+      return get(this.printer, 'pic.img_url', printerStockImgSrc)
+    },
   },
   methods: {
     shareUrl() {
@@ -307,6 +385,27 @@ export default {
     settingsUrl() {
       return `/printers/${this.printer.id}/`
     },
+    onSettingsToggleClicked() {
+      this.section_toggles.settings = !this.section_toggles.settings
+      setPrinterLocalPref(
+        LocalPrefNames.Settings,
+        this.printer.id,
+        this.section_toggles.settings)
+    },
+    onTimeToggleClicked() {
+      this.section_toggles.time = !this.section_toggles.time
+      setPrinterLocalPref(
+        LocalPrefNames.Time,
+        this.printer.id,
+        this.section_toggles.time)
+    },
+    onStatusTempToggleClicked() {
+      this.section_toggles.statusTemp = !this.section_toggles.statusTemp
+      setPrinterLocalPref(
+        LocalPrefNames.StatusTemp,
+        this.printer.id,
+        this.section_toggles.statusTemp)
+    }
   }
 }
 </script>

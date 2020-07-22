@@ -203,6 +203,9 @@ def detect_timelapse(self, print_id):
 
 @shared_task
 def service_webhook(print_id, event_type, **kwargs):
+    if not settings.EXT_3D_GEEKS_ENDPOINT:
+        return
+
     _print = Print.objects.select_related('printer__user').get(id=print_id)
     webhook_payload = service_webhook_payload(event_type, _print, kwargs)
     LOGGER.debug(webhook_payload)
@@ -210,6 +213,7 @@ def service_webhook(print_id, event_type, **kwargs):
         url= settings.EXT_3D_GEEKS_ENDPOINT,
         json=webhook_payload
     )
+
 
 # Websocket connection count house upkeep jobs
 

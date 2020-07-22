@@ -318,5 +318,3 @@ PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 
 # Secure redirects
 SECURE_REDIRECTS = {}
-
-EXT_3D_GEEKS_ENDPOINT = 'https://qx8eve27wk.execute-api.eu-west-2.amazonaws.com/prod/tsd_push'

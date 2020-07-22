@@ -47,11 +47,11 @@
       <!-- webcam stream include TODO -->
       <div class="card-img-top webcam_container">
         <div
-          :class="rotate_class"
+          :class="webcamRotateClass"
         >
           <div
             class="webcam_fixed_ratio"
-            :class="webcam_ratio_class"
+            :class="webcamRatioClass"
           >
             <div class="webcam_fixed_ratio_inner full">
               <img
@@ -66,7 +66,7 @@
                 class="remote-video hide"
                 :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
                 width=960
-                :height="webcam_video_height"
+                :height="webcamVideoHeight"
                 autoplay muted playsinline>
               </video>
             </div>
@@ -132,28 +132,57 @@
             <div class="pt-2 pb-3">
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
-                  <label class="toggle-label" :for="'watching-toggle-' + printer.id">Watch for failures
-                    <div class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned
-                      on.</div>
+                  <label
+                    class="toggle-label"
+                    :for="'watching-toggle-' + printer.id"
+                  >Watch for failures
+                    <div
+                      v-if="!watchForFailures"
+                      class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turnedon.
+                    </div>
                   </label>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" name="watching" class="custom-control-input update-printer"
-                      :id="'watching-toggle-' + printer.id">
-                    <label class="custom-control-label" for="'watching-toggle-' + printer.id"
-                      style="font-size: 1rem;"></label>
+                    <input
+                      type="checkbox"
+                      name="watching"
+                      class="custom-control-input update-printer"
+                      :id="'watching-toggle-' + printer.id"
+                      @click="$emit('WatchForFailuresToggled')"
+                      :checked="watchForFailures"
+                    >
+                    <label
+                      class="custom-control-label"
+                      :for="'watching-toggle-' + printer.id"
+                      style="font-size: 1rem;"
+                    ></label>
                   </div>
                 </div>
               </div>
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
-                  <label class="toggle-label" for="'pause-toggle-' + printer.id">Pause on detected failures<div
+                  <label
+                    class="toggle-label"
+                    :for="'pause-toggle-' + printer.id"
+                  >Pause on detected failures
+                    <div
+                      v-if="!pauseOnFailure"
                       class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications
-                    </div></label>
+                    </div>
+                  </label>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" name="pause_on_failure" class="custom-control-input update-printer"
-                      id="pause-toggle-printer.id">
-                    <label class="custom-control-label" for="pause-toggle-printer.id"
-                      style="font-size: 1rem;"></label>
+                    <input
+                      type="checkbox"
+                      name="pause_on_failure"
+                      class="custom-control-input update-printer"
+                      :id="'pause-toggle-' + printer.id"
+                      @click="$emit('PauseOnFailureToggled')"
+                      :checked="pauseOnFailure"
+                    >
+                    <label
+                      class="custom-control-label"
+                      :for="'pause-toggle-'+printer.id"
+                      style="font-size: 1rem;">
+                    </label>
                   </div>
                 </div>
               </div>
@@ -201,6 +230,9 @@
 <script>
 import Gauge from '@common/Gauge'
 
+export const PAUSE = 'PAUSE'
+export const NOPAUSE = ''
+
 export default {
   name: 'PrinterCard',
   components: {
@@ -231,7 +263,7 @@ export default {
     time_total() {
       return '-' // FIXME
     },
-    webcam_rotate_class() {
+    webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {
       case true:
         return 'webcam_rotated'
@@ -241,7 +273,7 @@ export default {
         return 'webcam_unrotated'
       }
     },
-    webcam_ratio_class() {
+    webcamRatioClass() {
       switch (this.printer.settings.ratio169) {
       case true:
         return 'ratio169'
@@ -251,7 +283,7 @@ export default {
         return 'ratio43'
       }
     },
-    webcam_video_height() {
+    webcamVideoHeight() {
       switch (this.printer.settings.ratio169) {
       case true:
         return 540
@@ -261,6 +293,12 @@ export default {
         return 720
       }
     },
+    watchForFailures() {
+      return this.printer.watching
+    },
+    pauseOnFailure() {
+      return this.printer.action_on_failure == PAUSE
+    }
   },
   methods: {
     shareUrl() {

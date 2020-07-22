@@ -73,6 +73,8 @@
         :printer="printer"
         @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked(printer.id, false)"
+        @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
+        @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
       ></PrinterCard>
     </div>
 
@@ -115,6 +117,7 @@ import * as plib from '@lib/printers'
 import apis from '@lib/apis'
 
 import PrinterCard from './PrinterCard.vue'
+import {PAUSE, NOPAUSE} from './PrinterCard.vue'
 
 
 const SortOrder = {
@@ -250,6 +253,19 @@ export default {
             '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
             false)
         }
+      })
+    },
+    onWatchForFailuresToggled(printerId) {
+      //FIXME
+      console.log('watchtoggle', printerId)
+      this.printers.filter((p) => p.id == printerId).forEach((p) => p.watching = !p.watching)
+
+    },
+    onPauseOnFailureToggled(printerId) {
+      //FIXME
+      console.log('pausetoggle', printerId)
+      this.printers.filter((p) => p.id == printerId).forEach((p) => {
+        p.action_on_failure = p.action_on_failure == PAUSE ? NOPAUSE : PAUSE
       })
     }
   },

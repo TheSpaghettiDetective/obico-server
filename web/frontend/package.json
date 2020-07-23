@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.4",
+    "filesize": "^3.6.1",
     "ifvisible": "^1.1.0",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.15",

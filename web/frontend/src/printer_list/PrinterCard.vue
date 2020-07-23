@@ -107,8 +107,17 @@
         />
         <hr />
       </div>
-      <div id="printer-actions" class="container">
-      </div>
+      <PrinterActions
+        id="printer-actions"
+        class="container"
+        v-bind="actionsProps"
+        @PrinterActionPauseClicked="$emit('PrinterActionPauseClicked')"
+        @PrinterActionResumeClicked="$emit('PrinterActionResumeClicked')"
+        @PrinterActionCancelClicked="$emit('PrinterActionCancelClicked')"
+        @PrinterActionConnectClicked="$emit('PrinterActionConnectClicked')"
+        @PrinterActionStartClicked="$emit('PrinterActionStartClicked')"
+        @PrinterActionControlClicked="$emit('PrinterActionControlClicked')"
+      ></PrinterActions>
       <div class="info-section settings">
         <button
           type="button"
@@ -223,19 +232,26 @@
                 ></DurationBlock>
                 <div class="col-12">
                   <div class="progress" style="height: 2px;">
-                    <div id="print-progress" class="progress-bar progress-bar-striped progress-bar-animated"
-                      role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                    <div
+                      id="print-progress"
+                      class="progress-bar"
+                      :class="{'progress-bar-striped': progressPct < 100, 'progress-bar-animated': progressPct < 100}"
+                      role="progressbar"
+                      aria-valuenow="0"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      :style="`width: ${progressPct}%;`">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div
+          <StatusTemp
+            v-if="section_toggles.statusTemp && statusTempProps.show"
             id="status_temp_block"
-            v-if="section_toggles.statusTemp"
-          >
-          </div>
+            v-bind="statusTempProps"
+          ></StatusTemp>
         </div>
       </div>
     </div>
@@ -243,15 +259,26 @@
 </template>
 
 <script>
-import moment from 'moment'
 import get from 'lodash/get'
+import capitalize from 'lodash/capitalize'
 import Gauge from '@common/Gauge'
 
 import printerStockImgSrc from '@static/img/3d_printer.png'
 
-import {setPrinterLocalPref, getPrinterLocalPref, toDuration} from '@lib/printers.js'
+import {
+  setPrinterLocalPref,
+  getPrinterLocalPref,
+  toDuration,
+  isPrinterPaused,
+  isPrinterIdle,
+  printerHasError,
+  isPrinterDisconnected,
+  shouldShowAlert
+} from '@lib/printers.js'
 
 import DurationBlock from './DurationBlock.vue'
+import PrinterActions from './PrinterActions.vue'
+import StatusTemp from './StatusTemp.vue'
 
 export const PAUSE = 'PAUSE'
 export const NOPAUSE = ''
@@ -270,6 +297,8 @@ export default {
   components: {
     Gauge,
     DurationBlock,
+    PrinterActions,
+    StatusTemp,
   },
   props: {
     printer: {
@@ -277,6 +306,10 @@ export default {
       required: true
     },
     isOnSharedPage: { // TODO
+      type: Boolean,
+      required: true
+    },
+    isConnecting: {
       type: Boolean,
       required: true
     }
@@ -359,14 +392,7 @@ export default {
       return this.printer.action_on_failure == PAUSE
     },
     shouldShowAlert() {
-      if (!this.printer.current_print || !this.printer.current_print.alerted_at) {
-        return false
-      }
-      return moment(
-        this.printer.current_print.alerted_at
-      ).isAfter(
-        moment(this.printer.current_print.alert_acknowledged_at || 0)
-      )
+      return shouldShowAlert(this.printer)
     },
     hasCurrentPrintFilename() {
       if (this.printer.current_print && this.printer.curent_print.filename) {
@@ -376,6 +402,43 @@ export default {
     },
     taggedSrc() {
       return get(this.printer, 'pic.img_url', printerStockImgSrc)
+    },
+    actionsProps() {
+      return {
+        printerId: this.printer.id,
+        status: this.printer.status,
+        printerStateTxt: get(this.printer, 'status.state.text', ''),
+        printerPaused: isPrinterPaused(get(this.printer, 'status.state')),
+        idle: isPrinterIdle(get(this.printer, 'status.state')),
+        error: printerHasError(get(this.printer, 'status.state')),
+        disconnected: isPrinterDisconnected(get(this.printer, 'status.state')),
+
+        connecting: this.isConnecting
+      }
+    },
+    progressPct() {
+      return get(this.printer, 'status.progress.completion')
+    },
+    statusTempProps() {
+      // If temp_profiles is missing, it's a plugin version too old to change temps
+      let editable = get(this.printer, 'settings.temp_profiles') != undefined
+      let temperatures = []
+      const keys = ['bed', 'tool0', 'tool1']
+      keys.forEach((tempKey) => {
+        let temp = get(this.printer, 'status.temperatures.' + tempKey)
+        if (temp) {
+          temp.actual = parseFloat(temp.actual).toFixed(1)
+          temp.target = Math.round(temp.target)
+          Object.assign(temp, {toolName: capitalize(tempKey)})
+          temp.id = this.printer.id + '-' + tempKey
+          temperatures.push(temp)
+        }
+      })
+      return {
+        temperatures: temperatures,
+        show: temperatures.length > 0,
+        editable: editable,
+      }
     },
   },
   methods: {

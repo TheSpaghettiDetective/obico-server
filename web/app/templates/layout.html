@@ -1,5 +1,4 @@
 {% load static %}
-{% load account_status %}
 {% load bundle from vue %}
 {% load bundlechunk from vue %}
 
@@ -104,12 +103,7 @@
             </li>
             {% endif %}
           {% else %}
-          <li class="nav-item">
-            <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
-                <img src="{% static 'img/detective-hour-inverse.png' %}"> <span id="user-credits" class="badge badge-light">{{ user.dh_balance | dh_badge_num }}</span>
-                <span class="sr-only">Detective Hours</span>
-            </a>
-          </li>
+          {% block nav_item_dh_balance %}{% endblock nav_item_dh_balance %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" id="{{user.id}}"
               aria-expanded="false">{{user.first_name|default:user.email}}

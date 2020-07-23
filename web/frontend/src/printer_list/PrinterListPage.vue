@@ -118,11 +118,12 @@
 
 <script>
 import axios from 'axios'
-
+import moment from 'moment'
+import filesize from 'filesize'
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
-// import filter from 'lodash/filter'
+import filter from 'lodash/filter'
 
 import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
@@ -137,6 +138,8 @@ import PrinterWebSocket from '@lib/printer_ws'
 
 import PrinterCard from './PrinterCard.vue'
 import {PAUSE, NOPAUSE} from './PrinterCard.vue'
+import StartPrint from './StartPrint.vue'
+import ConnectPrinter from './ConnectPrinter.vue'
 
 let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerWSUrl = printerId => `/ws/web/${printerId}/`
@@ -397,29 +400,31 @@ export default {
               })
               this.setIsConnecting(printerId, false)
             } else {
-              // TODO
-              // this.$swal.fire({
-              //   html: Mustache.template('connect_printer').render({ connectionOptions: connectionOptions }),
-              //   confirmButtonText: 'Connect',
-              //   showCancelButton: true,
-              //   onOpen: function (e) {
-              //     $(e).find('select.selectpicker').selectpicker()
-              //   },
-              // }).then((result) => {
-              //   if (result.value) {
-              //     var args = [$('select#id-port').val(),]
-              //     if ($('select#id-baudrate').val()) {
-              //       args.push($('select#id-baudrate').val())
-              //     }
-              //     this.printerWs.passThruToPrinter(
-              //       printerId,
-              //       { func: 'connect', target: '_printer',
-              //         args: args }
-              //     )
-              //   }
-              //   // FIXME exactly when to set this?
-              //   this.setIsConnecting(printerId, false)
-              // })
+              this.$swal.openModalWithComponent(
+                ConnectPrinter,
+                {
+                  connectionOptions: connectionOptions,
+                },
+                {
+                  confirmButtonText: 'Connect',
+                  showCancelButton: true,
+                }
+              ).then((result) => {
+                if (result.value) {
+                  let args = [
+                    result.value.port,
+                    result.value.baudrate
+                  ]
+                  this.printerWs.passThruToPrinter(
+                    printerId,
+                    { func: 'connect', target: '_printer',
+                      args: args },
+                    () => {
+                      this.setIsConnecting(printerId, false)
+                    }
+                  )
+                }
+              })
             }
           }
         }
@@ -445,60 +450,73 @@ export default {
           '/api/v1/gcodes/',
         ).then((response) => {
           let gcodeFiles = response.data
-          console.log(gcodeFiles, printer)
-          //gcodeFiles.forEach(function (gcodeFile) {
-          //  gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
-          //  gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
-          //})
+          gcodeFiles.forEach(function (gcodeFile) {
+            gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
+            gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
+          })
 
-          //this.$swal.fire({
-          //  title: 'Print on ' + printer.name,
-          //  html: Mustache.template('start_print').render({ gcodeFiles: gcodeFiles }),
-          //  showConfirmButton: false,
-          //  showCancelButton: true,
-          //  onOpen: function (gcodeDiv) {
-          //    $(gcodeDiv).find('#myInput').on('keyup', function () {
-          //      var value = $(this).val().toLowerCase()
-          //      $(gcodeDiv).find('.card').filter(function () {
-          //        $(this).toggle($(this).find('.gcode-filename').text().toLowerCase().indexOf(value) > -1)
-          //      })
-          //    })
-          //    $(gcodeDiv).find('button.send-print').on('click', function () {
-          //      actionsDiv.find('button').attr('disabled', true)
-          //      $(this).find('i.fa-spin').show()
-
-          //      var gcodeFileId = $(this).data('gcode-file-id')
-          //      this.printerWs.passThruToPrinter(
-          //        printerId,
-          //        { func: 'download', target: 'file_downloader', args: filter(gcodeFiles, { id: gcodeFileId }) },
-          //        function (err, ret) {
-          //          if (ret.error) {
-          //            this.$swal.Toast.fire({
-          //              type: 'error',
-          //              title: ret.error,
-          //            })
-          //            return
-          //          }
-
-          //          Swal.fire({
-          //            html: Mustache.template('waiting_download').render({ gcodeFiles: gcodeFiles, targetPath: ret.target_path, printer: printer }),
-          //            showConfirmButton: false
-          //          })
-
-          //          function checkPrinterStatus() {
-          //            var updatedPrinter = this.printers.find((p) => p.id == printerId)
-          //            if (get(updatedPrinter, 'status.state.text') == 'Operational') {
-          //              setTimeout(checkPrinterStatus, 1000)
-          //            } else {
-          //              this.$swal.close()
-          //            }
-          //          }
-          //          checkPrinterStatus()
-          //        })
-          //    })
-          //  },
-          //})
+          this.$swal.openModalWithComponent(
+            StartPrint,
+            {
+              gcodeFiles: gcodeFiles,
+              onGcodeFileSelected: this.onGcodeFileSelected,
+            },
+            {
+              title: 'Print on ' + printer.name,
+              showConfirmButton: false,
+              showCancelButton: true,
+            }
+          )
         })
+    },
+    onGcodeFileSelected(printerId, gcodeFiles, gcodeFileId) {
+      // actionsDiv.find('button').attr('disabled', true) // TODO
+      let printer = this.printers.find((p) => p.id == printerId)
+
+      this.printerWs.passThruToPrinter(
+        printerId,
+        { func: 'download',
+          target: 'file_downloader',
+          args: filter(gcodeFiles, { id: gcodeFileId })
+        },
+        (err, ret) => {
+          if (ret.error) {
+            this.$swal.Toast.fire({
+              type: 'error',
+              title: ret.error,
+            })
+            return
+          }
+
+          let targetPath = ret.target_path
+
+          let html =`
+          <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
+            <h5 class="py-3">
+              Uploading G-Code to ${printer.name} ...
+            </h5>
+            <p>
+              ${targetPath}
+            </p>
+          </div>`
+
+          this.$swal.fire({
+            html: html,
+            showConfirmButton: false
+          })
+
+          let checkPrinterStatus = () => {
+            let updatedPrinter = this.printers.find((p) => p.id == printerId)
+            if (get(updatedPrinter, 'status.state.text') == 'Operational') {
+              setTimeout(checkPrinterStatus, 1000)
+            } else {
+              this.$swal.close()
+            }
+          }
+          checkPrinterStatus()
+        }
+      )
     },
     onPrinterActionControlClicked(printerId) {
       window.location = printerControlUrl(printerId)

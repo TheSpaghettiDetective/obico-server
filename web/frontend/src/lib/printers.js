@@ -20,6 +20,18 @@ let printInProgress = (printerState) =>
   get(printerState, 'text', '') !== 'Operational'
 
 
+let shouldShowAlert = (printer) => {
+  if (!printer.current_print || !printer.current_print.alerted_at) {
+    return false
+  }
+  return moment(
+    printer.current_print.alerted_at
+  ).isAfter(
+    moment(printer.current_print.alert_acknowledged_at || 0)
+  )
+}
+
+
 let getLocalPref = (prefId, defaultValue) => {
   var val = localStorage.getItem(prefId) || defaultValue
   // Hack to deal with data type such as boolean and number
@@ -79,6 +91,7 @@ export {
   isPrinterDisconnected,
   printerHasError,
   printInProgress,
+  shouldShowAlert,
   getLocalPref,
   setLocalPref,
   getPrinterLocalPref,

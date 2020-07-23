@@ -74,11 +74,18 @@
         :key="printer.id"
         :printer="printer"
         :is-on-shared-page="isOnSharedPage"
+        :is-connecting="isConnecting(printer.id)"
         @DeleteClicked="onDeleteClicked(printer.id)"
-        @NotAFailureClicked="onNotAFailureClicked(printer.id, false)"
+        @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
         @ExpandThumbnailToFullClicked="onExpandThumbnailToFullClicked(printer.id)"
+        @PrinterActionPauseClicked="onPrinterActionPauseClicked(printer.id)"
+        @PrinterActionResumeClicked="onPrinterActionResumeClicked($event, printer.id)"
+        @PrinterActionCancelClicked="onPrinterActionCancelClicked(printer.id)"
+        @PrinterActionConnectClicked="onPrinterActionConnectClicked(printer.id)"
+        @PrinterActionStartClicked="onPrinterActionStartClicked(printer.id)"
+        @PrinterActionControlClicked="onPrinterActionControlClicked(printer.id)"
       ></PrinterCard>
     </div>
 
@@ -115,15 +122,25 @@ import axios from 'axios'
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
+// import filter from 'lodash/filter'
 
 import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
-import * as plib from '@lib/printers'
+import {
+  shouldShowAlert,
+  isPrinterDisconnected,
+  printInProgress,
+} from '@lib/printers'
+
 import apis from '@lib/apis'
+import PrinterWebSocket from '@lib/printer_ws'
 
 import PrinterCard from './PrinterCard.vue'
 import {PAUSE, NOPAUSE} from './PrinterCard.vue'
 
+let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
+let printerWSUrl = printerId => `/ws/web/${printerId}/`
+let printerControlUrl = printerId => `/printers/${printerId}/control/`
 
 const SortOrder = {
   Asc: 'asc',
@@ -149,7 +166,6 @@ const LocalPrefNames = {
 }
 
 let lookup = (obj, value, def)=> {
-  console.log(obj, value, def)
   const ret = Object.entries(obj).find(pair => (pair[1] == value))
   if (ret) {
     return ret[1]
@@ -164,6 +180,7 @@ export default {
     PrinterCard,
   },
   created() {
+    this.printerWs = PrinterWebSocket()
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter
     this.SortOrder = SortOrder
@@ -179,9 +196,16 @@ export default {
       {id: SortFilter.NameDesc, title: 'By Name Desc', order: SortOrder.Desc},
     ]
   },
+  props: {
+    isProAccount: {
+      type: Boolean,
+      required: true
+    }
+  },
   data: function() {
     return {
       printers: [],
+      localPrinterState: new Map(),
       loading: false,
       isOnSharedPage: false,
       filters: {
@@ -207,10 +231,10 @@ export default {
       let printers = this.printers
       switch (this.filters.state) {
       case StateFilter.OnlineOnly:
-        printers = printers.filter((p) => !plib.isPrinterDisconnected(get(p, 'status.state')))
+        printers = printers.filter((p) => !isPrinterDisconnected(get(p, 'status.state')))
         break
       case StateFilter.Active:
-        printers = printers.filter((p) => plib.printInProgress(get(p, 'status.state')))
+        printers = printers.filter((p) => printInProgress(get(p, 'status.state')))
         break
       case StateFilter.All:
         break
@@ -236,6 +260,7 @@ export default {
     hiddenPrinterCount() {
       return this.printers.length - this.visiblePrinters.length
     }
+
   },
   methods: {
     // TODO
@@ -245,7 +270,7 @@ export default {
     //});
     fetchPrinters() {
       this.loading = true
-      axios
+      return axios
         .get(apis.printers(), {
           params: {
             filter: this.filters.state,
@@ -277,13 +302,13 @@ export default {
       )
     },
     onDeleteClicked(printerId) {
-      console.log(printerId) // TODO
+      this.$swal.Confirm({}).then((result) => {
+        if (result.value) { // When it is confirmed
+          window.location.href = printerDeleteUrl(printerId)
+        }
+      })
     },
-    onNotAFailureClicked(printerId, resumePrint) {
-      let sendPrinterAction = (printerId, path, someBool) => {
-        console.log('sendPrinterAction', printerId, path, someBool) // TODO
-      }
-
+    onNotAFailureClicked(event, printerId, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
         html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
@@ -293,7 +318,7 @@ export default {
         if (result.dismiss == 'cancel') {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
-            sendPrinterAction(
+            this.sendPrinterAction(
               printerId,
               '/mute_current_print/?mute_alert=true',
               false
@@ -301,20 +326,20 @@ export default {
           }, 1000)
         }
         if (resumePrint) {
-          sendPrinterAction(
+          this.sendPrinterAction(
             printerId,
             '/resume_print/',
             true)
         } else {
-          sendPrinterAction(
+          this.sendPrinterAction(
             printerId,
             '/acknowledge_alert/?alert_overwrite=NOT_FAILED',
             false)
         }
       })
+      event.preventDefault()
     },
     onWatchForFailuresToggled(printerId) {
-      console.log('watchtoggle', printerId)
       let p = this.printers.find((p) => p.id == printerId)
       if (p) {
         p.watching = !p.watching
@@ -322,7 +347,6 @@ export default {
       }
     },
     onPauseOnFailureToggled(printerId) {
-      console.log('pausetoggle', printerId)
       let p = this.printers.find((p) => p.id == printerId)
       if (p) {
         p.action_on_failure = p.action_on_failure == PAUSE ? NOPAUSE : PAUSE
@@ -331,6 +355,160 @@ export default {
     },
     onExpandThumbnailToFullClicked(printerId) {
       console.log('ExpandThumbnailToFullClicked', printerId) //FIXME
+    },
+    onPrinterActionPauseClicked(printerId) {
+      this.sendPrinterAction(printerId, '/pause_print/', true)
+    },
+    onPrinterActionResumeClicked(event, printerId) {
+      let printer = this.printers.find((p) => p.id == printerId)
+      if (shouldShowAlert(printer)) {
+        this.onNotAFailureClicked(event, printerId, true)
+      } else {
+        this.sendPrinterAction(printerId, '/resume_print/', true)
+      }
+    },
+    onPrinterActionCancelClicked(printerId) {
+      this.$swal.Confirm.fire({
+        text: 'Once cancelled, the print can no longer be resumed.',
+      }).then((result) => {
+        if (result.value) {
+          // When it is confirmed
+          this.sendPrinterAction(printerId, '/cancel_print/', true)
+        }
+      })
+    },
+    onPrinterActionConnectClicked(printerId) {
+      this.setIsConnecting(printerId, true)
+      this.printerWs.passThruToPrinter(
+        printerId,
+        { func: 'get_connection_options', target: '_printer' },
+        (err, connectionOptions) => {
+          if (err) {
+            this.$swal.Toast.fire({
+              type: 'error',
+              title: 'Failed to contact OctoPrint!',
+            })
+            this.setIsConnecting(printerId, false)
+          } else {
+            if (connectionOptions.ports.length < 1) {
+              this.$swal.Toast.fire({
+                type: 'error',
+                title: 'Uh-Oh. No printer is found on the serial port.',
+              })
+              this.setIsConnecting(printerId, false)
+            } else {
+              // TODO
+              // this.$swal.fire({
+              //   html: Mustache.template('connect_printer').render({ connectionOptions: connectionOptions }),
+              //   confirmButtonText: 'Connect',
+              //   showCancelButton: true,
+              //   onOpen: function (e) {
+              //     $(e).find('select.selectpicker').selectpicker()
+              //   },
+              // }).then((result) => {
+              //   if (result.value) {
+              //     var args = [$('select#id-port').val(),]
+              //     if ($('select#id-baudrate').val()) {
+              //       args.push($('select#id-baudrate').val())
+              //     }
+              //     this.printerWs.passThruToPrinter(
+              //       printerId,
+              //       { func: 'connect', target: '_printer',
+              //         args: args }
+              //     )
+              //   }
+              //   // FIXME exactly when to set this?
+              //   this.setIsConnecting(printerId, false)
+              // })
+            }
+          }
+        }
+      )
+    },
+    onPrinterActionStartClicked(printerId) {
+      if (!this.isProAccount) {
+        this.$swal.fire({
+          title: 'Wait!',
+          html: `
+              <h5 class="mb-3">You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to start a remote print job. </h5>
+              <p>Remote G-Code upload and print start is a Pro feature.</p>
+              <p>With <a href="/ent/pricing/">little more than 1 Starbucks per month</a>, you can upgrade to a Pro account.</p>
+            `
+        })
+        return
+      }
+
+      let printer = this.printers.find((p) => p.id == printerId)
+
+      axios
+        .get(
+          '/api/v1/gcodes/',
+        ).then((response) => {
+          let gcodeFiles = response.data
+          console.log(gcodeFiles, printer)
+          //gcodeFiles.forEach(function (gcodeFile) {
+          //  gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
+          //  gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
+          //})
+
+          //this.$swal.fire({
+          //  title: 'Print on ' + printer.name,
+          //  html: Mustache.template('start_print').render({ gcodeFiles: gcodeFiles }),
+          //  showConfirmButton: false,
+          //  showCancelButton: true,
+          //  onOpen: function (gcodeDiv) {
+          //    $(gcodeDiv).find('#myInput').on('keyup', function () {
+          //      var value = $(this).val().toLowerCase()
+          //      $(gcodeDiv).find('.card').filter(function () {
+          //        $(this).toggle($(this).find('.gcode-filename').text().toLowerCase().indexOf(value) > -1)
+          //      })
+          //    })
+          //    $(gcodeDiv).find('button.send-print').on('click', function () {
+          //      actionsDiv.find('button').attr('disabled', true)
+          //      $(this).find('i.fa-spin').show()
+
+          //      var gcodeFileId = $(this).data('gcode-file-id')
+          //      this.printerWs.passThruToPrinter(
+          //        printerId,
+          //        { func: 'download', target: 'file_downloader', args: filter(gcodeFiles, { id: gcodeFileId }) },
+          //        function (err, ret) {
+          //          if (ret.error) {
+          //            this.$swal.Toast.fire({
+          //              type: 'error',
+          //              title: ret.error,
+          //            })
+          //            return
+          //          }
+
+          //          Swal.fire({
+          //            html: Mustache.template('waiting_download').render({ gcodeFiles: gcodeFiles, targetPath: ret.target_path, printer: printer }),
+          //            showConfirmButton: false
+          //          })
+
+          //          function checkPrinterStatus() {
+          //            var updatedPrinter = this.printers.find((p) => p.id == printerId)
+          //            if (get(updatedPrinter, 'status.state.text') == 'Operational') {
+          //              setTimeout(checkPrinterStatus, 1000)
+          //            } else {
+          //              this.$swal.close()
+          //            }
+          //          }
+          //          checkPrinterStatus()
+          //        })
+          //    })
+          //  },
+          //})
+        })
+    },
+    onPrinterActionControlClicked(printerId) {
+      window.location = printerControlUrl(printerId)
+    },
+    isConnecting(printerId) {
+      let state = this.localPrinterState[printerId]
+      if (state) {
+        return state.isConnecting == true
+      }
+      return false
     },
     updatePrinter(printer) {
       return axios
@@ -353,9 +531,34 @@ export default {
           alert('Something went wrong!') // FIXME
         })
     },
+    sendPrinterAction(printerId, path, someBool) {
+      console.log('sendPrinterAction', printerId, path, someBool) // TODO
+    },
+    setIsConnecting(printerId, isConnecting) {
+      let state = this.localPrinterState[printerId] || {}
+      state.isConnecting = isConnecting
+      this.localPrinterState[printerId] = state
+    },
   },
   mounted() {
-    this.fetchPrinters()
+    this.fetchPrinters().then(() => {
+      // var wsUri = printerCard.data('share-token') ? // TODO
+      // '/ws/shared/web/' + printerCard.data('share-token') + '/' :
+      this.printers.forEach((printer) => {
+        this.printerWs.openPrinterWebSockets(
+          printer.id,
+          printerWSUrl(printer.id),
+          (data) => {
+            this.printers.map(p => {
+              if (p.id == data.id) {
+                return normalizedPrinter(data)
+              }
+              return p
+            })
+          }
+        )
+      })
+    })
   }
 }
 </script>

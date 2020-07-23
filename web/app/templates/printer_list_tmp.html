@@ -4,8 +4,9 @@
 
 {% block content %}
 <div id="printer-list-mount">
-  <printer-list-page>
-  </printer-list-page>
+  <printer-list-page
+    :is-pro-account="{% if user.is_authenticated and user.is_pro %}true{% else %}false{% endif %}"
+  ></printer-list-page>
 </div>
 
 {% bundle 'printer_list' %}

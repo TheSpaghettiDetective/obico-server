@@ -9,7 +9,7 @@
     <div class="form-container">
       <form id="printer_integration" method="POST" action="{{ request.path }}">
         {% csrf_token %}
-        <h2 class="mb-4">3D Geeks push notification</h2>
+        <h2 class="mb-4">3D Geeks Push Notification</h2>
         <h3 class="text-center">{{ printer.name }}</h3>
         {% if printer.service_token %}
         <div class="mt-3">Scan this QR code in your 3D Geeks app:</div>
@@ -73,7 +73,7 @@
         .done(function () {
           $('button#int-test i.fa-spin').hide();
           Swal.fire({
-                title: 'Test push notification sent!',
+                title: 'Test Message Sent!',
                 text: 'You should receive it on your 3D Geeks app shortly.'
             });
         });

@@ -81,6 +81,8 @@ sake, this document assumes the server port is 3334.
 
 ![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/site_config.png)
 
+**Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](advanced_config.md#using-a-reverse-proxy) for details.**
+
 ## Configure Email server (SMTP)
 
 The following is using gmail as an example. Other web mail services may vary slightly, such as EMAIL_PORT

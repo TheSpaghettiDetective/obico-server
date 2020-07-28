@@ -25,7 +25,7 @@ class UserPreferencesForm(ModelForm):
         fields = ['first_name', 'last_name', 'phone_country_code', 'phone_number', 'pushbullet_access_token',
                   'telegram_chat_id', 'notify_on_done', 'notify_on_canceled', 'account_notification_by_email',
                   'print_notification_by_email', 'print_notification_by_pushbullet', 'print_notification_by_telegram',
-                  'alert_by_sms', 'alert_by_email',]
+                  'alert_by_sms', 'alert_by_email', 'discord_webhook', 'print_notification_by_discord']
         widgets = {
             'phone_country_code': PhoneCountryCodeWidget()
         }

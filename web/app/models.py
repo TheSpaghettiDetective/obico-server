@@ -91,6 +91,8 @@ class User(AbstractUser):
     print_notification_by_pushbullet = models.BooleanField(null=False, blank=False, default=True)
     print_notification_by_telegram = models.BooleanField(null=False, blank=False, default=True)
     alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
+    discord_webhook = models.CharField(max_length=256, null=True, blank=True)
+    print_notification_by_discord = models.BooleanField(null=False, blank=False, default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

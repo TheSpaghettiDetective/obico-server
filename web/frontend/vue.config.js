@@ -60,6 +60,7 @@ let vueConfig = {
     })
 
     config.plugin('ignore-plugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
+    config.plugin('provide-plugin').use(webpack.ProvidePlugin, [{adapter: 'webrtc-adapter'}])
 
     if (process.env.NODE_ENV != 'production') {
       config.optimization

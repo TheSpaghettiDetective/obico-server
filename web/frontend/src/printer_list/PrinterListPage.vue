@@ -135,6 +135,7 @@ import {
 
 import apis from '@lib/apis'
 import PrinterWebSocket from '@lib/printer_ws'
+import Janus from '@lib/janus'
 
 import PrinterCard from './PrinterCard.vue'
 import {PAUSE, NOPAUSE} from './PrinterCard.vue'
@@ -577,6 +578,12 @@ export default {
             })
           }
         )
+      })
+      Janus.init({
+        debug: 'all',
+        callback: () => {
+          console.log('Janus has been initalized')
+        },
       })
     })
   }

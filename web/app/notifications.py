@@ -23,6 +23,7 @@ from lib import site
 
 LOGGER = logging.getLogger(__name__)
 
+RED = 0xcf142b
 
 def send_failure_alert(printer, is_warning=True, print_paused=False):
     LOGGER.info(f'Printer {printer.user.id} {"smells fishy" if is_warning else "is probably failing"}. Sending Alerts')
@@ -248,7 +249,7 @@ def send_failure_alert_discord(printer, rotated_jpg_url, is_warning, print_pause
     if is_warning:
         color = 0xEED202 # hazard yellow
     elif is_warning and print_paused:
-        color = 0xcf142b # stop red
+        color = RED # stop red
 
     action = ''
     if print_paused:
@@ -418,7 +419,7 @@ Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() 
 """
 
     try:
-        send_discord_notification(_print.printer, text, 0xcf142b, _print.printer.user.discord_webhook, _print.poster_url)
+        send_discord_notification(_print.printer, text, RED, _print.printer.user.discord_webhook, _print.poster_url)
     except Exception as e:
         LOGGER.error(e)
 

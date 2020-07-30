@@ -40,7 +40,7 @@
 export default {
   name: 'StatusTemp',
   props: {
-    tempreatures: {
+    temperatures: {
       type: Array,
       required: true
     },

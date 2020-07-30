@@ -145,6 +145,7 @@ let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerWSUrl = printerId => `/ws/web/${printerId}/`
 let printerControlUrl = printerId => `/printers/${printerId}/control/`
 
+
 const SortOrder = {
   Asc: 'asc',
   Desc: 'desc'
@@ -458,6 +459,7 @@ export default {
           this.$swal.openModalWithComponent(
             StartPrint,
             {
+              printerId: printerId,
               gcodeFiles: gcodeFiles,
               onGcodeFileSelected: this.onGcodeFileSelected,
             },

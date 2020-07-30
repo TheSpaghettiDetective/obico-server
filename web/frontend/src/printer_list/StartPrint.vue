@@ -57,7 +57,11 @@ export default {
     onGcodeFileSelected: {
       type: Function,
       required: true
-    }
+    },
+    printerId: {
+      type: Number,
+      required: true
+    },
   },
   data() {
     return {
@@ -69,7 +73,7 @@ export default {
     visibleGcodeFiles() {
       let q = this.searchText.toLowerCase()
       return this.gcodeFiles.filter(
-        (gcf) => gcf.name.toLowerCase().indexOf(q) > -1)
+        (gcf) => gcf.filename.toLowerCase().indexOf(q) > -1)
     },
   },
   methods: {

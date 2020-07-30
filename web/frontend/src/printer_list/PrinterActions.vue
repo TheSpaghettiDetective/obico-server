@@ -85,7 +85,7 @@
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
         @click="$emit('PrinterActionConnectClicked')"
-        :disabled="isConnecting"
+        :disabled="connecting"
       >
         <i class="fab fa-usb"></i>&nbsp;&nbsp;Connect
         <i

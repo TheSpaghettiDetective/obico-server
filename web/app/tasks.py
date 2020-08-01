@@ -311,7 +311,9 @@ def select_print_shots_for_feedback(_print):
             _print,
             f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
             unrotated_jpg_path=None,
-            rotated_jpg_path=f'ff_printshots/rotated/{_print.printer.id}/{_print.id}/{ts}.jpg')
+            rotated_jpg_path=f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
+            to_container=settings.PICS_CONTAINER,
+            to_long_term_storage=False)
         PrintShotFeedback.objects.create(print=_print, image_url=rotated_jpg_url)
 
 

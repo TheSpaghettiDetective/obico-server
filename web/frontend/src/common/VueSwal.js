@@ -10,6 +10,9 @@ let openModalWithComponent = (C, props, modalOptions) => {
 
   return Vue.swal({
     ...modalOptions,
+    customClass: {
+      container: 'dark-backdrop',
+    },
     html: '<div id="replace-here">Placeholder</div>',
     onBeforeOpen: (el) => {
       el.querySelector('#replace-here').replaceWith(c.$el)
@@ -25,6 +28,9 @@ let openModalWithComponent = (C, props, modalOptions) => {
 let openModalWithElement = (element, props, modalOptions) => {
   return Vue.swal({
     ...modalOptions,
+    customClass: {
+      container: 'dark-backdrop',
+    },
     html: '<div id="replace-here">Placeholder</div>',
     onBeforeOpen: (el) => {
       el.querySelector('#replace-here').replaceWith(element)
@@ -33,10 +39,23 @@ let openModalWithElement = (element, props, modalOptions) => {
 }
 
 
+let toast = (options) => {
+    return Vue.swal.fire({
+        ...options,
+        toast: true,
+        backdrop: false,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+    })
+}
+
+
 const install = (Vue, options) => {
   Vue.use(VueSwal, options)
   Vue.prototype.$swal['openModalWithComponent'] = openModalWithComponent
   Vue.prototype.$swal['openModalWithElement'] = openModalWithElement
+  Vue.prototype.$swal['toast'] = toast
 }
 
 export default {install: install}

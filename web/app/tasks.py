@@ -306,17 +306,15 @@ def select_print_shots_for_feedback(_print):
 
         return sorted(selected_timestamps)
 
-    selected_predictions = highest_7_predictions(redis.print_highest_predictions_get(_print.id))
-
-    to_dir = os.path.join(tempfile.gettempdir(), 'ff_' + str(_print.id))
-    shutil.rmtree(to_dir, ignore_errors=True)
-    os.mkdir(to_dir)
-
-    local_imgs = download_files([f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg' for ts in selected_predictions], to_dir)
-    for local_img in local_imgs:
-        with open(local_img, 'rb') as local_img_file:
-            _, img_url = save_file_obj(f'ff_printshots/raw/{_print.printer.id}/{_print.id}/{local_img.name}', local_img_file, settings.TIMELAPSE_CONTAINER)
-            PrintShotFeedback.objects.create(print=_print, image_url=img_url)
+    for ts in highest_7_predictions(redis.print_highest_predictions_get(_print.id)):
+        (_, rotated_jpg_url) = save_print_snapshot(
+            _print,
+            f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
+            unrotated_jpg_path=None,
+            rotated_jpg_path=f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
+            to_container=settings.PICS_CONTAINER,
+            to_long_term_storage=False)
+        PrintShotFeedback.objects.create(print=_print, image_url=rotated_jpg_url)
 
 
 def service_webhook_payload(event_type, _print, extra_dict):

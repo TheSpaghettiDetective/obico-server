@@ -128,7 +128,7 @@ def share_printer(request, pk):
                 SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
         else:
             SharedResource.objects.filter(printer=printer).delete()
-            messages.success(request, 'You have disabled printer feed sharing. Previous share link has now been revoked.')
+            messages.success(request, 'You have disabled printer feed sharing. Previous shareable link has now been revoked.')
 
     return render(request, 'share_printer.html', dict(printer=printer, user=request.user))
 
@@ -198,20 +198,6 @@ def unsubscribe_email(request):
 
 ### Prints and public time lapse ###
 
-
-# TODO: Remove this after switching to Vue
-# @login_required
-# def prints(request):
-#     prints = get_prints(request).filter(video_url__isnull=False).order_by('-id')
-
-#     if request.GET.get('deleted', False):
-#         prints = prints.all(force_visibility=True)
-#     page_obj = get_paginator(prints, request, 9)
-#     prediction_urls = [dict(print_id=print.id, prediction_json_url=print.prediction_json_url) for print in page_obj.object_list]
-
-#     return render(request, 'print_list.html', dict(prints=page_obj.object_list, page_obj=page_obj, prediction_urls=prediction_urls))
-
-
 @login_required
 def prints(request):
     return render(request, 'prints.html')
@@ -221,20 +207,6 @@ def prints(request):
 def print(request, pk):
     _print = get_print_or_404(pk, request)
     return render(request, 'print.html', {'object': _print})
-
-
-# TODO: remove after /prints/ switched to Vue
-@login_required
-def delete_prints(request, pk):
-    if request.method == 'POST':
-        select_prints_ids = request.POST.getlist('selected_print_ids', [])
-    else:
-        select_prints_ids = [pk]
-
-    get_prints(request).filter(id__in=select_prints_ids).delete()
-    messages.success(request, '{} time-lapses deleted.'.format(len(select_prints_ids)))
-
-    return redirect(reverse('prints'))
 
 
 @login_required

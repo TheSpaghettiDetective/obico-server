@@ -568,6 +568,7 @@ class PrintShotFeedback(models.Model):
 
     answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True, null=True, db_index=True)
     answered_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    persisted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

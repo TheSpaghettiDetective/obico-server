@@ -226,15 +226,24 @@ export default {
           axios
             .post(apis.printsBulkDelete(), { print_ids: selectedPrintIds })
             .then(() => {
-              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId))
+              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId, false))
+              this.$swal.toast({
+                title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
+              })
               this.selectedPrintIds = []
             })
         }
       })
     },
-    onPrintDeleted(printId) {
+    onPrintDeleted(printId, toast=true) {
       const i = findIndex(this.prints, p => p.id == printId)
+      const print = this.prints[i]
       this.$delete(this.prints, i)
+      if (toast) {
+        this.$swal.toast({
+          title: `Time-lapse ${print.filename} deleted!`,
+        })
+      }
     },
     printDataChanged(data) {
       const i = findIndex(this.prints, p => p.id == data.id)

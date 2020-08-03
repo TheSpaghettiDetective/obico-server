@@ -75,7 +75,11 @@
                 :class="{hide: isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
                 width=960
                 :height="webcamVideoHeight"
+                :poster="poster"
                 autoplay muted playsinline
+                @loadstart="onLoadStart()"
+                @canplay="onCanPlay()"
+                @click="$emit('ExpandThumbnailToFullClicked')"
               ></video>
             </div>
           </div>
@@ -265,6 +269,7 @@ import capitalize from 'lodash/capitalize'
 import Gauge from '@common/Gauge'
 
 import printerStockImgSrc from '@static/img/3d_printer.png'
+import loadingIconSrc from '@static/img/loading.gif'
 
 import {
   setPrinterLocalPref,
@@ -321,6 +326,7 @@ export default {
   },
   data() {
     return {
+      poster: loadingIconSrc,
       section_toggles: {
         settings: getPrinterLocalPref(
           LocalPrefNames.Settings,
@@ -473,6 +479,12 @@ export default {
         LocalPrefNames.StatusTemp,
         this.printer.id,
         this.section_toggles.statusTemp)
+    },
+    onCanPlay() {
+      this.poster = ''
+    },
+    onLoadStart() {
+      this.poster = loadingIconSrc
     }
   }
 }

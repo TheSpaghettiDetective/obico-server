@@ -39,20 +39,20 @@ let openModalWithElement = (element, props, modalOptions) => {
 }
 
 let toast = (options) => {
-    return Vue.swal.fire({
-        ...options,
-        toast: true,
-        backdrop: false,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-    })
+  return Vue.swal.fire({
+    ...options,
+    toast: true,
+    backdrop: false,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 5000,
+  })
 }
 
 
 const install = (Vue, options) => {
   Vue.use(VueSwal, options)
-  
+
   const Confirm = Vue.swal.mixin({
     title: 'Are you sure?',
     showCancelButton: true,

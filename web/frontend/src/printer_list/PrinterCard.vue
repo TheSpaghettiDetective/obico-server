@@ -8,7 +8,7 @@
           <div
             v-if="hasCurrentPrintFilename"
             class="primary-title print-filename"
-          >{{ pinter.current_print.filename }}</div>
+          >{{ printer.current_print.filename }}</div>
           <div
             class="printer-name"
             :class="{'secondary-title': hasCurrentPrintFilename}"
@@ -70,12 +70,13 @@
             </div>
             <div id="webrtc-stream" class="webcam_fixed_ratio_inner full ontop">
               <video
-                class="remote-video hide"
-                :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
+                ref="video"
+                class="remote-video"
+                :class="{hide: isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
                 width=960
                 :height="webcamVideoHeight"
-                autoplay muted playsinline>
-              </video>
+                autoplay muted playsinline
+              ></video>
             </div>
           </div>
         </div>
@@ -312,6 +313,10 @@ export default {
     isConnecting: {
       type: Boolean,
       required: true
+    },
+    isVideoVisible: {
+      type: Boolean,
+      required: true
     }
   },
   data() {
@@ -395,7 +400,7 @@ export default {
       return shouldShowAlert(this.printer)
     },
     hasCurrentPrintFilename() {
-      if (this.printer.current_print && this.printer.curent_print.filename) {
+      if (this.printer.current_print && this.printer.current_print.filename) {
         return true
       }
       return false

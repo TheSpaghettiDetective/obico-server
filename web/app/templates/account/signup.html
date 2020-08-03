@@ -36,6 +36,7 @@
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
       <form class="signup form-signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">
         {% csrf_token %}
+        <input type="hidden" name="recaptcha_token" id='recaptcha'>
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
         <div class="form-group">
           {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="Email address" %}
@@ -87,4 +88,20 @@
 
 {% block page_js %}
 <script src="{% static 'js/signup.js' %}"></script>
+{% if settings.RECAPTCHA_SITE_KEY %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ settings.RECAPTCHA_SITE_KEY }}"></script>
+<script>
+  grecaptcha.ready(function() {
+      $('#signup_form').submit(function(e){
+          var form = this;
+          e.preventDefault()
+          grecaptcha.execute('{{ settings.RECAPTCHA_SITE_KEY }}', {action: 'signup_form'}).then(function(token) {
+              $('#recaptcha').val(token)
+              form.submit()
+          });
+      })
+
+  });
+</script>
+{% endif %}
 {% endblock page_js %}

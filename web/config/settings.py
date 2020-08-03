@@ -189,6 +189,11 @@ STATICFILES_DIRS = [
 SITE_ID = 1
 SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 
+# Google recaptcha V3
+
+RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
+RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
+
 # Allauth
 
 AUTHENTICATION_BACKENDS = (
@@ -212,6 +217,9 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = os.environ.get('ACCOUNT_ALLOW_SIGN_UP') == 'True'
 
 AUTH_USER_MODEL = 'app.User'
+
+if RECAPTCHA_SITE_KEY:
+    ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}
 
 # Layout
 TEMPLATE_LAYOUT = "layout.html"
@@ -271,6 +279,7 @@ SETTINGS_EXPORT = [
     'SLACK_CLIENT_ID',
     'SITE_USES_HTTPS',
     'EXT_3D_GEEKS_ENDPOINT',
+    'RECAPTCHA_SITE_KEY',
 ]
 
 # Celery

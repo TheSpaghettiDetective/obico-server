@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 
 from .view_helpers import *
 from .models import *
-from .forms import *
+from .forms import PrinterForm, UserPreferencesForm
 from lib import redis
 from .telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj

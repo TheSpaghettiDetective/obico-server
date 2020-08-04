@@ -77,6 +77,7 @@
         :is-on-shared-page="isOnSharedPage"
         :is-connecting="isConnecting(printer.id)"
         :is-video-visible="isVideoVisible(printer.id)"
+        :is-video-full="isVideoFull(printer.id)"
         @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
@@ -224,7 +225,7 @@ export default {
   data: function() {
     return {
       printers: [],
-      localPrinterState: new Map(),
+      localPrinterState: {},
       loading: false,
       isOnSharedPage: false,
       filters: {
@@ -298,7 +299,9 @@ export default {
         })
         .then(response => {
           this.loading = false
-          this.printers = response.data.map(p => normalizedPrinter(p))
+          response.data.forEach((p) =>
+            this.onPrinterLoaded(normalizedPrinter(p))
+          )
         })
     },
     onSortFilterChanged() {
@@ -373,7 +376,7 @@ export default {
       }
     },
     onExpandThumbnailToFullClicked(printerId) {
-      console.log('ExpandThumbnailToFullClicked', printerId) //FIXME
+      this.setIsVideoFull(printerId, !this.isVideoFull(printerId))
     },
     onPrinterActionPauseClicked(printerId) {
       this.sendPrinterAction(printerId, PAUSE_PRINT, true)
@@ -424,6 +427,12 @@ export default {
                 {
                   confirmButtonText: 'Connect',
                   showCancelButton: true,
+                  preConfirm: () => {
+                    return {
+                      port: document.getElementById('connect-port').value,
+                      baudrate: document.getElementById('connect-baudrate').value
+                    }
+                  }
                 }
               ).then((result) => {
                 if (result.value) {
@@ -558,43 +567,63 @@ export default {
         })
         .catch(response => {
           console.log(response)
-          alert('Something went wrong!') // FIXME
+          this.$swal.Toast.fire({
+              icon: 'error',
+              title: 'Failed to update printer!',
+          }) // FIXME this was not handled in original code. sentry?
         })
     },
 
-    sendPrinterAction(printerId, path, someBool) {
-      console.log('sendPrinterAction', printerId, path, someBool) // TODO
+    sendPrinterAction(printerId, path, isOctoPrintCommand) {
+      console.log('sendPrinterAction', printerId, path, isOctoPrintCommand)
+      axios
+        .get(apis.printerAction(printerId, path))
+        .then(() => {
+          let toastHtml = ''
+          if (isOctoPrintCommand) {
+              toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
+                  '<p>It may take a while to be executed by OctoPrint.</p>'
+          }
+          if (toastHtml != '') {
+              this.$swal.Toast.fire({
+                  icon: 'success',
+                  html: toastHtml,
+              })
+          }
+        })
     },
 
     setIsConnecting(printerId, isConnecting) {
-      let state = this.localPrinterState[printerId] || {}
-      state.isConnecting = isConnecting
-      this.localPrinterState[printerId] = state
+      this.$set(this.localPrinterState, `${printerId}-isConnecting`, isConnecting == true)
     },
 
     isConnecting(printerId) {
-      let state = this.localPrinterState[printerId]
-      if (state) {
-        return state.isConnecting == true
-      }
-      return false
+      return this.localPrinterState[`${printerId}-isConnecting`] == true
     },
 
     setIsVideoVisible(printerId, isVideoVisible) {
-      let state = this.localPrinterState[printerId] || {}
-      state.isVideoVisible = isVideoVisible
-      this.localPrinterState[printerId] = state
+      this.$set(this.localPrinterState, `${printerId}-isVideoVisible`, isVideoVisible == true)
     },
 
     isVideoVisible(printerId) {
-      let state = this.localPrinterState[printerId]
-      if (state) {
-        return state.isVideoVisible == true
-      }
-      return false
+      return this.localPrinterState[`${printerId}-isVideoVisible`] == true
+    },
+
+    setIsVideoFull(printerId, isVideoFull) {
+      this.$set(this.localPrinterState, `${printerId}-isVideoFull`, isVideoFull == true)
+    },
+
+    isVideoFull(printerId) {
+      return this.localPrinterState[`${printerId}-isVideoFull`] == true
     },
 
     onPrinterLoaded(printer) {
+      this.printers.push(printer)
+
+      this.setIsConnecting(printer.id, false)
+      this.setIsVideoVisible(printer.id, false)
+      this.setIsVideoFull(printer.id, false)
+
       this.openWSForPrinter(printer)
 
       if (this.webrtc) {
@@ -677,9 +706,7 @@ export default {
   },
 
   mounted() {
-    this.fetchPrinters().then(() => {
-      this.printers.forEach(this.onPrinterLoaded)
-    })
+    this.fetchPrinters()
 
     if (this.isProAccount) {
       Janus.init({

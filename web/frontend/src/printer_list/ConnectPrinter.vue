@@ -7,7 +7,7 @@
       <select
         name="port"
         class="form-control"
-        id="id-port"
+        id="connect-port"
         v-model="selection.port"
         @change="onSelectionChanged"
       >
@@ -26,7 +26,7 @@
       <select
         name="baudrate"
         class="form-control"
-        id="id-baudrate"
+        id="connect-baudrate"
         v-model="selection.baudrate"
         @change="onSelectionChanged"
       >
@@ -66,10 +66,6 @@ export default {
   },
   methods: {
     onSelectionChanged() {
-      this.$swal.setActionValue({
-        baudrate: this.selection.baudrate,
-        port: this.selection.port
-      })
     }
   }
 }

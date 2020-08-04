@@ -59,7 +59,10 @@
             class="webcam_fixed_ratio"
             :class="webcamRatioClass"
           >
-            <div class="webcam_fixed_ratio_inner full">
+            <div 
+              class="webcam_fixed_ratio_inner"
+              :class="{full: !isVideoFull, thumbnail: isVideoFull}"
+            >
               <img
                 class="tagged-jpg"
                 :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
@@ -68,11 +71,15 @@
                 @click="$emit('ExpandThumbnailToFullClicked')"
             />
             </div>
-            <div id="webrtc-stream" class="webcam_fixed_ratio_inner full ontop">
+            <div 
+              id="webrtc-stream" 
+              class="webcam_fixed_ratio_inner ontop"
+              :class="{full: isVideoFull, thumbnail: !isVideoFull}"
+            >
               <video
                 ref="video"
                 class="remote-video"
-                :class="{hide: isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
+                :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
                 width=960
                 :height="webcamVideoHeight"
                 :poster="poster"
@@ -320,6 +327,10 @@ export default {
       required: true
     },
     isVideoVisible: {
+      type: Boolean,
+      required: true
+    },
+    isVideoFull: {
       type: Boolean,
       required: true
     }

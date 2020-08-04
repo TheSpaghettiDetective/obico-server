@@ -8,5 +8,6 @@ export default {
   printAlertOverwrite: printId => `/api/v1/prints/${printId}/alert_overwrite/`,
   printers: () => '/api/v1/printers/',
   printer: printerId => `/api/v1/printers/${printerId}/`,
+  printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   gcodes: () => '/api/v1/gcodes/',
 }

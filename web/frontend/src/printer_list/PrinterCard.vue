@@ -59,7 +59,7 @@
             class="webcam_fixed_ratio"
             :class="webcamRatioClass"
           >
-            <div 
+            <div
               class="webcam_fixed_ratio_inner"
               :class="{full: !isVideoFull, thumbnail: isVideoFull}"
             >
@@ -71,8 +71,8 @@
                 @click="$emit('ExpandThumbnailToFullClicked')"
             />
             </div>
-            <div 
-              id="webrtc-stream" 
+            <div
+              id="webrtc-stream"
               class="webcam_fixed_ratio_inner ontop"
               :class="{full: isVideoFull, thumbnail: !isVideoFull}"
             >
@@ -107,15 +107,20 @@
         >Not a failure?</button>
       </div>
 
-      <div class="card-body gauge-container">
-        <div class="overlay-top text-center"
-          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px;">
+      <div
+        class="card-body gauge-container"
+        :class="{overlay: !isWatching}"
+      >
+        <div
+          v-if="!isWatching"
+          class="overlay-top text-center"
+          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px;"
+        >
           <div>The Detective Is Not Watching</div>
           <div>(<a href="https://www.thespaghettidetective.com/docs/detective-not-watching/">Why?</a>)</div>
         </div>
-        <gauge
-          :predictionJsonUrl="printer.prediction_json_url"
-          :currentPosition="0"
+        <DirectGauge
+          :ewm_mean="ewm_mean"
         />
         <hr />
       </div>
@@ -123,12 +128,12 @@
         id="printer-actions"
         class="container"
         v-bind="actionsProps"
-        @PrinterActionPauseClicked="$emit('PrinterActionPauseClicked')"
-        @PrinterActionResumeClicked="$emit('PrinterActionResumeClicked')"
-        @PrinterActionCancelClicked="$emit('PrinterActionCancelClicked')"
-        @PrinterActionConnectClicked="$emit('PrinterActionConnectClicked')"
-        @PrinterActionStartClicked="$emit('PrinterActionStartClicked')"
-        @PrinterActionControlClicked="$emit('PrinterActionControlClicked')"
+        @PrinterActionPauseClicked="$emit('PrinterActionPauseClicked', $event)"
+        @PrinterActionResumeClicked="$emit('PrinterActionResumeClicked', $event)"
+        @PrinterActionCancelClicked="$emit('PrinterActionCancelClicked', $event)"
+        @PrinterActionConnectClicked="$emit('PrinterActionConnectClicked', $event)"
+        @PrinterActionStartClicked="$emit('PrinterActionStartClicked', $event)"
+        @PrinterActionControlClicked="$emit('PrinterActionControlClicked', $event)"
       ></PrinterActions>
       <div class="info-section settings">
         <button
@@ -263,6 +268,7 @@
             v-if="section_toggles.statusTemp && statusTempProps.show"
             id="status_temp_block"
             v-bind="statusTempProps"
+            @TempEditClicked="$emit('TempEditClicked', $event)"
           ></StatusTemp>
         </div>
       </div>
@@ -273,7 +279,7 @@
 <script>
 import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
-import Gauge from '@common/Gauge'
+import DirectGauge from '@common/DirectGauge'
 
 import printerStockImgSrc from '@static/img/3d_printer.png'
 import loadingIconSrc from '@static/img/loading.gif'
@@ -308,7 +314,7 @@ const LocalPrefNames = {
 export default {
   name: 'PrinterCard',
   components: {
-    Gauge,
+    DirectGauge,
     DurationBlock,
     PrinterActions,
     StatusTemp,
@@ -333,7 +339,7 @@ export default {
     isVideoFull: {
       type: Boolean,
       required: true
-    }
+    },
   },
   data() {
     return {
@@ -358,6 +364,12 @@ export default {
     }
   },
   computed: {
+    ewm_mean() {
+      return get(this.printer, 'printerprediction.ewm_mean', 0)
+    },
+    isWatching() {
+      return this.printer.should_watch && get(this.printer, 'status.state.flags.printing')
+    },
     timeRemaining() {
       return toDuration(
         this.secondsLeft, get(this.printer, 'status.state'))
@@ -453,6 +465,7 @@ export default {
           temp.target = Math.round(temp.target)
           Object.assign(temp, {toolName: capitalize(tempKey)})
           temp.id = this.printer.id + '-' + tempKey
+          temp.key = tempKey
           temperatures.push(temp)
         }
       })

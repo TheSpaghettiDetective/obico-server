@@ -26,13 +26,13 @@ x-web-defaults: &web-defaults
     WEBPACK_LOADER_ENABLED:
 
     #### Optional env vars below this line ###
-    # TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
-    # TWILIO_AUTH_TOKEN:
-    # TWILIO_FROM_NUMBER:
-    # ENALBE_HISTORY:
-    # ML_API_TOKEN:
-    # SENTRY_DSN:
-    # TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
+    #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
+    #TWILIO_AUTH_TOKEN:
+    #TWILIO_FROM_NUMBER:
+    #ENALBE_HISTORY:
+    #ML_API_TOKEN:
+    #SENTRY_DSN:
+    #TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
 
 services:
   ml_api:
@@ -43,8 +43,8 @@ services:
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
-        # ML_API_TOKEN:
-        # HAS_GPU: 'False'
+        #ML_API_TOKEN:
+        #HAS_GPU: 'False'
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 2 wsgi"
 
   web:

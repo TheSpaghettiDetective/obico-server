@@ -643,12 +643,10 @@ export default {
         printerId,
         url,
         (data) => {
-          this.printers.map(p => {
-            if (p.id == data.id) {
-              return normalizedPrinter(data)
-            }
-            return p
-          })
+          let index = this.printers.findIndex(p => p.id == data.id)
+          if (index > -1) {
+            this.$set(this.printers, index, normalizedPrinter(data))
+          } // FIXME any alert here?
         }
       )
     },

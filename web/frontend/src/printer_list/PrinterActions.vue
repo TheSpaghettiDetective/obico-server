@@ -16,7 +16,7 @@
         type="button"
         class="btn btn-block mt-2"
         :class="{'btn-outline-warning': !printerPaused, 'btn-outline-success': printerPaused}"
-        @click="onPauseToggled()"
+        @click="onPauseToggled($event)"
       >
         <span
           v-if="!printerPaused"
@@ -40,7 +40,7 @@
         id="print-cancel"
         type="button"
         class="btn btn-outline-danger btn-block mt-2 mb-2"
-        @click="$emit('PrinterActionCancelClicked')"
+        @click="$emit('PrinterActionCancelClicked', $event)"
       >
         <i class="fas fa-stop"></i>&nbsp;&nbsp;Cancel
       </button>
@@ -55,7 +55,7 @@
         id="start-print"
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
-        @click="$emit('PrinterActionStartClicked')"
+        @click="$emit('PrinterActionStartClicked', $event)"
       >
         <i class="fas fa-star"></i>&nbsp;&nbsp;Start Printing
       </button>
@@ -69,7 +69,7 @@
         type="button"
         role="button"
         class="btn btn-outline-secondary btn-block mt-2 mb-2"
-        @click="$emit('PrinterActionControlClicked')"
+        @click="$emit('PrinterActionControlClicked', $event)"
       >
         <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
       </a>
@@ -84,7 +84,7 @@
         id="connect-printer"
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
-        @click="$emit('PrinterActionConnectClicked')"
+        @click="$emit('PrinterActionConnectClicked', $event)"
         :disabled="connecting"
       >
         <i class="fab fa-usb"></i>&nbsp;&nbsp;Connect
@@ -127,11 +127,11 @@ export default {
   computed: {
   },
   methods: {
-    onPauseToggled() {
+    onPauseToggled(ev) {
       if (this.printerPaused) {
-        this.$emit('PrinterActionResumeClicked')
+        this.$emit('PrinterActionResumeClicked', ev)
       } else {
-        this.$emit('PrinterActionPauseClicked')
+        this.$emit('PrinterActionPauseClicked', ev)
       }
     },
   }

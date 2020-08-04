@@ -27,6 +27,7 @@
       <div
         :id="item.id"
         class="col-5 numbers"
+        @click="onEditClicked(item)"
       >{{item.target}}<span class="text-subscript text-muted">°C</span>
         <span
           v-if="editable"
@@ -47,6 +48,13 @@ export default {
     editable: {
       type: Boolean,
       required: true
+    }
+  },
+  methods: {
+    onEditClicked(item) {
+      if (this.editable) {
+        this.$emit('TempEditClicked', item)
+      }
     }
   }
 }

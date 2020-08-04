@@ -89,6 +89,7 @@
         @PrinterActionConnectClicked="onPrinterActionConnectClicked(printer.id)"
         @PrinterActionStartClicked="onPrinterActionStartClicked(printer.id)"
         @PrinterActionControlClicked="onPrinterActionControlClicked(printer.id)"
+        @TempEditClicked="onTempEditClicked(printer.id, $event)"
       ></PrinterCard>
     </div>
 
@@ -147,6 +148,7 @@ import PrinterCard from './PrinterCard.vue'
 import {PAUSE, NOPAUSE} from './PrinterCard.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
+import TempTargetEditor from './TempTargetEditor.vue'
 
 let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerControlUrl = printerId => `/printers/${printerId}/control/`
@@ -288,6 +290,12 @@ export default {
     //
     //    $('.panel-collapse').collapse('hide');
     //});
+
+    /*  TODO
+        // Nothing else needs to be done if it's a shared page. A bit hacky.
+        if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
+            return;
+    */
     fetchPrinters() {
       this.loading = true
       return axios
@@ -300,7 +308,7 @@ export default {
         .then(response => {
           this.loading = false
           response.data.forEach((p) =>
-            this.onPrinterLoaded(normalizedPrinter(p))
+            this.insertPrinter(normalizedPrinter(p))
           )
         })
     },
@@ -330,7 +338,7 @@ export default {
         }
       })
     },
-    onNotAFailureClicked(event, printerId, resumePrint) {
+    onNotAFailureClicked(ev, printerId, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
         html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
@@ -359,7 +367,7 @@ export default {
             false)
         }
       })
-      event.preventDefault()
+      ev.preventDefault()
     },
     onWatchForFailuresToggled(printerId) {
       let p = this.printers.find((p) => p.id == printerId)
@@ -381,10 +389,10 @@ export default {
     onPrinterActionPauseClicked(printerId) {
       this.sendPrinterAction(printerId, PAUSE_PRINT, true)
     },
-    onPrinterActionResumeClicked(event, printerId) {
+    onPrinterActionResumeClicked(ev, printerId) {
       let printer = this.printers.find((p) => p.id == printerId)
       if (shouldShowAlert(printer)) {
-        this.onNotAFailureClicked(event, printerId, true)
+        this.onNotAFailureClicked(ev, printerId, true)
       } else {
         this.sendPrinterAction(printerId, RESUME_PRINT, true)
       }
@@ -549,6 +557,54 @@ export default {
       window.location = printerControlUrl(printerId)
     },
 
+    onTempEditClicked(printerId, item) {
+      let printer = this.printers.find((p) => p.id == printerId)
+      let tempProfiles = get(printer, 'settings.temp_profiles', [])
+      let presets
+      let maxTemp = 350
+
+      if (item.key == 'bed') {
+          presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['bed']}}
+        )
+        maxTemp = 140
+      } else {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['extruder']}}
+        )
+      }
+
+      this.$swal.openModalWithComponent(
+        TempTargetEditor,
+        {
+          presets: presets,
+          maxTemp: maxTemp,
+          curTarget: item.target,
+        },
+        {
+          title: 'Set ' + item.toolName + ' Temperature',
+          confirmButtonText: 'Confirm',
+          showCancelButton: true,
+          preConfirm: () => {
+            return {
+              target: parseInt(document.getElementById('target-temp').value)
+            }
+          }
+        }).then((result) => {
+          if (result.value) {
+            console.log(result.value)
+            let targetTemp = result.value.target
+            this.printerWs.passThruToPrinter(
+              printer.id,
+              {
+                func: 'set_temperature',
+                target: '_printer',
+                args: [item.key, targetTemp]
+              })
+          }
+      })
+    },
+
     updatePrinter(printer) {
       return axios
         .patch(
@@ -617,18 +673,37 @@ export default {
       return this.localPrinterState[`${printerId}-isVideoFull`] == true
     },
 
-    onPrinterLoaded(printer) {
+    shouldVideoBeFull(printer) {
+      let hasImage = get(printer, 'pic.img_url')
+      let shouldBeThumb = shouldShowAlert(printer) && hasImage
+      return !shouldBeThumb
+    },
+
+    insertPrinter(printer) {
       this.printers.push(printer)
 
       this.setIsConnecting(printer.id, false)
       this.setIsVideoVisible(printer.id, false)
-      this.setIsVideoFull(printer.id, false)
+
+      this.setIsVideoFull(printer.id, this.shouldVideoBeFull(printer))
 
       this.openWSForPrinter(printer)
 
       if (this.webrtc) {
         this.openWebRTCForPrinter(printer)
       }
+    },
+
+    reinsertPrinter(printer) {
+      let index = this.printers.findIndex(p => p.id == printer.id)
+      if (index < 0) {
+        // FIXME any alert here?
+        return
+      }
+
+      this.$set(this.printers, index, printer)
+
+      this.setIsVideoFull(printer.id, this.shouldVideoBeFull(printer))
     },
 
     openWSForPrinter(printer) {
@@ -643,10 +718,7 @@ export default {
         printerId,
         url,
         (data) => {
-          let index = this.printers.findIndex(p => p.id == data.id)
-          if (index > -1) {
-            this.$set(this.printers, index, normalizedPrinter(data))
-          } // FIXME any alert here?
+          this.reinsertPrinter(normalizedPrinter(data))
         }
       )
     },

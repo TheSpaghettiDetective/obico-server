@@ -225,6 +225,8 @@ if RECAPTCHA_SITE_KEY:
 TEMPLATE_LAYOUT = "layout.html"
 
 # Sentry
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
 if os.environ.get('SENTRY_DSN'):
     INSTALLED_APPS = INSTALLED_APPS + [
         'raven.contrib.django.raven_compat',
@@ -280,6 +282,7 @@ SETTINGS_EXPORT = [
     'SITE_USES_HTTPS',
     'EXT_3D_GEEKS_ENDPOINT',
     'RECAPTCHA_SITE_KEY',
+    'SENTRY_DSN',
 ]
 
 # Celery

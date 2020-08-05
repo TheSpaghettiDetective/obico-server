@@ -16,7 +16,7 @@ from PIL import Image
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import redis
-from lib.image import overlay_detections
+from lib.image import overlay_detections, image_too_dark
 from lib.utils import ml_api_auth_headers
 from app.models import *
 from app.notifications import send_failure_alert
@@ -144,6 +144,7 @@ class OctoPrintPingView(APIView):
 
 def cap_image_size(pic):
     im = Image.open(pic.file)
+    image_too_dark(im)
     if max(im.size) <= 1296:
         pic.file.seek(0)
         return pic

@@ -3,44 +3,31 @@
     <div class="option-drawer">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
-          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <b-collapse
+            id="collapse-one"
+            v-model="filters.visible"
+            class="panel-collapse in"
+            role="tabpanel"
+            aria-labelledby="headingOne"
+          >
             <div class="panel-body p-3">
               <div>
                 <div class="sorting-and-filter">
-                  <select
+                  <TSDSelect
                     id="printer-sorting"
                     class="my-1 mx-2"
                     v-model="filters.sort"
-                    @change="onSortFilterChanged()"
-                  >
-                    <option
-                      v-for="item in sortFilters"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{ item.title }}
-                      <i
-                        v-if="item.order == SortOrder.Asc"
-                        class="fas fa-long-arrow-alt-up"
-                      ></i>
-                      <i
-                        v-if="item.order == SortOrder.Desc"
-                        class="fas fa-long-arrow-alt-down"
-                      ></i>
-                    </option>
-                  </select>
+                    :options="sortFilters"
+                    @input="onSortFilterChanged()"
+                  ></TSDSelect>
 
-                  <select
+                  <TSDSelect
                     id="printer-filtering"
                     class="my-1 mx-2"
                     v-model="filters.state"
-                    @change="onStateFilterChanged()"
-                  >
-                    <option
-                      v-for="item in stateFilters"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{ item.title }}</option>
-                  </select>
+                    :options="stateFilters"
+                    @input="onStateFilterChanged()"
+                  ></TSDSelect>
                 </div>
               </div>
               <hr />
@@ -55,12 +42,14 @@
                 </a>
               </div>
             </div>
-          </div>
+          </b-collapse>
           <div class="panel-heading" role="tab" id="headingOne">
             <div class="panel-title">
-              <button class="btn btn-block shadow-none" role="button" data-toggle="collapse" data-parent="#accordion"
-                href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <i class="fas fa-angle-down"></i></button>
+              <button
+                class="btn btn-block shadow-none"
+                role="button"
+                @click="toggleFiltersPanel"
+              ><i class="fas fa-angle-down"></i></button>
             </div>
           </div>
         </div>
@@ -149,6 +138,7 @@ import {PAUSE, NOPAUSE} from './PrinterCard.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
+import TSDSelect from '@common/TSDSelect.vue'
 
 let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerControlUrl = printerId => `/printers/${printerId}/control/`
@@ -181,6 +171,11 @@ const SortFilter = {
   NameDesc: 'by-name-desc',
 }
 
+const SortIconClass = {
+  [SortOrder.Asc]: 'fas fa-long-arrow-alt-up',
+  [SortOrder.Desc]: 'fas fa-long-arrow-alt-down'
+}
+
 const LocalPrefNames = {
   StateFilter: 'printer-filtering',
   SortFilter: 'printer-sorting',
@@ -199,6 +194,7 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
+    TSDSelect
   },
   created() {
     this.printerWs = PrinterWebSocket()
@@ -207,15 +203,15 @@ export default {
     this.SortFilter = SortFilter
     this.SortOrder = SortOrder
     this.stateFilters = [
-      {id: StateFilter.All, title: 'All'},
-      {id: StateFilter.OnlineOnly, title: 'Online Printers Only'},
-      {id: StateFilter.ActiveOnly, title: 'Active Printers Only'},
+      {value: StateFilter.All, title: 'All Printers'},
+      {value: StateFilter.OnlineOnly, title: 'Online Printers Only'},
+      {value: StateFilter.ActiveOnly, title: 'Active Printers Only'},
     ]
     this.sortFilters = [
-      {id: SortFilter.DateAsc, title: 'By Date Asc', order: SortOrder.Asc},
-      {id: SortFilter.DateDesc, title: 'By Date Desc', order: SortOrder.Desc},
-      {id: SortFilter.NameAsc, title: 'By Name Asc', order: SortOrder.Asc},
-      {id: SortFilter.NameDesc, title: 'By Name Desc', order: SortOrder.Desc},
+      {value: SortFilter.DateAsc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Asc]},
+      {value: SortFilter.DateDesc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Desc]},
+      {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
+      {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
     ]
   },
   props: {
@@ -231,6 +227,7 @@ export default {
       loading: false,
       isOnSharedPage: false,
       filters: {
+        visible: false,
         state: lookup(
           StateFilter,
           getLocalPref(
@@ -285,12 +282,6 @@ export default {
 
   },
   methods: {
-    // TODO
-    //$('.option-drawer .printer-link').on('click', function() {
-    //
-    //    $('.panel-collapse').collapse('hide');
-    //});
-
     /*  TODO
         // Nothing else needs to be done if it's a shared page. A bit hacky.
         if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
@@ -312,17 +303,22 @@ export default {
           )
         })
     },
+    toggleFiltersPanel() {
+      this.filters.visible = !this.filters.visible
+    },
     onSortFilterChanged() {
       setLocalPref(
         LocalPrefNames.SortFilter,
         this.filters.sort
       )
+      this.toggleFiltersPanel()
     },
     onStateFilterChanged() {
       setLocalPref(
         LocalPrefNames.StateFilter,
         this.filters.state
       )
+      this.toggleFiltersPanel()
     },
     onShowAllPrintersClicked(){
       this.filters.state = StateFilter.All
@@ -564,7 +560,7 @@ export default {
       let maxTemp = 350
 
       if (item.key == 'bed') {
-          presets = tempProfiles.map(
+        presets = tempProfiles.map(
           (v) => {return {name: v.name, target: v['bed']}}
         )
         maxTemp = 140
@@ -591,17 +587,16 @@ export default {
             }
           }
         }).then((result) => {
-          if (result.value) {
-            console.log(result.value)
-            let targetTemp = result.value.target
-            this.printerWs.passThruToPrinter(
-              printer.id,
-              {
-                func: 'set_temperature',
-                target: '_printer',
-                args: [item.key, targetTemp]
-              })
-          }
+        if (result.value) {
+          let targetTemp = result.value.target
+          this.printerWs.passThruToPrinter(
+            printer.id,
+            {
+              func: 'set_temperature',
+              target: '_printer',
+              args: [item.key, targetTemp]
+            })
+        }
       })
     },
 
@@ -624,27 +619,26 @@ export default {
         .catch(response => {
           console.log(response)
           this.$swal.Toast.fire({
-              icon: 'error',
-              title: 'Failed to update printer!',
+            icon: 'error',
+            title: 'Failed to update printer!',
           }) // FIXME this was not handled in original code. sentry?
         })
     },
 
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      console.log('sendPrinterAction', printerId, path, isOctoPrintCommand)
       axios
         .get(apis.printerAction(printerId, path))
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {
-              toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
+            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
                   '<p>It may take a while to be executed by OctoPrint.</p>'
           }
           if (toastHtml != '') {
-              this.$swal.Toast.fire({
-                  icon: 'success',
-                  html: toastHtml,
-              })
+            this.$swal.Toast.fire({
+              icon: 'success',
+              html: toastHtml,
+            })
           }
         })
     },
@@ -771,7 +765,7 @@ export default {
     },
 
     onWebRTCCleanup(printerId) {
-        this.setIsVideoVisible(printerId, false)
+      this.setIsVideoVisible(printerId, false)
     }
   },
 
@@ -786,7 +780,6 @@ export default {
     }
 
     ifvisible.on('blur', () => {
-      console.log(this)
       if (this.webrtc) {
         this.webrtc.stopAllStreaming()
       }

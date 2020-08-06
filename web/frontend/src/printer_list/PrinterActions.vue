@@ -12,23 +12,20 @@
       class="col-sm-6"
     >
       <button
-        id="print-pause-resume"
+        v-if="!printerPaused"
         type="button"
-        class="btn btn-block mt-2"
-        :class="{'btn-outline-warning': !printerPaused, 'btn-outline-success': printerPaused}"
+        class="btn btn-block mt-2 btn-outline-warning"
         @click="onPauseToggled($event)"
       >
-        <span
-          v-if="!printerPaused"
-        >
-          <i class="fas fa-pause"></i>&nbsp;&nbsp;Pause
-        </span>
-
-        <span
-          v-if="printerPaused"
-        >
-          <i class="fas fa-play"></i>&nbsp;&nbsp;Resume
-        </span>
+        <i class="fas fa-pause"></i>&nbsp;Pause
+      </button>
+      <button
+        v-else
+        type="button"
+        class="btn btn-block mt-2 btn-outline-success"
+        @click="onPauseToggled($event)"
+      >
+        <i class="fas fa-play"></i>&nbsp;Resume
       </button>
     </div>
 
@@ -42,7 +39,7 @@
         class="btn btn-outline-danger btn-block mt-2 mb-2"
         @click="$emit('PrinterActionCancelClicked', $event)"
       >
-        <i class="fas fa-stop"></i>&nbsp;&nbsp;Cancel
+        <i class="fas fa-stop"></i>&nbsp;Cancel
       </button>
     </div>
 

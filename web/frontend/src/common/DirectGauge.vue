@@ -4,7 +4,6 @@
     <div class="tsd-gauge">
       <radial-gauge :value="value" :options="options"></radial-gauge>
     </div>
-    <hr />
   </div>
 </template>
 
@@ -122,7 +121,7 @@ export default {
 
 #title
   position: absolute
-  top: 50%
+  top: 86px
   left: 0px
   width: 100%
   text-align: center

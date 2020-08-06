@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <div class="py-2">
+  <div class="py-2">
       <div class="row text-muted">
         <div class="col-2">
           <i class="fas fa-thermometer-half fa-lg"></i>
@@ -12,7 +11,6 @@
             Target
         </small>
       </div>
-    </div>
     <div
       v-for="item in temperatures"
       :key="item.id"

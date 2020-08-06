@@ -37,7 +37,7 @@ function getWebRTCManager(callbacks) {
             urls:'turn:' + turnServer + ':80?transport=udp',
             credential: token,
             username: token
-        })
+          })
         iceServers.push(
           {
             urls:'turn:' + turnServer + ':80?transport=tcp',

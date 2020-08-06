@@ -11,6 +11,8 @@
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.4",
+    "filesize": "^3.6.1",
+    "ifvisible": "^1.1.0",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
@@ -20,10 +22,12 @@
     "vue-mugen-scroll": "^0.2.6",
     "vue-pluralize": "^0.0.2",
     "vue-slick-carousel": "^1.0.5",
+    "vue-slider-component": "^3.2.2",
     "vue-sticky-directive": "^0.0.10",
     "vue-sweetalert2": "^3.0.5",
     "vue-video-player": "^5.0.2",
-    "vue2-canvas-gauges": "^0.0.0"
+    "vue2-canvas-gauges": "^0.0.0",
+    "webrtc-adapter": "^6.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",

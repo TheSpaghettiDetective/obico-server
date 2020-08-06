@@ -9,6 +9,12 @@ urlpatterns = [
     path('media/<path:file_path>', views.serve_jpg_file, name='serve_jpg_file'),  # semi hacky solution to serve image files
     path('printer_auth_token/<int:pk>/', views.printer_auth_token, name='printer_auth_token'),
     path('printers/', views.printers, name='printers'),
+    path(
+        'printers/tmp/',
+        views.printers,
+        kwargs={"template_name": "printer_list_tmp.html"},
+        name='printers_tmp'
+    ),
     path('printers/<pk>/', views.edit_printer, name='edit_printer'),
     path('printers/<int:pk>/delete/', views.delete_printer, name='delete_printer'),
     path('printers/<int:pk>/share/', views.share_printer, name='share_printer'),

@@ -14,3 +14,9 @@ export const normalizedPrint = print => {
   print.has_alerts = Boolean(print.alerted_at)
   return print
 }
+
+export const normalizedPrinter = printer => {
+  printer.name = printer.name || ('Printer #' + printer.id.toString())
+  printer.created_at = toMomentOrNull(printer.created_at)
+  return printer
+}

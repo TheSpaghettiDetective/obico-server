@@ -252,7 +252,7 @@ export default {
       case StateFilter.OnlineOnly:
         printers = printers.filter((p) => !isPrinterDisconnected(get(p, 'status.state')))
         break
-      case StateFilter.Active:
+      case StateFilter.ActiveOnly:
         printers = printers.filter((p) => printInProgress(get(p, 'status.state')))
         break
       case StateFilter.All:

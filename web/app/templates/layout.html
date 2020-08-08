@@ -180,6 +180,9 @@
     {% endif %}
     {% if settings.SENTRY_DSN %}
       Sentry.init({ dsn: '{{ settings.SENTRY_DSN }}' });
+      {% if user.is_authenticated %}
+        Sentry.setUser({"email": "{{ user.email }}"});
+      {% endif %}
     {% endif %}
   </script>
   <script src="{% static 'js/shared.js' %}"></script>

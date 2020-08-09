@@ -1,7 +1,7 @@
 from telebot import TeleBot, types
 from django.conf import settings
 from lib import site
-from .models import Printer
+from app.models import Printer
 
 import logging
 

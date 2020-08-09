@@ -4,7 +4,7 @@ from lib import site
 # color is an integer between the values of 0 and 0xffffff'
 # text is self explanatory
 # image_url is the url of the image of the printer's state
-def execute_discord_webhook(printer, text, color, webhook_url, image_url=None):
+def send_discord_notification(printer, text, color, webhook_url, image_url=None):
     webhook = DiscordWebhook(url=webhook_url, username="The Spaghetti Detective")
     embed = DiscordEmbed(title=printer.name, description=text, color=color)
     if image_url:

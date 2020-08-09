@@ -17,7 +17,7 @@ from .view_helpers import *
 from .models import *
 from .forms import PrinterForm, UserPreferencesForm
 from lib import redis
-from .telegram_bot import bot_name, telegram_bot, LOGGER
+from lib.integrations.telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 

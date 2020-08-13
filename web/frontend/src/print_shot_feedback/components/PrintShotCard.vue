@@ -1,35 +1,22 @@
 <template>
   <div>
     <img class="card-img-top" :src="shot.image_url" />
-    <div class="text-center pt-3 px-3">
-      <answer-button
-        ref="button"
-        :checked="shot.answer === consts.LOOKS_BAD"
-        :updating="updating && inFlightAnswer === consts.LOOKS_BAD"
-        :disabled="updating"
-        checked-class="btn-primary"
-        @click="looksBad"
-      >Yes, I do see spaghetti</answer-button>
-      <answer-button
-        :checked="shot.answer === consts.LOOKS_OK"
-        :updating="updating && inFlightAnswer === consts.LOOKS_OK"
-        :disabled="updating"
-        checked-class="btn-primary"
-        @click="looksOk"
-      >No, I do NOT see ANY spaghetti</answer-button>
-      <answer-button
-        :checked="shot.answer === consts.UNANSWERED"
-        :updating="updating && inFlightAnswer === consts.UNANSWERED"
-        :disabled="updating"
-        checked-class="btn-primary"
-        @click="willDecideLater"
-      >Hmmm, I am not sure</answer-button>
-    </div>
-    <div class="float-right text-muted px-2 pb-2">
-      Not sure? Look at
-      <a
-        href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#spaghetti-examples"
-      >some examples >>></a>
+    <div class="px-3 pt-4">
+      <b-form-group label="Do you see any spaghetti in this picture?">
+        <b-form-radio-group
+          :id="'rd' + this.shot.id"
+          v-model="answer"
+          :options="options"
+          :name="'rd' + this.shot.id"
+          @change="updateShot"
+        ></b-form-radio-group>
+      </b-form-group>
+      <small class="text-muted">
+        Not sure? Look at
+        <a
+          href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#spaghetti-examples"
+        >some examples >>></a>
+      </small>
     </div>
   </div>
 </template>
@@ -38,57 +25,35 @@
 import axios from 'axios'
 
 import apis from '../../lib/apis'
-import AnswerButton from './AnswerButton'
-
-const consts = {
-  LOOKS_OK: 'LOOKS_OK',
-  LOOKS_BAD: 'LOOKS_BAD',
-  UNANSWERED: 'UNDECIDED'
-}
+// import AnswerButton from './AnswerButton'
+import { BFormGroup, BFormRadioGroup } from 'bootstrap-vue'
 
 export default {
   name: 'PrintShotCard',
 
   components: {
-    AnswerButton
-  },
-
-  created() {
-    this.consts = consts
+    // AnswerButton
+    BFormGroup,
+    BFormRadioGroup
   },
 
   props: {
     shot: Object
   },
 
-  computed: {
-    updating() {
-      return Boolean(this.inFlightAnswer)
-    }
-  },
-
   data() {
     return {
-      inFlightAnswer: null
+      answer: this.shot.answer,
+      options: [
+        { text: 'Yes', value: 'LOOKS_BAD' },
+        { text: 'No', value: 'LOOKS_OK' },
+        { text: 'I am not sure', value: 'UNDECIDED' },
+      ]
     }
   },
 
   methods: {
-    looksOk() {
-      this.updateShot(consts.LOOKS_OK)
-    },
-
-    looksBad() {
-      this.updateShot(consts.LOOKS_BAD)
-    },
-
-    willDecideLater() {
-      this.updateShot(consts.UNANSWERED)
-    },
-
     updateShot: function(answer) {
-      this.inFlightAnswer = answer
-
       axios
         .put(apis.printShotFeedback(this.shot.id, this.shot.print_id), {
           answer: answer
@@ -111,10 +76,6 @@ export default {
               }
             })
           }
-        })
-
-        .finally(() => {
-          this.inFlightAnswer = null
         })
     }
   }

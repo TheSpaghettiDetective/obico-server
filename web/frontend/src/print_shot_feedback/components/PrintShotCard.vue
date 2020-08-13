@@ -4,10 +4,8 @@
     <div class="px-3 pt-4">
       <b-form-group label="Do you see any spaghetti in this picture?">
         <b-form-radio-group
-          :id="'rd' + this.shot.id"
           v-model="answer"
           :options="options"
-          :name="'rd' + this.shot.id"
           @change="updateShot"
         ></b-form-radio-group>
       </b-form-group>
@@ -26,7 +24,7 @@ import axios from 'axios'
 
 import apis from '../../lib/apis'
 // import AnswerButton from './AnswerButton'
-import { BFormGroup, BFormRadioGroup } from 'bootstrap-vue'
+import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
 
 export default {
   name: 'PrintShotCard',
@@ -34,7 +32,7 @@ export default {
   components: {
     // AnswerButton
     BFormGroup,
-    BFormRadioGroup
+    BFormRadioGroup,
   },
 
   props: {

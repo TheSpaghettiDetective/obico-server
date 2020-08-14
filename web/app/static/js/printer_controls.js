@@ -46,7 +46,7 @@ $(document).ready(function () {
     });
 
     var mmPerStep = getPrinterLocalPref(MM_PER_STEP_PREF, printerId, "10");
-    var toToggleOn = printerCard.find('.btn-group-toggle input[value=' + mmPerStep + ']')
+    var toToggleOn = printerCard.find('.btn-group-toggle input[value="' + mmPerStep + '"]')
     toToggleOn.prop('checked', true);
     toToggleOn.parent().addClass('active').siblings().removeClass('active');
 });

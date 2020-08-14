@@ -363,4 +363,7 @@ $(document).ready(function () {
     $('.hint').popover({
         container: 'body'
     });
+
+
+    var asdf = asdfasdf.asdf();
 });

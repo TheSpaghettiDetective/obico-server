@@ -7,11 +7,9 @@ import os
 import django
 from channels.routing import get_default_application
 import newrelic.agent
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-
 newrelic.agent.initialize()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
-application = SentryAsgiMiddleware(get_default_application())
+application = get_default_application()
 

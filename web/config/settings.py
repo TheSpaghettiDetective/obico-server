@@ -14,10 +14,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 from django.contrib.messages import constants as messages
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -231,13 +227,10 @@ TEMPLATE_LAYOUT = "layout.html"
 # Sentry
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
-if SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), CeleryIntegration()],
-        send_default_pii=True
-    )
-
+if os.environ.get('SENTRY_DSN'):
+    INSTALLED_APPS = INSTALLED_APPS + [
+        'raven.contrib.django.raven_compat',
+    ]
 
 # REDIS client
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')

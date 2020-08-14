@@ -10,7 +10,7 @@ import requests
 import logging
 from urllib.parse import urlparse
 import ipaddress
-from sentry_sdk import capture_exception
+from raven.contrib.django.raven_compat.models import client as sentryClient
 import smtplib
 import backoff
 
@@ -41,29 +41,29 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
         if printer.user.alert_by_email:
             send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if printer.user.is_pro and printer.user.alert_by_sms:
             send_failure_alert_sms(printer, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if printer.user.is_pro:
             send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         send_failure_alert_discord(printer, rotated_jpg_url, is_warning, print_paused)
@@ -281,19 +281,19 @@ def send_print_notification(_print, extra_ctx={}):
         if _print.printer.user.print_notification_by_email:
             send_print_notification_email(_print, extra_ctx)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_pushbullet:
             send_print_notification_pushbullet(_print)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_telegram:
             send_print_notification_telegram(_print)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_discord:
@@ -305,7 +305,7 @@ def send_print_notification(_print, extra_ctx={}):
         if _print.printer.user.is_pro:
             send_print_notification_slack(_print)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
 
 def send_print_notification_email(_print, extra_ctx={}):

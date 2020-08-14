@@ -1,6 +1,7 @@
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
 import logging
+from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
 import newrelic.agent
 from channels_presence.models import Room
@@ -35,7 +36,6 @@ class WebConsumer(JsonWebsocketConsumer):
         except:
             LOGGER.exception("Websocket failed to connect")
             self.close()
-            raise
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
@@ -51,8 +51,11 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.send_msg_to_printer(self.printer.id, data)
 
     def printer_status(self, data):
-        serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
-        self.send_json(serializer.data)
+        try:
+            serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
+            self.send_json(serializer.data)
+        except:
+            sentryClient.captureException()
 
     def web_message(self, msg):
         self.send_json(msg)
@@ -96,11 +99,14 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
                 channels.send_message_to_web(printer.id, data)
             else:
                 process_octoprint_status(printer, data)
-        except:
+
+        except ObjectDoesNotExist:
             import traceback; traceback.print_exc()
             self.close()
-            raise
-
+        except:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            self.close()
+            sentryClient.captureException()
 
     def printer_message(self, msg):
         self.send_json(msg)
@@ -127,7 +133,6 @@ class JanusWebConsumer(WebsocketConsumer):
         except:
             LOGGER.exception("Websocket failed to connect")
             self.close()
-            raise
 
     def disconnect(self, close_code):
         LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))

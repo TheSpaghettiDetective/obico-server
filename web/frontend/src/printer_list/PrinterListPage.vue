@@ -121,9 +121,6 @@ import ifvisible from 'ifvisible'
 
 import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
-import {
-  shouldShowAlert,
-} from '@lib/printers'
 
 import apis from '@lib/apis'
 import PrinterWebSocket from '@lib/printer_ws'
@@ -383,7 +380,7 @@ export default {
     },
     onPrinterActionResumeClicked(ev, printerId) {
       let printer = this.printers.find((p) => p.id == printerId)
-      if (shouldShowAlert(printer)) {
+      if (printer.alertUnacknowledged) {
         this.onNotAFailureClicked(ev, printerId, true)
       } else {
         this.sendPrinterAction(printerId, RESUME_PRINT, true)
@@ -651,7 +648,7 @@ export default {
 
     shouldVideoBeFull(printer) {
       let hasImage = get(printer, 'pic.img_url')
-      let shouldBeThumb = shouldShowAlert(printer) && hasImage
+      let shouldBeThumb = printer.alertUnacknowledged && hasImage
       return !shouldBeThumb
     },
 

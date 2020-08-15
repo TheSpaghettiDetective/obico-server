@@ -94,7 +94,7 @@
       </div>
 
       <div
-        v-if="shouldShowAlert"
+        v-if="printer.alertUnacknowledged"
         class="failure-alert card-body bg-warning px-2 py-1"
       >
         <i class="fas fa-exclamation-triangle align-middle"></i>
@@ -288,7 +288,6 @@ import {
   setPrinterLocalPref,
   getPrinterLocalPref,
   toDuration,
-  shouldShowAlert
 } from '@lib/printers.js'
 
 import DurationBlock from './DurationBlock.vue'
@@ -413,9 +412,6 @@ export default {
     },
     pauseOnFailure() {
       return this.printer.action_on_failure == 'PAUSE'
-    },
-    shouldShowAlert() {
-      return shouldShowAlert(this.printer)
     },
     hasCurrentPrintFilename() {
       if (this.printer.current_print && this.printer.current_print.filename) {

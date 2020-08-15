@@ -19,11 +19,18 @@ export const normalizedPrint = print => {
 export const normalizedPrinter = printer => {
   printer.name = printer.name || ('Printer #' + printer.id.toString())
   printer.created_at = toMomentOrNull(printer.created_at)
+  printer.isOffline = get(printer, 'status', null) === null
   printer.isPaused = get(printer, 'status.state.flags.paused', false)
   printer.isIdle = get(printer, 'status.state.text', '') === 'Operational'
   printer.isDisconnected = get(printer, 'status.state.flags.closedOrError', true)
   printer.isPrinting = !printer.isDisconnected && get(printer, 'status.state.text', '') !== 'Operational'
   printer.hasError = get(printer, 'status.state.flags.error') || get(printer, 'status.state.text', '').toLowerCase().includes('error')
+  printer.alertUnacknowledged = get(printer, 'current_print.alerted_at')
+    && moment(
+        get(printer, 'current_print.alerted_at')
+    ).isAfter(
+        moment(get(printer, 'current_print.alert_acknowledged_at') || 0)
+    )
 
   return printer
 }

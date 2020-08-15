@@ -1,19 +1,5 @@
 import moment from 'moment'
 
-/***** Other helpers */
-
-let shouldShowAlert = (printer) => {
-  if (!printer.current_print || !printer.current_print.alerted_at) {
-    return false
-  }
-  return moment(
-    printer.current_print.alerted_at
-  ).isAfter(
-    moment(printer.current_print.alert_acknowledged_at || 0)
-  )
-}
-
-
 let getLocalPref = (prefId, defaultValue) => {
   var val = localStorage.getItem(prefId) || defaultValue
   // Hack to deal with data type such as boolean and number
@@ -68,7 +54,6 @@ let toDuration = (seconds, isPrinting) => {
 }
 
 export {
-  shouldShowAlert,
   getLocalPref,
   setLocalPref,
   getPrinterLocalPref,

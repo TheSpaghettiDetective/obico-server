@@ -2,13 +2,13 @@
 <div>
   <div class="row my-2">
     <div
-      v-if="printer.hasError"
+      v-if="!printer.isOffline && printer.hasError"
       class="col-12 bg-danger text-center">
       <div>OctoPrint Error</div><div>{{ printer.status.state.text }}</div>
     </div>
 
     <div
-      v-if="!printer.isDisconnected && !printer.isIdle"
+      v-if="!printer.isOffline && !printer.isDisconnected && !printer.isIdle"
       class="col-sm-6"
     >
       <button
@@ -30,7 +30,7 @@
     </div>
 
     <div
-      v-if="!printer.isDisconnected && !printer.isIdle"
+      v-if="!printer.isOffline && !printer.isDisconnected && !printer.isIdle"
       class="col-sm-6"
     >
       <button
@@ -45,7 +45,7 @@
 
 
     <div
-      v-if="!printer.isDisconnected && printer.isIdle"
+      v-if="!printer.isOffline && !printer.isDisconnected && printer.isIdle"
       class="col-sm-6"
     >
       <button
@@ -59,7 +59,7 @@
     </div>
 
     <div
-      v-if="!printer.isDisconnected && printer.isIdle"
+      v-if="!printer.isOffline && !printer.isDisconnected && printer.isIdle"
       class="col-sm-6"
     >
       <a
@@ -73,7 +73,7 @@
     </div>
 
     <div
-      v-if="printer.isDisconnected"
+      v-if="!printer.isOffline && printer.isDisconnected"
       class="col-12 text-center py-2 text-warning"
     >
       <div>Printer is not connected to OctoPrint.</div>
@@ -91,7 +91,7 @@
     </div>
 
     <div
-      v-if="!printer.status"
+      v-if="printer.isOffline"
       class="col-12 text-center py-3 text-warning"
     >
       <div>

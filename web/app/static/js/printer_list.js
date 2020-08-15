@@ -1,3 +1,5 @@
+// TODO: Delete me after switching to Vue
+
 "use strict";
 
 function notFailedBtnClicked(event, printerId, resumePrint) {

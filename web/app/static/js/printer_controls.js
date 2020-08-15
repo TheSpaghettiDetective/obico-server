@@ -1,3 +1,5 @@
+// TODO: Delete me after switching to Vue
+
 "use strict";
 
 

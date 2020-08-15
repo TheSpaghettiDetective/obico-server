@@ -23,14 +23,12 @@
 import axios from 'axios'
 
 import apis from '../../lib/apis'
-// import AnswerButton from './AnswerButton'
 import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
 
 export default {
   name: 'PrintShotCard',
 
   components: {
-    // AnswerButton
     BFormGroup,
     BFormRadioGroup,
   },

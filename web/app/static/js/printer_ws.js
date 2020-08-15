@@ -1,3 +1,5 @@
+// TODO: delete me after switching to Vue
+
 "use strict";
 
 function PrinterWebSocket() {

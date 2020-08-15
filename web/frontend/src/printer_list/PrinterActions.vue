@@ -82,13 +82,8 @@
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
         @click="$emit('PrinterActionConnectClicked', $event)"
-        :disabled="connecting"
       >
         <i class="fab fa-usb"></i>&nbsp;&nbsp;Connect
-        <i
-          v-if="connecting"
-          class="fas fa-spinner fa-spin"
-        ></i>
       </button>
     </div>
 
@@ -116,10 +111,6 @@ export default {
     idle: {},
     error: {},
     disconnected: {},
-
-    // --
-
-    connecting: {},
   },
   computed: {
   },

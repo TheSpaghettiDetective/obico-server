@@ -328,10 +328,6 @@ export default {
       type: Boolean,
       required: true
     },
-    isConnecting: {
-      type: Boolean,
-      required: true
-    },
     isVideoVisible: {
       type: Boolean,
       required: true
@@ -446,8 +442,6 @@ export default {
         idle: isPrinterIdle(get(this.printer, 'status.state')),
         error: printerHasError(get(this.printer, 'status.state')),
         disconnected: isPrinterDisconnected(get(this.printer, 'status.state')),
-
-        connecting: this.isConnecting
       }
     },
     progressPct() {

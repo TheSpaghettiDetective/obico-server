@@ -64,7 +64,6 @@
         :key="printer.id"
         :printer="printer"
         :is-on-shared-page="isOnSharedPage"
-        :is-connecting="isConnecting(printer.id)"
         :is-video-visible="isVideoVisible(printer.id)"
         :is-video-full="isVideoFull(printer.id)"
         @DeleteClicked="onDeleteClicked(printer.id)"
@@ -404,7 +403,6 @@ export default {
       })
     },
     onPrinterActionConnectClicked(printerId) {
-      this.setIsConnecting(printerId, true)
       this.printerWs.passThruToPrinter(
         printerId,
         { func: 'get_connection_options', target: '_printer' },
@@ -414,14 +412,12 @@ export default {
               icon: 'error',
               title: 'Failed to contact OctoPrint!',
             })
-            this.setIsConnecting(printerId, false)
           } else {
             if (connectionOptions.ports.length < 1) {
               this.$swal.Toast.fire({
                 icon: 'error',
                 title: 'Uh-Oh. No printer is found on the serial port.',
               })
-              this.setIsConnecting(printerId, false)
             } else {
               this.$swal.openModalWithComponent(
                 ConnectPrinter,
@@ -447,10 +443,7 @@ export default {
                   this.printerWs.passThruToPrinter(
                     printerId,
                     { func: 'connect', target: '_printer',
-                      args: args },
-                    () => {
-                      this.setIsConnecting(printerId, false)
-                    }
+                      args: args }
                   )
                 }
               })
@@ -643,14 +636,6 @@ export default {
         })
     },
 
-    setIsConnecting(printerId, isConnecting) {
-      this.$set(this.localPrinterState, `${printerId}-isConnecting`, isConnecting == true)
-    },
-
-    isConnecting(printerId) {
-      return this.localPrinterState[`${printerId}-isConnecting`] == true
-    },
-
     setIsVideoVisible(printerId, isVideoVisible) {
       this.$set(this.localPrinterState, `${printerId}-isVideoVisible`, isVideoVisible == true)
     },
@@ -676,7 +661,6 @@ export default {
     insertPrinter(printer) {
       this.printers.push(printer)
 
-      this.setIsConnecting(printer.id, false)
       this.setIsVideoVisible(printer.id, false)
 
       this.setIsVideoFull(printer.id, this.shouldVideoBeFull(printer))

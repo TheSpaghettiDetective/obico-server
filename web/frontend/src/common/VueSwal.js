@@ -58,6 +58,9 @@ const install = (Vue, options) => {
     showCancelButton: true,
     confirmButtonText: 'Yes',
     cancelButtonText: 'No',
+    customClass: {
+      container: 'dark-backdrop',
+    },
   })
 
   const Toast = Vue.swal.mixin({

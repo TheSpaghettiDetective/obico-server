@@ -237,16 +237,16 @@
                 <div class="col-2 text-muted">
                   <i class="fas fa-clock"></i>
                 </div>
-                <DurationBlock
+                <duration-block
                   id="print-time-remaining"
                   class="col-5 numbers"
                   v-bind="timeRemaining"
-                ></DurationBlock>
-                <DurationBlock
+                ></duration-block>
+                <duration-block
                   id="print-time-total"
                   class="col-5 numbers"
                   v-bind="timeTotal"
-                ></DurationBlock>
+                ></duration-block>
                 <div class="col-12">
                   <div class="progress" style="height: 2px;">
                     <div
@@ -288,19 +288,12 @@ import {
   setPrinterLocalPref,
   getPrinterLocalPref,
   toDuration,
-  isPrinterPaused,
-  isPrinterIdle,
-  printerHasError,
-  isPrinterDisconnected,
   shouldShowAlert
 } from '@lib/printers.js'
 
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
-
-export const PAUSE = 'PAUSE'
-export const NOPAUSE = ''
 
 const Show = true
 const Hide = false
@@ -368,7 +361,7 @@ export default {
     },
     timeRemaining() {
       return toDuration(
-        this.secondsLeft, get(this.printer, 'status.state'))
+        this.secondsLeft, this.printer.isPrinting)
     },
     timeTotal() {
       let secs = null
@@ -377,7 +370,7 @@ export default {
       }
       return toDuration(
         secs,
-        get(this.printer, 'status.state'))
+        this.printer.isPrinting)
     },
     secondsLeft() {
       return get(this.printer, 'status.progress.printTimeLeft')
@@ -419,7 +412,7 @@ export default {
       return this.printer.watching
     },
     pauseOnFailure() {
-      return this.printer.action_on_failure == PAUSE
+      return this.printer.action_on_failure == 'PAUSE'
     },
     shouldShowAlert() {
       return shouldShowAlert(this.printer)
@@ -435,13 +428,7 @@ export default {
     },
     actionsProps() {
       return {
-        printerId: this.printer.id,
-        status: this.printer.status,
-        printerStateTxt: get(this.printer, 'status.state.text', ''),
-        printerPaused: isPrinterPaused(get(this.printer, 'status.state')),
-        idle: isPrinterIdle(get(this.printer, 'status.state')),
-        error: printerHasError(get(this.printer, 'status.state')),
-        disconnected: isPrinterDisconnected(get(this.printer, 'status.state')),
+        printer: this.printer,
       }
     },
     progressPct() {

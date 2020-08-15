@@ -58,7 +58,7 @@
 
     <div id="printers" class="row justify-content-center">
       <b-spinner v-if="loading" label="Loading..."></b-spinner>
-      <PrinterCard
+      <printer-card
         v-for="printer in visiblePrinters"
         ref="printer"
         :key="printer.id"
@@ -78,7 +78,7 @@
         @PrinterActionStartClicked="onPrinterActionStartClicked(printer.id)"
         @PrinterActionControlClicked="onPrinterActionControlClicked(printer.id)"
         @TempEditClicked="onTempEditClicked(printer.id, $event)"
-      ></PrinterCard>
+      ></printer-card>
     </div>
 
     <div class="row justify-content-center">
@@ -123,8 +123,6 @@ import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
 import {
   shouldShowAlert,
-  isPrinterDisconnected,
-  printInProgress,
 } from '@lib/printers'
 
 import apis from '@lib/apis'
@@ -133,7 +131,6 @@ import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
 
 import PrinterCard from './PrinterCard.vue'
-import {PAUSE, NOPAUSE} from './PrinterCard.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
@@ -249,10 +246,10 @@ export default {
       let printers = this.printers
       switch (this.filters.state) {
       case StateFilter.OnlineOnly:
-        printers = printers.filter((p) => !isPrinterDisconnected(get(p, 'status.state')))
+        printers = printers.filter((p) => !p.isDisconnected)
         break
       case StateFilter.ActiveOnly:
-        printers = printers.filter((p) => printInProgress(get(p, 'status.state')))
+        printers = printers.filter((p) => p.isPrinting)
         break
       case StateFilter.All:
         break
@@ -374,7 +371,7 @@ export default {
     onPauseOnFailureToggled(printerId) {
       let p = this.printers.find((p) => p.id == printerId)
       if (p) {
-        p.action_on_failure = p.action_on_failure == PAUSE ? NOPAUSE : PAUSE
+        p.action_on_failure = p.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
         this.updatePrinter(p)
       }
     },
@@ -410,7 +407,7 @@ export default {
           if (err) {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: 'Failed to contact OctoPrint!',
+              title: 'Failed to connect!',
             })
           } else {
             if (connectionOptions.ports.length < 1) {

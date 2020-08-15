@@ -56,7 +56,7 @@ function PrinterWebSocket() {
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
               type: 'error',
-              title: 'Failed to contact OctoPrint, or you have NOT upgraded to the latest TSD plugin version.',
+              title: 'Failed to contact OctoPrint, or the TSD plugin version is older than 1.2.0.',
             })
           }
         }, 10*1000)

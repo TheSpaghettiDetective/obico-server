@@ -35,16 +35,8 @@
 </template>
 
 <script>
-import { BFormSelect, BFormSelectOption} from 'bootstrap-vue'
-
 export default {
   name: 'ConnectPrinter',
-
-  components: {
-    BFormSelect,
-    BFormSelectOption,
-  },
-
   props: {
     connectionOptions: {
       type: Object,

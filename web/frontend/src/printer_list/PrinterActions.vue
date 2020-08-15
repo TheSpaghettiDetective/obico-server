@@ -2,17 +2,17 @@
 <div>
   <div class="row my-2">
     <div
-      v-if="status && error"
+      v-if="printer.hasError"
       class="col-12 bg-danger text-center">
-      <div>OctoPrint Error</div><div>{{ printerStateTxt }}</div>
+      <div>OctoPrint Error</div><div>{{ printer.status.state.text }}</div>
     </div>
 
     <div
-      v-if="status && !disconnected && !idle"
+      v-if="!printer.isDisconnected && !printer.isIdle"
       class="col-sm-6"
     >
       <button
-        v-if="!printerPaused"
+        v-if="!printer.isPaused"
         type="button"
         class="btn btn-block mt-2 btn-outline-warning"
         @click="onPauseToggled($event)"
@@ -30,7 +30,7 @@
     </div>
 
     <div
-      v-if="status && !disconnected && !idle"
+      v-if="!printer.isDisconnected && !printer.isIdle"
       class="col-sm-6"
     >
       <button
@@ -45,7 +45,7 @@
 
 
     <div
-      v-if="status && !disconnected && idle"
+      v-if="!printer.isDisconnected && printer.isIdle"
       class="col-sm-6"
     >
       <button
@@ -59,7 +59,7 @@
     </div>
 
     <div
-      v-if="status && !disconnected && idle"
+      v-if="!printer.isDisconnected && printer.isIdle"
       class="col-sm-6"
     >
       <a
@@ -73,7 +73,7 @@
     </div>
 
     <div
-      v-if="status && disconnected"
+      v-if="printer.isDisconnected"
       class="col-12 text-center py-2 text-warning"
     >
       <div>Printer is not connected to OctoPrint.</div>
@@ -81,14 +81,17 @@
         id="connect-printer"
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
-        @click="$emit('PrinterActionConnectClicked', $event)"
+        :disabled="connecting"
+        @click="this.onConnectClicked"
       >
-        <i class="fab fa-usb"></i>&nbsp;&nbsp;Connect
+        <b-spinner v-if="connecting" type="grow" small></b-spinner>
+        <i v-else class="fab fa-usb"></i>
+        &nbsp;&nbsp;Connect
       </button>
     </div>
 
     <div
-      v-if="!status"
+      v-if="!printer.status"
       class="col-12 text-center py-3 text-warning"
     >
       <div>
@@ -101,27 +104,36 @@
 </template>
 
 <script>
+
 export default {
   name: 'PrinterActions',
   props: {
-    printerId: {},
-    status: {},
-    printerStateTxt: {},
-    printerPaused: {},
-    idle: {},
-    error: {},
-    disconnected: {},
+    printer: {},
+  },
+  data() {
+    return {
+      connectBtnClicked: false,
+    }
   },
   computed: {
+    connecting() {
+      return this.connectBtnClicked && this.printer.isDisconnected
+    }
   },
   methods: {
     onPauseToggled(ev) {
-      if (this.printerPaused) {
+      if (this.printer.isPaused) {
         this.$emit('PrinterActionResumeClicked', ev)
       } else {
         this.$emit('PrinterActionPauseClicked', ev)
       }
     },
+    onConnectClicked(ev) {
+      this.$emit('PrinterActionConnectClicked', ev)
+      this.connectBtnClicked = true
+      setTimeout( () => {this.connectBtnClicked = false}, 10*1000)
+
+    }
   }
 }
 </script>

@@ -1,48 +1,43 @@
 <template>
   <div>
     <div class="text-center">
-      <h1 
+      <h1
         v-if="value > 0"
         class="target-temp-degree"
       >{{ value }} <span class="text-subscript text-muted">°C</span></h1>
-      <h1 
+      <h1
         v-if="value < 1"
         class="target-temp-degree"
       >OFF</h1>
     </div>
     <br />
-    <div style="min-height: 15rem;">
+    <div class="mb-5">
       <div>
         <h5>Presets:</h5>
       </div>
       <div>
-        <select 
-          name="preset" 
-          class="form-control" 
-          id="id_preset"
-          v-model="preset"
-          @change="onPresetChanged"
-        >
-          <option 
+        <b-form-select v-model="preset" id="id_preset" @change="onPresetChanged">
+          <b-form-select-option
             v-for="pre in allPresets"
             :key="pre.value"
-            :value="parseInt(pre.value)"
-          >{{pre.title}}</option>
-        </select>
+            :value="parseInt(pre.value)">
+            {{pre.title}}
+          </b-form-select-option>
+        </b-form-select>
       </div>
       <br />
       <h5>Manual:</h5>
       <div>
         <vue-slider
-          :min="0" 
-          :max="maxTemp" 
+          :min="0"
+          :max="maxTemp"
           :step="1"
           :tooltip="'none'"
           v-model="value"
           @change="onSliderChanged"
         ></vue-slider>
-        <input 
-          id="target-temp" 
+        <input
+          id="target-temp"
           v-model="value"
           type="hidden"
         >
@@ -65,7 +60,7 @@ export default {
       required: true
     },
     maxTemp: {
-      type: Number, 
+      type: Number,
       required: true
     },
     curTarget: {

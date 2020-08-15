@@ -8,13 +8,13 @@
       class="fa fa-spinner"></i>
     <span
       v-if="valid && showHours"
-    >{{ hours }}<span class="text-subscript text-muted">h</span></span>
+    >&nbsp;{{ hours }}<span class="text-subscript text-muted">h</span></span>
     <span
       v-if="valid && showMinutes"
-    >{{minutes}}<span class="text-subscript text-muted">m</span></span>
+    >&nbsp;{{ minutes }}<span class="text-subscript text-muted">m</span></span>
     <span
       v-if="valid && showSeconds"
-    >{{seconds}}<span class="text-subscript text-muted">s</span></span>
+    >&nbsp;{{ seconds }}<span class="text-subscript text-muted">s</span></span>
   </div>
 </template>
 

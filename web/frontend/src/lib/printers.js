@@ -1,24 +1,6 @@
-import get from 'lodash/get'
 import moment from 'moment'
 
-
-let isPrinterIdle = (printerState) =>
-  get(printerState, 'text', '') === 'Operational'
-
-let isPrinterPaused = (printerState) =>
-  get(printerState, 'flags.paused', false)
-
-let isPrinterDisconnected = (printerState) =>
-  get(printerState, 'flags.closedOrError', true)
-
-let printerHasError = (printerState) =>
-  get(printerState, 'flags.error') ||
-  get(printerState, 'text', '').toLowerCase().includes('error')
-
-let printInProgress = (printerState) =>
-  !isPrinterDisconnected(printerState) &&
-  get(printerState, 'text', '') !== 'Operational'
-
+/***** Other helpers */
 
 let shouldShowAlert = (printer) => {
   if (!printer.current_print || !printer.current_print.alerted_at) {
@@ -61,11 +43,11 @@ let setPrinterLocalPref = (prefix, printerId, value) => {
   return localStorage.setItem(itemId, value)
 }
 
-let toDuration = (seconds, printerState) => {
+let toDuration = (seconds, isPrinting) => {
   if (seconds == null || seconds == 0) {
     return {
       valid: false,
-      printing: printInProgress(printerState),
+      printing: isPrinting,
     }
   } else {
     var d = moment.duration(seconds, 'seconds')
@@ -74,7 +56,7 @@ let toDuration = (seconds, printerState) => {
     var s = d.seconds()
     return {
       valid: true,
-      printing: true,
+      printing: isPrinting,
       hours: h,
       showHours: (h>0),
       minutes: m,
@@ -86,11 +68,6 @@ let toDuration = (seconds, printerState) => {
 }
 
 export {
-  isPrinterIdle,
-  isPrinterPaused,
-  isPrinterDisconnected,
-  printerHasError,
-  printInProgress,
   shouldShowAlert,
   getLocalPref,
   setLocalPref,

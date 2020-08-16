@@ -52,6 +52,10 @@
 
       <!-- webcam stream include TODO -->
       <div class="card-img-top webcam_container">
+        <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
+          <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
+          <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
+        </div>
         <div
           :class="webcamRotateClass"
         >
@@ -60,21 +64,19 @@
             :class="webcamRatioClass"
           >
             <div
-              class="webcam_fixed_ratio_inner"
-              :class="{full: !isVideoFull, thumbnail: isVideoFull}"
+              class="webcam_fixed_ratio_inner full"
             >
               <img
                 class="tagged-jpg"
                 :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
                 :src="taggedSrc"
                 :alt="printer.name + ' current image'"
-                @click="$emit('ExpandThumbnailToFullClicked')"
-            />
+              />
             </div>
             <div
+              v-show="showVideo"
               id="webrtc-stream"
-              class="webcam_fixed_ratio_inner ontop"
-              :class="{full: isVideoFull, thumbnail: !isVideoFull}"
+              class="webcam_fixed_ratio_inner ontop full"
             >
               <video
                 ref="video"
@@ -86,7 +88,6 @@
                 autoplay muted playsinline
                 @loadstart="onLoadStart()"
                 @canplay="onCanPlay()"
-                @click="$emit('ExpandThumbnailToFullClicked')"
               ></video>
             </div>
           </div>
@@ -324,10 +325,6 @@ export default {
       type: Boolean,
       required: true
     },
-    isVideoFull: {
-      type: Boolean,
-      required: true
-    },
   },
   data() {
     return {
@@ -347,8 +344,9 @@ export default {
           LocalPrefNames.StatusTemp,
           this.printer.id,
           Show
-        )
-      }
+        ),
+      },
+      stickyStreamingSrc: null,
     }
   },
   computed: {
@@ -376,6 +374,12 @@ export default {
     },
     secondsPrinted() {
       return get(this.printer, 'status.progress.printTime')
+    },
+    taggedImgAvailable() {
+      return this.taggedSrc !== printerStockImgSrc
+    },
+    showVideo() {
+      return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
     },
     webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {
@@ -460,6 +464,9 @@ export default {
     settingsUrl() {
       return `/printers/${this.printer.id}/`
     },
+    forceStreamingSrc(src) {
+      this.stickyStreamingSrc = src
+    },
     onSettingsToggleClicked() {
       this.section_toggles.settings = !this.section_toggles.settings
       setPrinterLocalPref(
@@ -486,12 +493,28 @@ export default {
     },
     onLoadStart() {
       this.poster = loadingIconSrc
-    }
+    },
   }
 }
 </script>
 
 <style lang="sass" scoped>
 @use "~main/theme"
+
+.streaming-switch
+  background-color: rgba(255, 255, 255, 0.4)
+  border: solid thin #888
+  position: absolute
+  display: flex
+  flex-flow: column
+  right: 4px
+  top: 4px
+  z-index: 100
+
+  .btn
+    color: #444444
+    &.active
+      color: #ffffff
+      background-color: rgba(0,0,0,0.6)
 
 </style>

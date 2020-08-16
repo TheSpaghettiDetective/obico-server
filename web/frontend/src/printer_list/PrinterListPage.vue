@@ -65,12 +65,10 @@
         :printer="printer"
         :is-on-shared-page="isOnSharedPage"
         :is-video-visible="isVideoVisible(printer.id)"
-        :is-video-full="isVideoFull(printer.id)"
         @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
-        @ExpandThumbnailToFullClicked="onExpandThumbnailToFullClicked(printer.id)"
         @PrinterActionPauseClicked="onPrinterActionPauseClicked(printer.id)"
         @PrinterActionResumeClicked="onPrinterActionResumeClicked($event, printer.id)"
         @PrinterActionCancelClicked="onPrinterActionCancelClicked(printer.id)"
@@ -216,7 +214,7 @@ export default {
   data: function() {
     return {
       printers: [],
-      localPrinterState: {},
+      videoAvailable: {},
       loading: false,
       isOnSharedPage: false,
       filters: {
@@ -371,9 +369,6 @@ export default {
         p.action_on_failure = p.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
         this.updatePrinter(p)
       }
-    },
-    onExpandThumbnailToFullClicked(printerId) {
-      this.setIsVideoFull(printerId, !this.isVideoFull(printerId))
     },
     onPrinterActionPauseClicked(printerId) {
       this.sendPrinterAction(printerId, PAUSE_PRINT, true)
@@ -631,19 +626,11 @@ export default {
     },
 
     setIsVideoVisible(printerId, isVideoVisible) {
-      this.$set(this.localPrinterState, `${printerId}-isVideoVisible`, isVideoVisible == true)
+      this.$set(this.videoAvailable, printerId, isVideoVisible)
     },
 
     isVideoVisible(printerId) {
-      return this.localPrinterState[`${printerId}-isVideoVisible`] == true
-    },
-
-    setIsVideoFull(printerId, isVideoFull) {
-      this.$set(this.localPrinterState, `${printerId}-isVideoFull`, isVideoFull == true)
-    },
-
-    isVideoFull(printerId) {
-      return this.localPrinterState[`${printerId}-isVideoFull`] == true
+      return this.videoAvailable[printerId]
     },
 
     shouldVideoBeFull(printer) {
@@ -656,8 +643,6 @@ export default {
       this.printers.push(printer)
 
       this.setIsVideoVisible(printer.id, false)
-
-      this.setIsVideoFull(printer.id, this.shouldVideoBeFull(printer))
 
       this.openWSForPrinter(printer)
 
@@ -674,8 +659,6 @@ export default {
       }
 
       this.$set(this.printers, index, printer)
-
-      this.setIsVideoFull(printer.id, this.shouldVideoBeFull(printer))
     },
 
     openWSForPrinter(printer) {

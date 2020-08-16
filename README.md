@@ -99,6 +99,8 @@ The following is using gmail as an example. Other web mail services may vary sli
       EMAIL_USE_TLS: 'True'
 ```
 
+If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](docs/email_guide.md).
+
 # Done!
 
 That's it! You now have a fully-functional The Spaghetti Detective server that your OctoPrint can talk to. We hope setting up the server has not been overwhelming.

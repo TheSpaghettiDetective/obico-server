@@ -172,7 +172,7 @@
                   >Watch for failures
                     <div
                       v-if="!watchForFailures"
-                      class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turnedon.
+                      class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned on.
                     </div>
                   </label>
                   <div class="custom-control custom-switch">

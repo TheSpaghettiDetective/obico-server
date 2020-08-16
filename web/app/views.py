@@ -89,7 +89,9 @@ def edit_printer(request, pk):
 
 @login_required
 def delete_printer(request, pk=None):
-    get_printer_or_404(pk, request).delete()
+    printer = get_printer_or_404(pk, request)
+    printer.delete()
+    messages.success(request, f'{printer.name} has been deleted!')
 
     return redirect('/printers/')
 

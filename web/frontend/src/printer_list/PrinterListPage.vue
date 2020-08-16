@@ -57,7 +57,7 @@
     </div>
 
     <div id="printers" class="row justify-content-center">
-      <b-spinner v-if="loading" label="Loading..."></b-spinner>
+      <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
       <printer-card
         v-for="printer in visiblePrinters"
         ref="printer"
@@ -215,7 +215,7 @@ export default {
     return {
       printers: [],
       videoAvailable: {},
-      loading: false,
+      loading: true,
       isOnSharedPage: false,
       filters: {
         visible: false,
@@ -319,7 +319,7 @@ export default {
       )
     },
     onDeleteClicked(printerId) {
-      this.$swal.Confirm({}).then((result) => {
+      this.$swal.Confirm.fire({}).then((result) => {
         if (result.value) { // When it is confirmed
           window.location.href = printerDeleteUrl(printerId)
         }

@@ -9,5 +9,6 @@ export default {
   printers: () => '/api/v1/printers/',
   printer: printerId => `/api/v1/printers/${printerId}/`,
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
+  pubPrinter: () => '/api/v1p/printer/',
   gcodes: () => '/api/v1/gcodes/',
 }

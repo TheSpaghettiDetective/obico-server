@@ -5,29 +5,11 @@ import Janus from '@lib/janus'
 function getWebRTCManager(callbacks) {
   let manager = {
     callbacks: callbacks,
-    streamList: new Map(),
-    startStream(streamId, streaming) {
-      const body = { 'request': 'watch', id: parseInt(streamId) }
-      streaming.send({ 'message': body })
-    },
-    stopStream(streaming) {
-      const body = { 'request': 'stop' }
-      streaming.send({ 'message': body })
-      streaming.hangup()
-    },
-    stopAllStreaming() {
-      this.streamList.forEach((s, /* printerId */) => {
-        this.stopStream(s.streaming)
-      })
-    },
-    resumeAllStreaming() {
-      this.streamList.forEach((s, /* printerId */) => {
-        this.startStream(s.id, s.streaming)
-      })
-    },
+    streamId: null,
+    streaming: null,
 
-    connect(printerId, wsUri, token) {
-      const opaqueId = 'streamingtest-' + Janus.randomString(12) 
+    connect(wsUri, token) {
+      const opaqueId = 'streamingtest-' + Janus.randomString(12)
 
       var iceServers = [{urls:['stun:stun.l.google.com:19302']}]
       if (token) {
@@ -65,9 +47,9 @@ function getWebRTCManager(callbacks) {
                   'message': body, success: function (result) {
                     let stream = get(result, 'list[0]')
                     if (stream) {
-                      self.startStream(stream.id, streaming)
-                      self.streamList.set(
-                        printerId, { id: stream.id, streaming: streaming })
+                      self.streamId = stream.id
+                      self.streaming = streaming
+                      self.startStream()
                     }
                   }
                 })
@@ -77,17 +59,17 @@ function getWebRTCManager(callbacks) {
                 janus.destroy()
               },
               onmessage: function(msg, jsep) {
-                self.onMessage(printerId, msg, jsep)
+                self.onMessage(msg, jsep)
               },
               onremotestream: function(stream) {
-                self.onRemoteStream(printerId, stream)
+                self.onRemoteStream(stream)
               },
               ondataopen: function () {
               },
               ondata: function () {
               },
               oncleanup: function() {
-                self.onCleanup(printerId)
+                self.onCleanup()
               }
             })
         },
@@ -100,15 +82,16 @@ function getWebRTCManager(callbacks) {
           // remove(self.streamList, ([printerId, item]) => {
           //  return item === janus
           // })
-          self.streamList.delete(printerId)
+          self.streaming = null
+          self.streamId = null
         }
       })
     },
-    onMessage(printerId, msg, jsep) {
+    onMessage(msg, jsep) {
+      let self = this
       Janus.debug(' ::: Got a message :::')
       Janus.debug(msg)
       let result = msg['result']
-      let s = this.streamList.get(printerId)
       if (result !== null && result !== undefined) {
         if (result['status'] !== undefined && result['status'] !== null) {
           var status = result['status']
@@ -117,19 +100,19 @@ function getWebRTCManager(callbacks) {
           else if (status === 'started')
             console.log('Started')
           else if (status === 'stopped') {
-            this.stopStream(s.streaming)
+            self.stopStream()
           }
         }
       } else if (msg['error'] !== undefined && msg['error'] !== null) {
         Janus.error(msg)
-        this.stopStream(s.streaming)
+        self.stopStream()
         return
       }
       if (jsep !== undefined && jsep !== null) {
         Janus.debug('Handling SDP as well...')
         Janus.debug(jsep)
         // Offer from the plugin, let's answer
-        s.streaming.createAnswer(
+        self.streaming.createAnswer(
           {
             jsep: jsep,
             // We want recvonly audio/video and, if negotiated, datachannels
@@ -138,7 +121,7 @@ function getWebRTCManager(callbacks) {
               Janus.debug('Got SDP!')
               Janus.debug(jsep)
               var body = { 'request': 'start' }
-              s.streaming.send({ 'message': body, 'jsep': jsep })
+              self.streaming.send({ 'message': body, 'jsep': jsep })
             },
             error: function (error) {
               Janus.error('WebRTC error:', error)
@@ -146,14 +129,25 @@ function getWebRTCManager(callbacks) {
           })
       }
     },
-    onRemoteStream(printerId, stream) {
+    onRemoteStream(stream) {
       Janus.debug(' ::: Got a remote stream :::')
       Janus.debug(stream)
-      this.callbacks.onRemoteStream(printerId, stream)
+      this.callbacks.onRemoteStream(stream)
     },
-    onCleanup(printerId) {
-      this.callbacks.onCleanup(printerId)
-    }
+    onCleanup() {
+      this.callbacks.onCleanup()
+    },
+    startStream() {
+      console.log('starting')
+      const body = { 'request': 'watch', id: parseInt(this.streamId) }
+      this.streaming.send({ 'message': body })
+    },
+    stopStream() {
+      console.log('stopping')
+      const body = { 'request': 'stop' }
+      this.streaming.send({ 'message': body })
+      this.streaming.hangup()
+    },
   }
 
   return manager

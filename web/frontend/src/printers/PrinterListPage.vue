@@ -1,5 +1,5 @@
 <template>
-  <div id="print-list-page">
+  <div>
     <div class="option-drawer">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
@@ -63,8 +63,7 @@
         ref="printer"
         :key="printer.id"
         :printer="printer"
-        :is-on-shared-page="isOnSharedPage"
-        :is-video-visible="isVideoVisible(printer.id)"
+        :is-pro-account="isProAccount"
         @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
@@ -115,15 +114,11 @@ import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
 import filter from 'lodash/filter'
 
-import ifvisible from 'ifvisible'
-
 import { getLocalPref, setLocalPref } from '@lib/printers'
 import { normalizedPrinter } from '@lib/normalizers'
 
 import apis from '@lib/apis'
 import PrinterWebSocket from '@lib/printer_ws'
-import Janus from '@lib/janus'
-import webrtc from '@lib/webrtc_streaming'
 
 import PrinterCard from './PrinterCard.vue'
 import StartPrint from './StartPrint.vue'
@@ -135,8 +130,6 @@ let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerControlUrl = printerId => `/printers/${printerId}/control/`
 let printerWSUrl = printerId => `/ws/web/${printerId}/`
 let printerSharedWSUrl = token => `/ws/shared/web/${token}/`
-let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
-let printerSharedWebRTCUrl = token => `/ws/shared/janus/${token}/`
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -189,7 +182,6 @@ export default {
   },
   created() {
     this.printerWs = PrinterWebSocket()
-    this.webrtc = null
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter
     this.SortOrder = SortOrder
@@ -209,14 +201,12 @@ export default {
     isProAccount: {
       type: Boolean,
       required: true
-    }
+    },
   },
   data: function() {
     return {
       printers: [],
-      videoAvailable: {},
       loading: true,
-      isOnSharedPage: false,
       filters: {
         visible: false,
         state: lookup(
@@ -273,11 +263,6 @@ export default {
 
   },
   methods: {
-    /*  TODO
-        // Nothing else needs to be done if it's a shared page. A bit hacky.
-        if (typeof isOnSharedPage !== 'undefined' && isOnSharedPage)
-            return;
-    */
     fetchPrinters() {
       this.loading = true
       return axios
@@ -625,14 +610,6 @@ export default {
         })
     },
 
-    setIsVideoVisible(printerId, isVideoVisible) {
-      this.$set(this.videoAvailable, printerId, isVideoVisible)
-    },
-
-    isVideoVisible(printerId) {
-      return this.videoAvailable[printerId]
-    },
-
     shouldVideoBeFull(printer) {
       let hasImage = get(printer, 'pic.img_url')
       let shouldBeThumb = printer.alertUnacknowledged && hasImage
@@ -641,14 +618,7 @@ export default {
 
     insertPrinter(printer) {
       this.printers.push(printer)
-
-      this.setIsVideoVisible(printer.id, false)
-
       this.openWSForPrinter(printer)
-
-      if (this.webrtc) {
-        this.openWebRTCForPrinter(printer)
-      }
     },
 
     reinsertPrinter(printer) {
@@ -664,8 +634,8 @@ export default {
     openWSForPrinter(printer) {
       let printerId = printer.id
       let url
-      if (printer.share_token) {
-        url = printerSharedWSUrl(printer.share_token)
+      if (this.shareToken) {
+        url = printerSharedWSUrl(printer.shareToken)
       } else {
         url = printerWSUrl(printer.id)
       }
@@ -677,80 +647,10 @@ export default {
         }
       )
     },
-
-    openWebRTCForPrinter(printer) {
-      let url, token
-      if (printer.share_token) {
-        url = printerSharedWebRTCUrl(printer.share_token)
-        token = printer.share_token
-      } else {
-        url = printerWebRTCUrl(printer.id)
-        token = printer.auth_token
-      }
-      this.webrtc.connect(
-        printer.id,
-        url,
-        token
-      )
-    },
-
-    onJanusInitalized() {
-      if (!Janus.isWebrtcSupported()) {
-        return
-      }
-
-      this.webrtc = webrtc.getWebRTCManager({
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onCleanup: this.onWebRTCCleanup,
-      })
-
-      this.printers.forEach(this.openWebRTCForPrinter)
-    },
-
-    onWebRTCRemoteStream(printerId, stream) {
-      Janus.debug(' ::: Got a remote stream :::')
-      Janus.debug(stream)
-      let index = this.printers.findIndex((p) => p.id == printerId)
-
-      if (index > -1) {
-        Janus.attachMediaStream(this.$refs.printer[index].$refs.video, stream)
-      }
-
-      var videoTracks = stream.getVideoTracks()
-      if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
-        // No remote video
-        this.setIsVideoVisible(printerId, false)
-      } else {
-        this.setIsVideoVisible(printerId, true)
-      }
-    },
-
-    onWebRTCCleanup(printerId) {
-      this.setIsVideoVisible(printerId, false)
-    }
   },
 
   mounted() {
     this.fetchPrinters()
-
-    if (this.isProAccount) {
-      Janus.init({
-        debug: 'all',
-        callback: this.onJanusInitalized
-      })
-    }
-
-    ifvisible.on('blur', () => {
-      if (this.webrtc) {
-        this.webrtc.stopAllStreaming()
-      }
-    })
-
-    ifvisible.on('focus', () => {
-      if (this.webrtc) {
-        this.webrtc.resumeAllStreaming()
-      }
-    })
   }
 }
 </script>

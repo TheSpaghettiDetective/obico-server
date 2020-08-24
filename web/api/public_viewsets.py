@@ -2,14 +2,14 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .authentication import PrinterServiceTokenAuthentication
+from .authentication import PrinterServiceTokenAuthentication, PrinterShareTokenAuthentication
 from app.models import Printer
 from api.serializers import PublicPrinterSerializer
 
 
 class PrinterViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (PrinterServiceTokenAuthentication,)
+    authentication_classes = (PrinterServiceTokenAuthentication,PrinterShareTokenAuthentication)
     serializer_class = PublicPrinterSerializer
 
     def get_queryset(self):

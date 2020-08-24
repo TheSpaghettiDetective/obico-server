@@ -23,6 +23,8 @@ class PrinterViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Printer.objects.filter(user=self.request.user)
 
+    # TODO: Should these be removed, or changed to POST after switching to Vue?
+
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
         printer = self.current_printer_or_404(pk)

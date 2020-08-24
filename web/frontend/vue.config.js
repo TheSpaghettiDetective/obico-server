@@ -47,8 +47,8 @@ let vueConfig = {
     prints: {
       entry: 'src/prints/main.js',
     },
-    printer_list: {
-      entry: 'src/printer_list/main.js',
+    printers: {
+      entry: 'src/printers/main.js',
     },
   },
 

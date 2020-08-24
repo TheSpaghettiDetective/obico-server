@@ -46,16 +46,11 @@ def printer_auth_token(request, pk):
 
 
 @login_required
-def printers(request, template_name="printer_list.html"):
+def printers(request):
     if not request.user.consented_at:
         return redirect('/consent/')
 
-    printers = request.user.printer_set.order_by('-created_at').all()
-
-    if Printer.with_archived.filter(user=request.user, archived_at__isnull=False).count() > 0:
-        messages.warning(request, mark_safe('Some of your printers have been archived. <a href="/ent/printers/archived/">Find them here.</a>'))
-
-    return render(request, template_name, {'printers': printers})
+    return render(request, 'printers.html')
 
 
 @login_required
@@ -138,7 +133,7 @@ def share_printer(request, pk):
 def printer_shared(request, share_token=None):
     printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
 
-    return render(request, 'printer_shared.html', {'printer': printer, 'share_token': share_token})
+    return render(request, 'printer_shared.html', {'share_token': share_token})
 
 
 @login_required

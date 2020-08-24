@@ -14,7 +14,7 @@
             :class="{'secondary-title': hasCurrentPrintFilename}"
           >{{ printer.name }}</div>
         </div>
-        <div class="dropdown">
+        <div v-if="!shareToken" class="dropdown">
           <button
             class="btn icon-btn"
             type="button"
@@ -50,7 +50,6 @@
         </div>
       </div>
 
-      <!-- webcam stream include TODO -->
       <div class="card-img-top webcam_container">
         <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
           <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
@@ -95,7 +94,7 @@
       </div>
 
       <div
-        v-if="printer.alertUnacknowledged"
+        v-if="printer.alertUnacknowledged && !shareToken"
         class="failure-alert card-body bg-warning px-2 py-1"
       >
         <i class="fas fa-exclamation-triangle align-middle"></i>
@@ -109,6 +108,7 @@
       </div>
 
       <div
+        v-if="!shareToken"
         class="card-body gauge-container"
         :class="{overlay: !isWatching}"
       >
@@ -126,6 +126,7 @@
         <hr />
       </div>
       <PrinterActions
+        v-if="!shareToken"
         id="printer-actions"
         class="container"
         v-bind="actionsProps"
@@ -136,7 +137,7 @@
         @PrinterActionStartClicked="$emit('PrinterActionStartClicked', $event)"
         @PrinterActionControlClicked="$emit('PrinterActionControlClicked', $event)"
       ></PrinterActions>
-      <div class="info-section settings">
+      <div v-if="!shareToken" class="info-section settings">
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
@@ -157,7 +158,7 @@
           ><i class="fas fa-thermometer-half fa-lg"></i></button>
       </div>
       <div class="info-section" style="height: 0.3rem;"></div>
-      <div>
+      <div v-if="!shareToken">
         <div class="info-section container">
           <div
             id="panel-settings"
@@ -273,6 +274,11 @@
           ></StatusTemp>
         </div>
       </div>
+      <div v-if="shareToken" class="p-3 p-md-5">
+        <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on <a
+            href="https://www.thespaghettidetective.com/">The Spaghetti Detective</a></p>
+        <p class="text-center"><a href="/accounts/signup/">Sign up an account for FREE >>></a></p>
+      </div>
     </div>
   </div>
 </template>
@@ -280,8 +286,11 @@
 <script>
 import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
-import DirectGauge from '@common/DirectGauge'
+import ifvisible from 'ifvisible'
 
+import Janus from '@lib/janus'
+import webrtc from '@lib/webrtc_streaming'
+import DirectGauge from '@common/DirectGauge'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 import loadingIconSrc from '@static/img/loading.gif'
 
@@ -294,6 +303,10 @@ import {
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
+
+
+let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
+let printerSharedWebRTCUrl = token => `/ws/shared/janus/${token}/`
 
 const Show = true
 const Hide = false
@@ -312,16 +325,19 @@ export default {
     PrinterActions,
     StatusTemp,
   },
+  created() {
+        this.webrtc = null
+  },
   props: {
     printer: {
       type: Object,
       required: true
     },
-    isOnSharedPage: { // TODO
-      type: Boolean,
-      required: true
+    shareToken: {
+      type: String,
+      required: false
     },
-    isVideoVisible: {
+    isProAccount: {
       type: Boolean,
       required: true
     },
@@ -347,6 +363,7 @@ export default {
         ),
       },
       stickyStreamingSrc: null,
+      isVideoVisible: false,
     }
   },
   computed: {
@@ -494,6 +511,72 @@ export default {
     onLoadStart() {
       this.poster = loadingIconSrc
     },
+
+    openWebRTCForPrinter() {
+      let url, token
+      if (this.shareToken) {
+        url = printerSharedWebRTCUrl(this.shareToken)
+        token = this.shareToken
+      } else {
+        url = printerWebRTCUrl(this.printer.id)
+        token = this.printer.auth_token
+      }
+      this.webrtc.connect(
+        url,
+        token
+      )
+    },
+
+    onJanusInitalized() {
+      if (!Janus.isWebrtcSupported()) {
+        return
+      }
+
+      this.webrtc = webrtc.getWebRTCManager({
+        onRemoteStream: this.onWebRTCRemoteStream,
+        onCleanup: this.onWebRTCCleanup,
+      })
+
+      this.openWebRTCForPrinter()
+    },
+
+    onWebRTCRemoteStream(stream) {
+      Janus.debug(' ::: Got a remote stream :::')
+      Janus.debug(stream)
+      Janus.attachMediaStream(this.$refs.video, stream)
+
+      var videoTracks = stream.getVideoTracks()
+      if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
+        // No remote video
+        this.isVideoVisible = false
+      } else {
+        this.isVideoVisible = true
+      }
+    },
+
+    onWebRTCCleanup() {
+      this.isVideoVisible = false
+    },
+  },
+  mounted() {
+    if (this.isProAccount) {
+      Janus.init({
+        debug: 'all',
+        callback: this.onJanusInitalized
+      })
+    }
+
+    ifvisible.on('blur', () => {
+      if (this.webrtc) {
+        this.webrtc.stopStream()
+      }
+    })
+
+    ifvisible.on('focus', () => {
+      if (this.webrtc) {
+        this.webrtc.startStream()
+      }
+    })
   }
 }
 </script>

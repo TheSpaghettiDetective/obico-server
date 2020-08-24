@@ -60,4 +60,4 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('name',)
+        fields = ('name', 'settings')

@@ -53,7 +53,17 @@ class PrinterServiceTokenAuthentication(TokenAuthentication):
         try:
             printer = Printer.objects.select_related('user').get(service_token=key)
         except ObjectDoesNotExist:
-            raise AuthenticationFailed({'error': 'Invalid or Inactive Token', 'is_authenticated': False})
+            return None
+
+        return printer.user, printer
+
+
+class PrinterShareTokenAuthentication(TokenAuthentication):
+    def authenticate_credentials(self, key, request=None):
+        try:
+            printer = SharedResource.objects.select_related('printer').get(share_token=key).printer
+        except ObjectDoesNotExist:
+            return None
 
         return printer.user, printer
 

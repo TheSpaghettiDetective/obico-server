@@ -28,14 +28,11 @@
 import axios from 'axios'
 import split from 'lodash/split'
 import Janus from '@lib/janus'
-// import ifvisible from 'ifvisible'
 
 import { normalizedPrinter } from '@lib/normalizers'
 
 import apis from '@lib/apis'
 import PrinterWebSocket from '@lib/printer_ws'
-// import Janus from '@lib/janus'
-// import webrtc from '@lib/webrtc_streaming'
 
 import PrinterCard from './PrinterCard.vue'
 
@@ -82,18 +79,6 @@ export default {
       debug: 'all',
       callback: this.onJanusInitalized
     })
-
-    // ifvisible.on('blur', () => {
-    //   if (this.webrtc) {
-    //     this.webrtc.stopAllStreaming()
-    //   }
-    // })
-
-    // ifvisible.on('focus', () => {
-    //   if (this.webrtc) {
-    //     this.webrtc.resumeAllStreaming()
-    //   }
-    // })
   }
 
 }

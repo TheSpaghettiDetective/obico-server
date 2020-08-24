@@ -4,6 +4,7 @@ x-web-defaults: &web-defaults
   restart: unless-stopped
   build:
     context: web
+    dockerfile: "Dockerfile${DOCKERFILE_VERSION}"
   volumes:
     - ./web:/app
   depends_on:

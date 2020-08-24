@@ -5,8 +5,8 @@ import Janus from '@lib/janus'
 function getWebRTCManager(callbacks) {
   let manager = {
     callbacks: callbacks,
-    streamId: null,
-    streaming: null,
+    streamId: undefined,
+    streaming: undefined,
 
     connect(wsUri, token) {
       const opaqueId = 'streamingtest-' + Janus.randomString(12)
@@ -78,12 +78,8 @@ function getWebRTCManager(callbacks) {
           janus.destroy()
         },
         destroyed() {
-          // TODO bug here? janus never ever matched that
-          // remove(self.streamList, ([printerId, item]) => {
-          //  return item === janus
-          // })
-          self.streaming = null
-          self.streamId = null
+          self.streaming = undefined
+          self.streamId = undefined
         }
       })
     },
@@ -138,12 +134,16 @@ function getWebRTCManager(callbacks) {
       this.callbacks.onCleanup()
     },
     startStream() {
-      console.log('starting')
+      if (this.streamId === undefined || this.streaming === undefined) {
+        return
+      }
       const body = { 'request': 'watch', id: parseInt(this.streamId) }
       this.streaming.send({ 'message': body })
     },
     stopStream() {
-      console.log('stopping')
+      if (this.streamId === undefined || this.streaming === undefined) {
+        return
+      }
       const body = { 'request': 'stop' }
       this.streaming.send({ 'message': body })
       this.streaming.hangup()

@@ -16,8 +16,16 @@ def web_group_name(printer_id):
 def janus_web_group_name(printer_id):
     return 'janus_web.{}'.format(printer_id)
 
-def send_msg_to_printer(printer_id, msg_dict):
-    msg_dict.update({'type': 'printer.message'})    # mapped to -> printer_message in consumer
+
+def octoprintproxy_group_name(printer_id, path):
+    return 'octoprintproxy__{}.{}'.format(path, printer_id)
+
+
+def send_msg_to_printer(printer_id, msg_dict, as_binary=False):
+    msg_dict.update({
+        'type': 'printer.message',  # mapped to -> printer_message in consumer
+        'as_binary': as_binary,
+    })
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         octo_group_name(printer_id),
@@ -50,6 +58,20 @@ def send_janus_to_web(printer_id, msg):
             'msg': msg,
         }
     )
+
+
+def send_message_to_octoprintproxy(group_name, data):
+    msg_dict = {
+        # mapped to -> octoprintproxy_message in consumer
+        'type': 'octoprintproxy.message',
+        'data': data
+    }
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        group_name,
+        msg_dict,
+    )
+
 
 @receiver(presence_changed)
 def broadcast_ws_connection_change(sender, room, **kwargs):

@@ -358,15 +358,29 @@ def octoprint_http_proxy(request, printer_id):
         resp[k] = v
 
     content = data['response']['content']
+
     if content_type and content_type.startswith('text/html'):
         content = rewrite_html(prefix, content)
+
+    if path.endswith('app/client/socket.js'):
+        content = rewrite_socket_js(content)
 
     resp.write(content)
 
     return resp
 
 
+def rewrite_socket_js(content):
+    # force websocket-only connection
+    # xhr(-streams/etc) won't work for now
+    return content.replace(
+        b'OctoPrintSocketClient.prototype.connect = function(opts) {',
+        b'OctoPrintSocketClient.prototype.connect = function(opts) {\nopts = opts || {}; opts["transports"] = ["websocket", ];\n'  # noqa
+    )
+
+
 def rewrite_html(prefix, content):
+    # rewirte urls
     return content\
         .replace(b'src="/',
                  f'src="{prefix}/'.encode())\

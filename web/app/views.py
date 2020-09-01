@@ -2,21 +2,27 @@ import os
 from binascii import hexlify
 import tempfile
 import re
+import time
+import json
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.views.decorators.csrf import csrf_exempt
 
-from .view_helpers import *
-from .models import *
+from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator
+from .models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
+
 from .forms import PrinterForm, UserPreferencesForm
 from lib import redis
+from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot, LOGGER
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
@@ -293,3 +299,80 @@ def secure_redirect(request):
     dest = settings.SECURE_REDIRECTS.get((target, source), target)
 
     return redirect(dest)
+
+
+@csrf_exempt
+@login_required
+def octoprint_http_proxy(request, printer_id):
+    if request.path.startswith('sockjs'):
+        return HttpResponseRedirect('/api/', request.get_full_path())
+
+    get_printer_or_404(printer_id, request)
+
+    prefix = f'/octoprint/{printer_id}'
+    method = request.method.lower()
+    path = request.get_full_path()[len(prefix):]
+
+    IGNORE_HEADERS = {
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER'
+    }
+
+    headers = {
+        k[5:].replace("_", " ").title().replace(" ", "-"): v
+        for (k, v) in request.META.items()
+        if k.startswith("HTTP") and k not in IGNORE_HEADERS
+    }
+
+    if 'CONTENT_TYPE' in request.META:
+        headers['Content-Type'] = request.META['CONTENT_TYPE']
+
+    ref = f'{printer_id}.{method}.{time.time()}.{path}'
+
+    channels.send_msg_to_printer(printer_id, {
+        "commands": [
+            {
+                "cmd": "http.proxy",
+                "args": {
+                    "ref": ref,
+                    "method": method,
+                    "headers": headers,
+                    "path": path,
+                    "data": request.body
+                }
+            }
+        ]
+    })
+
+    data = redis.octoprintproxy_http_response_get(ref)
+    if data is None:
+        raise Exception("no response in time")
+
+    content_type = data['response']['headers'].get('Content-Type') or None
+    resp = HttpResponse(
+        status=data["response"]["status"],
+        content_type=content_type,
+    )
+    for k, v in data['response']['headers'].items():
+        if k == 'Content-Length':
+            continue
+        resp[k] = v
+
+    content = data['response']['content']
+    if content_type and content_type.startswith('text/html'):
+        content = rewrite_html(prefix, content)
+
+    resp.write(content)
+
+    return resp
+
+
+def rewrite_html(prefix, content):
+    return content\
+        .replace(b'src="/',
+                 f'src="{prefix}/'.encode())\
+        .replace(b'href="/',
+                 f'href="{prefix}/'.encode())\
+        .replace(b'var BASEURL = "/',
+                 f'var BASEURL = "{prefix}'.encode())\
+        .replace(b'var GCODE_WORKER = "/',
+                 f'var GCODE_WORKER = "{prefix}'.encode())

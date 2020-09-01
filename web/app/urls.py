@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 from . import vue_demo
@@ -28,6 +28,10 @@ urlpatterns = [
     path('gcodes/', views.gcodes, name='gcodes'),
     path('gcodes/upload/', views.upload_gcode_file, name='upload_gcode_file'),
     path('secure_redirect/', views.secure_redirect, name='secure_redirect'),
+
+    re_path(r'^octoprint/(?P<printer_id>\d+)',
+            views.octoprint_http_proxy,
+            name='octoprint_http_proxy'),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

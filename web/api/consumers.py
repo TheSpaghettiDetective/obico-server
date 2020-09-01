@@ -1,3 +1,7 @@
+import bson
+import json
+import hashlib
+
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
 import logging
@@ -64,7 +68,7 @@ class WebConsumer(JsonWebsocketConsumer):
         return self.scope['user']
 
 
-class OctoPrintConsumer(JsonWebsocketConsumer):
+class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         if self.current_printer().is_authenticated:
@@ -88,13 +92,28 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
         )
         Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
 
-    def receive_json(self, data, **kwargs):
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
         Presence.objects.touch(self.channel_name)
         try:
             printer = Printer.with_archived.get(id=self.current_printer().id)
 
+            if text_data:
+                data = json.loads(text_data)
+            else:
+                data = bson.loads(bytes_data)
+
             if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
+            elif 'http.proxy' in data:
+                redis.octoprintproxy_http_response_set(
+                    data['http.proxy']['ref'],
+                    data['http.proxy']
+                )
+            elif 'ws.proxy' in data:
+                channels.send_message_to_octoprintproxy(
+                    data['ws.proxy']['ref'],
+                    data['ws.proxy']['data']
+                )
             elif 'passthru' in data:
                 channels.send_message_to_web(printer.id, data)
             else:
@@ -108,8 +127,8 @@ class OctoPrintConsumer(JsonWebsocketConsumer):
             self.close()
             sentryClient.captureException()
 
-    def printer_message(self, msg):
-        self.send_json(msg)
+    def printer_message(self, data):
+        self.send(text_data=None, bytes_data=bson.dumps(data))
 
     def current_printer(self):
         return self.scope['user']
@@ -147,3 +166,83 @@ class JanusWebConsumer(WebsocketConsumer):
 
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))
+
+
+class OctoprintProxyConsumer(WebsocketConsumer):
+    @newrelic.agent.background_task()
+    def connect(self):
+        try:
+            # Exception for un-authenticated or un-authorized access
+            self.printer = Printer.objects.get(
+                user=self.current_user(),
+                id=self.scope['url_route']['kwargs']['printer_id'])
+            self.path = self.scope['path'][len(f'/octoprint/{self.printer.id}'):]
+            self.group_name = channels.octoprintproxy_group_name(
+                self.printer.id,
+                hashlib.md5(self.path.encode()).hexdigest())
+
+            async_to_sync(self.channel_layer.group_add)(
+                self.group_name,
+                self.channel_name
+            )
+            self.accept()
+            Room.objects.add(
+                self.group_name,
+                self.channel_name)
+
+            channels.send_msg_to_printer(
+                self.printer.id,
+                {
+                    'commands': [
+                        {
+                            'cmd': 'ws.proxy',
+                            'args': {
+                                'ref': self.group_name,
+                                'data': None,
+                                'path': self.path,
+                            }
+                        }
+                    ]
+                }
+            )
+        except:
+            LOGGER.exception("Websocket failed to connect")
+            self.close()
+
+    def disconnect(self, close_code):
+        LOGGER.warn(
+            "OctoprintProxyConsumer: Closed websocket with code: "
+            "{}".format(close_code))
+        async_to_sync(self.channel_layer.group_discard)(
+            self.group_name,
+            self.channel_name)
+        Room.objects.remove(
+            self.group_name,
+            self.channel_name)
+
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
+        Presence.objects.touch(self.channel_name)
+        channels.send_msg_to_printer(
+            self.printer.id,
+            {
+                'commands': [
+                    {
+                        'cmd': 'ws.proxy',
+                        'args': {
+                            'ref': self.group_name,
+                            'data': text_data or bytes_data,
+                            'path': self.path,
+                        }
+                    }
+                ]
+            }
+        )
+
+    def octoprintproxy_message(self, msg, **kwargs):
+        if isinstance(msg['data'], bytes):
+            self.send(bytes_data=msg['data'])
+        else:
+            self.send(text_data=msg['data'])
+
+    def current_user(self):
+        return self.scope['user']

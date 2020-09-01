@@ -304,12 +304,9 @@ def secure_redirect(request):
 @csrf_exempt
 @login_required
 def octoprint_http_proxy(request, printer_id):
-    if request.path.startswith('sockjs'):
-        return HttpResponseRedirect('/api/', request.get_full_path())
-
     get_printer_or_404(printer_id, request)
 
-    prefix = f'/octoprint/{printer_id}'
+    prefix = f'/octoprint/{printer_id}'  # FIXME
     method = request.method.lower()
     path = request.get_full_path()[len(prefix):]
 
@@ -328,20 +325,23 @@ def octoprint_http_proxy(request, printer_id):
 
     ref = f'{printer_id}.{method}.{time.time()}.{path}'
 
-    channels.send_msg_to_printer(printer_id, {
-        "commands": [
-            {
-                "cmd": "http.proxy",
-                "args": {
-                    "ref": ref,
-                    "method": method,
-                    "headers": headers,
-                    "path": path,
-                    "data": request.body
+    channels.send_msg_to_printer(
+        printer_id,
+        {
+            "commands": [
+                {
+                    "cmd": "http.proxy",
+                    "args": {
+                        "ref": ref,
+                        "method": method,
+                        "headers": headers,
+                        "path": path,
+                        "data": request.body
+                    }
                 }
-            }
-        ]
-    })
+            ]
+        },
+        as_binary=True)
 
     data = redis.octoprintproxy_http_response_get(ref)
     if data is None:

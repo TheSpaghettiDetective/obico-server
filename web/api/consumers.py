@@ -128,7 +128,11 @@ class OctoPrintConsumer(WebsocketConsumer):
             sentryClient.captureException()
 
     def printer_message(self, data):
-        self.send(text_data=None, bytes_data=bson.dumps(data))
+        as_binary = data.pop('as_binary', False)
+        if as_binary:
+            self.send(text_data=None, bytes_data=bson.dumps(data))
+        else:
+            self.send(text_data=json.dumps(data))
 
     def current_printer(self):
         return self.scope['user']
@@ -176,7 +180,7 @@ class OctoprintProxyConsumer(WebsocketConsumer):
             self.printer = Printer.objects.get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
-            self.path = self.scope['path'][len(f'/octoprint/{self.printer.id}'):]
+            self.path = self.scope['path'][len(f'/octoprint/{self.printer.id}'):]  # FIXME
             self.group_name = channels.octoprintproxy_group_name(
                 self.printer.id,
                 hashlib.md5(self.path.encode()).hexdigest())
@@ -203,7 +207,8 @@ class OctoprintProxyConsumer(WebsocketConsumer):
                             }
                         }
                     ]
-                }
+                },
+                as_binary=True
             )
         except:
             LOGGER.exception("Websocket failed to connect")
@@ -235,7 +240,8 @@ class OctoprintProxyConsumer(WebsocketConsumer):
                         }
                     }
                 ]
-            }
+            },
+            as_binary=True
         )
 
     def octoprintproxy_message(self, msg, **kwargs):

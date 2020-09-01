@@ -21,8 +21,11 @@ def octoprintproxy_group_name(printer_id, path):
     return 'octoprintproxy__{}.{}'.format(path, printer_id)
 
 
-def send_msg_to_printer(printer_id, msg_dict):
-    msg_dict.update({'type': 'printer.message'})    # mapped to -> printer_message in consumer
+def send_msg_to_printer(printer_id, msg_dict, as_binary=False):
+    msg_dict.update({
+        'type': 'printer.message',  # mapped to -> printer_message in consumer
+        'as_binary': as_binary,
+    })
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         octo_group_name(printer_id),

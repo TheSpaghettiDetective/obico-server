@@ -37,3 +37,4 @@ backoff==1.10.0
 django-webpack-loader==0.7.0
 django-qr-code==1.2.0
 discord-webhook==0.8.0
+bson==0.5.10

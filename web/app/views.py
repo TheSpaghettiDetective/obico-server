@@ -358,16 +358,22 @@ def octoprint_http_proxy(request, printer_id):
         resp[k] = v
 
     content = data['response']['content']
-
     if content_type and content_type.startswith('text/html'):
-        content = rewrite_html(prefix, content)
-
-    if path.endswith('app/client/socket.js'):
-        content = rewrite_socket_js(content)
+        content = rewrite_html(prefix, ensure_bytes(content))
+    elif path.endswith('app/client/socket.js'):
+        content = rewrite_socket_js(ensure_bytes(content))
 
     resp.write(content)
 
     return resp
+
+def ensure_bytes(content):
+    # If plugin side runs on py2.7
+    # then content is potentially a string.
+    # Rewriting later expects bytes.
+    if not isinstance(content, bytes):
+        return content.encode()
+    return content
 
 
 def rewrite_socket_js(content):

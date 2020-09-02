@@ -1,7 +1,21 @@
 from django.conf import settings
 import redis
+import bson
 
-REDIS = redis.Redis.from_url(settings.REDIS_URL, charset="utf-8", decode_responses=True)
+REDIS = redis.Redis.from_url(
+    settings.REDIS_URL, charset="utf-8", decode_responses=True)
+
+# for binary messages, decoding must be omitted
+BREDIS = redis.Redis.from_url(settings.REDIS_URL, decode_responses=False)
+
+# redis key prefix
+PROXY_PREFIX = "octoprintproxy"
+
+# max wait time for response from plugin
+PROXY_RSP_TIMEOUT_SECS = 15
+
+# drop unconsumed response from redis after this seconds
+PROXY_RSP_EXPIRE_SECS = 15
 
 
 def printer_key_prefix(printer_id):
@@ -68,7 +82,8 @@ def print_num_predictions_incr(print_id):
     key = f'{print_key_prefix(print_id)}:pred'
     with REDIS.pipeline() as pipe:
         pipe.incr(key)
-        pipe.expire(key, 60*60*24*30)     # Assuming it'll be processed in 30 days.
+        # Assuming it'll be processed in 30 days.
+        pipe.expire(key, 60*60*24*30)
         pipe.execute()
 
 
@@ -88,7 +103,8 @@ def print_high_prediction_add(print_id, prediction, timestamp, maxsize=180):
     with REDIS.pipeline() as pipe:
         pipe.zadd(key, {timestamp: prediction})
         pipe.zremrangebyrank(key, 0, (-1*maxsize+1))
-        pipe.expire(key, 60*60*24*3)     # Assuming it'll be processed in 3 days.
+        # Assuming it'll be processed in 3 days.
+        pipe.expire(key, 60*60*24*3)
         pipe.execute()
 
 
@@ -106,3 +122,22 @@ def print_progress_get(print_id):
     key = f'{print_key_prefix(print_id)}:pct'
     return int(REDIS.get(key) or 0)
 
+
+def octoprintproxy_http_response_set(ref, data,
+                                     expire_secs=PROXY_RSP_EXPIRE_SECS):
+    key = f"{PROXY_PREFIX}.{ref}"
+    with BREDIS.pipeline() as pipe:
+        pipe.lpush(key, bson.dumps(data))
+        pipe.expire(key, expire_secs)
+        pipe.execute()
+
+
+def octoprintproxy_http_response_get(ref, timeout_secs=PROXY_RSP_TIMEOUT_SECS):
+    # no way to delete key in after blpop in a pipeline as
+    # blpop does not block in that case..
+    key = f"{PROXY_PREFIX}.{ref}"
+    ret = BREDIS.blpop(key, timeout=timeout_secs)
+    if ret is not None and ret[1] is not None:
+        BREDIS.delete(key)
+        return bson.loads(ret[1])
+    return None

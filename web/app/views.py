@@ -315,6 +315,7 @@ def octoprint_http_proxy(request, printer_id):
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'X-Forwarded-Host', 'X-Forwarded-Port', 'X-Forwarded-For', 'X-Forwarded-Proto'
     ]
 
+    LOGGER.info(request.META)
     headers = {
         k[5:].replace("_", " ").title().replace(" ", "-"): v
         for (k, v) in request.META.items()

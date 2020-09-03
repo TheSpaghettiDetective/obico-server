@@ -341,7 +341,7 @@ def octoprint_http_proxy(request, printer_id):
 
     data = redis.octoprintproxy_http_response_get(ref)
     if data is None:
-        raise Exception("no response in time")
+        raise Exception(f'no response in time: {path}')
 
     content_type = data['response']['headers'].get('Content-Type') or None
     resp = HttpResponse(

@@ -311,9 +311,9 @@ def octoprint_http_proxy(request, printer_id):
     method = request.method.lower()
     path = request.get_full_path()[len(prefix):]
 
-    IGNORE_HEADERS = {
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER'
-    }
+    IGNORE_HEADERS = [
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'X-Forwarded-Host', 'X-Forwarded-Port', 'X-Forwarded-For', 'X-Forwarded-Proto'
+    ]
 
     headers = {
         k[5:].replace("_", " ").title().replace(" ", "-"): v

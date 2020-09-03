@@ -23,7 +23,7 @@ from .models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from .forms import PrinterForm, UserPreferencesForm
 from lib import redis
 from lib import channels
-from lib.integrations.telegram_bot import bot_name, telegram_bot, LOGGER
+from lib.integrations.telegram_bot import bot_name, telegram_bot
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
@@ -312,10 +312,10 @@ def octoprint_http_proxy(request, printer_id):
     path = request.get_full_path()[len(prefix):]
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'X-Forwarded-Host', 'X-Forwarded-Port', 'X-Forwarded-For', 'X-Forwarded-Proto'
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED_HOST', 'HTTP_X_FORWARDED_PORT', 'HTTP_X_FORWARDED_PROTO'
     ]
 
-    LOGGER.info(request.META)
+    # Recreate http headers, because django put headers in request.META as "HTTP_XXX_XXX". Is there a better way?
     headers = {
         k[5:].replace("_", " ").title().replace(" ", "-"): v
         for (k, v) in request.META.items()
@@ -388,6 +388,7 @@ def rewrite_socket_js(content):
 
 
 def rewrite_sockjs_js(content):
+    # Route sockjs to "^/ws/" as Ops requires all websocket path starts with "/ws"
     return content.replace(
         b"urlUtils.addPath(transUrl, '/websocket')",
         b"urlUtils.addPath(transUrl.replace('/octoprint', '/ws/octoprint'), '/websocket')"
@@ -395,6 +396,7 @@ def rewrite_sockjs_js(content):
 
 
 def rewrite_sockjs_min_js(content):
+    # Route sockjs to "^/ws/" as Ops requires all websocket path starts with "/ws"
     return content.replace(
         b'addPath(t,"/websocket")',
         b'addPath(t.replace("/octoprint", "/ws/octoprint"),"/websocket")'

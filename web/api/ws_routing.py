@@ -9,6 +9,6 @@ websocket_urlpatterns = [
     url(r'^ws/shared/web/(?P<share_token>[^/]+)/$', consumers.WebConsumer),
     url(r'^ws/shared/janus/(?P<share_token>[^/]+)/$', consumers.JanusWebConsumer),
     url(
-        r'^octoprint/(?P<printer_id>\d+)/',
+        r'^ws/octoprint/(?P<printer_id>\d+)/',
         consumers.OctoprintProxyWebConsumer),
 ]

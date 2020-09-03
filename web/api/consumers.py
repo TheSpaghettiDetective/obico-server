@@ -180,7 +180,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
             self.printer = Printer.objects.get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
-            self.path = self.scope['path'][len(f'/octoprint/{self.printer.id}'):]  # FIXME
+            self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.group_name = channels.octoprintproxy_group_name(
                 self.printer.id,
                 hashlib.md5(self.path.encode()).hexdigest())

@@ -358,10 +358,15 @@ def octoprint_http_proxy(request, printer_id):
         content = rewrite_html(prefix, ensure_bytes(content))
     elif path.endswith('app/client/socket.js'):
         content = rewrite_socket_js(ensure_bytes(content))
+    elif path.endswith('sockjs.js'):
+        content = rewrite_sockjs_js(ensure_bytes(content))
+    elif path.endswith('sockjs.min.js'):
+        content = rewrite_sockjs_min_js(ensure_bytes(content))
 
     resp.write(content)
 
     return resp
+
 
 def ensure_bytes(content):
     # If plugin side runs on py2.7
@@ -378,6 +383,20 @@ def rewrite_socket_js(content):
     return content.replace(
         b'OctoPrintSocketClient.prototype.connect = function(opts) {',
         b'OctoPrintSocketClient.prototype.connect = function(opts) {\nopts = opts || {}; opts["transports"] = ["websocket", ];\n'  # noqa
+    )
+
+
+def rewrite_sockjs_js(content):
+    return content.replace(
+        b"urlUtils.addPath(transUrl, '/websocket')",
+        b"urlUtils.addPath(transUrl.replace('/octoprint', '/ws/octoprint'), '/websocket')"
+    )
+
+
+def rewrite_sockjs_min_js(content):
+    return content.replace(
+        b'addPath(t,"/websocket")',
+        b'addPath(t.replace("/octoprint", "/ws/octoprint"),"/websocket")'
     )
 
 

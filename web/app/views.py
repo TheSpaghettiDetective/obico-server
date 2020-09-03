@@ -312,14 +312,14 @@ def octoprint_http_proxy(request, printer_id):
     path = request.get_full_path()[len(prefix):]
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED_HOST', 'HTTP_X_FORWARDED_PORT', 'HTTP_X_FORWARDED_PROTO'
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',
     ]
 
     # Recreate http headers, because django put headers in request.META as "HTTP_XXX_XXX". Is there a better way?
     headers = {
         k[5:].replace("_", " ").title().replace(" ", "-"): v
         for (k, v) in request.META.items()
-        if k.startswith("HTTP") and k not in IGNORE_HEADERS
+        if k.startswith("HTTP") and not k.startswith('HTTP_X_') and k not in IGNORE_HEADERS
     }
 
     if 'CONTENT_TYPE' in request.META:

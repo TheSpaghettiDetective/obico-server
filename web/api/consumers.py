@@ -172,7 +172,7 @@ class JanusWebConsumer(WebsocketConsumer):
         self.send(text_data=msg.get('msg'))
 
 
-class OctoprintProxyConsumer(WebsocketConsumer):
+class OctoprintProxyWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
@@ -197,16 +197,11 @@ class OctoprintProxyConsumer(WebsocketConsumer):
             channels.send_msg_to_printer(
                 self.printer.id,
                 {
-                    'commands': [
-                        {
-                            'cmd': 'ws.proxy',
-                            'args': {
-                                'ref': self.group_name,
-                                'data': None,
-                                'path': self.path,
-                            }
-                        }
-                    ]
+                    'ws.proxy': {
+                        'ref': self.group_name,
+                        'data': None,
+                        'path': self.path,
+                    }
                 },
                 as_binary=True
             )
@@ -216,7 +211,7 @@ class OctoprintProxyConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         LOGGER.warn(
-            "OctoprintProxyConsumer: Closed websocket with code: "
+            "OctoprintProxyWebConsumer: Closed websocket with code: "
             "{}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
@@ -230,16 +225,11 @@ class OctoprintProxyConsumer(WebsocketConsumer):
         channels.send_msg_to_printer(
             self.printer.id,
             {
-                'commands': [
-                    {
-                        'cmd': 'ws.proxy',
-                        'args': {
-                            'ref': self.group_name,
-                            'data': text_data or bytes_data,
-                            'path': self.path,
-                        }
-                    }
-                ]
+                'ws.proxy': {
+                    'ref': self.group_name,
+                    'data': text_data or bytes_data,
+                    'path': self.path,
+                }
             },
             as_binary=True
         )

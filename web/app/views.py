@@ -283,7 +283,6 @@ def upload_gcode_file(request):
 
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
-
 def serve_jpg_file(request, file_path):
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
@@ -300,6 +299,8 @@ def secure_redirect(request):
 
     return redirect(dest)
 
+
+### Proxy for OctoPrint ####
 
 @csrf_exempt
 @login_required
@@ -328,18 +329,13 @@ def octoprint_http_proxy(request, printer_id):
     channels.send_msg_to_printer(
         printer_id,
         {
-            "commands": [
-                {
-                    "cmd": "http.proxy",
-                    "args": {
-                        "ref": ref,
-                        "method": method,
-                        "headers": headers,
-                        "path": path,
-                        "data": request.body
-                    }
-                }
-            ]
+            "http.proxy": {
+                "ref": ref,
+                "method": method,
+                "headers": headers,
+                "path": path,
+                "data": request.body
+            }
         },
         as_binary=True)
 

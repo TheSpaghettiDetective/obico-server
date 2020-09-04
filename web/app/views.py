@@ -347,7 +347,7 @@ def octoprint_http_proxy(request, printer_id):
 
     data = redis.octoprintproxy_http_response_get(ref)
     if data is None:
-        raise Exception(f'no response in time: {path}')
+        return HttpResponse('Timed out. Either your OctoPrint is offline, or The Spaghetti Detective plugin version is lower than 1.4.0.')
 
     content_type = data['response']['headers'].get('Content-Type') or None
     resp = HttpResponse(

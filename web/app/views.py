@@ -304,6 +304,11 @@ def secure_redirect(request):
 
 @csrf_exempt
 @login_required
+def octoprint_tunnel(request, printer_id):
+    return render(request, 'octoprint_tunnel.html', {'printer': get_printer_or_404(printer_id, request)})
+
+@csrf_exempt
+@login_required
 def octoprint_http_proxy(request, printer_id):
     get_printer_or_404(printer_id, request)
 

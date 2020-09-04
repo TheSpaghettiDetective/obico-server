@@ -5,34 +5,8 @@
 <div>
   <div class="text-center p-2">OctoPrint securely tunneled via The Spaghetti Detective server. The page load may be very slow. Please be patient!</div>
   <div>
-    <iframe src="{% url 'octoprint_http_proxy' printer.id %}" width='100%' frameborder="0" scrolling="no" id="iFrame1"></iframe>
+    <iframe src="{% url 'octoprint_http_proxy' printer.id %}" width='100%' height='1400'></iframe>
   </div>
 </div>
 
 {% endblock content %}
-
-{% block page_js %}
-<script type="application/javascript">
-  // Not working!! https://stackoverflow.com/questions/819416/adjust-width-and-height-of-iframe-to-fit-with-content-in-it
-
-  function resizeIFrameToFitContent( iFrame ) {
-
-      iFrame.width  = iFrame.contentWindow.document.body.scrollWidth;
-      iFrame.height = iFrame.contentWindow.document.body.scrollHeight;
-  }
-
-  window.addEventListener('DOMContentLoaded', function(e) {
-
-      var iFrame = document.getElementById( 'iFrame1' );
-      resizeIFrameToFitContent( iFrame );
-
-      // or, to resize all iframes:
-      var iframes = document.querySelectorAll("iframe");
-      for( var i = 0; i < iframes.length; i++) {
-          resizeIFrameToFitContent( iframes[i] );
-      }
-  } );
-
-  </script>
-
-{% endblock page_js %}

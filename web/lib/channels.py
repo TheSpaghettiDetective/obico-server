@@ -17,8 +17,8 @@ def janus_web_group_name(printer_id):
     return 'janus_web.{}'.format(printer_id)
 
 
-def octoprintproxy_group_name(printer_id, path):
-    return 'octoprintproxy__{}.{}'.format(path, printer_id)
+def octoprinttunnel_group_name(printer_id, path):
+    return 'octoprinttunnel__{}.{}'.format(path, printer_id)
 
 
 def send_msg_to_printer(printer_id, msg_dict, as_binary=False):
@@ -60,10 +60,10 @@ def send_janus_to_web(printer_id, msg):
     )
 
 
-def send_message_to_octoprintproxy(group_name, data):
+def send_message_to_octoprinttunnel(group_name, data):
     msg_dict = {
-        # mapped to -> octoprintproxy_message in consumer
-        'type': 'octoprintproxy.message',
+        # mapped to -> octoprinttunnel_message in consumer
+        'type': 'octoprinttunnel.message',
         'data': data
     }
     layer = get_channel_layer()

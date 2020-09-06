@@ -104,15 +104,15 @@ class OctoPrintConsumer(WebsocketConsumer):
 
             if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
-            elif 'http.proxy' in data:
-                redis.octoprintproxy_http_response_set(
-                    data['http.proxy']['ref'],
-                    data['http.proxy']
+            elif 'http.tunnel' in data:
+                redis.octoprinttunnel_http_response_set(
+                    data['http.tunnel']['ref'],
+                    data['http.tunnel']
                 )
-            elif 'ws.proxy' in data:
-                channels.send_message_to_octoprintproxy(
-                    data['ws.proxy']['ref'],
-                    data['ws.proxy']['data']
+            elif 'ws.tunnel' in data:
+                channels.send_message_to_octoprinttunnel(
+                    data['ws.tunnel']['ref'],
+                    data['ws.tunnel']['data']
                 )
             elif 'passthru' in data:
                 channels.send_message_to_web(printer.id, data)
@@ -172,7 +172,7 @@ class JanusWebConsumer(WebsocketConsumer):
         self.send(text_data=msg.get('msg'))
 
 
-class OctoprintProxyWebConsumer(WebsocketConsumer):
+class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
@@ -181,7 +181,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
-            self.group_name = channels.octoprintproxy_group_name(
+            self.group_name = channels.octoprinttunnel_group_name(
                 self.printer.id,
                 hashlib.md5(self.path.encode()).hexdigest())
 
@@ -197,7 +197,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
             channels.send_msg_to_printer(
                 self.printer.id,
                 {
-                    'ws.proxy': {
+                    'ws.tunnel': {
                         'ref': self.group_name,
                         'data': None,
                         'path': self.path,
@@ -211,7 +211,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         LOGGER.warn(
-            "OctoprintProxyWebConsumer: Closed websocket with code: "
+            "OctoprintTunnelWebConsumer: Closed websocket with code: "
             "{}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
@@ -225,7 +225,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
         channels.send_msg_to_printer(
             self.printer.id,
             {
-                'ws.proxy': {
+                'ws.tunnel': {
                     'ref': self.group_name,
                     'data': text_data or bytes_data,
                     'path': self.path,
@@ -234,7 +234,7 @@ class OctoprintProxyWebConsumer(WebsocketConsumer):
             as_binary=True
         )
 
-    def octoprintproxy_message(self, msg, **kwargs):
+    def octoprinttunnel_message(self, msg, **kwargs):
         if isinstance(msg['data'], bytes):
             self.send(bytes_data=msg['data'])
         else:

@@ -9,13 +9,13 @@ REDIS = redis.Redis.from_url(
 BREDIS = redis.Redis.from_url(settings.REDIS_URL, decode_responses=False)
 
 # redis key prefix
-PROXY_PREFIX = "octoprintproxy"
+TUNNEL_PREFIX = "octoprinttunnel"
 
 # max wait time for response from plugin
-PROXY_RSP_TIMEOUT_SECS = 15
+TUNNEL_RSP_TIMEOUT_SECS = 15
 
 # drop unconsumed response from redis after this seconds
-PROXY_RSP_EXPIRE_SECS = 15
+TUNNEL_RSP_EXPIRE_SECS = 15
 
 
 def printer_key_prefix(printer_id):
@@ -123,19 +123,19 @@ def print_progress_get(print_id):
     return int(REDIS.get(key) or 0)
 
 
-def octoprintproxy_http_response_set(ref, data,
-                                     expire_secs=PROXY_RSP_EXPIRE_SECS):
-    key = f"{PROXY_PREFIX}.{ref}"
+def octoprinttunnel_http_response_set(ref, data,
+                                     expire_secs=TUNNEL_RSP_EXPIRE_SECS):
+    key = f"{TUNNEL_PREFIX}.{ref}"
     with BREDIS.pipeline() as pipe:
         pipe.lpush(key, bson.dumps(data))
         pipe.expire(key, expire_secs)
         pipe.execute()
 
 
-def octoprintproxy_http_response_get(ref, timeout_secs=PROXY_RSP_TIMEOUT_SECS):
+def octoprinttunnel_http_response_get(ref, timeout_secs=TUNNEL_RSP_TIMEOUT_SECS):
     # no way to delete key in after blpop in a pipeline as
     # blpop does not block in that case..
-    key = f"{PROXY_PREFIX}.{ref}"
+    key = f"{TUNNEL_PREFIX}.{ref}"
     ret = BREDIS.blpop(key, timeout=timeout_secs)
     if ret is not None and ret[1] is not None:
         BREDIS.delete(key)

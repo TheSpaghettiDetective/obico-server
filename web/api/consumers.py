@@ -137,7 +137,6 @@ class OctoPrintConsumer(WebsocketConsumer):
                 self.send(text_data=json.dumps(data))
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
-            self.close()
             sentryClient.captureException()
 
     def current_printer(self):

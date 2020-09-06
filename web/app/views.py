@@ -317,18 +317,18 @@ def octoprint_http_proxy(request, printer_id):
     path = request.get_full_path()[len(prefix):]
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_COOKIE',
     ]
 
     # Recreate http headers, because django put headers in request.META as "HTTP_XXX_XXX". Is there a better way?
-    headers = {
+    req_headers = {
         k[5:].replace("_", " ").title().replace(" ", "-"): v
         for (k, v) in request.META.items()
         if k.startswith("HTTP") and not k.startswith('HTTP_X_') and k not in IGNORE_HEADERS
     }
 
     if 'CONTENT_TYPE' in request.META:
-        headers['Content-Type'] = request.META['CONTENT_TYPE']
+        req_headers['Content-Type'] = request.META['CONTENT_TYPE']
 
     ref = f'{printer_id}.{method}.{time.time()}.{path}'
 
@@ -338,7 +338,7 @@ def octoprint_http_proxy(request, printer_id):
             "http.proxy": {
                 "ref": ref,
                 "method": method,
-                "headers": headers,
+                "headers": req_headers,
                 "path": path,
                 "data": request.body
             }
@@ -368,6 +368,8 @@ def octoprint_http_proxy(request, printer_id):
         content = rewrite_sockjs_js(ensure_bytes(content))
     elif path.endswith('sockjs.min.js'):
         content = rewrite_sockjs_min_js(ensure_bytes(content))
+    elif path.endswith('loginui/static/js/main.js'):
+        content = rewrite_loginui_main_js(prefix, ensure_bytes(content))
 
     resp.write(content)
 
@@ -405,6 +407,13 @@ def rewrite_sockjs_min_js(content):
     return content.replace(
         b'addPath(t,"/websocket")',
         b'addPath(t.replace("/octoprint", "/ws/octoprint"),"/websocket")'
+    )
+
+
+def rewrite_loginui_main_js(prefix, content):
+    return content.replace(
+        b'BASE_URL;',
+        f'"{prefix}" + BASE_URL;'.encode()
     )
 
 

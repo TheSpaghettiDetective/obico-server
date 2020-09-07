@@ -128,8 +128,9 @@ class OctoPrintConsumer(WebsocketConsumer):
             sentryClient.captureException()
 
     def printer_message(self, data):
+        LOGGER.error(data)
         try:
-            as_binary = data.pop('as_binary', False)
+            as_binary = data.get('as_binary', False)
             if as_binary:
                 self.send(text_data=None, bytes_data=bson.dumps(data))
             else:

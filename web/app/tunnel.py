@@ -62,7 +62,7 @@ def octoprint_http_tunnel(request, printer_id):
         content_type=content_type,
     )
     for k, v in data['response']['headers'].items():
-        if k == 'Content-Length':
+        if k in ['Content-Length', 'Content-Encoding']:
             continue
         resp[k] = v
 

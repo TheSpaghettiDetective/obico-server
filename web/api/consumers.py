@@ -129,7 +129,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     def printer_message(self, data):
         try:
-            as_binary = data.pop('as_binary', False)
+            as_binary = data.get('as_binary', False)
             if as_binary:
                 self.send(text_data=None, bytes_data=bson.dumps(data))
             else:

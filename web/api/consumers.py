@@ -129,7 +129,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     def printer_message(self, data):
         try:
-            as_binary = data.get('as_binary', False)
+            as_binary = data.pop('as_binary', False)
             if as_binary:
                 self.send(text_data=None, bytes_data=bson.dumps(data))
             else:
@@ -206,10 +206,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                         'ref': self.group_name,
                         'data': None,
                         'path': self.path,
-                    }
-                },
-                as_binary=True
-            )
+                    },
+                    'as_binary': True,
+                })
         except:
             LOGGER.exception("Websocket failed to connect")
             self.close()
@@ -234,10 +233,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     'ref': self.group_name,
                     'data': text_data or bytes_data,
                     'path': self.path,
-                }
-            },
-            as_binary=True
-        )
+                },
+                'as_binary': True
+            })
 
     def octoprinttunnel_message(self, msg, **kwargs):
         if isinstance(msg['data'], bytes):

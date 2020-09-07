@@ -21,10 +21,9 @@ def octoprinttunnel_group_name(printer_id, path):
     return 'octoprinttunnel__{}.{}'.format(path, printer_id)
 
 
-def send_msg_to_printer(printer_id, msg_dict, as_binary=False):
+def send_msg_to_printer(printer_id, msg_dict):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
-        'as_binary': as_binary,
     })
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(

@@ -54,9 +54,9 @@ def octoprint_http_tunnel(request, printer_id):
                 "headers": req_headers,
                 "path": path,
                 "data": request.body
-            }
-        },
-        as_binary=True)
+            },
+            'as_binary': True,
+        })
 
     data = redis.octoprinttunnel_http_response_get(ref)
     if data is None:

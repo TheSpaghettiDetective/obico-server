@@ -17,8 +17,8 @@ def janus_web_group_name(printer_id):
     return 'janus_web.{}'.format(printer_id)
 
 
-def octoprinttunnel_group_name(printer_id, path):
-    return 'octoprinttunnel__{}.{}'.format(path, printer_id)
+def octoprinttunnel_group_name(printer_id):
+    return 'octoprinttunnel.{}'.format(printer_id)
 
 
 def send_msg_to_printer(printer_id, msg_dict, as_binary=False):

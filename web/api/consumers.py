@@ -184,6 +184,9 @@ class JanusWebConsumer(WebsocketConsumer):
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
+    # default 1000 does not trigger retries in octoprint webapp
+    OCTO_WS_ERROR_CODE = 3000
+
     @newrelic.agent.background_task()
     def connect(self):
         try:
@@ -269,7 +272,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 return
 
             if payload['type'] == 'octoprint_close':
-                self.close()
+                self.close(self.OCTO_WS_ERROR_CODE)
                 return
 
             if isinstance(payload['data'], bytes):

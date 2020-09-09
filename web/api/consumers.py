@@ -1,6 +1,5 @@
 import bson
 import json
-import hashlib
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
@@ -92,6 +91,12 @@ class OctoPrintConsumer(WebsocketConsumer):
         )
         Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
 
+        # disconnect all octoprint tunnels
+        channels.send_message_to_octoprinttunnel(
+            channels.octoprinttunnel_group_name(self.current_printer().id),
+            {'type': 'octoprint_close', 'ref': 'ALL'},
+        )
+
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         Presence.objects.touch(self.channel_name)
         try:
@@ -111,8 +116,8 @@ class OctoPrintConsumer(WebsocketConsumer):
                 )
             elif 'ws.tunnel' in data:
                 channels.send_message_to_octoprinttunnel(
-                    data['ws.tunnel']['ref'],
-                    data['ws.tunnel']['data']
+                    channels.octoprinttunnel_group_name(self.current_printer().id),
+                    data['ws.tunnel'],
                 )
             elif 'passthru' in data:
                 channels.send_message_to_web(printer.id, data)
@@ -178,6 +183,7 @@ class JanusWebConsumer(WebsocketConsumer):
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
+
     @newrelic.agent.background_task()
     def connect(self):
         try:
@@ -186,9 +192,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
+            self.ref = self.scope['path']
             self.group_name = channels.octoprinttunnel_group_name(
-                self.printer.id,
-                hashlib.md5(self.path.encode()).hexdigest())
+                self.printer.id)
 
             async_to_sync(self.channel_layer.group_add)(
                 self.group_name,
@@ -203,9 +209,10 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 self.printer.id,
                 {
                     'ws.tunnel': {
-                        'ref': self.group_name,
+                        'ref': self.ref,
                         'data': None,
                         'path': self.path,
+                        'type': 'connect',
                     },
                     'as_binary': True,
                 })
@@ -214,9 +221,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             self.close()
 
     def disconnect(self, close_code):
-        LOGGER.warn(
-            "OctoprintTunnelWebConsumer: Closed websocket with code: "
-            "{}".format(close_code))
+        LOGGER.warn(f'OctoprintTunnelWebConsumer: Closed websocket with code: {close_code}')
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
             self.channel_name)
@@ -224,24 +229,58 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             self.group_name,
             self.channel_name)
 
-    def receive(self, text_data=None, bytes_data=None, **kwargs):
-        Presence.objects.touch(self.channel_name)
         channels.send_msg_to_printer(
             self.printer.id,
             {
                 'ws.tunnel': {
-                    'ref': self.group_name,
-                    'data': text_data or bytes_data,
+                    'ref': self.ref,
+                    'data': None,
                     'path': self.path,
+                    'type': 'tunnel_close',
                 },
-                'as_binary': True
+                'as_binary': True,
             })
 
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
+        try:
+            Presence.objects.touch(self.channel_name)
+            channels.send_msg_to_printer(
+                self.printer.id,
+                {
+                    'ws.tunnel': {
+                        'ref': self.ref,
+                        'data': text_data or bytes_data,
+                        'path': self.path,
+                        'type': 'tunnel_message',
+                    },
+                    'as_binary': True
+                })
+        except:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            self.close()
+            sentryClient.captureException()
+
     def octoprinttunnel_message(self, msg, **kwargs):
-        if isinstance(msg['data'], bytes):
-            self.send(bytes_data=msg['data'])
-        else:
-            self.send(text_data=msg['data'])
+        try:
+            # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}
+            payload = msg['data']
+
+            if payload['ref'] != self.ref and payload['ref'] != 'ALL':
+                return
+
+            if payload['type'] == 'octoprint_close':
+                self.close()
+                return
+
+            if isinstance(payload['data'], bytes):
+                self.send(bytes_data=payload['data'])
+            else:
+                self.send(text_data=payload['data'])
+
+        except:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            self.close()
+            sentryClient.captureException()
 
     def current_user(self):
         return self.scope['user']

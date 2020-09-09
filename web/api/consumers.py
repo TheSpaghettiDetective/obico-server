@@ -94,7 +94,7 @@ class OctoPrintConsumer(WebsocketConsumer):
         # disconnect all octoprint tunnels
         channels.send_message_to_octoprinttunnel(
             channels.octoprinttunnel_group_name(self.current_printer().id),
-            {'type': 'byebye'},
+            {'type': 'octoprint_close', 'ref': 'ALL'},
         )
 
     def receive(self, text_data=None, bytes_data=None, **kwargs):
@@ -183,9 +183,6 @@ class JanusWebConsumer(WebsocketConsumer):
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
-    # default 1000 does not
-    # click in octoprint webapp
-    OCTO_WS_ERROR_CODE = 3000
 
     @newrelic.agent.background_task()
     def connect(self):
@@ -268,19 +265,14 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}
             payload = msg['data']
 
-            if payload['type'] == 'byebye':
-                # mass disconnect when printer is lost
-                self.disconnect(self.OCTO_WS_ERROR_CODE, propagate_to_printer=False)
-                self.close(self.OCTO_WS_ERROR_CODE)
-                return
-
-            if payload['ref'] != self.ref:
+            if payload['ref'] != self.ref and payload['ref'] != 'ALL':
                 return
 
             if payload['type'] == 'octoprint_close':
                 self.close()
+                return
 
-            elif isinstance(payload['data'], bytes):
+            if isinstance(payload['data'], bytes):
                 self.send(bytes_data=payload['data'])
             else:
                 self.send(text_data=payload['data'])

@@ -32,7 +32,7 @@
             </a>
             <a class="dropdown-item" :href="octoPrintTunnelUrl()">
               <img class="menu-icon" :src="require('@static/img/octoprint-tunnel.png')" />
-              OctoPrint
+              Tunneling
             </a>
 
             <div class="dropdown-divider"></div>

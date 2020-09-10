@@ -30,6 +30,10 @@
             <a class="dropdown-item" :href="shareUrl()">
               <i class="fas fa-share-alt fa-lg"></i>Share
             </a>
+            <a class="dropdown-item" :href="octoPrintTunnelUrl()">
+              <img class="menu-icon" :src="require('@static/img/octoprint-tunnel.png')" />
+              OctoPrint
+            </a>
 
             <div class="dropdown-divider"></div>
 
@@ -481,6 +485,9 @@ export default {
     settingsUrl() {
       return `/printers/${this.printer.id}/`
     },
+    octoPrintTunnelUrl() {
+      return `/tunnel/${this.printer.id}/`
+    },
     forceStreamingSrc(src) {
       this.stickyStreamingSrc = src
     },
@@ -599,5 +606,9 @@ export default {
     &.active
       color: #ffffff
       background-color: rgba(0,0,0,0.6)
+
+.menu-icon
+  width: 20px
+  margin-right: 12px
 
 </style>

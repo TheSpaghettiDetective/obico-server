@@ -146,6 +146,10 @@ EOF
 
 [Document Here](jetson_guide.md)
 
+## Running on unRAID
+
+[Document Here](unraid_guide.md)
+
 ## Enable telegram notifications
 
 1. Create a bot. You can do this by messaging [@BotFather](https://t.me/botfather) - see [telegram's documentation](https://core.telegram.org/bots#3-how-do-i-create-a-bot) for further information.

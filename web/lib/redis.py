@@ -12,10 +12,10 @@ BREDIS = redis.Redis.from_url(settings.REDIS_URL, decode_responses=False)
 TUNNEL_PREFIX = "octoprinttunnel"
 
 # max wait time for response from plugin
-TUNNEL_RSP_TIMEOUT_SECS = 15
+TUNNEL_RSP_TIMEOUT_SECS = 30
 
 # drop unconsumed response from redis after this seconds
-TUNNEL_RSP_EXPIRE_SECS = 15
+TUNNEL_RSP_EXPIRE_SECS = 30
 
 # sent/received stats expiration
 TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6

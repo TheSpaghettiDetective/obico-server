@@ -263,7 +263,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             redis.octoprinttunnel_update_sent_stats(
                 now(),
                 self.current_user().id,
-                self.printer_id,
+                self.printer.id,
                 'ws',
                 len(text_data or bytes_data or '')
             )

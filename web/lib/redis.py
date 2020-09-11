@@ -17,6 +17,9 @@ TUNNEL_RSP_TIMEOUT_SECS = 15
 # drop unconsumed response from redis after this seconds
 TUNNEL_RSP_EXPIRE_SECS = 15
 
+# sent/received stats expiration
+TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
+
 
 def printer_key_prefix(printer_id):
     return 'printer:{}:'.format(printer_id)
@@ -123,8 +126,52 @@ def print_progress_get(print_id):
     return int(REDIS.get(key) or 0)
 
 
+def octoprinttunnel_stats_key(date):
+    dt = date.strftime('%Y%m')
+    return f'{TUNNEL_PREFIX}.stats.{dt}'
+
+
+def octoprinttunnel_update_sent_stats(date, user_id, printer_id, transport, delta):
+    key = octoprinttunnel_stats_key(date)
+    with BREDIS.pipeline() as pipe:
+        pipe.hincrby(key, f'{user_id}.{printer_id}.sent.{transport}', delta)
+        pipe.hincrby(key, f'{user_id}.{printer_id}.sent', delta)
+        pipe.hincrby(key, f'{user_id}.{printer_id}.total', delta)
+        pipe.hincrby(key, f'{user_id}.sent.{transport}', delta)
+        pipe.hincrby(key, f'{user_id}.sent', delta)
+        pipe.hincrby(key, f'{user_id}.total', delta)
+        pipe.hincrby(key, f'sent.{transport}', delta)
+        pipe.hincrby(key, 'sent', delta)
+        pipe.hincrby(key, f'total.{transport}', delta)
+        pipe.hincrby(key, 'total', delta)
+        pipe.expire(key, TUNNEL_STATS_EXPIRE_SECS)
+        pipe.execute()
+
+
+def octoprinttunnel_update_received_stats(date, user_id, printer_id, transport, delta):
+    key = octoprinttunnel_stats_key(date)
+    with BREDIS.pipeline() as pipe:
+        pipe.hincrby(key, f'{user_id}.{printer_id}.received.{transport}', delta)
+        pipe.hincrby(key, f'{user_id}.{printer_id}.received', delta)
+        pipe.hincrby(key, f'{user_id}.{printer_id}.total', delta)
+        pipe.hincrby(key, f'{user_id}.received.{transport}', delta)
+        pipe.hincrby(key, f'{user_id}.received', delta)
+        pipe.hincrby(key, f'{user_id}.total', delta)
+        pipe.hincrby(key, f'received.{transport}', delta)
+        pipe.hincrby(key, 'received', delta)
+        pipe.hincrby(key, f'total.{transport}', delta)
+        pipe.hincrby(key, 'total', delta)
+        pipe.expire(key, TUNNEL_STATS_EXPIRE_SECS)
+        pipe.execute()
+
+
+def octoprinttunnel_get_stats(date):
+    key = octoprinttunnel_stats_key(date)
+    return BREDIS.hgetall(key)
+
+
 def octoprinttunnel_http_response_set(ref, data,
-                                     expire_secs=TUNNEL_RSP_EXPIRE_SECS):
+                                      expire_secs=TUNNEL_RSP_EXPIRE_SECS):
     key = f"{TUNNEL_PREFIX}.{ref}"
     with BREDIS.pipeline() as pipe:
         pipe.lpush(key, bson.dumps(data))

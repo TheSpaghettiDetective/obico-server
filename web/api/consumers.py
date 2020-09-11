@@ -6,6 +6,7 @@ from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import now
 import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
@@ -258,6 +259,14 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     },
                     'as_binary': True
                 })
+
+            redis.octoprinttunnel_update_sent_stats(
+                now(),
+                self.current_user().id,
+                self.printer_id,
+                'ws',
+                len(text_data or bytes_data or '')
+            )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
             self.close()
@@ -280,6 +289,13 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             else:
                 self.send(text_data=payload['data'])
 
+            redis.octoprinttunnel_update_received_stats(
+                now(),
+                self.scope['user'].id,
+                self.printer.id,
+                'ws',
+                len(payload['data'])
+            )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
             self.close()

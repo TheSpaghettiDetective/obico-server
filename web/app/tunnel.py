@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
 
 from .view_helpers import get_printer_or_404
 from lib import redis
@@ -58,6 +59,14 @@ def octoprint_http_tunnel(request, printer_id):
             'as_binary': True,
         })
 
+    redis.octoprinttunnel_update_sent_stats(
+        now(),
+        request.user.id,
+        printer_id,
+        'http',
+        len(request.body)
+    )
+
     data = redis.octoprinttunnel_http_response_get(ref)
     if data is None:
         return HttpResponse('Timed out. Either your OctoPrint is offline, or The Spaghetti Detective plugin version is lower than 1.4.0.')
@@ -74,6 +83,14 @@ def octoprint_http_tunnel(request, printer_id):
 
     url_path = urllib.parse.urlparse(path).path
     content = data['response']['content']
+
+    redis.octoprinttunnel_update_received_stats(
+        now(),
+        request.user.id,
+        printer_id,
+        'http',
+        len(content)
+    )
 
     if content_type and content_type.startswith('text/html'):
         content = rewrite_html(prefix, ensure_bytes(content))

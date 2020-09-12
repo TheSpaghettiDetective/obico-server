@@ -296,7 +296,7 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             "hosts": [REDIS_URL],
             'capacity': 1500,
-            'expiry': 30,
+            'expiry': 60,
         },
     },
 }

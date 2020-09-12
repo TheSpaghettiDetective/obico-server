@@ -49,11 +49,13 @@ class WebConsumer(JsonWebsocketConsumer):
         )
         Room.objects.remove(channels.web_group_name(self.printer.id), self.channel_name)
 
+    @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
         Presence.objects.touch(self.channel_name)
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
 
+    @newrelic.agent.background_task()
     def printer_status(self, data):
         try:
             serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
@@ -61,6 +63,7 @@ class WebConsumer(JsonWebsocketConsumer):
         except:
             sentryClient.captureException()
 
+    @newrelic.agent.background_task()
     def web_message(self, msg):
         self.send_json(msg)
 
@@ -98,6 +101,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             {'type': 'octoprint_close', 'ref': 'ALL'},
         )
 
+    @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         Presence.objects.touch(self.channel_name)
         try:
@@ -133,6 +137,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.close()
             sentryClient.captureException()
 
+    @newrelic.agent.background_task()
     def printer_message(self, data):
         try:
             as_binary = data.get('as_binary', False)
@@ -179,6 +184,7 @@ class JanusWebConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
+    @newrelic.agent.background_task()
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))
 
@@ -245,6 +251,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 'as_binary': True,
             })
 
+    @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         try:
             Presence.objects.touch(self.channel_name)
@@ -272,6 +279,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             self.close()
             sentryClient.captureException()
 
+    @newrelic.agent.background_task()
     def octoprinttunnel_message(self, msg, **kwargs):
         try:
             # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}

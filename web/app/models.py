@@ -212,6 +212,21 @@ class Printer(SafeDeleteModel):
 
         return self.current_print is not None and self.current_print.alert_muted_at is None
 
+    def not_watching_reason(self):
+        if not self.actively_printing():
+            return "Printer is not actively printing"
+
+        if not self.watching:
+            return '"Watch for failures" is turned off'
+
+        if self.current_print is not None and self.current_print.alert_muted_at is None:
+            return "Alerts are muted for current print"
+
+        if self.user.dh_balance < 0:
+            return "You have ran out of Detective Hours"
+
+        return ""
+
     def actively_printing(self):
         printer_cur_state = redis.printer_status_get(self.id, 'state')
 

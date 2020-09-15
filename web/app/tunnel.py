@@ -124,6 +124,8 @@ def rewrite_html(prefix, content):
     return content\
         .replace(b'src="/',
                  f'src="{prefix}/'.encode())\
+        .replace(b'src="plugin/',
+                 f'src="{prefix}/plugin/'.encode())\
         .replace(b'href="/',
                  f'href="{prefix}/'.encode())\
         .replace(b'var BASEURL = "/',

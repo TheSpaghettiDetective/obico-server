@@ -2,6 +2,7 @@ import time
 import json
 import urllib.parse
 import re
+import functools
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -104,6 +105,10 @@ def octoprint_http_tunnel(request, printer_id):
         content = re.sub(_R_WS_CONNECT_PATH, _rewrite_ws_connect_path, ensure_bytes(content))
     elif url_path.endswith('sockjs.min.js'):
         content = re.sub(_R_WS_CONNECT_PATH, _rewrite_ws_connect_path, ensure_bytes(content))
+    elif url_path.endswith('packed_plugins.js'):
+        content = re.sub(_R_ABL_API_BASE, functools.partial(_rewrite_abl_api_base, prefix), ensure_bytes(content))
+    elif url_path.endswith('ABLexpert.js'):
+        content = re.sub(_R_ABL_API_BASE, functools.partial(_rewrite_abl_api_base, prefix), ensure_bytes(content))
 
     resp.write(content)
 
@@ -127,11 +132,11 @@ def rewrite_html(prefix, content):
         .replace(b'href="/',
                  f'href="{prefix}/'.encode())\
         .replace(b'var BASEURL = "/',
-                 f'var BASEURL = "{prefix}'.encode())\
+                 f'var BASEURL = "{prefix}/'.encode())\
         .replace(b'var BASE_URL = "/',
-                 f'var BASE_URL = "{prefix}'.encode())\
+                 f'var BASE_URL = "{prefix}/'.encode())\
         .replace(b'var GCODE_WORKER = "/',
-                 f'var GCODE_WORKER = "{prefix}'.encode())
+                 f'var GCODE_WORKER = "{prefix}/'.encode())
 
 
 _R_WS_CONNECT_PATH = re.compile(b'addPath\\((\\w+), *./websocket.\\)')
@@ -152,3 +157,10 @@ def _rewrite_sockjs_transports(match):
     # force websocket-only connection
     # xhr(-streams/etc) won't work for now
     return b'OctoPrintSocketClient.prototype.connect=function(opts){opts=opts||{};opts["transports"]=["websocket",];'  # noqa
+
+
+_R_ABL_API_BASE = re.compile(b'url: "/api".concat\\(PLUGIN_BASEURL, "ABL_Expert"\\)')
+
+
+def _rewrite_abl_api_base(prefix, match):
+    return b'url: "%b/".concat("api/plugin/", "ABL_Expert")' % prefix.encode()

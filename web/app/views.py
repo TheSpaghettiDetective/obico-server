@@ -298,3 +298,14 @@ def secure_redirect(request):
     dest = settings.SECURE_REDIRECTS.get((target, source), target)
 
     return redirect(dest)
+
+from allauth.account.views import LoginView
+
+class MobileLoginView(LoginView):
+
+    def get_success_url(self):
+        return '/mobile/fetch/'
+
+@login_required
+def mobile_fetch(request):
+    return HttpResponse(f'<div id="view">{request.session.session_key}</div>')

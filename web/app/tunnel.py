@@ -1,5 +1,5 @@
 import time
-import json
+import functools
 import urllib.parse
 import re
 from django.shortcuts import render
@@ -94,16 +94,24 @@ def octoprint_http_tunnel(request, printer_id):
 
     if content_type and content_type.startswith('text/html'):
         content = rewrite_html(prefix, ensure_bytes(content))
+    elif url_path.endswith('jquery.js') or url_path.endswith('jquery.min.js'):
+        content = inject_ajax_prefilter(prefix, content)
     elif url_path.endswith('socket.js'):
-        content = re.sub(_R_SOCKJS_TRANSPORTS, _rewrite_sockjs_transports, ensure_bytes(content))
+        content = re.sub(_R_SOCKJS_TRANSPORTS,
+                         _rewrite_sockjs_transports, ensure_bytes(content))
     elif url_path.endswith('packed_client.js'):
-        content = re.sub(_R_SOCKJS_TRANSPORTS, _rewrite_sockjs_transports, ensure_bytes(content))
+        content = re.sub(_R_SOCKJS_TRANSPORTS,
+                         _rewrite_sockjs_transports, ensure_bytes(content))
     elif url_path.endswith('packed_libs.js'):
-        content = re.sub(_R_WS_CONNECT_PATH, _rewrite_ws_connect_path, ensure_bytes(content))
+        content = re.sub(_R_WS_CONNECT_PATH,
+                         _rewrite_ws_connect_path, ensure_bytes(content))
+        content = inject_ajax_prefilter(prefix, content)
     elif url_path.endswith('sockjs.js'):
-        content = re.sub(_R_WS_CONNECT_PATH, _rewrite_ws_connect_path, ensure_bytes(content))
+        content = re.sub(_R_WS_CONNECT_PATH,
+                         _rewrite_ws_connect_path, ensure_bytes(content))
     elif url_path.endswith('sockjs.min.js'):
-        content = re.sub(_R_WS_CONNECT_PATH, _rewrite_ws_connect_path, ensure_bytes(content))
+        content = re.sub(_R_WS_CONNECT_PATH,
+                         _rewrite_ws_connect_path, ensure_bytes(content))
 
     resp.write(content)
 
@@ -120,18 +128,22 @@ def ensure_bytes(content):
 
 
 def rewrite_html(prefix, content):
-    # rewirte urls
+    content = re.sub(
+        _R_SRC_IN_QUOTES,
+        functools.partial(_rewrite_url, b'src', prefix.encode()),
+        content)
+    content = re.sub(
+        _R_HREF_IN_QUOTES,
+        functools.partial(_rewrite_url, b'href', prefix.encode()),
+        content)
+
     return content\
-        .replace(b'src="/',
-                 f'src="{prefix}/'.encode())\
-        .replace(b'href="/',
-                 f'href="{prefix}/'.encode())\
         .replace(b'var BASEURL = "/',
-                 f'var BASEURL = "{prefix}'.encode())\
+                 f'var BASEURL = "{prefix}/'.encode())\
         .replace(b'var BASE_URL = "/',
-                 f'var BASE_URL = "{prefix}'.encode())\
+                 f'var BASE_URL = "{prefix}/'.encode())\
         .replace(b'var GCODE_WORKER = "/',
-                 f'var GCODE_WORKER = "{prefix}'.encode())
+                 f'var GCODE_WORKER = "{prefix}/'.encode())
 
 
 _R_WS_CONNECT_PATH = re.compile(b'addPath\\((\\w+), *./websocket.\\)')
@@ -152,3 +164,51 @@ def _rewrite_sockjs_transports(match):
     # force websocket-only connection
     # xhr(-streams/etc) won't work for now
     return b'OctoPrintSocketClient.prototype.connect=function(opts){opts=opts||{};opts["transports"]=["websocket",];'  # noqa
+
+
+_R_SRC_IN_QUOTES = re.compile(b'src=[\'"](.*?)[\'"]')
+_R_HREF_IN_QUOTES = re.compile(b'href=[\'"](.*?)[\'"]')
+
+
+def _rewrite_url(attr, prefix, match):
+    url = match.groups()[0]
+
+    if not url.startswith(b'#') and not url.startswith(b'javascript:'):
+        # logger.info(b'%b %b' % (attr, url))
+
+        parts = urllib.parse.urlsplit(url)
+        if parts.netloc == b'':
+            new_path = (prefix + b"/" + parts.path).replace(b"//", b"/")
+            parts = parts._replace(path=new_path)
+
+            url = urllib.parse.urlunsplit(parts)
+    return b'%s="%b"' % (attr, url)
+
+
+def inject_ajax_prefilter(prefix, content):
+    # Plugins have different ajax url building startegies.
+    # Sometimes our modified BASEURL breaks them.
+    # Let's clean them up by removing&readding our prefix.
+    # Slashes need some extra care, in some cases they are missing
+    # at unexpected places and we try to fix those here too.
+    code = b'''\n
+    (function($) {
+      $.ajaxPrefilter(function(options) {
+        var url = options.url;
+
+        var url = url.replace("%b", "/");
+        url = url.replace("//", "/");
+        if (!url.startsWith('http') && !url.startsWith("/")) {
+            url = "/" + url;
+        }
+        url = "%b" + url;
+
+        if (options.url != url) {
+          console.log("[TSD] url is rewritten", {from: options.url, to: url});
+        }
+
+        options.url = url;
+      })
+    }(jQuery))''' % (prefix.encode(), prefix.encode())
+    content += code
+    return content

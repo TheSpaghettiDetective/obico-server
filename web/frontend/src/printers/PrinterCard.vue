@@ -121,11 +121,11 @@
           class="overlay-top text-center"
           style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px;"
         >
-          <div>The Detective Is Not Watching</div>
+          <div class="text-warning">The Detective Is Not Watching</div>
           <small
             v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}</small>
-          <div>(<a href="https://www.thespaghettidetective.com/docs/detective-not-watching/">More</a>)</div>
+          >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/">Why?</a></small>
+          <div></div>
         </div>
         <DirectGauge
           :ewm_mean="ewm_mean"

@@ -210,5 +210,7 @@ def inject_ajax_prefilter(prefix, content):
         options.url = url;
       })
     }(jQuery))''' % (prefix.encode(), prefix.encode())
+    if not isinstance(content, (bytes, bytearray)):
+        code = code.decode()
     content += code
     return content

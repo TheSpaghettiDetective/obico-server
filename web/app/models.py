@@ -219,7 +219,7 @@ class Printer(SafeDeleteModel):
         if not self.watching_enabled:
             return '"Watch for failures" is turned off'
 
-        if self.current_print is not None and self.current_print.alert_muted_at is None:
+        if self.current_print is not None and self.current_print.alert_muted_at is not None:
             return "Alerts are muted for current print"
 
         if self.user.dh_balance < 0:

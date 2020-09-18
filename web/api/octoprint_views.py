@@ -31,7 +31,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def alert_suppressed(printer):
-    if not printer.watching or printer.current_print is None or printer.current_print.alert_muted_at:
+    if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
         return True
 
     last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)

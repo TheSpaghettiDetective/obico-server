@@ -44,7 +44,7 @@ class PrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('id', 'name', 'created_at', 'action_on_failure', 'watching', 'should_watch', 'not_watching_reason', 'pic', 'status', 'settings', 'current_print', 'printerprediction', 'auth_token')
+        fields = ('id', 'name', 'created_at', 'action_on_failure', 'watching_enabled', 'should_watch', 'not_watching_reason', 'pic', 'status', 'settings', 'current_print', 'printerprediction', 'auth_token')
 
 
 class GCodeFileSerializer(serializers.ModelSerializer):

@@ -344,7 +344,7 @@ export default {
     onWatchForFailuresToggled(printerId) {
       let p = this.printers.find((p) => p.id == printerId)
       if (p) {
-        p.watching = !p.watching
+        p.watching_enabled = !p.watching_enabled
         this.updatePrinter(p)
       }
     },
@@ -572,7 +572,7 @@ export default {
         .patch(
           apis.printer(printer.id),
           {
-            watching: printer.watching,
+            watching_enabled: printer.watching_enabled,
             action_on_failure: printer.action_on_failure,
           })
         .then(response => {

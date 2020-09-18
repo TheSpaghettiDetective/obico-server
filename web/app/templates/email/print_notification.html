@@ -20,7 +20,7 @@
 </table>
 {% endif %}
 
-{% if print.alerted_at or print.printer.watching and print.user.dh_balance > 0 %}
+{% if print.alerted_at or print.printer.watching_enabled and print.user.dh_balance > 0 %}
 <table style="padding: 18px 0px 18px 0px;" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 0px 0px 9px 0px;width:100%;">

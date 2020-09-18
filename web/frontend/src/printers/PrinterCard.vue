@@ -176,7 +176,7 @@
                 <div class="col-12 setting-item">
                   <label
                     class="toggle-label"
-                    :for="'watching-toggle-' + printer.id"
+                    :for="'watching_enabled-toggle-' + printer.id"
                   >Watch for failures
                     <div
                       v-if="!watchForFailures"
@@ -186,15 +186,15 @@
                   <div class="custom-control custom-switch">
                     <input
                       type="checkbox"
-                      name="watching"
+                      name="watching_enabled"
                       class="custom-control-input update-printer"
-                      :id="'watching-toggle-' + printer.id"
+                      :id="'watching_enabled-toggle-' + printer.id"
                       @click="$emit('WatchForFailuresToggled')"
                       :checked="watchForFailures"
                     >
                     <label
                       class="custom-control-label"
-                      :for="'watching-toggle-' + printer.id"
+                      :for="'watching_enabled-toggle-' + printer.id"
                       style="font-size: 1rem;"
                     ></label>
                   </div>
@@ -436,7 +436,7 @@ export default {
       }
     },
     watchForFailures() {
-      return this.printer.watching
+      return this.printer.watching_enabled
     },
     pauseOnFailure() {
       return this.printer.action_on_failure == 'PAUSE'

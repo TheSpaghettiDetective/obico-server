@@ -160,7 +160,7 @@ class Printer(SafeDeleteModel):
         choices=ACTION_ON_FAILURE,
         default=PAUSE,
     )
-    watching = models.BooleanField(default=True)
+    watching_enabled = models.BooleanField(default=True, db_column="watching")
     tools_off_on_pause = models.BooleanField(default=True)
     bed_off_on_pause = models.BooleanField(default=False)
     retract_on_pause = models.FloatField(null=False, default=6.5)
@@ -207,7 +207,7 @@ class Printer(SafeDeleteModel):
         return p_settings
 
     def should_watch(self):
-        if not self.watching or self.user.dh_balance < 0:
+        if not self.watching_enabled or self.user.dh_balance < 0:
             return False
 
         return self.current_print is not None and self.current_print.alert_muted_at is None
@@ -216,7 +216,7 @@ class Printer(SafeDeleteModel):
         if not self.actively_printing():
             return "Printer is not actively printing"
 
-        if not self.watching:
+        if not self.watching_enabled:
             return '"Watch for failures" is turned off'
 
         if self.current_print is not None and self.current_print.alert_muted_at is None:

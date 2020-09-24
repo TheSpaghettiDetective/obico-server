@@ -35,6 +35,7 @@ urlpatterns = [
     path('tunnel/<int:printer_id>/', tunnel.tunnel, name='tunnel'),
     path('mobile/login/', views.MobileLoginView.as_view(), name='mobile_login'),
     path('mobile/fetch/', views.mobile_fetch, name='mobile_fetch'),
+    path('mobile/callback/', views.callback, name='mobile_callback'),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

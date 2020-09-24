@@ -25,7 +25,7 @@
 
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
 
-      <form class="login form-signin" method="POST" action="{% url 'account_login' %}">
+      <form class="login form-signin" method="POST">
         {% if form.errors %}
         <div style="padding-bottom: 0.5em">
           <span class="text-danger">Wrong email or password.</span> <a class="button secondaryAction"

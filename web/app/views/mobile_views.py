@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from allauth.account.views import LoginView
 
 from allauth.exceptions import ImmediateHttpResponse
@@ -23,7 +24,7 @@ from allauth.socialaccount.helpers import (
 class MobileLoginView(LoginView):
 
     def get_success_url(self):
-        return '/mobile/fetch/'
+        return '/mobile/auth/fetch/'
 
 @login_required
 def fetch_session(request):

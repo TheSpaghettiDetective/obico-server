@@ -1,5 +1,8 @@
 # Run TSD on unRAID
 
+If video is your cup of tea, follow [this awesome video guide](https://www.youtube.com/watch?v=B2gjxL0MgEo) put together by [u/rickyh7](https://www.reddit.com/user/rickyh7/).Thank you u/rickyh7 !
+
+
 ## Install docker-compose
 
 To run TSD on unRAID, you first must install Docker-Compose on the server. This can be done following the usual instructions found on the [Docker-Compose Install Guide](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).

@@ -8,6 +8,7 @@ from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
 )
@@ -33,36 +34,30 @@ def fetch_session(request):
 
 def oauth_callback(request, *args, **kwargs):
     try:
-        adapter = GoogleOAuth2Adapter(request)
+        is_google = request.GET['provider'] == 'google'
 
-        if 'error' in request.GET or 'code' not in request.GET:
-            # Distinguish cancel from error
-            auth_error = request.GET.get('error', None)
-            if auth_error == adapter.login_cancelled_error:
-                error = AuthError.CANCELLED
-            else:
-                error = AuthError.UNKNOWN
-            return render_authentication_error(
-                request,
-                adapter.provider_id,
-                error=error)
+        adapter = GoogleOAuth2Adapter(request) if is_google else FacebookOAuth2Adapter(request)
+        provider = adapter.get_provider()
         app = adapter.get_provider().get_app(request)
 
-        callback_url = adapter.get_callback_url(request, app)
-        provider = adapter.get_provider()
-        scope = provider.get_scope(request)
-        client = OAuth2Client(request, app.client_id, app.secret,
-                                adapter.access_token_method,
-                                adapter.access_token_url,
-                                callback_url,
-                                scope,
-                                scope_delimiter=adapter.scope_delimiter,
-                                headers=adapter.headers,
-                                basic_auth=adapter.basic_auth)
-
         try:
-            access_token = client.get_access_token(request.GET['code'])
-            token = adapter.parse_token(access_token)
+            if is_google:
+                callback_url = adapter.get_callback_url(request, app)
+                scope = provider.get_scope(request)
+                client = OAuth2Client(request, app.client_id, app.secret,
+                                        adapter.access_token_method,
+                                        adapter.access_token_url,
+                                        callback_url,
+                                        scope,
+                                        scope_delimiter=adapter.scope_delimiter,
+                                        headers=adapter.headers,
+                                        basic_auth=adapter.basic_auth)
+                access_token = client.get_access_token(request.GET['code'])
+                token = adapter.parse_token(access_token)
+            else:
+                access_token = request.GET['code']
+                token = adapter.parse_token({'access_token': access_token, 'token_type': 'bearer', 'expires_in': 5179237})      # hard-coded properties to make allauth happy
+
             token.app = app
             login = adapter.complete_login(request,
                                                 app,

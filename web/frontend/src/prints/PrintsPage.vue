@@ -227,7 +227,7 @@ export default {
             .post(apis.printsBulkDelete(), { print_ids: selectedPrintIds })
             .then(() => {
               selectedPrintIds.forEach(printId => this.onPrintDeleted(printId, false))
-              this.$swal.toast({
+              this.$swal.Toast.fire({
                 title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
               })
               this.selectedPrintIds = []
@@ -240,7 +240,7 @@ export default {
       const print = this.prints[i]
       this.$delete(this.prints, i)
       if (toast) {
-        this.$swal.toast({
+        this.$swal.Toast.fire({
           title: `Time-lapse ${print.filename} deleted!`,
         })
       }

@@ -38,17 +38,6 @@ let openModalWithElement = (element, props, modalOptions) => {
   })
 }
 
-let toast = (options) => {
-  return Vue.swal.fire({
-    ...options,
-    toast: true,
-    backdrop: false,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 5000,
-  })
-}
-
 
 const install = (Vue, options) => {
   Vue.use(VueSwal, options)
@@ -72,9 +61,8 @@ const install = (Vue, options) => {
 
   Vue.prototype.$swal['openModalWithComponent'] = openModalWithComponent
   Vue.prototype.$swal['openModalWithElement'] = openModalWithElement
-  Vue.prototype.$swal['toast'] = toast
   Vue.prototype.$swal['Confirm'] = Confirm
-  Vue.prototype.$swal['Toast'] = Toast // FIXME Toast vs toast: caused by parallel development
+  Vue.prototype.$swal['Toast'] = Toast
 }
 
 export default {install: install}

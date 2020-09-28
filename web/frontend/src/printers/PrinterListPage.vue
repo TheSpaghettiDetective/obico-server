@@ -223,7 +223,7 @@ export default {
             SortFilter.DateDesc),
           SortFilter.DateDesc
         )
-      }
+      },
     }
   },
   computed: {
@@ -268,15 +268,20 @@ export default {
       return axios
         .get(apis.printers(), {
           params: {
-            filter: this.filters.state,
-            sorting: this.filters.sort
+            with_archived: true,
           }
         })
         .then(response => {
           this.loading = false
-          response.data.forEach((p) =>
-            this.insertPrinter(normalizedPrinter(p))
-          )
+          response.data.forEach((p) => {
+            if (p.archived_at) {
+              this.$swal.Toast.fire({
+                html: '<h6>Some of your printers have been archived.</h6><p><a href="/ent/printers/archived/">Find them here.</a></p>',
+              })
+            } else {
+              this.insertPrinter(normalizedPrinter(p))
+            }
+          })
         })
     },
     toggleFiltersPanel() {

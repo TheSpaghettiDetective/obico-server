@@ -36,7 +36,6 @@ urlpatterns = [
         name='octoprint_http_tunnel'),
     path('tunnel/<int:printer_id>/', tunnel_views.tunnel, name='tunnel'),
 
-    path('mobile/login/', mobile_views.MobileLoginView.as_view(), name='mobile_login'),
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
     path('mobile/auth/fetch/', mobile_views.fetch_session, name='mobile_auth_fetch_session'),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback, name='mobile_auth_oauth_callback'),

@@ -21,7 +21,10 @@ class PrinterViewSet(viewsets.ModelViewSet):
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
-        return Printer.objects.filter(user=self.request.user)
+        if self.request.query_params.get('with_archived') == 'true':
+            return Printer.with_archived.filter(user=self.request.user)
+        else:
+            return Printer.objects.filter(user=self.request.user)
 
     # TODO: Should these be removed, or changed to POST after switching to Vue?
 

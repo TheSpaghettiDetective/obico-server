@@ -11,18 +11,21 @@ Thanks to Raymond's work, you can now easily run TSD server on Jetson. You only 
 ```
 version: '2.4'
 
-x-web-defaults: &web-defaults
-  build:
-    dockerfile: Dockerfile.base
-
 services:
   ml_api:
     build:
       context: ml_api
-      dockerfile: Dockerfile.aarch64
     environment:
         HAS_GPU: 'True'
     runtime: nvidia
 ```
+
+- Edit `web/Dockerfile`.
+
+- Change `FROM thespaghettidetective/web:base-1.1` to `FROM raymondh2/web:aarch64`
+
+- Edit `ml_api/Dockerfile`.
+
+- Change `FROM thespaghettidetective/ml_api:base` to `FROM raymondh2/ml_api:jetson`
 
 You can then follow the remaining steps by following the instructions in [README.md].

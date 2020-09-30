@@ -96,7 +96,7 @@
     >
       <div>
         OctoPrint is not powered on, or is offline.
-        <a href="https://www.thespaghettidetective.com/docs/octoprint-is-offline/">Why?</a>
+        <a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-is-offline/">Why? <small><i class="fas fa-external-link-alt"></i></small></a>
       </div>
     </div>
   </div>

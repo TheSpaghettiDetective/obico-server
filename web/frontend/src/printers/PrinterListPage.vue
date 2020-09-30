@@ -363,7 +363,7 @@ export default {
     },
     onPrinterActionPauseClicked(printerId) {
       this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a href="https://www.thespaghettidetective.com/docs/detection-print-job-settings/#when-print-is-paused">Learn more.</a>',
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings/#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
       }).then((result) => {
         if (result.value) {
           this.sendPrinterAction(printerId, PAUSE_PRINT, true)

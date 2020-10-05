@@ -1,0 +1,69 @@
+{% extends "mobile/layout.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+{% get_providers as socialaccount_providers %}
+
+<div class="row justify-content-center logreg">
+  <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+    <div id="logreg-forms" class="pb-5">
+      <h1 class="text-center">{% trans "Sign In" %}</h1>
+
+      {% if socialaccount_providers %}
+      <div class="social-login">
+        <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+          role="button"><span><i class="fab fa-facebook-f"></i> Sign In with Facebook</span> </a>
+        <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+          role="button"><span><i class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
+      </div>
+      {% endif %}
+
+      <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
+
+      <form class="login form-signin" method="POST">
+        {% if form.errors %}
+        <div style="padding-bottom: 0.5em">
+          <span class="text-danger">Wrong email or password.</span> <a class="button secondaryAction"
+            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        </div>
+        {% endif %}
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+        <div class="input-group">
+          {% render_field form.login class="form-control" placeholder="Email address" %}
+        </div>
+        <div class="input-group">
+          {% render_field form.password class="form-control" placeholder="Password" %}
+        </div>
+        <div style="padding-top: 0.5rem;">
+          <div class="custom-control custom-checkbox form-check-inline">
+            <input type="checkbox" checked name="remember" class="custom-control-input" id="remember-checkbox">
+            <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">Remember me</label>
+          </div>
+        </div>
+        {% endwith %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
+        <div class="pt-2">
+          <a class="button secondaryAction float-left"
+            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        </div>
+      </form>
+
+      <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
+
+      {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
+      <a class="btn btn-secondary btn-block" href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "Sign up" %}</a>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

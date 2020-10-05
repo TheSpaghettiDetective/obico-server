@@ -23,6 +23,7 @@ from allauth.socialaccount.helpers import (
 )
 
 class MobileLoginView(LoginView):
+    template_name = 'account/mobile_login.html'
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'

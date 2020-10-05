@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from allauth.account.views import LoginView
+from allauth.account.views import LoginView, SignupView
 
 from allauth.exceptions import ImmediateHttpResponse
 from django.core.exceptions import PermissionDenied
@@ -27,6 +27,13 @@ class MobileLoginView(LoginView):
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'
+
+class MobileSignupView(SignupView):
+    template_name = 'account/mobile_signup.html'
+
+    def get_success_url(self):
+        return '/mobile/auth/fetch/'
+
 
 @login_required
 def fetch_session(request):

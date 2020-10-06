@@ -36,7 +36,6 @@
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
       <form class="signup form-signup" id="signup_form" method="POST">
         {% csrf_token %}
-        <input type="hidden" name="recaptcha_token" id='recaptcha'>
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
         <div class="form-group">
           {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="Email address" %}

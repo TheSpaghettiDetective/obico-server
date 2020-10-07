@@ -1,4 +1,4 @@
-FROM thespaghettidetective/web:base-1.1
+FROM thespaghettidetective/web:base-1.2
 
 WORKDIR /app
 EXPOSE 3334

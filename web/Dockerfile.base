@@ -3,7 +3,7 @@ FROM python:3.7-alpine
 WORKDIR /app
 EXPOSE 3334
 RUN apk -U add bash vim ffmpeg postgresql-libs git && \
-    apk add --virtual .build-deps build-base musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev
+    apk add --virtual .build-deps g++ musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev
 RUN pip install --upgrade pip
 
 ADD requirements.txt .

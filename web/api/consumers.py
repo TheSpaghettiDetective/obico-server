@@ -158,7 +158,7 @@ class JanusWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
-            if self.scope['path'].startswith('/ws/share_token/'):
+            if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
                 self.printer = self.scope['user']
             else:
                 # Exception for un-authenticated or un-authorized access

@@ -23,8 +23,8 @@ celery[redis]==4.4.7
 django-safedelete==0.5.1
 Pillow==5.4.1
 django-hijack==2.1.10
-daphne==2.2.5
-asgiref==2.3.2
+daphne==2.5.0
+asgiref==3.2.10
 # latest version of zope.interface is broken
 zope.interface==4.7.2
 channels==2.4.0
@@ -38,3 +38,4 @@ django-webpack-loader==0.7.0
 django-qr-code==1.2.0
 discord-webhook==0.8.0
 bson==0.5.10
+firebase-admin==4.4.0

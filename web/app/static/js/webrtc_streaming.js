@@ -77,7 +77,7 @@ $(document).ready(function () {
                 var streaming, wsUri, turnToken, turnId;
 
                 if (printerCard.data('share-token')) {
-                    wsUri = '/ws/shared/janus/' + printerCard.data('share-token') + '/';
+                    wsUri = '/ws/share_token/janus/' + printerCard.data('share-token') + '/';
                     turnToken = printerCard.data('share-token');
                 } else {
                     wsUri = '/ws/janus/' + printerId + '/';

@@ -9,7 +9,7 @@ $(document).ready(function () {
     var printerCard = $('.printer-card');
     var printerId = printerCard.attr('id');
     var wsUri = printerCard.data('share-token') ?
-    '/ws/shared/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
+    '/ws/share_token/web/' + printerCard.data('share-token') + '/' : '/ws/web/' + printerId + '/';
     var printerWs = new PrinterWebSocket();
 
     printerWs.openPrinterWebSockets(printerId, wsUri, function(printer) {

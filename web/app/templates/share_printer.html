@@ -34,7 +34,7 @@
             {% if printer.sharedresource.share_token %}
             <div class="input-group mt-4 mb-2">
               <input type="text" id="secret-token-input" class="form-control"
-                value="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/"
+                value="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/share_token/{{ printer.sharedresource.share_token }}/"
                 readonly aria-label="Secret token">
               <div class="input-group-append">
                 <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
@@ -45,7 +45,7 @@
             </div>
             <div class="my-1">Click the clipboard icon above to copy the secure shareable link to your clipboard.</div>
             <div class="my-1">You can test the shareable link by right click <a
-                href="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/shared/{{ printer.sharedresource.share_token }}/">here</a>
+                href="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/share_token/{{ printer.sharedresource.share_token }}/">here</a>
               and select "Open Link in Incognito Window".</div>
             {% endif %}
             <br />

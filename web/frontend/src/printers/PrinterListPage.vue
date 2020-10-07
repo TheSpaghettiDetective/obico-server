@@ -129,7 +129,7 @@ import TSDSelect from '@common/TSDSelect.vue'
 let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
 let printerControlUrl = printerId => `/printers/${printerId}/control/`
 let printerWSUrl = printerId => `/ws/web/${printerId}/`
-let printerSharedWSUrl = token => `/ws/shared/web/${token}/`
+let printerSharedWSUrl = token => `/ws/share_token/web/${token}/`
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'

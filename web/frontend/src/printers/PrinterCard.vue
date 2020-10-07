@@ -313,7 +313,7 @@ import StatusTemp from './StatusTemp.vue'
 
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
-let printerSharedWebRTCUrl = token => `/ws/shared/janus/${token}/`
+let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 const Show = true
 const Hide = false

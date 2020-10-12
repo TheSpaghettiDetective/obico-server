@@ -266,14 +266,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     },
                     'as_binary': True
                 })
-
-            cache.octoprinttunnel_update_sent_stats(
-                now(),
-                self.current_user().id,
-                self.printer.id,
-                'ws',
-                len(text_data or bytes_data or '')
-            )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
             self.close()

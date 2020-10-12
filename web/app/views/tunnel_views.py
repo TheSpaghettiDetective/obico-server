@@ -59,14 +59,6 @@ def octoprint_http_tunnel(request, printer_id):
             'as_binary': True,
         })
 
-    cache.octoprinttunnel_update_sent_stats(
-        now(),
-        request.user.id,
-        printer_id,
-        'http',
-        len(request.body)
-    )
-
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
         return HttpResponse('Timed out. Either your OctoPrint is offline, or The Spaghetti Detective plugin version is lower than 1.4.0.')

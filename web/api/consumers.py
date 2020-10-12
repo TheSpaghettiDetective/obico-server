@@ -297,7 +297,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             else:
                 self.send(text_data=payload['data'])
 
-            cache.octoprinttunnel_update_received_stats(
+            cache.octoprinttunnel_update_stats(
                 now(),
                 self.scope['user'].id,
                 self.printer.id,

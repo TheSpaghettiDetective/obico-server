@@ -84,7 +84,7 @@ def octoprint_http_tunnel(request, printer_id):
     url_path = urllib.parse.urlparse(path).path
     content = data['response']['content']
 
-    cache.octoprinttunnel_update_received_stats(
+    cache.octoprinttunnel_update_stats(
         now(),
         request.user.id,
         printer_id,

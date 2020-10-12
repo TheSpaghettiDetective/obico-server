@@ -21,7 +21,6 @@ from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator
 
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from app.forms import PrinterForm, UserPreferencesForm
-from lib import redis
 from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot
 from lib.file_storage import save_file_obj

@@ -27,7 +27,7 @@ from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, dele
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
-from lib import redis
+from lib import cache
 from app.notifications import send_print_notification
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 
@@ -259,7 +259,7 @@ def generate_print_poster(_print):
                                                                rotated_jpg_path=f'private/{_print.id}_poster.jpg')
 
     if unrotated_jpg_url:
-        redis.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
+        cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
@@ -306,7 +306,7 @@ def select_print_shots_for_feedback(_print):
 
         return sorted(selected_timestamps)
 
-    for ts in highest_7_predictions(redis.print_highest_predictions_get(_print.id)):
+    for ts in highest_7_predictions(cache.print_highest_predictions_get(_print.id)):
         (_, rotated_jpg_url) = save_print_snapshot(
             _print,
             f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',

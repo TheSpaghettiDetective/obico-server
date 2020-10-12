@@ -5,7 +5,7 @@ from channels_presence.models import Room
 from django.dispatch import receiver
 from channels_presence.signals import presence_changed
 
-from . import redis
+from . import cache
 
 def octo_group_name(printer_id):
     return 'p_octo.{}'.format(printer_id)
@@ -79,7 +79,7 @@ def broadcast_ws_connection_change(sender, room, **kwargs):
         send_viewing_status(printer_id, room.get_anonymous_count())
     if group == 'p_octo':
         if num_ws_connections(octo_group_name(printer_id)) <= 0:
-            redis.printer_status_delete(printer_id)
+            cache.printer_status_delete(printer_id)
         send_status_to_web(printer_id)
 
 def send_viewing_status(printer_id, viewing_count=None):

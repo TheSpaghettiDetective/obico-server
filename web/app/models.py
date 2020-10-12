@@ -20,7 +20,7 @@ from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
 
 from config.celery import celery_app
-from lib import redis, channels
+from lib import cache, channels
 from lib.utils import dict_or_none
 
 LOGGER = logging.getLogger(__name__)
@@ -180,7 +180,7 @@ class Printer(SafeDeleteModel):
 
     @property
     def status(self):
-        status_data = redis.printer_status_get(self.id)
+        status_data = cache.printer_status_get(self.id)
 
         for k, v in status_data.items():
             status_data[k] = json.loads(v)
@@ -189,13 +189,13 @@ class Printer(SafeDeleteModel):
 
     @property
     def pic(self):
-        pic_data = redis.printer_pic_get(self.id)
+        pic_data = cache.printer_pic_get(self.id)
 
         return dict_or_none(pic_data)
 
     @property
     def settings(self):
-        p_settings = redis.printer_settings_get(self.id)
+        p_settings = cache.printer_settings_get(self.id)
 
         for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'):
             p_settings[key] = p_settings.get(key, 'False') == 'True'
@@ -228,7 +228,7 @@ class Printer(SafeDeleteModel):
         return ""
 
     def actively_printing(self):
-        printer_cur_state = redis.printer_status_get(self.id, 'state')
+        printer_cur_state = cache.printer_status_get(self.id, 'state')
 
         return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False)
 

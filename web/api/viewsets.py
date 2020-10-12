@@ -10,7 +10,6 @@ from .authentication import CsrfExemptSessionAuthentication
 from app.models import *
 from .serializers import *
 from app.models import PrintShotFeedback
-from lib import redis
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 

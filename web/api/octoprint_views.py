@@ -15,7 +15,7 @@ from PIL import Image
 
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
-from lib import redis
+from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from app.models import *
@@ -87,7 +87,7 @@ class OctoPrintPicView(APIView):
         internal_url, external_url = save_file_obj(f'raw/{pic_path}', pic, settings.PICS_CONTAINER, long_term_storage=False)
 
         if not printer.should_watch() or not printer.actively_printing():
-            redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
+            cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
             send_status_to_web(printer.id)
             return Response({'result': 'ok'})
 
@@ -95,7 +95,7 @@ class OctoPrintPicView(APIView):
         req.raise_for_status()
         resp = req.json()
 
-        redis.print_num_predictions_incr(printer.current_print.id)
+        cache.print_num_predictions_incr(printer.current_print.id)
 
         detections = resp['detections']
         prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
@@ -103,7 +103,7 @@ class OctoPrintPicView(APIView):
         prediction.save()
 
         if prediction.current_p > settings.THRESHOLD_LOW * 0.2:  # Select predictions high enough for focused feedback
-            redis.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
+            cache.print_high_prediction_add(printer.current_print.id, prediction.current_p, pic_id)
 
         pic.file.seek(0)  # Reset file object pointer so that we can load it again
         tagged_img = io.BytesIO()
@@ -112,7 +112,7 @@ class OctoPrintPicView(APIView):
         tagged_img.seek(0)
 
         _, external_url = save_file_obj(f'tagged/{pic_path}', tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
-        redis.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
+        cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])
         p_out = io.BytesIO()

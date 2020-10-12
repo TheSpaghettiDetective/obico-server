@@ -1,7 +1,7 @@
 from django.utils import timezone
 import json
 
-from lib import redis
+from lib import cache
 from lib import channels
 from lib.utils import set_as_str_if_present
 from app.models import PrintEvent
@@ -14,13 +14,13 @@ SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]
 def process_octoprint_status(printer, status):
     octoprint_settings = status.get('octoprint_settings')
     if octoprint_settings:
-        redis.printer_settings_set(printer.id, settings_dict(octoprint_settings))
+        cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
     octoprint_data = dict()
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
     set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
-    redis.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
+    cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
     if status.get('current_print_ts'):
         process_octoprint_status_with_ts(status, printer)
@@ -75,8 +75,8 @@ def call_service_webhook_if_needed(printer, op_event, op_data):
     print_time = op_data.get('progress', {}).get('printTime')
     print_time_left = op_data.get('progress', {}).get('printTimeLeft')
     pct = op_data.get('progress', {}).get('completion')
-    last_progress = redis.print_progress_get(printer.current_print.id)
+    last_progress = cache.print_progress_get(printer.current_print.id)
     next_progress_pct = next(iter(list(filter(lambda x: x > last_progress, SVC_WEBHOOK_PROGRESS_PCTS))), None)
     if pct and print_time and print_time_left and next_progress_pct and pct >= next_progress_pct:
-        redis.print_progress_set(printer.current_print.id, next_progress_pct)
+        cache.print_progress_set(printer.current_print.id, next_progress_pct)
         service_webhook.delay(printer.current_print.id, 'PrintProgress', percent=pct, timeleft=int(print_time_left), currenttime=int(print_time))

@@ -11,7 +11,7 @@ import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
 
-from lib import redis
+from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
@@ -115,7 +115,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
             elif 'http.tunnel' in data:
-                redis.octoprinttunnel_http_response_set(
+                cache.octoprinttunnel_http_response_set(
                     data['http.tunnel']['ref'],
                     data['http.tunnel']
                 )
@@ -267,7 +267,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     'as_binary': True
                 })
 
-            redis.octoprinttunnel_update_sent_stats(
+            cache.octoprinttunnel_update_sent_stats(
                 now(),
                 self.current_user().id,
                 self.printer.id,
@@ -297,7 +297,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             else:
                 self.send(text_data=payload['data'])
 
-            redis.octoprinttunnel_update_received_stats(
+            cache.octoprinttunnel_update_received_stats(
                 now(),
                 self.scope['user'].id,
                 self.printer.id,

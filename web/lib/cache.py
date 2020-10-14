@@ -126,24 +126,6 @@ def print_progress_get(print_id):
     return int(REDIS.get(key) or 0)
 
 
-def octoprinttunnel_stats_key(date):
-    dt = date.strftime('%Y%m')
-    return f'{TUNNEL_PREFIX}.stats.{dt}'
-
-
-def octoprinttunnel_update_stats(date, user_id, printer_id, transport, delta):
-    key = octoprinttunnel_stats_key(date)
-    with BREDIS.pipeline() as pipe:
-        pipe.hincrby(key, f'{user_id}.total', delta)
-        pipe.expire(key, TUNNEL_STATS_EXPIRE_SECS)
-        pipe.execute()
-
-
-def octoprinttunnel_get_stats(date):
-    key = octoprinttunnel_stats_key(date)
-    return BREDIS.hgetall(key)
-
-
 def octoprinttunnel_http_response_set(ref, data,
                                       expire_secs=TUNNEL_RSP_EXPIRE_SECS):
     key = f"{TUNNEL_PREFIX}.{ref}"
@@ -162,3 +144,21 @@ def octoprinttunnel_http_response_get(ref, timeout_secs=TUNNEL_RSP_TIMEOUT_SECS)
         BREDIS.delete(key)
         return bson.loads(ret[1])
     return None
+
+
+def octoprinttunnel_stats_key(date):
+    dt = date.strftime('%Y%m')
+    return f'{TUNNEL_PREFIX}.stats.{dt}'
+
+
+def octoprinttunnel_update_stats(date, user_id, delta):
+    key = octoprinttunnel_stats_key(date)
+    with BREDIS.pipeline() as pipe:
+        pipe.hincrby(key, str(user_id), int(delta))
+        pipe.expire(key, TUNNEL_STATS_EXPIRE_SECS)
+        pipe.execute()
+
+
+def octoprinttunnel_get_stats(date, user_id):
+    key = octoprinttunnel_stats_key(date)
+    return BREDIS.hget(key, str(user_id))

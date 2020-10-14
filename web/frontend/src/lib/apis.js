@@ -1,6 +1,4 @@
 export default {
-  printShotFeedbackList: printId =>
-    `/api/v1/printshotfeedbacks/?print_id=${printId}`,
   printShotFeedback: (shotId, printId) => `/api/v1/printshotfeedbacks/${shotId}/?print_id=${printId}`,
   print: printId => `/api/v1/prints/${printId}/`,
   prints: () => '/api/v1/prints/',
@@ -11,4 +9,5 @@ export default {
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   pubPrinter: () => '/api/v1p/printer/',
   gcodes: () => '/api/v1/gcodes/',
+  tunnelUsage: () => '/api/v1/tunnelusage/',
 }

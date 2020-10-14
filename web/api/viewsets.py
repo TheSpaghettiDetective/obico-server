@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.timezone import now
 import requests
 
 from .authentication import CsrfExemptSessionAuthentication
@@ -11,6 +12,7 @@ from app.models import *
 from .serializers import *
 from app.models import PrintShotFeedback
 from lib.channels import send_status_to_web
+from lib import cache
 from config.celery import celery_app
 
 
@@ -192,3 +194,10 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
+
+
+class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
+                               viewsets.GenericViewSet):
+
+    def list(self, request, *args, **kwargs):
+        return Response({ 'total': int(cache.octoprinttunnel_get_stats(now(), self.request.user.id) or '0') })

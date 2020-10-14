@@ -14,6 +14,10 @@ router.register(
     r'printshotfeedbacks',
     viewsets.PrintShotFeedbackViewSet,
     'PrintShotFeedback')
+router.register(
+    r'tunnelusage',
+    viewsets.OctoPrintTunnelUsageViewSet,
+    'OctoPrintTunnelUsage')
 
 pub_router = DefaultRouter()
 pub_router.register(r'printer', public_viewsets.PrinterViewSet, 'Printer')

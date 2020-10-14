@@ -292,9 +292,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             cache.octoprinttunnel_update_stats(
                 now(),
                 self.scope['user'].id,
-                self.printer.id,
-                'ws',
-                len(payload['data'])
+                len(payload['data']) * 1.2 * 2 # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
             )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()

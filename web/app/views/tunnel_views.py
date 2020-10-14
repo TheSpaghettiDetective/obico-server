@@ -80,7 +80,7 @@ def octoprint_http_tunnel(request, printer_id):
     cache.octoprinttunnel_update_stats(
         now(),
         request.user.id,
-        len(content) * 1.2 * 2 # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
+        (len(content)+ 240) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out. 240 bytes header overhead
     )
 
     if content_type and content_type.startswith('text/html'):

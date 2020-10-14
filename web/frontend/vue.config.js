@@ -50,6 +50,9 @@ let vueConfig = {
     printers: {
       entry: 'src/printers/main.js',
     },
+    octoprint_tunnel: {
+      entry: 'src/octoprint_tunnel/TunnelMain.js',
+    },
   },
 
   chainWebpack: config => {

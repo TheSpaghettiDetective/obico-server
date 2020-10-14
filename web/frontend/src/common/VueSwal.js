@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueSwal from 'vue-sweetalert2'
 
+import { getLocalPref, setLocalPref } from '@lib/pref'
 
-let openModalWithComponent = (C, props, modalOptions) => {
+const openModalWithComponent = (C, props, modalOptions) => {
   let wrapper = document.createElement('div')
   const c = new Vue({
     render: h => h(C, {props: props}),
@@ -25,7 +26,7 @@ let openModalWithComponent = (C, props, modalOptions) => {
 }
 
 
-let openModalWithElement = (element, props, modalOptions) => {
+const openModalWithElement = (element, props, modalOptions) => {
   return Vue.swal({
     ...modalOptions,
     customClass: {
@@ -37,7 +38,6 @@ let openModalWithElement = (element, props, modalOptions) => {
     },
   })
 }
-
 
 const install = (Vue, options) => {
   Vue.use(VueSwal, options)
@@ -59,10 +59,29 @@ const install = (Vue, options) => {
     timer: 5000,
   })
 
+  const DismissableToast = (swalOpt, dismissKey) => {
+
+    if (!getLocalPref(dismissKey, false)) {
+        const opt = {
+            ...swalOpt,
+            position: 'top-end',
+            confirmButtonText: 'Gotcha! Don\'t show this again.',
+        }
+        return Vue.swal(opt)
+        .then(function (result) {
+            if (result.value) {
+                setLocalPref(dismissKey, true)
+                console.log(result)
+            }
+        })
+    }
+  }
+
   Vue.prototype.$swal['openModalWithComponent'] = openModalWithComponent
   Vue.prototype.$swal['openModalWithElement'] = openModalWithElement
   Vue.prototype.$swal['Confirm'] = Confirm
   Vue.prototype.$swal['Toast'] = Toast
+  Vue.prototype.$swal['DismissableToast'] = DismissableToast
 }
 
 export default {install: install}

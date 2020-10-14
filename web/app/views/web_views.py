@@ -208,7 +208,7 @@ def prints(request):
 @login_required
 def print(request, pk):
     _print = get_print_or_404(pk, request)
-    return render(request, 'print.html', {'object': _print})
+    return render(request, 'print.html', {'print': _print})
 
 
 @login_required

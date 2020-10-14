@@ -114,7 +114,7 @@ import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
 import filter from 'lodash/filter'
 
-import { getLocalPref, setLocalPref } from '@lib/printers'
+import { getLocalPref, setLocalPref } from '@lib/pref'
 import { normalizedPrinter } from '@lib/normalizers'
 
 import apis from '@lib/apis'

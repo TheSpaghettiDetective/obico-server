@@ -18,7 +18,8 @@ logger = logging.getLogger()
 
 @login_required
 def tunnel(request, printer_id):
-    return render(request, 'tunnel.html', {'printer': get_printer_or_404(printer_id, request)})
+    printer = get_printer_or_404(printer_id, request)
+    return render(request, 'tunnel.html', {'printer': printer})
 
 
 @csrf_exempt

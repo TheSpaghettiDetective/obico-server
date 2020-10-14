@@ -301,12 +301,8 @@ import DirectGauge from '@common/DirectGauge'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 import loadingIconSrc from '@static/img/loading.gif'
 
-import {
-  setPrinterLocalPref,
-  getPrinterLocalPref,
-  toDuration,
-} from '@lib/printers.js'
-
+import { toDuration } from '@lib/printers.js'
+import { getLocalPref, setLocalPref } from '@lib/pref'
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
@@ -353,21 +349,9 @@ export default {
     return {
       poster: loadingIconSrc,
       section_toggles: {
-        settings: getPrinterLocalPref(
-          LocalPrefNames.Settings,
-          this.printer.id,
-          Show
-        ),
-        time: getPrinterLocalPref(
-          LocalPrefNames.Time,
-          this.printer.id,
-          Hide,
-        ),
-        statusTemp: getPrinterLocalPref(
-          LocalPrefNames.StatusTemp,
-          this.printer.id,
-          Show
-        ),
+        settings: getLocalPref(LocalPrefNames.Settings + String(this.printer.id), Show),
+        time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
+        statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
       stickyStreamingSrc: null,
       isVideoVisible: false,
@@ -496,24 +480,15 @@ export default {
     },
     onSettingsToggleClicked() {
       this.section_toggles.settings = !this.section_toggles.settings
-      setPrinterLocalPref(
-        LocalPrefNames.Settings,
-        this.printer.id,
-        this.section_toggles.settings)
+      setLocalPref(LocalPrefNames.Settings + String(this.printer.id), this.section_toggles.settings)
     },
     onTimeToggleClicked() {
       this.section_toggles.time = !this.section_toggles.time
-      setPrinterLocalPref(
-        LocalPrefNames.Time,
-        this.printer.id,
-        this.section_toggles.time)
+      setLocalPref(LocalPrefNames.Time + String(this.printer.id), this.section_toggles.time)
     },
     onStatusTempToggleClicked() {
       this.section_toggles.statusTemp = !this.section_toggles.statusTemp
-      setPrinterLocalPref(
-        LocalPrefNames.StatusTemp,
-        this.printer.id,
-        this.section_toggles.statusTemp)
+      setLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), this.section_toggles.statusTemp)
     },
     onCanPlay() {
       this.poster = ''

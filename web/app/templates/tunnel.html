@@ -5,7 +5,11 @@
 {% block content %}
 
 <div id="octoprint-tunnel-mount">
-  <octo-print-tunnel-page v-bind:config='{printerId: {{ printer.id }}, isPro: "{{ printer.user.is_pro }}"}'>
+  <octo-print-tunnel-page
+  :printer-id={{ printer.id }}
+  :is-pro={{ printer.user.is_pro|yesno:"true,false" }}
+  :usage-cap={{ settings.OCTOPRINT_TUNNEL_CAP }}
+  >
   </octo-print-tunnel-page>
 </div>
 

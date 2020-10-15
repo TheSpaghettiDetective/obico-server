@@ -126,6 +126,8 @@ class User(AbstractUser):
         except errors.InvalidKeyError:
             return False
 
+    def tunnel_usage_over_cap(self):
+        return not self.is_pro and cache.octoprinttunnel_get_stats(self.id) > settings.OCTOPRINT_TUNNEL_CAP * 1.1 # Cap x 1.1 to give some grace period to users
 
 # We use a signal as opposed to a form field because users may sign up using social buttons
 @receiver(post_save, sender=User)

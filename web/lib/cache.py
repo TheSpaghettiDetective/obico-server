@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.timezone import now
 import redis
 import bson
 
@@ -151,14 +152,14 @@ def octoprinttunnel_stats_key(date):
     return f'{TUNNEL_PREFIX}.stats.{dt}'
 
 
-def octoprinttunnel_update_stats(date, user_id, delta):
-    key = octoprinttunnel_stats_key(date)
-    with BREDIS.pipeline() as pipe:
+def octoprinttunnel_update_stats(user_id, delta):
+    key = octoprinttunnel_stats_key(now())
+    with REDIS.pipeline() as pipe:
         pipe.hincrby(key, str(user_id), int(delta))
         pipe.expire(key, TUNNEL_STATS_EXPIRE_SECS)
         pipe.execute()
 
 
-def octoprinttunnel_get_stats(date, user_id):
-    key = octoprinttunnel_stats_key(date)
-    return BREDIS.hget(key, str(user_id))
+def octoprinttunnel_get_stats(user_id):
+    key = octoprinttunnel_stats_key(now())
+    return int(REDIS.hget(key, str(user_id)) or '0')

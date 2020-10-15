@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
+from django.conf import settings
 
 from .view_helpers import get_printer_or_404
 from lib import cache
@@ -26,6 +27,8 @@ def tunnel(request, printer_id):
 @login_required
 def octoprint_http_tunnel(request, printer_id):
     get_printer_or_404(printer_id, request)
+    if request.user.tunnel_usage_over_cap():
+        return HttpResponse('Your month-to-date usage of OctoPrint Tunneling is over the free limit. Upgrade to The Spaghetti Detective Pro plan for unlimited tunneling, or wait for the reset of free limit at the start of the next month.')
 
     prefix = f'/octoprint/{printer_id}'  # FIXME
     method = request.method.lower()
@@ -78,7 +81,6 @@ def octoprint_http_tunnel(request, printer_id):
     content = data['response']['content']
 
     cache.octoprinttunnel_update_stats(
-        now(),
         request.user.id,
         (len(content)+ 240) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out. 240 bytes header overhead
     )

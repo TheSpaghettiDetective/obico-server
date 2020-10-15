@@ -2,6 +2,7 @@ import bson
 import json
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
+from django.conf import settings
 from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
@@ -10,6 +11,7 @@ from django.utils.timezone import now
 import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
+
 
 from lib import cache
 from lib import channels
@@ -253,6 +255,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
+        if self.user.tunnel_usage_over_cap():
+            return
+
         try:
             Presence.objects.touch(self.channel_name)
             channels.send_msg_to_printer(
@@ -290,7 +295,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 self.send(text_data=payload['data'])
 
             cache.octoprinttunnel_update_stats(
-                now(),
                 self.scope['user'].id,
                 len(payload['data']) * 1.2 * 2 # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
             )

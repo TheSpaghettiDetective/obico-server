@@ -200,4 +200,4 @@ class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
-        return Response({ 'total': int(cache.octoprinttunnel_get_stats(now(), self.request.user.id) or '0') })
+        return Response({ 'total': cache.octoprinttunnel_get_stats(self.request.user.id) })

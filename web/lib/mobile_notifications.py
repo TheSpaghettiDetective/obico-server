@@ -1,11 +1,15 @@
-from firebase_admin import messaging
+from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps
 import firebase_admin
 
 default_app = firebase_admin.initialize_app()
 
 def send_to_device(registration_token, msg):
-    message = messaging.Message(data=msg, token=registration_token)
-    return messaging.send(message)
+    message = Message(
+            data=msg,
+            android=AndroidConfig(priority="high"),
+            apns=APNSConfig(payload=APNSPayload(aps=Aps(content_available=True))),
+            token=registration_token)
+    return send(message)
 
 if __name__ == "__main__":
     import json

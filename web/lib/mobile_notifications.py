@@ -7,7 +7,7 @@ def send_to_device(registration_token, msg):
     message = Message(
             data=msg,
             android=AndroidConfig(priority="high"),
-            apns=APNSConfig(payload=APNSPayload(aps=Aps(content_available=True))),
+            apns=APNSConfig(headers={"apns-priority": "5"}, payload=APNSPayload(aps=Aps(content_available=True))),
             token=registration_token)
     return send(message)
 

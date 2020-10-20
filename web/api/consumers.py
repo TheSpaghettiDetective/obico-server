@@ -200,7 +200,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     def connect(self):
         try:
             # Exception for un-authenticated or un-authorized access
-            self.printer = Printer.objects.get(
+            self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
@@ -255,7 +255,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        if self.user.tunnel_usage_over_cap():
+        if self.printer.user.tunnel_usage_over_cap():
             return
 
         try:

@@ -1,4 +1,6 @@
 export default {
+
+  // APIs
   printShotFeedback: (shotId, printId) => `/api/v1/printshotfeedbacks/${shotId}/?print_id=${printId}`,
   print: printId => `/api/v1/prints/${printId}/`,
   prints: () => '/api/v1/prints/',
@@ -10,4 +12,10 @@ export default {
   pubPrinter: () => '/api/v1p/printer/',
   gcodes: () => '/api/v1/gcodes/',
   tunnelUsage: () => '/api/v1/tunnelusage/',
+
+  // App urls
+  printerDelete: printerId => `/printers/${printerId}/delete/`,
+  printerControl: printerId => `/printers/${printerId}/control/`,
+  printerWS: printerId => `/ws/web/${printerId}/`,
+  printerSharedWS:token => `/ws/share_token/web/${token}/`,
 }

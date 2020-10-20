@@ -117,7 +117,7 @@ import filter from 'lodash/filter'
 import { getLocalPref, setLocalPref } from '@lib/pref'
 import { normalizedPrinter } from '@lib/normalizers'
 
-import apis from '@lib/apis'
+import urls from '@lib/server_urls'
 import PrinterWebSocket from '@lib/printer_ws'
 
 import PrinterCard from './PrinterCard.vue'
@@ -125,11 +125,6 @@ import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import TSDSelect from '@common/TSDSelect.vue'
-
-let printerDeleteUrl = printerId => `/printers/${printerId}/delete/`
-let printerControlUrl = printerId => `/printers/${printerId}/control/`
-let printerWSUrl = printerId => `/ws/web/${printerId}/`
-let printerSharedWSUrl = token => `/ws/share_token/web/${token}/`
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -266,7 +261,7 @@ export default {
     fetchPrinters() {
       this.loading = true
       return axios
-        .get(apis.printers(), {
+        .get(urls.printers(), {
           params: {
             with_archived: true,
           }
@@ -312,7 +307,7 @@ export default {
     onDeleteClicked(printerId) {
       this.$swal.Confirm.fire({}).then((result) => {
         if (result.value) { // When it is confirmed
-          window.location.href = printerDeleteUrl(printerId)
+          window.location.href = urls.printerDelete(printerId)
         }
       })
     },
@@ -455,7 +450,7 @@ export default {
 
       axios
         .get(
-          apis.gcodes(),
+          urls.gcodes(),
         ).then((response) => {
           let gcodeFiles = response.data
           gcodeFiles.forEach(function (gcodeFile) {
@@ -529,7 +524,7 @@ export default {
     },
 
     onPrinterActionControlClicked(printerId) {
-      window.location = printerControlUrl(printerId)
+      window.location = urls.printerControl(printerId)
     },
 
     onTempEditClicked(printerId, item) {
@@ -582,7 +577,7 @@ export default {
     updatePrinter(printer) {
       return axios
         .patch(
-          apis.printer(printer.id),
+          urls.printer(printer.id),
           {
             watching_enabled: printer.watching_enabled,
             action_on_failure: printer.action_on_failure,
@@ -606,7 +601,7 @@ export default {
 
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
       axios
-        .get(apis.printerAction(printerId, path))
+        .get(urls.printerAction(printerId, path))
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {
@@ -647,9 +642,9 @@ export default {
       let printerId = printer.id
       let url
       if (this.shareToken) {
-        url = printerSharedWSUrl(printer.shareToken)
+        url = urls.printerSharedWS(printer.shareToken)
       } else {
-        url = printerWSUrl(printer.id)
+        url = urls.printerWS(printer.id)
       }
       this.printerWs.openPrinterWebSockets(
         printerId,

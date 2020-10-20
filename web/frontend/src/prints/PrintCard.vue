@@ -195,7 +195,7 @@ import filter from 'lodash/filter'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
-import apis from '../lib/apis'
+import urls from '../lib/server_urls'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
 import DetectiveWorking from 'common/DetectiveWorking'
@@ -339,7 +339,7 @@ export default {
     },
 
     deleteVideo() {
-      axios.delete(apis.print(this.print.id)).then(() => {
+      axios.delete(urls.print(this.print.id)).then(() => {
         this.$emit('printDeleted', this.print.id)
       })
     },
@@ -360,7 +360,7 @@ export default {
 
     alertOverwrite(value) {
       axios
-        .post(apis.printAlertOverwrite(this.print.id), { value })
+        .post(urls.printAlertOverwrite(this.print.id), { value })
         .then(response => {
           this.$emit('printDataChanged', response.data)
           this.inflightAlertOverwrite = null

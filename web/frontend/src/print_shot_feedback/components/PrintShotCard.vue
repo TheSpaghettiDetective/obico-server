@@ -22,7 +22,7 @@
 <script>
 import axios from 'axios'
 
-import apis from '../../lib/apis'
+import urls from '../../lib/server_urls'
 import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
 
 export default {
@@ -51,7 +51,7 @@ export default {
   methods: {
     updateShot: function(answer) {
       axios
-        .put(apis.printShotFeedback(this.shot.id, this.shot.print_id), {
+        .put(urls.printShotFeedback(this.shot.id, this.shot.print_id), {
           answer: answer
         })
 

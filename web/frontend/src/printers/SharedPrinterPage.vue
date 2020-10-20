@@ -31,7 +31,7 @@ import Janus from '@lib/janus'
 
 import { normalizedPrinter } from '@lib/normalizers'
 
-import apis from '@lib/apis'
+import urls from '@lib/server_urls'
 import PrinterWebSocket from '@lib/printer_ws'
 
 import PrinterCard from './PrinterCard.vue'
@@ -58,7 +58,7 @@ export default {
     fetchPrinter() {
       this.loading = true
       return axios
-        .get(apis.pubPrinter(), {
+        .get(urls.pubPrinter(), {
           headers: {
             'Authorization': 'Token ' + this.shareToken
           }

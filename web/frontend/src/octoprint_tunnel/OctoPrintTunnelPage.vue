@@ -16,7 +16,7 @@
 <script>
 import axios from 'axios'
 import filesize from 'filesize'
-import apis from '@lib/apis'
+import urls from '@lib/server_urls'
 
 export default {
   name: 'OctoPrintTunnelPage',
@@ -68,7 +68,7 @@ export default {
     const self = this
     const fetchUsage = () => {
       axios
-        .get(apis.tunnelUsage())
+        .get(urls.tunnelUsage())
         .then((resp) => {
           self.bytesMTD = resp.data.total
         })

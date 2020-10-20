@@ -14,7 +14,7 @@
 <script>
 import axios from 'axios'
 
-import apis from '../lib/apis'
+import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
 
@@ -41,7 +41,7 @@ export default {
 
   methods: {
     fetchData() {
-      axios.get(apis.print(this.config.printId)).then(response => {
+      axios.get(urls.print(this.config.printId)).then(response => {
         this.print = normalizedPrint(response.data)
       })
     },

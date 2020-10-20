@@ -60,7 +60,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 import Consent from './components/Consent'
 import PrintShotCard from './components/PrintShotCard'
-import apis from '../lib/apis'
+import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 
 export default {
@@ -92,7 +92,7 @@ export default {
 
   methods: {
     fetchData() {
-      axios.get(apis.print(this.config.printId)).then(response => {
+      axios.get(urls.print(this.config.printId)).then(response => {
         this.print = normalizedPrint(response.data)
         this.shots = sortBy(this.print.printshotfeedback_set, 'id')
       })
@@ -100,7 +100,7 @@ export default {
 
     updatePrint(data) {
       axios
-        .patch(apis.print(this.print.id), data)
+        .patch(urls.print(this.print.id), data)
 
         .then(response => (this.print = response.data))
     },

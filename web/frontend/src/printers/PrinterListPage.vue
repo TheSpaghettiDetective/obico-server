@@ -640,12 +640,7 @@ export default {
 
     openWSForPrinter(printer) {
       let printerId = printer.id
-      let url
-      if (this.shareToken) {
-        url = urls.printerSharedWS(printer.shareToken)
-      } else {
-        url = urls.printerWS(printer.id)
-      }
+      const url = urls.printerWS(printer.id)
       this.printerWs.openPrinterWebSockets(
         printerId,
         url,

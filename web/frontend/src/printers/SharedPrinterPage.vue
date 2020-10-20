@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import split from 'lodash/split'
 import Janus from '@lib/janus'
 
@@ -54,27 +53,16 @@ export default {
       loading: true,
     }
   },
-  methods: {
-    fetchPrinter() {
-      this.loading = true
-      return axios
-        .get(urls.pubPrinter(), {
-          headers: {
-            'Authorization': 'Token ' + this.shareToken
-          }
-        })
-        .then(response => {
-          this.loading = false
-          this.printer = normalizedPrinter(response.data)
-        })
-        .catch(() => {
-            this.loading = false
-        })
-    }
-  },
   mounted() {
-    this.fetchPrinter()
-
+    const url = urls.printerSharedWS(this.shareToken)
+    this.printerWs.openPrinterWebSockets(
+      this.shareToken,
+      url,
+      (data) => {
+        this.printer = normalizedPrinter(data)
+        this.loading = false
+      }
+    )
     Janus.init({
       debug: 'all',
       callback: this.onJanusInitalized

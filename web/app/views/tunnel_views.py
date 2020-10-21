@@ -28,7 +28,7 @@ def tunnel(request, printer_id):
 def octoprint_http_tunnel(request, printer_id):
     get_printer_or_404(printer_id, request)
     if request.user.tunnel_usage_over_cap():
-        return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><p>Your month-to-date usage of OctoPrint Tunneling is over the free limit. Upgrade to The Spaghetti Detective Pro plan for unlimited tunneling, or wait for the reset of free limit at the start of the next month.</p></center></body></html>', status=412)
+        return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><h3 style="color: red;">Your month-to-date usage of OctoPrint Tunneling is over the free limit. Upgrade to The Spaghetti Detective Pro plan for unlimited tunneling, or wait for the reset of free limit at the start of the next month.</h3></center></body></html>', status=412)
 
     prefix = f'/octoprint/{printer_id}'
     method = request.method.lower()
@@ -65,7 +65,7 @@ def octoprint_http_tunnel(request, printer_id):
 
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
-        return HttpResponse('<html><body><center><h1>Timed Out<hr><p>Either your OctoPrint is offline, or The Spaghetti Detective plugin version is lower than 1.4.0.</p></center></body></html>', status=504)
+        return HttpResponse('<html><body><center><h1>Timed Out</h1><hr><h3 style="color: red;">Either your OctoPrint is offline, or The Spaghetti Detective plugin version is lower than 1.4.0.</h3></center></body></html>', status=504)
 
     content_type = data['response']['headers'].get('Content-Type') or None
     resp = HttpResponse(

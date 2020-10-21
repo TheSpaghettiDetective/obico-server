@@ -13,7 +13,7 @@ BREDIS = redis.Redis.from_url(settings.REDIS_URL, decode_responses=False)
 TUNNEL_PREFIX = "octoprinttunnel"
 
 # max wait time for response from plugin
-TUNNEL_RSP_TIMEOUT_SECS = 60
+TUNNEL_RSP_TIMEOUT_SECS = 55  # Nginx in production has gateway timeout = 60s. Needs to be shorter than that
 
 # drop unconsumed response from redis after this seconds
 TUNNEL_RSP_EXPIRE_SECS = 60

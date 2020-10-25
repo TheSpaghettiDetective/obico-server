@@ -16,16 +16,16 @@ If you otherwise prefer textual instructions, follow the steps below.
 
 ### Hardware minimum spec
 
-The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Rapberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). If you have an old PC with at least 2GB of memory, you will be probably be fine.
+The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Raspberry Pi, or Latte Panda, is just not powerful enough to run the Machine Learning model). If you have an old PC with at least 2GB of memory, you will be probably be fine.
 
 ### Software requirements
 
-The following softwares are required before you start installing the server:
+The following software is required before you start installing the server:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
     - [Install Docker-compose](https://docs.docker.com/compose/install/). You need Docker-compose 1.21.0 or higher version.
-    - (**Windows only**) Make sure "Shared Dirves" is checked in Docker settings
+    - (**Windows only**) Make sure "Shared Drives" is checked in Docker settings
 <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png" width="409" height="200"></img>
 
 - git ([how to install](https://git-scm.com/downloads)).

@@ -42,6 +42,7 @@ urlpatterns = [
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
     path('mobile/prints/', web_views.prints, {"template_dir": "mobile"}),
+    path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

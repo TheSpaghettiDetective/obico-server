@@ -52,6 +52,7 @@
 
 <body>
   {% block body_top_ext %}{% endblock body_top_ext %}
+  {% block navbar %}
   {% with view_name=request.resolver_match.view_name %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
@@ -118,6 +119,7 @@
     </div>
   </nav>
   {% endwith %}
+  {% endblock navbar %}
   <main>
     {% block main_top_ext %}{% endblock main_top_ext %}
     <div id="content-wrapper" class="container">

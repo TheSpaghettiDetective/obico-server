@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
-from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator
+from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from app.forms import PrinterForm, UserPreferencesForm
@@ -201,9 +201,8 @@ def unsubscribe_email(request):
 ### Prints and public time lapse ###
 
 @login_required
-def prints(request):
-    return render(request, 'prints.html')
-
+def prints(request, template_dir=None):
+    return render(request, get_template_path('prints', template_dir))
 
 @login_required
 def print(request, pk):

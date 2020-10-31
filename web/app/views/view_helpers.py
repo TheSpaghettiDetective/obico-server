@@ -25,3 +25,6 @@ def get_paginator(objs, request, num_per_page):
 
 def get_print_or_404(pk, request):
     return get_object_or_404(Print, pk=pk, user=request.user)
+
+def get_template_path(template_name, template_dir):
+    return f"{template_dir + '/' if template_dir else ''}{template_name}.html"

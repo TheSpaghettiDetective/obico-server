@@ -36,10 +36,12 @@ urlpatterns = [
         name='octoprint_http_tunnel'),
     path('tunnel/<int:printer_id>/', tunnel_views.tunnel, name='tunnel'),
 
+    # Shown only in mobile apps
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
     path('mobile/auth/signup/', mobile_views.MobileSignupView.as_view(), name='mobile_auth_signup'),
     path('mobile/auth/fetch/', mobile_views.fetch_session, name='mobile_auth_fetch_session'),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback, name='mobile_auth_oauth_callback'),
+    path('mobile/prints/', web_views.prints, {"template_dir": "mobile"}),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

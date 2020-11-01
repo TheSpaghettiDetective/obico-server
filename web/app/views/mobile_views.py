@@ -24,13 +24,13 @@ from allauth.socialaccount.helpers import (
 )
 
 class MobileLoginView(LoginView):
-    template_name = 'account/mobile_login.html'
+    template_name = 'mobile/account/login.html'
 
     def get_success_url(self):
         return '/mobile/auth/fetch/'
 
 class MobileSignupView(SignupView):
-    template_name = 'account/mobile_signup.html'
+    template_name = 'mobile/account/signup.html'
 
     def get_form_class(self):
         return SignupForm

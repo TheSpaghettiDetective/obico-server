@@ -1,8 +1,11 @@
-{% extends "mobile/layout.html" %}
+{% extends settings.TEMPLATE_LAYOUT %}
 
 {% load i18n %}
 {% load widget_tweaks %}
 {% load account socialaccount %}
+
+{% block navbar %}
+{% endblock navbar %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 

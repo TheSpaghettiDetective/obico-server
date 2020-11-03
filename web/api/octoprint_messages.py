@@ -19,6 +19,8 @@ def process_octoprint_status(printer, status):
     octoprint_data = dict()
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
+    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata', target_key='gcode')
+    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'currentZ')
     set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
     cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 

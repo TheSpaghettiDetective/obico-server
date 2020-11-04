@@ -44,7 +44,7 @@
               </div>
             </div>
             <div class="my-1">Click the clipboard icon above to copy the secure shareable link to your clipboard.</div>
-            <div class="my-1">You can test the shareable link by right click <a
+            <div class="my-1">You can test the shareable link by right-clicking <a
                 href="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/share_token/{{ printer.sharedresource.share_token }}/">here</a>
               and select "Open Link in Incognito Window".</div>
             {% endif %}

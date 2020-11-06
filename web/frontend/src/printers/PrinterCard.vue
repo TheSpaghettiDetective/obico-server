@@ -128,7 +128,7 @@
           <div></div>
         </div>
         <DirectGauge
-          :ewm_mean="ewm_mean"
+          :normalized_p="printer.normalized_p"
         />
         <hr />
       </div>
@@ -358,9 +358,6 @@ export default {
     }
   },
   computed: {
-    ewm_mean() {
-      return get(this.printer, 'printerprediction.ewm_mean', 0)
-    },
     isWatching() {
       return this.printer.should_watch && get(this.printer, 'status.state.flags.printing')
     },

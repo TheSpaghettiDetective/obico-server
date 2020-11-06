@@ -10,8 +10,6 @@
 <script>
 import RadialGauge from 'vue2-canvas-gauges/src/RadialGauge'
 
-const ALERT_THRESHOLD = 0.4
-
 export default {
   name: 'DirectGauge',
   components: {
@@ -22,7 +20,7 @@ export default {
     }
   },
   props: {
-    ewm_mean: {
+    normalized_p: {
       type: Number,
     },
 
@@ -63,7 +61,7 @@ export default {
 
   computed: {
     value() {
-      return this.scaleP(this.ewm_mean)
+      return this.normalized_p*100
     },
 
     titleText() {
@@ -93,16 +91,6 @@ export default {
   },
 
   methods: {
-    scaleP(p) {
-      var scaleAboveCutOff = 100.0 / 3.0 / (1 - ALERT_THRESHOLD)
-      var scaleBelowCutOff = 200.0 / 3.0 / ALERT_THRESHOLD
-      if (p > ALERT_THRESHOLD) {
-        return (p - ALERT_THRESHOLD) * scaleAboveCutOff + 200.0 / 3.0
-      } else {
-        return p * scaleBelowCutOff
-      }
-    },
-
     level() {
       if (this.value > 66) {
         return 2

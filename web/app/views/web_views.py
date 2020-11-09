@@ -1,6 +1,5 @@
 import os
 from binascii import hexlify
-import tempfile
 import re
 import time
 import json
@@ -59,13 +58,13 @@ def printers(request):
 
 
 @login_required
-def edit_printer(request, pk):
+def edit_printer(request, pk, template_dir=None):
     if pk == 'new':
         printer = None
-        template = 'printer_wizard.html'
+        template = 'printer_wizard'
     else:
         printer = get_printer_or_404(int(pk), request)
-        template = 'printer_wizard.html' if request.GET.get('wizard', False) else 'edit_printer.html'
+        template = 'printer_wizard' if request.GET.get('wizard', False) else 'edit_printer'
 
     form = PrinterForm(request.POST or None, request.FILES or None, instance=printer)
 
@@ -84,7 +83,7 @@ def edit_printer(request, pk):
                 if not request.GET.get('wizard', False):
                     messages.success(request, 'Printer settings have been updated successfully!')
 
-    return render(request, template, {'form': form})
+    return render(request, get_template_path(template, template_dir), {'form': form})
 
 
 @login_required
@@ -121,7 +120,7 @@ def resume_print(request, pk):
 
 
 @login_required
-def share_printer(request, pk):
+def share_printer(request, pk, template_dir=None):
     printer = get_printer_or_404(pk, request)
 
     if request.method == "POST":
@@ -132,7 +131,7 @@ def share_printer(request, pk):
             SharedResource.objects.filter(printer=printer).delete()
             messages.success(request, 'You have disabled printer feed sharing. Previous shareable link has now been revoked.')
 
-    return render(request, 'share_printer.html', dict(printer=printer, user=request.user))
+    return render(request, get_template_path('share_printer', template_dir), dict(printer=printer, user=request.user))
 
 
 def printer_shared(request, share_token=None):

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
 from django.conf import settings
 
-from .view_helpers import get_printer_or_404
+from .view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 
@@ -18,19 +18,19 @@ logger = logging.getLogger()
 
 
 @login_required
-def tunnel(request, printer_id):
-    printer = get_printer_or_404(printer_id, request)
-    return render(request, 'tunnel.html', {'printer': printer})
+def tunnel(request, pk, template_dir=None):
+    printer = get_printer_or_404(pk, request)
+    return render(request, get_template_path('tunnel', template_dir), {'printer': printer})
 
 
 @csrf_exempt
 @login_required
-def octoprint_http_tunnel(request, printer_id):
-    get_printer_or_404(printer_id, request)
+def octoprint_http_tunnel(request, pk):
+    get_printer_or_404(pk, request)
     if request.user.tunnel_usage_over_cap():
         return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><h3 style="color: red;">Your month-to-date usage of OctoPrint Tunneling is over the free limit. Upgrade to The Spaghetti Detective Pro plan for unlimited tunneling, or wait for the reset of free limit at the start of the next month.</h3></center></body></html>', status=412)
 
-    prefix = f'/octoprint/{printer_id}'
+    prefix = f'/octoprint/{pk}'
     method = request.method.lower()
     path = request.get_full_path()[len(prefix):]
 
@@ -48,10 +48,10 @@ def octoprint_http_tunnel(request, printer_id):
     if 'CONTENT_TYPE' in request.META:
         req_headers['Content-Type'] = request.META['CONTENT_TYPE']
 
-    ref = f'{printer_id}.{method}.{time.time()}.{path}'
+    ref = f'{pk}.{method}.{time.time()}.{path}'
 
     channels.send_msg_to_printer(
-        printer_id,
+        pk,
         {
             "http.tunnel": {
                 "ref": ref,

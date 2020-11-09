@@ -31,10 +31,10 @@ urlpatterns = [
     path('gcodes/upload/', web_views.upload_gcode_file,),
     path('secure_redirect/', web_views.secure_redirect, name='secure_redirect'),
 
-    re_path(r'^octoprint/(?P<printer_id>\d+)',
+    re_path(r'^octoprint/(?P<pk>\d+)',
         tunnel_views.octoprint_http_tunnel,
         name='octoprint_http_tunnel'),
-    path('tunnel/<int:printer_id>/', tunnel_views.tunnel),
+    path('tunnel/<int:pk>/', tunnel_views.tunnel),
 
     # Shown only in mobile apps
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
@@ -43,6 +43,9 @@ urlpatterns = [
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
     path('mobile/prints/', web_views.prints, {"template_dir": "mobile"}),
     path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
+    path('mobile/printers/<pk>/', web_views.edit_printer, {"template_dir": "mobile"}),
+    path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel, {"template_dir": "mobile"}),
+    path('mobile/printers/<int:pk>/share/', web_views.share_printer, {"template_dir": "mobile"}),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

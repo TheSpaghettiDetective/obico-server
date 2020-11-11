@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from django.utils.timezone import now
 
 from app.models import Print, Printer, GCodeFile, PrintShotFeedback
@@ -21,6 +22,7 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
 
 class PrintSerializer(serializers.ModelSerializer):
     printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
+    prediction_json_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Print
@@ -31,6 +33,9 @@ class PrintSerializer(serializers.ModelSerializer):
                   'prediction_json_url', 'alert_overwrite',
                   'access_consented_at', 'printshotfeedback_set')
         read_only_fields = ('id', 'printer', 'printshotfeedback_set')
+
+    def get_prediction_json_url(self, obj: Print) -> str:
+        return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
 
 
 class PrinterSerializer(serializers.ModelSerializer):
@@ -48,7 +53,8 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'normalized_p', 'auth_token', 'archived_at')
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj, obj.printerprediciton)
+        return calc_normalized_p(obj.detective_sensitivity,
+                                 obj.printerprediction)
 
 
 class GCodeFileSerializer(serializers.ModelSerializer):

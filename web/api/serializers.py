@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.utils.timezone import now
 
-from config import settings
-from app.models import *
+from app.models import Print, Printer, GCodeFile, PrintShotFeedback
+from app.models import calc_normalized_p
 
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):
@@ -24,8 +24,12 @@ class PrintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at', 'cancelled_at', 'uploaded_at', 'alerted_at', 'alert_acknowledged_at',
-                  'alert_muted_at', 'paused_at', 'video_url', 'tagged_video_url', 'poster_url', 'prediction_json_url', 'alert_overwrite', 'access_consented_at', 'printshotfeedback_set')
+        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at',
+                  'cancelled_at', 'uploaded_at', 'alerted_at',
+                  'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
+                  'video_url', 'tagged_video_url', 'poster_url',
+                  'prediction_json_url', 'alert_overwrite',
+                  'access_consented_at', 'printshotfeedback_set')
         read_only_fields = ('id', 'printer', 'printshotfeedback_set')
 
 
@@ -38,27 +42,14 @@ class PrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('id', 'name', 'created_at', 'action_on_failure', 'watching_enabled', 'should_watch', 'not_watching_reason', 'pic', 'status', 'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at')
+        fields = ('id', 'name', 'created_at', 'action_on_failure',
+                  'watching_enabled', 'should_watch', 'not_watching_reason',
+                  'pic', 'status', 'settings', 'current_print',
+                  'normalized_p', 'auth_token', 'archived_at')
 
-    def get_normalized_p(self, obj):
+    def get_normalized_p(self, obj: Printer) -> float:
+        return calc_normalized_p(obj, obj.printerprediciton)
 
-        def scale(oldValue, oldMin, oldMax, newMin, newMax):
-            newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
-            return min(newMax, max(newMin, newValue))
-
-        pred = obj.printerprediction
-        thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * settings.ROLLING_MEAN_SHORT_MULTIPLE
-        thresh_warning = min(settings.THRESHOLD_HIGH, max(settings.THRESHOLD_LOW, thresh_warning))
-        thresh_failure = thresh_warning * settings.ESCALATING_FACTOR
-
-        p = (pred.ewm_mean - pred.rolling_mean_long) * obj.detective_sensitivity
-
-        if p > thresh_failure:
-            return scale(p, thresh_failure, thresh_failure*1.5, 2.0/3.0, 1.0)
-        elif p > thresh_warning:
-            return scale(p, thresh_warning, thresh_failure, 1.0/3.0, 2.0/3.0)
-        else:
-            return scale(p, 0, thresh_warning, 0, 1.0/3.0)
 
 class GCodeFileSerializer(serializers.ModelSerializer):
 

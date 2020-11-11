@@ -50,7 +50,7 @@
 import VueSlider from 'vue-slider-component'
 
 export default {
-  name: 'TargetTempEditor',
+  name: 'TempTargetEditor',
   components: {
     VueSlider,
   },

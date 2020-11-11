@@ -21,7 +21,7 @@ phonenumbers==8.10.5
 twilio==6.24.1
 celery[redis]==4.4.7
 django-safedelete==0.5.1
-Pillow==5.4.1
+Pillow==7.1.0
 django-hijack==2.1.10
 daphne==2.5.0
 asgiref==3.2.10

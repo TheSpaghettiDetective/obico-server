@@ -5,15 +5,23 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
+from django.conf import settings
+from django.http import JsonResponse, HttpRequest
+
 import requests
 
 from .authentication import CsrfExemptSessionAuthentication
-from app.models import *
-from .serializers import *
-from app.models import PrintShotFeedback
+from app.models import (
+    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction,
+    calc_normalized_p)
+from .serializers import (
+    GCodeFileSerializer, PrinterSerializer, PrintSerializer,
+    PrintShotFeedbackSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from config.celery import celery_app
+
+PREDICTION_FETCH_TIMEOUT = 20
 
 
 class PrinterViewSet(viewsets.ModelViewSet):
@@ -75,7 +83,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
     def send_webhook_test(self, request, pk=None):
         printer = self.current_printer_or_404(pk)
         req = requests.post(
-            url= settings.EXT_3D_GEEKS_ENDPOINT,
+            url=settings.EXT_3D_GEEKS_ENDPOINT,
             json=dict(
                 token=printer.service_token,
                 event="test"))
@@ -138,7 +146,7 @@ class PrintViewSet(viewsets.ModelViewSet):
         limit = int(request.GET.get('limit', '12'))
         # The "right" way to do it is `queryset[start:start+limit]`. However, it slows down the query by 100x because of the "offset 12 limit 12" clause. Weird.
         # Maybe related to https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1
-        results = list(queryset)[start:start+limit]
+        results = list(queryset)[start:start + limit]
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
@@ -148,6 +156,32 @@ class PrintViewSet(viewsets.ModelViewSet):
         select_prints_ids = request.data.get('print_ids', [])
         self.get_queryset().filter(id__in=select_prints_ids).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['get'])
+    def prediction_json(self, request, pk) -> JsonResponse:
+        p: Print = get_object_or_404(
+            self.get_queryset().select_related('printer'),
+            pk=pk)
+
+        detective_sensitivity: float = (
+            p.printer.detective_sensitivity
+            if p.printer is not None else
+            Printer._meta.get_field('detective_sensitivity').get_default()
+        )
+
+        resp = requests.get(url=p.prediction_json_url,
+                            timeout=PREDICTION_FETCH_TIMEOUT)
+        resp.raise_for_status()
+
+        data = resp.json()
+        for raw_pred in data:
+            pred = PrinterPrediction(**raw_pred['fields'])
+            raw_pred['fields']['current_p'] = calc_normalized_p(
+                detective_sensitivity, pred)
+
+        # "In order to allow non-dict objects to be serialized
+        #  set the safe parameter to False."
+        return JsonResponse(data, safe=False)
 
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
@@ -197,7 +231,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
 
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
-                               viewsets.GenericViewSet):
+                                  viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
-        return Response({ 'total': cache.octoprinttunnel_get_stats(self.request.user.id) })
+        return Response({'total': cache.octoprinttunnel_get_stats(self.request.user.id)})

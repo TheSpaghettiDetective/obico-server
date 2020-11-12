@@ -200,7 +200,7 @@ class PrintViewSet(viewsets.ModelViewSet):
 
         for raw_pred in data:
             pred = PrinterPrediction(**raw_pred['fields'])
-            raw_pred['fields']['current_p'] = calc_normalized_p(
+            raw_pred['fields']['normalized_p'] = calc_normalized_p(
                 detective_sensitivity, pred)
 
         return Response(

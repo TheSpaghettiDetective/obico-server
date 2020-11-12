@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
 from django.conf import settings
-from django.http import JsonResponse, HttpRequest
+from django.http import HttpRequest
 
 import requests
 
@@ -158,10 +158,39 @@ class PrintViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])
-    def prediction_json(self, request, pk) -> JsonResponse:
+    def prediction_json(self, request, pk) -> Response:
         p: Print = get_object_or_404(
             self.get_queryset().select_related('printer'),
             pk=pk)
+
+        # check as it's null=True
+        if not p.prediction_json_url:
+            return Response([])
+
+        headers = {
+            'If-Modified-Since': request.headers.get('if-modified-since'),
+            'If-None-Match': request.headers.get('if-none-match'),
+        }
+
+        r = requests.get(url=p.prediction_json_url,
+                         timeout=PREDICTION_FETCH_TIMEOUT,
+                         headers={k: v for k, v in headers.items() if v is not None})
+        r.raise_for_status()
+
+        resp_headers = {
+            'Last-Modified': r.headers.get('Last-Modified'),
+            'Etag': r.headers.get('Etag')
+        }
+
+        # might be cached already
+        if r.status_code == 304:
+            return Response(
+                None,
+                status=304,
+                headers={k: v for k, v in resp_headers.items() if v is not None}
+            )
+
+        data = r.json()
 
         detective_sensitivity: float = (
             p.printer.detective_sensitivity
@@ -169,19 +198,15 @@ class PrintViewSet(viewsets.ModelViewSet):
             Printer._meta.get_field('detective_sensitivity').get_default()
         )
 
-        resp = requests.get(url=p.prediction_json_url,
-                            timeout=PREDICTION_FETCH_TIMEOUT)
-        resp.raise_for_status()
-
-        data = resp.json()
         for raw_pred in data:
             pred = PrinterPrediction(**raw_pred['fields'])
             raw_pred['fields']['current_p'] = calc_normalized_p(
                 detective_sensitivity, pred)
 
-        # "In order to allow non-dict objects to be serialized
-        #  set the safe parameter to False."
-        return JsonResponse(data, safe=False)
+        return Response(
+            data,
+            headers={k: v for k, v in resp_headers.items() if v is not None}
+        )
 
 
 class GCodeFileViewSet(viewsets.ModelViewSet):

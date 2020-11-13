@@ -48,7 +48,7 @@ class PrinterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Printer
         fields = ('id', 'name', 'created_at', 'action_on_failure',
-                  'watching_enabled', 'should_watch', 'not_watching_reason',
+                  'watching_enabled', 'not_watching_reason',
                   'pic', 'status', 'settings', 'current_print',
                   'normalized_p', 'auth_token', 'archived_at')
 

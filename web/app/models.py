@@ -210,6 +210,11 @@ class Printer(SafeDeleteModel):
 
         return p_settings
 
+    # should_watch and not_watching_reason follow slightly different rules
+    # should_watch is used by the plugin. Therefore printing status is not a factor, otherwise we may have a feedback cycle:
+    #    printer paused -> update server cache -> send should_watch to plugin -> udpate server
+    # not_watching_reason is used by the web app and mobile app
+
     def should_watch(self):
         if not self.watching_enabled or self.user.dh_balance < 0:
             return False
@@ -217,19 +222,19 @@ class Printer(SafeDeleteModel):
         return self.current_print is not None and self.current_print.alert_muted_at is None
 
     def not_watching_reason(self):
-        if not self.actively_printing():
-            return "Printer is not actively printing"
-
         if not self.watching_enabled:
             return '"Watch for failures" is turned off'
-
-        if self.current_print is not None and self.current_print.alert_muted_at is not None:
-            return "Alerts are muted for current print"
 
         if self.user.dh_balance < 0:
             return "You have ran out of Detective Hours"
 
-        return ""
+        if not self.actively_printing():
+            return "Printer is not actively printing"
+
+        if self.current_print is not None and self.current_print.alert_muted_at is not None:
+            return "Alerts are muted for current print"
+
+        return None
 
     def actively_printing(self):
         printer_cur_state = cache.printer_status_get(self.id, 'state')

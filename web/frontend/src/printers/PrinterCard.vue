@@ -359,7 +359,7 @@ export default {
   },
   computed: {
     isWatching() {
-      return this.printer.should_watch && get(this.printer, 'status.state.flags.printing')
+      return !this.printer.not_watching_reason
     },
     timeRemaining() {
       return toDuration(

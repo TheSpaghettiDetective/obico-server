@@ -127,9 +127,11 @@ class User(AbstractUser):
             return False
 
     def tunnel_usage_over_cap(self):
-        return not self.is_pro and cache.octoprinttunnel_get_stats(self.id) > settings.OCTOPRINT_TUNNEL_CAP * 1.1 # Cap x 1.1 to give some grace period to users
+        return not self.is_pro and cache.octoprinttunnel_get_stats(self.id) > settings.OCTOPRINT_TUNNEL_CAP * 1.1  # Cap x 1.1 to give some grace period to users
 
 # We use a signal as opposed to a form field because users may sign up using social buttons
+
+
 @receiver(post_save, sender=User)
 def update_consented_at(sender, instance, created, **kwargs):
     if created:
@@ -398,6 +400,26 @@ class PrinterCommand(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+def calc_normalized_p(detective_sensitivity: float,
+                      pred: 'PrinterPrediction') -> float:
+    def scale(oldValue, oldMin, oldMax, newMin, newMax):
+        newValue = (((oldValue - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
+        return min(newMax, max(newMin, newValue))
+
+    thresh_warning = (pred.rolling_mean_short - pred.rolling_mean_long) * settings.ROLLING_MEAN_SHORT_MULTIPLE
+    thresh_warning = min(settings.THRESHOLD_HIGH, max(settings.THRESHOLD_LOW, thresh_warning))
+    thresh_failure = thresh_warning * settings.ESCALATING_FACTOR
+
+    p = (pred.ewm_mean - pred.rolling_mean_long) * detective_sensitivity
+
+    if p > thresh_failure:
+        return scale(p, thresh_failure, thresh_failure * 1.5, 2.0 / 3.0, 1.0)
+    elif p > thresh_warning:
+        return scale(p, thresh_warning, thresh_failure, 1.0 / 3.0, 2.0 / 3.0)
+    else:
+        return scale(p, 0, thresh_warning, 0, 1.0 / 3.0)
 
 
 class PrinterPrediction(models.Model):

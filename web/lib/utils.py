@@ -17,7 +17,7 @@ def dict_or_none(dict_value):
 
 
 def set_as_str_if_present(target_dict, source_dict, key, target_key=None):
-    if source_dict.get(key):
+    if key in source_dict:
         if not target_key:
             target_key = key
         target_dict[target_key] = json.dumps(source_dict.get(key))

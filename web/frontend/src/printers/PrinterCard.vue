@@ -40,7 +40,7 @@
             <a
               class="dropdown-item"
               :href="settingsUrl()"
-            ><i class="fas fa-cog fa-lg"></i>Settings
+            ><i class="fas fa-wrench fa-lg"></i>Settings
             </a>
           </div>
         </div>

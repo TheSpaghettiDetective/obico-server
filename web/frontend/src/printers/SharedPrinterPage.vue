@@ -8,7 +8,6 @@
         :printer="printer"
         :is-pro-account=true
         :share-token="shareToken"
-        @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"

@@ -18,12 +18,18 @@
       <br /><br />
       <h2 class="mb-4">Secret Token</h2>
       {% include 'includes/_secret_token.html' %}
+      <br />
       {% if settings.EXT_3D_GEEKS_ENDPOINT %}
       <h2 class="mb-4">Integration</h2>
       <a role="button" type="button" class="btn btn-outline-primary my-2" href="{{ request.path }}integration/">{% if form.instance.service_token %}Change/Remove 3D Geeks push notification{% else %}Set up 3D Geeks push notification{% endif %}</a>
       <div class="mt-2">3D Geeks mobile app can be downloaded <a href="https://www.3dgeeks.app/u/tsd-android">here</a>.</div>
       <small class="text-muted font-italic">Disclaimer: 3D Geeks is not affiliated with The Spaghetti Detective.</small>
       {% endif %}
+      <br /><br />
+      <h2 class="mb-4 text-danger">Danger Zone</h2>
+      <div class="col-sm-12 text-center">
+        <button id="delete-printer-btn" href="{{ request.path }}delete/" class="btn btn-outline-danger">Delete Printer</button>
+      </div>
     </div>
   </div>
 </div>

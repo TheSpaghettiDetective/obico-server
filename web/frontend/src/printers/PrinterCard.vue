@@ -42,14 +42,6 @@
               :href="settingsUrl()"
             ><i class="fas fa-cog fa-lg"></i>Settings
             </a>
-
-            <a
-              id="delete-print"
-              class="dropdown-item text-danger"
-              href="#"
-              @click="$emit('DeleteClicked', printer.id)"
-            ><i class="fas fa-trash-alt fa-lg"></i>Delete
-            </a>
           </div>
         </div>
       </div>

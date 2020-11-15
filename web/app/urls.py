@@ -46,6 +46,7 @@ urlpatterns = [
     path('mobile/printers/<pk>/', web_views.edit_printer, {"template_dir": "mobile"}),
     path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel, {"template_dir": "mobile"}),
     path('mobile/printers/<int:pk>/share/', web_views.share_printer, {"template_dir": "mobile"}),
+    path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 
     # vue demo urls
     path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),

@@ -72,7 +72,6 @@
         :key="printer.id"
         :printer="printer"
         :is-pro-account="isProAccount"
-        @DeleteClicked="onDeleteClicked(printer.id)"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
@@ -311,13 +310,6 @@ export default {
         LocalPrefNames.StateFilter,
         this.filters.state
       )
-    },
-    onDeleteClicked(printerId) {
-      this.$swal.Confirm.fire({}).then((result) => {
-        if (result.value) { // When it is confirmed
-          window.location.href = urls.printerDelete(printerId)
-        }
-      })
     },
     onNotAFailureClicked(ev, printerId, resumePrint) {
       this.$swal.Confirm.fire({

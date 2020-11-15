@@ -98,4 +98,14 @@ $(document).ready(function () {
         }
     });
 
+    $('#delete-printer-btn').on('click', function() {
+        var el = $(this);
+        Confirm.fire({
+        }).then(function (result) {
+          if (result.value) {  // When it is confirmed
+            window.location.href = el.attr('href');
+          }
+        });
+    });
+
 });

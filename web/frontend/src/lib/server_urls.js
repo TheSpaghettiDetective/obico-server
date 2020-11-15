@@ -14,7 +14,6 @@ export default {
   tunnelUsage: () => '/api/v1/tunnelusage/',
 
   // App urls
-  printerDelete: printerId => `/printers/${printerId}/delete/`,
   printerControl: printerId => `/printers/${printerId}/control/`,
   printerWS: printerId => `/ws/web/${printerId}/`,
   printerSharedWS:token => `/ws/share_token/web/${token}/`,

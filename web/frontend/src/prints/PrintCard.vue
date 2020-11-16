@@ -113,8 +113,7 @@
         <div v-show="cardView == 'detective'">
           <gauge
             v-if="print.prediction_json_url"
-            :predictionJsonUrl="print.prediction_json_url"
-            :currentPosition="currentPosition"
+            :normalizedP="normalizedP"
           />
           <div class="feedback-section">
             <div class="text-center py-2 px-3">
@@ -195,6 +194,7 @@ import filter from 'lodash/filter'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
+import getNormalizedP from '../lib/normalizers'
 import urls from '../lib/server_urls'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
@@ -214,6 +214,7 @@ export default {
     return {
       videoDownloading: false,
       currentPosition: 0,
+      predictions: [],
       selectedCardView: 'detective',
       selected: false,
       inflightAlertOverwrite: null
@@ -307,6 +308,10 @@ export default {
 
     hasFullscreenListener() {
       return Boolean(this.$listeners && this.$listeners.fullscreen)
+    },
+
+    normalizedP() {
+      return getNormalizedP(this.predictions, this.currentPosition)
     }
   },
 
@@ -365,9 +370,19 @@ export default {
           this.$emit('printDataChanged', response.data)
           this.inflightAlertOverwrite = null
         })
+    },
+
+    fetchPredictions() {
+      axios.get(this.print.predictionJsonUrl).then(response => {
+        this.predictions = response.data
+      })
     }
   },
   mounted() {
+    if (this.print.predictionJsonUrl) {
+      this.fetchPredictions()
+    }
+
     if (!this.print.tagged_video_url) {
       this.selectedCardView = 'info'
     }

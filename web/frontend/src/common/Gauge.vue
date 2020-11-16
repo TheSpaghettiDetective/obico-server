@@ -1,9 +1,10 @@
 <template>
   <div class="tsd-gauge-container">
-    <span id="title" :style="{color: titleColor}">{{ titleText }}</span>
+    <span :id="titleId" :style="{color: titleColor}">{{ titleText }}</span>
     <div class="tsd-gauge">
       <radial-gauge :value="value" :options="options"></radial-gauge>
     </div>
+    <hr />
   </div>
 </template>
 
@@ -22,6 +23,9 @@ export default {
   props: {
     normalized_p: {
       type: Number,
+    },
+    variant: {
+      type: String
     },
 
     options: {
@@ -63,7 +67,9 @@ export default {
     value() {
       return this.normalized_p*100
     },
-
+    titleId() {
+      return this.variant ? `title-${this.variant}` : 'title'
+    },
     titleText() {
       switch (this.level()) {
       case 0:
@@ -110,6 +116,13 @@ export default {
 #title
   position: absolute
   top: 86px
+  left: 0px
+  width: 100%
+  text-align: center
+
+#title-2
+  position: absolute
+  top: 50%
   left: 0px
   width: 100%
   text-align: center

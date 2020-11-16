@@ -114,6 +114,7 @@
           <gauge
             v-if="print.prediction_json_url"
             :normalizedP="normalizedP"
+            variant="2"
           />
           <div class="feedback-section">
             <div class="text-center py-2 px-3">
@@ -194,7 +195,7 @@ import filter from 'lodash/filter'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
-import getNormalizedP from '../lib/normalizers'
+import {getNormalizedP} from '@lib/normalizers'
 import urls from '../lib/server_urls'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
@@ -373,13 +374,13 @@ export default {
     },
 
     fetchPredictions() {
-      axios.get(this.print.predictionJsonUrl).then(response => {
+      axios.get(this.print.prediction_json_url).then(response => {
         this.predictions = response.data
       })
     }
   },
   mounted() {
-    if (this.print.predictionJsonUrl) {
+    if (this.print.prediction_json_url) {
       this.fetchPredictions()
     }
 

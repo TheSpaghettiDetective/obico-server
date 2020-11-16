@@ -10,13 +10,14 @@
     />
     <gauge
       :normalizedP="normalizedP"
+      variant="2"
     />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import getNormalizedP from '../lib/normalizers'
+import {getNormalizedP} from '@lib/normalizers'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
 
@@ -61,13 +62,13 @@ export default {
     },
 
     fetchPredictions() {
-      axios.get(this.print.predictionJsonUrl).then(response => {
+      axios.get(this.print.prediction_json_url).then(response => {
         this.predictions = response.data
       })
     }
   },
   mounted() {
-    if (this.print.predictionJsonUrl) {
+    if (this.print.prediction_json_url) {
       this.fetchPredictions()
     }
   },

@@ -21,7 +21,7 @@ export default {
     }
   },
   props: {
-    normalized_p: {
+    normalizedP: {
       type: Number,
     },
 
@@ -62,7 +62,7 @@ export default {
 
   computed: {
     value() {
-      return this.normalized_p*100
+      return this.normalizedP*100
     },
     titleText() {
       switch (this.level()) {

@@ -119,7 +119,7 @@
           >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
           <div></div>
         </div>
-        <DirectGauge
+        <Gauge
           :normalized_p="printer.normalized_p"
         />
         <hr />
@@ -289,7 +289,7 @@ import ifvisible from 'ifvisible'
 
 import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
-import DirectGauge from '@common/DirectGauge'
+import Gauge from '@common/Gauge'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 import loadingIconSrc from '@static/img/loading.gif'
 
@@ -315,7 +315,7 @@ const LocalPrefNames = {
 export default {
   name: 'PrinterCard',
   components: {
-    DirectGauge,
+    Gauge,
     DurationBlock,
     PrinterActions,
     StatusTemp,

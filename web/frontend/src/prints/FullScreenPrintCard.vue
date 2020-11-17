@@ -8,11 +8,15 @@
       :autoplay="autoplay"
       :fullScreenBtn="false"
     />
-    <gauge :predictionJsonUrl="print.prediction_json_url" :currentPosition="currentPosition" />
+    <gauge
+      :normalizedP="normalizedP"
+    />
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+import {getNormalizedP} from '@lib/normalizers'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
 
@@ -42,14 +46,31 @@ export default {
   },
   data() {
     return {
-      currentPosition: 0
+      currentPosition: 0,
+      predictions: [],
+    }
+  },
+  computed: {
+    normalizedP() {
+      return getNormalizedP(this.predictions, this.currentPosition)
     }
   },
   methods: {
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
     },
-  }
+
+    fetchPredictions() {
+      axios.get(this.print.prediction_json_url).then(response => {
+        this.predictions = response.data
+      })
+    }
+  },
+  mounted() {
+    if (this.print.prediction_json_url) {
+      this.fetchPredictions()
+    }
+  },
 }
 </script>
 

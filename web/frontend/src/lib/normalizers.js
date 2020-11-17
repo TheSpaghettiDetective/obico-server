@@ -34,3 +34,9 @@ export const normalizedPrinter = printer => {
 
   return printer
 }
+
+
+export const getNormalizedP = (predictions, currentPosition) => {
+      const num = Math.round(predictions.length * currentPosition)
+      return get(predictions[num], 'fields.normalized_p', 0)
+}

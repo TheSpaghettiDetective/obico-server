@@ -9,27 +9,21 @@
 </template>
 
 <script>
-import axios from 'axios'
-import get from 'lodash/get'
 import RadialGauge from 'vue2-canvas-gauges/src/RadialGauge'
 
 export default {
+  name: 'Gauge',
   components: {
     RadialGauge
   },
   data: () => {
     return {
-      predictions: [],
-      currentValue: 0
     }
   },
   props: {
-    currentPosition: {
+    normalized_p: {
       type: Number,
-      default: 0
     },
-
-    predictionJsonUrl: String,
 
     options: {
       // https://canvas-gauges.com/documentation/user-guide/configuration
@@ -68,10 +62,8 @@ export default {
 
   computed: {
     value() {
-      const num = Math.round(this.predictions.length * this.currentPosition)
-      return get(this.predictions[num], 'fields.normalized_p', 0) * 100
+      return this.normalized_p*100
     },
-
     titleText() {
       switch (this.level()) {
       case 0:
@@ -98,17 +90,7 @@ export default {
     }
   },
 
-  mounted() {
-    this.fetchData()
-  },
-
   methods: {
-    fetchData() {
-      axios.get(this.predictionJsonUrl).then(response => {
-        this.predictions = response.data
-      })
-    },
-
     level() {
       if (this.value > 66) {
         return 2
@@ -127,10 +109,10 @@ export default {
 
 #title
   position: absolute
-  top: 50%
   left: 0px
-  width: 100%
   text-align: center
+  width: 100%
+  top: 50%
 
 .tsd-gauge-container
   position: relative

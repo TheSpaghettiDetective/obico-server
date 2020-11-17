@@ -10,7 +10,6 @@
     />
     <gauge
       :normalizedP="normalizedP"
-      variant="2"
     />
   </div>
 </template>

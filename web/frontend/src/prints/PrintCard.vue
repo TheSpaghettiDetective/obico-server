@@ -114,7 +114,6 @@
           <gauge
             v-if="print.prediction_json_url"
             :normalizedP="normalizedP"
-            variant="2"
           />
           <div class="feedback-section">
             <div class="text-center py-2 px-3">

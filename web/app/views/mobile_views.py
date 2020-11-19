@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from allauth.account.views import LoginView, SignupView
+from allauth.account.views import SignupView
 from allauth.account.forms import SignupForm
 
 from allauth.exceptions import ImmediateHttpResponse
@@ -23,7 +23,9 @@ from allauth.socialaccount.helpers import (
     render_authentication_error,
 )
 
-class MobileLoginView(LoginView):
+from .web_views import SocialAccountAwareLoginView
+
+class MobileLoginView(SocialAccountAwareLoginView):
     template_name = 'mobile/account/login.html'
 
     def get_success_url(self):

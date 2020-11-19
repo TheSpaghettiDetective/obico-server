@@ -15,12 +15,12 @@ from .models import *
 LOGGER = logging.getLogger(__name__)
 
 
-class TSDLoginForm(LoginForm):
+class SocialAccountAwareLoginForm(LoginForm):
     no_password_yet: bool = False
 
     def clean(self):
         try:
-            return super(TSDLoginForm, self).clean()
+            return super(SocialAccountAwareLoginForm, self).clean()
         except forms.ValidationError as err:
             if err.message == self.error_messages['email_password_mismatch']:
                 email = self.user_credentials().get('email', None)

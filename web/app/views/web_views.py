@@ -21,7 +21,7 @@ from allauth.account.views import LoginView
 from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
-from app.forms import PrinterForm, UserPreferencesForm, TSDLoginForm
+from app.forms import PrinterForm, UserPreferencesForm, SocialAccountAwareLoginForm
 from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot
 from lib.file_storage import save_file_obj
@@ -35,11 +35,8 @@ def index(request):
         return redirect('/printers/')
 
 
-class TSDLoginView(LoginView):
-    form_class = TSDLoginForm
-
-
-login = TSDLoginView.as_view()
+class SocialAccountAwareLoginView(LoginView):
+    form_class = SocialAccountAwareLoginForm
 
 
 @login_required

@@ -28,8 +28,15 @@
       <form class="login form-signin" method="POST">
         {% if form.errors %}
         <div style="padding-bottom: 0.5em">
-          <span class="text-danger">Wrong email or password.</span> <a class="button secondaryAction"
-            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          {% if form.no_password_yet %}
+          <span class="text-danger">
+            Looks like you signed up using a social account and don't have a valid password.
+          </span>
+          <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Reset Your Password!" %}</a>
+          {% else %}
+          <span class="text-danger">Wrong email or password.</span>
+          <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          {% endif %}
         </div>
         {% endif %}
         {% csrf_token %}

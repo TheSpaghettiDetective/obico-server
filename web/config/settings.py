@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
-SESSION_COOKIE_AGE = 60*60*24*60  # User login session is 2 months
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
@@ -174,7 +174,7 @@ LOGGING = {
 
 # Django settings
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 200*1024*1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -218,6 +218,11 @@ ACCOUNT_ALLOW_SIGN_UP = os.environ.get('ACCOUNT_ALLOW_SIGN_UP') == 'True'
 
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'VERIFIED_EMAIL': True
+    }
+}
 
 if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}

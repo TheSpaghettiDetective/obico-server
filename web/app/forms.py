@@ -2,8 +2,10 @@ from django.conf import settings
 import logging
 import requests
 from django.db import models
+from django import forms
 from django.forms import ModelForm, Form, CharField, ChoiceField, Textarea, HiddenInput, BooleanField, ValidationError
-from allauth.account.forms import SignupForm
+from allauth.account.forms import SignupForm, LoginForm
+import allauth.account.views
 import phonenumbers
 from pushbullet import Pushbullet, PushbulletError
 
@@ -11,6 +13,25 @@ from .widgets import CustomRadioSelectWidget, PhoneCountryCodeWidget
 from .models import *
 
 LOGGER = logging.getLogger(__name__)
+
+
+class TSDLoginForm(LoginForm):
+    no_password_yet: bool = False
+
+    def clean(self):
+        try:
+            return super(TSDLoginForm, self).clean()
+        except forms.ValidationError as err:
+            if err.message == self.error_messages['email_password_mismatch']:
+                email = self.user_credentials().get('email', None)
+                if email is not None:
+                    user = User.objects.filter(email=email).first()
+                    if user is not None and not user.has_usable_password():
+                        has_social_accounts = user.socialaccount_set.exists()
+                        if has_social_accounts:
+                            self.no_password_yet = True
+            raise err
+
 
 class PrinterForm(ModelForm):
     class Meta:

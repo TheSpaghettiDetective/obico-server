@@ -217,6 +217,7 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_ALLOW_SIGN_UP = os.environ.get('ACCOUNT_ALLOW_SIGN_UP') == 'True'
 
 AUTH_USER_MODEL = 'app.User'
+SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
 
 if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}

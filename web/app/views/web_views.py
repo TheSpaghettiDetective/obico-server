@@ -169,7 +169,7 @@ def integration(request, pk):
 
 
 @login_required
-def user_preferences(request):
+def user_preferences(request, template_dir=None):
     form = UserPreferencesForm(request.POST or None, request.FILES or None, instance=request.user)
 
     if request.method == "POST":
@@ -177,7 +177,7 @@ def user_preferences(request):
             form.save()
             messages.success(request, 'Your preferences have been updated successfully!')
 
-    return render(request, 'user_preferences.html', dict(form=form, bot_name=bot_name))
+    return render(request, get_template_path('user_preferences', template_dir), dict(form=form, bot_name=bot_name))
 
 
 @login_required

@@ -42,6 +42,7 @@ urlpatterns = [
     path('mobile/auth/signup/', mobile_views.MobileSignupView.as_view(), name='mobile_auth_signup'),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
+    path('mobile/user_preferences/', web_views.user_preferences, {"template_dir": "mobile"}),
     path('mobile/prints/', web_views.prints, {"template_dir": "mobile"}),
     path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
     path('mobile/printers/<pk>/', web_views.edit_printer, {"template_dir": "mobile"}),

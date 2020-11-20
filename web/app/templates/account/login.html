@@ -31,9 +31,9 @@
           {# user signed up using social accounts might not have password #}
           {% if form.no_password_yet %}
           <span class="text-danger">
-            Looks like you signed up using a social account and don't have a valid password.
+            This email was previously signed up using either Google or Facebook.
           </span>
-          <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Reset Your Password!" %}</a>
+          <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Click here to reset your password" %}</a>.
           {% else %}
           <span class="text-danger">Wrong email or password.</span>
           <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>

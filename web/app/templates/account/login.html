@@ -28,6 +28,7 @@
       <form class="login form-signin" method="POST">
         {% if form.errors %}
         <div style="padding-bottom: 0.5em">
+          {# user signed up using social accounts might not have password #}
           {% if form.no_password_yet %}
           <span class="text-danger">
             Looks like you signed up using a social account and don't have a valid password.

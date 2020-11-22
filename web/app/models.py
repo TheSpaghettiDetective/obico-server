@@ -619,3 +619,12 @@ class PrintShotFeedback(models.Model):
         return mark_safe(f'<img src="{self.image_url}" width="150" height="150" />')
 
     image_tag.short_description = 'Image'
+
+class MobileDevice(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    platform = models.CharField(max_length=16, null=False, blank=False)
+    device_token = models.CharField(max_length=256, unique=True, null=False, blank=False, db_index=True)
+    deactivated_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

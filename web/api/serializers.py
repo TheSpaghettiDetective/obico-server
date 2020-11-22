@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
 
-from app.models import Print, Printer, GCodeFile, PrintShotFeedback
+from app.models import Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice
 from app.models import calc_normalized_p
 
 
@@ -61,6 +61,13 @@ class GCodeFileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GCodeFile
+        fields = '__all__'
+
+
+class MobileDeviceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MobileDevice
         fields = '__all__'
 
 

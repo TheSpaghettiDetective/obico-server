@@ -18,6 +18,7 @@ router.register(
     r'tunnelusage',
     viewsets.OctoPrintTunnelUsageViewSet,
     'OctoPrintTunnelUsage')
+router.register(r'mobile_devices', viewsets.MobileDeviceViewSet, 'MobileDevice')
 
 pub_router = DefaultRouter()
 pub_router.register(r'printer', public_viewsets.PrinterViewSet, 'Printer')

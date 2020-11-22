@@ -12,10 +12,10 @@ import requests
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
-    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction,
+    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice,
     calc_normalized_p)
 from .serializers import (
-    GCodeFileSerializer, PrinterSerializer, PrintSerializer,
+    GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
@@ -260,3 +260,20 @@ class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         return Response({'total': cache.octoprinttunnel_get_stats(self.request.user.id)})
+
+
+class MobileDeviceViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = MobileDeviceSerializer
+
+    def get_queryset(self):
+        return MobileDevice.objects.filter(user=self.request.user)
+
+    def create(self, request):
+        device, _ = MobileDevice.objects.get_or_create(
+            user=request.user,
+            device_token=request.data['device_token'],
+            defaults=request.data
+        )
+        return Response(self.serializer_class(device, many=False).data)

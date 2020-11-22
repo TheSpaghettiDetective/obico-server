@@ -37,7 +37,7 @@
         id="consented-checkbox"
       />
       <label class="custom-control-label" style="font-size: 16px;" for="consented-checkbox">
-        I grant The Spaghetti Detective the permission to review the time-lapse video of the print shown on this page.
+        I grant The Spaghetti Detective team members the permission to review the time-lapse video of the print shown on this page.
           <a target="_blank"
             href="https://www.thespaghettidetective.com/docs/how-does-credits-work/#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse"
           >Why is this necessary? <small><i class="fas fa-external-link-alt"></i></small></a>

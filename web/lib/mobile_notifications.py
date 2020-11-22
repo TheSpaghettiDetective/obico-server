@@ -1,17 +1,40 @@
 from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps
 import firebase_admin
 
+from app.models import calc_normalized_p
+
 default_app = firebase_admin.initialize_app()
 
-def send_to_device(registration_token, msg):
+def send_print_progress(printer, registration_token):
+
+    data = dict(
+        type='printProgress',
+        printId=str(printer.current_print.id),
+        printFilename=printer.current_print.filename,
+        completion='-1',
+        printTimeLeft='-1',
+        picUrl='',
+        normalizedP='0',
+    )
+    if printer.status:
+        data['completion'] = str(printer.status.get('progress', {}).get('completion', -1))
+        data['printTimeLeft'] = str(printer.status.get('progress', {}).get('printTimeLeft', -1))
+
+    if printer.pic:
+        data['picUrl'] = printer.pic.get('img_url', '')
+    data['normalizedP'] = str(calc_normalized_p(printer.detective_sensitivity, printer.printerprediction))
+
+    send_to_device(data, registration_token)
+
+def send_to_device(msg, registration_token):
     message = Message(
             data=msg,
-            android=AndroidConfig(priority="high"),
-            apns=APNSConfig(headers={"apns-priority": "5"}, payload=APNSPayload(aps=Aps(content_available=True))),
+            android=AndroidConfig(priority='high'),
+            apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True))),
             token=registration_token)
     return send(message)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import json
     import sys
     with open(sys.argv[1], 'r') as json_file:

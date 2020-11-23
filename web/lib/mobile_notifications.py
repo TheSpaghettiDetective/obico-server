@@ -1,7 +1,8 @@
-from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps
+from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError
 import firebase_admin
-from .utils import shortform_duration
+from django.utils.timezone import now
 
+from .utils import shortform_duration
 from app.models import calc_normalized_p, MobileDevice
 
 default_app = firebase_admin.initialize_app()
@@ -69,12 +70,15 @@ def send_print_progress(printer):
         send_to_device(data, mobile_device.device_token)
 
 def send_to_device(msg, device_token):
-    message = Message(
+    try:
+        message = Message(
             data=msg,
             android=AndroidConfig(priority='high'),
             apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True))),
             token=device_token)
-    return send(message)
+        return send(message)
+    except UnregisteredError:
+        MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())
 
 if __name__ == '__main__':
     import json

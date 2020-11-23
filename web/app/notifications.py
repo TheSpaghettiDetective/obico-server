@@ -19,6 +19,7 @@ from lib.utils import save_print_snapshot, last_pic_of_print
 from app.models import Printer, Print
 from lib.integrations.telegram_bot import send_notification as send_telegram_notification
 from lib.integrations.discord import send_discord_notification
+from lib import mobile_notifications
 from lib import site
 
 LOGGER = logging.getLogger(__name__)
@@ -36,6 +37,10 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
         rotated_jpg_path=f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
 
     # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
+    try:
+        mobile_notifications.send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
 
     try:
         if printer.user.alert_by_email:

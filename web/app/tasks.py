@@ -213,7 +213,6 @@ def service_webhook(print_id, event_type, **kwargs):
         json=webhook_payload
     )
 
-
 # Websocket connection count house upkeep jobs
 
 @periodic_task(run_every=timedelta(seconds=120))

@@ -6,17 +6,26 @@ from app.models import calc_normalized_p, MobileDevice
 
 default_app = firebase_admin.initialize_app()
 
-def send_print_event(event_type, _print):
+def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
+    data = dict(
+        type='failureAlert',
+        title=f'Print {"is fishy" if is_warning else "may be failing"} {" | Paused" if print_paused else ""}',
+        body=printer.current_print.filename,
+        picUrl=rotated_jpg_url,
+    )
+
+    for mobile_device in MobileDevice.objects.filter(user=printer.user):
+        send_to_device(data, mobile_device.device_token)
+
+def send_print_event(_print, event_type):
     data = dict(
         type='printEvent',
         eventType=event_type,
         printId=str(_print.id),
-        title='',
+        title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
         body=_print.filename,
         picUrl='',
     )
-
-    data['title'] += f"{event_type.replace('Print', '')} | {_print.printer.name}"
     if _print.printer.pic:
         data['picUrl'] = _print.printer.pic.get('img_url', '')
 
@@ -43,15 +52,15 @@ def send_print_progress(printer):
         data['title'] += f' | {shortform_duration(seconds_left)}/{shortform_duration(seconds_left + seconds_past)}'
 
     if printer.not_watching_reason():
-        data['title'] += ' | 😴'
+        data['title'] += ' | 💤'
     else:
         p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
         if p < 0.33:
-            data['title'] += ' | 😀'
+            data['title'] += ' | ☀'
         elif p < 0.66:
-            data['title'] += ' | 😐'
+            data['title'] += ' | ☁'
         else:
-            data['title'] += ' | 😱'
+            data['title'] += ' | 🌧'
 
     if printer.pic:
         data['picUrl'] = printer.pic.get('img_url', '')

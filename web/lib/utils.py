@@ -47,7 +47,6 @@ def orientation_to_ffmpeg_options(printer_settings):
 
     return options
 
-
 def last_pic_of_print(_print, path_prefix):
     print_pics = list_dir(f'{path_prefix}/{_print.printer.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:
@@ -84,3 +83,8 @@ def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg
     shutil.rmtree(to_dir, ignore_errors=True)
 
     return (unrotated_jpg_url, rotated_jpg_url)
+
+def shortform_duration(total_seconds):
+    hours, remainder = divmod(total_seconds,60*60)
+    minutes, seconds = divmod(remainder,60)
+    return '{:02}:{:02} hr'.format(hours, minutes)

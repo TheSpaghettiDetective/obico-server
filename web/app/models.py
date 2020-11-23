@@ -620,6 +620,10 @@ class PrintShotFeedback(models.Model):
 
     image_tag.short_description = 'Image'
 
+class ActiveMobileDeviceManager(models.Manager):
+    def get_queryset(self):
+        return super(ActiveMobileDeviceManager, self).get_queryset().filter(deactivated_at__isnull=True)
+
 class MobileDevice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     platform = models.CharField(max_length=16, null=False, blank=False)
@@ -628,3 +632,6 @@ class MobileDevice(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = ActiveMobileDeviceManager()
+    with_inactive = models.Manager()

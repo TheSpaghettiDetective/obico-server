@@ -267,13 +267,14 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = MobileDeviceSerializer
 
-    def get_queryset(self):
-        return MobileDevice.objects.filter(user=self.request.user)
-
     def create(self, request):
-        device, _ = MobileDevice.objects.get_or_create(
+        device, created = MobileDevice.with_inactive.get_or_create(
             user=request.user,
             device_token=request.data['device_token'],
             defaults=request.data
         )
+        if not created and device.deactivated_at:
+            device.deactivated_at = None
+            device.save()
+
         return Response(self.serializer_class(device, many=False).data)

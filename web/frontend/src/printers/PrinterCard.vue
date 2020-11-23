@@ -120,7 +120,7 @@
           <div></div>
         </div>
         <Gauge
-          :normalized_p="printer.normalized_p"
+          :normalizedP="printer.normalized_p"
         />
         <hr />
       </div>

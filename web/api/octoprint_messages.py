@@ -9,7 +9,6 @@ from app.models import PrintEvent
 from app.tasks import service_webhook
 
 STATUS_TTL_SECONDS = 240
-SVC_WEBHOOK_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintFailed', 'PrintDone', 'PrintCancelled', 'PrintStarted']
 SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]
 
 def process_octoprint_status(printer, status):
@@ -50,9 +49,9 @@ def process_octoprint_status_with_ts(op_status, printer):
     if not printer.current_print:
         return
 
-    # Events for external service webhooks such as 3D Geeks
+    # Notification for mobile devices or for external service webhooks such as 3D Geeks
     # This has to happen before event saving, as `current_print` may change after event saving.
-    send_mobile_notification_if_needed(printer, op_event, op_data)
+    mobile_notifications.send_if_needed(printer.current_print, op_event, op_data)
     call_service_webhook_if_needed(printer, op_event, op_data)
 
 
@@ -74,7 +73,7 @@ def call_service_webhook_if_needed(printer, op_event, op_data):
     if not printer.service_token:
         return
 
-    if op_event.get('event_type') in SVC_WEBHOOK_EVENTS:
+    if op_event.get('event_type') in mobile_notifications.PRINT_EVENTS:
         service_webhook.delay(printer.current_print.id, op_event.get('event_type'))
 
     print_time = op_data.get('progress', {}).get('printTime')
@@ -85,7 +84,3 @@ def call_service_webhook_if_needed(printer, op_event, op_data):
     if pct and print_time and print_time_left and next_progress_pct and pct >= next_progress_pct:
         cache.print_progress_set(printer.current_print.id, next_progress_pct)
         service_webhook.delay(printer.current_print.id, 'PrintProgress', percent=pct, timeleft=int(print_time_left), currenttime=int(print_time))
-
-def send_mobile_notification_if_needed(printer, op_event, op_data):
-    if op_event.get('event_type') in SVC_WEBHOOK_EVENTS:
-        mobile_notifications.send_print_event(printer.current_print, op_event.get('event_type'))

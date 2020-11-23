@@ -3,7 +3,7 @@
 {% csrf_token %}
 {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
 <div class="form-group text-muted">
-  <label class="form-label" for="{{ form.name.id_for_label }}">Give your new printer a shiny name</label>
+  <label class="form-label" for="{{ form.name.id_for_label }}">Give your shiny new printer a name</label>
   <input type="text" name="name" value="{{ form.name.value|default_if_none:'' }}" maxlength="200"
          placeholder="My Awesome 3D Printer" class="form-control field_required"
          required="required" id="id_name" {% if form.name.errors %}aria-describedby="nameHelp" aria-invalid="true"{% endif %}>
@@ -16,7 +16,7 @@
   {% endif %}
 </div>
 <div class="form-group mt-4">
-  <div class="form-label text-muted">When potential failure is detected,</div>
+  <div class="form-label text-muted">When a potential failure is detected,</div>
   {% render_field form.action_on_failure %}
 </div>
 <div id="accordion">
@@ -37,7 +37,7 @@
     <div class="card-body" style="padding: 1rem 0 0 0;">
 
       <p class="text-warning">
-        <i class="fas fa-exclamation-triangle"></i> If you are not sure about the settings below, leave them in default values
+        <i class="fas fa-exclamation-triangle"></i> If you are not sure about the settings below, leave the default values
         to minimize surprises.
       </p>
       <div class="form-group mt-4">
@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="form-group sensitivity my-4">
-        <div class="form-label text-muted">How alerted do you want the Detective to be on this printer?</div>
+        <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
         <div>
           <input id="sensitivity" name="detective_sensitivity" data-slider-id='sensitivity-slider' type="text"
             data-slider-min="0.8" data-slider-max="1.2" data-slider-step="0.05"
@@ -93,7 +93,7 @@
           Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
         </div>
         <div class="hint-high">
-          High - Hit me with all the false alarms. I just want you to catch as many as you can.
+          High - Hit me with all the false alarms. I want to catch as many failures as possible.
         </div>
       </div>
     </div>

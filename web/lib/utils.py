@@ -85,6 +85,8 @@ def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg
     return (unrotated_jpg_url, rotated_jpg_url)
 
 def shortform_duration(total_seconds):
+    if not total_seconds:
+        return '--:--'
     hours, remainder = divmod(total_seconds,60*60)
     minutes, seconds = divmod(remainder,60)
     return '{:02}:{:02}'.format(hours, minutes)

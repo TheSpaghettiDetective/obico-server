@@ -9,43 +9,43 @@ default_app = firebase_admin.initialize_app()
 
 
 def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
-    data = dict(
-        type='failureAlert',
-        title=f'Print {"is fishy" if is_warning else "may be failing"} {" | Paused" if print_paused else ""}',
-        body=printer.current_print.filename,
-        picUrl=rotated_jpg_url,
-    )
-
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
+        data = dict(
+            type='failureAlert',
+            title=f'Print {"is fishy" if is_warning else "may be failing"} {" | Paused" if print_paused else ""}',
+            body=printer.current_print.filename,
+            picUrl=rotated_jpg_url,
+        )
+
         send_to_device(data, mobile_device.device_token)
 
 
 def send_print_event(_print, event_type):
-    data = dict(
-        type='printEvent',
-        eventType=event_type,
-        title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
-        body=_print.filename,
-        picUrl='',
-    )
-    if _print.printer.pic:
-        data['picUrl'] = _print.printer.pic.get('img_url', '')
-
     for mobile_device in MobileDevice.objects.filter(user=_print.user):
+        data = dict(
+            type='printEvent',
+            eventType=event_type,
+            title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
+            body=_print.filename,
+            picUrl='',
+        )
+        if _print.printer.pic:
+            data['picUrl'] = _print.printer.pic.get('img_url', '')
+
         send_to_device(data, mobile_device.device_token)
 
 
 def send_heater_event(printer, event, heater_name, actual_temperature):
-    data = dict(
-        type='heaterEvent',
-        title=f'{heater_name} | {actual_temperature} ℃ | {event}',
-        body=printer.name,
-        picUrl='',
-    )
-    if printer.pic:
-        data['picUrl'] = printer.pic.get('img_url', '')
-
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
+        data = dict(
+            type='heaterEvent',
+            title=f'{heater_name} | {actual_temperature} ℃ | {event}',
+            body=printer.name,
+            picUrl='',
+        )
+        if printer.pic:
+            data['picUrl'] = printer.pic.get('img_url', '')
+
         send_to_device(data, mobile_device.device_token)
 
 

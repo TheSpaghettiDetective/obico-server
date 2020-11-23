@@ -163,3 +163,13 @@ def octoprinttunnel_update_stats(user_id, delta):
 def octoprinttunnel_get_stats(user_id):
     key = octoprinttunnel_stats_key(now())
     return int(REDIS.hget(key, str(user_id)) or '0')
+
+
+# def last_mobile_push_get(print_id, mobile_platform):
+#     key = f'{print_key_prefix(print_id)}:pct'
+#     REDIS.set(key, str(progress_percent), ex=60*60*24*2)
+
+
+# def print_progress_get(print_id):
+#     key = f'{print_key_prefix(print_id)}:pct'
+#     return int(REDIS.get(key) or 0)

@@ -136,7 +136,6 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.close()
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
-            self.close()
             sentryClient.captureException()
 
     @newrelic.agent.background_task()
@@ -273,7 +272,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 })
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
-            self.close()
             sentryClient.captureException()
 
     @newrelic.agent.background_task()
@@ -300,7 +298,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
-            self.close()
             sentryClient.captureException()
 
     def current_user(self):

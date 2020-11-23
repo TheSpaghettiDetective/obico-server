@@ -7,6 +7,7 @@ from app.models import calc_normalized_p, MobileDevice
 
 default_app = firebase_admin.initialize_app()
 
+
 def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
     data = dict(
         type='failureAlert',
@@ -18,11 +19,11 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
         send_to_device(data, mobile_device.device_token)
 
+
 def send_print_event(_print, event_type):
     data = dict(
         type='printEvent',
         eventType=event_type,
-        printId=str(_print.id),
         title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
         body=_print.filename,
         picUrl='',
@@ -32,6 +33,21 @@ def send_print_event(_print, event_type):
 
     for mobile_device in MobileDevice.objects.filter(user=_print.user):
         send_to_device(data, mobile_device.device_token)
+
+
+def send_heater_event(printer, event, heater_name, actual_temperature):
+    data = dict(
+        type='heaterEvent',
+        title=f'{heater_name} | {actual_temperature} ℃ | {event}',
+        body=printer.name,
+        picUrl='',
+    )
+    if printer.pic:
+        data['picUrl'] = printer.pic.get('img_url', '')
+
+    for mobile_device in MobileDevice.objects.filter(user=printer.user):
+        send_to_device(data, mobile_device.device_token)
+
 
 def send_print_progress(printer):
     data = dict(

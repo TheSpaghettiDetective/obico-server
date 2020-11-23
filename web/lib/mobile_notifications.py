@@ -6,6 +6,23 @@ from app.models import calc_normalized_p, MobileDevice
 
 default_app = firebase_admin.initialize_app()
 
+def send_print_event(event_type, _print):
+    data = dict(
+        type='printEvent',
+        eventType=event_type,
+        printId=str(_print.id),
+        title='',
+        body=_print.filename,
+        picUrl='',
+    )
+
+    data['title'] += f"{event_type.replace('Print', '')} | {_print.printer.name}"
+    if _print.printer.pic:
+        data['picUrl'] = _print.printer.pic.get('img_url', '')
+
+    for mobile_device in MobileDevice.objects.filter(user=_print.user):
+        send_to_device(data, mobile_device.device_token)
+
 def send_print_progress(printer):
     data = dict(
         type='printProgress',

@@ -208,7 +208,6 @@ def service_webhook(print_id, event_type, **kwargs):
 
     _print = Print.objects.select_related('printer__user').get(id=print_id)
     webhook_payload = service_webhook_payload(event_type, _print, kwargs)
-    LOGGER.debug(webhook_payload)
     req = requests.post(
         url= settings.EXT_3D_GEEKS_ENDPOINT,
         json=webhook_payload

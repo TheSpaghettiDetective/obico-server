@@ -1,0 +1,14 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+{% block content %}
+
+<div id="view" style="display: none;">{{session_key}}</div>
+
+<div class="text-center m-5">
+  <p>Logging in...</p>
+  <i class="fa fa-spinner fa-spin"></i>
+</div>
+{% endblock %}

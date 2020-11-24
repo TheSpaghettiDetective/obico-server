@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from allauth.account.views import SignupView
@@ -43,7 +44,7 @@ class MobileSignupView(SignupView):
 
 @login_required
 def fetch_session(request):
-    return HttpResponse(f'<div id="view">{request.session.session_key}</div>')
+    return render(request, 'mobile/mobile_session_fetch.html', {'session_key': request.session.session_key})
 
 
 def oauth_callback(request, *args, **kwargs):

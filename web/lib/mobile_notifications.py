@@ -1,4 +1,5 @@
-from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError
+import os
+from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
 import firebase_admin
 from django.utils.timezone import now
 
@@ -9,7 +10,7 @@ from lib import cache
 PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintFailed', 'PrintDone', 'PrintCancelled', 'PrintStarted']
 PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 
-default_app = firebase_admin.initialize_app()
+firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None
 
 
 def send_if_needed(_print, op_event, op_data):
@@ -100,14 +101,18 @@ def send_print_progress(_print, op_data):
         send_to_device(data, mobile_device.device_token)
 
 def send_to_device(msg, device_token):
+    if not firebase_app:
+        return
+
     try:
         message = Message(
             data=msg,
             android=AndroidConfig(priority='high'),
             apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True))),
             token=device_token)
-        return send(message)
-    except UnregisteredError:
+        return send(message, app=firebase_app)
+    except (UnregisteredError, SenderIdMismatchError):
+        import traceback; traceback.print_exc()
         MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())
 
 if __name__ == '__main__':

@@ -72,17 +72,16 @@ def send_print_progress(_print, op_data):
             title='',
             body=_print.filename,
             picUrl='',
+            completion='0'
         )
-
-        completion = op_data.get('progress', {}).get('completion')
-        data['completion'] = str(round(completion or 0))
-        data['title'] += f'{data["completion"] if completion else "-"}%'
 
         progress = op_data.get('progress')
         if progress:
-            seconds_past = progress.get('printTime', 0)
-            seconds_left = progress.get('printTimeLeft', 0)
-            data['title'] += f' | {shortform_duration(seconds_left)}/{shortform_duration(seconds_left + seconds_past)}'
+            completion = progress.get('completion')
+            data['completion'] = str(round(completion or 0))
+            data['title'] += f'{data["completion"] if completion else "-"}%'
+            data['title'] += f' | {shortform_duration(progress.get('printTimeLeft') || 0)}'
+            data['title'] += f'/{shortform_duration((progress.get('printTimeLeft') || 0) + (progress.get('printTime') || 0))}'
 
         printer = _print.printer
         if printer.not_watching_reason():

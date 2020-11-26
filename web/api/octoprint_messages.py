@@ -7,6 +7,7 @@ from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
 from app.models import PrintEvent
 from app.tasks import service_webhook
+from app.heater_trackers import update_heater_trackers
 
 STATUS_TTL_SECONDS = 240
 SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]
@@ -27,6 +28,10 @@ def process_octoprint_status(printer, status):
 
     if status.get('current_print_ts'):
         process_octoprint_status_with_ts(status, printer)
+
+    temps = status.get('octoprint_temperatures', None)
+    if temps is not None:
+        update_heater_trackers(printer, temps)
 
     channels.send_status_to_web(printer.id)
 

@@ -127,7 +127,7 @@ def calc_changes(trackers: List[HeaterTracker],
     return ret
 
 
-def process_temp_data(printer: Printer, temp_data: Dict) -> None:
+def update_heater_trackers(printer: Printer, temp_data: Dict) -> None:
     heaters = list(parse_states(temp_data).values())
     trackers = list(printer.heatertracker_set.all())
     trackersd = {tracker.name: tracker for tracker in trackers}

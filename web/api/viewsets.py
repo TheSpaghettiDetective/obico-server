@@ -199,9 +199,14 @@ class PrintViewSet(viewsets.ModelViewSet):
         )
 
         for raw_pred in data:
-            pred = PrinterPrediction(**raw_pred['fields'])
-            raw_pred['fields']['normalized_p'] = calc_normalized_p(
-                detective_sensitivity, pred)
+            if 'fields' not in raw_pred:
+                # once upon a time in production
+                # should not happen, exact cause is TODO/FIXME
+                raw_pred['fields'] = {'normalized_p': 0.0}
+            else:
+                pred = PrinterPrediction(**raw_pred['fields'])
+                raw_pred['fields']['normalized_p'] = calc_normalized_p(
+                    detective_sensitivity, pred)
 
         return Response(
             data,

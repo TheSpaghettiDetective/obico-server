@@ -37,7 +37,7 @@ class HeaterState:
             abs(self.target - self.actual) < TARGET_REACHED_DELTA
         )
 
-    def look_for_event_type(self) -> Optional[HeaterEventType]:
+    def event_type_if_any(self) -> Optional[HeaterEventType]:
         if self.has_been_cooled_down():
             return HeaterEventType.COOLED_DOWN
         if self.has_reached_target():
@@ -67,13 +67,12 @@ def parse_states(d: Dict[str, Dict[str, Any]]) -> Dict[str, HeaterState]:
     }
 
 
-def update_trackers(trackers: List[HeaterTracker],
-                    heaters: List[HeaterState]) -> Tuple[List[HeaterTracker], List[HeaterEvent]]:
+def calc_changes(trackers: List[HeaterTracker],
+                 heaters: List[HeaterState]) -> List[Tuple[HeaterTracker, bool, Optional[HeaterEvent]]]:
     trackersd = {t.name: t for t in trackers}
-    events: List[HeaterEvent] = []
     seen: Set[str] = set()
 
-    trackers_ = []
+    ret = []
     for heater in heaters:
         if heater.name in seen:
             continue
@@ -81,50 +80,73 @@ def update_trackers(trackers: List[HeaterTracker],
         seen.add(heater.name)
 
         if heater.target is None:
+            # existing tracker (if any) is going to be purged
+            # without notification
             continue
+
+        dirty: bool = False
+        event: Optional[HeaterEvent] = None
 
         tracker = trackersd.pop(heater.name, None)
         if tracker is not None:
             if tracker.target == heater.target:
+                # tracked heater with unchanged target,
+                # notification is necessary only when
+                # target is reached
                 if not tracker.reached:
-                    type_ = heater.look_for_event_type()
-                    if type_ is not None:
+                    etype = heater.event_type_if_any()
+                    if etype is not None:
+                        dirty = True
                         tracker.reached = True
-                        events.append(HeaterEvent(type=type_, state=heater))
+                        event = HeaterEvent(type=etype, state=heater)
             else:
+                # tracked heater has new target,
+                # notify if target's been reached already
+                dirty = True
                 tracker.target = heater.target
-                tracker.reached = heater.look_for_event_type() is not None
+                etype = heater.event_type_if_any()
+                if etype is not None:
+                    tracker.reached = True
+                    event = HeaterEvent(type=etype, state=heater)
+
         else:
+            # not yet tracked heater,
+            # notify if target's been reached already
+            dirty = True
             tracker = HeaterTracker(
                 name=heater.name,
                 target=heater.target,
-                reached=heater.look_for_event_type() is not None
             )
+            etype = heater.event_type_if_any()
+            if etype is not None:
+                tracker.reached = True
+                event = HeaterEvent(type=etype, state=heater)
 
-        trackers_.append(tracker)
+        ret.append((tracker, dirty, event))
 
-    return (trackers_, events)
+    return ret
 
 
 def process_temp_data(printer: Printer, temp_data: Dict) -> None:
     heaters = list(parse_states(temp_data).values())
     trackers = list(printer.heatertracker_set.all())
-
-    new_trackers, events = update_trackers(trackers, heaters)
-
     trackersd = {tracker.name: tracker for tracker in trackers}
-    for tracker in new_trackers:
+
+    changes = calc_changes(trackers, heaters)
+    for tracker, dirty, event in changes:
         trackersd.pop(tracker.name, None)
-        if tracker.pk is None:
+
+        if dirty:
+            tracker.printer = printer
             tracker.save()
+
+        if event is not None:
+            send_heater_event(
+                printer,
+                event=event.type_as_str(),
+                heater_name=event.state.name,
+                # 0.0 for pleasing mypy, actual cannot be None here
+                actual_temperature=event.state.actual or 0.0)
 
     for obsolete_tracker in trackersd.values():
         obsolete_tracker.delete()
-
-    for e in events:
-        send_heater_event(
-            printer,
-            event=e.type_as_str(),
-            heater_name=e.state.name,
-            # 0.0 for pleasing mypy, actual cannot be None here
-            actual_temperature=e.state.actual or 0.0)

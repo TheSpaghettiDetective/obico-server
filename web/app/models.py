@@ -625,10 +625,14 @@ class ActiveMobileDeviceManager(models.Manager):
         return super(ActiveMobileDeviceManager, self).get_queryset().filter(deactivated_at__isnull=True)
 
 class MobileDevice(models.Model):
+
+    class Meta:
+        unique_together = [['user', 'device_token']]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     platform = models.CharField(max_length=16, null=False, blank=False)
     app_version = models.CharField(max_length=16, null=False, blank=False)
-    device_token = models.CharField(max_length=256, unique=True, null=False, blank=False, db_index=True)
+    device_token = models.CharField(max_length=256, null=False, blank=False)
     deactivated_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

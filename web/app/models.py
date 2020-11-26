@@ -385,6 +385,16 @@ class Printer(SafeDeleteModel):
         return str(self.id)
 
 
+class HeaterTracker(models.Model):
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
+    name = models.CharField(max_length=16)
+    target = models.IntegerField()
+    reached = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class PrinterCommand(models.Model):
     PENDING = 'PENDING'
     SENT = 'SENT'

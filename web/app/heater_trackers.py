@@ -104,6 +104,7 @@ def calc_changes(trackers: List[HeaterTracker],
                 # notify if target's been reached already
                 dirty = True
                 tracker.target = heater.target
+                tracker.reached = False
                 etype = heater.event_type_if_any()
                 if etype is not None:
                     tracker.reached = True
@@ -116,6 +117,7 @@ def calc_changes(trackers: List[HeaterTracker],
             tracker = HeaterTracker(
                 name=heater.name,
                 target=heater.target,
+                reached=False,
             )
             etype = heater.event_type_if_any()
             if etype is not None:
@@ -133,6 +135,7 @@ def update_heater_trackers(printer: Printer, temp_data: Dict) -> None:
     trackersd = {tracker.name: tracker for tracker in trackers}
 
     changes = calc_changes(trackers, heaters)
+
     for tracker, dirty, event in changes:
         trackersd.pop(tracker.name, None)
 

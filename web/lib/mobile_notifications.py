@@ -62,6 +62,7 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
 
 
 def send_print_progress(_print, op_data):
+
     for mobile_device in MobileDevice.objects.filter(user=_print.user):
         if cache.print_status_mobile_push_get(_print.id, mobile_device.platform):
             return
@@ -75,13 +76,14 @@ def send_print_progress(_print, op_data):
             completion='0'
         )
 
+        data['title'] += op_data.get("state", {}).get("text", "")
         progress = op_data.get('progress')
         if progress:
             completion = progress.get('completion')
             data['completion'] = str(round(completion or 0))
-            data['title'] += f'{data["completion"] if completion else "-"}%'
-            data['title'] += f' | {shortform_duration(progress.get('printTimeLeft') || 0)}'
-            data['title'] += f'/{shortform_duration((progress.get('printTimeLeft') || 0) + (progress.get('printTime') || 0))}'
+            data['title'] += f' {data["completion"] if completion else "-"}%'
+            data['title'] += f' | {shortform_duration(progress.get("printTimeLeft") or 0)}'
+            data['title'] += f'/{shortform_duration((progress.get("printTimeLeft") or 0) + (progress.get("printTime") or 0))}'
 
         printer = _print.printer
         if printer.not_watching_reason():

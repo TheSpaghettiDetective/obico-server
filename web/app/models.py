@@ -388,8 +388,8 @@ class Printer(SafeDeleteModel):
 class HeaterTracker(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
     name = models.CharField(max_length=16)
-    target = models.IntegerField()
-    reached = models.IntegerField()
+    target = models.FloatField()
+    reached = models.BooleanField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -386,6 +386,9 @@ class Printer(SafeDeleteModel):
 
 
 class HeaterTracker(models.Model):
+    class Meta:
+        unique_together = ('printer', 'name')
+
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
     name = models.CharField(max_length=16)
     target = models.FloatField()

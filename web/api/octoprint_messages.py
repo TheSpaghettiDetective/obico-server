@@ -30,7 +30,7 @@ def process_octoprint_status(printer, status):
         process_octoprint_status_with_ts(status, printer)
 
     temps = status.get('octoprint_temperatures', None)
-    if temps is not None:
+    if temps:
         update_heater_trackers(printer, temps)
 
     channels.send_status_to_web(printer.id)

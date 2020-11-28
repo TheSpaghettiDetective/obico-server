@@ -24,7 +24,7 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
         data = dict(
             type='failureAlert',
-            title=f'{"⚠ Print is fishy." if is_warning else "⛔ Failure is detected."} Printer {"" if print_paused else "not"} paused.',
+            title=f'{"🟠 Print is fishy." if is_warning else "🔴 Failure is detected."} Printer {"" if print_paused else "not"} paused.',
             body=printer.current_print.filename,
             picUrl=rotated_jpg_url,
         )
@@ -91,11 +91,11 @@ def send_print_progress(_print, op_data):
         else:
             p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
             if p < 0.33:
-                data['title'] += ' | ☀'
+                data['title'] += ' | 🟢'
             elif p < 0.66:
-                data['title'] += ' | ☁'
+                data['title'] += ' | 🟠'
             else:
-                data['title'] += ' | 🌧'
+                data['title'] += ' | 🔴'
 
         if printer.pic:
             data['picUrl'] = printer.pic.get('img_url', '')

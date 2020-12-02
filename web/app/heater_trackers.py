@@ -220,6 +220,5 @@ def process_heater_temps(printer: Printer, temps: Dict) -> int:
                 printer.refresh_from_db()
                 printer._heater_trackers = None
             else:
-                logging.error("could not update heater trackers")
-                break  # or raise ?  # FIXME
+                raise
     return tries

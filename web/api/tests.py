@@ -25,7 +25,7 @@ def init_data():
 
     return (user, printer, client)
 
-# https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "app.notifications.send_failure_alert"
+# https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"
 
 
 @patch('api.octoprint_views.send_failure_alert')

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
 from .models import User, Printer
-from .notifications import send_email
+from lib.notifications import send_email
 
 
 def send_test_email(modeladmin, request, queryset):

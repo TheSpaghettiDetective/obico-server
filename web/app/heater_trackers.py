@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
-from app.models import Printer, HeaterTracker
+from app.models import Printer, HeaterTrackers
 from lib.mobile_notifications import send_heater_event
 from django.utils.timezone import now
 
@@ -19,6 +19,13 @@ class UpdateError(Exception):
 class HeaterEventType(enum.Enum):
     TARGET_REACHED = 'target reached'
     COOLED_DOWN = 'cooled down'
+
+
+@dataclasses.dataclass
+class HeaterTracker:
+    name: str
+    target: float
+    reached: bool
 
 
 @dataclasses.dataclass
@@ -72,6 +79,16 @@ def parse_states(d: Dict[str, Dict[str, Any]]) -> Dict[str, HeaterState]:
                           offset=v['offset'])
         for name, v in d.items()
     }
+
+
+def parse_trackers(data: List[Dict[str, Any]]) -> List[HeaterTracker]:
+    """
+    [{'name': 'tool0', 'target': 90.0, reached: true}, ...]
+    """
+    return [
+        HeaterTracker(name=v['name'], target=v['target'], reached=v['reached'])
+        for v in data
+    ]
 
 
 def calc_changes(trackers: List[HeaterTracker],
@@ -136,61 +153,7 @@ def calc_changes(trackers: List[HeaterTracker],
     return ret
 
 
-def update_heater_trackers(printer: Printer,
-                           trackers: List[HeaterTracker],
-                           temp_data: Dict,
-                           now_: Optional[datetime] = None) -> List[HeaterTracker]:
-    new_updated_at = now_ or now()
-    heaters = list(parse_states(temp_data).values())
-
-    trackersd = {tracker.name: tracker for tracker in trackers}
-    changes = calc_changes(trackers, heaters)
-
-    new_trackers = []
-    for tracker, dirty, event in changes:
-        new_trackers.append(tracker)
-
-        trackersd.pop(tracker.name, None)
-
-        if dirty:
-            if tracker.id:
-                touched = HeaterTracker.objects.filter(
-                    name=tracker.name,
-                    printer=printer,
-                    updated_at=tracker.updated_at
-                ).update(
-                    name=tracker.name,
-                    target=tracker.target,
-                    reached=tracker.reached,
-                    updated_at=new_updated_at
-                )
-                if not touched:
-                    raise UpdateError()
-            else:
-                tracker.printer = printer
-                tracker.save()
-
-        if event is not None:
-            send_heater_event(
-                printer,
-                event=event.type_as_str(),
-                heater_name=event.state.name,
-                # 0.0 for pleasing mypy, actual cannot be None here
-                actual_temperature=event.state.actual or 0.0)
-
-    # removing obsolete entries
-    if trackersd:
-        HeaterTracker.objects.filter(
-            printer=printer,
-            name__in=[t.name for t in trackersd.values()],
-        ).delete()
-
-    return new_trackers
-
-
 def process_heater_temps(printer: Printer, temps: Dict) -> int:
-    now_ = now()
-    qs = printer.heatertracker_set.all()
     MAX_TRIES = 2
     tries = 0
 
@@ -198,19 +161,39 @@ def process_heater_temps(printer: Printer, temps: Dict) -> int:
     # cached in printer instance to avoid frequent db reads
     while True:
         try:
-            if getattr(printer, '_heater_trackers', None) is None:
-                # fill local cache
-                printer._heater_trackers = list(qs)
+            if not hasattr(printer, 'heatertrackers'):
+                obj, _ = HeaterTrackers.objects.get_or_create(printer=printer, defaults={'data': []})
+                setattr(printer, 'heatertrackers', obj)
 
-            new_trackers = update_heater_trackers(
-                printer,
-                printer._heater_trackers,
-                temps,
-                now_=now_,
-            )
+            heaters = list(parse_states(temps).values())
+            trackers = parse_trackers(printer.heatertrackers.data)
+            changes = calc_changes(trackers, heaters)
+            dirty = any([x[1] for x in changes]) or len(changes) != len(trackers)
+            if dirty:
+                new_trackers = [x[0] for x in changes]
+                new_data = [dataclasses.asdict(t) for t in new_trackers]
 
-            # update local cache
-            printer._heater_trackers = new_trackers
+                touched = HeaterTrackers.objects.filter(
+                    printer=printer,
+                    updated_at=printer.heatertrackers.updated_at,
+                ).update(
+                    data=new_data,
+                    updated_at=now()
+                )
+
+                if not touched:
+                    raise UpdateError()
+
+                printer.heatertrackers.data = new_data
+
+                events = [x[2] for x in changes if x[2] is not None]
+                for event in events:
+                    send_heater_event(
+                        printer,
+                        event=event.type_as_str(),
+                        heater_name=event.state.name,
+                        # 0.0 for pleasing mypy, actual cannot be None here
+                        actual_temperature=event.state.actual or 0.0)
 
             break
         except UpdateError:
@@ -218,7 +201,7 @@ def process_heater_temps(printer: Printer, temps: Dict) -> int:
             tries += 1
             if tries < MAX_TRIES:
                 printer.refresh_from_db()
-                printer._heater_trackers = None
+                printer.heatertrackers = None
             else:
                 logging.error("could not update heater trackers")
                 break  # or raise ?  # FIXME

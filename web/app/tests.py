@@ -2,8 +2,8 @@ from django.test import TestCase
 from unittest.mock import patch
 
 
-from .models import User, HeaterTracker, Printer
-from .heater_trackers import process_heater_temps
+from .models import User, HeaterTrackers, Printer
+from .heater_trackers import process_heater_temps, parse_trackers
 
 
 class HeaterTrackerTestCase(TestCase):
@@ -18,7 +18,8 @@ class HeaterTrackerTestCase(TestCase):
             {'h0': {'actual': 50.0, 'target': None, 'offset': 0}}
         )
 
-        self.assertIsNone(self.printer.heatertracker_set.first())
+        trackers = HeaterTrackers.objects.get(printer=self.printer)
+        self.assertEqual(len(trackers.data), 0)
 
     def test_created_when_has_target(self):
         process_heater_temps(
@@ -26,25 +27,38 @@ class HeaterTrackerTestCase(TestCase):
             {'h0': {'actual': 50.0, 'target': 0.0, 'offset': 0}}
         )
 
-        self.assertEqual(self.printer.heatertracker_set.first().target, 0.0)
+        trackers = HeaterTrackers.objects.get(printer=self.printer)
+        self.assertEqual(trackers.data[0]['target'], 0.0)
+
+    def test_printer_heatertracekrs_data_attr_updates(self):
+        process_heater_temps(
+            self.printer,
+            {'h0': {'actual': 50.0, 'target': 0.0, 'offset': 0}}
+        )
+
+        self.assertEqual(self.printer.heatertrackers.data[0]['target'], 0.0)
 
     def test_updated_when_target_changes(self):
-        tracker = HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=0.0, reached=False)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[{'name': 'h0', 'target': 0.0, 'reached': False}])
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 50.0, 'target': 100.0, 'offset': 0}}
         )
 
-        tracker.refresh_from_db()
-        self.assertEqual(tracker.target, 100.0)
+        trackers.refresh_from_db()
+        self.assertEqual(trackers.data[0]['target'], 100.0)
 
     def test_deleted_when_obsolete(self):
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=0.0, reached=False)
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h1', target=200.0, reached=False)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[
+                {'name': 'h0', 'target': 0.0, 'reached': False},
+                {'name': 'h1', 'target': 200.0, 'reached': False}
+            ]
+        )
 
         process_heater_temps(
             self.printer,
@@ -52,7 +66,8 @@ class HeaterTrackerTestCase(TestCase):
             # h1 is no longer exists in data
         )
 
-        self.assertEqual(self.printer.heatertracker_set.count(), 0)
+        trackers.refresh_from_db()
+        self.assertEqual(len(trackers.data), 0)
 
     @patch("app.heater_trackers.send_heater_event")
     def test_cooled_down_threshold(self, mock_send):
@@ -63,22 +78,25 @@ class HeaterTrackerTestCase(TestCase):
 
         mock_send.side_effect = call
 
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=0.0, reached=False)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[{'name': 'h0', 'target': 0.0, 'reached': False}])
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 36.0, 'target': 0.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, False)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], False)
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 35.0, 'target': 0.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, True)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], True)
 
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'cooled down')
@@ -92,22 +110,26 @@ class HeaterTrackerTestCase(TestCase):
 
         mock_send.side_effect = call
 
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=60.0, reached=False)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[{'name': 'h0', 'target': 60.0, 'reached': False}]
+        )
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 57.0, 'target': 60.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, False)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], False)
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 58.0, 'target': 60.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, True)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], True)
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'target reached')
 
@@ -120,8 +142,10 @@ class HeaterTrackerTestCase(TestCase):
 
         mock_send.side_effect = call
 
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=60.0, reached=True)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[{'name': 'h0', 'target': 60.0, 'reached': True}]
+        )
 
         # -delta
         process_heater_temps(
@@ -148,7 +172,8 @@ class HeaterTrackerTestCase(TestCase):
         )
 
         self.assertEqual(len(calls), 0)
-        self.assertIs(self.printer.heatertracker_set.first().reached, True)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], True)
 
     @patch("app.heater_trackers.send_heater_event")
     def test_first_seen_reached_event(self, mock_send):
@@ -165,7 +190,8 @@ class HeaterTrackerTestCase(TestCase):
             {'h0': {'actual': 60.0, 'target': 60.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, True)
+        trackers = HeaterTrackers.objects.get(printer=self.printer)
+        self.assertIs(trackers.data[0]['reached'], True)
         self.assertEqual(len(calls), 1)
 
     @patch("app.heater_trackers.send_heater_event")
@@ -177,15 +203,18 @@ class HeaterTrackerTestCase(TestCase):
 
         mock_send.side_effect = call
 
-        HeaterTracker.objects.create(
-            printer=self.printer, name='h0', target=60.0, reached=True)
+        trackers = HeaterTrackers.objects.create(
+            printer=self.printer,
+            data=[{'name': 'h0', 'target': 60.0, 'reached': True}])
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 70.0, 'target': 70.0, 'offset': 0}}
         )
 
-        self.assertIs(self.printer.heatertracker_set.first().reached, True)
+        trackers.refresh_from_db()
+        self.assertIs(trackers.data[0]['reached'], True)
+
         self.assertEqual(len(calls), 1)
 
     def test_update_error_retry_cnt(self):
@@ -195,7 +224,7 @@ class HeaterTrackerTestCase(TestCase):
         )
         self.assertEqual(ret0, 0)
 
-        HeaterTracker.objects.all().delete()
+        HeaterTrackers.objects.all().delete()
 
         ret1 = process_heater_temps(
             self.printer,

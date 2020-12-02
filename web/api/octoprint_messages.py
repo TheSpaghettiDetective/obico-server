@@ -8,7 +8,7 @@ from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
 from app.models import PrintEvent, Printer
 from app.tasks import service_webhook
-from app.heater_trackers import process_heater_temps
+from lib.heater_trackers import process_heater_temps
 
 STATUS_TTL_SECONDS = 240
 SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]

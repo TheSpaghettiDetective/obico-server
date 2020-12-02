@@ -2,7 +2,7 @@ from django.test import TestCase
 from unittest.mock import patch
 
 
-from .models import User, HeaterTracker, Printer
+from app.models import User, HeaterTracker, Printer
 from .heater_trackers import process_heater_temps
 
 
@@ -54,7 +54,7 @@ class HeaterTrackerTestCase(TestCase):
 
         self.assertEqual(self.printer.heatertracker_set.count(), 0)
 
-    @patch("app.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_heater_event")
     def test_cooled_down_threshold(self, mock_send):
         calls = []
 
@@ -83,7 +83,7 @@ class HeaterTrackerTestCase(TestCase):
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'cooled down')
 
-    @patch("app.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_heater_event")
     def test_target_reached_delta(self, mock_send):
         calls = []
 
@@ -111,7 +111,7 @@ class HeaterTrackerTestCase(TestCase):
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]['event'], 'target reached')
 
-    @patch("app.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_heater_event")
     def test_no_events_after_reached(self, mock_send):
         calls = []
 
@@ -150,7 +150,7 @@ class HeaterTrackerTestCase(TestCase):
         self.assertEqual(len(calls), 0)
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
 
-    @patch("app.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_heater_event")
     def test_first_seen_reached_event(self, mock_send):
         calls = []
 
@@ -168,7 +168,7 @@ class HeaterTrackerTestCase(TestCase):
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
         self.assertEqual(len(calls), 1)
 
-    @patch("app.heater_trackers.send_heater_event")
+    @patch("lib.heater_trackers.send_heater_event")
     def test_target_changes_and_reached_event(self, mock_send):
         calls = []
 

@@ -155,7 +155,7 @@ def update_heater_trackers(printer: Printer,
         if dirty:
             if tracker.id:
                 touched = HeaterTracker.objects.filter(
-                    id=tracker.id,
+                    name=tracker.name,
                     printer=printer,
                     updated_at=tracker.updated_at
                 ).update(
@@ -178,8 +178,12 @@ def update_heater_trackers(printer: Printer,
                 # 0.0 for pleasing mypy, actual cannot be None here
                 actual_temperature=event.state.actual or 0.0)
 
-    for obsolete_tracker in trackersd.values():
-        obsolete_tracker.delete()
+    # removing obsolete entries
+    if trackersd:
+        HeaterTracker.objects.filter(
+            printer=printer,
+            name__in=[t.name for t in trackersd.values()],
+        ).delete()
 
     return new_trackers
 

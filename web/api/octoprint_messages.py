@@ -1,23 +1,25 @@
 from django.utils import timezone
 import json
+from typing import Dict
 
 from lib import cache
 from lib import channels
 from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
-from app.models import PrintEvent
+from app.models import PrintEvent, Printer
 from app.tasks import service_webhook
-from app.heater_trackers import update_heater_trackers
+from app.heater_trackers import process_heater_temps
 
 STATUS_TTL_SECONDS = 240
 SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]
 
-def process_octoprint_status(printer, status):
+
+def process_octoprint_status(printer: Printer, status: Dict) -> None:
     octoprint_settings = status.get('octoprint_settings')
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
-    octoprint_data = dict()
+    octoprint_data: Dict = dict()
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
     set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata')
@@ -29,11 +31,11 @@ def process_octoprint_status(printer, status):
     if status.get('current_print_ts'):
         process_octoprint_status_with_ts(status, printer)
 
+    channels.send_status_to_web(printer.id)
+
     temps = status.get('octoprint_temperatures', None)
     if temps:
-        update_heater_trackers(printer, temps)
-
-    channels.send_status_to_web(printer.id)
+        process_heater_temps(printer, temps)
 
 
 def settings_dict(octoprint_settings):
@@ -59,7 +61,6 @@ def process_octoprint_status_with_ts(op_status, printer):
     mobile_notifications.send_if_needed(printer.current_print, op_event, op_data)
     call_service_webhook_if_needed(printer, op_event, op_data)
 
-
     if op_event.get('event_type') in ('PrintCancelled', 'PrintFailed'):
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()
@@ -73,6 +74,7 @@ def process_octoprint_status_with_ts(op_status, printer):
         printer.current_print.paused_at = None
         printer.current_print.save()
         PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
+
 
 def call_service_webhook_if_needed(printer, op_event, op_data):
     if not printer.service_token:

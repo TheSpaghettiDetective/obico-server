@@ -111,7 +111,9 @@ Before you can configure The Spaghetti Detective OctoPrint Plugin to use your ow
 
 1. Pointing your browser to `http://your_server_ip:3334`.
 
-1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user). Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-sign-up-the-spaghetti-detective-account) and obtain the secret token.
+1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user).
+
+1. Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-2-add-a-new-printer) and obtain the secret token. *Note: Do it on your own server, not on [The Spaghetti Detective cloud](https://app.thespaghettidetective.com).*
 
 Then, on The Spaghetti Detective plugin settings page:
 

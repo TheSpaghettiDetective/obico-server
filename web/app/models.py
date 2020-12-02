@@ -390,7 +390,7 @@ class HeaterTracker(models.Model):
         unique_together = ('printer', 'name')
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, blank=False)
     target = models.FloatField()
     reached = models.BooleanField()
 

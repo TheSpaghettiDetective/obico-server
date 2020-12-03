@@ -15,13 +15,24 @@ from app.models import (
     Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice,
     calc_normalized_p)
 from .serializers import (
-    GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
+    UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from config.celery import celery_app
 
 PREDICTION_FETCH_TIMEOUT = 20
+
+
+class UserViewSet(viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = UserSerializer
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        serializer = self.serializer_class(request.user, many=False)
+        return Response(serializer.data)
 
 
 class PrinterViewSet(viewsets.ModelViewSet):

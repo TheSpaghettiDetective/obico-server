@@ -2,8 +2,15 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
 
-from app.models import Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice
+from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice
 from app.models import calc_normalized_p
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email', 'is_pro', 'dh_balance')
 
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):

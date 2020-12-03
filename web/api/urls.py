@@ -7,6 +7,7 @@ from . import public_viewsets
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
+router.register(r'users', viewsets.UserViewSet, 'User')
 router.register(r'printers', viewsets.PrinterViewSet, 'Printer')
 router.register(r'prints', viewsets.PrintViewSet, 'Print')
 router.register(r'gcodes', viewsets.GCodeFileViewSet, 'GCodeFile')

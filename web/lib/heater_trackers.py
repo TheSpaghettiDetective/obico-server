@@ -17,8 +17,8 @@ class UpdateError(Exception):
 
 
 class HeaterEventType(enum.Enum):
-    TARGET_REACHED = 'target reached'
-    COOLED_DOWN = 'cooled down'
+    TARGET_REACHED = 'ReachedTarget'
+    COOLED_DOWN = 'CooledDown'
 
 
 @dataclasses.dataclass

@@ -49,15 +49,21 @@ def send_print_event(_print, event_type):
 
 
 def send_heater_event(printer, event, heater_name, actual_temperature):
+    from lib.heater_trackers import HeaterEventType
+
+    event_str = {
+        HeaterEventType.TARGET_REACHED.value: 'Target reached',
+        HeaterEventType.COOLED_DOWN.value: 'Cooled down'
+    }[event]
+
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
         data = dict(
             type='heaterEvent',
-            title=f'{heater_name} | {actual_temperature} ℃ | {event}',
+            eventType=event,
+            printerId=str(printer.id),
+            title=f'{heater_name} | {actual_temperature} ℃ | {event_str}',
             body=printer.name,
-            picUrl='',
         )
-        if printer.pic:
-            data['picUrl'] = printer.pic.get('img_url', '')
 
         send_to_device(data, mobile_device.device_token)
 

@@ -81,7 +81,7 @@ class HeaterTrackerTestCase(TestCase):
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
 
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0][1]['event'], 'cooled down')
+        self.assertEqual(calls[0][1]['event'], 'CooledDown')
 
     @patch("lib.heater_trackers.send_heater_event")
     def test_target_reached_delta(self, mock_send):
@@ -109,7 +109,7 @@ class HeaterTrackerTestCase(TestCase):
 
         self.assertIs(self.printer.heatertracker_set.first().reached, True)
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0][1]['event'], 'target reached')
+        self.assertEqual(calls[0][1]['event'], 'ReachedTarget')
 
     @patch("lib.heater_trackers.send_heater_event")
     def test_no_events_after_reached(self, mock_send):

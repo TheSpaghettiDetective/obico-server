@@ -37,6 +37,7 @@ def send_print_event(_print, event_type):
         data = dict(
             type='printEvent',
             eventType=event_type,
+            printerId=str(_print.printer.id),
             title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
             body=_print.filename,
             picUrl='',

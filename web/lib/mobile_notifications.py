@@ -69,11 +69,13 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
 
 
 def send_print_progress(_print, op_data):
+    pushed_platforms = set()
 
     for mobile_device in MobileDevice.objects.filter(user=_print.user):
         if cache.print_status_mobile_push_get(_print.id, mobile_device.platform):
-            return
-        cache.print_status_mobile_push_set(_print.id, mobile_device.platform, PRINT_PROGRESS_PUSH_INTERVAL[mobile_device.platform])
+            continue
+        pushed_platforms.add(mobile_device.platform)
+
         data = dict(
             type='printProgress',
             printId=str(_print.id),
@@ -108,6 +110,10 @@ def send_print_progress(_print, op_data):
             data['picUrl'] = printer.pic.get('img_url', '')
 
         send_to_device(data, mobile_device.device_token)
+
+    for pushed_platform in pushed_platforms:
+        cache.print_status_mobile_push_set(_print.id, pushed_platform, PRINT_PROGRESS_PUSH_INTERVAL[pushed_platform])
+
 
 def send_to_device(msg, device_token):
     if not firebase_app:

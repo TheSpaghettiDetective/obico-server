@@ -8,7 +8,7 @@ from .utils import shortform_duration
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
-PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintFailed', 'PrintDone', 'PrintCancelled', 'PrintStarted']
+PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted']
 PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 
 firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None
@@ -37,6 +37,7 @@ def send_print_event(_print, event_type):
         data = dict(
             type='printEvent',
             eventType=event_type,
+            printId=str(_print.id),
             printerId=str(_print.printer.id),
             title=f"{event_type.replace('Print', '')} | {_print.printer.name}",
             body=_print.filename,

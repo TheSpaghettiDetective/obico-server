@@ -38,21 +38,23 @@ function getWebRTCManager(callbacks) {
               plugin: 'janus.plugin.streaming',
               opaqueId: opaqueId,
               success: function (pluginHandle) {
-                let streaming = pluginHandle
-                Janus.log('Plugin attached! (' + streaming.getPlugin() + ', id=' + streaming.getId() + ')')
+                Janus.log('Plugin attached! (' + pluginHandle.getPlugin() + ', id=' + pluginHandle.getId() + ')')
 
                 const body = { 'request': 'list' }
                 Janus.debug('Sending message (' + JSON.stringify(body) + ')')
-                streaming.send({
+                pluginHandle.send({
                   'message': body, success: function (result) {
                     let stream = get(result, 'list[0]')
                     if (stream) {
                       self.streamId = stream.id
-                      self.streaming = streaming
+                      self.streaming = pluginHandle
                       self.startStream()
                     }
                   }
                 })
+                setInterval(function() {
+                    console.log(pluginHandle.getBitrate())
+                }, 5000)
               },
               error: function (error) {
                 Janus.error('  -- Error attaching plugin... ', error)

@@ -1,6 +1,6 @@
 <template>
   <div class="printshots-container row justify-content-center">
-    <div class="col-sm-12 col-lg-6">
+    <div class="col-sm-12 col-lg-10">
       <div class="card">
         <h5 class="card-header text-center">
           F

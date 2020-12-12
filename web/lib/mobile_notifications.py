@@ -4,7 +4,7 @@ import firebase_admin
 from django.utils.timezone import now
 from raven.contrib.django.raven_compat.models import client as sentryClient
 
-from .utils import shortform_duration
+from .utils import shortform_duration, shortform_localtime
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
@@ -86,14 +86,17 @@ def send_print_progress(_print, op_data):
             completion='0'
         )
 
-        data['title'] += op_data.get("state", {}).get("text", "")
+        state_text = op_data.get('state', {}).get('text', '')
+        data['title'] += state_text if state_text.lower() != 'printing' else ''
         progress = op_data.get('progress')
         if progress:
             completion = progress.get('completion')
             data['completion'] = str(round(completion or 0))
             data['title'] += f' {data["completion"] if completion else "-"}%'
-            data['title'] += f' | {shortform_duration(progress.get("printTimeLeft") or 0)}'
-            data['title'] += f'/{shortform_duration((progress.get("printTimeLeft") or 0) + (progress.get("printTime") or 0))}'
+            seconds_left = progress.get("printTimeLeft") or 0
+            data['title'] += f' | ⏱{shortform_duration(seconds_left)}'
+            if mobile_device.preferred_timezone:
+                data['title'] += f' | 🏁{shortform_localtime(seconds_left, mobile_device.preferred_timezone)}'
 
         printer = _print.printer
         if printer.not_watching_reason():

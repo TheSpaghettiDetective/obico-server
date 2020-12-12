@@ -6,6 +6,9 @@ import tempfile
 import os
 import shutil
 from operator import itemgetter
+from django.utils import timezone
+import pytz
+from datetime import timedelta
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
@@ -90,3 +93,9 @@ def shortform_duration(total_seconds):
     hours, remainder = divmod(total_seconds,60*60)
     minutes, seconds = divmod(remainder,60)
     return '{:02}:{:02}'.format(hours, minutes)
+
+def shortform_localtime(seconds_from_now, tz):
+    if not seconds_from_now:
+        return '--:--'
+
+    return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M %p")

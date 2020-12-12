@@ -284,14 +284,16 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
     serializer_class = MobileDeviceSerializer
 
     def create(self, request):
+        device_token = request.data.pop('device_token')
         device, _ = MobileDevice.with_inactive.get_or_create(
             user=request.user,
-            device_token=request.data['device_token'],
+            device_token=device_token,
             defaults=request.data
         )
         if device.deactivated_at or device.app_version != request.data['app_version']:
             device.deactivated_at = None
-            device.app_version = request.data['app_version']
+            for attr, value in request.data.items():
+                setattr(device, attr, value)
             device.save()
 
         return Response(self.serializer_class(device, many=False).data)

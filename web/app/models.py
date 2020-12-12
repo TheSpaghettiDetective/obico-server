@@ -647,6 +647,7 @@ class MobileDevice(models.Model):
     app_version = models.CharField(max_length=16, null=False, blank=False)
     device_token = models.CharField(max_length=256, null=False, blank=False)
     deactivated_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    preferred_timezone = models.CharField(max_length=32, null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

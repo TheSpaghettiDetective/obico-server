@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Welcome from './Welcome.vue'
+import setupSentry from '@lib/sentry'
+
+setupSentry(Vue)
 
 // list all components here
 let components = {Welcome, };

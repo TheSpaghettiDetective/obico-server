@@ -3,9 +3,10 @@ import VueSwal from 'common/VueSwal'
 import { BootstrapVue } from 'bootstrap-vue'
 import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
-
 import 'common/filters'
+import setupSentry from '@lib/sentry'
 
+setupSentry(Vue)
 Vue.use(BootstrapVue)
 Vue.use(VueSwal)
 Vue.use(Sticky)

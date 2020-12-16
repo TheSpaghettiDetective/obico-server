@@ -18,6 +18,8 @@ from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
+from django.db import IntegrityError
+from django.forms import model_to_dict
 
 from config.celery import celery_app
 from lib import cache, channels
@@ -287,12 +289,24 @@ class Printer(SafeDeleteModel):
         if not current_print_ts or current_print_ts == -1:
             raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
 
-        cur_print, _ = Print.objects.get_or_create(
-            user=self.user,
-            printer=self,
-            ext_id=current_print_ts,
-            defaults={'filename': filename, 'started_at': timezone.now()},
-        )
+        try:
+            cur_print, _ = Print.objects.get_or_create(
+                user=self.user,
+                printer=self,
+                ext_id=current_print_ts,
+                defaults={'filename': filename, 'started_at': timezone.now()},
+            )
+        except IntegrityError:
+            # FIXME debugging odd case
+            current_printer = model_to_dict(self)  # noqa: F841
+            current_status = self.status  # noqa: F841
+            current_print = model_to_dict(self.current_print) if self.current_print else None  # noqa: F841
+            existing_print = model_to_dict(Print.objects.get(  # noqa: F841
+                printer=self,
+                ext_id=current_print_ts
+            ))
+            # reraising if it reached here...
+            raise
 
         if cur_print.ended_at():
             if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
@@ -633,9 +647,11 @@ class PrintShotFeedback(models.Model):
 
     image_tag.short_description = 'Image'
 
+
 class ActiveMobileDeviceManager(models.Manager):
     def get_queryset(self):
         return super(ActiveMobileDeviceManager, self).get_queryset().filter(deactivated_at__isnull=True)
+
 
 class MobileDevice(models.Model):
 

@@ -309,9 +309,14 @@ class Printer(SafeDeleteModel):
             raise
 
         if cur_print.ended_at():
-            if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
+            now = timezone.now()
+            if cur_print.ended_at() > (now - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
                 return
             else:
+                # FIXME debugging another odd case
+                current_printer = model_to_dict(self)  # noqa: F841
+                current_status = self.status  # noqa: F841
+                current_print = model_to_dict(cur_print)  # noqa: F841
                 raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         self.current_print = cur_print

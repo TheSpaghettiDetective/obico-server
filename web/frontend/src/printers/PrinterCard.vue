@@ -99,7 +99,7 @@
           type="button"
           id="not-a-failure"
           class="btn btn-outline-primary btn-sm float-right"
-          @click="$emit('NotAFailureClicked', printer.id)"
+          @click="$emit('NotAFailureClicked', $event, printer.id)"
         >Not a failure?</button>
       </div>
 

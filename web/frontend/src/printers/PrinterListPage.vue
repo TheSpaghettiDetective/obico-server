@@ -341,9 +341,7 @@ export default {
         }
       })
 
-      if (ev) {
-        ev.preventDefault()
-      }
+      ev.preventDefault()
     },
     onWatchForFailuresToggled(printerId) {
       let p = this.printers.find((p) => p.id == printerId)

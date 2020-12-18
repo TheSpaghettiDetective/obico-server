@@ -179,10 +179,16 @@
     {% endif %}
     {% if settings.SENTRY_DSN %}
       if (Sentry) {
-        Sentry.init({ dsn: '{{ settings.SENTRY_DSN }}' });
-      {% if user.is_authenticated %}
-        Sentry.setUser({"email": "{{ user.email }}"});
-      {% endif %}
+        Sentry.init({
+          dsn: '{{ settings.SENTRY_DSN }}',
+          ignoreErrors: [
+            'window.webkit.messageHandlers',
+            'api.telegram.org'
+          ]
+        });
+        {% if user.is_authenticated %}
+          Sentry.setUser({"email": "{{ user.email }}"});
+        {% endif %}
       }
     {% endif %}
   </script>

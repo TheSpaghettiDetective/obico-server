@@ -1,3 +1,4 @@
+from typing import Dict, List
 from allauth.account.admin import EmailAddress
 from datetime import datetime, timedelta
 import logging
@@ -26,6 +27,13 @@ from lib.utils import dict_or_none
 LOGGER = logging.getLogger(__name__)
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
+
+
+class ResurrectionError(Exception):
+
+    def __init__(self, message: str, print: 'Print') -> None:
+        self.print: Print = print
+        super().__init__(message)
 
 
 def dh_is_unlimited(dh):
@@ -298,7 +306,10 @@ class Printer(SafeDeleteModel):
             if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
                 return
             else:
-                raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
+                raise ResurrectionError(
+                    'Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename),
+                    print=cur_print
+                )
 
         self.current_print = cur_print
         self.save()
@@ -633,9 +644,11 @@ class PrintShotFeedback(models.Model):
 
     image_tag.short_description = 'Image'
 
+
 class ActiveMobileDeviceManager(models.Manager):
     def get_queryset(self):
         return super(ActiveMobileDeviceManager, self).get_queryset().filter(deactivated_at__isnull=True)
+
 
 class MobileDevice(models.Model):
 

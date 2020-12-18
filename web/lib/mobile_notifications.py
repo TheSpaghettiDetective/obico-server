@@ -137,7 +137,7 @@ def send_to_device(msg, mobile_device):
             token=mobile_device.device_token)
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
-        MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())
+        MobileDevice.objects.filter(device_token=mobile_device.device_token).update(deactivated_at=now())
     except:
         import traceback; traceback.print_exc()
         sentryClient.captureException()

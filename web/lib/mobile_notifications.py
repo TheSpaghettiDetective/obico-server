@@ -146,7 +146,6 @@ def ios_push_notification(data, device_token):
     if not firebase_app:
         return
 
-    print(data)
     # TODO: Fixed notification settings that only sends events turned on by default, until we find a better solution for ios
     if data['type'] in ['heaterEvent',]:
         return
@@ -168,9 +167,13 @@ def ios_push_notification(data, device_token):
                     'apns-topic': 'com.thespaghettidetective.ios',
                     'apns-collapse-id': f'collapse-{data["printerId"]}',
                 },
-                # payload=APNSPayload(aps=Aps(sound="default")),
+
             ),
             token=device_token)
+
+        if  data['type'] != 'printProgress':
+            message.apns.payload=APNSPayload(aps=Aps(sound="default"))
+
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
         MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())

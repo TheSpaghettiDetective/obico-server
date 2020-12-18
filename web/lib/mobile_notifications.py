@@ -1,5 +1,5 @@
 import os
-from firebase_admin.messaging import Message, send, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
+from firebase_admin.messaging import Message, send, Notification, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
 import firebase_admin
 from django.utils.timezone import now
 from raven.contrib.django.raven_compat.models import client as sentryClient
@@ -27,9 +27,10 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
             title=f'{"🟠 Print is fishy." if is_warning else "🔴 Failure is detected."} Printer {"" if print_paused else "not"} paused.',
             body=printer.current_print.filename,
             picUrl=rotated_jpg_url,
+            printerId=str(printer.id),
         )
 
-        send_to_device(data, mobile_device.device_token)
+        send_to_device(data, mobile_device)
 
 
 def send_print_event(_print, event_type):
@@ -46,7 +47,7 @@ def send_print_event(_print, event_type):
         if _print.printer.pic:
             data['picUrl'] = _print.printer.pic.get('img_url', '')
 
-        send_to_device(data, mobile_device.device_token)
+        send_to_device(data, mobile_device)
 
 
 def send_heater_event(printer, event, heater_name, actual_temperature):
@@ -66,7 +67,7 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
             body=printer.name,
         )
 
-        send_to_device(data, mobile_device.device_token)
+        send_to_device(data, mobile_device)
 
 
 def send_print_progress(_print, op_data):
@@ -80,6 +81,7 @@ def send_print_progress(_print, op_data):
         data = dict(
             type='printProgress',
             printId=str(_print.id),
+            printerId=str(_print.printer.id),
             title='',
             body=_print.filename,
             picUrl='',
@@ -113,14 +115,18 @@ def send_print_progress(_print, op_data):
         if printer.pic:
             data['picUrl'] = printer.pic.get('img_url', '')
 
-        send_to_device(data, mobile_device.device_token)
+        send_to_device(data, mobile_device)
 
     for pushed_platform in pushed_platforms:
         cache.print_status_mobile_push_set(_print.id, pushed_platform, PRINT_PROGRESS_PUSH_INTERVAL[pushed_platform])
 
 
-def send_to_device(msg, device_token):
+def send_to_device(msg, mobile_device):
     if not firebase_app:
+        return
+
+    if mobile_device.platform == 'ios':
+        ios_push_notification(msg, mobile_device.device_token)
         return
 
     try:
@@ -128,6 +134,42 @@ def send_to_device(msg, device_token):
             data=msg,
             android=AndroidConfig(priority='high'),
             apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True))),
+            token=mobile_device.device_token)
+        return send(message, app=firebase_app)
+    except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
+        MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())
+    except:
+        import traceback; traceback.print_exc()
+        sentryClient.captureException()
+
+def ios_push_notification(data, device_token):
+    if not firebase_app:
+        return
+
+    print(data)
+    # TODO: Fixed notification settings that only sends events turned on by default, until we find a better solution for ios
+    if data['type'] in ['heaterEvent',]:
+        return
+    if data['type'] == 'printEvent' and data['eventType'] not in ['PrintDone', 'PrintCancelled']:
+        return
+
+    notification = Notification(title=data['title'], body=data['body'])
+
+    if data.get('picUrl'):
+        notification.image = data.get('picUrl')
+
+    try:
+        message = Message(
+            notification=notification,
+            apns=APNSConfig(
+                headers={
+                    'apns-push-type': 'alert',
+                    'apns-priority': '5',
+                    'apns-topic': 'com.thespaghettidetective.ios',
+                    'apns-collapse-id': f'collapse-{data["printerId"]}',
+                },
+                # payload=APNSPayload(aps=Aps(sound="default")),
+            ),
             token=device_token)
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):

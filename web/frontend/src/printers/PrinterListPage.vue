@@ -485,10 +485,10 @@ export default {
           args: filter(gcodeFiles, { id: gcodeFileId })
         },
         (err, ret) => {
-          if (ret.error) {
+          if (err || ret.error) {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: ret.error,
+              title: err ? err : ret.error,
             })
             return
           }

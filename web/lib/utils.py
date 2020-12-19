@@ -98,4 +98,4 @@ def shortform_localtime(seconds_from_now, tz):
     if not seconds_from_now:
         return '--:--'
 
-    return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M %p")
+    return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M%p")

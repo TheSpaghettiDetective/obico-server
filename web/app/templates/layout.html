@@ -183,7 +183,8 @@
           dsn: '{{ settings.SENTRY_DSN }}',
           ignoreErrors: [
             'window.webkit.messageHandlers',
-            'api.telegram.org'
+            'api.telegram.org',
+            /^Network Error$/,
           ]
         });
         {% if user.is_authenticated %}

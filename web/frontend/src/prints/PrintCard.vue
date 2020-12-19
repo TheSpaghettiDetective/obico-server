@@ -87,16 +87,16 @@
                 </div>
                 <div class="col-8">{{ print.filename }}</div>
               </div>
-              <div class="row" v-b-tooltip.hover v-bind:title="wasTimelapseUploaded ? print.uploaded_at : print.ended_at | moment('LLLL')">
+              <div class="row" v-b-tooltip.hover v-bind:title="this.humanizedPrintedOrUploadedTime(longFormat=true)">
                 <div class="text-muted col-4">
                   {{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}
                   <span class="float-right">:</span>
                 </div>
                 <div
                   class="col-8"
-                >{{ wasTimelapseUploaded ? print.uploaded_at.fromNow() : print.ended_at.fromNow() }} {{ endStatus }}</div>
+                >{{ this.humanizedPrintedOrUploadedTime() }} {{ endStatus }}</div>
               </div>
-              <div class="row" v-if="!wasTimelapseUploaded" :id="'dur-'+print.id">
+              <div class="row" v-if="!wasTimelapseUploaded && duration" :id="'dur-'+print.id">
                 <b-tooltip :target="'dur-'+print.id" triggers="hover">
                   {{ duration | duration("asHours") | floor }}:{{ duration | duration("minutes") }}:{{ duration | duration("seconds") }}
                 </b-tooltip>
@@ -235,7 +235,9 @@ export default {
     },
 
     duration() {
-      return moment.duration(this.print.ended_at.diff(this.print.started_at))
+      return this.print.ended_at && this.print.started_at
+        ? moment.duration(this.print.ended_at.diff(this.print.started_at))
+        : null
     },
 
     canShowDetectiveView() {
@@ -376,7 +378,20 @@ export default {
       axios.get(this.print.prediction_json_url).then(response => {
         this.predictions = response.data
       })
-    }
+    },
+
+    humanizedPrintedOrUploadedTime(longFormat=false) {
+      if (!this.print.uploaded_at && !this.print.ended_at) {
+        return '-'
+      }
+      const ts = this.wasTimelapseUploaded() ? print.uploaded_at : print.ended_at
+      if (longFormat) {
+        return ts.format('LLLL')
+      } else {
+        return ts.fromNow()
+      }
+    },
+
   },
   mounted() {
     if (this.print.prediction_json_url) {

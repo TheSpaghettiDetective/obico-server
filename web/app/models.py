@@ -299,7 +299,7 @@ class Printer(SafeDeleteModel):
             user=self.user,
             printer=self,
             ext_id=current_print_ts,
-            defaults={'filename': filename, 'started_at': timezone.now()},
+            defaults={'filename': filename.strip(), 'started_at': timezone.now()},
         )
 
         if cur_print.ended_at():

@@ -1,4 +1,3 @@
-from typing import List, Dict, Tuple
 import bson
 import json
 
@@ -18,11 +17,7 @@ from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
-from app.models import Print, Printer, ResurrectionError, PrintEvent
-from django.forms import model_to_dict
-
 from .serializers import *
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -81,8 +76,6 @@ class WebConsumer(JsonWebsocketConsumer):
 class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
-        self.status_history: List[Tuple[int, Dict]] = []
-
         if self.current_printer().is_authenticated:
             async_to_sync(self.channel_layer.group_add)(
                 channels.octo_group_name(self.current_printer().id),
@@ -136,14 +129,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             elif 'passthru' in data:
                 channels.send_message_to_web(printer.id, data)
             else:
-                idx = self.status_history[-1][0] + 1 if len(self.status_history) else 0
-                self.status_history.append((idx, data))
-                if len(self.status_history) > 15:
-                    self.status_history = self.status_history[-15:]
-                try:
-                    process_octoprint_status(printer, data)
-                except ResurrectionError as ex:
-                    report_resurrection(printer, ex.print, self.status_history)
+                process_octoprint_status(printer, data)
 
         except ObjectDoesNotExist:
             import traceback; traceback.print_exc()
@@ -308,7 +294,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
             cache.octoprinttunnel_update_stats(
                 self.scope['user'].id,
-                len(payload['data']) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
+                len(payload['data']) * 1.2 * 2 # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
             )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
@@ -316,31 +302,3 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     def current_user(self):
         return self.scope['user']
-
-
-def report_resurrection(printer: 'Printer', cur_print: 'Print', status_history: List[Tuple[int, Dict]]):
-    data = {}
-    for (i, status) in status_history:
-        data[f'status{str(i).zfill(4)}'] = status
-
-    data['print'] = model_to_dict(cur_print)  # noqa: F841
-    data['print']['deleted'] = cur_print.deleted
-    if printer.current_print:
-        data['current_print'] = model_to_dict(  # noqa: F841
-            printer.current_print)
-
-    evqs = PrintEvent.objects.filter(
-        print__printer=printer
-    ).order_by(
-        '-created_at'
-    ).values(
-        'print__ext_id', 'event_type', 'created_at'
-    )[:10]
-
-    for i, ev in enumerate(evqs):
-        data[f'event{str(i).zfill(2)}'] = dict(**ev)
-
-    from raven import Client
-    c = Client()
-    c.extra_context(data=data)
-    c.captureMessage('Dead print alive')

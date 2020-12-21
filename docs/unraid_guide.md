@@ -1,6 +1,6 @@
 # Run TSD on unRAID
 
-If video is your cup of tea, follow [this awesome video guide](https://www.youtube.com/watch?v=B2gjxL0MgEo) put together by [u/rickyh7](https://www.reddit.com/user/rickyh7/).Thank you u/rickyh7 !
+If video is your cup of tea, follow [this awesome video guide](https://www.youtube.com/watch?v=B2gjxL0MgEo) put together by Ricky at [SNR Tech Bytes](https://www.snrtechbytes.com/).Thank you Ricky!
 
 
 ## Install docker-compose

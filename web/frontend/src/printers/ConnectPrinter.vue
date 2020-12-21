@@ -50,10 +50,5 @@ export default {
       selectedBaudrate: '',
     }
   },
-
-  methods: {
-    onSelectionChanged() {
-    }
-  }
 }
 </script>

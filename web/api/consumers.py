@@ -1,5 +1,8 @@
+from typing import List, Dict, Tuple, Optional, Any
 import bson
+import time
 import json
+import datetime
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -8,15 +11,18 @@ import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
+from django.forms import model_to_dict
 import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
+from django.db.models import F
 
 
 from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
+from app.models import Print, Printer, ResurrectionError
 from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
@@ -76,6 +82,8 @@ class WebConsumer(JsonWebsocketConsumer):
 class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
+        self.anomaly_tracker = AnomalyTracker(now())
+
         if self.current_printer().is_authenticated:
             async_to_sync(self.channel_layer.group_add)(
                 channels.octo_group_name(self.current_printer().id),
@@ -107,7 +115,9 @@ class OctoPrintConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         Presence.objects.touch(self.channel_name)
         try:
-            printer = Printer.with_archived.get(id=self.current_printer().id)
+            printer = Printer.with_archived.annotate(
+                ext_id=F('current_print__ext_id')
+            ).get(id=self.current_printer().id)
 
             if text_data:
                 data = json.loads(text_data)
@@ -129,12 +139,18 @@ class OctoPrintConsumer(WebsocketConsumer):
             elif 'passthru' in data:
                 channels.send_message_to_web(printer.id, data)
             else:
-                process_octoprint_status(printer, data)
+                ex: Optional[Exception] = None
+                data['_now'] = now()
+                try:
+                    process_octoprint_status(printer, data)
+                    self.anomaly_tracker.track(printer, data)
+                except ResurrectionError as ex:
+                    self.anomaly_tracker.track(printer, data, ex)
 
         except ObjectDoesNotExist:
             import traceback; traceback.print_exc()
             self.close()
-        except:  # sentry doesn't automatically capture consumer errors
+        except Exception:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
             sentryClient.captureException()
 
@@ -294,7 +310,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
             cache.octoprinttunnel_update_stats(
                 self.scope['user'].id,
-                len(payload['data']) * 1.2 * 2 # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
+                len(payload['data']) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
             )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
@@ -302,3 +318,84 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     def current_user(self):
         return self.scope['user']
+
+
+class AnomalyTracker:
+
+    def __init__(self, connected_at: datetime) -> None:
+        self.connected_at = connected_at
+        self.transition_history: List[Tuple[int, Dict]] = []
+        self.last_ext_id: Optional[int] = None
+        self.last_failed = False
+
+    def track(self, printer: Printer, status: Dict[str, Any], ex: Optional[Exception] = None) -> None:
+        if len(self.transition_history) > 0:
+            idx = self.transition_history[-1][0] + 1
+        else:
+            idx = 0
+
+        comeback = False
+        ext_id = status.get('current_print_ts', None)
+        if self.last_ext_id != ext_id:
+            self.last_failed = False
+            self.transition_history.append((idx, status))
+            if ext_id != -1:
+                comeback = [
+                    _st.get('current_print_ts', None)
+                    for (_, _st) in self.transition_history
+                ].count(ext_id) > 1
+
+            if len(self.transition_history) > 10:
+                self.transition_history[-10:]
+
+        self.last_ext_id = ext_id
+
+        if (comeback or ex) and not self.last_failed:
+            self.report_resurrection(
+                comeback=comeback,
+                ex=ex is not None,
+                printer=printer,
+                transition_history=self.transition_history,
+            )
+
+        self.last_failed = comeback or (ex is not None)
+
+    def report_resurrection(self, comeback: bool, ex: bool, printer: 'Printer', transition_history: List[Tuple[int, Dict]]) -> None:
+        data: Dict[str, Any] = {
+            'connected_at': self.connected_at,
+            'comeback': comeback,
+            'ex': ex,
+        }
+
+        seen = set()
+        for (i, status) in transition_history:
+            data[f'status{str(i).zfill(4)}'] = status
+            ext_id = status.get('current_print_ts', None)
+            if ext_id not in seen:
+                print = Print.all_objects.filter(
+                    printer=printer,
+                    ext_id=ext_id
+                ).first()
+                if print:
+                    data[f'print.{ext_id}'] = model_to_dict(print)
+                    data[f'print.{ext_id}']['deleted'] = print.deleted
+                seen.add(ext_id)
+
+        data['printer.ext_id'] = printer.ext_id
+        data['print.current'] = model_to_dict(printer.current_print) if printer.current_print else None
+
+        from raven import Client
+        c = Client(
+            install_sys_hook=False,
+            install_logging_hook=False,
+            enable_breadcrumbs=False,
+            tags={
+                'printer_id': printer.id,
+                'ext_id': ext_id,
+                'connected_at': self.connected_at,
+                'comeback': comeback,
+                'ex': ex
+            }
+        )
+        c.extra_context(data=data)
+        c.captureMessage('Resurrected print')

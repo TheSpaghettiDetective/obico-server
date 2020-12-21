@@ -1,9 +1,10 @@
+from typing import Dict, List, Optional
 from allauth.account.admin import EmailAddress
 from datetime import datetime, timedelta
 import logging
 import os
 import json
-from django.db import models
+from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
 from django.contrib.auth.models import AbstractUser
@@ -26,6 +27,10 @@ from lib.utils import dict_or_none
 LOGGER = logging.getLogger(__name__)
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
+
+
+class ResurrectionError(Exception):
+    pass
 
 
 def dh_is_unlimited(dh):
@@ -287,18 +292,21 @@ class Printer(SafeDeleteModel):
         if not current_print_ts or current_print_ts == -1:
             raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
 
-        cur_print, _ = Print.objects.get_or_create(
-            user=self.user,
-            printer=self,
-            ext_id=current_print_ts,
-            defaults={'filename': filename.strip(), 'started_at': timezone.now()},
-        )
+        try:
+            cur_print, _ = Print.objects.get_or_create(
+                user=self.user,
+                printer=self,
+                ext_id=current_print_ts,
+                defaults={'filename': filename.strip(), 'started_at': timezone.now()},
+            )
+        except IntegrityError:
+            raise ResurrectionError('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         if cur_print.ended_at():
             if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
                 return
             else:
-                raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
+                raise ResurrectionError('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         self.current_print = cur_print
         self.save()
@@ -633,9 +641,11 @@ class PrintShotFeedback(models.Model):
 
     image_tag.short_description = 'Image'
 
+
 class ActiveMobileDeviceManager(models.Manager):
     def get_queryset(self):
         return super(ActiveMobileDeviceManager, self).get_queryset().filter(deactivated_at__isnull=True)
+
 
 class MobileDevice(models.Model):
 

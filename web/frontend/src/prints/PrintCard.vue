@@ -384,7 +384,7 @@ export default {
       if (!this.print.uploaded_at && !this.print.ended_at) {
         return '-'
       }
-      const ts = this.wasTimelapseUploaded() ? print.uploaded_at : print.ended_at
+      const ts = this.wasTimelapseUploaded ? this.print.uploaded_at : this.print.ended_at
       if (longFormat) {
         return ts.format('LLLL')
       } else {

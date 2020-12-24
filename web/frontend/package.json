@@ -13,7 +13,6 @@
     "core-js": "^3.6.4",
     "filesize": "^3.6.1",
     "ifvisible": "^1.1.0",
-    "js-file-download": "^0.4.12",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",
     "vue": "^2.6.11",

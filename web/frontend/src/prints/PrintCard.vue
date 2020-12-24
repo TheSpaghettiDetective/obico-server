@@ -1,7 +1,6 @@
 <template>
   <div class="col-sm-12 col-md-6 col-lg-4 pt-3">
     <div class="card vld-parent">
-      <loading :active="videoDownloading" :is-full-page="true"></loading>
       <div class="card-header">
         <div :style="{visibility: hasSelectedChangedListener ? 'visible' : 'hidden'}">
           <b-form-checkbox
@@ -47,13 +46,13 @@
             <i class="fas fa-ellipsis-v"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" v-if="this.print.video_url" @click="downloadVideo(false)">
+            <a class="dropdown-item" v-if="this.print.video_url" :href="this.print.video_url" target="_blank">
               <i class="fas fa-download"></i>Download Original Time-lapse
             </a>
             <a
               class="dropdown-item"
               v-if="this.print.tagged_video_url"
-              @click="downloadVideo(true)"
+              :href="this.print.tagged_video_url" target="_blank"
             >
               <i class="fas fa-download"></i>Download Detective Time-lapse
             </a>
@@ -187,7 +186,6 @@
 
 <script>
 import axios from 'axios'
-import fileDownload from 'js-file-download'
 import moment from 'moment'
 import filter from 'lodash/filter'
 // TODO: this should be configured as global. But for some reason it doesn't work.
@@ -212,7 +210,6 @@ export default {
 
   data: () => {
     return {
-      videoDownloading: false,
       currentPosition: 0,
       predictions: [],
       selectedCardView: 'detective',
@@ -324,25 +321,6 @@ export default {
 
     onSelectedChange() {
       this.$emit('selectedChanged', this.print.id, !this.selected) // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
-    },
-
-    downloadVideo(detectiveVideo) {
-      this.videoDownloading = true
-      const x = new XMLHttpRequest()
-      const filename = `${this.print.filename}${
-        detectiveVideo ? '_detective_view' : ''
-      }.mp4`
-      x.open(
-        'GET',
-        detectiveVideo ? this.print.tagged_video_url : this.print.video_url,
-        true
-      )
-      x.responseType = 'blob'
-      x.onload = e => {
-        fileDownload(e.target.response, filename)
-        this.videoDownloading = false
-      }
-      x.send()
     },
 
     deleteVideo() {

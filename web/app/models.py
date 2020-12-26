@@ -664,3 +664,23 @@ class MobileDevice(models.Model):
 
     objects = ActiveMobileDeviceManager()
     with_inactive = models.Manager()
+
+
+class OneTimeVerificationCodeManager(models.Manager):
+    def get_queryset(self):
+        return super(OneTimeVerificationCodeManager, self).get_queryset().filter(expired_at__gte=timezone.now())
+
+
+def two_hours_later():
+    return timezone.now() + timedelta(hours=2)
+
+class OneTimeVerificationCode(models.Model):
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    code = models.CharField(max_length=16, null=False, blank=False, db_index=True)
+    expired_at = models.DateTimeField(null=False, blank=False, default=two_hours_later, db_index=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = OneTimeVerificationCodeManager()
+    with_expired = models.Manager()

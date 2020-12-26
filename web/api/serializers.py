@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
 
-from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice
+from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
 from app.models import calc_normalized_p
 
 
@@ -76,6 +76,14 @@ class MobileDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobileDevice
         fields = '__all__'
+
+
+class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
+    printer = PrinterSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = OneTimeVerificationCode
+        fields = ('printer', 'code', 'expired_at',)
 
 
 # For public APIs

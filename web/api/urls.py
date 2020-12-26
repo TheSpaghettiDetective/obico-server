@@ -20,6 +20,10 @@ router.register(
     viewsets.OctoPrintTunnelUsageViewSet,
     'OctoPrintTunnelUsage')
 router.register(r'mobile_devices', viewsets.MobileDeviceViewSet, 'MobileDevice')
+router.register(
+    r'onetimeverificationcodes',
+    viewsets.OneTimeVerificationCodeViewSet,
+    'OneTimeVerificationCodeViewSet')
 
 pub_router = DefaultRouter()
 pub_router.register(r'printer', public_viewsets.PrinterViewSet, 'Printer')

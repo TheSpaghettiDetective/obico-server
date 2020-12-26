@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -7,16 +8,17 @@ from rest_framework import status
 from django.utils.timezone import now
 from django.conf import settings
 from django.http import HttpRequest
+from random import random, seed
 
 import requests
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
-    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice,
+    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from config.celery import celery_app
@@ -297,3 +299,32 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
             device.save()
 
         return Response(self.serializer_class(device, many=False).data)
+
+
+class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
+                                  viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = OneTimeVerificationCodeSerializer
+
+    def list(self, request, *args, **kwargs):
+        code = None
+        param_printer_id = request.GET.get('printer_id')
+        if param_printer_id:
+            code = OneTimeVerificationCode.objects.filter(
+                printer_id=get_object_or_404(Printer, user=request.user, pk=param_printer_id).id
+                ).first()
+            if not code:
+                seed()
+                while True:
+                    new_code = int(random()*1500450271) % 1000000
+                    if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
+                        break
+
+                code = OneTimeVerificationCode.objects.create(printer_id=param_printer_id, code=new_code)
+        elif request.GET.get('code'):
+            code = OneTimeVerificationCode.objects.filter(code=code).first()
+
+        if code:
+            return Response(self.serializer_class(code, many=False).data)
+        else:
+            raise Http404("Requested resource does not exist")

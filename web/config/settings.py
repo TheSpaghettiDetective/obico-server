@@ -189,6 +189,14 @@ STATICFILES_DIRS = [
 SITE_ID = 1
 SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 
+# DRF settings:
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '50/hour',
+    }
+}
+
 # Google recaptcha V3
 
 RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')

@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from django.conf import settings
 from django.http import HttpRequest
 from random import random, seed
+from rest_framework.throttling import AnonRateThrottle
 
 import requests
 
@@ -303,6 +304,7 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
 
 class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
+    throttle_classes = [AnonRateThrottle]
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = OneTimeVerificationCodeSerializer
 
@@ -322,7 +324,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
                 code = OneTimeVerificationCode.objects.create(printer_id=param_printer_id, code=new_code)
         elif request.GET.get('code'):
-            code = OneTimeVerificationCode.objects.filter(code=code).first()
+            code = OneTimeVerificationCode.objects.filter(code=request.GET.get('code')).first()
 
         if code:
             return Response(self.serializer_class(code, many=False).data)

@@ -188,9 +188,6 @@
 import axios from 'axios'
 import moment from 'moment'
 import filter from 'lodash/filter'
-// TODO: this should be configured as global. But for some reason it doesn't work.
-import Loading from 'vue-loading-overlay'
-import 'vue-loading-overlay/dist/vue-loading.css'
 
 import {getNormalizedP} from '@lib/normalizers'
 import urls from '../lib/server_urls'
@@ -202,7 +199,6 @@ export default {
   name: 'PrintCard',
 
   components: {
-    Loading,
     VideoBox,
     Gauge,
     DetectiveWorking

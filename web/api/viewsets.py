@@ -309,22 +309,25 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
     serializer_class = OneTimeVerificationCodeSerializer
 
     def list(self, request, *args, **kwargs):
-        code = None
         param_printer_id = request.GET.get('printer_id')
-        if param_printer_id:
-            code = OneTimeVerificationCode.objects.filter(
-                printer_id=get_object_or_404(Printer, user=request.user, pk=param_printer_id).id
-                ).first()
-            if not code:
-                seed()
-                while True:
-                    new_code = int(random()*1500450271) % 1000000
-                    if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
-                        break
+        code = OneTimeVerificationCode.objects.filter(
+            printer_id=get_object_or_404(Printer, user=request.user, pk=param_printer_id).id
+            ).first()
+        if not code:
+            seed()
+            while True:
+                new_code = int(random()*1500450271) % 1000000
+                if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
+                    break
 
-                code = OneTimeVerificationCode.objects.create(printer_id=param_printer_id, code=new_code)
-        elif request.GET.get('code'):
-            code = OneTimeVerificationCode.objects.filter(code=request.GET.get('code')).first()
+            code = OneTimeVerificationCode.objects.create(printer_id=param_printer_id, code=new_code)
+
+        return Response(self.serializer_class(code, many=False).data)
+
+
+    @action(detail=False, methods=['get'])
+    def verify(self, request, *args, **kwargs):
+        code = OneTimeVerificationCode.objects.filter(code=request.GET.get('code')).first()
 
         if code:
             return Response(self.serializer_class(code, many=False).data)

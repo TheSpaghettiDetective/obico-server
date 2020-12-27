@@ -23,7 +23,7 @@ The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfort
 The following software is required before you start installing the server:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
-    - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
+    - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Fedora](https://docs.docker.com/engine/install/fedora/), [CentOS](https://docs.docker.com/engine/install/centos/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
     - [Install Docker-compose](https://docs.docker.com/compose/install/). You need Docker-compose 1.21.0 or higher version.
     - (**Windows only**) Make sure "Shared Drives" is checked in Docker settings
 <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/shared_drives.png" width="409" height="200"></img>

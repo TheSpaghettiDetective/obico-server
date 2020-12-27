@@ -327,9 +327,9 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
     @action(detail=False, methods=['get'])
     def verify(self, request, *args, **kwargs):
-        code = OneTimeVerificationCode.objects.filter(code=request.GET.get('code')).first()
+        code = OneTimeVerificationCode.objects.select_related('printer').filter(code=request.GET.get('code')).first()
 
-        if code:
+        if code and Printer.objects.filter(id=code.printer.id).exists():
             return Response(self.serializer_class(code, many=False).data)
         else:
             raise Http404("Requested resource does not exist")

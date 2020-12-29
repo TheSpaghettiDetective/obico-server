@@ -1,14 +1,16 @@
-from django.test import TestCase, override_settings
-from unittest.mock import *
+from django.test import TestCase, TransactionTestCase, override_settings
+from unittest.mock import patch, call, ANY
 from django.utils import timezone
 from datetime import timedelta
 from django.test import Client
 from django.urls import reverse
-from safedelete.models import *
+from safedelete.models import HARD_DELETE
 
-from app.models import Printer
-from api.octoprint_views import *
-from api.octoprint_messages import *
+from app.models import Printer, Print, User
+from api.octoprint_views import pause_if_needed, alert_if_needed
+from api.octoprint_messages import process_octoprint_status_with_ts, CURRENT_SWITCH_OVER_DELTA, UNSET_DELTA
+
+from app.tasks import mark_prints_as_gone, GONE_DELTA, ABS_GONE_DELTA
 
 
 def init_data():
@@ -34,7 +36,7 @@ class AlertTestCase(TestCase):
         (self.user, self.printer, self.client) = init_data()
 
     def test_warning_once_and_cancel(self, send_failure_alert):
-        response = self.client.get(
+        self.client.get(
             '/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
 
         alert_if_needed(self.printer)
@@ -43,7 +45,7 @@ class AlertTestCase(TestCase):
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
-        response = self.client.get(
+        self.client.get(
             '/api/v1/printers/{}/cancel_print/'.format(self.printer.id))
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at >
@@ -58,7 +60,7 @@ class AlertTestCase(TestCase):
         self.printer.refresh_from_db()
         self.assertIsNotNone(self.printer.current_print.alerted_at)
 
-        response = self.client.get(
+        self.client.get(
             '/api/v1/printers/{}/acknowledge_alert/?alert_overwrite=NOT_FAILED'.format(self.printer.id))
         self.printer.refresh_from_db()
         self.assertTrue(self.printer.current_print.alert_acknowledged_at >
@@ -327,22 +329,6 @@ class PrintTestCase(TestCase):
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
 
-    def test_lost_end_event(self, celery_app):
-        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
-        self.assertIsNotNone(self.printer.current_print)
-
-        process_octoprint_status_with_ts(self.msg_without_event(-1, '1.gcode'), self.printer)
-        process_octoprint_status_with_ts(self.msg(100, '1.gcode', 'PrintPaused'), self.printer)
-        self.assertIsNotNone(self.printer.current_print)
-        self.assertEqual(self.printer.current_print.ext_id, 100)
-        self.assertIsNotNone(self.printer.current_print.started_at)
-        self.assertEqual(Print.objects.all_with_deleted().count(), 2)
-        celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 1)
-
-        process_octoprint_status_with_ts(self.msg(100, '1.gcode', 'PrintDone'), self.printer)
-        self.assertEqual(celery_app.send_task.call_count, 2)
-
     def test_plugin_send_neg_print_ts_while_printing(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
         process_octoprint_status_with_ts(self.msg(-1, '1.gcode', 'PrintPaused'), self.printer)
@@ -353,9 +339,12 @@ class PrintTestCase(TestCase):
         self.assertEqual(celery_app.send_task.call_count, 0)
 
     def test_race_condition_at_end_of_print(self, celery_app):
-        eleven_hour_ago = timezone.now() - timedelta(hours=11)
-        with patch('django.utils.timezone.now', return_value=eleven_hour_ago):
-            process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
+        eleven_hours_ago = timezone.now() - timedelta(hours=11)
+        with patch('django.utils.timezone.now', return_value=eleven_hours_ago):
+            process_octoprint_status_with_ts(
+                self.msg(1, '1.gcode', 'PrintStarted'),
+                self.printer,
+                now=eleven_hours_ago)
 
         process_octoprint_status_with_ts(self.msg_without_event(-1, '1.gcode'), self.printer)
         process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintFailed'), self.printer)
@@ -364,14 +353,130 @@ class PrintTestCase(TestCase):
         celery_app.send_task.assert_has_calls(EVENT_CALLS)
         self.assertEqual(celery_app.send_task.call_count, 1)
 
-    def test_plugin_send_diff_print_ts_while_printing(self, celery_app):
+    def test_touched_print_is_kept_as_current(self, celery_app):
         process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
-        process_octoprint_status_with_ts(self.msg(5, '1.gcode', 'PrintPaused'), self.printer)
-        process_octoprint_status_with_ts(self.msg_without_event(1, '1.gcode'), self.printer)
-        self.assertIsNotNone(self.printer.current_print)
-        self.assertEqual(Print.objects.all_with_deleted().count(), 1)
-        self.assertEqual(celery_app.send_task.call_count, 0)
+        process_octoprint_status_with_ts(self.msg_without_event(2, '1.gcode'), self.printer)
+        self.assertEqual(self.printer.current_print.ext_id, 1)
+        self.assertEqual(Print.objects.count(), 2)
 
-        process_octoprint_status_with_ts(self.msg_without_event(100, '1.gcode'), self.printer)
-        celery_app.send_task.assert_has_calls(EVENT_CALLS)
-        self.assertEqual(celery_app.send_task.call_count, 1)
+    def test_untouched_print_gets_swapped(self, celery_app):
+        # happened in the past
+        t0 = timezone.now() - CURRENT_SWITCH_OVER_DELTA - timedelta(seconds=1)
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(
+                self.msg(1, '1.gcode', 'PrintStarted'),
+                self.printer,
+                now=t0)
+
+        # happens now
+        process_octoprint_status_with_ts(self.msg_without_event(2, '1.gcode'), self.printer)
+
+        self.assertEqual(self.printer.current_print.ext_id, 2)
+        self.assertEqual(Print.objects.count(), 2)
+
+    def test_untouched_print_is_unset(self, celery_app):
+        # happened in the past
+        t0 = timezone.now() - UNSET_DELTA - timedelta(seconds=1)
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(
+                self.msg(1, '1.gcode', 'PrintStarted'),
+                self.printer,
+                now=t0)
+
+        # happens now
+        process_octoprint_status_with_ts(self.msg_without_event(-1, '1.gcode'), self.printer)
+
+        self.assertIsNone(self.printer.current_print)
+        self.assertEqual(Print.objects.count(), 1)
+
+    def test_last_PrintStarted_wins(self, celery_app):
+        process_octoprint_status_with_ts(self.msg(1, '1.gcode', 'PrintStarted'), self.printer)
+        process_octoprint_status_with_ts(self.msg(2, '1.gcode', 'PrintStarted'), self.printer)
+        self.assertEqual(self.printer.current_print.ext_id, 2)
+        self.assertEqual(Print.objects.count(), 2)
+
+    def test_lost_end_event__estimated(self, celery_app):
+        # happened in the past
+        t0 = timezone.now() - GONE_DELTA - timedelta(seconds=1)
+        msg = self.msg(1, '1.gcode', 'PrintStarted')
+        msg['octoprint_data']['progress'] = {'printTimeLeft': 1}
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(msg, self.printer, t0)
+
+        self.assertIsNotNone(self.printer.current_print)
+        self.assertEqual(self.printer.current_print.ext_id, 1)
+
+        print = self.printer.current_print
+
+        # happens now
+        mark_prints_as_gone()
+
+        self.printer.refresh_from_db()
+        self.assertIsNone(self.printer.current_print)
+
+        print.refresh_from_db()
+        self.assertIsNotNone(print.gone_at)
+        self.assertIsNotNone(print.cancelled_at)
+
+    def test_lost_end_event__abs(self, celery_app):
+        # happened in the past
+        t0 = timezone.now() - ABS_GONE_DELTA - timedelta(seconds=1)
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(
+                self.msg(1, '1.gcode', 'PrintStarted'),
+                self.printer,
+                now=t0)
+
+        self.assertIsNotNone(self.printer.current_print)
+        self.assertEqual(self.printer.current_print.ext_id, 1)
+
+        print = self.printer.current_print
+
+        # happens now
+        mark_prints_as_gone()
+
+        self.printer.refresh_from_db()
+        self.assertIsNone(self.printer.current_print)
+
+        print.refresh_from_db()
+        self.assertIsNotNone(print.gone_at)
+        self.assertIsNotNone(print.cancelled_at)
+
+    def test_not_gone__estimated(self, celery_app):
+        t0 = timezone.now() - GONE_DELTA
+        msg = self.msg(1, '1.gcode', 'PrintStarted')
+        msg['octoprint_data']['progress'] = {'printTimeLeft': 1}
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(msg, self.printer, now=t0)
+
+        print = self.printer.current_print
+
+        mark_prints_as_gone()
+
+        self.assertEqual(Print.objects.count(), 1)
+
+        self.printer.refresh_from_db()
+        self.assertIsNotNone(self.printer.current_print)
+
+        print.refresh_from_db()
+        self.assertIsNone(print.gone_at)
+
+    def test_not_gone__abs(self, celery_app):
+        t0 = timezone.now() - ABS_GONE_DELTA + timedelta(seconds=1)
+        with patch('django.utils.timezone.now', return_value=t0):
+            process_octoprint_status_with_ts(
+                self.msg(1, '1.gcode', 'PrintStarted'),
+                self.printer,
+                now=t0)
+
+        print = self.printer.current_print
+
+        mark_prints_as_gone()
+
+        self.assertEqual(Print.objects.count(), 1)
+
+        self.printer.refresh_from_db()
+        self.assertIsNotNone(self.printer.current_print)
+
+        print.refresh_from_db()
+        self.assertIsNone(print.gone_at)

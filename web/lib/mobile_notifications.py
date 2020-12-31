@@ -1,4 +1,5 @@
 import os
+import re
 from firebase_admin.messaging import Message, send, Notification, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
 import firebase_admin
 from django.utils.timezone import now
@@ -126,8 +127,10 @@ def send_to_device(msg, mobile_device):
         return
 
     if mobile_device.platform == 'ios':
-        ios_push_notification(msg, mobile_device.device_token)
-        return
+        m = re.search('1.(\d*):',  mobile_device.app_version)
+        if m and int(m.group(1)) < 14:      # ios App < 1.14 will need server-push otherwise will crash.
+            ios_push_notification(msg, mobile_device.device_token)
+            return
 
     try:
         message = Message(

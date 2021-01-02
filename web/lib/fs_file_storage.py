@@ -5,7 +5,7 @@ from shutil import copyfileobj, rmtree
 
 from lib import site
 
-def save_file_obj(dest_path, file_obj, container):
+def save_file_obj(dest_path, file_obj, container, content_type):
     fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
     if not path.exists(path.dirname(fqp)):
         os.makedirs(path.dirname(fqp))

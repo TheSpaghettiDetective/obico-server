@@ -126,12 +126,6 @@ def send_to_device(msg, mobile_device):
     if not firebase_app:
         return
 
-    if mobile_device.platform == 'ios':
-        m = re.search('1.(\d*):',  mobile_device.app_version)
-        if m and int(m.group(1)) < 14:      # ios App < 1.14 will need server-push otherwise will crash.
-            ios_push_notification(msg, mobile_device.device_token)
-            return
-
     try:
         message = Message(
             data=msg,
@@ -141,45 +135,6 @@ def send_to_device(msg, mobile_device):
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
         MobileDevice.objects.filter(device_token=mobile_device.device_token).update(deactivated_at=now())
-    except:
-        import traceback; traceback.print_exc()
-        sentryClient.captureException()
-
-def ios_push_notification(data, device_token):
-    if not firebase_app:
-        return
-
-    # TODO: Fixed notification settings that only sends events turned on by default, until we find a better solution for ios
-    if data['type'] in ['heaterEvent',]:
-        return
-    if data['type'] == 'printEvent' and data['eventType'] not in ['PrintDone', 'PrintCancelled']:
-        return
-
-    notification = Notification(title=data['title'], body=data['body'])
-
-    if data.get('picUrl'):
-        notification.image = data.get('picUrl')
-
-    try:
-        message = Message(
-            notification=notification,
-            apns=APNSConfig(
-                headers={
-                    'apns-push-type': 'alert',
-                    'apns-priority': '5',
-                    'apns-topic': 'com.thespaghettidetective.ios',
-                    'apns-collapse-id': f'collapse-{data["printerId"]}',
-                },
-
-            ),
-            token=device_token)
-
-        if  data['type'] != 'printProgress':
-            message.apns.payload=APNSPayload(aps=Aps(sound="default"))
-
-        return send(message, app=firebase_app)
-    except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
-        MobileDevice.objects.filter(device_token=device_token).update(deactivated_at=now())
     except:
         import traceback; traceback.print_exc()
         sentryClient.captureException()

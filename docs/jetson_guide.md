@@ -1,7 +1,5 @@
 # Run TSD server on Jetson Nano
 
-*Attribution: This guide is adopted from [Raymond's scripts](https://gist.github.com/RaymondHimle/5c06454f09f0e370ec0673835fb53dba).*
-
 Thanks to Raymond's work, you can now easily run TSD server on Jetson.
 
 ## Software requirements

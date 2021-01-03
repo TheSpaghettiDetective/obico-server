@@ -219,8 +219,8 @@ def print(request, pk):
 def upload_print(request):
     if request.method == 'POST':
         _, file_extension = os.path.splitext(request.FILES['file'].name)
-        video_path = f'{str(timezone.now().timestamp())}{file_extension}'
-        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.TIMELAPSE_CONTAINER)
+        video_path = f'{request.user.id}/{str(timezone.now().timestamp())}{file_extension}'
+        save_file_obj(f'uploaded/{video_path}', request.FILES['file'], settings.PICS_CONTAINER, long_term_storage=False)
         preprocess_timelapse.delay(request.user.id, video_path, request.FILES['file'].name)
 
         return JsonResponse(dict(status='Ok'))

@@ -8,7 +8,10 @@ Thanks to Raymond's work, you can now easily run TSD server on Jetson.
 
 The following software is required before you start installing the server:
 
-- [JetPack SDK](https://developer.nvidia.com/embedded/jetpack). If you already flashed a software on you sd card, you will have to replace it with this one. **Important:** When you flash the new software on your sd card, it will format it as well, so make sure you have backed up anything important
+- [JetPack SDK](https://developer.nvidia.com/embedded/jetpack). If you already flashed a software on you sd card, you will have to replace it with this one. **Important:** Before you flash the new software on your sd card, you will have to fully format it first, so make sure you have backed up anything important on an external device.
+  - [Flashing Software](https://www.balena.io/etcher/)
+  - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
+
 - [Docker and Docker-compose](https://dev.to/rohansawant/installing-docker-and-docker-compose-on-the-jetson-nano-4gb-2gb-in-2-simple-steps-1f4i). But you don't have to understand how Docker or Docker-compose works. This step may also take a while to complete.
 
 - git ([how to install](https://git-scm.com/downloads)).
@@ -53,6 +56,6 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
  cd TheSpaghettiDetective && sudo docker-compose up -d
  ```
 
-4. Go grab a coffee. Step 2 will take 15-30 minutes.
+4. Go grab a coffee. Step 3 will take 15-30 minutes.
 
 You can then follow the remaining steps by following the instructions in [README.md].

@@ -30,11 +30,11 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
 
-    (_, rotated_jpg_url) = save_print_snapshot(
-        printer.current_print,
-        last_pic_of_print(printer.current_print, 'tagged'),
-        unrotated_jpg_path=None,
-        rotated_jpg_path=f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg')
+    rotated_jpg_url = save_print_snapshot(printer.current_print,
+                        last_pic_of_print(printer.current_print, 'tagged'),
+                        f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
+                        rotated=True,
+                        to_long_term_storage=False)
 
     # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
     try:

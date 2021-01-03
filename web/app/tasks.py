@@ -251,15 +251,20 @@ def clean_up_print_pics(_print):
 
 
 def generate_print_poster(_print):
-
-    (unrotated_jpg_url, rotated_jpg_url) = save_print_snapshot(_print,
-                                                               last_pic_of_print(_print, 'raw'),
-                                                               unrotated_jpg_path=f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
-                                                               rotated_jpg_path=f'private/{_print.id}_poster.jpg')
-
+    unrotated_jpg_url = save_print_snapshot(_print,
+                            last_pic_of_print(_print, 'raw'),
+                            f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
+                            rotated=False,
+                            to_long_term_storage=False)
     if unrotated_jpg_url:
         cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
+    rotated_jpg_url = save_print_snapshot(_print,
+                            last_pic_of_print(_print, 'raw'),
+                            f'private/{_print.id}_poster.jpg',
+                            to_container=settings.TIMELAPSE_CONTAINER,
+                            rotated=True,
+                            to_long_term_storage=True)
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
         _print.save()
@@ -306,13 +311,11 @@ def select_print_shots_for_feedback(_print):
         return sorted(selected_timestamps)
 
     for ts in highest_7_predictions(cache.print_highest_predictions_get(_print.id)):
-        (_, rotated_jpg_url) = save_print_snapshot(
-            _print,
-            f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
-            unrotated_jpg_path=None,
-            rotated_jpg_path=f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
-            to_container=settings.PICS_CONTAINER,
-            to_long_term_storage=False)
+        rotated_jpg_url = save_print_snapshot(_print,
+                            f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
+                            f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
+                            rotated=True,
+                            to_long_term_storage=False)
         PrintShotFeedback.objects.create(print=_print, image_url=rotated_jpg_url)
 
 

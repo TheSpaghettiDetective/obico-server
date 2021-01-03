@@ -58,34 +58,30 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def save_print_snapshot(_print, input_path, unrotated_jpg_path=None, rotated_jpg_path=None, to_container=settings.TIMELAPSE_CONTAINER, to_long_term_storage=True):
+def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
         return (None, None)
 
     to_dir = tempfile.mkdtemp()
     shutil.rmtree(to_dir, ignore_errors=True)
     os.mkdir(to_dir)
-    unrotated_jpg = os.path.join(to_dir, 'unrotated.jpg')
-    with open(unrotated_jpg, 'wb') as file_obj:
+    temp_jpg = os.path.join(to_dir, 'unrotated.jpg')
+    with open(temp_jpg, 'wb') as file_obj:
         retrieve_to_file_obj(input_path, file_obj, settings.PICS_CONTAINER, long_term_storage=False)
 
-    (unrotated_jpg_url, rotated_jpg_url) = (None, None)
-
-    if unrotated_jpg_path:
-        with open(unrotated_jpg, 'rb') as file_obj:
-            _, unrotated_jpg_url = save_file_obj(unrotated_jpg_path, file_obj, to_container, long_term_storage=to_long_term_storage)
-
-    if rotated_jpg_path:
+    if not rotated:
+        dest_jpg = temp_jpg
+    else:
         ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
-        rotated_jpg = os.path.join(to_dir, 'rotated.jpg')
-        cmd = f'ffmpeg -y -i {unrotated_jpg} {ffmpeg_extra_options} {rotated_jpg}'
+        dest_jpg = os.path.join(to_dir, 'rotated.jpg')
+        cmd = f'ffmpeg -y -i {temp_jpg} {ffmpeg_extra_options} {dest_jpg}'
         subprocess.run(cmd.split(), check=True)
-        with open(rotated_jpg, 'rb') as file_obj:
-            _, rotated_jpg_url = save_file_obj(rotated_jpg_path, file_obj, to_container, long_term_storage=to_long_term_storage)
 
+    with open(dest_jpg, 'rb') as file_obj:
+        _, dest_jpg_url = save_file_obj(dest_jpg_path, file_obj, to_container, long_term_storage=to_long_term_storage)
     shutil.rmtree(to_dir, ignore_errors=True)
 
-    return (unrotated_jpg_url, rotated_jpg_url)
+    return dest_jpg_url
 
 def shortform_duration(total_seconds):
     if not total_seconds:

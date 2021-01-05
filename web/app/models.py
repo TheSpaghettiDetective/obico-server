@@ -625,7 +625,7 @@ class PrintShotFeedback(models.Model):
         (UNANSWERED, "I'll decide later"),
     )
 
-    print = models.ForeignKey(Print, on_delete=models.CASCADE)
+    print = models.ForeignKey(Print, on_delete=models.SET_NULL, blank=True, null=True)
 
     image_url = models.CharField(max_length=2000, null=False, blank=False)
 

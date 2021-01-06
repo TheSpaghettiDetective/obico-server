@@ -60,7 +60,7 @@ def last_pic_of_print(_print, path_prefix):
 
 def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
-        return (None, None)
+        return None
 
     to_dir = tempfile.mkdtemp()
     shutil.rmtree(to_dir, ignore_errors=True)

@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'bootstrap_pagination',
     'jstemplate',
     'pushbullet',
-    'corsheaders',
     'safedelete',
     'qr_code',
     'app',  # app has to come before allauth for template override to work
@@ -77,7 +76,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -198,11 +196,6 @@ REST_FRAMEWORK = {
         'anon': '50/hour',
     }
 }
-
-# CORS settings:
-
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^.*onetimeverificationcodes/verify/$'
 
 # Google recaptcha V3
 

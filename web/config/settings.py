@@ -202,7 +202,7 @@ REST_FRAMEWORK = {
 # CORS settings:
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^.*onetimeverificationcode/verify/$'
+CORS_URLS_REGEX = r'^.*onetimeverificationcodes/verify/$'
 
 # Google recaptcha V3
 

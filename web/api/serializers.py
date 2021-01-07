@@ -83,7 +83,7 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OneTimeVerificationCode
-        fields = ('printer', 'code', 'expired_at',)
+        fields = ('id', 'printer', 'code', 'expired_at',)
 
 
 # For public APIs

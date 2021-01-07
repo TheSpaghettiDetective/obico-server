@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+import os
+from binascii import hexlify
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from django.utils.timezone import now
+from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
 from random import random, seed
@@ -303,6 +305,7 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
 
 
 class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
+                                  mixins.RetrieveModelMixin,
                                   viewsets.GenericViewSet):
     throttle_classes = [AnonRateThrottle]
     authentication_classes = (CsrfExemptSessionAuthentication,)
@@ -324,6 +327,13 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
         return Response(self.serializer_class(code, many=False).data)
 
+    def retrieve(self, request, *args, **kwargs):
+        if not request.user or not request.user.is_authenticated:
+            raise Http404("Requested resource does not exist")
+
+        code = get_object_or_404(OneTimeVerificationCode.with_expired.select_related('printer')
+                .filter(user=request.user), pk=kwargs["pk"])
+        return Response(self.serializer_class(code, many=False).data)
 
     @action(detail=False, methods=['get'])
     def verify(self, request, *args, **kwargs):
@@ -331,8 +341,12 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
         if code:
             if not code.printer:
-                printer = Printer.objects.create(name="My Awesome Cloud Printer", user=code.user)
+                printer = Printer.objects.create(
+                    name="My Awesome Cloud Printer",
+                    user=code.user,
+                    auth_token = hexlify(os.urandom(10)).decode())
                 code.printer = printer
+                code.expired_at = timezone.now()
                 code.save()
             return Response(self.serializer_class(code, many=False).data)
         else:

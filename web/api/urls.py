@@ -21,7 +21,7 @@ router.register(
     'OctoPrintTunnelUsage')
 router.register(r'mobile_devices', viewsets.MobileDeviceViewSet, 'MobileDevice')
 router.register(
-    r'onetimeverificationcode',
+    r'onetimeverificationcodes',
     viewsets.OneTimeVerificationCodeViewSet,
     'OneTimeVerificationCodeViewSet')
 

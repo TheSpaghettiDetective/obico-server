@@ -30,43 +30,6 @@ ALERT_COOLDOWN_SECONDS = 120
 LOGGER = logging.getLogger(__name__)
 
 
-def alert_suppressed(printer):
-    if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
-        return True
-
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
-
-
-def alert_if_needed(printer):
-    if alert_suppressed(printer):
-        return
-
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-    if last_alerted > last_acknowledged:
-        return
-
-    printer.set_alert()
-    send_failure_alert(printer, is_warning=True, print_paused=False)
-
-
-def pause_if_needed(printer):
-    if alert_suppressed(printer):
-        return
-
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-
-    if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
-        printer.pause_print()
-        printer.set_alert()
-        send_failure_alert(printer, is_warning=False, print_paused=True)
-    elif not last_alerted > last_acknowledged:
-        printer.set_alert()
-        send_failure_alert(printer, is_warning=False, print_paused=False)
-
-
 class OctoPrintPicView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (PrinterAuthentication,)
@@ -135,11 +98,56 @@ class OctoPrintPingView(APIView):
 
     def get(self, request):
         user = request.user
+        printer = request.auth
         return Response({
-            'user': {
+            'user': {       # For compatibility with plugin < 1.5.0. Can be removed once old plugins have phased out.
                 'is_pro': user.is_pro,
+            },
+            'printer': {
+                'is_pro': user.is_pro,
+                'id': printer.id,
+                'name': printer.name,
             }
         })
+
+
+## Helper methods
+
+def alert_suppressed(printer):
+    if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
+        return True
+
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
+
+
+def alert_if_needed(printer):
+    if alert_suppressed(printer):
+        return
+
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
+    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    if last_alerted > last_acknowledged:
+        return
+
+    printer.set_alert()
+    send_failure_alert(printer, is_warning=True, print_paused=False)
+
+
+def pause_if_needed(printer):
+    if alert_suppressed(printer):
+        return
+
+    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
+    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+
+    if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
+        printer.pause_print()
+        printer.set_alert()
+        send_failure_alert(printer, is_warning=False, print_paused=True)
+    elif not last_alerted > last_acknowledged:
+        printer.set_alert()
+        send_failure_alert(printer, is_warning=False, print_paused=False)
 
 
 def cap_image_size(pic):

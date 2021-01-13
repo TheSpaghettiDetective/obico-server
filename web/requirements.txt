@@ -40,4 +40,3 @@ discord-webhook==0.8.0
 bson==0.5.10
 firebase-admin==4.4.0
 django-cors-headers==3.6.0
-pyjwt==1.7.1

@@ -33,9 +33,13 @@
           role="button"><span><i class="fab fa-facebook-f"></i> Sign up with Facebook</span> </a>
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
           role="button"><span><i class="fab fa-google-plus-g"></i> Sign up with Google+</span> </a>
-        <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn apple-btn social-btn"
-          role="button"><span><i class="fab fa-apple"></i> Sign up with Apple</span> </a>
       </div>
+        {% if request.GET.platform == 'ios' %}
+        <div class="social-login">
+          <a href="/mobile/auth/apple/" class="btn" style="border-radius: 100px; background-color: black; height: 47px; font-size: 20px;"
+            role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Apple</span> </a>
+        </div>
+        {% endif %}
       {% endif %}
 
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>

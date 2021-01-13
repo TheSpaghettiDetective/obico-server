@@ -40,6 +40,7 @@ urlpatterns = [
     # Shown only in mobile apps
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
     path('mobile/auth/signup/', mobile_views.MobileSignupView.as_view(), name='mobile_auth_signup'),
+    path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
     path('mobile/user_preferences/', web_views.user_preferences, {"template_dir": "mobile"}),

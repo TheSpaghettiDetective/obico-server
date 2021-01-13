@@ -91,3 +91,6 @@ def oauth_callback(request, *args, **kwargs):
 
     except ImmediateHttpResponse as e:
         return e.response
+
+def apple_login(request):
+    return render(request, 'mobile/account/apple_login.html')

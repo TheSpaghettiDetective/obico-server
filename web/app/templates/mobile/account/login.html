@@ -23,9 +23,13 @@
           role="button"><span><i class="fab fa-facebook-f"></i> Sign In with Facebook</span> </a>
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
           role="button"><span><i class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
-        <a href="/auth/apple" class="btn apple-btn social-btn"
-          role="button"><span><i class="fab fa-apple"></i> Sign In with Apple</span> </a>
       </div>
+        {% if request.GET.platform == 'ios' %}
+        <div class="social-login">
+          <a href="/mobile/auth/apple/" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
+            role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Apple</span> </a>
+        </div>
+        {% endif %}
       {% endif %}
 
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
@@ -65,17 +69,16 @@
         {% endif %}
         <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
         <div class="pt-2">
-          <a class="button secondaryAction float-left"
+          <a class="button secondaryAction"
             href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
         </div>
+        {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
+        <div class="text-center pt-3 w-100">
+          <div class="font-weight-light text-muted">- OR -</div>
+          <a class="btn" href="{% url 'mobile_auth_signup' %}?platform={{request.GET.platform}}{% if redirect_field_value %}&next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
+        </div>
+        {% endif %}
       </form>
-
-      <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
-
-      {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
-      <a class="btn btn-outline-secondary btn-block" href="{% url 'mobile_auth_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "Sign up" %}</a>
-      {% endif %}
-
     </div>
   </div>
 </div>

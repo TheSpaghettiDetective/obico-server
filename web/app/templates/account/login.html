@@ -60,10 +60,15 @@
         {% endif %}
         <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
         <div class="pt-2">
-          <a class="button secondaryAction float-left"
+          <a class="button secondaryAction"
             href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        </div>
+        <div>
           {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
-          <a class="button secondaryAction float-right" href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "Sign up" %} >>></a>
+          <div class="text-center pt-3 w-100">
+            <div class="font-weight-light text-muted">- OR -</div>
+            <a class="btn" href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
+          </div>
           {% endif %}
         </div>
       </form>

@@ -9,7 +9,7 @@
 
 {% block content %}
 
-{% if not user.is_pro %}
+{% if not user.is_pro and request.GET.platform != 'ios' %}
 <div class="row justify-content-center">
   <div class="col-sm-11 col-md-10 col-lg-8">
     <div class="form-container printer-settings">
@@ -21,22 +21,24 @@
   </div>
 </div>
 {% else %}
-<div>
-  <div class="row my-3 justify-content-center">
-    <div class="col-sm-12 col-lg-10">
-          <form action="upload/" id="gcode-upload" class="dropzone upload-box">
-            {% csrf_token %}
-            <div class="dz-message needsclick">
-              <i class="fas fa-upload fa-2x"></i> <br />
-              Drop files here or click to upload.<br />
-              G-Code files only. Up to 200MB each.
-              <div class="fallback">
-                <input name="file" type="file" multiple />
+  {% if request.GET.platform != 'ios' %}
+  <div>
+    <div class="row my-3 justify-content-center">
+      <div class="col-sm-12 col-lg-10">
+            <form action="upload/" id="gcode-upload" class="dropzone upload-box">
+              {% csrf_token %}
+              <div class="dz-message needsclick">
+                <i class="fas fa-upload fa-2x"></i> <br />
+                Drop files here or click to upload.<br />
+                G-Code files only. Up to 200MB each.
+                <div class="fallback">
+                  <input name="file" type="file" multiple />
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+      </div>
     </div>
-  </div>
+    {% endif %}
   <div class="row justify-content-center">
     <div class="col-sm-12 col-lg-10">
       <div class="form-container" style="margin-top: 0rem;">

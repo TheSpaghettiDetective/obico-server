@@ -37,6 +37,11 @@ class SocialAccountAwareLoginView(LoginView):
 
 
 @login_required
+def welcome(request):
+    return render(request, 'welcome.html')
+
+
+@login_required
 def printer_auth_token(request, pk):
     pk_filter = {}
 

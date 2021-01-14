@@ -29,10 +29,7 @@ from app.tasks import preprocess_timelapse
 
 
 def index(request):
-    if request.user.is_authenticated and not request.user.consented_at:
-        return redirect('/consent/')
-    else:
-        return redirect('/printers/')
+    return redirect('/printers/')
 
 
 class SocialAccountAwareLoginView(LoginView):
@@ -57,9 +54,6 @@ def printer_auth_token(request, pk):
 
 @login_required
 def printers(request):
-    if not request.user.consented_at:
-        return redirect('/consent/')
-
     return render(request, 'printers.html')
 
 

@@ -56,9 +56,10 @@ export default {
   font-weight: 800
 
 .btn
-  width: 250px
+  width: 280px
   height: 60px
-  font-size: 1.2rem
+  font-size: 1.3rem
+  line-height: 1.3rem
 
 .content
   font-size: 1.5rem

@@ -1,66 +1,42 @@
 <template>
   <div>
-    <div class="example">
-      {{ msg }}
-      <b
-        v-b-popover.hover="{title:'Popover', content:'This is the content of popover'}"
-      >POPOVER</b>
-    </div>
-    <div>
-      <img :src="logo" />
-      <img :src="require('./assets/logo.png')" />
-      <img :src="require('../../../app/static/img/logo.png')" />
-    </div>
-    <b-card
-      title="Card Title"
-      :img-src="logo"
-      img-alt="Image"
-      img-top
-      tag="article"
-      style="max-width: 20rem;"
-      class="mb-2"
-    >
-      <b-card-text>
-        Here you can see a
-        <b
-          v-b-popover.hover="{title:'Popover', content:'This is the content of popover'}"
-        >POPOVER</b>
-        in action.
-      </b-card-text>
-
-      <b-button href="#" variant="primary">Go somewhere</b-button>
-    </b-card>
-    <div class="form-group mt-2">
-      <div v-for="ch in ['a', 'b']" class="custom-control custom-radio" :key="ch">
-        <input
-          type="radio"
-          class="custom-control-input"
-          name="select"
-          :id="'select-' + ch"
-          v-model="choice"
-          :value="ch"
-        />
-        <label class="custom-control-label" :for="'select-' + ch">Choice: {{ ch }}</label>
-      </div>
+    <div class="main-container">
+      <b-row>
+        <div class="mx-auto title pb-3">Welcome!</div>
+      </b-row>
+      <b-row>
+        <div class="mx-auto content">You have successfully created your account</div>
+      </b-row>
+      <b-row class="pb-5 text-center">
+        <div class="mx-auto content next">Next, let's link your first OctoPrint printer and get you started in 3 simple steps</div>
+      </b-row>
+      <b-row class="py-2">
+        <b-button href="/quicksetup" variant="primary" class="mx-auto py-3 btn">Quick Setup</b-button>
+      </b-row>
+      <b-row class="py-2">
+        <b-button href="/printers" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
+      </b-row>
+      <b-row class="py-2">
+        <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>
+      </b-row>
     </div>
   </div>
 </template>
 
 <script>
-import logo from './assets/logo.png'
-import { BCard, BCardText, BButton } from 'bootstrap-vue'
+import { BButton } from 'bootstrap-vue'
 
 export default {
   components: {
-    BCard,
-    BCardText,
     BButton
   },
   data() {
     return {
-      msg: 'Hello from vue!',
-      choice: 'a',
-      logo: logo
+    }
+  },
+  methods: {
+    openOctoprint() {
+      window.open('https://octoprint.org/download')
     }
   }
 }
@@ -69,13 +45,25 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
-b
-  color: theme.$primary
+.main-container
+  position: fixed
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
 
-img
-  width: 200px
-  display: block
+.title
+  font-size: 4rem
+  font-weight: 800
 
-.example
-  color: theme.$primary
+.btn
+  width: 250px
+  height: 60px
+  font-size: 1.2rem
+
+.content
+  font-size: 1.5rem
+  font-weight: 400
+
+.next
+  width: 500px
 </style>

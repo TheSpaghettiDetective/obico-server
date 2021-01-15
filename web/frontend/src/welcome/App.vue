@@ -11,7 +11,7 @@
         <div class="mx-auto content next">Next, let's link your first OctoPrint printer and get you started in 3 simple steps</div>
       </b-row>
       <b-row class="py-2">
-        <b-button href="/quicksetup" variant="primary" class="mx-auto py-3 btn">Quick Setup</b-button>
+        <b-button href="/printers/new" variant="primary" class="mx-auto py-3 btn">Quick Setup</b-button>
       </b-row>
       <b-row class="py-2">
         <b-button href="/printers" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>

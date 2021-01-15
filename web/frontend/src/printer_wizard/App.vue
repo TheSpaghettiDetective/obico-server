@@ -1,24 +1,25 @@
 <template>
   <div>
-    <div class="main-container">
-      <b-row>
-        <div class="mx-auto title pb-3">Welcome!</div>
-      </b-row>
-      <b-row>
-        <div class="mx-auto content">You have successfully created your account</div>
-      </b-row>
-      <b-row class="pb-5 text-center">
-        <div class="mx-auto content next">Next, let's link your first OctoPrint printer and get you started in 3 simple steps</div>
-      </b-row>
-      <b-row class="py-2">
-        <b-button href="/quicksetup" variant="primary" class="mx-auto py-3 btn">Quick Setup</b-button>
-      </b-row>
-      <b-row class="py-2">
-        <b-button href="/printers" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
-      </b-row>
-      <b-row class="py-2">
-        <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>
-      </b-row>
+    <div class="container">
+      <div class="col"></div>
+      <div class="d-flex flex-column col">
+        <b-row class="pt-3 text-center">
+          <div class="mx-auto title pb-3">Install TSD Plugin in the Octoprint Store</div>
+        </b-row>
+        <b-row class="pb-3 d-flex justify-content-center">
+          <img :src="require('@static/img/TSDInstallScreenshot.png')">
+        </b-row>
+        <b-row class="text-center">
+          <div class="mx-auto content">Octoprint Settings menu > Plugin Manager > Install new Plugins</div>
+        </b-row>
+        <b-row class="pb-3 text-center">
+          <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
+        </b-row>
+        <b-row class="pt-2">
+          <b-button @click="openOctoprint" variant="primary" class="mx-auto py-3 btn">Next</b-button>
+        </b-row>
+      </div>
+      <div class="helper col ml-auto">*Need help? Check out the step by step <a href="#">set up guide</a></div>
     </div>
   </div>
 </template>
@@ -45,26 +46,29 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
-.main-container
-  position: fixed
-  top: 50%
-  left: 50%
-  transform: translate(-50%, -50%)
+img
+  width: 35vw
+  min-width: 360px
+
+.spacer
+ width: 200px
 
 .title
-  font-size: 4rem
+  font-size: 2.5rem
   font-weight: 800
 
 .btn
-  width: 280px
+  width: 220px
   height: 60px
   font-size: 1.3rem
   line-height: 1.3rem
 
 .content
-  font-size: 1.5rem
+  font-size: 1.2rem
   font-weight: 400
 
-.next
-  width: 500px
+.helper
+  font-size: 0.8rem
+  font-weight: 400
+  max-width: 200px
 </style>

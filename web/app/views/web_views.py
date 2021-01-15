@@ -71,24 +71,7 @@ def edit_printer(request, pk, template_dir=None):
         printer = get_printer_or_404(int(pk), request)
         template = 'printer_wizard' if request.GET.get('wizard', False) else 'edit_printer'
 
-    form = PrinterForm(request.POST or None, request.FILES or None, instance=printer)
-
-    if request.method == "POST":
-        if form.is_valid():
-            if pk == 'new':
-                printer = form.save(commit=False)
-                printer.user = request.user
-                printer.auth_token = hexlify(os.urandom(10)).decode()
-                form.save()
-
-                return redirect('/printers/{}/?wizard=True#step-2'.format(printer.id))
-            else:
-                form.save()
-
-                if not request.GET.get('wizard', False):
-                    messages.success(request, 'Printer settings have been updated successfully!')
-
-    return render(request, get_template_path(template, template_dir), {'form': form})
+    return render(request, get_template_path(template, template_dir))
 
 
 @login_required

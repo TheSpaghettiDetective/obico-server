@@ -1,0 +1,10 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% load bundle from vue %}
+
+{% block content %}
+<div id="welcome-app"></div>
+
+{% bundle 'welcome' %}
+
+{% endblock content%}

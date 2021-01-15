@@ -8,6 +8,7 @@ from .views import vue_demo
 urlpatterns = [
     path('', web_views.index, name='index'),
     path('accounts/login/', web_views.SocialAccountAwareLoginView.as_view(), name="account_login"),
+    path('accounts/welcome/', web_views.welcome),
     path('media/<path:file_path>', web_views.serve_jpg_file),  # semi hacky solution to serve image files
     path('printer_auth_token/<int:pk>/', web_views.printer_auth_token, name='printer_auth_token'),
     path('printers/', web_views.printers, name='printers'),

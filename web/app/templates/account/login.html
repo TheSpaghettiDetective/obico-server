@@ -67,7 +67,7 @@
           {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
           <div class="text-center pt-3 w-100">
             <div class="font-weight-light text-muted">- OR -</div>
-            <a class="btn" href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
+            <a class="btn" href="{% url 'account_signup' %}">{% trans "SIGN UP" %}</a>
           </div>
           {% endif %}
         </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="main-container">
-      <b-row>
+    <div class="d-flex flex-column">
+      <b-row class="pt-5">
         <div class="mx-auto title pb-3">Welcome!</div>
       </b-row>
       <b-row>
@@ -66,5 +66,6 @@ export default {
   font-weight: 400
 
 .next
-  width: 500px
+  width: 80vw
+  max-width: 500px
 </style>

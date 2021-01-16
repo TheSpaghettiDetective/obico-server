@@ -19,7 +19,9 @@
           <b-button @click="toLinkStage" variant="primary" class="mx-auto py-3 btn">Next</b-button>
         </b-row>
       </div>
-      <div class="helper col ml-auto">*Need help? Check out the step by step <a href="#">set up guide</a></div>
+      <b-row class="text-center">
+        <div class="helper col mx-auto pt-2">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
+      </b-row>
     </div>
     <div v-else-if="setupStage === 'link'" class="container">
       <div class="col"></div>
@@ -49,7 +51,9 @@
           <img :src="require('@static/img/TSDVerificationScreenshot.png')">
         </b-row>
       </div> 
-      <div class="helper col ml-auto">*Need help? Check out the step by step <a href="#">set up guide</a></div>
+      <b-row class="text-center">
+        <div class="helper col mx-auto pt-2">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
+      </b-row>
     </div>
     <div v-else class="container">
       <div class="col"></div>
@@ -150,13 +154,12 @@ export default {
             if (this.currentTime > this.expiryMoment) {
               this.url += `${resp.data.id}`
             }
-            if (resp.data.printer) {
+            this.counter += 1
+            if (this.counter === 5) {
               clearInterval(this.codeInterval)
               this.setupStage = 'preferences'
             }
-            // Redirect Testing
-            this.counter += 1
-            // if (this.counter === 5) {
+            // if (resp.data.printer) {
             //   clearInterval(this.codeInterval)
             //   this.setupStage = 'preferences'
             // }
@@ -210,7 +213,8 @@ img
   width: 90px
 
 .content
-  font-size: 1.2rem
+  font-size: 1rem
+  line-height: 1.2rem
   font-weight: 400
 
 .helper

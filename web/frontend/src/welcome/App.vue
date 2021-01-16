@@ -4,7 +4,7 @@
       <b-row class="pt-5">
         <div class="mx-auto title pb-3">Welcome!</div>
       </b-row>
-      <b-row>
+      <b-row class="text-center">
         <div class="mx-auto content">You have successfully created your account</div>
       </b-row>
       <b-row class="pb-5 text-center">
@@ -62,7 +62,8 @@ export default {
   line-height: 1.3rem
 
 .content
-  font-size: 1.5rem
+  font-size: 1rem
+  line-height: 1.2rem
   font-weight: 400
 
 .next

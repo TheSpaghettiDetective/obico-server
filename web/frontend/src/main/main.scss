@@ -7,6 +7,10 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
+  background: repeating-linear-gradient(45deg, darken($body-bg, 8) 0%, darken($body-bg, 8) 10%, darken($body-bg, 5) 0%, darken($body-bg, 5) 50%) 0 / 15px 15px;
+}
+
+body.solid-bg {
   background: #313e4f;
 }
 

@@ -43,6 +43,9 @@ export default {
     openOctoprint() {
       window.open('https://octoprint.org/download')
     }
+  },
+  beforeCreate: function() {
+    document.body.className = 'solid-bg'
   }
 }
 </script>

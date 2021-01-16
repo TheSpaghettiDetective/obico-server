@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div v-if="setupStage === 'install'" class="container">
       <div class="col"></div>
       <div class="d-flex flex-column col">
         <b-row class="pt-3 text-center">
@@ -16,11 +16,12 @@
           <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
         </b-row>
         <b-row class="pt-2">
-          <b-button @click="openOctoprint" variant="primary" class="mx-auto py-3 btn">Next</b-button>
+          <b-button @click="toLinkStage" variant="primary" class="mx-auto py-3 btn">Next</b-button>
         </b-row>
       </div>
       <div class="helper col ml-auto">*Need help? Check out the step by step <a href="#">set up guide</a></div>
     </div>
+    <div v-else-if="setupStage === 'link'">LINK</div>
   </div>
 </template>
 
@@ -33,11 +34,20 @@ export default {
   },
   data() {
     return {
+      setupStage: 'install'
     }
   },
+  mounted() {
+    this.getStage()
+  },
   methods: {
-    openOctoprint() {
-      window.open('https://octoprint.org/download')
+    getStage() {
+      const params = new URLSearchParams(window.location.search)
+      const stage = params.get('setup')
+      this.setupStage = stage
+    },
+    toLinkStage() {
+      this.setupStage = 'link'
     }
   }
 }

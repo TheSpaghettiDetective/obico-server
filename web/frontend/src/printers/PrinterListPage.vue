@@ -88,7 +88,7 @@
     <div class="row justify-content-center">
       <div id="new-printer" class="col-sm-12 col-lg-6">
         <div class="new-printer-container">
-          <a href="/printers/new">
+          <a href="/printers/new?setup=link">
             <i class="fa fa-plus fa-2x"></i>
             <div>Add Printer</div>
           </a>

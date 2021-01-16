@@ -10,7 +10,7 @@
           <img :src="require('@static/img/TSDInstallScreenshot.png')">
         </b-row>
         <b-row class="text-center">
-          <div class="mx-auto content">Octoprint Settings menu > Plugin Manager > Install new Plugins</div>
+          <div class="mx-auto content">Octoprint Settings menu > Plugin Manager > Install new Plugin</div>
         </b-row>
         <b-row class="pb-3 text-center">
           <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
@@ -36,16 +36,13 @@
           <div class="px-1">
             <input disabled ref="code" class="special-btn code-btn" :value="`${verificationCode}`"/>
           </div>
-          <div class="px-1">
-            <b-button class="special-btn copy-btn" @click="copy" variant="primary">Copy</b-button>
-          </div>
         </b-row>
         <b-row class="pt-1 text-center">
           <div class="mx-auto pb-3">{{ `*This code will expire in ${validityHours} hrs ${validityMins} mins` }}</div>
         </b-row>
-        <b-row class="pt-1 d-flex flex-column">
+        <b-row class="pt-1 d-flex flex-column text-center">
           <div class="mx-auto subtitle">Enter the 6-Digit verification Code in the Plugin</div>
-          <div class="helper mx-auto pb-1" style="max-width: 220px;">Can't find where to enter the code?<span class="px-1" v-b-tooltip.hover.right="{ variant: 'primary' }" title="You need the latest version of TSD plugin">ⓘ</span></div>
+          <div class="helper mx-auto pb-1" style="max-width: 220px;" v-b-tooltip.hover.html.v-primary.right="tooltipTitle">Can't find where to enter the code? ⓘ</div>
         </b-row>
         <b-row class="pb-3 d-flex justify-content-center">
           <img :src="require('@static/img/TSDVerificationScreenshot.png')">
@@ -61,7 +58,38 @@
         <b-row class="pt-3 text-center">
           <div class="mx-auto title pb-3">Printer Preferences</div>
         </b-row>
-        <b-row class="pt-2">
+        <b-row class="pt-1 text-center d-flex flex-column align-items-start mx-auto prefs">
+            <div class="subtitle pb-3">When a potential failure is detected:</div>
+            <b-form-radio :v-model="!pauseAndNotify" name="notify" size="lg" class="notify">Just notify me</b-form-radio>
+            <b-form-radio :v-model="pauseAndNotify" name="notify" size="lg" class="notify pb-4">Pause the printer and notify me</b-form-radio>
+            <div class="settings d-flex justify-content-between" @click="dropdown = !dropdown">
+              <div class="px-2">Advanced Settings</div>
+              <div class="px-2"></div>
+              <div v-if="!dropdown" class="px-2"> ></div>
+              <div v-else class="px-2">&lt;</div>
+            </div>
+            <div v-if="!dropdown">TIP: You can change your notification preferences later by going to:Settings > UserPreferences</div>
+            <div v-else class="d-flex flex-column align-items-start">
+              <div class="px-2 warning">⚠ If you are not sure about the settings below, leave the default values to minimize surprises</div>
+              <div class="subheading pt-2">When print is paused:</div>
+              <b-form-checkbox v-model="advancedSettings.isHotendHeaterOff">Turn off hotend heater(s)</b-form-checkbox>
+              <b-form-checkbox v-model="advancedSettings.isBedHeaterOff">Turn off bed heater</b-form-checkbox>
+              <div class="d-flex align-items-center">
+                <div class="col input-label-text">Retract filament by</div>
+                <b-form-input v-model="advancedSettings.retractFilamentBy" placeholder="6.5"></b-form-input>
+                <input disabled ref="code" class="mm" value="mm"/>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="col input-label-text">Lift extruder by</div>
+                <b-form-input v-model="advancedSettings.liftExtruderBy"></b-form-input>
+                <input disabled ref="code" class="mm" value="mm"/>
+              </div>
+              <div class="subheading pt-2">How sensitive do you want the Detective to be on this printer?</div>
+              <b-form-input v-model="advancedSettings.sensitivity" type="range" min="1" max="9"></b-form-input>
+              <div>{{ sensitivityText }}</div>
+            </div>
+        </b-row>
+        <b-row class="pt-4">
           <b-button variant="primary" class="mx-auto py-3 btn">Let's Go!</b-button>
         </b-row>
       </div>
@@ -74,11 +102,14 @@ import axios from 'axios'
 import moment from 'moment'
 import urls from '@lib/server_urls'
 
-import { BButton } from 'bootstrap-vue'
+import { BButton, BFormRadio, BFormCheckbox, BFormInput } from 'bootstrap-vue'
 
 export default {
   components: {
-    BButton
+    BButton,
+    BFormRadio,
+    BFormCheckbox,
+    BFormInput
   },
   data() {
     return {
@@ -87,6 +118,19 @@ export default {
       currentTime: Date.now(),
       expiryMoment: null,
       url: urls.verificationCode(),
+      tooltipTitle: {
+        title: '<div>You need the latest</div><div>version of TSD plugin</div>',
+        html: true
+      },
+      pauseAndNotify: true,
+      dropdown: false,
+      advancedSettings: {
+        isHotendHeaterOff: true,
+        isBedHeaterOff: false,
+        retractFilamentBy: 6.5,
+        liftExtruderBy: 2.5,
+        sensitivity: '5',
+      },
       counter: 0
     }
   },
@@ -102,6 +146,18 @@ export default {
         return `0${(Math.floor((this.expiryMoment - this.currentTime) / 60000) % 60)}`.slice(-2)
       }
       return '-'
+    },
+    sensitivityText() {
+      switch (this.advancedSettings.sensitivity) {
+        case '1': case '2': case '3':
+          return 'Low - I don\'t want a lot of false alarms. Only alert me when you are absolutely sure.'
+        case '4': case '5': case '6':
+          return 'Medium - A few false alarms won\'t bother me. But some well-disguised spaghetti will be missed.'
+        case '7': case '8': case '9':
+          return 'High - Hit me with all the false alarms. I want to catch as many failures as possible'
+        default:
+          return 'Medium - A few false alarms won\'t bother me. But some well-disguised spaghetti will be missed.'
+      }
     }
   },
   created() {
@@ -128,19 +184,19 @@ export default {
     toLinkStage() {
       this.setupStage = 'link'
     },
-    copy() {
-      const codeButton = this.$refs.code
-      console.log(codeButton.value)
-      codeButton.focus()
-      codeButton.select()
-      try {
-        const successful = document.execCommand('copy')
-        const msg = successful ? 'successful' : 'unsuccessful'
-        console.log('Fallback: Copying text command was ' + msg)
-      } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err)
-      }
-    },
+    // copy() {
+    //   const codeButton = this.$refs.code
+    //   console.log(codeButton.value)
+    //   codeButton.focus()
+    //   codeButton.select()
+    //   try {
+    //     const successful = document.execCommand('copy')
+    //     const msg = successful ? 'successful' : 'unsuccessful'
+    //     console.log('Fallback: Copying text command was ' + msg)
+    //   } catch (err) {
+    //     console.error('Fallback: Oops, unable to copy', err)
+    //   }
+    // },
     getVerificationCode() {
       if (this.setupStage === 'link') {
         axios
@@ -155,7 +211,7 @@ export default {
               this.url += `${resp.data.id}`
             }
             this.counter += 1
-            if (this.counter === 5) {
+            if (this.counter === 10) {
               clearInterval(this.codeInterval)
               this.setupStage = 'preferences'
             }
@@ -221,4 +277,28 @@ img
   font-size: 0.8rem
   font-weight: 400
   max-width: 200px
+
+::v-deep .custom-control-label
+  font-size: 1.2rem
+
+.settings
+  background-color: #616a7a
+  width: 100%
+
+.prefs
+  max-width: 500px
+
+.warning
+  color: #d9a821
+
+.subheading
+  color: gray
+
+.mm
+  width: 40px
+  text-align: center
+  height: calc(1.5em + 0.75rem + 2px)
+
+.input-label-text
+  min-width: 170px
 </style>

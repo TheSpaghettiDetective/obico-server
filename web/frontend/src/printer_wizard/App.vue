@@ -89,7 +89,9 @@ export default {
     getStage() {
       const params = new URLSearchParams(window.location.search)
       const stage = params.get('setup') 
-      this.setupStage = stage
+      if (stage) {
+        this.setupStage = stage
+      }
       console.log('Stage Set!')
     },
     toLinkStage() {

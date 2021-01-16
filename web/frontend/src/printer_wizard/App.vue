@@ -48,13 +48,28 @@
         <b-row class="pb-3 d-flex justify-content-center">
           <img :src="require('@static/img/TSDVerificationScreenshot.png')">
         </b-row>
-      </div>
+      </div> 
       <div class="helper col ml-auto">*Need help? Check out the step by step <a href="#">set up guide</a></div>
+    </div>
+    <div v-else class="container">
+      <div class="col"></div>
+      <div class="d-flex flex-column col">
+        <b-row class="pt-3 text-center">
+          <div class="mx-auto title pb-3">Printer Preferences</div>
+        </b-row>
+        <b-row class="pt-2">
+          <b-button variant="primary" class="mx-auto py-3 btn">Let's Go!</b-button>
+        </b-row>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
+import urls from '@lib/server_urls'
+
 import { BButton } from 'bootstrap-vue'
 
 export default {
@@ -64,31 +79,43 @@ export default {
   data() {
     return {
       setupStage: 'install',
-      verificationCode: 313894,
-      validityTime: 3600000
+      verificationCode: '',
+      currentTime: Date.now(),
+      expiryMoment: null,
+      url: urls.verificationCode(),
+      counter: 0
     }
   },
   computed: {
     validityHours() {
-      return `0${Math.floor(this.validityTime / 3600000)}`.slice(-2)
+      if (this.expiryMoment) {
+        return `0${Math.floor((this.expiryMoment - this.currentTime) / 3600000)}`.slice(-2)
+      } 
+      return '-'
     },
     validityMins() {
-      return `0${(Math.floor(this.validityTime / 60000) % 60)}`.slice(-2)
+      if (this.expiryMoment) {
+        return `0${(Math.floor((this.expiryMoment - this.currentTime) / 60000) % 60)}`.slice(-2)
+      }
+      return '-'
     }
   },
   created() {
     setInterval(() => {
-      this.validityTime -= 5000
-      console.log(this.validityTime)
+      this.currentTime = Date.now()
     }, 5000)
   },
   mounted() {
     this.getStage()
+    this.getVerificationCode()
+    this.codeInterval = setInterval(() => {
+      this.getVerificationCode()
+    }, 5000)  
   },
   methods: {
     getStage() {
       const params = new URLSearchParams(window.location.search)
-      const stage = params.get('setup') 
+      const stage = params.get('setup')
       if (stage) {
         this.setupStage = stage
       }
@@ -108,6 +135,33 @@ export default {
         console.log('Fallback: Copying text command was ' + msg)
       } catch (err) {
         console.error('Fallback: Oops, unable to copy', err)
+      }
+    },
+    getVerificationCode() {
+      if (this.setupStage === 'link') {
+        axios
+        .get(this.url)
+        .then((resp) => {
+          if (resp.data) {
+            this.verificationCode = resp.data.code
+            const expiryTime = resp.data.expired_at.replace(/-|:/g, '')
+            this.expiryMoment = moment(expiryTime).format('x')
+            console.log(resp.data)
+            if (this.currentTime > this.expiryMoment) {
+              this.url += `${resp.data.id}`
+            }
+            if (resp.data.printer) {
+              clearInterval(this.codeInterval)
+              this.setupStage = 'preferences'
+            }
+            // Redirect Testing
+            this.counter += 1
+            // if (this.counter === 5) {
+            //   clearInterval(this.codeInterval)
+            //   this.setupStage = 'preferences'
+            // }
+          }
+        })
       }
     }
   }

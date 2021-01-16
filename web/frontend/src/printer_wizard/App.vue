@@ -32,7 +32,7 @@
         </b-row>
         <b-row class="d-flex justify-content-center">
           <div class="px-1">
-            <b-button class="special-btn code-btn" @click="copy">{{ verificationCode }}</b-button>
+            <input disabled ref="code" class="special-btn code-btn" :value="`${verificationCode}`"/>
           </div>
           <div class="px-1">
             <b-button class="special-btn copy-btn" @click="copy" variant="primary">Copy</b-button>
@@ -96,7 +96,17 @@ export default {
       this.setupStage = 'link'
     },
     copy() {
-      return
+      const codeButton = this.$refs.code
+      console.log(codeButton.value)
+      codeButton.focus()
+      codeButton.select()
+      try {
+        const successful = document.execCommand('copy')
+        const msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Fallback: Copying text command was ' + msg)
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err)
+      }
     }
   }
 }
@@ -130,6 +140,9 @@ img
   border-radius: 10px
 
 .code-btn
+  text-align: center
+  width: 220px
+  height: 60px
   background-color: black
   border: black
   color: white

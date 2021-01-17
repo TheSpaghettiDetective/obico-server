@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { BootstrapVue} from 'bootstrap-vue'
-import App from './App.vue'
+import App from './PrinterWizard.vue'
 import setupSentry from '@lib/sentry'
 
 setupSentry(Vue)

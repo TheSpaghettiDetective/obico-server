@@ -70,10 +70,10 @@
 
       <template slot="footer" slot-scope="props">
        <div class="wizard-footer-left">
-           <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab()" class="btn-link back-btn" :style="props.fillButtonStyle">Back</wizard-button>
+           <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab()" class="btn btn-link" :style="props.fillButtonStyle">&lt; Back</wizard-button>
         </div>
         <div class="wizard-footer-right">
-          <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next</wizard-button>
+          <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
 
           <!-- Uncomment, if you will need Finish button: -->
           <!-- <wizard-button v-else class="wizard-footer-right finish-button" :style="props.fillButtonStyle">{{props.isLastStep ? 'Finish' : 'Next'}}</wizard-button> -->
@@ -269,14 +269,6 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
-// TODO: This is task 4:
-// Rewrite styles for back button if you what
-// This styles is just copy from wizard plugin
-.wizard-btn.back-btn.btn-link
-  background-color: rgb(153, 101, 244)
-  border-color: rgb(153, 101, 244)
-  color: white
-
 .wizard-btn
   border-radius: 300px
 
@@ -302,12 +294,6 @@ img
   font-size: 1.5rem
   font-weight: 500
 
-.btn
-  width: 220px
-  height: 60px
-  font-size: 1.3rem
-  line-height: 1.3rem
-
 .code-btn
   border-radius: 10px
   text-align: center
@@ -319,9 +305,6 @@ img
   font-size: 2rem
   font-weight: 500
   letter-spacing: 2px
-
-.copy-btn
-  width: 90px
 
 .content
   font-size: 1rem

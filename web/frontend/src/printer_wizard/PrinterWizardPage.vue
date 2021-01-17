@@ -1,8 +1,13 @@
 <template>
 <div class="row justify-content-center">
   <div class="col-sm-12 col-lg-10 wizard-container">
-    <form-wizard>
+    <form-wizard
+      :color="theme.primary"
+      finish-button-text="Next"
+      step-size="sm"
+    >
       <h2 slot="title">Link OctoPrint</h2>
+
       <tab-content title="Install Plugin">
         <div class="container">
           <div class="col"></div>
@@ -62,6 +67,18 @@
           </div>
         </div>
       </tab-content>
+
+      <template slot="footer" slot-scope="props">
+       <div class="wizard-footer-left">
+           <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab()" class="btn-link back-btn" :style="props.fillButtonStyle">Back</wizard-button>
+        </div>
+        <div class="wizard-footer-right">
+          <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next</wizard-button>
+
+          <!-- Uncomment, if you will need Finish button: -->
+          <!-- <wizard-button v-else class="wizard-footer-right finish-button" :style="props.fillButtonStyle">{{props.isLastStep ? 'Finish' : 'Next'}}</wizard-button> -->
+        </div>
+      </template>
     </form-wizard>
     <b-row>
       <div class="helper col-sm-12 float-right">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
@@ -117,8 +134,9 @@ import axios from 'axios'
 import moment from 'moment'
 import urls from '@lib/server_urls'
 import { BButton, BFormRadio, BFormCheckbox, BFormInput } from 'bootstrap-vue'
-import {FormWizard, TabContent} from 'vue-form-wizard'
+import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import theme from '../main/main.sass'
 
 export default {
   components: {
@@ -128,6 +146,7 @@ export default {
     BFormInput,
     FormWizard,
     TabContent,
+    WizardButton
   },
 
   data() {
@@ -150,7 +169,8 @@ export default {
         liftExtruderBy: 2.5,
         sensitivity: '5',
       },
-      counter: 0
+      counter: 0,
+      theme: theme
     }
   },
   computed: {
@@ -249,6 +269,17 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
+// TODO: This is task 4:
+// Rewrite styles for back button if you what
+// This styles is just copy from wizard plugin
+.wizard-btn.back-btn.btn-link
+  background-color: rgb(153, 101, 244)
+  border-color: rgb(153, 101, 244)
+  color: white
+
+.wizard-btn
+  border-radius: 300px
+
 .wizard-container
   margin: 2em 0em
   padding: 1em
@@ -300,6 +331,8 @@ img
 .helper
   font-size: 0.8rem
   font-weight: 400
+  text-align: right
+  padding: 0 36px
 
 ::v-deep .custom-control-label
   font-size: 1.2rem
@@ -324,4 +357,12 @@ img
 
 .input-label-text
   min-width: 170px
+</style>
+
+<style lang="sass">
+// Unscoped styles to style plugin elements
+@use "~main/theme"
+
+.wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
+  color: theme.$white
 </style>

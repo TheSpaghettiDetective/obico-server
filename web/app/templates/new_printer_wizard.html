@@ -1,0 +1,10 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% load bundle from vue %}
+
+{% block content %}
+<div id="printer_wizard-app"></div>
+
+{% bundle 'printer_wizard' %}
+
+{% endblock content%}

@@ -13,10 +13,10 @@
         <div class="pb-3 small-text">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
       </b-row>
       <b-row class="py-2">
-        <b-button href="/printers/new?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
+        <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
       </b-row>
       <b-row class="py-2">
-        <b-button href="/printers" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
+        <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
       </b-row>
       <b-row class="py-2">
         <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>

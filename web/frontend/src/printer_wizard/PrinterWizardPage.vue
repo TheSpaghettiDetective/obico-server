@@ -17,9 +17,6 @@
               <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
             </b-row>
           </div>
-          <b-row class="text-center">
-            <div class="helper col mx-auto pt-2">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
-          </b-row>
         </div>
       </tab-content>
       <tab-content title="Plugin Wizard">
@@ -30,30 +27,24 @@
               <img :src="require('@static/img/plugin_wizard_websetup.png')">
             </b-row>
             <b-row class="text-center">
-              <div class="mx-auto content">Octoprint Settings menu > Plugin Manager > Install new Plugin</div>
+              <div class="mx-auto content">Once OctoPrint has come back up, The Spaghetti Detective wizard will popup.</div>
             </b-row>
-            <b-row class="pb-3 text-center">
-              <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
+            <b-row class="text-center">
+              <div class="mx-auto content">Follow the steps in the wizard.</div>
+            </b-row>
+            <b-row class="text-center">
+              <div class="mx-auto content">Select "Web Setup".</div>
             </b-row>
           </div>
-          <b-row class="text-center">
-            <div class="helper col mx-auto pt-2">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
-          </b-row>
         </div>
       </tab-content>
-      <tab-content title="Verify">
+      <tab-content title="Enter Code">
         <div class="container">
           <div class="col"></div>
           <div class="d-flex flex-column col">
-            <b-row class="pt-3 text-center">
-              <div class="mx-auto title pb-2">Link Your Printer</div>
-            </b-row>
-            <b-row class="pt-1 text-center">
-              <div class="mx-auto subtitle pb-3">Copy the 6-Digit verification Code</div>
-            </b-row>
             <b-row class="d-flex justify-content-center">
               <div class="px-1">
-                <input disabled ref="code" class="special-btn code-btn" :value="`${verificationCode}`"/>
+                <input disabled ref="code" class="code-btn" :value="`${verificationCode}`"/>
               </div>
             </b-row>
             <b-row class="pt-1 text-center">
@@ -61,18 +52,20 @@
             </b-row>
             <b-row class="pt-1 d-flex flex-column text-center">
               <div class="mx-auto subtitle">Enter the 6-Digit verification Code in the Plugin</div>
-              <div class="helper mx-auto pb-1" style="max-width: 220px;" v-b-tooltip.hover.html.v-primary.right="tooltipTitle">Can't find where to enter the code? ⓘ</div>
             </b-row>
             <b-row class="pb-3 d-flex justify-content-center">
               <img :src="require('@static/img/TSDVerificationScreenshot.png')">
             </b-row>
+            <b-row>
+              <div class="helper mx-auto pb-1" v-b-tooltip.hover.html.v-primary.right="tooltipTitle">Don't know where to enter the code? ⓘ</div>
+            </b-row>
           </div>
-          <b-row class="text-center">
-            <div class="helper col mx-auto pt-2">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
-          </b-row>
         </div>
       </tab-content>
     </form-wizard>
+    <b-row>
+      <div class="helper col-sm-12 float-right">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
+    </b-row>
         <div v-if="false" class="container">
           <div class="col"></div>
           <div class="d-flex flex-column col">
@@ -265,7 +258,7 @@ export default {
   border: none !important
 
 img
-  height: 30vh
+  height: 40vh
 
 .spacer
  width: 200px
@@ -284,12 +277,10 @@ img
   font-size: 1.3rem
   line-height: 1.3rem
 
-.special-btn
-  border-radius: 10px
-
 .code-btn
+  border-radius: 10px
   text-align: center
-  width: 220px
+  width: 25rem
   height: 60px
   background-color: black
   border: black
@@ -309,7 +300,6 @@ img
 .helper
   font-size: 0.8rem
   font-weight: 400
-  max-width: 200px
 
 ::v-deep .custom-control-label
   font-size: 1.2rem

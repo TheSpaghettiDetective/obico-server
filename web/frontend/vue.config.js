@@ -54,7 +54,7 @@ let vueConfig = {
       entry: 'src/octoprint_tunnel/TunnelMain.js',
     },
     welcome: {
-      entry: 'src/welcome/main.js',
+      entry: 'src/welcome/WelcomeMain.js',
     },
     printer_wizard: {
       entry: 'src/printer_wizard/main.js',

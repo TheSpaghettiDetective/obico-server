@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="d-flex flex-column">
-      <b-row class="mx-auto pt-4">
-        <img :src="require('@static/img/16JanWelcomeSuccessIcon.png')" class="success">
-      </b-row>
       <b-row>
         <div class="mx-auto title pb-3">Success!</div>
       </b-row>
@@ -11,9 +8,9 @@
         <div class="mx-auto content">Link your Octoprint printer now in 3 simple steps to enjoy the benefits of your <strong>30-day free trial</strong>, on us!</div>
       </b-row>
       <b-row class="pt-3 text-center d-flex flex-column align-items-start mx-auto">
-        <div class="pb-1 small-text"><img :src="require('@static/img/Tick-14.png')" class="tick mr-1">Enhanced 25fps Webcam Streaming</div>
-        <div class="pb-1 small-text"><img :src="require('@static/img/Tick-14.png')" class="tick mr-1">Unlimited Monitoring of Your Prints by The Spaghetti Detective</div>
-        <div class="pb-3 small-text"><img :src="require('@static/img/Tick-14.png')" class="tick mr-1">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
+        <div class="pb-1 small-text">Enhanced 25fps Webcam Streaming</div>
+        <div class="pb-1 small-text">Unlimited Monitoring of Your Prints by The Spaghetti Detective</div>
+        <div class="pb-3 small-text">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
       </b-row>
       <b-row class="py-2">
         <b-button href="/printers/new?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
@@ -81,7 +78,4 @@ export default {
 
 .success
   width: 12rem
-
-.tick
-  width: 1rem
 </style>

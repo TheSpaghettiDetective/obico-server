@@ -11,6 +11,7 @@
           <div class="row justify-content-center pb-3">
             <div class="col-sm-12 col-lg-8">
               <ol>
+                <li>Open OctoPrint in another browser tab. </li>
                 <li>OctoPrint settings menu > Plugin Manager > Get More... </li>
                 <li>Enter "The Spaghetti Detective" to search for the plugin. Click "Install".</li>
                 <li>After installing, Octoprint will restart (this may take a few minutes).</li>
@@ -29,8 +30,8 @@
           <div class="row justify-content-center pb-3">
             <div class="col-sm-12 col-lg-8">
               <ol>
-                <li>Upon restarting, The Spaghetti Detective wizard will popup.</li>
-                <li>Follow the steps in the wizard.</li>
+                <li>Upon restarting, <b>Access Anywhere - The Spaghetti Detective</b> wizard will popup.</li>
+                <li>Follow the instructions in the wizard.</li>
                 <li>Select <b>"Web Setup"</b> when asked.</li>
               </ol>
             </div>
@@ -49,7 +50,7 @@
                 <input disabled ref="code" class="code-btn" :value="`${verificationCode}`"/>
                 <small class="mx-auto py-1 text-muted">(Ctrl-C/Cmd-C to copy the code)</small>
                 <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>xxx minutes</div>
-              <div class="lead">Enter the <strong>6-digit verification code</strong> in the Plugin</div>
+              <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
             </div>
           </div>
           <div class="row justify-content-center">
@@ -141,7 +142,6 @@ export default {
 
   data() {
     return {
-      setupStage: 'install',
       verificationCode: '',
       currentTime: Date.now(),
       expiryMoment: null,
@@ -160,6 +160,9 @@ export default {
     }
   },
   computed: {
+    title() {
+      return this.isRelink() ? 'Re-Link' : 'Link'
+    },
     sensitivityText() {
       switch (this.advancedSettings.sensitivity) {
         case '1': case '2': case '3':
@@ -179,23 +182,14 @@ export default {
     }, 5000)
   },
   mounted() {
-    this.getStage()
     this.getVerificationCode()
     this.codeInterval = setInterval(() => {
       this.getVerificationCode()
     }, 5000)
   },
   methods: {
-    getStage() {
-      const params = new URLSearchParams(window.location.search)
-      const stage = params.get('setup')
-      if (stage) {
-        this.setupStage = stage
-      }
-      console.log('Stage Set!')
-    },
-    toLinkStage() {
-      this.setupStage = 'link'
+    isRelink: function() {
+      return !!this.$route.query.printer_id
     },
     // copy() {
     //   const codeButton = this.$refs.code
@@ -241,11 +235,14 @@ export default {
         title: 'Not Seeing Verification Code Page?',
         html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
-        <li>You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
-        <li>The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li>If for some reason you can't upgrade the plugin, follow <a href="/printers/new/">the old process</a> to link OctoPrint.</li>
-        <li>Still no dice? Check out the step-by-step <a href="#">set up guide</a>.</li>
+        <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
+        <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
+        <li style="margin: 10px 0;">If for some reason you can't upgrade the plugin, follow <a href="/printers/new/">the old process</a> to link OctoPrint.</li>
+        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="#">set up guide</a>.</li>
         </ul></p>`,
+        customClass: {
+          container: 'dark-backdrop',
+        },
       })
     }
   }
@@ -298,6 +295,9 @@ img
   font-weight: 400
   text-align: center
   padding: 0 36px
+
+li
+  margin: 2px -35px
 
 // Preferences page.
 

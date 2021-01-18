@@ -88,9 +88,9 @@
     <div class="row justify-content-center">
       <div id="new-printer" class="col-sm-12 col-lg-6">
         <div class="new-printer-container">
-          <a href="/printers/new?setup=link">
+          <a href="/printers/wizard/">
             <i class="fa fa-plus fa-2x"></i>
-            <div>Add Printer</div>
+            <div>Link OctoPrint Printer</div>
           </a>
         </div>
       </div>

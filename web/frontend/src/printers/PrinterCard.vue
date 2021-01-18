@@ -34,13 +34,15 @@
               <img class="menu-icon" :src="require('@static/img/octoprint-tunnel.png')" />
               Tunneling
             </a>
-
             <div class="dropdown-divider"></div>
-
             <a
               class="dropdown-item"
               :href="settingsUrl()"
             ><i class="fas fa-wrench fa-lg"></i>Settings
+            </a>
+            <a class="dropdown-item" :href="printerWizardUrl()">
+              <i class="fas fa-link fa-lg"></i>
+              Re-link OctoPrint
             </a>
           </div>
         </div>
@@ -463,6 +465,9 @@ export default {
     },
     octoPrintTunnelUrl() {
       return `/tunnel/${this.printer.id}/`
+    },
+    printerWizardUrl() {
+      return `/printers/wizard/?printer_id=${this.printer.id}`
     },
     forceStreamingSrc(src) {
       this.stickyStreamingSrc = src

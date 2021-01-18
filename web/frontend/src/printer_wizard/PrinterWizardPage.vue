@@ -148,13 +148,13 @@ export default {
       advancedSettings: {
         isHotendHeaterOff: true, // true, false
         isBedHeaterOff: false, // true, false
-        retractFilamentBy: false, // false or number (in string number) from 0 with 0.5 step
-        liftExtruderBy: '2.5', // false or number (in string number) from 0 with 0.5 step
+        retractFilamentBy: false, // false or number (in string format) from 0 with 0.5 step
+        liftExtruderBy: '2.5', // false or number (in string format) from 0 with 0.5 step
         sensitivity: '1', // number (in string format) from 0.8 to 1.2 with 0.05 step
       },
       counter: 0,
       theme: theme,
-      setupStage: 'preferences', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
+      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
       expiresIn: 'xxx',
     }
   },

@@ -64,10 +64,10 @@
 
       <template slot="footer" slot-scope="props">
        <div class="wizard-footer-left">
-           <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab()" class="btn btn-link" :style="props.fillButtonStyle">&lt; Back</wizard-button>
+           <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab();" class="btn btn-link btn-back">&lt; Back</wizard-button>
         </div>
         <div class="wizard-footer-right">
-          <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
+          <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab();" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
         </div>
       </template>
     </form-wizard>
@@ -190,6 +190,17 @@ export default {
   methods: {
     isRelink: function() {
       return !!this.$route.query.printer_id
+    },
+    /**
+     * Functions prevTab() and nextTab() are used to remove .checked class from circle steps
+     * following current step (.checked class isn't removed by default after clicking Back
+     * button, which causes showiing logo inside furter steps, not only completed ones).
+     */
+    prevTab() {
+      document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
+    },
+    nextTab() {
+      document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
     },
     // copy() {
     //   const codeButton = this.$refs.code
@@ -327,6 +338,31 @@ li
 // Unscoped styles to style plugin elements
 @use "~main/theme"
 
+// Step label (not active)
 .wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
   color: theme.$white
+
+// Adjust numbers in the circles (form steps)
+.wizard-nav.wizard-nav-pills .wizard-icon-circle i
+  position: relative
+  right: 2px
+
+// Show logo inside completed sorm step circles
+.wizard-nav.wizard-nav-pills li:not(.active)
+  .wizard-icon-circle.checked i
+    display: none
+
+  .wizard-icon-circle.checked:before
+    $size: 30px
+    content: ""
+    display: block
+    width: $size
+    height: $size
+    background-image: url("/static/img/logo-square.png")
+    background-size: $size $size
+    position: absolute
+    top: calc(50% - #{$size / 2})
+    left: calc(50% - #{$size / 2})
+    bottom: calc(50% - #{$size / 2})
+    right: calc(50% - #{$size / 2})
 </style>

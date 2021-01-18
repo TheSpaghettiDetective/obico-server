@@ -1,7 +1,7 @@
 <template>
 <div class="row justify-content-center">
   <div class="col-sm-12 col-lg-10 wizard-container">
-    <div v-if="setupStage === 'linkPrinter'">
+    <div v-if="['linkPrinter', 'verificationCode'].includes(setupStage)">
       <form-wizard
         :color="theme.primary"
         step-size="sm"
@@ -132,7 +132,7 @@ export default {
       },
       counter: 0,
       theme: theme,
-      setupStage: 'linkPrinter', // first - linkPrinter, then - preferences
+      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
     }
   },
   computed: {
@@ -153,20 +153,16 @@ export default {
     }
   },
   created() {
-    // setInterval(() => {
-    //   this.currentTime = Date.now()
-    // }, 5000)
+    
   },
   mounted() {
-    // this.getVerificationCode()
-    // this.codeInterval = setInterval(() => {
-    //   this.getVerificationCode()
-    // }, 5000)
+    
   },
   methods: {
     isRelink: function() {
       return !!this.$route.query.printer_id
     },
+
     /**
      * Functions prevTab() and nextTab() are used to remove .checked class from circle steps
      * following current step (.checked class isn't removed by default after clicking Back
@@ -174,30 +170,69 @@ export default {
      */
     prevTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
+      this.setupStage = 'linkPrinter' // If Back button clicked it means user still working with form wizard
     },
     nextTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
 
       if (document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1') {
+        this.setupStage = 'verificationCode' // Activate key bindings for copying verification code
         this.getVerificationCode()
+
+        const copyFunc = this.copyCode
+
+        let ctrlDown = false, ctrlKey = 17, cmdKey = 91, cKey = 67
+
+        document.addEventListener('keydown', function(e) {
+          if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true
+        })
+        document.addEventListener('keyup', function(e) {
+          if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false
+        })
+
+        document.addEventListener('keydown', function(e) {
+          if (ctrlDown && (e.keyCode == cKey)) {
+            copyFunc()
+          }
+        })
+
         this.codeInterval = setInterval(() => {
           this.getVerificationCode()
         }, 5000)
       }
     },
-    // copy() {
-    //   const codeButton = this.$refs.code
-    //   console.log(codeButton.value)
-    //   codeButton.focus()
-    //   codeButton.select()
-    //   try {
-    //     const successful = document.execCommand('copy')
-    //     const msg = successful ? 'successful' : 'unsuccessful'
-    //     console.log('Fallback: Copying text command was ' + msg)
-    //   } catch (err) {
-    //     console.error('Fallback: Oops, unable to copy', err)
-    //   }
-    // },
+
+    /**
+     * Copy verification code to clipboard (on appropriate step)
+     */
+    copyCode() {
+      if (this.setupStage === 'verificationCode') {
+        let textArea = document.createElement('textarea')
+        textArea.value = this.verificationCode
+        
+        // Avoid scrolling to bottom
+        textArea.style.top = '0'
+        textArea.style.left = '0'
+        textArea.style.position = 'fixed'
+
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+
+        try {
+          document.execCommand('copy')
+          document.querySelector('input.code-btn').style.backgroundColor = this.theme.primary
+        } catch (err) {
+          console.error('Fallback: Oops, unable to copy', err)
+        }
+
+        document.body.removeChild(textArea)
+      }
+    },
+
+    /**
+     * Get verification code from API
+     */
     getVerificationCode() {
       this.currentTime = Date.now()
 
@@ -206,8 +241,6 @@ export default {
         .then((resp) => {
           if (resp.data) {
             if (resp.data) {
-              console.log(resp.data)
-
               this.verificationCode = resp.data.code
               const expiryTime = resp.data.expired_at.replace(/-|:/g, '')
 
@@ -230,6 +263,7 @@ export default {
           }
         })
     },
+
     showVerificationCodeHelpModal() {
       this.$swal.fire({
         title: 'Can\'t find the page to enter the 6-digit code?',

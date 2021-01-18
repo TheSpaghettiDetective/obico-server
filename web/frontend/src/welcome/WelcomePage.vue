@@ -1,23 +1,24 @@
 <template>
-<div class="row justify-content-center">
-  <div class="col-sm-12 col-lg-10 wizard-container">
-    <div class="container">
-      <div class="row text-center">
-        <div class="mx-auto content">Link your Octoprint printer now in 3 simple steps to enjoy the benefits of your <strong>30-day free trial</strong>, on us!</div>
-      </div>
-      <div class="row pt-3 text-center d-flex flex-column align-items-start mx-auto">
-        <div class="pb-1 small-text">Enhanced 25fps Webcam Streaming</div>
-        <div class="pb-1 small-text">Unlimited Monitoring of Your Prints by The Spaghetti Detective</div>
-        <div class="pb-3 small-text">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
-      </div>
-      <div class="row py-2">
-        <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
-      </div>
-      <div class="row py-2">
-        <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
-      </div>
-      <div class="row py-2">
-        <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>
+  <div class="row justify-content-center">
+    <div class="col-sm-12 col-lg-10 wizard-container">
+      <div class="container">
+        <div class="row text-center">
+          <div class="mx-auto content">Link your Octoprint printer now in 3 simple steps to enjoy the benefits of your <strong>30-day free trial</strong>, on us!</div>
+        </div>
+        <div class="row pt-3 text-center d-flex flex-column align-items-start mx-auto">
+          <div class="pb-1 small-text">Enhanced 25fps Webcam Streaming</div>
+          <div class="pb-1 small-text">Unlimited Monitoring of Your Prints by The Spaghetti Detective</div>
+          <div class="pb-3 small-text">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
+        </div>
+        <div class="row py-2">
+          <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
+        </div>
+        <div class="row py-2">
+          <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
+        </div>
+        <div class="row py-2">
+          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>
+        </div>
       </div>
     </div>
   </div>

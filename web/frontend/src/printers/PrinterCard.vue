@@ -41,7 +41,7 @@
             ><i class="fas fa-wrench fa-lg"></i>Settings
             </a>
             <a class="dropdown-item" :href="printerWizardUrl()">
-              <i class="fas fa-link fa-lg"></i>
+              <img class="menu-icon" :src="require('../../../app/static/img/octo-inverted.png')" />
               Re-link OctoPrint
             </a>
           </div>

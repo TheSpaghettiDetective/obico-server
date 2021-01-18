@@ -6,7 +6,11 @@
         :color="theme.primary"
         step-size="sm"
       >
-        <h2 slot="title"><i class="fas fa-link mr-3" />Link OctoPrint</h2>
+        <h2 slot="title">
+          <img class="header-img"
+            :src="require('../../../app/static/img/octo-inverted.png')" />
+          Link OctoPrint
+        </h2>
         <tab-content title="Install Plugin">
           <div class="container">
             <div class="row justify-content-center pb-3">
@@ -261,6 +265,11 @@ export default {
 
 .container
   padding: 0
+
+.header-img
+  width: 1em
+  height: 1em
+  margin: 0 12px
 
 .img-container
   background: darken(theme.$body-bg, 5)

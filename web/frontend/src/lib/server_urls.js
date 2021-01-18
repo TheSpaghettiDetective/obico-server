@@ -12,7 +12,7 @@ export default {
   pubPrinter: () => '/api/v1p/printer/',
   gcodes: () => '/api/v1/gcodes/',
   tunnelUsage: () => '/api/v1/tunnelusage/',
-  verificationCode: () => 'api/v1/onetimeverificationcodes/',
+  verificationCode: () => '/api/v1/onetimeverificationcodes/',
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

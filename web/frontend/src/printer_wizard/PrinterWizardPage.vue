@@ -17,9 +17,9 @@
               <div class="col-sm-12 col-lg-8">
                 <ol>
                   <li>Open OctoPrint in another browser tab. </li>
-                  <li>OctoPrint settings menu > Plugin Manager > Get More... </li>
-                  <li>Enter "The Spaghetti Detective" to search for the plugin. Click "Install".</li>
-                  <li>After installing, Octoprint will restart (this may take a few minutes).</li>
+                  <li>Select "OctoPrint settings menu → Plugin Manager → Get More..." </li>
+                  <li>Enter "The Spaghetti Detective" to locate the plugin. Click "Install".</li>
+                  <li>Restart OctoPrint when prompted.</li>
                 </ol>
               </div>
             </div>
@@ -68,7 +68,7 @@
         </tab-content>
 
         <template slot="footer" slot-scope="props">
-        <div class="wizard-footer-left">
+          <div class="wizard-footer-left">
             <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab();" class="btn btn-link btn-back">&lt; Back</wizard-button>
           </div>
           <div class="wizard-footer-right">
@@ -77,7 +77,7 @@
         </template>
       </form-wizard>
       <div class="row">
-        <div class="helper col-sm-12 float-right">Need help? Check out the <a href="#">step-by-step set up guide</a>.</div>
+        <div class="helper col-sm-12">Need help? Check out the <a href="#">step-by-step set up guide</a>.</div>
       </div>
     </div>
 
@@ -232,7 +232,7 @@ export default {
     },
     showVerificationCodeHelpModal() {
       this.$swal.fire({
-        title: 'Not Seeing Verification Code Page?',
+        title: 'Can\'t find the page to enter the 6-digit code?',
         html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
@@ -277,8 +277,7 @@ export default {
   text-align: center
 
 img
-  width: 100%
-  max-width: 450px
+  max-height: 30vh
 
 .spacer
  width: 200px
@@ -296,8 +295,6 @@ img
   letter-spacing: 2px
 
 .helper
-  font-size: 0.8rem
-  font-weight: 400
   text-align: center
   padding: 0 36px
 

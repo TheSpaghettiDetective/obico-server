@@ -17,7 +17,7 @@
           <h2 class="mx-auto pt-3 text-center">Your <span class="text-primary">30-Day Free Trial</span> Started Today!</h2>
         </div>
         <div class="row pt-2">
-          <div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3">
+          <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
             <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
             <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Print Hours Watched by The Detective</span></div>
             <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>

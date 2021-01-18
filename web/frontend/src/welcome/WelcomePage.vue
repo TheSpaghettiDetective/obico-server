@@ -40,7 +40,7 @@
           <div class="text-muted mx-auto text-center font-weight-light">Not a whole lot you can see without your OctoPrint linked.</div>
         </div>
         <div class="row py-2">
-          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't Have Octoprint?</b-button>
+          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn btn-link">Don't Have Octoprint?</b-button>
         </div>
       </div>
     </div>
@@ -82,6 +82,9 @@ export default {
   height: 3rem
   font-size: 1rem
   line-height: 0.9rem
+
+.btn-link
+  color: theme.$white
 
 hr
   background-color: theme.$white

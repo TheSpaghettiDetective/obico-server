@@ -54,7 +54,7 @@
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
                   <input disabled ref="code" class="code-btn" :value="`${verificationCode}`"/>
                   <small class="mx-auto py-1 text-muted">(Ctrl-C/Cmd-C to copy the code)</small>
-                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>xxx minutes</div>
+                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{expiresIn}} minutes</div>
                 <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
               </div>
             </div>
@@ -133,8 +133,30 @@ export default {
       counter: 0,
       theme: theme,
       setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
+      expiresIn: 'xxx',
     }
   },
+
+  watch: {
+    // Automatic countdown for minutes timer to expiration date
+    expiresIn: {
+      handler() {
+        setTimeout(() => {
+          if (this.expiryMoment) {
+            const duration = Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
+            if (duration > 0) {
+              this.expiresIn = duration
+            } else {
+              this.expiresIn = 0
+            }
+          }
+        }, 1000)
+      },
+      immediate: true // This ensures the watcher is triggered upon creation
+    }
+
+  },
+
   computed: {
     title() {
       return this.isRelink() ? 'Re-Link' : 'Link'
@@ -150,7 +172,7 @@ export default {
         default:
           return 'Medium - A few false alarms won\'t bother me. But some well-disguised spaghetti will be missed.'
       }
-    }
+    },
   },
   created() {
     
@@ -248,6 +270,9 @@ export default {
               if (this.currentTime > this.expiryMoment) {
                 this.url += `${resp.data.id}/`
               }
+
+              // Show user how much minutes left to expiration moment (with automatic countdown)
+              this.expiresIn = Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
 
               this.counter += 1
               if (this.counter === 10) {

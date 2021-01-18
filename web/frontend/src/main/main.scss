@@ -10,10 +10,6 @@ body {
   background: repeating-linear-gradient(45deg, darken($body-bg, 8) 0%, darken($body-bg, 8) 10%, darken($body-bg, 5) 0%, darken($body-bg, 5) 50%) 0 / 15px 15px;
 }
 
-body.solid-bg {
-  background: #313e4f;
-}
-
 .borderless {
   border: none !important;
 }

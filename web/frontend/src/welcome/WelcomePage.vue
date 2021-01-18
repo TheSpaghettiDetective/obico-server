@@ -2,22 +2,45 @@
   <div class="row justify-content-center">
     <div class="col-sm-12 col-lg-10 wizard-container">
       <div class="container">
-        <div class="row text-center">
-          <div class="mx-auto content">Link your Octoprint printer now in 3 simple steps to enjoy the benefits of your <strong>30-day free trial</strong>, on us!</div>
+        <br />
+        <div class="row">
+          <h1 class="mx-auto">Welcome To</h1>
         </div>
-        <div class="row pt-3 text-center d-flex flex-column align-items-start mx-auto">
-          <div class="pb-1 small-text">Enhanced 25fps Webcam Streaming</div>
-          <div class="pb-1 small-text">Unlimited Monitoring of Your Prints by The Spaghetti Detective</div>
-          <div class="pb-3 small-text">Unlimited Remote Tunneling to your Octoprint anytime, anywhere</div>
+        <div class="row">
+          <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+            <img class="logo-img"
+              :src="require('../../../app/static/img/logo-inverted.png')" />
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <h2 class="mx-auto pt-3 text-center">Your <span class="text-primary">30-Day Free Trial</span> Started Today!</h2>
+        </div>
+        <div class="row pt-2">
+          <div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3">
+            <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
+            <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Print Hours Watched by The Detective</span></div>
+            <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>
+            <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your Octoprint</span></div>
+          </div>
+        </div>
+        <div class="row text-center mt-5">
+          <div class="mx-auto lead">Link your OctoPrint now so that you can fully enjoy the 30-Day Free Trial!</div>
+        </div>
+        <div class="row p mt-4">
+          <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link OctoPrint</b-button>
+        </div>
+        <div class="row">
+          <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
+        </div>
+        <div class="row mt-3">
+          <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Just Checking Out</b-button>
+        </div>
+        <div class="row">
+          <div class="text-muted mx-auto text-center font-weight-light">Not a whole lot you can see without your OctoPrint linked.</div>
         </div>
         <div class="row py-2">
-          <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link Printer</b-button>
-        </div>
-        <div class="row py-2">
-          <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Skip, Set Up Later</b-button>
-        </div>
-        <div class="row py-2">
-          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't have Octoprint?</b-button>
+          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn">Don't Have Octoprint?</b-button>
         </div>
       </div>
     </div>
@@ -40,24 +63,19 @@ export default {
       window.open('https://octoprint.org/download')
     }
   },
-  beforeCreate: function() {
-    document.body.className = 'solid-bg'
-  }
 }
 </script>
 
 <style lang="sass" scoped>
 @use "~main/theme"
 
-.main-container
-  position: fixed
-  top: 50%
-  left: 50%
-  transform: translate(-50%, -50%)
-
-.title
-  font-size: 3rem
-  font-weight: 800
+.wizard-container
+  margin: 2em 0em
+  padding: 1em
+  background: theme.$body-bg
+  -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
+  border: none !important
 
 .btn
   width: 240px
@@ -65,15 +83,17 @@ export default {
   font-size: 1rem
   line-height: 0.9rem
 
-.content
-  font-size: 1rem
-  line-height: 1.5rem
-  font-weight: 400
-  width: 60vw
-  max-width: 380px
+hr
+  background-color: theme.$white
 
-.small-text
-  font-size: 0.75rem
+.logo-img
+  width: 100%
+
+.feature-check
+  color: theme.$primary
+
+.feature-text
+  margin-left: 0.5em
 
 .success
   width: 12rem

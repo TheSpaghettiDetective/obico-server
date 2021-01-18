@@ -297,6 +297,10 @@ export default {
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
 
+.btn-back
+  color: theme.$white
+  min-width: auto
+
 .container
   padding: 0
 

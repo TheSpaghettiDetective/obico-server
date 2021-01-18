@@ -93,7 +93,20 @@
     <div v-if="setupStage === 'preferences'" class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
       <h2 class="preferences-title">Printer Preferences</h2>
 
-      <PrinterPreferences />
+      <PrinterPreferences
+        :pauseAndNotify="pauseAndNotify"
+        :isHotendHeaterOff="advancedSettings.isHotendHeaterOff"
+        :isBedHeaterOff="advancedSettings.isBedHeaterOff"
+        :retractFilamentBy="advancedSettings.retractFilamentBy"
+        :liftExtruderBy="advancedSettings.liftExtruderBy"
+        :sensitivity="advancedSettings.sensitivity"
+
+        @pauseAndNotifyChanged="pauseAndNotifyChanged"
+        @isHotendHeaterOffChanged="isHotendHeaterOffChanged"
+        @isBedHeaterOffChanged="isBedHeaterOffChanged"
+        @retractFilamentByChanged="retractFilamentByChanged"
+        @liftExtruderByChanged="liftExtruderByChanged"
+        @sensitivityChanged="sensitivityChanged"/>
 
       <div class="footer text-center mt-2 mb-5">
         <div class="tip">TIP: You can change your notification preferences later by going to: Settings > User Preferences</div>
@@ -130,18 +143,18 @@ export default {
       currentTime: Date.now(),
       expiryMoment: null,
       url: urls.verificationCode(),
-      pauseAndNotify: true,
+      pauseAndNotify: true, // true, false (settings: When a potential failure is detected)
       dropdown: false,
       advancedSettings: {
-        isHotendHeaterOff: true,
-        isBedHeaterOff: false,
-        retractFilamentBy: 6.5,
-        liftExtruderBy: 2.5,
-        sensitivity: '5',
+        isHotendHeaterOff: true, // true, false
+        isBedHeaterOff: false, // true, false
+        retractFilamentBy: false, // false or number (in string number) from 0 with 0.5 step
+        liftExtruderBy: '2.5', // false or number (in string number) from 0 with 0.5 step
+        sensitivity: '1', // number (in string format) from 0.8 to 1.2 with 0.05 step
       },
       counter: 0,
       theme: theme,
-      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
+      setupStage: 'preferences', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
       expiresIn: 'xxx',
     }
   },
@@ -316,7 +329,42 @@ export default {
 
     zoomIn(event) {
       event.target.classList.toggle('zoomedIn')
-    }
+    },
+
+
+    /**
+     * Settings change emits
+     */
+    pauseAndNotifyChanged(value) {
+      this.pauseAndNotify = value
+      console.log(value)
+      // TODO: call API
+    },
+    isHotendHeaterOffChanged(value) {
+      this.advancedSettings.isHotendHeaterOff = value
+      console.log(value)
+      // TODO: call API
+    },
+    isBedHeaterOffChanged(value) {
+      this.advancedSettings.isBedHeaterOff = value
+      console.log(value)
+      // TODO: call API
+    },
+    retractFilamentByChanged(value) {
+      this.advancedSettings.retractFilamentBy = value
+      console.log(value)
+      // TODO: call API
+    },
+    liftExtruderByChanged(value) {
+      this.advancedSettings.liftExtruderBy = value
+      console.log(value)
+      // TODO: call API
+    },
+    sensitivityChanged(value) {
+      this.advancedSettings.sensitivity = value
+      console.log(value)
+      // TODO: call API
+    },
   }
 }
 </script>

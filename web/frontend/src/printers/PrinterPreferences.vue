@@ -4,11 +4,23 @@
       <div class="form-group mt-4 mb-4">
         <div class="form-label text-muted">When a potential failure is detected:</div>
         <div class="custom-control custom-radio mt-1">
-          <input type="radio" name="action_on_failure" value="NONE" class="custom-control-input field_required" required="" id="id_action_on_failure_0" checked="">
+          <input
+            type="radio"
+            name="action_on_failure"
+            class="custom-control-input field_required"
+            id="id_action_on_failure_0"
+            :checked="!pauseAndNotify"
+            @change="$emit('pauseAndNotifyChanged', false)">
           <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
         </div>
         <div class="custom-control custom-radio mt-1">
-          <input type="radio" name="action_on_failure" value="PAUSE" class="custom-control-input field_required" required="" id="id_action_on_failure_1">
+          <input
+            type="radio"
+            name="action_on_failure"
+            class="custom-control-input field_required"
+            id="id_action_on_failure_1"
+            :checked="pauseAndNotify"
+            @change="$emit('pauseAndNotifyChanged', true)">
           <label class="custom-control-label" for="id_action_on_failure_1">Pause the printer and notify me</label>
         </div>
       </div>
@@ -32,24 +44,50 @@
               <div class="form-group mt-4">
                 <div class="form-label text-muted">When print is paused,</div>
                 <div class="custom-control custom-checkbox form-check-inline mt-2">
-                  <input type="checkbox" name="tools_off_on_pause" class="custom-control-input" id="id_tools_off_on_pause" checked="">
+                  <input
+                    type="checkbox"
+                    name="tools_off_on_pause"
+                    class="custom-control-input"
+                    id="id_tools_off_on_pause"
+                    :checked="isHotendHeaterOff"
+                    @change="$emit('isHotendHeaterOffChanged', $event.target.checked)">
                   <label class="custom-control-label" for="id_tools_off_on_pause">
                     Turn off hotend heater(s)
                   </label>
                 </div>
                 <div class="custom-control custom-checkbox form-check-inline mt-2">
-                  <input type="checkbox" name="bed_off_on_pause" class="custom-control-input" id="id_bed_off_on_pause">
+                  <input
+                    type="checkbox"
+                    name="bed_off_on_pause"
+                    class="custom-control-input"
+                    id="id_bed_off_on_pause"
+                    :checked="isBedHeaterOff"
+                    @change="$emit('isBedHeaterOffChanged', $event.target.checked)">
                   <label class="custom-control-label" for="id_bed_off_on_pause">
                     Turn off bed heater
                   </label>
                 </div>
                 <div class="form-inline my-1">
                   <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox" class="custom-control-input" id="retract-checkbox">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="retract-checkbox"
+                      :checked="retractFilamentBy !== false"
+                      @change="$event.target.checked ? $emit('retractFilamentByChanged', retractFilamentByInput) : $emit('retractFilamentByChanged', false)">
                     <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                   </div>
                   <div class="input-group input-group-sm minimal-width">
-                    <input type="number" name="retract_on_pause" value="6.5" step="0.5" aria-label="Retraction ammount in millimeters" min="0" class="form-control field_required" required="" id="id_retract_on_pause">
+                    <input
+                      type="number"
+                      name="retract_on_pause"
+                      step="0.5"
+                      aria-label="Retraction ammount in millimeters"
+                      min="0"
+                      class="form-control field_required"
+                      id="id_retract_on_pause"
+                      v-model="retractFilamentByInput"
+                      @change="EmitIfEtractFilamentBy()">
                     <div class="input-group-append">
                       <span class="input-group-text">mm</span>
                     </div>
@@ -57,11 +95,25 @@
                 </div>
                 <div class="form-inline my-1">
                   <div class="custom-control custom-checkbox form-check-inline">
-                    <input type="checkbox" class="custom-control-input" id="lift-z-checkbox">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="lift-z-checkbox"
+                      :checked="liftExtruderBy !== false"
+                      @change="$event.target.checked ? $emit('liftExtruderByChanged', liftExtruderByInput) : $emit('liftExtruderByChanged', false)">
                     <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                   </div>
                   <div class="input-group input-group-sm minimal-width">
-                    <input type="number" name="lift_z_on_pause" value="2.5" step="0.5" aria-label="Lift Z Axis ammount in millimeters" min="0" class="form-control field_required" required="" id="id_lift_z_on_pause">
+                    <input
+                      type="number"
+                      name="lift_z_on_pause"
+                      step="0.5"
+                      aria-label="Lift Z Axis ammount in millimeters"
+                      min="0"
+                      class="form-control field_required"
+                      id="id_lift_z_on_pause"
+                      v-model="liftExtruderByInput"
+                      @change="EmitIfLiftExtruderBy()">
                     <div class="input-group-append">
                       <span class="input-group-text">mm</span>
                     </div>
@@ -72,7 +124,7 @@
                 <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
                 <div class="px-3 my-2">
                   <input id="sensitivity" name="detective_sensitivity" data-slider-id='sensitivity-slider' type="text"
-                    data-slider-min="0.8" data-slider-max="1.2" data-slider-step="0.05" data-slider-value="1" />
+                    data-slider-min="0.8" data-slider-max="1.2" data-slider-step="0.05" :data-slider-value="sensitivity" />
                 </div>
                 <div class="hint-low">
                   Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
@@ -99,9 +151,72 @@ import Slider from 'bootstrap-slider'
 export default {
   name: 'PrinterPreferences',
 
+  props: {
+    pauseAndNotify: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    isHotendHeaterOff: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    isBedHeaterOff: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    retractFilamentBy: {
+      type: [Boolean, String],
+      required: false,
+      default: false
+    },
+    liftExtruderBy: {
+      type: [Boolean, String],
+      required: false,
+      default: false
+    },
+    sensitivity: {
+      type: String,
+      required: false,
+      default: '1'
+    }
+  },
+
+  data() {
+    return {
+      retractFilamentByInput: '0',
+      liftExtruderByInput: '0'
+    }
+  },
+
+  methods: {
+    EmitIfEtractFilamentBy: function() {
+      if (this.retractFilamentBy !== false) {
+        this.$emit('retractFilamentByChanged', this.retractFilamentByInput)
+      }
+    },
+    EmitIfLiftExtruderBy: function() {
+      if (this.liftExtruderBy !== false) {
+        this.$emit('liftExtruderByChanged', this.liftExtruderByInput)
+      }
+    },
+    emitSensitivityChange: function(event) {
+      this.$emit('sensitivityChanged', String(event.value.newValue))
+    }
+  },
+
   mounted() {
     const $ = JQuery
     console.log(Slider)
+
+    if (this.retractFilamentBy !== false) {
+      this.retractFilamentByInput = this.retractFilamentBy
+    }
+    if (this.liftExtruderBy !== false) {
+      this.liftExtruderByInput = this.liftExtruderBy
+    }
 
     $('#sensitivity').slider({
       formatter: function(value) {
@@ -118,6 +233,7 @@ export default {
     function updateSensitivityHint() {
       $('.sensitivity div[class^=hint]').hide()
       var value = parseFloat($('#sensitivity').val())
+
       if (value < 0.95) {
         $('.sensitivity .hint-low').show()
       } else if (value > 1.05) {
@@ -129,6 +245,8 @@ export default {
 
     $('#sensitivity').on('change', updateSensitivityHint)
     updateSensitivityHint()
+
+    $('#sensitivity').on('change', this.emitSensitivityChange)
   },
 }
 </script>

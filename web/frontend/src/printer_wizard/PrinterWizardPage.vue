@@ -3,67 +3,60 @@
   <div class="col-sm-12 col-lg-10 wizard-container">
     <form-wizard
       :color="theme.primary"
-      finish-button-text="Next"
       step-size="sm"
     >
-      <h2 slot="title">Link OctoPrint</h2>
-
+      <h2 slot="title"><i class="fas fa-link mr-3" />Link OctoPrint</h2>
       <tab-content title="Install Plugin">
         <div class="container">
-          <div class="col"></div>
-          <div class="d-flex flex-column col">
-            <b-row class="pb-3 d-flex justify-content-center">
-              <img :src="require('@static/img/install_plugin.png')">
-            </b-row>
-            <b-row class="text-center">
-              <div class="mx-auto content">Octoprint Settings menu > Plugin Manager > Install new Plugin</div>
-            </b-row>
-            <b-row class="pb-3 text-center">
-              <div class="mx-auto content">After installing, Octoprint will restart (this may take a few minutes)</div>
-            </b-row>
+          <div class="row justify-content-center pb-3">
+            <div class="col-sm-12 col-lg-8">
+              <ol>
+                <li>OctoPrint settings menu > Plugin Manager > Get More... </li>
+                <li>Enter "The Spaghetti Detective" to search for the plugin. Click "Install".</li>
+                <li>After installing, Octoprint will restart (this may take a few minutes).</li>
+              </ol>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-sm-12 col-lg-8 img-container">
+              <img class="mx-auto" :src="require('@static/img/install_plugin.png')">
+            </div>
           </div>
         </div>
       </tab-content>
       <tab-content title="Plugin Wizard">
         <div class="container">
-          <div class="col"></div>
-          <div class="d-flex flex-column col">
-            <b-row class="pb-3 d-flex justify-content-center">
-              <img :src="require('@static/img/plugin_wizard_websetup.png')">
-            </b-row>
-            <b-row class="text-center">
-              <div class="mx-auto content">Once OctoPrint has come back up, The Spaghetti Detective wizard will popup.</div>
-            </b-row>
-            <b-row class="text-center">
-              <div class="mx-auto content">Follow the steps in the wizard.</div>
-            </b-row>
-            <b-row class="text-center">
-              <div class="mx-auto content">Select "Web Setup".</div>
-            </b-row>
+          <div class="row justify-content-center pb-3">
+            <div class="col-sm-12 col-lg-8">
+              <ol>
+                <li>Upon restarting, The Spaghetti Detective wizard will popup.</li>
+                <li>Follow the steps in the wizard.</li>
+                <li>Select <b>"Web Setup"</b> when asked.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-sm-12 col-lg-8 img-container">
+              <img class="mx-auto" :src="require('@static/img/plugin_wizard_websetup.png')">
+            </div>
           </div>
         </div>
       </tab-content>
       <tab-content title="Enter Code">
         <div class="container">
-          <div class="col"></div>
-          <div class="d-flex flex-column col">
-            <b-row class="d-flex justify-content-center">
-              <div class="px-1">
+          <div class="row justify-content-center pb-3">
+            <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
                 <input disabled ref="code" class="code-btn" :value="`${verificationCode}`"/>
-              </div>
-            </b-row>
-            <b-row class="pt-1 text-center">
-              <div class="mx-auto pb-3">{{ `*This code will expire in ${validityHours} hrs ${validityMins} mins` }}</div>
-            </b-row>
-            <b-row class="pt-1 d-flex flex-column text-center">
-              <div class="mx-auto subtitle">Enter the 6-Digit verification Code in the Plugin</div>
-            </b-row>
-            <b-row class="pb-3 d-flex justify-content-center">
+                <small class="mx-auto py-1 text-muted">(Ctrl-C/Cmd-C to copy the code)</small>
+                <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>xxx minutes</div>
+              <div class="lead">Enter the <strong>6-digit verification code</strong> in the Plugin</div>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-sm-12 col-lg-8 img-container">
               <img :src="require('@static/img/TSDVerificationScreenshot.png')">
-            </b-row>
-            <b-row>
-              <div class="helper mx-auto pb-1" v-b-tooltip.hover.html.v-primary.right="tooltipTitle">Don't know where to enter the code? ⓘ</div>
-            </b-row>
+              <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
+            </div>
           </div>
         </div>
       </tab-content>
@@ -74,23 +67,20 @@
         </div>
         <div class="wizard-footer-right">
           <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
-
-          <!-- Uncomment, if you will need Finish button: -->
-          <!-- <wizard-button v-else class="wizard-footer-right finish-button" :style="props.fillButtonStyle">{{props.isLastStep ? 'Finish' : 'Next'}}</wizard-button> -->
         </div>
       </template>
     </form-wizard>
-    <b-row>
-      <div class="helper col-sm-12 float-right">*Need help? Check out the step-by-step <a href="#">set up guide</a></div>
-    </b-row>
+    <div class="row">
+      <div class="helper col-sm-12 float-right">Need help? Check out the <a href="#">step-by-step set up guide</a>.</div>
+    </div>
         <div v-if="false" class="container">
           <div class="col"></div>
           <div class="d-flex flex-column col">
-            <b-row class="pt-3 text-center">
-              <div class="mx-auto title pb-3">Printer Preferences</div>
-            </b-row>
-            <b-row class="pt-1 text-center d-flex flex-column align-items-start mx-auto prefs">
-                <div class="subtitle pb-3">When a potential failure is detected:</div>
+            <div class="row pt-3 text-center">
+              <div class="mx-auto pb-3">Printer Preferences</div>
+            </div>
+            <div class="row pt-1 text-center d-flex flex-column align-items-start mx-auto prefs">
+                <div class="pb-3">When a potential failure is detected:</div>
                 <b-form-radio :v-model="!pauseAndNotify" name="notify" size="lg" class="notify">Just notify me</b-form-radio>
                 <b-form-radio :v-model="pauseAndNotify" name="notify" size="lg" class="notify pb-4">Pause the printer and notify me</b-form-radio>
                 <div class="settings d-flex justify-content-between" @click="dropdown = !dropdown">
@@ -119,10 +109,10 @@
                   <b-form-input v-model="advancedSettings.sensitivity" type="range" min="1" max="9"></b-form-input>
                   <div>{{ sensitivityText }}</div>
                 </div>
-            </b-row>
-            <b-row class="pt-4">
+            </div>
+            <div class="row pt-4">
               <b-button variant="primary" class="mx-auto py-3 btn">Let's Go!</b-button>
-            </b-row>
+            </div>
           </div>
         </div>
   </div>
@@ -156,10 +146,6 @@ export default {
       currentTime: Date.now(),
       expiryMoment: null,
       url: urls.verificationCode(),
-      tooltipTitle: {
-        title: '<div>You need the latest</div><div>version of TSD plugin</div>',
-        html: true
-      },
       pauseAndNotify: true,
       dropdown: false,
       advancedSettings: {
@@ -174,18 +160,6 @@ export default {
     }
   },
   computed: {
-    validityHours() {
-      if (this.expiryMoment) {
-        return `0${Math.floor((this.expiryMoment - this.currentTime) / 3600000)}`.slice(-2)
-      }
-      return '-'
-    },
-    validityMins() {
-      if (this.expiryMoment) {
-        return `0${(Math.floor((this.expiryMoment - this.currentTime) / 60000) % 60)}`.slice(-2)
-      }
-      return '-'
-    },
     sensitivityText() {
       switch (this.advancedSettings.sensitivity) {
         case '1': case '2': case '3':
@@ -261,6 +235,18 @@ export default {
           }
         })
       }
+    },
+    showVerificationCodeHelpModal() {
+      this.$swal.fire({
+        title: 'Not Seeing Verification Code Page?',
+        html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+        <p><ul>
+        <li>You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
+        <li>The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
+        <li>If for some reason you can't upgrade the plugin, follow <a href="/printers/new/">the old process</a> to link OctoPrint.</li>
+        <li>Still no dice? Check out the step-by-step <a href="#">set up guide</a>.</li>
+        </ul></p>`,
+      })
     }
   }
 }
@@ -280,24 +266,25 @@ export default {
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
 
+.container
+  padding: 0
+
+.img-container
+  background: darken(theme.$body-bg, 5)
+  padding: 1rem
+  text-align: center
+
 img
-  height: 40vh
+  width: 100%
+  max-width: 450px
 
 .spacer
  width: 200px
 
-.title
-  font-size: 2.5rem
-  font-weight: 800
-
-.subtitle
-  font-size: 1.5rem
-  font-weight: 500
-
 .code-btn
   border-radius: 10px
   text-align: center
-  width: 25rem
+  width: 21rem
   height: 60px
   background-color: black
   border: black
@@ -306,19 +293,13 @@ img
   font-weight: 500
   letter-spacing: 2px
 
-.content
-  font-size: 1rem
-  line-height: 1.2rem
-  font-weight: 400
-
 .helper
   font-size: 0.8rem
   font-weight: 400
-  text-align: right
+  text-align: center
   padding: 0 36px
 
-::v-deep .custom-control-label
-  font-size: 1.2rem
+// Preferences page.
 
 .settings
   background-color: #616a7a

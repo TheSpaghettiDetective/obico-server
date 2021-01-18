@@ -25,7 +25,10 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-sm-12 col-lg-8 img-container">
-                <img class="mx-auto" :src="require('@static/img/install_plugin.png')">
+                <img
+                  class="mx-auto screenshot"
+                  :src="require('@static/img/install_plugin.png')"
+                  @click="zoomIn($event)">
               </div>
             </div>
           </div>
@@ -43,7 +46,10 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-sm-12 col-lg-8 img-container">
-                <img class="mx-auto" :src="require('@static/img/plugin_wizard_websetup.png')">
+                <img
+                  class="mx-auto screenshot"
+                  :src="require('@static/img/plugin_wizard_websetup.png')"
+                  @click="zoomIn($event)">
               </div>
             </div>
           </div>
@@ -60,7 +66,10 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-sm-12 col-lg-8 img-container">
-                <img :src="require('@static/img/TSDVerificationScreenshot.png')">
+                <img
+                  class="screenshot"
+                  :src="require('@static/img/TSDVerificationScreenshot.png')"
+                  @click="zoomIn($event)">
                 <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
               </div>
             </div>
@@ -303,6 +312,10 @@ export default {
           container: 'dark-backdrop',
         },
       })
+    },
+
+    zoomIn(event) {
+      event.target.classList.toggle('zoomedIn')
     }
   }
 }
@@ -363,6 +376,16 @@ img
 
 li
   margin: 2px -35px
+
+.screenshot
+  max-width: 100%
+  transition: transform .3s
+
+  &:hover
+    cursor: pointer
+
+  &.zoomedIn
+    transform: scale(2)
 
 
 // Preferences page

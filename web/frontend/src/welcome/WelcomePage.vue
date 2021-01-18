@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <div class="d-flex flex-column">
-      <div class="row">
-        <div class="mx-auto title pb-3">Success!</div>
-      </div>
+<div class="row justify-content-center">
+  <div class="col-sm-12 col-lg-10 wizard-container">
+    <div class="container">
       <div class="row text-center">
         <div class="mx-auto content">Link your Octoprint printer now in 3 simple steps to enjoy the benefits of your <strong>30-day free trial</strong>, on us!</div>
       </div>

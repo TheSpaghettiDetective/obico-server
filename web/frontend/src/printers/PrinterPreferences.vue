@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import JQuery from 'jquery'
 import Slider from 'bootstrap-slider'
 
 export default {
@@ -202,15 +201,30 @@ export default {
         this.$emit('liftExtruderByChanged', this.liftExtruderByInput)
       }
     },
-    emitSensitivityChange: function(event) {
-      this.$emit('sensitivityChanged', String(event.value.newValue))
+    emitSensitivityChange: function(data) {
+      this.$emit('sensitivityChanged', String(data.newValue))
+    },
+    updateSensitivityHint: function() {
+      // Hide all hints
+      const hints = document.querySelectorAll('.sensitivity div[class^=hint]');
+      [].forEach.call(hints, function(hint) {
+        hint.style.display = 'none'
+      })
+
+      // Show target hint depending of selected value
+      var value = parseFloat(document.querySelector('#sensitivity').value)
+      if (value < 0.95) {
+        document.querySelector('.sensitivity .hint-low').style.display = 'block'
+      } else if (value > 1.05) {
+        document.querySelector('.sensitivity .hint-high').style.display = 'block'
+      } else {
+        document.querySelector('.sensitivity .hint-medium').style.display = 'block'
+      }
     }
   },
 
   mounted() {
-    const $ = JQuery
-    console.log(Slider)
-
+    // Put values into inputs placed near checkboxes
     if (this.retractFilamentBy !== false) {
       this.retractFilamentByInput = this.retractFilamentBy
     }
@@ -218,7 +232,8 @@ export default {
       this.liftExtruderByInput = this.liftExtruderBy
     }
 
-    $('#sensitivity').slider({
+    // Instantiate sensitivity slider
+    const sensitivitySlider = new Slider('#sensitivity', {
       formatter: function(value) {
         if (value < 0.95) {
           return 'Low'
@@ -230,23 +245,9 @@ export default {
       }
     })
 
-    function updateSensitivityHint() {
-      $('.sensitivity div[class^=hint]').hide()
-      var value = parseFloat($('#sensitivity').val())
-
-      if (value < 0.95) {
-        $('.sensitivity .hint-low').show()
-      } else if (value > 1.05) {
-        $('.sensitivity .hint-high').show()
-      } else {
-        $('.sensitivity .hint-medium').show()
-      }
-    }
-
-    $('#sensitivity').on('change', updateSensitivityHint)
-    updateSensitivityHint()
-
-    $('#sensitivity').on('change', this.emitSensitivityChange)
+    sensitivitySlider.on('change', this.emitSensitivityChange) // Emit new value to parent component
+    sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
+    this.updateSensitivityHint() // Initial hits update (hide all except one)
   },
 }
 </script>

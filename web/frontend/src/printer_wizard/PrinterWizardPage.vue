@@ -15,11 +15,13 @@
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
+                <div class="text-warning">
+                  Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.thespaghettidetective.com/help/">TSD's help website</a>.
+                </div>
                 <ol>
                   <li>Open OctoPrint in another browser tab. </li>
-                  <li>Select "OctoPrint settings menu → Access Anywhere - The Spaghetti Detective" </li>
-                  <li>Enter "The Spaghetti Detective" to locate the plugin. Click "Install".</li>
-                  <li>Restart OctoPrint when prompted.</li>
+                  <li>Select <em>"OctoPrint settings menu → Access Anywhere - The Spaghetti Detective"</em>.</li>
+                  <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                 </ol>
               </div>
             </div>
@@ -36,8 +38,8 @@
               <div class="col-sm-12 col-lg-8">
                 <ol>
                   <li>Open OctoPrint in another browser tab. </li>
-                  <li>Select "OctoPrint settings menu → Plugin Manager → Get More..." </li>
-                  <li>Enter "The Spaghetti Detective" to locate the plugin. Click "Install".</li>
+                  <li>Select <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.</li>
+                  <li>Enter "The Spaghetti Detective" to locate the plugin. Click <em>"Install"</em>.</li>
                   <li>Restart OctoPrint when prompted.</li>
                 </ol>
               </div>
@@ -57,9 +59,9 @@
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
                 <ol>
-                  <li>Upon restarting, <b>Access Anywhere - The Spaghetti Detective</b> wizard will popup.</li>
+                  <li>Wait for <em>"Access Anywhere - The Spaghetti Detective"</em> wizard to popup.</li>
                   <li>Follow the instructions in the wizard.</li>
-                  <li>Select <b>"Web Setup"</b> when asked.</li>
+                  <li>Select <em>"Web Setup"</em> when asked.</li>
                 </ol>
               </div>
             </div>
@@ -205,24 +207,6 @@ export default {
     title() {
       return this.printerIdToLink ? 'Re-Link OctoPrint' : 'Link OctoPrint'
     },
-    sensitivityText() {
-      switch (this.advancedSettings.sensitivity) {
-        case '1': case '2': case '3':
-          return 'Low - I don\'t want a lot of false alarms. Only alert me when you are absolutely sure.'
-        case '4': case '5': case '6':
-          return 'Medium - A few false alarms won\'t bother me. But some well-disguised spaghetti will be missed.'
-        case '7': case '8': case '9':
-          return 'High - Hit me with all the false alarms. I want to catch as many failures as possible'
-        default:
-          return 'Medium - A few false alarms won\'t bother me. But some well-disguised spaghetti will be missed.'
-      }
-    },
-  },
-  created() {
-
-  },
-  mounted() {
-
   },
   methods: {
     /**
@@ -411,7 +395,8 @@ export default {
 .header-img
   width: 1em
   height: 1em
-  margin: 0 12px
+  margin-right: 12px
+  margin-bottom: 8px
 
 .img-container
   background: darken(theme.$body-bg, 5)

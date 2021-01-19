@@ -582,5 +582,6 @@ export default {
 .menu-icon
   width: 20px
   margin-right: 12px
+  margin-bottom: 6px
 
 </style>

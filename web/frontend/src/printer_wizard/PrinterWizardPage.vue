@@ -9,9 +9,28 @@
         <h2 slot="title">
           <img class="header-img"
             :src="require('../../../app/static/img/octo-inverted.png')" />
-          Link OctoPrint
+          {{title}}
         </h2>
-        <tab-content title="Install Plugin">
+        <tab-content v-if="printerIdToLink" title="Open Plugin Settings">
+          <div class="container">
+            <div class="row justify-content-center pb-3">
+              <div class="col-sm-12 col-lg-8">
+                <ol>
+                  <li>Open OctoPrint in another browser tab. </li>
+                  <li>Select "OctoPrint settings menu → Access Anywhere - The Spaghetti Detective" </li>
+                  <li>Enter "The Spaghetti Detective" to locate the plugin. Click "Install".</li>
+                  <li>Restart OctoPrint when prompted.</li>
+                </ol>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-sm-12 col-lg-8 img-container">
+                <img class="mx-auto" :src="require('@static/img/plugin_rerun_setup.png')">
+              </div>
+            </div>
+          </div>
+        </tab-content>
+        <tab-content v-else title="Install Plugin">
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
@@ -68,7 +87,7 @@
               <div class="col-sm-12 col-lg-8 img-container">
                 <img
                   class="screenshot"
-                  :src="require('@static/img/TSDVerificationScreenshot.png')"
+                  :src="require('@static/img/plugin_verification_code.png')"
                   @click="zoomIn($event)">
                 <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
               </div>
@@ -180,8 +199,11 @@ export default {
   },
 
   computed: {
+    printerIdToLink() {
+      return new URLSearchParams(window.location.search.substring(1)).get('printerId')
+    },
     title() {
-      return this.isRelink() ? 'Re-Link' : 'Link'
+      return this.printerIdToLink ? 'Re-Link OctoPrint' : 'Link OctoPrint'
     },
     sensitivityText() {
       switch (this.advancedSettings.sensitivity) {
@@ -197,16 +219,12 @@ export default {
     },
   },
   created() {
-    
+
   },
   mounted() {
-    
+
   },
   methods: {
-    isRelink: function() {
-      return !!this.$route.query.printer_id
-    },
-
     /**
      * Functions prevTab() and nextTab() are used to remove .checked class from circle steps
      * following current step (.checked class isn't removed by default after clicking Back
@@ -253,7 +271,7 @@ export default {
       if (this.setupStage === 'verificationCode') {
         let textArea = document.createElement('textarea')
         textArea.value = this.verificationCode
-        
+
         // Avoid scrolling to bottom
         textArea.style.top = '0'
         textArea.style.left = '0'

@@ -28,7 +28,7 @@
           <div class="mx-auto lead">Link your OctoPrint now so that you can fully enjoy the 30-Day Free Trial!</div>
         </div>
         <div class="row p mt-4">
-          <b-button href="/printers/wizard/?setup=install" variant="primary" class="mx-auto py-3 btn">Link OctoPrint</b-button>
+          <b-button href="/printers/wizard/" variant="primary" class="mx-auto py-3 btn">Link OctoPrint</b-button>
         </div>
         <div class="row">
           <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>

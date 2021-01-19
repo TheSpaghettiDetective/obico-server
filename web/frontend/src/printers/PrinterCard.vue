@@ -42,7 +42,7 @@
             </a>
             <a class="dropdown-item" :href="printerWizardUrl()">
               <img class="menu-icon" :src="require('../../../app/static/img/octo-inverted.png')" />
-              Re-link OctoPrint
+              Re-Link OctoPrint
             </a>
           </div>
         </div>
@@ -467,7 +467,7 @@ export default {
       return `/tunnel/${this.printer.id}/`
     },
     printerWizardUrl() {
-      return `/printers/wizard/?printer_id=${this.printer.id}`
+      return `/printers/wizard/?printerId=${this.printer.id}`
     },
     forceStreamingSrc(src) {
       this.stickyStreamingSrc = src

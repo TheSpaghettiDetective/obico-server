@@ -27,20 +27,22 @@
         <div class="row text-center mt-5">
           <div class="mx-auto lead">Link your OctoPrint now so that you can fully enjoy the 30-Day Free Trial!</div>
         </div>
-        <div class="row p mt-4">
-          <b-button href="/printers/wizard/" variant="primary" class="mx-auto py-3 btn">Link OctoPrint</b-button>
-        </div>
-        <div class="row">
-          <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
-        </div>
-        <div class="row mt-3">
-          <b-button href="/printers/" variant="outline-primary text-white" class="mx-auto py-3 btn">Just Checking Out</b-button>
-        </div>
-        <div class="row">
-          <div class="text-muted mx-auto text-center font-weight-light">Not a whole lot you can see without your OctoPrint linked.</div>
-        </div>
-        <div class="row py-2">
-          <b-button @click="openOctoprint" variant="outline" class="mx-auto py-3 btn btn-link">Don't Have Octoprint?</b-button>
+        <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+          <div class="mt-4">
+            <a href="/printers/wizard/" class="btn btn-primary btn-block mx-auto btn-lg">Link OctoPrint</a>
+          </div>
+          <div>
+            <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
+          </div>
+          <div class="mt-3">
+            <a href="/printers/" class="btn btn-outline-secondary btn-block mx-auto">Just Checking Out</a>
+          </div>
+          <div>
+            <div class="text-muted mx-auto text-center font-weight-light">Not a whole lot you can see without your OctoPrint linked.</div>
+          </div>
+          <div class="py-2">
+            <button @click="openOctoprint" variant="outline" class="btn btn-block mx-auto btn-link">Don't Have Octoprint?</button>
+          </div>
         </div>
       </div>
     </div>
@@ -48,12 +50,8 @@
 </template>
 
 <script>
-import { BButton } from 'bootstrap-vue'
 
 export default {
-  components: {
-    BButton
-  },
   data() {
     return {
     }
@@ -76,12 +74,6 @@ export default {
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
-
-.btn
-  width: 240px
-  height: 3rem
-  font-size: 1rem
-  line-height: 0.9rem
 
 .btn-link
   color: theme.$white

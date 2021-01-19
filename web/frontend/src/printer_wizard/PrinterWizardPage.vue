@@ -110,7 +110,30 @@
         <div class="helper col-sm-12">Need help? Check out the <a href="#">step-by-step set up guide</a>.</div>
       </div>
     </div>
-
+    <div v-if="setupStage === 'success'" class="text-center py-5">
+      <img
+        :src="require('../../../app/static/img/checkmark.png')" />
+      <h2>Printer Stub name</h2>
+      <div class="lead">Has been successfully linked to your account!</div>
+      <br /><br />
+      <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+        <div class="mt-4">
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+        </div>
+        <div class="mt-5">
+          <a href="#" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
+        </div>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>
+        </div>
+        <div class="mt-4">
+          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
+        </div>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
+        </div>
+      </div>
+    </div>
     <div v-if="setupStage === 'preferences'" class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
       <h2 class="preferences-title">Printer Preferences</h2>
 
@@ -132,7 +155,6 @@
       <div class="footer text-center mt-2 mb-5">
         <div class="tip">TIP: You can change your notification preferences later by going to: Settings > User Preferences</div>
         <br>
-        <b-button variant="primary" class="btn btn-primary btn-lg px-5">Let's Go!</b-button>
       </div>
     </div>
   </div>
@@ -143,7 +165,6 @@
 import axios from 'axios'
 import moment from 'moment'
 import urls from '@lib/server_urls'
-import { BButton } from 'bootstrap-vue'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import theme from '../main/main.sass'
@@ -151,7 +172,6 @@ import PrinterPreferences from '../printers/PrinterPreferences'
 
 export default {
   components: {
-    BButton,
     FormWizard,
     TabContent,
     WizardButton,
@@ -164,6 +184,7 @@ export default {
       currentTime: Date.now(),
       expiryMoment: null,
       url: urls.verificationCode(),
+      verifiedPrinter: null,
       pauseAndNotify: true, // true, false (settings: When a potential failure is detected)
       dropdown: false,
       advancedSettings: {
@@ -173,10 +194,9 @@ export default {
         liftExtruderBy: '2.5', // false or number (in string format) from 0 with 0.5 step
         sensitivity: '1', // number (in string format) from 0.8 to 1.2 with 0.05 step
       },
-      counter: 0,
       theme: theme,
-      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
-      expiresIn: 'xxx',
+      setupStage: 'success', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
+      expiresIn: '-',
     }
   },
 
@@ -207,6 +227,9 @@ export default {
     title() {
       return this.printerIdToLink ? 'Re-Link OctoPrint' : 'Link OctoPrint'
     },
+    editPrinterUrl() {
+      return `/printers/${this.verifiedPrinter}`
+    }
   },
   methods: {
     /**
@@ -298,13 +321,8 @@ export default {
               // Show user how much minutes left to expiration moment (with automatic countdown)
               this.expiresIn = Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
 
-              this.counter += 1
-              if (this.counter === 10) {
-                clearInterval(this.codeInterval)
-                this.setupStage = 'preferences'
-              }
-
               if (resp.data.printer) {
+                this.verifiedPrinter = resp.data.printer
                 clearInterval(this.codeInterval)
                 this.setupStage = 'preferences'
               }

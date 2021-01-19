@@ -461,6 +461,8 @@ li
 
   &.zoomedIn
     transform: scale(2)
+    position: relative
+    z-index: 9
 
 
 // Preferences page

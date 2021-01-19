@@ -113,7 +113,7 @@
     <div v-if="setupStage === 'success'" class="text-center py-5">
       <img
         :src="require('../../../app/static/img/checkmark.png')" />
-      <h2>Printer Stub name</h2>
+      <h2>My Awesome Cloud Printer</h2>
       <div class="lead">Has been successfully linked to your account!</div>
       <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
@@ -177,7 +177,13 @@ export default {
     WizardButton,
     PrinterPreferences
   },
-
+  mounted() {
+    const params = new URLSearchParams(window.location.search)
+    const stage = params.get('setup')
+    if (stage) {
+       this.setupStage = stage
+    }
+  },
   data() {
     return {
       verificationCode: '',
@@ -195,7 +201,7 @@ export default {
         sensitivity: '1', // number (in string format) from 0.8 to 1.2 with 0.05 step
       },
       theme: theme,
-      setupStage: 'success', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
+      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
       expiresIn: '-',
     }
   },

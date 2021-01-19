@@ -14,7 +14,7 @@
         </div>
         <hr />
         <div class="row">
-          <h2 class="mx-auto pt-3 text-center">Your <span class="text-primary">30-Day Free Trial</span> Started Today!</h2>
+          <h2 class="mx-auto pt-3 text-center">Your <span class="text-primary">30-Day Free Trial</span> Starts Today!</h2>
         </div>
         <div class="row pt-2">
           <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">

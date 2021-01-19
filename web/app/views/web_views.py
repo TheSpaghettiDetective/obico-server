@@ -68,6 +68,9 @@ def edit_printer(request, pk, template_dir=None):
     # TODO: Simplify to remove the old wizard flow once we have plugin < 1.5 phased out
     if pk == 'wizard':
         return render(request, get_template_path('new_printer_wizard', template_dir))
+    elif pk == 'settings':
+        printer = None
+        return render(request, get_template_path('printer_settings', template_dir))
     elif pk == 'new':
         printer = None
         template = 'printer_wizard'

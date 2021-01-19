@@ -1,0 +1,12 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% load bundle from vue %}
+
+{% block content %}
+<div id="printer-settings-mount">
+  <printer-settings-page></printer-settings-page>
+</div>
+
+{% bundle 'printers' %}
+
+{% endblock content%}

@@ -52,6 +52,10 @@
 </template>
 
 <script>
+import axios from 'axios'
+
+import { normalizedPrinter } from '@lib/normalizers'
+import urls from '@lib/server_urls'
 import PrinterPreferences from '../printers/PrinterPreferences'
 
 export default {
@@ -61,6 +65,8 @@ export default {
 
   data() {
     return {
+      printer: null,
+      loading: false,
       printerName: 'Epson',
       pauseAndNotify: true, // true, false (settings: When a potential failure is detected)
       advancedSettings: {
@@ -73,7 +79,22 @@ export default {
     }
   },
 
+  mounted() {
+    const printerId = (new URLSearchParams(window.location.search)).get('printerId')
+    this.fetchPrinter(printerId)
+  },
+
   methods: {
+    fetchPrinter(printerId) {
+      this.loading = true
+      return axios
+        .get(urls.printer(printerId))
+        .then(response => {
+          this.loading = false
+          this.printer = normalizedPrinter(response.data)
+        })
+    },
+
     /**
      * Show animation of successful settings save
      * @param {String} inputName
@@ -88,7 +109,7 @@ export default {
         default:
           return
       }
-      
+
       elem.classList.remove('loading')
       elem.classList.add('successfully-saved')
       setTimeout(
@@ -231,7 +252,7 @@ section.danger
 
   &.successfully-saved
     position: relative
-    
+
     &:before
       background-image: url('/static/img/tick.svg')
 </style>

@@ -10,6 +10,7 @@ Vue.use(VueSwal)
 import PrinterListPage from './PrinterListPage.vue'
 import SharedPrinterPage from './SharedPrinterPage.vue'
 import PrinterSettingsPage from './PrinterSettingsPage.vue'
+import PrinterWizardPage from './PrinterWizardPage.vue'
 
 if (document.getElementById('printer-list-mount')) {
   new Vue({
@@ -27,4 +28,10 @@ if (document.getElementById('printer-settings-mount')) {
     new Vue({
       components: { PrinterSettingsPage }
     }).$mount('#printer-settings-mount')
+  }
+
+  if (document.getElementById('printer-wizard-mount')) {
+    new Vue({
+      components: { PrinterWizardPage }
+    }).$mount('#printer-wizard-mount')
   }

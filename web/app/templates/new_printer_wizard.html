@@ -3,8 +3,10 @@
 {% load bundle from vue %}
 
 {% block content %}
-<div id="printer_wizard-app"></div>
+<div id="printer-wizard-mount">
+  <printer-wizard-page></printer-wizard-page>
+</div>
 
-{% bundle 'printer_wizard' %}
+{% bundle 'printers' %}
 
 {% endblock content%}

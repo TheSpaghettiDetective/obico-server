@@ -56,9 +56,6 @@ let vueConfig = {
     welcome: {
       entry: 'src/welcome/main.js',
     },
-    printer_wizard: {
-      entry: 'src/printer_wizard/main.js',
-    },
   },
 
   chainWebpack: config => {

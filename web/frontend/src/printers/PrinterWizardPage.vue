@@ -231,15 +231,20 @@ export default {
     },
     url() {
       const baseUrl = urls.verificationCode()
-      if (this.verificationCode && moment().isBefore(this.expiryMoment)) {
-        return `${baseUrl}${this.verificationCode.id}/`
-      } else {
-        if (this.printerIdToLink) {
-          return `${baseUrl}?printer_id=${this.printerIdToLink}`
-        } else {
-          return baseUrl
-        }
+      if (!this.verificationCode){ // Never retrieved veification code. Get one.
+        return baseUrl
       }
+
+      if (this.verificationCode.verified_at) { // Code is verified successfully, keep on polling to get update on the printer name if any
+        return `${baseUrl}${this.verificationCode.id}/`
+      }
+
+      if (moment().isBefore(this.expiryMoment)) { // Not verified, and not expired
+        return `${baseUrl}${this.verificationCode.id}/`
+      }
+
+      // Not verified, but expired.
+      return baseUrl
     },
     /**
      * Copy verification code to clipboard (on appropriate step)
@@ -247,7 +252,7 @@ export default {
     copyCode() {
       if (this.onVerificationStep) {
         let textArea = document.createElement('textarea')
-        textArea.value = this.verificationCode
+        textArea.value = this.verificationCode.code
 
         // Avoid scrolling to bottom
         textArea.style.top = '0'

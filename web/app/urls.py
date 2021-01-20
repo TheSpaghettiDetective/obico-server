@@ -8,7 +8,6 @@ from .views import vue_demo
 urlpatterns = [
     path('', web_views.index, name='index'),
     path('accounts/login/', web_views.SocialAccountAwareLoginView.as_view(), name="account_login"),
-    path('accounts/welcome/', web_views.welcome),
     path('media/<path:file_path>', web_views.serve_jpg_file),  # semi hacky solution to serve image files
     path('printer_auth_token/<int:pk>/', web_views.printer_auth_token, name='printer_auth_token'),
     path('printers/', web_views.printers, name='printers'),
@@ -30,7 +29,6 @@ urlpatterns = [
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
     path('gcodes/', web_views.gcodes),
     path('gcodes/upload/', web_views.upload_gcode_file,),
-    path('secure_redirect/', web_views.secure_redirect, name='secure_redirect'),
 
     re_path(r'^octoprint/(?P<pk>\d+)',
         tunnel_views.octoprint_http_tunnel,

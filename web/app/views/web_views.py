@@ -36,11 +36,6 @@ class SocialAccountAwareLoginView(LoginView):
     form_class = SocialAccountAwareLoginForm
 
 
-@login_required
-def welcome(request):
-    return render(request, 'welcome.html')
-
-
 # TODO: To Remove once we have plugin < 1.5 phased out
 @login_required
 def printer_auth_token(request, pk):
@@ -299,11 +294,3 @@ def serve_jpg_file(request, file_path):
         raise Http404("Requested file does not exist")
     with open(full_path, 'rb') as fh:
         return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))
-
-
-def secure_redirect(request):
-    target = request.GET.get('target')
-    source = request.GET.get('source')
-    dest = settings.SECURE_REDIRECTS.get((target, source), target)
-
-    return redirect(dest)

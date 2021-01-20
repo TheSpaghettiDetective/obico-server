@@ -53,9 +53,6 @@ let vueConfig = {
     octoprint_tunnel: {
       entry: 'src/octoprint_tunnel/TunnelMain.js',
     },
-    welcome: {
-      entry: 'src/welcome/main.js',
-    },
   },
 
   chainWebpack: config => {

@@ -12,7 +12,7 @@
           <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
         </div>
         <div class="mt-5">
-          <a href="#" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
+          <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>

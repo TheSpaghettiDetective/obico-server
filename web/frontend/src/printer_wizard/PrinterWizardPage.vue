@@ -79,9 +79,9 @@
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
-                  <input disabled ref="code" class="code-btn" :value="`${verificationCode}`"/>
+                  <input disabled ref="code" class="code-btn" :value="`${verificationCode.code}`"/>
                   <small class="mx-auto py-1 text-muted">(Ctrl-C/Cmd-C to copy the code)</small>
-                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{expiresIn}} minutes</div>
+                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{timeToExpire}} minutes</div>
                 <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
               </div>
             </div>
@@ -113,8 +113,8 @@
     <div v-if="setupStage === 'success'" class="text-center py-5">
       <img
         :src="require('../../../app/static/img/checkmark.png')" />
-      <h2>My Awesome Cloud Printer</h2>
-      <div class="lead">Has been successfully linked to your account!</div>
+      <h2>{{verifiedPrinter.name}}</h2>
+      <div class="lead">Successfully linked to your account!</div>
       <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <div class="mt-4">
@@ -187,9 +187,6 @@ export default {
   data() {
     return {
       verificationCode: '',
-      currentTime: Date.now(),
-      expiryMoment: null,
-      url: urls.verificationCode(),
       verifiedPrinter: null,
       pauseAndNotify: true, // true, false (settings: When a potential failure is detected)
       dropdown: false,
@@ -202,28 +199,7 @@ export default {
       },
       theme: theme,
       setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
-      expiresIn: '-',
     }
-  },
-
-  watch: {
-    // Automatic countdown for minutes timer to expiration date
-    expiresIn: {
-      handler() {
-        setTimeout(() => {
-          if (this.expiryMoment) {
-            const duration = Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
-            if (duration > 0) {
-              this.expiresIn = duration
-            } else {
-              this.expiresIn = 0
-            }
-          }
-        }, 1000)
-      },
-      immediate: true // This ensures the watcher is triggered upon creation
-    }
-
   },
 
   computed: {
@@ -235,6 +211,20 @@ export default {
     },
     editPrinterUrl() {
       return `/printers/${this.verifiedPrinter}`
+    },
+    expiryMoment() {
+      if (this.verificationCode) {
+        return moment(this.verificationCode.expired_at)
+      } else {
+        return null
+      }
+    },
+    timeToExpire() {
+      if (this.expiryMoment) {
+        return Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
+      } else {
+        return '-'
+      }
     }
   },
   methods: {
@@ -276,7 +266,18 @@ export default {
         }, 5000)
       }
     },
-
+    url() {
+      const baseUrl = urls.verificationCode()
+      if (this.verificationCode && moment().isBefore(this.expiryMoment)) {
+        return `${baseUrl}${this.verificationCode.id}/`
+      } else {
+        if (this.printerIdToLink) {
+          return `${baseUrl}?printer_id=${this.printerIdToLink}`
+        } else {
+          return baseUrl
+        }
+      }
+    },
     /**
      * Copy verification code to clipboard (on appropriate step)
      */
@@ -309,28 +310,15 @@ export default {
      * Get verification code from API
      */
     getVerificationCode() {
-      this.currentTime = Date.now()
-
       axios
-        .get(this.url)
+        .get(this.url())
         .then((resp) => {
           if (resp.data) {
             if (resp.data) {
-              this.verificationCode = resp.data.code
-              const expiryTime = resp.data.expired_at.replace(/-|:/g, '')
-
-              this.expiryMoment = moment(expiryTime).format('x')
-              if (this.currentTime > this.expiryMoment) {
-                this.url += `${resp.data.id}/`
-              }
-
-              // Show user how much minutes left to expiration moment (with automatic countdown)
-              this.expiresIn = Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
-
-              if (resp.data.printer) {
+              this.verificationCode = resp.data
+              if (this.verificationCode.verified_at) {
                 this.verifiedPrinter = resp.data.printer
-                clearInterval(this.codeInterval)
-                this.setupStage = 'preferences'
+                this.setupStage = 'success'
               }
             }
           }
@@ -443,7 +431,7 @@ img
   color: white
   font-size: 2rem
   font-weight: 500
-  letter-spacing: 2px
+  letter-spacing: 0.5em
 
 .helper
   text-align: center

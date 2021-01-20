@@ -1,7 +1,7 @@
 <template>
 
 <div>
-  <h4 class="text-center p-2"><i class="fas fa-lock"></i>&nbsp;OctoPrint Secure Tunnel&nbsp;<i class="fas fa-lock"></i>
+  <h4 class="text-center p-2"><img style="height: 1.1em;margin-right: 0.75em;" :src="require('@static/img/octoprint-tunnel.png')" />OctoPrint Secure Tunnel
   </h4>
   <div v-if="!isPro" class="text-center pb-2">
     <span class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">?</a>):</span> <span :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</span>

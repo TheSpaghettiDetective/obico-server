@@ -103,8 +103,8 @@
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
-                  <input disabled ref="code" class="code-btn" :value="`${verificationCode.code}`"/>
-                  <small class="mx-auto py-1 text-muted">(Ctrl-C/Cmd-C to copy the code)</small>
+                  <input disabled ref="code" class="code-btn" :value="`${verificationCode && verificationCode.code}`"/>
+                  <small class="mx-auto py-1" :class="{'text-muted': !copied}">{{ copied ? 'Code copied to system clipboard' : 'Ctrl-C/Cmd-C to copy the code'}}</small>
                   <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{timeToExpire}} minutes</div>
                 <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
               </div>
@@ -154,9 +154,11 @@ export default {
   },
   data() {
     return {
-      verificationCode: '',
-      verifiedPrinter: null,
       theme: theme,
+      verificationCode: null,
+      verifiedPrinter: null,
+      onVerificationStep: false,
+      copied: false
     }
   },
 
@@ -193,12 +195,21 @@ export default {
      */
     prevTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
+      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
     },
     nextTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
 
-      if (document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1') {
-        this.getVerificationCode()
+      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
+
+      if (this.onVerificationStep) {
+        if (!this.codeInterval) {
+          this.getVerificationCode()
+
+          this.codeInterval = setInterval(() => {
+            this.getVerificationCode()
+          }, 5000)
+        }
 
         const copyFunc = this.copyCode
 
@@ -216,10 +227,6 @@ export default {
             copyFunc()
           }
         })
-
-        this.codeInterval = setInterval(() => {
-          this.getVerificationCode()
-        }, 5000)
       }
     },
     url() {
@@ -238,26 +245,28 @@ export default {
      * Copy verification code to clipboard (on appropriate step)
      */
     copyCode() {
-      let textArea = document.createElement('textarea')
-      textArea.value = this.verificationCode
+      if (this.onVerificationStep) {
+        let textArea = document.createElement('textarea')
+        textArea.value = this.verificationCode
 
-      // Avoid scrolling to bottom
-      textArea.style.top = '0'
-      textArea.style.left = '0'
-      textArea.style.position = 'fixed'
+        // Avoid scrolling to bottom
+        textArea.style.top = '0'
+        textArea.style.left = '0'
+        textArea.style.position = 'fixed'
 
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
 
-      try {
-        document.execCommand('copy')
-        document.querySelector('input.code-btn').style.backgroundColor = this.theme.primary
-      } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err)
+        try {
+          document.execCommand('copy')
+          this.copied = true
+        } catch (err) {
+          console.error('Fallback: Oops, unable to copy', err)
+        }
+
+        document.body.removeChild(textArea)
       }
-
-      document.body.removeChild(textArea)
     },
 
     /**

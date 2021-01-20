@@ -1,7 +1,31 @@
 <template>
 <div class="row justify-content-center">
   <div class="col-sm-12 col-lg-10 wizard-container">
-    <div v-if="['linkPrinter', 'verificationCode'].includes(setupStage)">
+    <div v-if="verifiedPrinter" class="text-center py-5">
+      <img
+        :src="require('../../../app/static/img/checkmark.png')" />
+      <h2>{{verifiedPrinter.name}}</h2>
+      <div class="lead">Successfully linked to your account!</div>
+      <br /><br />
+      <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+        <div class="mt-4">
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+        </div>
+        <div class="mt-5">
+          <a href="#" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
+        </div>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>
+        </div>
+        <div class="mt-4">
+          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
+        </div>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
       <form-wizard
         :color="theme.primary"
         step-size="sm"
@@ -110,53 +134,6 @@
         <div class="helper col-sm-12">Need help? Check out the <a href="#">step-by-step set up guide</a>.</div>
       </div>
     </div>
-    <div v-if="setupStage === 'success'" class="text-center py-5">
-      <img
-        :src="require('../../../app/static/img/checkmark.png')" />
-      <h2>{{verifiedPrinter.name}}</h2>
-      <div class="lead">Successfully linked to your account!</div>
-      <br /><br />
-      <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-        <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
-        </div>
-        <div class="mt-5">
-          <a href="#" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
-        </div>
-        <div>
-          <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>
-        </div>
-        <div class="mt-4">
-          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
-        </div>
-        <div>
-          <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
-        </div>
-      </div>
-    </div>
-    <div v-if="setupStage === 'preferences'" class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-      <h2 class="preferences-title">Printer Preferences</h2>
-
-      <PrinterPreferences
-        :pauseAndNotify="pauseAndNotify"
-        :isHotendHeaterOff="advancedSettings.isHotendHeaterOff"
-        :isBedHeaterOff="advancedSettings.isBedHeaterOff"
-        :retractFilamentBy="advancedSettings.retractFilamentBy"
-        :liftExtruderBy="advancedSettings.liftExtruderBy"
-        :sensitivity="advancedSettings.sensitivity"
-
-        @pauseAndNotifyChanged="pauseAndNotifyChanged"
-        @isHotendHeaterOffChanged="isHotendHeaterOffChanged"
-        @isBedHeaterOffChanged="isBedHeaterOffChanged"
-        @retractFilamentByChanged="retractFilamentByChanged"
-        @liftExtruderByChanged="liftExtruderByChanged"
-        @sensitivityChanged="sensitivityChanged"/>
-
-      <div class="footer text-center mt-2 mb-5">
-        <div class="tip">TIP: You can change your notification preferences later by going to: Settings > User Preferences</div>
-        <br>
-      </div>
-    </div>
   </div>
 </div>
 </template>
@@ -168,37 +145,18 @@ import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import theme from '../main/main.sass'
-import PrinterPreferences from '../printers/PrinterPreferences'
 
 export default {
   components: {
     FormWizard,
     TabContent,
     WizardButton,
-    PrinterPreferences
-  },
-  mounted() {
-    const params = new URLSearchParams(window.location.search)
-    const stage = params.get('setup')
-    if (stage) {
-       this.setupStage = stage
-    }
   },
   data() {
     return {
       verificationCode: '',
       verifiedPrinter: null,
-      pauseAndNotify: true, // true, false (settings: When a potential failure is detected)
-      dropdown: false,
-      advancedSettings: {
-        isHotendHeaterOff: true, // true, false
-        isBedHeaterOff: false, // true, false
-        retractFilamentBy: false, // false or number (in string format) from 0 with 0.5 step
-        liftExtruderBy: '2.5', // false or number (in string format) from 0 with 0.5 step
-        sensitivity: '1', // number (in string format) from 0.8 to 1.2 with 0.05 step
-      },
       theme: theme,
-      setupStage: 'linkPrinter', // 1 - linkPrinter, 2 - verificationCode, 3 - preferences
     }
   },
 
@@ -235,13 +193,11 @@ export default {
      */
     prevTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
-      this.setupStage = 'linkPrinter' // If Back button clicked it means user still working with form wizard
     },
     nextTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
 
       if (document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1') {
-        this.setupStage = 'verificationCode' // Activate key bindings for copying verification code
         this.getVerificationCode()
 
         const copyFunc = this.copyCode
@@ -282,28 +238,26 @@ export default {
      * Copy verification code to clipboard (on appropriate step)
      */
     copyCode() {
-      if (this.setupStage === 'verificationCode') {
-        let textArea = document.createElement('textarea')
-        textArea.value = this.verificationCode
+      let textArea = document.createElement('textarea')
+      textArea.value = this.verificationCode
 
-        // Avoid scrolling to bottom
-        textArea.style.top = '0'
-        textArea.style.left = '0'
-        textArea.style.position = 'fixed'
+      // Avoid scrolling to bottom
+      textArea.style.top = '0'
+      textArea.style.left = '0'
+      textArea.style.position = 'fixed'
 
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
 
-        try {
-          document.execCommand('copy')
-          document.querySelector('input.code-btn').style.backgroundColor = this.theme.primary
-        } catch (err) {
-          console.error('Fallback: Oops, unable to copy', err)
-        }
-
-        document.body.removeChild(textArea)
+      try {
+        document.execCommand('copy')
+        document.querySelector('input.code-btn').style.backgroundColor = this.theme.primary
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err)
       }
+
+      document.body.removeChild(textArea)
     },
 
     /**
@@ -318,7 +272,6 @@ export default {
               this.verificationCode = resp.data
               if (this.verificationCode.verified_at) {
                 this.verifiedPrinter = resp.data.printer
-                this.setupStage = 'success'
               }
             }
           }
@@ -343,41 +296,6 @@ export default {
 
     zoomIn(event) {
       event.target.classList.toggle('zoomedIn')
-    },
-
-
-    /**
-     * Settings change emits
-     */
-    pauseAndNotifyChanged(value) {
-      this.pauseAndNotify = value
-      console.log(value)
-      // TODO: call API
-    },
-    isHotendHeaterOffChanged(value) {
-      this.advancedSettings.isHotendHeaterOff = value
-      console.log(value)
-      // TODO: call API
-    },
-    isBedHeaterOffChanged(value) {
-      this.advancedSettings.isBedHeaterOff = value
-      console.log(value)
-      // TODO: call API
-    },
-    retractFilamentByChanged(value) {
-      this.advancedSettings.retractFilamentBy = value
-      console.log(value)
-      // TODO: call API
-    },
-    liftExtruderByChanged(value) {
-      this.advancedSettings.liftExtruderBy = value
-      console.log(value)
-      // TODO: call API
-    },
-    sensitivityChanged(value) {
-      this.advancedSettings.sensitivity = value
-      console.log(value)
-      // TODO: call API
     },
   }
 }
@@ -451,19 +369,6 @@ li
     transform: scale(2)
     position: relative
     z-index: 9
-
-
-// Preferences page
-
-.preferences-title
-  width: 100%
-  text-align: center
-  margin-top: 50px
-  margin-bottom: 36px
-
-.footer .tip
-  margin-bottom: 40px
-  text-align: left
 </style>
 
 <style lang="sass">

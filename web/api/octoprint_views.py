@@ -92,13 +92,11 @@ class OctoPrintPicView(APIView):
         return Response({'result': 'ok'})
 
 
-class OctoPrintPingView(APIView):
+class OctoPrinterView(APIView):
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        user = request.user
-        printer = request.auth
+    def get_response(self, printer, user):
         return Response({
             'user': {       # For compatibility with plugin < 1.5.0. Can be removed once old plugins have phased out.
                 'is_pro': user.is_pro,
@@ -109,6 +107,13 @@ class OctoPrintPingView(APIView):
                 'name': printer.name,
             }
         })
+
+    def get(self, request):
+        return self.get_response(request.auth, request.user)
+
+    def patch(self, request):
+        Printer.objects.filter(id=request.auth.id).update(**request.data)
+        return self.get_response(request.auth, request.user)
 
 
 ## Helper methods

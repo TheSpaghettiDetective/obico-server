@@ -679,6 +679,7 @@ class OneTimeVerificationCode(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.SET_NULL, blank=True, null=True)
     code = models.CharField(max_length=16, null=False, blank=False, db_index=True)
     expired_at = models.DateTimeField(null=False, blank=False, default=two_hours_later, db_index=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

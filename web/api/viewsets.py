@@ -315,15 +315,20 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
         if not request.user or not request.user.is_authenticated:
             raise Http404("Requested resource does not exist")
 
-        code = OneTimeVerificationCode.objects.select_related('printer').filter(user=request.user).first()
+        printer_id_to_link = request.GET.get('printer_id')
+        if printer_id_to_link:
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(printer_id=printer_id_to_link, user=request.user).first()
+        else:
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(user=request.user).first()
+
         if not code:
             seed()
             while True:
-                new_code = int(random()*1500450271) % 1000000
+                new_code = '%06d' % (int(random()*1500450271) % 1000000)
                 if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
                     break
 
-            code = OneTimeVerificationCode.objects.create(user=request.user, code=new_code)
+            code = OneTimeVerificationCode.objects.create(user=request.user, code=new_code, printer_id=printer_id_to_link)
 
         return Response(self.serializer_class(code, many=False).data)
 
@@ -346,8 +351,10 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                     user=code.user,
                     auth_token = hexlify(os.urandom(10)).decode())
                 code.printer = printer
-                code.expired_at = timezone.now()
-                code.save()
+
+            code.expired_at = timezone.now()
+            code.verified_at = timezone.now()
+            code.save()
             return Response(self.serializer_class(code, many=False).data)
         else:
             raise Http404("Requested resource does not exist")

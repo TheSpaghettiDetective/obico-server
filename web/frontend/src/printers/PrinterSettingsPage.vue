@@ -5,19 +5,19 @@
       <h2 class="section-title">Settings</h2>
       <div class="form-group mb-4 mt-4">
         <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
-        <form @submit.prevent="updateSetting('name')" id="name">
+        <div id="name">
           <input
             id="id_name"
             type="text"
             name="name"
-            v-model="printer.name"
             maxlength="200"
             placeholder=""
             class="form-control field_required"
             required="required"
+            v-model="printer.name"
+            @keyup="updateSetting('name')"
           >
-            <small class="text-muted">Press "enter" to save new name</small>
-        </form>
+        </div>
       </div>
 
       <!-- Potential failure section -->
@@ -232,8 +232,20 @@ export default {
     return {
       printer: null,
       printerId: '',
-      retractFilamentByTimeoutId: null, // Is used to make 1s pause before sending new value to API
-      liftExtruderByTimeoutId: null, // Is used to make 1s pause before sending new value to API
+      delayedSubmit: { // Make pause before sending new value to API
+        'name': {
+          'delay': 1000,
+          'timeoutId': null
+        },
+        'retract_on_pause': {
+          'delay': 1000,
+          'timeoutId': null
+        },
+        'lift_z_on_pause': {
+          'delay': 1000,
+          'timeoutId': null
+        },
+      }
     }
   },
 
@@ -317,7 +329,7 @@ export default {
         console.log('Frontend error - can not find input element')
         return
       }
-
+      
       this.savingInProgressFeedback(inputElem)
 
       // Make request to API
@@ -350,6 +362,17 @@ export default {
      * @param {String} settingsItem
      */
     updateSetting(settingsItem) {
+      if (settingsItem in this.delayedSubmit) {
+        const delayInfo = this.delayedSubmit[settingsItem]
+        if (delayInfo['timeoutId']) {
+          clearTimeout(delayInfo['timeoutId'])
+        }
+        this.delayedSubmit[settingsItem]['timeoutId'] = setTimeout(() => {
+          this.patchPrinter(settingsItem, this.printer[settingsItem])
+        }, delayInfo['delay'])
+        return
+      }
+      
       this.patchPrinter(settingsItem, this.printer[settingsItem])
     },
 

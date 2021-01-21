@@ -105,7 +105,7 @@
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
                   <input disabled ref="code" class="code-btn" :value="`${verificationCode && verificationCode.code}`"/>
                   <small class="mx-auto py-1" :class="{'text-muted': !copied}">{{ copied ? 'Code copied to system clipboard' : 'Ctrl-C/Cmd-C to copy the code'}}</small>
-                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{timeToExpire}} minutes</div>
+                  <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{timeToExpire}}</div>
                 <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
               </div>
             </div>
@@ -131,7 +131,7 @@
         </template>
       </form-wizard>
       <div class="row">
-        <div class="helper col-sm-12">Need help? Check out the <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">step-by-step set up guide</a>.</div>
+        <div class="helper col-sm-12">Need help? Check out the <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">step-by-step set up guide.</a></div>
       </div>
     </div>
   </div>
@@ -181,7 +181,7 @@ export default {
     },
     timeToExpire() {
       if (this.expiryMoment) {
-        return Math.round(moment.duration(moment(Number(this.expiryMoment)).diff(moment())).asMinutes())
+        return moment.duration(this.expiryMoment.diff(moment())).humanize()
       } else {
         return '-'
       }
@@ -232,7 +232,11 @@ export default {
     url() {
       const baseUrl = urls.verificationCode()
       if (!this.verificationCode){ // Never retrieved veification code. Get one.
-        return baseUrl
+        if (this.printerIdToLink) {
+          return `${baseUrl}?printer_id=${this.printerIdToLink}`
+        } else {
+          return baseUrl
+        }
       }
 
       if (this.verificationCode.verified_at) { // Code is verified successfully, keep on polling to get update on the printer name if any

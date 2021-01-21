@@ -187,6 +187,12 @@
         </div>
       </div>
     </section>
+    <section class="mt-5" v-if="extEndpointLength && extEndpointLength > 0">
+      <h2 class="section-title">Integration</h2>
+      <a role="button" type="button" class="btn btn-outline-primary my-2" :href="integrationUrl">{{ this.printer.service_token ? 'Change/Remove 3D Geeks push notification' : 'Set up 3D Geeks push notification' }}</a>
+      <div class="mt-2">3D Geeks mobile app can be downloaded <a href="https://www.3dgeeks.app/u/tsd-android">here</a>.</div>
+      <small class="text-muted font-italic">Disclaimer: 3D Geeks is not affiliated with The Spaghetti Detective.</small>
+    </section>
     <section class="danger mt-5">
       <h2 class="section-title">Danger Zone</h2>
       <div class="text-center mt-4">
@@ -211,6 +217,12 @@ import urls from '@lib/server_urls'
 
 export default {
   components: {
+  },
+
+  props: {
+    extEndpointLength: {
+      type: Number
+    },
   },
 
   data() {
@@ -249,7 +261,10 @@ export default {
         }
         this.updateSetting('lift_z_on_pause')
       },
-    }
+    },
+    integrationUrl() {
+      return `/printers/${this.printerId}/integration/`
+    },
   },
 
   mounted() {

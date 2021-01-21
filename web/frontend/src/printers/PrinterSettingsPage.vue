@@ -5,7 +5,7 @@
       <h2 class="section-title">Settings</h2>
       <div class="form-group mb-4 mt-4">
         <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
-        <form @submit.prevent="callAPI('printerName')" id="printerNameForm" class="input-wrapper">
+        <form @submit.prevent="updateSetting('printerName')" id="printerNameForm" class="input-wrapper">
           <input
             id="printerName"
             type="text"
@@ -32,7 +32,7 @@
               id="id_action_on_failure_0"
               value="NONE"
               v-model="actionOnFailure"
-              @change="callAPI('actionOnFailure')"
+              @change="updateSetting('actionOnFailure')"
             >
             <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
           </div>
@@ -44,7 +44,7 @@
               id="id_action_on_failure_1"
               value="PAUSE"
               v-model="actionOnFailure"
-              @change="callAPI('actionOnFailure')"
+              @change="updateSetting('actionOnFailure')"
             >
             <label class="custom-control-label" for="id_action_on_failure_1">Pause the printer and notify me</label>
           </div>
@@ -79,7 +79,7 @@
                       class="custom-control-input"
                       id="id_tools_off_on_pause"
                       v-model="advancedSettings.isHotendHeaterOff"
-                      @change="callAPI('isHotendHeaterOff')"
+                      @change="updateSetting('isHotendHeaterOff')"
                     >
                     <label class="custom-control-label" for="id_tools_off_on_pause">
                       Turn off hotend heater(s)
@@ -92,7 +92,7 @@
                       class="custom-control-input"
                       id="id_bed_off_on_pause"
                       v-model="advancedSettings.isBedHeaterOff"
-                      @change="callAPI('isBedHeaterOff')"
+                      @change="updateSetting('isBedHeaterOff')"
                     >
                     <label class="custom-control-label" for="id_bed_off_on_pause">
                       Turn off bed heater
@@ -105,7 +105,7 @@
                         class="custom-control-input"
                         id="retract-checkbox"
                         v-model="advancedSettings.retractFilamentByEnabled"
-                        @change="callAPI('retractFilamentByEnabled')"
+                        @change="updateSetting('retractFilamentByEnabled')"
                         >
                       <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                     </div>
@@ -119,7 +119,7 @@
                         class="form-control field_required"
                         id="id_retract_on_pause"
                         v-model="advancedSettings.retractFilamentBy"
-                        @change="callAPI('retractFilamentBy')"
+                        @change="updateSetting('retractFilamentBy')"
                       >
                       <div class="input-group-append">
                         <span class="input-group-text">mm</span>
@@ -133,7 +133,7 @@
                         class="custom-control-input"
                         id="lift-z-checkbox"
                         v-model="advancedSettings.liftExtruderByEnabled"
-                        @change="callAPI('liftExtruderByEnabled')"
+                        @change="updateSetting('liftExtruderByEnabled')"
                       >
                       <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                     </div>
@@ -147,7 +147,7 @@
                         class="form-control field_required"
                         id="id_lift_z_on_pause"
                         v-model="advancedSettings.liftExtruderBy"
-                        @change="callAPI('liftExtruderBy')"
+                        @change="updateSetting('liftExtruderBy')"
                       >
                       <div class="input-group-append">
                         <span class="input-group-text">mm</span>
@@ -216,6 +216,7 @@ export default {
   data() {
     return {
       printer: null,
+      printerId: '',
       loading: false,
       printerName: '',
       actionOnFailure: 'NONE', // NONE, PAUSE
@@ -236,8 +237,8 @@ export default {
   },
 
   mounted() {
-    const printerId = (new URLSearchParams(window.location.search)).get('printerId')
-    this.fetchPrinter(printerId)
+    this.printerId = (new URLSearchParams(window.location.search)).get('printerId')
+    this.fetchPrinter()
 
     // Instantiate sensitivity slider
     const sensitivitySlider = new Slider('#sensitivity', {
@@ -258,42 +259,71 @@ export default {
   },
 
   methods: {
-    fetchPrinter(printerId) {
+    /**
+     * Get actual printer settings
+     */
+    fetchPrinter() {
       this.loading = true
       return axios
-        .get(urls.printer(printerId))
+        .get(urls.printer(this.printerId))
         .then(response => {
           this.loading = false
           this.printer = normalizedPrinter(response.data)
 
-          console.log(this.printer)
+          this.printerName = this.printer.name
+          this.actionOnFailure = this.printer.action_on_failure
+          this.advancedSettings.isHotendHeaterOff = this.printer.tools_off_on_pause
+          this.advancedSettings.isHotendHeaterOff = this.printer.bed_off_on_pause
 
-          // TODO:
-          // Put values into inputs (placed near checkboxes)
-          if (this.retractFilamentBy !== false) {
-            this.retractFilamentByInput = this.retractFilamentBy
+          if (this.printer.retract_on_pause !== false) {
+            this.advancedSettings.retractFilamentByEnabled = true
+            this.advancedSettings.retractFilamentBy = this.printer.retract_on_pause
+          } else {
+            this.advancedSettings.retractFilamentByEnabled = false
           }
-          if (this.liftExtruderBy !== false) {
-            this.liftExtruderByInput = this.liftExtruderBy
+
+          if (this.printer.lift_z_on_pause !== false) {
+            this.advancedSettings.liftExtruderByEnabled = true
+            this.advancedSettings.liftExtruderBy = this.printer.lift_z_on_pause
+          } else {
+            this.advancedSettings.liftExtruderByEnabled = false
           }
+
+          this.advancedSettings.sensitivity = this.printer.detective_sensitivity
         })
     },
 
-    saveSensitivity(newValue) {
-      this.advancedSettings.sensitivity = newValue
-      this.callAPI('sensitivity')
-    },
-
     /**
-     * Clear loading indicator (in case of error)
-     * @param {String} inputName
-     * @param {any} value
+     * Update printer settings
+     * @param {String} propName
+     * @param {any} propValue
+     * @param {String} settingsItem
      */
-    clearAPICallAnimation: function(inputName, value) {
-      const elem = this.getSettingsItemInput(inputName, value)
-      if (elem) {
-        elem.classList.remove('loading')
+    patchPrinter(propName, propValue, settingsItem) {
+      // Find input element to set loading animation
+      let inputElem = this.getSettingsItemInput(settingsItem)
+      if (!inputElem) {
+        this.errorAlert()
+        console.log('Frontend error - can not find input element')
+        return
       }
+      inputElem.classList.add('loading')
+
+      // Make request to API
+      return axios
+        .patch(urls.printer(this.printerId), {
+          propName: propValue
+        })
+        .then(response => {
+          // TODO: recognize success response
+          console.log(response)
+          this.successfullySavedFeedback(settingsItem)
+        })
+        .catch(err => {
+          this.clearAPICallAnimation(settingsItem)
+          this.errorAlert()
+          console.log(err)
+        })
     },
 
     /**
@@ -315,15 +345,30 @@ export default {
     },
 
     /**
+     * Clear loading indicator (used in case of error)
+     * @param {String} inputName
+     * @param {any} value
+     */
+    clearAPICallAnimation: function(inputName, value) {
+      const elem = this.getSettingsItemInput(inputName, value)
+      if (elem) {
+        elem.classList.remove('loading')
+      }
+    },
+
+    /**
      * Show error alert if can not save settings
      */
     errorAlert() {
       this.$swal('Error occured!', '<p class="text-center">Can not save your new settings, please try again.</p>', 'error')
     },
 
-    callAPI(settingsItem) {
-      console.log(settingsItem)
 
+    /**
+     * Update particular settings item
+     * @param {String} settingsItem
+     */
+    updateSetting(settingsItem) {
       let propName = '', propValue = ''
 
       switch (settingsItem) {
@@ -404,45 +449,13 @@ export default {
       this.patchPrinter(propName, propValue, settingsItem)
     },
 
-    patchPrinter(propName, propValue, settingsItem) {
-      let inputElem = this.getSettingsItemInput(settingsItem)
-      if (!inputElem) {
-        this.errorAlert()
-        return
-      }
-
-      inputElem.classList.add('loading')
-
-      console.log('API call')
-      setTimeout(() => {
-        this.successfullySavedFeedback(settingsItem)
-      }, 1000)
-
-      console.log(propName)
-      console.log(propValue)
-    },
-
     /**
-     * Printer name is changed - call the API
+     * Callback for sensitivity slider
+     * @param {String} newValue
      */
-    newPrinterName() {
-      const newName = document.querySelector('#printerName').value
-      if (newName) {
-        // TODO: call API
-        document.querySelector('#printerNameForm').classList.add('loading')
-        setTimeout(() => {
-          this.successfullySavedFeedback('printerName')
-        }, 1000)
-      }
-    },
-
-    deletePrinter() {
-      this.$swal.Confirm.fire().then((result) => {
-        if (result.value) {
-          console.log('Delete printer')
-          // TODO: delete printer
-        }
-      })
+    saveSensitivity(newValue) {
+      this.advancedSettings.sensitivity = newValue
+      this.updateSetting('sensitivity')
     },
 
     /**
@@ -467,7 +480,19 @@ export default {
     },
 
     /**
-     * Returns input element by gived name
+     * Confirm printer delete
+     */
+    deletePrinter() {
+      this.$swal.Confirm.fire().then((result) => {
+        if (result.value) {
+          console.log('Delete printer')
+          // TODO: delete printer
+        }
+      })
+    },
+
+    /**
+     * Return input element by gived name
      * @param {String} settingsItem
      * @returns {Object, null}
      */

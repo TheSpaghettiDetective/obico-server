@@ -5,7 +5,7 @@
       <h2 class="section-title">Settings</h2>
       <div class="form-group mb-4 mt-4">
         <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
-        <form @submit.prevent="updateSetting('name')" id="name" class="input-wrapper">
+        <form @submit.prevent="updateSetting('name')" id="name">
           <input
             id="id_name"
             type="text"
@@ -24,7 +24,7 @@
       <div class="failure-notification">
         <div class="form-group mt-4 mb-4">
           <div class="form-label text-muted">When a potential failure is detected:</div>
-          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_NONE">
+          <div class="custom-control custom-radio mt-1 radio" id="action_on_failure_NONE">
             <input
               type="radio"
               name="action_on_failure"
@@ -36,7 +36,7 @@
             >
             <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
           </div>
-          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_PAUSE">
+          <div class="custom-control custom-radio mt-1 radio" id="action_on_failure_PAUSE">
             <input
               type="radio"
               name="action_on_failure"
@@ -72,7 +72,7 @@
                 <!-- Advanced settngs: when printer is paused -->
                 <div class="form-group mt-4">
                   <div class="form-label text-muted">When print is paused,</div>
-                  <div class="custom-control custom-checkbox form-check-inline mt-2 input-wrapper checkbox" id="tools_off_on_pause">
+                  <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox" id="tools_off_on_pause">
                     <input
                       type="checkbox"
                       name="tools_off_on_pause"
@@ -85,7 +85,7 @@
                       Turn off hotend heater(s)
                     </label>
                   </div>
-                  <div class="custom-control custom-checkbox form-check-inline mt-2 input-wrapper checkbox" id="bed_off_on_pause">
+                  <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox" id="bed_off_on_pause">
                     <input
                       type="checkbox"
                       name="bed_off_on_pause"
@@ -98,7 +98,7 @@
                       Turn off bed heater
                     </label>
                   </div>
-                  <div class="form-inline my-1 input-wrapper checkbox-with-input" id="retract_on_pause">
+                  <div class="form-inline my-1 checkbox-with-input" id="retract_on_pause">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
                         type="checkbox"
@@ -108,7 +108,7 @@
                         >
                       <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                     </div>
-                    <div class="input-group input-group-sm minimal-width input-wrapper">
+                    <div class="input-group input-group-sm minimal-width">
                       <input
                         type="number"
                         name="retract_on_pause"
@@ -126,7 +126,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="form-inline my-1 checkbox-with-input input-wrapper" id="lift_z_on_pause">
+                  <div class="form-inline my-1 checkbox-with-input" id="lift_z_on_pause">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
                         type="checkbox"
@@ -159,7 +159,7 @@
                 <!-- Advanced settngs: sensitivity slider -->
                 <div class="form-group sensitivity my-4">
                   <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
-                  <div class="my-2 input-wrapper sensitivity-slider" id="sensitivityInputWrapper">
+                  <div class="my-2 sensitivity-slider" id="sensitivityInputWrapper">
                     <input
                       id="sensitivity"
                       name="detective_sensitivity"
@@ -212,11 +212,13 @@
 <script>
 import axios from 'axios'
 import Slider from 'bootstrap-slider'
+import SavingLoader from '../common/SavingLoader'
 
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 
 export default {
+  mixins: [SavingLoader],
   components: {
   },
 
@@ -316,7 +318,8 @@ export default {
         console.log('Frontend error - can not find input element')
         return
       }
-      inputElem.classList.add('loading')
+
+      this.savingInProgressFeedback(inputElem)
 
       // Make request to API
       return axios
@@ -327,37 +330,10 @@ export default {
           this.successfullySavedFeedback(inputElem)
         })
         .catch(err => {
-          this.clearAPICallAnimation(inputElem)
+          this.clearSavingLoader(inputElem)
           this.errorAlert()
           console.log(err)
         })
-    },
-
-    /**
-     * Show animation of successful settings save
-     * @param {String} inputName
-     * @param {any} value
-     */
-    successfullySavedFeedback: function(elem) {
-      if (elem) {
-        elem.classList.remove('loading')
-        elem.classList.add('successfully-saved')
-        setTimeout(
-          () => elem.classList.remove('successfully-saved'),
-          2000
-        )
-      }
-    },
-
-    /**
-     * Clear loading indicator (used in case of error)
-     * @param {String} inputName
-     * @param {any} value
-     */
-    clearAPICallAnimation: function(elem) {
-      if (elem) {
-        elem.classList.remove('loading')
-      }
     },
 
     /**
@@ -365,11 +341,10 @@ export default {
      */
     errorAlert() {
       this.$swal.Toast.fire({
-              icon: 'error',
-              html: '<div>Can not update printer settings.</div><div>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</div>',
-            })
+        icon: 'error',
+        html: '<div>Can not update printer settings.</div><div>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</div>',
+      })
     },
-
 
     /**
      * Update particular settings item
@@ -469,32 +444,4 @@ section.danger
   .section-title
     color: theme.$danger
     border-color: theme.$danger
-
-// API call animation
-.input-wrapper
-  $indicatorSize: 16px
-
-  &:before
-    content: ""
-    background-size: $indicatorSize $indicatorSize
-    width: $indicatorSize
-    height: $indicatorSize
-    display: block
-    position: absolute
-    top: 10px
-    right: -#{$indicatorSize + 16px}
-    margin: auto
-    z-index: 9
-
-  &.loading
-    position: relative
-
-    &:before
-      background-image: url('/static/img/tail-spin.svg')
-
-  &.successfully-saved
-    position: relative
-
-    &:before
-      background-image: url('/static/img/tick.svg')
 </style>

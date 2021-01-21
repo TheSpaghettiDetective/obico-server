@@ -17,6 +17,34 @@
   vertical-align: middle
   font-size: 1.8em
 
+// API call animation
+.saving-in-progress, .successfully-saved
+  $indicatorSize: 16px
+
+  &:before
+    content: ""
+    background-size: $indicatorSize $indicatorSize
+    width: $indicatorSize
+    height: $indicatorSize
+    display: block
+    position: absolute
+    top: 10px
+    right: -#{$indicatorSize + 16px}
+    margin: auto
+    z-index: 9
+
+  &.saving-in-progress
+    position: relative
+
+    &:before
+      background-image: url('/static/img/tail-spin.svg')
+
+  &.successfully-saved
+    position: relative
+
+    &:before
+      background-image: url('/static/img/tick.svg')
+
 // Export some color variable to use it in Vue as JS variables
 :export
   primary: $primary

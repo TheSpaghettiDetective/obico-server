@@ -205,6 +205,7 @@
       </div>
     </section>
   </div>
+  <b-spinner v-else class="mt-5" label="Loading..."></b-spinner>
 </div>
 </template>
 

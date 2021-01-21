@@ -5,7 +5,7 @@
       <h2 class="section-title">Settings</h2>
       <div class="form-group mb-4 mt-4">
         <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
-        <form @submit.prevent="updateSetting('printerName')" id="printerNameForm" class="input-wrapper">
+        <form @submit.prevent="updateSetting('name')" id="name" class="input-wrapper">
           <input
             id="id_name"
             type="text"
@@ -16,7 +16,7 @@
             class="form-control field_required"
             required="required"
           >
-            <small class="text-muted">Click Enter to save new name</small>
+            <small class="text-muted">Press "enter" to save new name</small>
         </form>
       </div>
 
@@ -24,7 +24,7 @@
       <div class="failure-notification">
         <div class="form-group mt-4 mb-4">
           <div class="form-label text-muted">When a potential failure is detected:</div>
-          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_false">
+          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_NONE">
             <input
               type="radio"
               name="action_on_failure"
@@ -36,7 +36,7 @@
             >
             <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
           </div>
-          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_true">
+          <div class="custom-control custom-radio mt-1 input-wrapper radio" id="action_on_failure_PAUSE">
             <input
               type="radio"
               name="action_on_failure"
@@ -98,7 +98,7 @@
                       Turn off bed heater
                     </label>
                   </div>
-                  <div class="form-inline my-1 input-wrapper checkbox-with-input" id="retractFilamentBy">
+                  <div class="form-inline my-1 input-wrapper checkbox-with-input" id="retract_on_pause">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
                         type="checkbox"
@@ -108,7 +108,7 @@
                         >
                       <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                     </div>
-                    <div class="input-group input-group-sm minimal-width">
+                    <div class="input-group input-group-sm minimal-width input-wrapper">
                       <input
                         type="number"
                         name="retract_on_pause"
@@ -118,6 +118,7 @@
                         class="form-control field_required"
                         id="id_retract_on_pause"
                         v-model="printer.retract_on_pause"
+                        :disabled="!retractFilamentByEnabled"
                         @change="updateSetting('retract_on_pause')"
                       >
                       <div class="input-group-append">
@@ -125,14 +126,13 @@
                       </div>
                     </div>
                   </div>
-                  <div class="form-inline my-1 input-wrapper checkbox-with-input" id="liftExtruderBy">
+                  <div class="form-inline my-1 checkbox-with-input input-wrapper" id="lift_z_on_pause">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
                         type="checkbox"
                         class="custom-control-input"
                         id="lift-z-checkbox"
                         v-model="liftExtruderByEnabled"
-                        @change="updateSetting('liftExtruderByEnabled')"
                       >
                       <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                     </div>
@@ -145,6 +145,7 @@
                         min="0"
                         class="form-control field_required"
                         id="id_lift_z_on_pause"
+                        :disabled="!liftExtruderByEnabled"
                         v-model="printer.lift_z_on_pause"
                         @change="updateSetting('lift_z_on_pause')"
                       >
@@ -216,7 +217,6 @@ export default {
     return {
       printer: null,
       printerId: '',
-      liftExtruderByEnabled: true, // false or number (in string format) from 0 with 0.5 step
       retractFilamentByTimeoutId: null, // Is used to make 1s pause before sending new value to API
       liftExtruderByTimeoutId: null, // Is used to make 1s pause before sending new value to API
       sensitivity: 1,
@@ -234,8 +234,22 @@ export default {
         } else {
           this.printer.retract_on_pause = 0
         }
-      }
+        this.updateSetting('retract_on_pause')
+      },
     },
+    liftExtruderByEnabled: {
+      get(){
+        return this.printer.lift_z_on_pause > 0
+      },
+      set(newValue){
+        if (newValue) {
+          this.printer.lift_z_on_pause = 2.5 // Default z-lift value
+        } else {
+          this.printer.lift_z_on_pause = 0
+        }
+        this.updateSetting('lift_z_on_pause')
+      },
+    }
   },
 
   mounted() {
@@ -278,9 +292,9 @@ export default {
      * @param {any} propValue
      * @param {String} settingsItem
      */
-    patchPrinter(propName, propValue, settingsItem) {
+    patchPrinter(propName, propValue) {
       // Find input element to set loading animation
-      let inputElem = this.getSettingsItemInput(settingsItem)
+      let inputElem = this.getSettingsItemInput(propName, propValue)
       if (!inputElem) {
         this.errorAlert()
         console.log('Frontend error - can not find input element')
@@ -293,13 +307,11 @@ export default {
         .patch(urls.printer(this.printerId), {
           [propName]: propValue
         })
-        .then(response => {
-          // TODO: recognize success response
-          console.log(response)
-          this.successfullySavedFeedback(settingsItem)
+        .then(() => {
+          this.successfullySavedFeedback(inputElem)
         })
         .catch(err => {
-          this.clearAPICallAnimation(settingsItem)
+          this.clearAPICallAnimation(inputElem)
           this.errorAlert()
           console.log(err)
         })
@@ -310,15 +322,13 @@ export default {
      * @param {String} inputName
      * @param {any} value
      */
-    successfullySavedFeedback: function(inputName, value = '') {
-      const elem = this.getSettingsItemInput(inputName, value)
-
+    successfullySavedFeedback: function(elem) {
       if (elem) {
         elem.classList.remove('loading')
         elem.classList.add('successfully-saved')
         setTimeout(
           () => elem.classList.remove('successfully-saved'),
-          800
+          2000
         )
       }
     },
@@ -328,8 +338,7 @@ export default {
      * @param {String} inputName
      * @param {any} value
      */
-    clearAPICallAnimation: function(inputName, value) {
-      const elem = this.getSettingsItemInput(inputName, value)
+    clearAPICallAnimation: function(elem) {
       if (elem) {
         elem.classList.remove('loading')
       }
@@ -351,7 +360,7 @@ export default {
      * @param {String} settingsItem
      */
     updateSetting(settingsItem) {
-      this.patchPrinter(settingsItem, this.printer[settingsItem], settingsItem)
+      this.patchPrinter(settingsItem, this.printer[settingsItem])
     },
 
     /**
@@ -404,7 +413,7 @@ export default {
     getSettingsItemInput: function(settingsItem, value = '') {
       switch (settingsItem) {
         case 'action_on_failure':
-          return value ? document.querySelector('#action_on_failure_true'): document.querySelector('#action_on_failure_false')
+          return document.querySelector(`#${settingsItem}_${value}`)
         default:
           return document.querySelector(`#${settingsItem}`)
       }

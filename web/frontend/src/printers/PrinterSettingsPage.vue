@@ -390,8 +390,7 @@ export default {
     deletePrinter() {
       this.$swal.Confirm.fire().then((result) => {
         if (result.value) {
-          console.log('Delete printer')
-          // TODO: delete printer
+          window.location.href = `/printers/${this.printerId}/delete/`
         }
       })
     },

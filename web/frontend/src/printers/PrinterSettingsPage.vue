@@ -159,16 +159,16 @@
                 <!-- Advanced settngs: sensitivity slider -->
                 <div class="form-group sensitivity my-4">
                   <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
-                  <div class="my-2 sensitivity-slider" id="sensitivityInputWrapper">
+                  <div class="my-2 sensitivity-slider" id="detective_sensitivity">
                     <input
-                      id="sensitivity"
+                      id="id_sensitivity"
                       name="detective_sensitivity"
                       data-slider-id='sensitivity-slider'
                       type="text"
                       data-slider-min="0.8"
                       data-slider-max="1.2"
                       data-slider-step="0.05"
-                      :data-slider-value="sensitivity"
+                      :data-slider-value="printer.detective_sensitivity"
                     />
                   </div>
                   <div class="hint-low">
@@ -234,7 +234,6 @@ export default {
       printerId: '',
       retractFilamentByTimeoutId: null, // Is used to make 1s pause before sending new value to API
       liftExtruderByTimeoutId: null, // Is used to make 1s pause before sending new value to API
-      sensitivity: 1,
     }
   },
 
@@ -274,7 +273,7 @@ export default {
     this.printerId = (new URLSearchParams(window.location.search)).get('printerId')
     this.fetchPrinter().then(() => {
       // Instantiate sensitivity slider
-      const sensitivitySlider = new Slider('#sensitivity', {
+      const sensitivitySlider = new Slider('#id_sensitivity', {
         formatter: function(value) {
           if (value < 0.95) {
             return 'Low'
@@ -359,8 +358,8 @@ export default {
      * @param {String} newValue
      */
     saveSensitivity(newValue) {
-      this.sensitivity = newValue
-      this.updateSetting('sensitivity')
+      this.printer.detective_sensitivity = newValue
+      this.updateSetting('detective_sensitivity')
     },
 
     /**
@@ -374,7 +373,7 @@ export default {
       })
 
       // Show target hint depending of selected value
-      var value = parseFloat(document.querySelector('#sensitivity').value)
+      var value = parseFloat(document.querySelector('#id_sensitivity').value)
       if (value < 0.95) {
         document.querySelector('.sensitivity .hint-low').style.display = 'block'
       } else if (value > 1.05) {

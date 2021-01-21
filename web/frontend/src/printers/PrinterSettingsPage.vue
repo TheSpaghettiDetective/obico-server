@@ -270,24 +270,24 @@ export default {
 
   mounted() {
     this.printerId = (new URLSearchParams(window.location.search)).get('printerId')
-    this.fetchPrinter()
+    this.fetchPrinter().then(() => {
+      // Instantiate sensitivity slider
+      const sensitivitySlider = new Slider('#sensitivity', {
+        formatter: function(value) {
+          if (value < 0.95) {
+            return 'Low'
+          }
+          if (value > 1.05) {
+            return 'High'
+          }
+          return 'Medium'
+        }
+      })
 
-    // Instantiate sensitivity slider
-    const sensitivitySlider = new Slider('#sensitivity', {
-      formatter: function(value) {
-        if (value < 0.95) {
-          return 'Low'
-        }
-        if (value > 1.05) {
-          return 'High'
-        }
-        return 'Medium'
-      }
+      sensitivitySlider.on('slideStop', this.saveSensitivity) // Emit new value to parent component
+      sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
+      this.updateSensitivityHint() // Initial hits update (hide all except one)
     })
-
-    sensitivitySlider.on('slideStop', this.saveSensitivity) // Emit new value to parent component
-    sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
-    this.updateSensitivityHint() // Initial hits update (hide all except one)
   },
 
   methods: {

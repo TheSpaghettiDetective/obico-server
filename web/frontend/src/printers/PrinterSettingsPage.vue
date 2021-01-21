@@ -211,7 +211,7 @@
 
 <script>
 import axios from 'axios'
-// import Slider from 'bootstrap-slider'
+import Slider from 'bootstrap-slider'
 
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
@@ -273,21 +273,21 @@ export default {
     this.fetchPrinter()
 
     // Instantiate sensitivity slider
-    // const sensitivitySlider = new Slider('#sensitivity', {
-    //   formatter: function(value) {
-    //     if (value < 0.95) {
-    //       return 'Low'
-    //     }
-    //     if (value > 1.05) {
-    //       return 'High'
-    //     }
-    //     return 'Medium'
-    //   }
-    // })
+    const sensitivitySlider = new Slider('#sensitivity', {
+      formatter: function(value) {
+        if (value < 0.95) {
+          return 'Low'
+        }
+        if (value > 1.05) {
+          return 'High'
+        }
+        return 'Medium'
+      }
+    })
 
-    // sensitivitySlider.on('slideStop', this.saveSensitivity) // Emit new value to parent component
-    // sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
-    // this.updateSensitivityHint() // Initial hits update (hide all except one)
+    sensitivitySlider.on('slideStop', this.saveSensitivity) // Emit new value to parent component
+    sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
+    this.updateSensitivityHint() // Initial hits update (hide all except one)
   },
 
   methods: {

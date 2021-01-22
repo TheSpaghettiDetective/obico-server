@@ -17,5 +17,6 @@ export default {
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,
   printerWS: printerId => `/ws/web/${printerId}/`,
-  printerSharedWS:token => `/ws/share_token/web/${token}/`,
+  printerSharedWS: token => `/ws/share_token/web/${token}/`,
+  printerWizard: printerId => `/printers/wizard/?printerId=${printerId}`
 }

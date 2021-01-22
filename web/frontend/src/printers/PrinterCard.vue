@@ -40,10 +40,6 @@
               :href="settingsUrl()"
             ><i class="fas fa-wrench fa-lg"></i>Settings
             </a>
-            <a class="dropdown-item" :href="printerWizardUrl()">
-              <img class="menu-icon" :src="require('../../../app/static/img/octo-inverted.png')" />
-              Re-Link OctoPrint
-            </a>
           </div>
         </div>
       </div>
@@ -465,9 +461,6 @@ export default {
     },
     octoPrintTunnelUrl() {
       return `/tunnel/${this.printer.id}/`
-    },
-    printerWizardUrl() {
-      return `/printers/wizard/?printerId=${this.printer.id}`
     },
     forceStreamingSrc(src) {
       this.stickyStreamingSrc = src

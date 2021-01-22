@@ -195,13 +195,26 @@
     </section>
     <section class="danger mt-5">
       <h2 class="section-title">Danger Zone</h2>
-      <div class="text-center mt-4">
+      <div class="mt-4">
+        <a
+          class="btn btn-outline-secondary"
+          :href="printerWizardUrl">
+              Re-Link OctoPrint
+        </a>
+        <div class="text-muted mt-1">
+          <small>If your OctoPrint is always showing as "offline", and you have gone through <a href="https://www.thespaghettidetective.com/docs/octoprint-is-offline/">all the trouble-shooting steps</a>, you can try to re-link OctoPrint as the last resort.</small>
+        </div>
+      </div>
+      <div class="mt-4">
         <button
           class="btn btn-outline-danger"
           @click="deletePrinter"
         >
           Delete Printer
         </button>
+        <div class="text-muted mt-1">
+          <small>Bye-bye printer. See you next time!</small>
+        </div>
       </div>
     </section>
   </div>
@@ -279,6 +292,11 @@ export default {
     integrationUrl() {
       return `/printers/${this.printerId}/integration/`
     },
+
+    printerWizardUrl() {
+      return urls.printerWizard(this.printer.id)
+    },
+
   },
 
   mounted() {
@@ -329,7 +347,7 @@ export default {
         console.log('Frontend error - can not find input element')
         return
       }
-      
+
       this.savingInProgressFeedback(inputElem)
 
       // Make request to API
@@ -372,7 +390,7 @@ export default {
         }, delayInfo['delay'])
         return
       }
-      
+
       this.patchPrinter(settingsItem, this.printer[settingsItem])
     },
 

@@ -49,35 +49,6 @@ export default {
         this.savingTimeout = null
       }
     },
-
-    /**
-     * Show indicator that data is saving
-     * @param {Element} elem HTML element
-     */
-    savingInProgressFeedback: function(elem) {
-      elem.classList.add('')
-    },
-
-    /**
-     * Show indicator that data is successfully saved
-     * @param {Element} elem HTML element
-     */
-    successfullySavedFeedback: function(elem) {
-      this.clearSavingLoader(elem)
-      elem.classList.add('successfully-saved')
-      setTimeout(
-        () => elem.classList.remove('successfully-saved'),
-        2000
-      )
-    },
-
-    /**
-     * Clear loading indicator (for example, in case of error)
-     * @param {Element} elem HTML element
-     */
-    clearSavingLoader: function(elem) {
-      elem.classList.remove('saving-in-progress')
-    }
   },
 }
 </script>

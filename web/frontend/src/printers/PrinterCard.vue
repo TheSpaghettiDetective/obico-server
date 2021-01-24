@@ -38,7 +38,7 @@
             <a
               class="dropdown-item"
               :href="settingsUrl()"
-            ><i class="fas fa-wrench fa-lg"></i>Settings
+            ><i class="fas fa-wrench fa-lg"></i>Configure
             </a>
           </div>
         </div>

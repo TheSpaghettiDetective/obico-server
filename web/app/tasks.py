@@ -207,7 +207,12 @@ def service_webhook(print_id, event_type, **kwargs):
     if not settings.EXT_3D_GEEKS_ENDPOINT:
         return
 
-    _print = Print.objects.select_related('printer__user').get(id=print_id)
+    _print = Print.objects.select_related('printer__user').filter(id=print_id).first()
+
+    # Silently ignore the print event when the print is already gone, most likely because it's too short to be kept.
+    if not _print:
+        return
+
     webhook_payload = service_webhook_payload(event_type, _print, kwargs)
     req = requests.post(
         url= settings.EXT_3D_GEEKS_ENDPOINT,

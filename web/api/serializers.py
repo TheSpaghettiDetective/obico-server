@@ -10,7 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'is_pro', 'dh_balance')
+        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'date_joined', 'groups', 'user_permissions',)
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'email': {'read_only': True},
+            'consented_at': {'read_only': True},
+            'is_pro': {'read_only': True},
+            'dh_balance': {'read_only': True},
+            'unsub_token': {'read_only': True},
+        }
 
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):

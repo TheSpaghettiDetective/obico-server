@@ -34,7 +34,7 @@ class UserViewSet(viewsets.GenericViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = UserSerializer
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'patch'])
     def me(self, request):
         serializer = self.serializer_class(request.user, many=False)
         return Response(serializer.data)

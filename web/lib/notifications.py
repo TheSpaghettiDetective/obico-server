@@ -19,6 +19,7 @@ from lib.utils import save_print_snapshot, last_pic_of_print
 from app.models import Printer, Print
 from lib.integrations.telegram_bot import send_notification as send_telegram_notification
 from lib.integrations.discord import send_discord_notification
+from lib.integrations.pushover import PushoverClient, PushoverException 
 from lib import mobile_notifications
 from lib import site
 
@@ -50,6 +51,11 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
 
     try:
         send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
+    except:
+        sentryClient.captureException()
+    
+    try:
+        send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paused)
     except:
         sentryClient.captureException()
 
@@ -165,6 +171,36 @@ def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_pa
         else:
             pb.push_link(title, link, body)
     except (PushError, PushbulletError) as e:
+        LOGGER.error(e)
+
+def send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paused):
+    if not printer.user.has_valid_pushover_tokens():
+        return
+
+    try:
+        photo = requests.get(rotated_jpg_url).content
+    except:
+        photo = None
+
+    pausing_msg = ''
+    if print_paused:
+        pausing_msg = 'Printer is paused.'
+    elif printer.action_on_failure == Printer.PAUSE and is_warning:
+        pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
+
+    pc = PushoverClient(printer.user.pushover_app_token, printer.user.pushover_user_token)
+    title = 'The Spaghetti Detective - Failure alert!'
+
+    msg = 'Your print {} on {} {}.'.format(
+        printer.current_print.filename or '',
+        printer.name,
+        'smells fishy' if is_warning else 'is probably failing')
+    link = site.build_full_url('/')
+    body = '{}\n{}\nGo check it at: {}'.format(msg, pausing_msg, link)
+
+    try:
+        pc.push_notification(body, title, photo)
+    except (PushError, PushoverException) as e:
         LOGGER.error(e)
 
 
@@ -295,6 +331,12 @@ def send_print_notification(_print, extra_ctx={}):
         sentryClient.captureException()
 
     try:
+        if _print.printer.user.print_notification_by_pushover:
+            send_print_notification_pushover(_print)
+    except:
+        sentryClient.captureException()
+
+    try:
         if _print.printer.user.print_notification_by_telegram:
             send_print_notification_telegram(_print)
     except:
@@ -374,6 +416,28 @@ def send_print_notification_pushbullet(_print):
         else:
             pb.push_link(title, link, body)
     except (PushError, PushbulletError) as e:
+        LOGGER.error(e)
+
+
+def send_print_notification_pushover(_print):
+    if not _print.printer.user.has_valid_pushover_tokens():
+        return
+
+    try:
+        photo = requests.get(rotated_jpg_url).content
+    except:
+        photo = None
+
+
+    pc = PushoverClient(printer.user.pushover_app_token, printer.user.pushover_user_token)
+
+    title = 'The Spaghetti Detective - Print job notification'
+    link = site.build_full_url('/')
+    body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
+    
+    try:
+        pc.push_notification(body, title, photo)
+    except (PushError, PushoverException) as e:
         LOGGER.error(e)
 
 

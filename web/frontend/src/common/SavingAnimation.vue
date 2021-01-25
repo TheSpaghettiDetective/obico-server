@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass}">
+  <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'small-height': smallHeightClass}">
     <slot></slot>
   </div>
 </template>
@@ -17,6 +17,10 @@ export default {
 
   props: {
     saving: String,
+    height: {
+      default() {return 'normal'}, // normal, small
+      type: String
+    }
   },
 
   watch: {
@@ -39,6 +43,9 @@ export default {
     },
     savingDoneClass() {
       return this.saving === 'done' && this.savingDoneTimeout
+    },
+    smallHeightClass() {
+      return this.height === 'small'
     },
   },
 
@@ -68,6 +75,10 @@ export default {
     right: -#{$indicatorSize + 16px}
     margin: auto
     z-index: 9
+
+  
+  &.small-height:before
+    top: 4px
 
   &.saving-in-progress
     position: relative

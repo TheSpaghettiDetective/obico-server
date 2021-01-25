@@ -13,6 +13,7 @@ export default {
   gcodes: () => '/api/v1/gcodes/',
   tunnelUsage: () => '/api/v1/tunnelusage/',
   verificationCode: () => '/api/v1/onetimeverificationcodes/',
+  user: () => '/api/v1/users/me/',
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

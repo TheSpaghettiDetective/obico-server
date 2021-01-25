@@ -53,6 +53,9 @@ let vueConfig = {
     octoprint_tunnel: {
       entry: 'src/octoprint_tunnel/TunnelMain.js',
     },
+    users: {
+      entry: 'src/users/main.js',
+    },
   },
 
   chainWebpack: config => {

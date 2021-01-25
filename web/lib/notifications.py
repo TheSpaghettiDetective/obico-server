@@ -420,11 +420,12 @@ def send_print_notification_pushbullet(_print):
 
 
 def send_print_notification_pushover(_print):
-    if not _print.printer.user.has_valid_pushover_tokens():
+    printer = _print.printer
+    if not printer.user.has_valid_pushover_tokens():
         return
 
     try:
-        photo = requests.get(rotated_jpg_url).content
+        photo = requests.get(_print.poster_url).content
     except:
         photo = None
 
@@ -432,7 +433,6 @@ def send_print_notification_pushover(_print):
     pc = PushoverClient(printer.user.pushover_app_token, printer.user.pushover_user_token)
 
     title = 'The Spaghetti Detective - Print job notification'
-    link = site.build_full_url('/')
     body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
     
     try:

@@ -107,7 +107,7 @@
         <h2 class="section-title">Email</h2>
         <div class="row">
           <label for="id_email" class="col-md-2 col-sm-3 col-form-label">Primary Email</label>
-          <div class="col-md-10 col-sm-9 col-form-label text-muted">{{user.email}} ({{emailVerified ? 'Verified' : 'Unverified'}})
+          <div class="col-md-10 col-sm-9 col-form-label text-muted">{{user.email}} ({{user.is_primary_email_verified ? 'Verified' : 'Unverified'}})
             <div class="form-text"><a href="/accounts/email">Manage email addresses</a></div>
           </div>
         </div>
@@ -543,22 +543,10 @@ export default {
     SavingAnimation,
   },
 
-  props: {
-    twilioEnabled: {
-      default() {return true},
-      type: Boolean
-    },
-    slackEnabled: {
-      default() {return true},
-      type: Boolean
-    },
-  },
-
   data() {
     return {
       user: null,
       saving: {},
-      emailVerified: false, // TODO: define
       delayedSubmit: { // Make pause before sending new value to API
         'first_name': {
           'delay': 1000,
@@ -584,11 +572,18 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
-      }
+      },
+      twilioEnabled: false,
+      slackEnabled: false,
     }
   },
 
   mounted() {
+    if (document.querySelector('#settings-json')) {
+      const {TWILIO_ENABLED, SLACK_CLIENT_ID} = JSON.parse(document.querySelector('#settings-json').text)
+      this.twilioEnabled = !!TWILIO_ENABLED
+      this.slackEnabled = !!SLACK_CLIENT_ID
+    }
     this.fetchUser()
   },
 
@@ -629,7 +624,7 @@ export default {
 
     setSavingStatus(propName, status) {
       if (propName === 'phone_country_code' || propName === 'phone_number') {
-        this.$set(this.saving, 'phone', status)  
+        this.$set(this.saving, 'phone', status)
       } else {
         this.$set(this.saving, propName, status)
       }

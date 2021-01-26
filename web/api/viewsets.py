@@ -17,7 +17,7 @@ import requests
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
-    Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
+    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
@@ -36,7 +36,11 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['get', 'patch'])
     def me(self, request):
-        serializer = self.serializer_class(request.user, many=False)
+        user = request.user
+        if request.method == 'PATCH':
+            User.objects.filter(pk=user.id).update(**request.data)
+            user.refresh_from_db()
+        serializer = self.serializer_class(user, many=False)
         return Response(serializer.data)
 
 

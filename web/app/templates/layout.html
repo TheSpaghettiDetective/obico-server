@@ -48,6 +48,8 @@
   <meta name="theme-color" content="#9965f4">
 
   {% block header_ext %}{% endblock header_ext %}
+
+  {{ settings|json_script:"settings-json" }}
 </head>
 
 <body>

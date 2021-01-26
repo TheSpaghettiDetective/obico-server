@@ -7,6 +7,7 @@ from app.models import calc_normalized_p
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_primary_email_verified = serializers.ReadOnlyField()
 
     class Meta:
         model = User

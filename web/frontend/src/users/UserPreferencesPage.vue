@@ -578,6 +578,13 @@ export default {
     }
   },
 
+  props: {
+    telegramBotName: {
+      default() {return null},
+      type: String
+    },
+  },
+
   mounted() {
     if (document.querySelector('#settings-json')) {
       const {TWILIO_ENABLED, SLACK_CLIENT_ID} = JSON.parse(document.querySelector('#settings-json').text)

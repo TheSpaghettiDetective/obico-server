@@ -20,8 +20,7 @@
                 maxlength="30"
                 class="form-control"
                 id="id_first_name"
-                v-model="user.first_name"
-                @keyup="updateSetting('first_name')"
+                v-model="firstName"
               >
             </saving-animation>
           </div>
@@ -35,8 +34,7 @@
                 maxlength="30"
                 class="form-control"
                 id="id_last_name"
-                v-model="user.last_name"
-                @keyup="updateSetting('last_name')"
+                v-model="lastName"
               >
             </saving-animation>
           </div>
@@ -166,8 +164,7 @@
                         class="form-control selectpicker"
                         id="id_phone_country_code"
                         data-live-search="true"
-                        v-model="user.phone_country_code"
-                        @change="updateSetting('phone_country_code')"
+                        v-model="phoneCountryCode"
                       >
                         <option value="+1">USA/Canada (+1)</option>
                         <option value="+213">Algeria (+213)</option>
@@ -391,8 +388,7 @@
                       class="form-control"
                       id="id_phone_number"
                       placeholder="Phone Number"
-                      v-model="user.phone_number"
-                      @keyup="updateSetting('phone_number')"
+                      v-model="phoneNumber"
                     >
                   </div>
                 </div>
@@ -447,8 +443,7 @@
                 placeholder="Pushbullet Access Token"
                 class="form-control"
                 id="id_pushbullet_access_token"
-                v-model="user.pushbullet_access_token"
-                @keyup="updateSetting('pushbullet_access_token')"
+                v-model="pushbulletToken"
               >
             </saving-animation>
           </div>
@@ -493,8 +488,7 @@
                 placeholder="Discord Webhook"
                 class="form-control"
                 id="id_discord_webhook"
-                v-model="user.discord_webhook"
-                @keyup="updateSetting('discord_webhook')"
+                v-model="discordWebhook"
               >
             </saving-animation>
           </div>
@@ -564,10 +558,6 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
-        'phone_country_code': {
-          'delay': 1000,
-          'timeoutId': null
-        },
         'phone_number': {
           'delay': 1000,
           'timeoutId': null
@@ -575,6 +565,90 @@ export default {
       },
       twilioEnabled: false,
       slackEnabled: false,
+    }
+  },
+
+  computed: {
+    firstName: {
+      get: function() {
+        return this.user ? this.user.first_name : null
+      },
+      set: function(newValue) {
+        this.user.first_name = newValue
+      }
+    },
+    lastName: {
+      get: function() {
+        return this.user ? this.user.last_name : null
+      },
+      set: function(newValue) {
+        this.user.last_name = newValue
+      }
+    },
+    phoneCountryCode: {
+      get: function() {
+        return this.user ? this.user.phone_country_code : null
+      },
+      set: function(newValue) {
+        this.user.phone_country_code = newValue
+      }
+    },
+    phoneNumber: {
+      get: function() {
+        return this.user ? this.user.phone_number : null
+      },
+      set: function(newValue) {
+        this.user.phone_number = newValue
+      }
+    },
+    pushbulletToken: {
+      get: function() {
+        return this.user ? this.user.pushbullet_access_token : null
+      },
+      set: function(newValue) {
+        this.user.pushbullet_access_token = newValue
+      }
+    },
+    discordWebhook: {
+      get: function() {
+        return this.user ? this.user.discord_webhook : null
+      },
+      set: function(newValue) {
+        this.user.discord_webhook = newValue
+      }
+    },
+  },
+
+  watch: {
+    firstName: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('first_name')
+      }
+    },
+    lastName: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('last_name')
+      }
+    },
+    phoneCountryCode: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('phone_country_code')
+      }
+    },
+    phoneNumber: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('phone_number')
+      }
+    },
+    pushbulletToken: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('pushbullet_access_token')
+      }
+    },
+    discordWebhook: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('discord_webhook')
+      }
     }
   },
 
@@ -629,6 +703,12 @@ export default {
         })
     },
 
+    /**
+     * Interlayer for saving status control to be able to set same saving status
+     * for 2 or more different inputs grouped to one block
+     * @param {String} propName
+     * @param {String} status
+     */
     setSavingStatus(propName, status) {
       if (propName === 'phone_country_code' || propName === 'phone_number') {
         this.$set(this.saving, 'phone', status)

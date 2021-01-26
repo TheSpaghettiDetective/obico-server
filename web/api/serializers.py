@@ -5,6 +5,8 @@ from django.utils.timezone import now
 from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
 from app.models import calc_normalized_p
 
+import phonenumbers
+
 
 class UserSerializer(serializers.ModelSerializer):
     is_primary_email_verified = serializers.ReadOnlyField()
@@ -20,6 +22,24 @@ class UserSerializer(serializers.ModelSerializer):
             'dh_balance': {'read_only': True},
             'unsub_token': {'read_only': True},
         }
+
+    def validate_phone_country_code(self, phone_country_code):
+        if phone_country_code and not phone_country_code.startswith('+'):
+            phone_country_code = '+' + phone_country_code
+        return phone_country_code
+
+    def validate(self, data):
+        if 'phone_number' in data and 'phone_country_code' in data:
+            if data['phone_country_code'] and data['phone_number']:
+                phone_number = data['phone_country_code'] + data['phone_number']
+                try:
+                    phone_number = phonenumbers.parse(phone_number, None)
+                    if not phonenumbers.is_valid_number(phone_number):
+                        raise serializers.ValidationError({'phone_number': 'Invalid phone number'})
+                except phonenumbers.NumberParseException:
+                    raise serializers.ValidationError({'phone_number': 'Cannot parse phone number'})
+
+        return data
 
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):

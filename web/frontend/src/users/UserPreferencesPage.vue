@@ -514,7 +514,49 @@
         </div>
       </section>
 
-      <!-- TODO: Telegram -->
+      <!-- Telegram -->
+      <section v-if="telegramBotName" class="telegram">
+        <h2 class="section-title">Telegram</h2>
+        <small class="form-text text-muted">
+          Login to be notified by our Telegram bot.
+        </small>
+        <br>
+        <div class="form-group row">
+          <div v-if="user.telegram_chat_id">
+            <div class="col-sm-6" id="id_telegram_logout_btn">
+              <div class="btn btn-primary float-left" @click="onTelegramLogout">Unlink Telegram</div>
+            </div>
+            <div class="col-sm-6" id="id_telegram_test_btn">
+              <div class="btn btn-primary float-left" @click="onTelegramTest($event)">Test Telegram Notification</div>
+            </div>
+          </div>
+          <div v-else>
+            <vue-telegram-login 
+              mode="callback"
+              :telegram-login="telegramBotName"
+              @callback="onTelegramAuth" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
+            <saving-animation :saving="saving.print_notification_by_telegram">
+              <div class="custom-control custom-checkbox form-check-inline">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="id_print_notification_by_telegram"
+                  v-model="user.print_notification_by_telegram"
+                  @change="updateSetting('print_notification_by_telegram')"
+                >
+                <label class="custom-control-label" for="id_print_notification_by_telegram">
+                  Send print job notifications via Telegram
+                </label>
+              </div>
+            </saving-animation>
+            <small class="text-muted">You will always be alerted via Telegram on print failures.</small>
+          </div>
+        </div>
+      </section>
 
       <!-- Slack -->
       <section v-if="slackEnabled" class="slack">
@@ -530,11 +572,13 @@
 import axios from 'axios'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
+import {vueTelegramLogin} from 'vue-telegram-login'
 
 export default {
   name: 'UserPreferencesPage',
   components: {
     SavingAnimation,
+    vueTelegramLogin
   },
 
   data() {
@@ -720,10 +764,10 @@ export default {
     /**
      * Show error alert if can not save settings
      */
-    errorAlert() {
+    errorAlert(text=null) {
       this.$swal.Toast.fire({
         icon: 'error',
-        html: '<div>Can not update your preferences.</div><div>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</div>',
+        html: `<div>${text ? text : 'Can not update your preferences.'}</div><div>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</div>`,
       })
     },
 
@@ -745,6 +789,30 @@ export default {
 
       this.patchUser(settingsItem, this.user[settingsItem])
     },
+
+    onTelegramAuth(user) {
+      user.telegram_chat_id = JSON.stringify(user.id)
+      this.updateSetting('telegram_chat_id')
+    },
+
+    onTelegramLogout() {
+      this.user.telegram_chat_id = ''
+      this.updateSetting('telegram_chat_id')
+    },
+
+    onTelegramTest(event) {
+      event.target.classList.add('disabled')
+
+      return axios
+        .post('/test_telegram')
+        .then(() => {
+          event.target.classList.add('btn-success')
+        })
+        .catch(err => {
+          this.errorAlert('Telegram test failed.')
+          console.log(err)
+        })
+    }
   }
 }
 </script>

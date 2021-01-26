@@ -20,7 +20,7 @@
                 maxlength="30"
                 class="form-control"
                 id="id_first_name"
-                v-model="firstName"
+                v-model="user.first_name"
               >
             </saving-animation>
           </div>
@@ -34,7 +34,7 @@
                 maxlength="30"
                 class="form-control"
                 id="id_last_name"
-                v-model="lastName"
+                v-model="user.last_name"
               >
             </saving-animation>
           </div>
@@ -164,7 +164,7 @@
                         class="form-control selectpicker"
                         id="id_phone_country_code"
                         data-live-search="true"
-                        v-model="phoneCountryCode"
+                        v-model="user.phone_country_code"
                       >
                         <option value="+1">USA/Canada (+1)</option>
                         <option value="+213">Algeria (+213)</option>
@@ -388,7 +388,7 @@
                       class="form-control"
                       id="id_phone_number"
                       placeholder="Phone Number"
-                      v-model="phoneNumber"
+                      v-model="user.phone_number"
                     >
                   </div>
                 </div>
@@ -443,7 +443,7 @@
                 placeholder="Pushbullet Access Token"
                 class="form-control"
                 id="id_pushbullet_access_token"
-                v-model="pushbulletToken"
+                v-model="user.pushbullet_access_token"
               >
             </saving-animation>
           </div>
@@ -488,7 +488,7 @@
                 placeholder="Discord Webhook"
                 class="form-control"
                 id="id_discord_webhook"
-                v-model="discordWebhook"
+                v-model="user.discord_webhook"
               >
             </saving-animation>
           </div>

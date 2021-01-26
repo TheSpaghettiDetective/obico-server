@@ -15,7 +15,6 @@
             class="form-control field_required"
             required="required"
             v-model="printer.name"
-            @keyup="updateSetting('name')"
           >
         </saving-animation>
       </div>
@@ -312,6 +311,22 @@ export default {
       return urls.printerWizard(this.printer.id)
     },
 
+    printerName: {
+      get: function() {
+        return this.printer ? this.printer.name : null
+      },
+      set: function(newValue) {
+        this.printer.name = newValue
+      }
+    },
+  },
+
+  watch: {
+    printerName: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('name')
+      }
+    },
   },
 
   mounted() {

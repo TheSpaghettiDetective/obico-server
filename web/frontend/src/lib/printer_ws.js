@@ -2,6 +2,7 @@
 import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
+import EventBus from '@lib/event_bus'
 
 function PrinterWebSocket() {
   var self = {}
@@ -20,6 +21,17 @@ function PrinterWebSocket() {
     })
   })
 
+  self.on_passThruReceived = function(printerId, msg) {
+    var refId = msg.passthru.ref
+    if (refId && self.passthruQueue.get(refId)) {
+      var callback = self.passthruQueue.get(refId)
+      self.passthruQueue.delete(refId)
+      callback(null, msg.passthru.ret)
+    }
+  }
+
+  EventBus.$on('gotPassthruOverDatachannel', self.on_passThruReceived)
+
   self.openPrinterWebSockets = function(printerId, wsUri, onMessageReceived) {
 
     self.desiredWsList.set(printerId, [wsUri, onMessageReceived])
@@ -29,12 +41,7 @@ function PrinterWebSocket() {
     printerSocket.onmessage = function (e) {
       var msg = JSON.parse(e.data)
       if ('passthru' in msg) {
-        var refId = msg.passthru.ref
-        if (refId && self.passthruQueue.get(refId)) {
-          var callback = self.passthruQueue.get(refId)
-          self.passthruQueue.delete(refId)
-          callback(null, msg.passthru.ret)
-        }
+        self.on_passThruReceived(printerId, msg)
       } else {
         onMessageReceived(msg)
       }
@@ -45,13 +52,13 @@ function PrinterWebSocket() {
   }
 
 
-  self.passThruToPrinter = function(printerId, msgObj, callback) {
+  self.passThruToPrinter = function(printerId, msg, callback) {
     var pSocket = self.wsList.get(printerId)
     if (pSocket) {
       if (callback) {
         var refId = Math.random().toString()
         self.passthruQueue.set(refId, callback)
-        assign(msgObj, {ref: refId})
+        assign(msg, {ref: refId})
         setTimeout(function() {
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
@@ -61,7 +68,10 @@ function PrinterWebSocket() {
           }
         }, 10*1000)
       }
-      pSocket.send(JSON.stringify({passthru: msgObj}))
+      let msgObj = {passthru: msg}
+      pSocket.send(JSON.stringify(msgObj))
+      EventBus.$emit('sendOverDatachannel', printerId, msgObj)
+      return msgObj
     } else {
       if (callback){
         callback('Message not passed through. No suitable WebSocket.')

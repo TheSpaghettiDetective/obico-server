@@ -75,9 +75,11 @@ function getWebRTCManager(callbacks) {
               slowLink: function(uplink, lost) {
                 self.onSlowLink(lost)
               },
-              ondataopen: function () {
+              ondataopen: function() {
               },
-              ondata: function () {
+              ondata: function(rawData) {
+                self.onData(rawData)
+
               },
               oncleanup: function() {
                 self.onCleanup()
@@ -145,13 +147,16 @@ function getWebRTCManager(callbacks) {
       this.callbacks.onTrackMuted()
     },
     onTrackUnmuted() {
-        this.callbacks.onTrackUnmuted()
+      this.callbacks.onTrackUnmuted()
     },
     onSlowLink(lost) {
       this.callbacks.onSlowLink(lost)
     },
     onCleanup() {
       this.callbacks.onCleanup()
+    },
+    onData(rawData) {
+      this.callbacks.onData(rawData)
     },
     startStream() {
       if (this.streamId === undefined || this.streaming === undefined) {

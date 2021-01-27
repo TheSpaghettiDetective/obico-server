@@ -25,6 +25,10 @@ $(document).ready(function () {
 
     });
 
+    printerCard.on('gotPassThruMessage', function (e, msg) {
+      printerWs.on_passThruMessage(msg)
+    })
+
     $('.printer-controls button').on('click', function() {
         var ele = $(this);
         var axes = ele.data('axis');
@@ -33,12 +37,20 @@ $(document).ready(function () {
             if (axes == 'xy') {
                 axes = ['x', 'y'];
             }
-            printerWs.passThruToPrinter(printerId, {func: 'home', target: '_printer', args: [axes]});
+            var payload = {func: 'home', target: '_printer', args: [axes]};
+            var msgObj = printerWs.passThruToPrinter(printerId, payload);
+            if (msgObj) {
+              printerCard.trigger('sendPassThruMessage', [msgObj]);
+            }
         } else {
             var distance = parseFloat(printerCard.find('.btn-group-toggle input:checked').val());
             var jogArgs = {}
             jogArgs[axes] = distance * (ele.data('dir') == 'up' ? 1 : -1);
-            printerWs.passThruToPrinter(printerId, {func: 'jog', target: '_printer', args: [jogArgs]});
+            var payload = {func: 'jog', target: '_printer', args: [jogArgs]};
+            var msgObj = printerWs.passThruToPrinter(printerId, payload);
+            if (msgObj) {
+              printerCard.trigger('sendPassThruMessage', [msgObj]);
+            }
         }
     });
 

@@ -29,8 +29,8 @@ class UserSerializer(serializers.ModelSerializer):
         return phone_country_code
 
     def validate(self, data):
-        if 'phone_number' in data and 'phone_country_code' in data:
-            if data['phone_country_code'] and data['phone_number']:
+        if 'phone_number' in data or 'phone_country_code' in data:
+            if 'phone_number' in data and 'phone_country_code' in data:
                 phone_number = data['phone_country_code'] + data['phone_number']
                 try:
                     phone_number = phonenumbers.parse(phone_number, None)
@@ -38,6 +38,8 @@ class UserSerializer(serializers.ModelSerializer):
                         raise serializers.ValidationError({'phone_number': 'Invalid phone number'})
                 except phonenumbers.NumberParseException:
                     raise serializers.ValidationError({'phone_number': 'Cannot parse phone number'})
+            else:
+                raise serializers.ValidationError('Both phone_number and phone_country_code need to be present.')
 
         return data
 

@@ -10,11 +10,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='user',
-            name='pushover_app_token',
-            field=models.CharField(blank=True, max_length=45, null=True),
-        ),
-        migrations.AddField(
-            model_name='user',
             name='pushover_user_token',
             field=models.CharField(blank=True, max_length=45, null=True),
         ),

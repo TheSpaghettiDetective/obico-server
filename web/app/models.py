@@ -98,6 +98,10 @@ class User(AbstractUser):
     alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
     discord_webhook = models.CharField(max_length=256, null=True, blank=True)
     print_notification_by_discord = models.BooleanField(null=False, blank=False, default=True)
+    pushover_app_token = models.CharField(max_length=45, null=True, blank=True)
+    pushover_user_token = models.CharField(max_length=45, null=True, blank=True)
+    print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
+    
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -130,6 +134,13 @@ class User(AbstractUser):
             return True
         except errors.InvalidKeyError:
             return False
+
+    def has_valid_pushover_tokens(self):
+        if not self.pushover_app_token or not self.pushover_user_token:
+            return False
+
+        return True
+
 
     def tunnel_usage_over_cap(self):
         return not self.is_pro and cache.octoprinttunnel_get_stats(self.id) > settings.OCTOPRINT_TUNNEL_CAP * 1.1  # Cap x 1.1 to give some grace period to users

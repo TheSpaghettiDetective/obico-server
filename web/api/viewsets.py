@@ -39,7 +39,7 @@ class UserViewSet(viewsets.GenericViewSet):
         user = request.user
         if request.method == 'PATCH':
             serializer = self.serializer_class(user, data=request.data, partial=True) # set partial=True to update a data partially
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 user.refresh_from_db()
         else:

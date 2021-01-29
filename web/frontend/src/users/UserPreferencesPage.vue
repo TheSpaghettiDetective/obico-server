@@ -23,6 +23,14 @@
                 v-model="user.first_name"
               >
             </saving-animation>
+            <div
+              v-if="errorMessages.first_name"
+              class="error-message text-danger"
+            >
+              <ul>
+                <li v-for="error in errorMessages.first_name" :key="error">{{ error }}</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="form-group row">
@@ -37,6 +45,14 @@
                 v-model="user.last_name"
               >
             </saving-animation>
+            <div
+              v-if="errorMessages.last_name"
+              class="error-message text-danger"
+            >
+              <ul>
+                <li v-for="error in errorMessages.last_name" :key="error">{{ error }}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -392,13 +408,22 @@
                     >
                   </div>
                 </div>
-                <small class="text-muted">
-                  <div>Can't find your country code?</div>
-                  <div>The Spaghetti Detective Team is currently self-funded. Therefore we can't afford to open to
-                    countries with high SMS cost. We will add more countries once we find a cost-effective SMS solution,
-                    or secure sufficient funding.</div>
-                </small>
               </saving-animation>
+              <div
+                v-if="errorMessages.phone_number || errorMessages.phone_country_code"
+                class="error-message text-danger"
+              >
+                <ul>
+                  <li v-for="error in errorMessages.phone_country_code" :key="error">{{ error }}</li>
+                  <li v-for="error in errorMessages.phone_number" :key="error">{{ error }}</li>
+                </ul>
+              </div>
+              <small class="text-muted">
+                <div>Can't find your country code?</div>
+                <div>The Spaghetti Detective Team is currently self-funded. Therefore we can't afford to open to
+                  countries with high SMS cost. We will add more countries once we find a cost-effective SMS solution,
+                  or secure sufficient funding.</div>
+              </small>
             </div>
             <p v-else class="text-muted">Please configure TWILIO_* items in settings to enable phone alert.</p>
           </div>
@@ -446,6 +471,14 @@
                 v-model="user.pushbullet_access_token"
               >
             </saving-animation>
+            <div
+              v-if="errorMessages.pushbullet_access_token"
+              class="error-message text-danger"
+            >
+              <ul>
+                <li v-for="error in errorMessages.pushbullet_access_token" :key="error">{{ error }}</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="row">
@@ -491,6 +524,14 @@
                 v-model="user.discord_webhook"
               >
             </saving-animation>
+            <div
+              v-if="errorMessages.discord_webhook"
+              class="error-message text-danger"
+            >
+              <ul>
+                <li v-for="error in errorMessages.discord_webhook" :key="error">{{ error }}</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="row">
@@ -609,6 +650,10 @@ export default {
       },
       twilioEnabled: false,
       slackEnabled: false,
+      combinedInputs: [ // Send changes to API only if all the other values in the array have data
+        ['phone_country_code', 'phone_number'],
+      ],
+      errorMessages: {}
     }
   },
 
@@ -730,21 +775,63 @@ export default {
      * @param {any} propValue
      */
     patchUser(propName, propValue) {
+      let data = {}
+
+      const combinedInputs = this.checkForCombinedValues(propName)
+      if (combinedInputs) {
+        // Must include all the inputs from the array
+        // or don't send if some of them have no data
+        for (const input of combinedInputs) {
+          delete this.errorMessages[input]
+          const value = this.user[input]
+          if (value) {
+            data[input] = value
+          } else {
+            return
+          }
+        }
+      } else {
+        data = {[propName]: propValue}
+        delete this.errorMessages[propName]
+      }
+
       this.setSavingStatus(propName, 'saving')
 
       // Make request to API
       return axios
-        .patch(urls.user(), {
-          [propName]: propValue
-        })
+        .patch(urls.user(), data)
         .then(() => {
           this.setSavingStatus(propName, 'done')
         })
         .catch(err => {
           this.setSavingStatus(propName, 'failed')
-          this.errorAlert()
+
+          if (err.response) {
+            for (const error in err.response.data) {
+              this.errorMessages[error] = err.response.data[error]
+            }
+          } else {
+            this.errorAlert()
+          }
+
           console.log(err)
         })
+    },
+
+    /**
+     * Checks if value is associated with others (must be sent simultaneously)
+     * and returns array of input names in the collection
+     * @param {String} propName
+     * @return {Array, Boolean} array with input names or False
+     */
+    checkForCombinedValues(propName) {
+      for (const inputs of this.combinedInputs) {
+        if (inputs.includes(propName)) {
+          return inputs
+        }
+      }
+
+      return false
     },
 
     /**
@@ -834,4 +921,7 @@ section:not(:first-child)
   .section-title
     padding-bottom: 5px
     border-bottom: 1px solid theme.$white
+
+.error-message
+  margin-bottom: 10px
 </style>

@@ -1,6 +1,7 @@
 <template>
-  <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'small-height': smallHeightClass}">
+  <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'failed-to-save': savingFailedClass, 'small-height': smallHeightClass}">
     <slot></slot>
+    <small v-if="errors && errors.length > 0" class="text-danger">{{errorMsg}}</small>
   </div>
 </template>
 
@@ -16,7 +17,13 @@ export default {
   },
 
   props: {
-    saving: String,
+    saving: {
+      default() {return false},
+      type: Boolean,
+    },
+    errors: {
+      type: Array,
+    },
     height: {
       default() {return 'normal'}, // normal, small
       type: String
@@ -25,9 +32,10 @@ export default {
 
   watch: {
     saving: function(nowSaving, prevSaving) { // watch it
-      if (prevSaving !== 'saving' && nowSaving === 'saving') {
+      if (!prevSaving && nowSaving) {
+        this.clearSavingTimeout()
         this.savingTimeout = setTimeout(this.clearSavingTimeout, 15*1000)
-      } else if (prevSaving !== 'done' && nowSaving === 'done') {
+      } else if (prevSaving && !nowSaving) {
         this.clearSavingTimeout()
         this.savingDoneTimeout = setTimeout(() => {
           clearTimeout(this.savingDoneTimeout)
@@ -39,14 +47,20 @@ export default {
 
   computed: {
     savingClass() {
-      return this.saving === 'saving' && this.savingTimeout
+      return this.saving && this.savingTimeout
     },
     savingDoneClass() {
-      return this.saving === 'done' && this.savingDoneTimeout
+      return !this.saving && this.savingDoneTimeout && !this.errors
+    },
+    savingFailedClass() {
+      return !this.saving && this.savingDoneTimeout && this.errors && this.errors.length > 0
     },
     smallHeightClass() {
       return this.height === 'small'
     },
+    errorMsg() {
+      return this.errors.join(' ')
+    }
   },
 
   methods: {
@@ -92,6 +106,9 @@ export default {
     &:before
       background-image: url('/static/img/tick.svg')
 
-.error-message
-  margin-bottom: 10px
+  &.failed-to-save
+    position: relative
+
+    &:before
+      background-image: url('/static/img/tick.svg')
 </style>

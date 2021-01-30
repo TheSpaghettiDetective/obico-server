@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
-# from pushbullet import Pushbullet, PushbulletError
+from pushbullet import Pushbullet, PushbulletError
 
 from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
 from app.models import calc_normalized_p

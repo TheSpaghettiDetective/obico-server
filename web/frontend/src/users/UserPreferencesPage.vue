@@ -14,7 +14,7 @@
         <div class="form-group row">
           <label for="id_first_name" class="col-md-2 col-sm-3 col-form-label">First Name</label>
           <div class="col-md-10 col-sm-9">
-            <saving-animation :saving="saving.first_name">
+            <saving-animation :errors="errorMessages.first_name" :saving="saving.first_name">
               <input
                 type="text"
                 maxlength="30"
@@ -23,20 +23,12 @@
                 v-model="user.first_name"
               >
             </saving-animation>
-            <div
-              v-if="errorMessages.first_name"
-              class="error-message text-danger"
-            >
-              <ul>
-                <li v-for="error in errorMessages.first_name" :key="error">{{ error }}</li>
-              </ul>
-            </div>
           </div>
         </div>
         <div class="form-group row">
           <label for="id_last_name" class="col-md-2 col-sm-3 col-form-label">Last Name</label>
           <div class="col-md-10 col-sm-9">
-            <saving-animation :saving="saving.last_name">
+            <saving-animation :errors="errorMessages.last_name" :saving="saving.last_name">
               <input
                 type="text"
                 maxlength="30"
@@ -45,14 +37,6 @@
                 v-model="user.last_name"
               >
             </saving-animation>
-            <div
-              v-if="errorMessages.last_name"
-              class="error-message text-danger"
-            >
-              <ul>
-                <li v-for="error in errorMessages.last_name" :key="error">{{ error }}</li>
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -62,7 +46,7 @@
         <h2 class="section-title">Notifications</h2>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.notify_on_done" height="small">
+            <saving-animation :errors="errorMessages.notify_on_done" :saving="saving.notify_on_done" height="small">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -80,7 +64,7 @@
         </div>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.notify_on_canceled" height="small">
+            <saving-animation :errors="errorMessages.notify_on_canceled" :saving="saving.notify_on_canceled" height="small">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -98,7 +82,7 @@
         </div>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.account_notification_by_email" height="small">
+            <saving-animation :errors="errorMessages.account_notification_by_email" :saving="saving.account_notification_by_email" height="small">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -128,7 +112,7 @@
         <div class="row">
           <label class="col-md-2 col-sm-3 col-form-label"></label>
           <div class="col-md-10 col-sm-9 col-form-label">
-            <saving-animation :saving="saving.alert_by_email">
+            <saving-animation :errors="errorMessages.alert_by_email" :saving="saving.alert_by_email">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -147,7 +131,7 @@
         <div class="row">
           <label class="col-md-2 col-sm-3 col-form-label"></label>
           <div class="col-md-10 col-sm-9 col-form-label">
-            <saving-animation :saving="saving.print_notification_by_email" height="small">
+            <saving-animation :errors="errorMessages.print_notification_by_email" :saving="saving.print_notification_by_email" height="small">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -172,7 +156,7 @@
           <label for="id_email" class="col-md-2 col-sm-3 col-form-label">Phone Number</label>
           <div class="col-md-10 col-sm-9 col-form-label">
             <div v-if="twilioEnabled">
-              <saving-animation :saving="saving.phone">
+              <saving-animation :errors="errorMessages.phone" :saving="saving.phone">
                 <div class="form-group row">
                   <div class="col-sm-6">
                     <div class="dropdown bootstrap-select form-control">
@@ -409,15 +393,6 @@
                   </div>
                 </div>
               </saving-animation>
-              <div
-                v-if="errorMessages.phone_number || errorMessages.phone_country_code"
-                class="error-message text-danger"
-              >
-                <ul>
-                  <li v-for="error in errorMessages.phone_country_code" :key="error">{{ error }}</li>
-                  <li v-for="error in errorMessages.phone_number" :key="error">{{ error }}</li>
-                </ul>
-              </div>
               <small class="text-muted">
                 <div>Can't find your country code?</div>
                 <div>The Spaghetti Detective Team is currently self-funded. Therefore we can't afford to open to
@@ -430,7 +405,7 @@
         </div>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.alert_by_sms">
+            <saving-animation :errors="errorMessages.alert_by_sms" :saving="saving.alert_by_sms">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -461,7 +436,7 @@
         <div class="row">
           <label for="id_pushbullet_access_token" class="col-md-2 col-sm-3 col-form-label">Access Token</label>
           <div class="col-md-10 col-sm-9 col-form-label">
-            <saving-animation :saving="saving.pushbullet_access_token">
+            <saving-animation :errors="errorMessages.pushbullet_access_token" :saving="saving.pushbullet_access_token">
               <input
                 type="text"
                 maxlength="45"
@@ -471,19 +446,11 @@
                 v-model="user.pushbullet_access_token"
               >
             </saving-animation>
-            <div
-              v-if="errorMessages.pushbullet_access_token"
-              class="error-message text-danger"
-            >
-              <ul>
-                <li v-for="error in errorMessages.pushbullet_access_token" :key="error">{{ error }}</li>
-              </ul>
-            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.print_notification_by_pushbullet" height="small">
+            <saving-animation :errors="errorMessages.print_notification_by_pushbullet" :saving="saving.print_notification_by_pushbullet" height="small">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -514,7 +481,7 @@
         <div class="row">
           <label for="id_discord_webhook" class="col-md-2 col-sm-3 col-form-label">Webhook URL</label>
           <div class="col-md-10 col-sm-9 col-form-label">
-            <saving-animation :saving="saving.discord_webhook">
+            <saving-animation :errors="errorMessages.discord_webhook" :saving="saving.discord_webhook">
               <input
                 type="text"
                 maxlength="256"
@@ -524,19 +491,11 @@
                 v-model="user.discord_webhook"
               >
             </saving-animation>
-            <div
-              v-if="errorMessages.discord_webhook"
-              class="error-message text-danger"
-            >
-              <ul>
-                <li v-for="error in errorMessages.discord_webhook" :key="error">{{ error }}</li>
-              </ul>
-            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.print_notification_by_discord">
+            <saving-animation :errors="errorMessages.print_notification_by_discord" :saving="saving.print_notification_by_discord">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -580,7 +539,7 @@
         </div>
         <div class="form-group row">
           <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-            <saving-animation :saving="saving.print_notification_by_telegram">
+            <saving-animation :errors="errorMessages.print_notification_by_telegram" :saving="saving.print_notification_by_telegram">
               <div class="custom-control custom-checkbox form-check-inline">
                 <input
                   type="checkbox"
@@ -626,6 +585,7 @@ export default {
     return {
       user: null,
       saving: {},
+      errorMessages: {},
       delayedSubmit: { // Make pause before sending new value to API
         'first_name': {
           'delay': 1000,
@@ -650,10 +610,9 @@ export default {
       },
       twilioEnabled: false,
       slackEnabled: false,
-      combinedInputs: [ // Send changes to API only if all the other values in the array have data
-        ['phone_country_code', 'phone_number'],
-      ],
-      errorMessages: {}
+      combinedInputs: { // Send changes to API only if all the other values in the array have data
+        phone: ['phone_country_code', 'phone_number'],
+      },
     }
   },
 
@@ -777,12 +736,13 @@ export default {
     patchUser(propName, propValue) {
       let data = {}
 
+      let key = propName
       const combinedInputs = this.checkForCombinedValues(propName)
       if (combinedInputs) {
         // Must include all the inputs from the array
         // or don't send if some of them have no data
-        for (const input of combinedInputs) {
-          delete this.errorMessages[input]
+        for (const input of combinedInputs.inputs) {
+          key = combinedInputs.key
           const value = this.user[input]
           if (value) {
             data[input] = value
@@ -792,31 +752,28 @@ export default {
         }
       } else {
         data = {[propName]: propValue}
-        delete this.errorMessages[propName]
       }
 
-      this.setSavingStatus(propName, 'saving')
+      this.setSavingStatus(key, true)
 
       // Make request to API
       return axios
         .patch(urls.user(), data)
-        .then(() => {
-          this.setSavingStatus(propName, 'done')
-        })
         .catch(err => {
-          this.setSavingStatus(propName, 'failed')
-
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             if (err.response.data.non_field_errors) {
               this.errorAlert(err.response.data.non_field_errors)
             } else {
               for (const error in err.response.data) {
-                this.errorMessages[error] = err.response.data[error]
+                this.errorMessages[key] = err.response.data[error]
               }
             }
           } else {
             this.errorAlert()
           }
+        })
+        .then(() => {
+          this.setSavingStatus(key, false)
         })
     },
 
@@ -827,13 +784,13 @@ export default {
      * @return {Array, Boolean} array with input names or False
      */
     checkForCombinedValues(propName) {
-      for (const inputs of this.combinedInputs) {
+      for (const [key, inputs] of Object.entries(this.combinedInputs)) {
         if (inputs.includes(propName)) {
-          return inputs
+          return {inputs, key}
         }
       }
 
-      return false
+      return null
     },
 
     /**
@@ -843,11 +800,10 @@ export default {
      * @param {String} status
      */
     setSavingStatus(propName, status) {
-      if (propName === 'phone_country_code' || propName === 'phone_number') {
-        this.$set(this.saving, 'phone', status)
-      } else {
-        this.$set(this.saving, propName, status)
+      if (status) {
+        delete this.errorMessages[propName]
       }
+      this.$set(this.saving, propName, status)
     },
 
     /**

@@ -725,6 +725,10 @@ export default {
         .get(urls.user())
         .then(response => {
           this.user = response.data
+
+          if (!this.user.phone_country_code) {
+            this.user.phone_country_code = '+1'
+          }
         })
     },
 

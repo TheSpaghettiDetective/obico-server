@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.saving-in-progress, .successfully-saved
+.saving-in-progress, .successfully-saved, .failed-to-save
   $indicatorSize: 16px
 
   &:before
@@ -110,5 +110,5 @@ export default {
     position: relative
 
     &:before
-      background-image: url('/static/img/tick.svg')
+      background-image: url('/static/img/cross.svg')
 </style>

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
+# from pushbullet import Pushbullet, PushbulletError
 
 from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
 from app.models import calc_normalized_p
@@ -36,10 +37,17 @@ class UserSerializer(serializers.ModelSerializer):
                     phone_number = phonenumbers.parse(phone_number, None)
                     if not phonenumbers.is_valid_number(phone_number):
                         raise serializers.ValidationError({'phone_number': 'Invalid phone number'})
-                except phonenumbers.NumberParseException:
-                    raise serializers.ValidationError({'phone_number': 'Cannot parse phone number'})
+                except phonenumbers.NumberParseException as e:
+                    raise serializers.ValidationError({'phone_number': e})
             else:
                 raise serializers.ValidationError('Both phone_number and phone_country_code need to be present.')
+
+        if 'pushbullet_access_token' in data:
+            pushbullet_access_token = data['pushbullet_access_token']
+            try:
+                Pushbullet(pushbullet_access_token)
+            except PushbulletError:
+                raise serializers.ValidationError({'pushbullet_access_token': 'Invalid pushbullet access token.'})
 
         return data
 

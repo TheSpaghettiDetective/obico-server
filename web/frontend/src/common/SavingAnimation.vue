@@ -76,7 +76,7 @@ export default {
     margin: auto
     z-index: 9
 
-  
+
   &.small-height:before
     top: 4px
 
@@ -91,4 +91,7 @@ export default {
 
     &:before
       background-image: url('/static/img/tick.svg')
+
+.error-message
+  margin-bottom: 10px
 </style>

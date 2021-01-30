@@ -572,7 +572,7 @@
             </div>
           </div>
           <div v-else>
-            <vue-telegram-login 
+            <vue-telegram-login
               mode="callback"
               :telegram-login="telegramBotName"
               @callback="onTelegramAuth" />
@@ -806,15 +806,17 @@ export default {
         .catch(err => {
           this.setSavingStatus(propName, 'failed')
 
-          if (err.response) {
-            for (const error in err.response.data) {
-              this.errorMessages[error] = err.response.data[error]
+          if (err.response && err.response.data && typeof err.response.data === 'object') {
+            if (err.response.data.non_field_errors) {
+              this.errorAlert(err.response.data.non_field_errors)
+            } else {
+              for (const error in err.response.data) {
+                this.errorMessages[error] = err.response.data[error]
+              }
             }
           } else {
             this.errorAlert()
           }
-
-          console.log(err)
         })
     },
 
@@ -852,9 +854,9 @@ export default {
      * Show error alert if can not save settings
      */
     errorAlert(text=null) {
-      this.$swal.Toast.fire({
+      this.$swal({
         icon: 'error',
-        html: `<div>${text ? text : 'Can not update your preferences.'}</div><div>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</div>`,
+        html: `<p>${text ? text : 'Can not update your preferences.'}</p><p>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</p>`,
       })
     },
 
@@ -922,6 +924,4 @@ section:not(:first-child)
     padding-bottom: 5px
     border-bottom: 1px solid theme.$white
 
-.error-message
-  margin-bottom: 10px
 </style>

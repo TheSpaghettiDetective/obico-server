@@ -1,65 +1,58 @@
 <template>
   <div>
-    <div v-if="printers.length > 1" class="filters-panel">
-      <div class="filters-wrapper">
-        <div>Filter:</div>
-        <div v-for="filterOption in stateFilters" :key="filterOption.value">
-          <button
-            class="btn btn-sm filter"
-            v-bind:class="{'btn-primary': filters.state === filterOption.value, 'btn-secondary': filters.state !== filterOption.value}"
-            @click="filters.state = filterOption.value; onStateFilterChanged();"
-          >{{ filterOption.title }}</button>
-        </div>
-      </div>
-      <div class="filters-wrapper mobile">
-        <TSDSelect
-          id="printer-filtering"
-          v-model="filters.state"
-          :options="stateFilters"
-          @input="onStateFilterChanged()"
-        ></TSDSelect>
-      </div>
+    <div class="option-drawer">
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+          <b-collapse
+            id="collapse-one"
+            v-model="filters.visible"
+            class="panel-collapse in"
+            role="tabpanel"
+            aria-labelledby="headingOne"
+          >
+            <div class="panel-body p-3">
+              <div>
+                <div class="sorting-and-filter">
+                  <TSDSelect
+                    id="printer-sorting"
+                    class="my-1 mx-2"
+                    v-model="filters.sort"
+                    :options="sortFilters"
+                    @input="onSortFilterChanged()"
+                  ></TSDSelect>
 
-      <div class="sort-wrapper">
-        <div>Sort:</div>
-        <div>
-          <button
-            class="sort-option"
-            v-bind:class="{'active': filters.sort === SortFilter.DateAsc || filters.sort === SortFilter.DateDesc}"
-            @click="updateSorting('date')"
-          >
-            By date
-            <span class="sort-direction">
-              <i
-                class="fas"
-                v-bind:class="{'fa-arrow-up': filters.sortDirections['date'] === SortOrder.Asc, 'fa-arrow-down': filters.sortDirections['date'] === SortOrder.Desc}"
-              ></i>
-            </span>
-          </button>
+                  <TSDSelect
+                    id="printer-filtering"
+                    class="my-1 mx-2"
+                    v-model="filters.state"
+                    :options="stateFilters"
+                    @input="onStateFilterChanged()"
+                  ></TSDSelect>
+                </div>
+              </div>
+              <hr />
+              <div>
+                <a
+                  v-for="printer in visiblePrinters"
+                  :key="printer.id"
+                  :href="'#' + printer.id"
+                  role="button"
+                  class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
+                  <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
+                </a>
+              </div>
+            </div>
+          </b-collapse>
+          <div class="panel-heading" role="tab" id="headingOne">
+            <div class="panel-title">
+              <button
+                class="btn btn-block shadow-none"
+                role="button"
+                @click="toggleFiltersPanel"
+              ><i class="fas fa-angle-down"></i></button>
+            </div>
+          </div>
         </div>
-        <div>
-          <button
-            class="sort-option"
-            v-bind:class="{'active': filters.sort === SortFilter.NameAsc || filters.sort === SortFilter.NameDesc}"
-            @click="updateSorting('name')"
-          >
-            By name
-            <span class="sort-direction">
-              <i
-                class="fas"
-                v-bind:class="{'fa-arrow-up': filters.sortDirections['name'] === SortOrder.Asc, 'fa-arrow-down': filters.sortDirections['name'] === SortOrder.Desc}"
-              ></i>
-            </span>
-          </button>
-        </div>
-      </div>
-      <div class="sort-wrapper mobile">
-        <TSDSelect
-          id="printer-sorting"
-          v-model="filters.sort"
-          :options="sortFilters"
-          @input="onSortFilterChanged()"
-        ></TSDSelect>
       </div>
     </div>
 
@@ -196,8 +189,8 @@ export default {
     this.SortOrder = SortOrder
     this.stateFilters = [
       {value: StateFilter.All, title: 'All Printers'},
-      {value: StateFilter.OnlineOnly, title: 'Online'},
-      {value: StateFilter.ActiveOnly, title: 'Active'},
+      {value: StateFilter.OnlineOnly, title: 'Online Printers Only'},
+      {value: StateFilter.ActiveOnly, title: 'Active Printers Only'},
     ]
     this.sortFilters = [
       {value: SortFilter.DateAsc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Asc]},
@@ -205,13 +198,6 @@ export default {
       {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
       {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
     ]
-
-    const savedSorting = getLocalPref(LocalPrefNames.SortFilter, SortFilter.DateDesc)
-    if (savedSorting === SortFilter.DateDesc) {
-      this.filters.sortDirections['date'] = SortOrder.Desc
-    } else if (savedSorting === SortFilter.NameDesc) {
-      this.filters.sortDirections['name'] = SortOrder.Desc
-    }
   },
   props: {
     isProAccount: {
@@ -238,11 +224,7 @@ export default {
             LocalPrefNames.SortFilter,
             SortFilter.DateDesc),
           SortFilter.DateDesc
-        ),
-        sortDirections: {
-          'date': SortOrder.Asc,
-          'name': SortOrder.Asc,
-        }
+        )
       },
     }
   },
@@ -283,31 +265,6 @@ export default {
 
   },
   methods: {
-    /**
-     * Handles sorting on desktop to properly update sort direction
-     * @param {String} sortBy 'date' or 'name'
-     */
-    updateSorting(sortBy) {
-      switch (sortBy) {
-        case 'date':
-          // Toggle direction if active sorting is By Date
-          if (this.filters.sort === SortFilter.DateAsc || this.filters.sort === SortFilter.DateDesc) {
-            this.filters.sortDirections['date'] = this.filters.sortDirections['date'] === SortOrder.Asc ? SortOrder.Desc : SortOrder.Asc
-          }
-          this.filters.sort = this.filters.sortDirections['date'] === SortOrder.Asc ? SortFilter.DateAsc : SortFilter.DateDesc
-          break
-        case 'name':
-          // Toggle direction if active sorting is By Name
-          if (this.filters.sort === SortFilter.NameAsc || this.filters.sort === SortFilter.NameDesc) {
-            this.filters.sortDirections['name'] = this.filters.sortDirections['name'] === SortOrder.Asc ? SortOrder.Desc : SortOrder.Asc
-          }
-          this.filters.sort = this.filters.sortDirections['name'] === SortOrder.Asc ? SortFilter.NameAsc : SortFilter.NameDesc
-          break
-      }
-
-      this.onSortFilterChanged()
-    },
-
     fetchPrinters() {
       this.loading = true
       return axios
@@ -704,80 +661,6 @@ export default {
  <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
 <style lang="sass">
 @use "~main/theme"
-
-.filters-panel
-  margin-top: 24px
-  padding: 10px 20px
-  background-color: theme.$gray-200
-  display: flex
-
-  & > div
-    // width: 50%
-    display: flex
-    align-items: center
-
-    &.mobile
-      display: none
-
-    &.filters-wrapper:not(.mobile)
-      width: 60%
-
-      & > div
-        margin-right: 8px
-    
-    &.sort-wrapper:not(.mobile)
-      justify-content: flex-end
-      width: 40%
-
-      & > div
-        margin-left: 8px
-
-        .sort-option
-          border: none
-          background: none
-          color: theme.$white
-          opacity: .5
-
-          &:hover
-            opacity: .7
-          
-          &:focus
-            border: none
-            outline: none
-
-          &.active
-            opacity: 1
-            font-weight: bold
-
-            &:hover
-              opacity: .8
-
-          .sort-direction
-            display: inline-block
-            margin-left: 2px
-
-  @media (max-width: 768px)
-    margin-top: 8px
-    padding-left: 0
-    padding-right: 0
-    background: none
-    justify-content: space-between
-
-    & > div
-      display: none
-
-      &.mobile
-        display: block
-        width: 48%
-
-        .dropdown
-          width: 100%
-
-      &.filters-wrapper.mobile
-        // width: 50%
-      
-      &.sort-wrapper.mobile
-        // width: 50%
 
 #printer-list-page
   margin-top: 1.5rem

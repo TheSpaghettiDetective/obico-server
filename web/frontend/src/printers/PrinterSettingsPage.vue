@@ -232,7 +232,9 @@
         </div>
       </section>
     </div>
-    <b-spinner v-else class="mt-5" label="Loading..."></b-spinner>
+    <div v-else class="text-center">
+      <b-spinner class="mt-5" label="Loading..."></b-spinner>
+    </div>
   </div>
 </div>
 </template>

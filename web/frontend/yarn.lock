@@ -8474,11 +8474,6 @@ vue-sweetalert2@^3.0.5:
   dependencies:
     sweetalert2 "9.x"
 
-vue-telegram-login@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/vue-telegram-login/-/vue-telegram-login-2.1.0.tgz#a3b80acb88ab031ef46503975c1415fcc5d26c5f"
-  integrity sha512-d8ZdNQpWk9SDtGjMSjXv9yHJZePVtclPbacyBdyJjBLqhStEkfjivpyNz+1w/EJt5AozdZvYNgkHLOJo00zaTA==
-
 vue-template-compiler@^2.6.11:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.6.11.tgz#c04704ef8f498b153130018993e56309d4698080"

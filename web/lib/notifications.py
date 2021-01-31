@@ -17,7 +17,6 @@ import backoff
 from lib.file_storage import save_file_obj
 from lib.utils import save_print_snapshot, last_pic_of_print
 from app.models import Printer, Print
-from lib.integrations.telegram_bot import send_notification as send_telegram_notification
 from lib.integrations.discord import send_discord_notification
 from lib.integrations.pushover import pushover_notification, PushoverException
 from lib import mobile_notifications
@@ -56,11 +55,6 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
 
     try:
         send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
-
-    try:
-        send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
     except:
         sentryClient.captureException()
 
@@ -202,37 +196,6 @@ def send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paus
     except (PushoverException) as e:
         LOGGER.error(e)
 
-
-def send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused):
-    if not printer.user.telegram_chat_id:
-        return
-
-    try:
-        photo = requests.get(rotated_jpg_url).content
-    except:
-        photo = None
-
-    action = ''
-    button_list = ['more_info']
-    if print_paused:
-        action = 'The print is paused.'
-        button_list = ['cancel', 'resume', 'do_not_ask', 'more_info']
-    elif printer.action_on_failure == Printer.PAUSE and is_warning:
-        action = 'Printer is NOT paused because The Detective is not very sure about it.'
-        button_list = ['cancel', 'more_info']
-
-    notification_text = f"""Hi {printer.user.first_name or ''},
-
-_The Spaghetti Detective_ spotted some suspicious activity on your printer *{printer.name}*.
-
-{action}"""
-
-    try:
-        send_telegram_notification(printer, notification_text, photo, buttons=button_list)
-    except requests.ConnectionError as e:
-        LOGGER.error(e)
-
-
 def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused):
     if not printer.user.slack_access_token:
         return
@@ -336,12 +299,6 @@ def send_print_notification(_print, extra_ctx={}):
         sentryClient.captureException()
 
     try:
-        if _print.printer.user.print_notification_by_telegram:
-            send_print_notification_telegram(_print)
-    except:
-        sentryClient.captureException()
-
-    try:
         if _print.printer.user.print_notification_by_discord:
             send_print_notification_discord(_print)
     except:
@@ -371,25 +328,6 @@ def send_print_notification_email(_print, extra_ctx={}):
         ctx=ctx,
         img_url=_print.poster_url,
     )
-
-
-def send_print_notification_telegram(_print):
-    if not _print.printer.user.telegram_chat_id:
-        return
-
-    try:
-        photo = requests.get(_print.poster_url).content
-    except:
-        photo = None
-
-    notification_text = f"""Hi {_print.printer.user.first_name or ''},
-
-Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
-"""
-    try:
-        send_telegram_notification(_print.printer, notification_text, photo)
-    except requests.ConnectionError as e:
-        LOGGER.error(e)
 
 
 def send_print_notification_pushbullet(_print):

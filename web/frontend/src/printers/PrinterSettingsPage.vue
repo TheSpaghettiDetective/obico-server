@@ -6,7 +6,7 @@
         <h2 class="section-title">Settings</h2>
         <div class="form-group mb-4 mt-4">
           <div class="form-label text-muted mb-2">Give your shiny new printer a name</div>
-          <saving-animation :saving="saving.name">
+          <saving-animation :errors="errorMessages.name" :saving="saving.name">
             <input
               id="id_name"
               type="text"
@@ -24,7 +24,7 @@
         <div class="failure-notification">
           <div class="form-group mt-4 mb-4">
             <div class="form-label text-muted">When a potential failure is detected:</div>
-            <saving-animation :saving="saving.action_on_failure_NONE">
+            <saving-animation :errors="errorMessages.action_on_failure_NONE" :saving="saving.action_on_failure_NONE">
               <div class="custom-control custom-radio mt-1 radio">
                 <input
                   type="radio"
@@ -38,7 +38,7 @@
                 <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
               </div>
             </saving-animation>
-            <saving-animation :saving="saving.action_on_failure_PAUSE">
+            <saving-animation :errors="errorMessages.action_on_failure_PAUSE" :saving="saving.action_on_failure_PAUSE">
               <div class="custom-control custom-radio mt-1 radio" id="action_on_failure_PAUSE">
                 <input
                   type="radio"
@@ -76,7 +76,7 @@
                   <!-- Advanced settngs: when printer is paused -->
                   <div class="form-group mt-4">
                     <div class="form-label text-muted">When print is paused,</div>
-                    <saving-animation :saving="saving.tools_off_on_pause">
+                    <saving-animation :errors="errorMessages.tools_off_on_pause" :saving="saving.tools_off_on_pause">
                       <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
                         <input
                           type="checkbox"
@@ -91,7 +91,7 @@
                         </label>
                       </div>
                     </saving-animation>
-                    <saving-animation :saving="saving.bed_off_on_pause">
+                    <saving-animation :errors="errorMessages.bed_off_on_pause" :saving="saving.bed_off_on_pause">
                       <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
                         <input
                           type="checkbox"
@@ -106,7 +106,7 @@
                         </label>
                       </div>
                     </saving-animation>
-                    <saving-animation :saving="saving.retract_on_pause">
+                    <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause">
                       <div class="form-inline my-1 checkbox-with-input">
                         <div class="custom-control custom-checkbox form-check-inline">
                           <input
@@ -136,7 +136,7 @@
                         </div>
                       </div>
                     </saving-animation>
-                    <saving-animation :saving="saving.lift_z_on_pause">
+                    <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause">
                       <div class="form-inline my-1 checkbox-with-input">
                         <div class="custom-control custom-checkbox form-check-inline">
                           <input
@@ -171,7 +171,7 @@
                   <!-- Advanced settngs: sensitivity slider -->
                   <div class="form-group sensitivity my-4">
                     <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
-                    <saving-animation :saving="saving.detective_sensitivity">
+                    <saving-animation :errors="errorMessages.detective_sensitivity" :saving="saving.detective_sensitivity">
                       <div class="my-2 sensitivity-slider">
                         <input
                           id="id_sensitivity"
@@ -263,6 +263,7 @@ export default {
       printer: null,
       printerId: '',
       saving: {},
+      errorMessages: {},
       delayedSubmit: { // Make pause before sending new value to API
         'name': {
           'delay': 1000,
@@ -376,20 +377,28 @@ export default {
     patchPrinter(propName, propValue) {
 
       const inputElem = this.getSettingsItemInput(propName, propValue)
-      this.$set(this.saving, inputElem, 'saving')
+      this.setSavingStatus(inputElem, true)
 
       // Make request to API
       return axios
         .patch(urls.printer(this.printerId), {
           [propName]: propValue
         })
-        .then(() => {
-          this.$set(this.saving, inputElem, 'done')
-        })
         .catch(err => {
-          this.$set(this.saving, inputElem, 'failed')
-          this.errorAlert()
-          console.log(err)
+          if (err.response && err.response.data && typeof err.response.data === 'object') {
+            if (err.response.data.non_field_errors) {
+              this.errorAlert(err.response.data.non_field_errors)
+            } else {
+              for (const error in err.response.data) {
+                this.errorMessages[inputElem] = err.response.data[error]
+              }
+            }
+          } else {
+            this.errorAlert()
+          }
+        })
+        .then(() => {
+          this.setSavingStatus(inputElem, false)
         })
     },
 
@@ -475,6 +484,19 @@ export default {
         default:
           return `${settingsItem}`
       }
+    },
+
+    /**
+     * Interlayer for saving status control to be able to set same saving status
+     * for 2 or more different inputs grouped to one block
+     * @param {String} propName
+     * @param {String} status
+     */
+    setSavingStatus(propName, status) {
+      if (status) {
+        delete this.errorMessages[propName]
+      }
+      this.$set(this.saving, propName, status)
     },
   }
 }

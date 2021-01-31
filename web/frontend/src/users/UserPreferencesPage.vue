@@ -515,7 +515,7 @@
       </section>
 
       <!-- Telegram -->
-      <section v-if="telegramBotName" class="telegram">
+      <section v-if="config.telegramBotName" class="telegram">
         <h2 class="section-title">Telegram</h2>
         <small class="form-text text-muted">
           Login to be notified by our Telegram bot.
@@ -533,7 +533,7 @@
           <div v-else>
             <vue-telegram-login
               mode="callback"
-              :telegram-login="telegramBotName"
+              :telegram-login="config.telegramBotName"
               @callback="onTelegramAuth" />
           </div>
         </div>
@@ -701,9 +701,9 @@ export default {
   },
 
   props: {
-    telegramBotName: {
-      default() {return null},
-      type: String
+    config: {
+      default() {return {}},
+      type: Object,
     },
   },
 

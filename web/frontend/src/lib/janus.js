@@ -1170,6 +1170,8 @@ function Janus(gatewayCallbacks) {
 					  handleRemoteJsep : function(callbacks) { prepareWebrtcPeer(handleId, callbacks) },
 					  onlocalstream : callbacks.onlocalstream,
 					  onremotestream : callbacks.onremotestream,
+					  onmute : callbacks.onmute,
+					  onunmute : callbacks.onunmute,
 					  ondata : callbacks.ondata,
 					  ondataopen : callbacks.ondataopen,
 					  oncleanup : callbacks.oncleanup,
@@ -1255,6 +1257,8 @@ function Janus(gatewayCallbacks) {
 					  handleRemoteJsep : function(callbacks) { prepareWebrtcPeer(handleId, callbacks) },
 					  onlocalstream : callbacks.onlocalstream,
 					  onremotestream : callbacks.onremotestream,
+					  onmute : callbacks.onmute,
+					  onunmute : callbacks.onunmute,
 					  ondata : callbacks.ondata,
 					  ondataopen : callbacks.ondataopen,
 					  oncleanup : callbacks.oncleanup,
@@ -1796,12 +1800,16 @@ function Janus(gatewayCallbacks) {
             pluginHandle.onremotestream(config.remoteStream)
           }
         }
-        event.track.onmute = event.track.onended
+        event.track.onmute = function(ev) {
+            pluginHandle.onmute()
+            event.track.onended(ev)
+        }
         event.track.onunmute = function(ev) {
           Janus.log('Remote track flowing again:', ev)
           try {
             config.remoteStream.addTrack(ev.target)
             pluginHandle.onremotestream(config.remoteStream)
+            pluginHandle.onunmute()
           } catch(e) {
             Janus.error(e)
           }

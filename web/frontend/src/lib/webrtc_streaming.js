@@ -66,6 +66,12 @@ function getWebRTCManager(callbacks) {
               onremotestream: function(stream) {
                 self.onRemoteStream(stream)
               },
+              onmute: function() {
+                  console.log('muted')
+              },
+              onunmute: function() {
+                  console.log('unmuted')
+              },
               ondataopen: function () {
               },
               ondata: function () {

@@ -513,8 +513,6 @@ export default {
     },
 
     onWebRTCRemoteStream(stream) {
-      Janus.debug(' ::: Got a remote stream :::')
-      Janus.debug(stream)
       Janus.attachMediaStream(this.$refs.video, stream)
 
       var videoTracks = stream.getVideoTracks()

@@ -66,11 +66,11 @@ function getWebRTCManager(callbacks) {
               onremotestream: function(stream) {
                 self.onRemoteStream(stream)
               },
-              onmute: function() {
-                  console.log('muted')
+              ontrackmuted: function() {
+                  self.onTrackMuted()
               },
-              onunmute: function() {
-                  console.log('unmuted')
+              ontrackunmuted: function() {
+                self.onTrackUnmuted()
               },
               ondataopen: function () {
               },
@@ -137,6 +137,12 @@ function getWebRTCManager(callbacks) {
       Janus.debug(' ::: Got a remote stream :::')
       Janus.debug(stream)
       this.callbacks.onRemoteStream(stream)
+    },
+    onTrackMuted() {
+      console.log('muted)')
+    },
+    onTrackUnmuted() {
+      console.log('unmuted)')
     },
     onCleanup() {
       this.callbacks.onCleanup()

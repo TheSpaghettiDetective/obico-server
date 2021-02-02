@@ -72,6 +72,9 @@ function getWebRTCManager(callbacks) {
               ontrackunmuted: function() {
                 self.onTrackUnmuted()
               },
+              slowLink: function(uplink, lost) {
+                self.onSlowLink(lost)
+              },
               ondataopen: function () {
               },
               ondata: function () {
@@ -143,6 +146,9 @@ function getWebRTCManager(callbacks) {
     },
     onTrackUnmuted() {
       console.log('unmuted)')
+    },
+    onSlowLink(lost) {
+      console.log('slow link', lost)
     },
     onCleanup() {
       this.callbacks.onCleanup()

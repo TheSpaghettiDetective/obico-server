@@ -45,11 +45,11 @@
       </div>
 
       <div class="card-img-top webcam_container">
-        <div class="slow-link-wrapper" @click="showSlowLinkDescription();">
-          <div class="icon">
+        <div class="slow-link-wrapper" ref="slowLinkWrapper" @click="showSlowLinkDescription();">
+          <div class="icon bg-warning">
             <i class="fas fa-exclamation"></i>
           </div>
-          <div class="text">Video frames dropped</div>
+          <div class="text text-warning" ref="slowLinkText">Video frames dropped</div>
         </div>
         <div v-show="trackMuted" class="muted-status-wrapper">
           <div class="text">Buffering...</div>
@@ -328,8 +328,30 @@ export default {
     PrinterActions,
     StatusTemp,
   },
+
   created() {
         this.webrtc = null
+  },
+
+  mounted() {
+    if (this.isProAccount) {
+      Janus.init({
+        debug: 'all',
+        callback: this.onJanusInitalized
+      })
+    }
+
+    ifvisible.on('blur', () => {
+      if (this.webrtc) {
+        this.webrtc.stopStream()
+      }
+    })
+
+    ifvisible.on('focus', () => {
+      if (this.webrtc) {
+        this.webrtc.startStream()
+      }
+    })
   },
 
   props: {
@@ -545,7 +567,7 @@ export default {
       this.isVideoVisible = false
     },
 
-    /** Slow link handling */
+    /** Video warning handling */
 
     onSlowLink(loss) {
       this.slowLinkLoss += loss
@@ -571,26 +593,23 @@ export default {
     },
 
     showSlowLinkAlert() {
-      const widthTransitionLen = 500 // value from css
-      const hideWarningTextAFter = 3000 // configurable value
-
-      const slowLinkBlock = document.querySelector('.slow-link-wrapper')
-      const slowLinkText = slowLinkBlock.querySelector('.text')
-
-      if (slowLinkBlock.style.display === 'block') {
+      if (this.$refs.slowLinkWrapper.style.display === 'block') {
         return
       }
 
-      slowLinkBlock.style.display = 'block'
+      const widthTransitionLen = 500 // value from css
+      const hideWarningTextAFter = 3000 // configurable value
+
+      this.$refs.slowLinkWrapper.style.display = 'block'
 
       // Temporary show warning text
       this.slowLinkAnimationTimeout = setTimeout(() => {
-        slowLinkBlock.style.width = '176px'
+        this.$refs.slowLinkWrapper.style.width = '176px'
         this.slowLinkAnimationTimeout = setTimeout(() => {
-          slowLinkText.style.display = 'block'
+          this.$refs.slowLinkText.style.display = 'block'
           this.slowLinkAnimationTimeout = setTimeout(() => {
-            slowLinkText.style.display = 'none'
-            slowLinkBlock.style.width = '0'
+            this.$refs.slowLinkText.style.display = 'none'
+            this.$refs.slowLinkWrapper.style.width = '0'
             this.slowLinkAnimationTimeout = null
           }, hideWarningTextAFter)
         }, widthTransitionLen)
@@ -598,21 +617,15 @@ export default {
     },
 
     hideSlowLinkAlert() {
-      const slowLinkBlock = document.querySelector('.slow-link-wrapper')
-      const slowLinkText = slowLinkBlock.querySelector('.text')
-
       if (this.slowLinkAnimationTimeout) {
         console.log('clear timeout - cancel all animations')
         clearTimeout(this.slowLinkAnimationTimeout)
-        slowLinkText.style.display = 'none'
-        slowLinkBlock.style.width = 0
+        this.$refs.slowLinkText.style.display = 'none'
+        this.$refs.slowLinkWrapper.style.width = 0
       }
 
-      slowLinkBlock.style.display = 'none'
+      this.$refs.slowLinkWrapper.style.display = 'none'
     },
-    /** End of slow link handling */
-
-    /** Muted Status handling */
 
     showMutedStatusDescription(event) {
       event.preventDefault()
@@ -620,42 +633,22 @@ export default {
       this.$swal({
         title: 'Webcam stream buffering',
         html: `
-          <p>When you see the messaging about webcam stream is "buffering" occassionaly, you can just reload the page. If this message repeatedly appears, it usually indicates a constricted video stream on <strong>your Raspberry Pi, not your phone</strong>.</p>
+          <p>When you see the messaging about webcam stream is "buffering" occassionaly, you can just reload the page. If this message repeatedly appears, it usually indicates a constricted video stream on <strong>your Raspberry Pi, not your computer</strong>.</p>
           <p>The most common reasons are:</p>
           <ul>
             <li>Camera resolution is set too high.</li>
-            <li>Camera framerate is set too high. This is only when you set <a href="/docs/streaming-compatibility-mode/">the compatibility mode</a> to "always".</li>
+            <li>Camera framerate is set too high. This is only when you set <a target="_blank" href="https://www.thespaghettidetective.com/docs/streaming-compatibility-mode/">the compatibility mode</a> to "always".</li>
             <li>The upload speed of your Raspberry Pi is too low.</li>
           </ul>
           <br>
-          <p>You should leave the compatibility mode to "auto", unless you have <a href="/docs/streaming-compatibility-mode/#are-there-situations-when-i-want-to-always-stream-in-compatibility-mode">a good reason to it to "always".</a></p>
-          <p>As a rule of thumb, for every 300k-pixel resolution (640x480), you need to have 1.5Mbps upload bandwidth to stream smoothly at 25fps. This means if you set the webcam resolution to 1024x768 (~800k pixels), you need to have 4.5Mbps upload bandwidth. Also remember that the upload bandwidth of your Raspberry Pi may not be the same as your computer, even if they are connected to the same Wifi network. This is because Raspberry Pi's Wifi chip is weaker than the most computers'.</p>
+          <p>You should leave the compatibility mode to "auto", unless you have <a target="_blank" href="https://www.thespaghettidetective.com/docs/streaming-compatibility-mode/#are-there-situations-when-i-want-to-always-stream-in-compatibility-mode">a good reason to it to "always".</a></p>
+          <p>As a rule of thumb, for every 300k-pixel resolution (640x480), you need to have 1.5Mbps upload bandwidth to stream smoothly at 25fps. This means if you set the webcam resolution to 1024x768 (~800k pixels), you need to have 4.5Mbps upload bandwidth. Also remember that the upload bandwidth of your Raspberry Pi may not be the same as your computer, even if they are connected to the same Wi-Fi network. This is because Raspberry Pi's Wi-Fi chip is weaker than the most computers'.</p>
         `,
         showCloseButton: true,
       })
     }
-    /** End of Muted Status handling */
+    /** End of video warning handling */
   },
-  mounted() {
-    if (this.isProAccount) {
-      Janus.init({
-        debug: 'all',
-        callback: this.onJanusInitalized
-      })
-    }
-
-    ifvisible.on('blur', () => {
-      if (this.webrtc) {
-        this.webrtc.stopStream()
-      }
-    })
-
-    ifvisible.on('focus', () => {
-      if (this.webrtc) {
-        this.webrtc.startStream()
-      }
-    })
-  }
 }
 </script>
 
@@ -693,7 +686,6 @@ export default {
   top: 10px
   left: 10px
   padding-left: $height
-  color: theme.$yellow
   line-height: $height
   font-size: 14px
   width: 0
@@ -711,7 +703,6 @@ export default {
     width: 20px
     height: 20px
     border-radius: 10px
-    background-color: theme.$yellow
     position: absolute
     top: 2px
     left: 2px

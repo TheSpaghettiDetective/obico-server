@@ -45,6 +45,12 @@
       </div>
 
       <div class="card-img-top webcam_container">
+        <div class="slow-link-wrapper" @click="showSlowLinkDescription();">
+          <div class="icon">
+            <i class="fas fa-exclamation"></i>
+          </div>
+          <div class="text">Video frames dropped</div>
+        </div>
         <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
           <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
           <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -527,6 +533,50 @@ export default {
     onWebRTCCleanup() {
       this.isVideoVisible = false
     },
+
+    showSlowLinkDescription() {
+      this.$swal({
+        title: 'Video frames dropped',
+        html: `
+          <P>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your phone. The bottleneck can be anywhere but in most cases <Text bold>it's either your phone's internet connection, or your Raspberry Pi's</Text>.</P>
+          <P>You can safely ignore this warning if you know your phone is connected to a slow network, like a 3G network.</P>
+          <P>However, if you keep on getting this warning, even if your phone is connected to the same network as your Pi, take these steps to trouble-shoot the problem:</P>
+          <P>1. Open <Link url="https://app.thespaghettidetective.com/" >The Spaghetti Detective web app </Link> on a computer. If the streaming is also laggy, it's most likely the connection of your Pi. Follow <Link url={websiteUrl('/docs/webcam-feed-is-laggy/#4-the-raspberry-pi-doesnt-have-solid-internet-connection')}>this guide</Link> to fix it.</P>
+          <P>2. If the webcam stream is smooth on your computer, open <Link url="https://app.thespaghettidetective.com/" >The Spaghetti Detective web app </Link> in a browser on this phone, while it is connected to the same network as your Pi. If the webcam stream is laggy in the browser, you need to trouble-shoot your phone's Wifi connection, probably by moving closer to the Wifi router.</P>
+          <P>3. If the webcam stream in the browser on this phone, but you keep on getting this warning in the app, please  <Link url={websiteUrl('/docs/contact-us-for-support/')} >ask us for help</Link>.</P>
+        `,
+        showCloseButton: true,
+      }).then(() => {
+        this.hideSlowLinkAlert()
+      })
+    },
+
+    showSlowLinkAlert() {
+      const widthTransitionLen = 500 // value from css
+      const hideWarningTextAFter = 3000 // configurable value
+
+      const slowLinkBlock = document.querySelector('.slow-link-wrapper')
+      const slowLinkText = slowLinkBlock.querySelector('.text')
+
+      slowLinkBlock.style.display = 'block'
+
+      // Temporary show warning text
+      setTimeout(() => {
+        slowLinkBlock.style.width = '176px'
+        setTimeout(() => {
+          slowLinkText.style.display = 'block'
+          setTimeout(() => {
+            slowLinkText.style.display = 'none'
+            slowLinkBlock.style.width = '0'
+          }, hideWarningTextAFter)
+        }, widthTransitionLen)
+      }, 1000)
+    },
+
+    hideSlowLinkAlert() {
+      const slowLinkBlock = document.querySelector('.slow-link-wrapper')
+      slowLinkBlock.style.display = 'none'
+    },
   },
   mounted() {
     if (this.isProAccount) {
@@ -575,4 +625,40 @@ export default {
   margin-right: 12px
   margin-bottom: 6px
 
+.slow-link-wrapper
+  $height: 24px
+  position: absolute
+  height: $height
+  z-index: 10
+  background-color: theme.$white
+  border-radius: $height
+  top: 10px
+  left: 10px
+  padding-left: $height
+  color: theme.$yellow
+  line-height: $height
+  font-size: 14px
+  width: 0
+  transition: width .5s linear
+  display: none
+  
+  &:hover
+    cursor: pointer
+  
+  .text
+    margin-left: 5px
+    display: none
+
+  .icon
+    width: 20px
+    height: 20px
+    border-radius: 10px
+    background-color: theme.$yellow
+    position: absolute
+    top: 2px
+    left: 2px
+    font-size: 12px
+    line-height: 20px
+    text-align: center
+    color: theme.$white
 </style>

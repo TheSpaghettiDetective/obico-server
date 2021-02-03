@@ -159,7 +159,7 @@ def get_rotated_jpg_url(_print):
     if not need_rotation:
         return jpg_url
 
-    jpg_path = re.search('tsd-pics/(raw|tagged/\d+/\d+/[\d\.]+.jpg)', jpg_url)
+    jpg_path = re.search('tsd-pics/(raw/\d+/\d+/[\d\.]+.jpg|tagged/\d+/\d+/[\d\.]+.jpg)', jpg_url)
     return save_print_snapshot(printer,
                         jpg_path.group(1),
                         f'snapshots/{printer.id}/{_print.id}_rotated.jpg',

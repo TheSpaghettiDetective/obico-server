@@ -327,6 +327,7 @@ export default {
   created() {
         this.webrtc = null
   },
+
   props: {
     printer: {
       type: Object,
@@ -513,6 +514,7 @@ export default {
       this.webrtc = webrtc.getWebRTCManager({
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
+        onSlowLink: this.onSlowLink,
       })
 
       this.openWebRTCForPrinter()
@@ -534,16 +536,20 @@ export default {
       this.isVideoVisible = false
     },
 
+    /** Slow link handling */
+
+    onSlowLink(loss) {
+      this.slowLinkLoss += loss
+    },
+
     showSlowLinkDescription() {
       this.$swal({
         title: 'Video frames dropped',
         html: `
-          <P>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your phone. The bottleneck can be anywhere but in most cases <Text bold>it's either your phone's internet connection, or your Raspberry Pi's</Text>.</P>
-          <P>You can safely ignore this warning if you know your phone is connected to a slow network, like a 3G network.</P>
-          <P>However, if you keep on getting this warning, even if your phone is connected to the same network as your Pi, take these steps to trouble-shoot the problem:</P>
-          <P>1. Open <Link url="https://app.thespaghettidetective.com/" >The Spaghetti Detective web app </Link> on a computer. If the streaming is also laggy, it's most likely the connection of your Pi. Follow <Link url={websiteUrl('/docs/webcam-feed-is-laggy/#4-the-raspberry-pi-doesnt-have-solid-internet-connection')}>this guide</Link> to fix it.</P>
-          <P>2. If the webcam stream is smooth on your computer, open <Link url="https://app.thespaghettidetective.com/" >The Spaghetti Detective web app </Link> in a browser on this phone, while it is connected to the same network as your Pi. If the webcam stream is laggy in the browser, you need to trouble-shoot your phone's Wifi connection, probably by moving closer to the Wifi router.</P>
-          <P>3. If the webcam stream in the browser on this phone, but you keep on getting this warning in the app, please  <Link url={websiteUrl('/docs/contact-us-for-support/')} >ask us for help</Link>.</P>
+          <p>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your computer. The bottleneck can be anywhere but in most cases <Text bold>it's either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
+          <p>Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.</p>
+          <p>If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as <b>low latency (ping)</b>.</p>
+          <p>Check out <a target="_blank" href="https://www.thespaghettidetective.com/docs/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
         `,
         showCloseButton: true,
       }).then(() => {
@@ -577,6 +583,7 @@ export default {
       const slowLinkBlock = document.querySelector('.slow-link-wrapper')
       slowLinkBlock.style.display = 'none'
     },
+    /** End of slow link handling */
   },
   mounted() {
     if (this.isProAccount) {
@@ -639,12 +646,12 @@ export default {
   line-height: $height
   font-size: 14px
   width: 0
-  transition: width .5s linear
+  transition: width .2s linear
   display: none
-  
+
   &:hover
     cursor: pointer
-  
+
   .text
     margin-left: 5px
     display: none

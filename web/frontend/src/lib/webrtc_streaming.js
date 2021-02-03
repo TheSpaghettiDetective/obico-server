@@ -148,7 +148,7 @@ function getWebRTCManager(callbacks) {
       console.log('unmuted)')
     },
     onSlowLink(lost) {
-      console.log('slow link', lost)
+      this.callbacks.onSlowLink(lost)
     },
     onCleanup() {
       this.callbacks.onCleanup()

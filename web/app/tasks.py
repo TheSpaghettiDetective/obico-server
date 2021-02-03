@@ -256,15 +256,15 @@ def clean_up_print_pics(_print):
 
 
 def generate_print_poster(_print):
-    unrotated_jpg_url = save_print_snapshot(_print,
+    unrotated_jpg_url = save_print_snapshot(_print.printer,
                             last_pic_of_print(_print, 'raw'),
-                            f'snapshots/{_print.printer.id}/{_print.id}/{str(timezone.now().timestamp())}_unrotated.jpg',
+                            f'snapshots/{_print.printer.id}/{_print.id}_unrotated.jpg',
                             rotated=False,
                             to_long_term_storage=False)
     if unrotated_jpg_url:
         cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
-    rotated_jpg_url = save_print_snapshot(_print,
+    rotated_jpg_url = save_print_snapshot(_print.printer,
                             last_pic_of_print(_print, 'raw'),
                             f'private/{_print.id}_poster.jpg',
                             to_container=settings.TIMELAPSE_CONTAINER,
@@ -316,7 +316,7 @@ def select_print_shots_for_feedback(_print):
         return sorted(selected_timestamps)
 
     for ts in highest_7_predictions(cache.print_highest_predictions_get(_print.id)):
-        rotated_jpg_url = save_print_snapshot(_print,
+        rotated_jpg_url = save_print_snapshot(_print.printer,
                             f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
                             f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
                             rotated=True,

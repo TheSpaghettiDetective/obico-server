@@ -15,8 +15,6 @@ from PIL import Image
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
 # Return dict if not empty, otherwise None.
-
-
 def dict_or_none(dict_value):
     return dict_value if dict_value else None
 
@@ -60,7 +58,7 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
         return None
 
@@ -68,12 +66,11 @@ def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_con
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
     tmp_img = Image.open(img_bytes)
-    printer_settings = _print.printer.settings
-    if printer_settings['webcam_flipH']:
+    if printer.settings['webcam_flipH']:
         tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
-    if printer_settings['webcam_flipV']:
+    if printer.settings['webcam_flipV']:
         tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
-    if printer_settings['webcam_rotate90']:
+    if printer.settings['webcam_rotate90']:
         tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
     img_bytes = io.BytesIO()

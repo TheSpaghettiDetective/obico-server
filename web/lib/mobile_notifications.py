@@ -5,7 +5,7 @@ import firebase_admin
 from django.utils.timezone import now
 from raven.contrib.django.raven_compat.models import client as sentryClient
 
-from .utils import shortform_duration, shortform_localtime
+from .utils import save_print_snapshot, shortform_duration, shortform_localtime
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
@@ -16,10 +16,16 @@ firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certific
 
 
 def send_if_needed(_print, op_event, op_data):
-    if op_event.get('event_type') in PRINT_EVENTS:
-        send_print_event(_print, op_event.get('event_type'))
+    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1:
+        return
 
-    send_print_progress(_print, op_data)
+    rotated_jpg_url = None      # Cache it as it's expensive to generate
+    if op_event.get('event_type') in PRINT_EVENTS:
+        rotated_jpg_url = get_rotated_jpg_url(_print)
+        send_print_event(_print, op_event.get('event_type'), rotated_jpg_url)
+
+    send_print_progress(_print, op_data, rotated_jpg_url)
+
 
 def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
     for mobile_device in MobileDevice.objects.filter(user=printer.user):
@@ -34,7 +40,7 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
         send_to_device(data, mobile_device)
 
 
-def send_print_event(_print, event_type):
+def send_print_event(_print, event_type, rotated_jpg_url):
     for mobile_device in MobileDevice.objects.filter(user_id=_print.user_id):
         data = dict(
             type='printEvent',
@@ -45,8 +51,8 @@ def send_print_event(_print, event_type):
             body=_print.filename,
             picUrl='',
         )
-        if _print.printer.pic:
-            data['picUrl'] = _print.printer.pic.get('img_url', '')
+        if rotated_jpg_url:
+            data['picUrl'] = rotated_jpg_url
 
         send_to_device(data, mobile_device)
 
@@ -71,7 +77,9 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
         send_to_device(data, mobile_device)
 
 
-def send_print_progress(_print, op_data):
+def send_print_progress(_print, op_data, existed_rotated_jpg_url):
+    rotated_jpg_url = existed_rotated_jpg_url       # Cache it as it's expensive to generate
+
     pushed_platforms = set()
 
     for mobile_device in MobileDevice.objects.filter(user=_print.user):
@@ -113,8 +121,10 @@ def send_print_progress(_print, op_data):
             else:
                 data['title'] += ' | 🔴'
 
-        if printer.pic:
-            data['picUrl'] = printer.pic.get('img_url', '')
+        if not rotated_jpg_url:
+            rotated_jpg_url = get_rotated_jpg_url(_print)
+        if rotated_jpg_url:
+            data['picUrl'] = rotated_jpg_url
 
         send_to_device(data, mobile_device)
 
@@ -138,6 +148,23 @@ def send_to_device(msg, mobile_device):
     except:
         import traceback; traceback.print_exc()
         sentryClient.captureException()
+
+def get_rotated_jpg_url(_print):
+    printer = _print.printer
+    if not printer.pic or not printer.pic.get('img_url'):
+        return None
+    jpg_url = printer.pic.get('img_url')
+
+    need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
+    if not need_rotation:
+        return jpg_url
+
+    jpg_path = re.search('tsd-pics/(raw|tagged/\d+/\d+/[\d\.]+.jpg)', jpg_url)
+    return save_print_snapshot(printer,
+                        jpg_path.group(1),
+                        f'snapshots/{printer.id}/{_print.id}_rotated.jpg',
+                        rotated=True,
+                        to_long_term_storage=False)
 
 if __name__ == '__main__':
     import json

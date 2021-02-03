@@ -142,10 +142,10 @@ function getWebRTCManager(callbacks) {
       this.callbacks.onRemoteStream(stream)
     },
     onTrackMuted() {
-      console.log('muted)')
+      this.callbacks.onTrackMuted()
     },
     onTrackUnmuted() {
-      console.log('unmuted)')
+        this.callbacks.onTrackUnmuted()
     },
     onSlowLink(lost) {
       this.callbacks.onSlowLink(lost)

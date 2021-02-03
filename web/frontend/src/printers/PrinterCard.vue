@@ -356,6 +356,7 @@ export default {
       },
       stickyStreamingSrc: null,
       isVideoVisible: false,
+      slowLinkAnimationTimeout: null,
     }
   },
   computed: {
@@ -544,6 +545,10 @@ export default {
 
     onSlowLink(loss) {
       this.slowLinkLoss += loss
+
+      if (this.slowLinkLoss > 50) {
+        this.showSlowLinkAlert()
+      }
     },
 
     showSlowLinkDescription() {
@@ -568,16 +573,21 @@ export default {
       const slowLinkBlock = document.querySelector('.slow-link-wrapper')
       const slowLinkText = slowLinkBlock.querySelector('.text')
 
+      if (slowLinkBlock.style.display === 'block') {
+        return
+      }
+
       slowLinkBlock.style.display = 'block'
 
       // Temporary show warning text
-      setTimeout(() => {
+      this.slowLinkAnimationTimeout = setTimeout(() => {
         slowLinkBlock.style.width = '176px'
-        setTimeout(() => {
+        this.slowLinkAnimationTimeout = setTimeout(() => {
           slowLinkText.style.display = 'block'
-          setTimeout(() => {
+          this.slowLinkAnimationTimeout = setTimeout(() => {
             slowLinkText.style.display = 'none'
             slowLinkBlock.style.width = '0'
+            this.slowLinkAnimationTimeout = null
           }, hideWarningTextAFter)
         }, widthTransitionLen)
       }, 1000)
@@ -585,6 +595,15 @@ export default {
 
     hideSlowLinkAlert() {
       const slowLinkBlock = document.querySelector('.slow-link-wrapper')
+      const slowLinkText = slowLinkBlock.querySelector('.text')
+
+      if (this.slowLinkAnimationTimeout) {
+        console.log('clear timeout - cancel all animations')
+        clearTimeout(this.slowLinkAnimationTimeout)
+        slowLinkText.style.display = 'none'
+        slowLinkBlock.style.width = 0
+      }
+
       slowLinkBlock.style.display = 'none'
     },
     /** End of slow link handling */

@@ -51,6 +51,10 @@
           </div>
           <div class="text">Video frames dropped</div>
         </div>
+        <div class="muted-status-wrapper">
+            <div class="text">Buffering...</div>
+            <a href="#" @click="showMutedStatusDescription($event)">Why did I get stuck?</a>
+          </div>
         <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
           <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
           <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -577,6 +581,37 @@ export default {
       const slowLinkBlock = document.querySelector('.slow-link-wrapper')
       slowLinkBlock.style.display = 'none'
     },
+
+    showMutedStatus() {
+      const mutedStatusBlock = document.querySelector('.muted-status-wrapper')
+      mutedStatusBlock.style.display = 'block'
+    },
+
+    hideMutedStatus() {
+      const mutedStatusBlock = document.querySelector('.muted-status-wrapper')
+      mutedStatusBlock.style.display = 'none'
+    },
+
+    showMutedStatusDescription(event) {
+      event.preventDefault()
+
+      this.$swal({
+        title: 'Webcam stream buffering',
+        html: `
+          <p>When you see the messaging about webcam stream is "buffering" occassionaly, you can just reload the page. If this message repeatedly appears, it usually indicates a constricted video stream on <strong>your Raspberry Pi, not your phone</strong>.</p>
+          <p>The most common reasons are:</p>
+          <ul>
+            <li>Camera resolution is set too high.</li>
+            <li>Camera framerate is set too high. This is only when you set <a href="/docs/streaming-compatibility-mode/">the compatibility mode</a> to "always".</li>
+            <li>The upload speed of your Raspberry Pi is too low.</li>
+          </ul>
+          <br>
+          <p>You should leave the compatibility mode to "auto", unless you have <a href="/docs/streaming-compatibility-mode/#are-there-situations-when-i-want-to-always-stream-in-compatibility-mode">a good reason to it to "always".</a></p>
+          <p>As a rule of thumb, for every 300k-pixel resolution (640x480), you need to have 1.5Mbps upload bandwidth to stream smoothly at 25fps. This means if you set the webcam resolution to 1024x768 (~800k pixels), you need to have 4.5Mbps upload bandwidth. Also remember that the upload bandwidth of your Raspberry Pi may not be the same as your computer, even if they are connected to the same Wifi network. This is because Raspberry Pi's Wifi chip is weaker than the most computers'.</p>
+        `,
+        showCloseButton: true,
+      })
+    }
   },
   mounted() {
     if (this.isProAccount) {
@@ -661,4 +696,15 @@ export default {
     line-height: 20px
     text-align: center
     color: theme.$white
+  
+.muted-status-wrapper
+  position: absolute
+  width: 100%
+  z-index: 10
+  bottom: 0
+  left: 0
+  background-color: rgba(0,0,0,.6)
+  text-align: center
+  padding: 10px 0
+  display: none
 </style>

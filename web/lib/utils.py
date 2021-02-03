@@ -4,11 +4,13 @@ from django.conf import settings
 import subprocess
 import tempfile
 import os
+import io
 import shutil
 from operator import itemgetter
 from django.utils import timezone
 import pytz
 from datetime import timedelta
+from PIL import Image
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
@@ -62,25 +64,22 @@ def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_con
     if not input_path:
         return None
 
-    to_dir = tempfile.mkdtemp()
-    shutil.rmtree(to_dir, ignore_errors=True)
-    os.mkdir(to_dir)
-    temp_jpg = os.path.join(to_dir, 'unrotated.jpg')
-    with open(temp_jpg, 'wb') as file_obj:
-        retrieve_to_file_obj(input_path, file_obj, settings.PICS_CONTAINER, long_term_storage=False)
+    img_bytes = io.BytesIO()
+    retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
+    img_bytes.seek(0)
+    tmp_img = Image.open(img_bytes)
+    printer_settings = _print.printer.settings
+    if printer_settings['webcam_flipH']:
+        tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
+    if printer_settings['webcam_flipV']:
+        tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
+    if printer_settings['webcam_rotate90']:
+        tmp_img = tmp_img.transpose(Image.Image.ROTATE_90)
 
-    if not rotated:
-        dest_jpg = temp_jpg
-    else:
-        ffmpeg_extra_options = orientation_to_ffmpeg_options(_print.printer.settings)
-        dest_jpg = os.path.join(to_dir, 'rotated.jpg')
-        cmd = f'ffmpeg -y -i {temp_jpg} {ffmpeg_extra_options} {dest_jpg}'
-        subprocess.run(cmd.split(), check=True)
+    img_bytes = io.BytesIO()
+    tmp_img.save(img_bytes, "JPEG")
 
-    with open(dest_jpg, 'rb') as file_obj:
-        _, dest_jpg_url = save_file_obj(dest_jpg_path, file_obj, to_container, long_term_storage=to_long_term_storage)
-    shutil.rmtree(to_dir, ignore_errors=True)
-
+    _, dest_jpg_url = save_file_obj(dest_jpg_path, img_bytes, to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
 def shortform_duration(total_seconds):

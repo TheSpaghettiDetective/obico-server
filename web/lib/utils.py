@@ -74,7 +74,7 @@ def save_print_snapshot(_print, input_path, dest_jpg_path, rotated=False, to_con
     if printer_settings['webcam_flipV']:
         tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
     if printer_settings['webcam_rotate90']:
-        tmp_img = tmp_img.transpose(Image.Image.ROTATE_90)
+        tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
     img_bytes = io.BytesIO()
     tmp_img.save(img_bytes, "JPEG")

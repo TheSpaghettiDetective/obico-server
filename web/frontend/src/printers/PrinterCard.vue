@@ -544,8 +544,8 @@ export default {
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
-        onTrackMuted: this.trackMuted = true,
-        onTrackUnmuted: this.trackMuted = false,
+        onTrackMuted: () => this.trackMuted = true,
+        onTrackUnmuted: () => this.trackMuted = false,
       })
 
       this.openWebRTCForPrinter()

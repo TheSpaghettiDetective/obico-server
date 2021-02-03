@@ -51,10 +51,10 @@
           </div>
           <div class="text">Video frames dropped</div>
         </div>
-        <div class="muted-status-wrapper">
-            <div class="text">Buffering...</div>
-            <a href="#" @click="showMutedStatusDescription($event)">Why did I get stuck?</a>
-          </div>
+        <div v-show="trackMuted" class="muted-status-wrapper">
+          <div class="text">Buffering...</div>
+          <a href="#" @click="showMutedStatusDescription($event)">Why did I get stuck?</a>
+        </div>
         <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
           <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
           <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -356,7 +356,9 @@ export default {
       },
       stickyStreamingSrc: null,
       isVideoVisible: false,
+      slowLinkLoss: 0,
       slowLinkAnimationTimeout: null,
+      trackMuted: true,
     }
   },
   computed: {
@@ -520,6 +522,8 @@ export default {
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
+        onTrackMuted: this.trackMuted = true,
+        onTrackUnmuted: this.trackMuted = false,
       })
 
       this.openWebRTCForPrinter()
@@ -609,16 +613,6 @@ export default {
     /** End of slow link handling */
 
     /** Muted Status handling */
-
-    showMutedStatus() {
-      const mutedStatusBlock = document.querySelector('.muted-status-wrapper')
-      mutedStatusBlock.style.display = 'block'
-    },
-
-    hideMutedStatus() {
-      const mutedStatusBlock = document.querySelector('.muted-status-wrapper')
-      mutedStatusBlock.style.display = 'none'
-    },
 
     showMutedStatusDescription(event) {
       event.preventDefault()
@@ -725,7 +719,7 @@ export default {
     line-height: 20px
     text-align: center
     color: theme.$white
-  
+
 .muted-status-wrapper
   position: absolute
   width: 100%
@@ -735,5 +729,4 @@ export default {
   background-color: rgba(0,0,0,.6)
   text-align: center
   padding: 10px 0
-  display: none
 </style>

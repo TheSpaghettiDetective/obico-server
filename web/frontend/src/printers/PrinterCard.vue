@@ -299,7 +299,7 @@ import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
 import Gauge from '@common/Gauge'
 import printerStockImgSrc from '@static/img/3d_printer.png'
-import loadingIconSrc from '@static/img/loading.gif'
+import loadingIconSrc from '@static/img/tail-spin-lg.svg'
 
 import { toDuration } from '@lib/printers.js'
 import { getLocalPref, setLocalPref } from '@lib/pref'

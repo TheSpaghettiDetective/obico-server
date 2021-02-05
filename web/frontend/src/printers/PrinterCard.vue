@@ -393,3 +393,4 @@ export default {
   width: 20px
   margin-right: 12px
   margin-bottom: 6px
+</style>

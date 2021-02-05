@@ -6,10 +6,11 @@
       </div>
       <div class="text text-warning" ref="slowLinkText">Video frames dropped</div>
     </div>
-    <div v-show="!videoPlaying" class="muted-status-wrapper">
+    <div v-show="trackMuted" class="muted-status-wrapper">
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why did I get stuck?</a>
     </div>
+    <img v-show="trackMuted || videoLoading" class="loading-icon" :src="require('@static/img/tail-spin.svg')" />
     <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
       <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
       <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -42,7 +43,7 @@
             :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
-            :poster="poster"
+            :poster="taggedSrc"
             autoplay muted playsinline
             @loadstart="onLoadStart()"
             @canplay="onCanPlay()"
@@ -60,7 +61,6 @@ import ifvisible from 'ifvisible'
 import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
 import printerStockImgSrc from '@static/img/3d_printer.png'
-import loadingIconSrc from '@static/img/tail-spin-lg.svg'
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
@@ -108,12 +108,12 @@ export default {
 
   data() {
     return {
-      poster: loadingIconSrc,
       stickyStreamingSrc: null,
       isVideoVisible: false,
       slowLinkLoss: 0,
       slowLinkAnimationTimeout: null,
-      videoPlaying: false,
+      trackMuted: false,
+      videoLoading: false,
     }
   },
 
@@ -164,10 +164,10 @@ export default {
       this.stickyStreamingSrc = src
     },
     onCanPlay() {
-      this.poster = ''
+      this.videoLoading = false
     },
     onLoadStart() {
-      this.poster = loadingIconSrc
+      this.videoLoading = true
     },
 
     openWebRTCForPrinter() {
@@ -194,8 +194,8 @@ export default {
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
-        onTrackMuted: () => this.videoPlaying = false,
-        onTrackUnmuted: () => this.videoPlaying = true,
+        onTrackMuted: () => this.trackMuted = true,
+        onTrackUnmuted: () => this.trackMuted = false,
       })
 
       this.openWebRTCForPrinter()
@@ -304,6 +304,14 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
+
+.loading-icon
+  position: absolute
+  width: 3rem
+  height: 3rem
+  top: calc(50% - 1.5rem)
+  left: calc(50% - 1.5rem)
+  z-index: 100
 
 .streaming-switch
   background-color: rgba(255, 255, 255, 0.4)

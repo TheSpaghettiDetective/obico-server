@@ -2,44 +2,50 @@
   <div>
     <div class="row justify-content-center">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
-      <printer-card
-        ref="printer"
-        v-if="printer"
-        :printer="printer"
-        :is-pro-account=true
-        :share-token="shareToken"
-        @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
-        @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
-        @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
-        @PrinterActionPauseClicked="onPrinterActionPauseClicked(printer.id)"
-        @PrinterActionResumeClicked="onPrinterActionResumeClicked($event, printer.id)"
-        @PrinterActionCancelClicked="onPrinterActionCancelClicked(printer.id)"
-        @PrinterActionConnectClicked="onPrinterActionConnectClicked(printer.id)"
-        @PrinterActionStartClicked="onPrinterActionStartClicked(printer.id)"
-        @PrinterActionControlClicked="onPrinterActionControlClicked(printer.id)"
-        @TempEditClicked="onTempEditClicked(printer.id, $event)"
-      ></printer-card>
+      <div v-if="printer"
+        class="col-sm-12 col-lg-6 printer-card"
+      >
+        <div class="card">
+          <div class="card-header">
+            <div>{{ printer.name }}</div>
+          </div>
+          <streaming-box
+            :printer="printer"
+            :is-pro-account=true
+            :shareToken="shareToken"
+          />
+          <div class="p-3 p-md-5">
+            <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
+            <a
+              href="https://www.thespaghettidetective.com/">
+              <img class="logo-img"
+                :src="require('@static/img/logo-inverted.png')" />
+            </a>
+            <hr />
+            <br /><br />
+            <a class="btn btn-block btn-primary" href="/accounts/signup/">Get OctoPrint remote monitoring/access for FREE</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import split from 'lodash/split'
-import Janus from '@lib/janus'
 
 import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
 import PrinterWebSocket from '@lib/printer_ws'
-
-import PrinterCard from './PrinterCard.vue'
+import StreamingBox from '@common/StreamingBox'
 
 export default {
   name: 'SharedPrinterPage',
   components: {
-    PrinterCard,
+    StreamingBox,
   },
-  created() {
+  created(){
     this.printerWs = PrinterWebSocket()
     this.webrtc = null
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
@@ -62,10 +68,6 @@ export default {
         this.loading = false
       }
     )
-    Janus.init({
-      debug: 'all',
-      callback: this.onJanusInitalized
-    })
   }
 
 }
@@ -81,4 +83,7 @@ export default {
 .menu-bar
   background-color: darken(theme.$color-bg-dark, 10)
   padding: 0.75rem
+
+.logo-img
+  width: 100%
 </style>

@@ -14,7 +14,7 @@
             :class="{'secondary-title': hasCurrentPrintFilename}"
           >{{ printer.name }}</div>
         </div>
-        <div v-if="!shareToken" class="dropdown">
+        <div class="dropdown">
           <button
             class="btn icon-btn"
             type="button"
@@ -44,10 +44,10 @@
         </div>
       </div>
 
-      <streaming-box :printer="printer" :isProAccount="isProAccount" :shareToken="shareToken" />
+      <streaming-box :printer="printer" :isProAccount="isProAccount" />
 
       <div
-        v-if="printer.alertUnacknowledged && !shareToken"
+        v-if="printer.alertUnacknowledged"
         class="failure-alert card-body bg-warning px-2 py-1"
       >
         <i class="fas fa-exclamation-triangle align-middle"></i>
@@ -61,7 +61,6 @@
       </div>
 
       <div
-        v-if="!shareToken"
         class="card-body gauge-container"
         :class="{overlay: !isWatching}"
       >
@@ -82,7 +81,6 @@
         <hr />
       </div>
       <PrinterActions
-        v-if="!shareToken"
         id="printer-actions"
         class="container"
         v-bind="actionsProps"
@@ -93,7 +91,7 @@
         @PrinterActionStartClicked="$emit('PrinterActionStartClicked', $event)"
         @PrinterActionControlClicked="$emit('PrinterActionControlClicked', $event)"
       ></PrinterActions>
-      <div v-if="!shareToken" class="info-section settings">
+      <div class="info-section settings">
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
@@ -114,7 +112,7 @@
           ><i class="fas fa-thermometer-half fa-lg"></i></button>
       </div>
       <div class="info-section" style="height: 0.3rem;"></div>
-      <div v-if="!shareToken">
+      <div>
         <div class="info-section container">
           <div
             id="panel-settings"
@@ -230,11 +228,6 @@
           ></StatusTemp>
         </div>
       </div>
-      <div v-if="shareToken" class="p-3 p-md-5">
-        <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on <a
-            href="https://www.thespaghettidetective.com/">The Spaghetti Detective</a></p>
-        <p class="text-center"><a href="/accounts/signup/">Sign up an account for FREE >>></a></p>
-      </div>
     </div>
   </div>
 </template>
@@ -274,10 +267,6 @@ export default {
     printer: {
       type: Object,
       required: true
-    },
-    shareToken: {
-      type: String,
-      required: false
     },
     isProAccount: {
       type: Boolean,

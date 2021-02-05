@@ -359,6 +359,10 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                     user=code.user,
                     auth_token = hexlify(os.urandom(10)).decode())
                 code.printer = printer
+            else:
+                # Reset the auth_token for security reason
+                code.printer.auth_token = hexlify(os.urandom(10)).decode()
+                code.printer.save()
 
             code.expired_at = timezone.now()
             code.verified_at = timezone.now()

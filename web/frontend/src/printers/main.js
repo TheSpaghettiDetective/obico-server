@@ -7,10 +7,18 @@ setupSentry(Vue)
 Vue.use(BootstrapVue)
 Vue.use(VueSwal)
 
+import Navbar from '../common/Navbar.vue'
+
 import PrinterListPage from './PrinterListPage.vue'
 import SharedPrinterPage from './SharedPrinterPage.vue'
 import PrinterSettingsPage from './PrinterSettingsPage.vue'
 import PrinterWizardPage from './PrinterWizardPage.vue'
+
+if (document.getElementById('navbar-mount')) {
+  new Vue({
+    components: { Navbar }
+  }).$mount('#navbar-mount')
+}
 
 if (document.getElementById('printer-list-mount')) {
   new Vue({

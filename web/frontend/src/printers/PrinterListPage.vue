@@ -1,60 +1,60 @@
 <template>
   <div>
-    <div class="option-drawer">
-      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-          <b-collapse
-            id="collapse-one"
-            v-model="filters.visible"
-            class="panel-collapse in"
-            role="tabpanel"
-            aria-labelledby="headingOne"
-          >
-            <div class="panel-body p-3">
-              <div>
-                <div class="sorting-and-filter">
-                  <TSDSelect
-                    id="printer-sorting"
-                    class="my-1 mx-2"
-                    v-model="filters.sort"
-                    :options="sortFilters"
-                    @input="onSortFilterChanged()"
-                  ></TSDSelect>
+    <pull-to-reveal
+      :enable="true"
+      :id="'filters'"
+      :maxElementHeight="210"
+      :animationTime=".7"
+      :zIndex="8"
+      :topOffsets="{'default': 52, 892: 56}"
+      :heightMultiplicator="4"
+    >
+      <div class="option-drawer">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+          <div class="panel panel-default">
+            <div
+              id="collapse-one"
+              class="panel-collapse in"
+              role="tabpanel"
+              aria-labelledby="headingOne"
+            >
+              <div class="panel-body p-3">
+                <div>
+                  <div class="sorting-and-filter">
+                    <TSDSelect
+                      id="printer-sorting"
+                      class="my-1 mx-2"
+                      v-model="filters.sort"
+                      :options="sortFilters"
+                      @input="onSortFilterChanged()"
+                    ></TSDSelect>
 
-                  <TSDSelect
-                    id="printer-filtering"
-                    class="my-1 mx-2"
-                    v-model="filters.state"
-                    :options="stateFilters"
-                    @input="onStateFilterChanged()"
-                  ></TSDSelect>
+                    <TSDSelect
+                      id="printer-filtering"
+                      class="my-1 mx-2"
+                      v-model="filters.state"
+                      :options="stateFilters"
+                      @input="onStateFilterChanged()"
+                    ></TSDSelect>
+                  </div>
+                </div>
+                <hr />
+                <div>
+                  <a
+                    v-for="printer in visiblePrinters"
+                    :key="printer.id"
+                    :href="'#' + printer.id"
+                    role="button"
+                    class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
+                    <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
+                  </a>
                 </div>
               </div>
-              <hr />
-              <div>
-                <a
-                  v-for="printer in visiblePrinters"
-                  :key="printer.id"
-                  :href="'#' + printer.id"
-                  role="button"
-                  class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
-                  <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
-                </a>
-              </div>
-            </div>
-          </b-collapse>
-          <div class="panel-heading" role="tab" id="headingOne">
-            <div class="panel-title">
-              <button
-                class="btn btn-block shadow-none"
-                role="button"
-                @click="toggleFiltersPanel"
-              ><i class="fas fa-angle-down"></i></button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </pull-to-reveal>
 
     <div v-if="!isProAccount" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">
@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <div id="printers" class="row justify-content-center">
+    <div id="printers" class="row justify-content-center mt-2">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
       <printer-card
         v-for="printer in visiblePrinters"
@@ -132,6 +132,7 @@ import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import TSDSelect from '@common/TSDSelect.vue'
+import PullToReveal from '@common/PullToReveal.vue'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -180,7 +181,8 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    TSDSelect
+    TSDSelect,
+    PullToReveal
   },
   created() {
     this.printerWs = PrinterWebSocket()

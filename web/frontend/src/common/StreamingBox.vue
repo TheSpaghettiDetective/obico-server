@@ -1,10 +1,24 @@
 <template>
   <div class="card-img-top webcam_container">
-    <div class="slow-link-wrapper" ref="slowLinkWrapper" @click="showSlowLinkDescription();">
+    <div
+      v-show="slowLinkLoss > 50"
+      class="slow-link-wrapper"
+      ref="slowLinkWrapper"
+      @click="showSlowLinkDescription();"
+      @mouseenter="slowLinkShowing = true; slowLinkHiding = false;"
+      @mouseleave="slowLinkShowing = false; slowLinkHiding = true;"
+    >
       <div class="icon bg-warning">
         <i class="fas fa-exclamation"></i>
       </div>
-      <div class="text text-warning" ref="slowLinkText">Video frames dropped</div>
+      <div
+        class="text text-warning"
+        ref="slowLinkText"
+        v-bind:class="{
+          'show-and-hide': !slowLinkShowing && !slowLinkHiding,
+          'showing': slowLinkShowing && !slowLinkHiding,
+          'hiding': !slowLinkShowing && slowLinkHiding}"
+      >Video frames dropped</div>
     </div>
     <div v-show="trackMuted" class="muted-status-wrapper">
       <div class="text">Buffering...</div>
@@ -111,7 +125,8 @@ export default {
       stickyStreamingSrc: null,
       isVideoVisible: false,
       slowLinkLoss: 0,
-      slowLinkAnimationTimeout: null,
+      slowLinkShowing: false, // show on mousenter
+      slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
     }
@@ -221,10 +236,6 @@ export default {
 
     onSlowLink(loss) {
       this.slowLinkLoss += loss
-
-      if (this.slowLinkLoss > 50) {
-        this.showSlowLinkAlert()
-      }
     },
 
     showSlowLinkDescription() {
@@ -238,42 +249,11 @@ export default {
         `,
         showCloseButton: true,
       }).then(() => {
-        this.hideSlowLinkAlert()
+        // this.hideSlowLinkAlert()
       })
     },
 
-    showSlowLinkAlert() {
-      if (this.$refs.slowLinkWrapper.style.display === 'block') {
-        return
-      }
-
-      const widthTransitionLen = 500 // value from css
-      const hideWarningTextAFter = 3000 // configurable value
-
-      this.$refs.slowLinkWrapper.style.display = 'block'
-
-      // Temporary show warning text
-      this.slowLinkAnimationTimeout = setTimeout(() => {
-        this.$refs.slowLinkWrapper.style.width = '176px'
-        this.slowLinkAnimationTimeout = setTimeout(() => {
-          this.$refs.slowLinkText.style.display = 'block'
-          this.slowLinkAnimationTimeout = setTimeout(() => {
-            this.$refs.slowLinkText.style.display = 'none'
-            this.$refs.slowLinkWrapper.style.width = '0'
-            this.slowLinkAnimationTimeout = null
-          }, hideWarningTextAFter)
-        }, widthTransitionLen)
-      }, 1000)
-    },
-
     hideSlowLinkAlert() {
-      if (this.slowLinkAnimationTimeout) {
-        console.log('clear timeout - cancel all animations')
-        clearTimeout(this.slowLinkAnimationTimeout)
-        this.$refs.slowLinkText.style.display = 'none'
-        this.$refs.slowLinkWrapper.style.width = 0
-      }
-
       this.$refs.slowLinkWrapper.style.display = 'none'
     },
 
@@ -341,16 +321,34 @@ export default {
   padding-left: $height
   line-height: $height
   font-size: 14px
-  width: 0
-  transition: width .2s linear
-  display: none
+  width: auto
 
   &:hover
     cursor: pointer
 
   .text
-    margin-left: 5px
-    display: none
+    width: 0
+    height: $height
+    overflow: hidden
+    text-align: center
+    opacity: 0
+
+    &.show-and-hide
+      animation-name: showAndHideText
+      animation-duration: 4s
+    
+    &.showing
+      width: 142px
+      opacity: 1
+      margin-left: .5em
+      margin-right: 1em
+
+      animation-name: showText
+      animation-duration: .6s
+
+    &.hiding
+      animation-name: hideText
+      animation-duration: .6s
 
   .icon
     width: 20px
@@ -363,6 +361,53 @@ export default {
     line-height: 20px
     text-align: center
     color: theme.$white
+  
+  @keyframes showText
+    from
+      width: 0
+      opacity: 0
+    99%
+      width: 142px
+      margin-left: .5em
+      margin-right: 1em
+      opacity: 0
+    to
+      opacity: 1
+
+  @keyframes hideText
+    from
+      width: 142px
+      margin-left: .5em
+      margin-right: 1em
+      opacity: 1
+    1%
+      opacity: 0
+    to
+      width: 0
+      opacity: 0
+
+  @keyframes showAndHideText
+    0%
+      width: 0
+      opacity: 0
+    19%
+      width: 142px
+      margin-left: .5em
+      margin-right: 1em
+      opacity: 0
+    20%
+      opacity: 1
+
+    80%
+      opacity: 1
+      width: 142px
+      margin-left: .5em
+      margin-right: 1em
+    81%
+      opacity: 0
+    100%
+      width: 0
+      opacity: 0
 
 .muted-status-wrapper
   position: absolute

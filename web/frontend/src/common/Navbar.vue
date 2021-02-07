@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import PullToReveal from '@/common/PullToReveal.vue'
+import PullToReveal from './PullToReveal.vue'
 
 export default {
   name: 'Navbar',

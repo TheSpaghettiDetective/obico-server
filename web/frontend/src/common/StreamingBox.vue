@@ -1,12 +1,12 @@
 <template>
   <div class="card-img-top webcam_container">
     <div
-      v-show="slowLinkLoss > 50"
+      v-show="slowLinkLoss > 50 && !hiddenByUser"
       class="slow-link-wrapper"
       ref="slowLinkWrapper"
       @click="showSlowLinkDescription();"
-      @mouseenter="slowLinkShowing = true; slowLinkHiding = false;"
-      @mouseleave="slowLinkShowing = false; slowLinkHiding = true;"
+      @mouseenter="fixSlowLinkTextWidth(); slowLinkShowing = true; slowLinkHiding = false;"
+      @mouseleave="fixSlowLinkTextWidth(); slowLinkShowing = false; slowLinkHiding = true;"
     >
       <div class="icon bg-warning">
         <i class="fas fa-exclamation"></i>
@@ -129,6 +129,7 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
+      hiddenByUser: false,
     }
   },
 
@@ -234,8 +235,14 @@ export default {
 
     /** Video warning handling */
 
+    fixSlowLinkTextWidth() {
+      const width = window.getComputedStyle(this.$refs.slowLinkText).width
+      this.$refs.slowLinkText.style.width = width
+    },
+
     onSlowLink(loss) {
       this.slowLinkLoss += loss
+      this.hiddenByUser = false
     },
 
     showSlowLinkDescription() {
@@ -249,12 +256,15 @@ export default {
         `,
         showCloseButton: true,
       }).then(() => {
-        // this.hideSlowLinkAlert()
+        this.hideSlowLinkAlert()
       })
     },
 
     hideSlowLinkAlert() {
-      this.$refs.slowLinkWrapper.style.display = 'none'
+      this.slowLinkSowing = false
+      this.slowLinkHiding = false
+      this.$refs.slowLinkText.style.width = 0
+      this.hiddenByUser = true
     },
 
     showMutedStatusDescription(event) {
@@ -335,20 +345,63 @@ export default {
 
     &.show-and-hide
       animation-name: showAndHideText
-      animation-duration: 4s
+      animation-duration: 3s
     
     &.showing
-      width: 142px
-      opacity: 1
-      margin-left: .5em
-      margin-right: 1em
-
       animation-name: showText
-      animation-duration: .6s
+      animation-duration: .4s
+      animation-fill-mode: forwards
 
     &.hiding
       animation-name: hideText
-      animation-duration: .6s
+      animation-duration: .4s
+      animation-fill-mode: forwards
+
+    $widthFull: 160px
+    $paddingRightFull: 10px
+    
+    @keyframes showText
+      from
+        opacity: 0
+      99%
+        width: $widthFull
+        padding-right: $paddingRightFull
+        opacity: 0
+      to
+        width: $widthFull
+        padding-right: $paddingRightFull
+        opacity: 1
+
+    @keyframes hideText
+      from
+        opacity: 1
+      1%
+        opacity: 0
+      to
+        width: 0
+        padding-right: 0
+        opacity: 0
+
+    @keyframes showAndHideText
+      0%
+        width: 0
+        opacity: 0
+      19%
+        width: $widthFull
+        padding-right: $paddingRightFull
+        opacity: 0
+      20%
+        opacity: 1
+      80%
+        opacity: 1
+        width: $widthFull
+        padding-right: $paddingRightFull
+      81%
+        opacity: 0
+      100%
+        width: 0
+        padding-right: 0
+        opacity: 0
 
   .icon
     width: 20px
@@ -361,53 +414,6 @@ export default {
     line-height: 20px
     text-align: center
     color: theme.$white
-  
-  @keyframes showText
-    from
-      width: 0
-      opacity: 0
-    99%
-      width: 142px
-      margin-left: .5em
-      margin-right: 1em
-      opacity: 0
-    to
-      opacity: 1
-
-  @keyframes hideText
-    from
-      width: 142px
-      margin-left: .5em
-      margin-right: 1em
-      opacity: 1
-    1%
-      opacity: 0
-    to
-      width: 0
-      opacity: 0
-
-  @keyframes showAndHideText
-    0%
-      width: 0
-      opacity: 0
-    19%
-      width: 142px
-      margin-left: .5em
-      margin-right: 1em
-      opacity: 0
-    20%
-      opacity: 1
-
-    80%
-      opacity: 1
-      width: 142px
-      margin-left: .5em
-      margin-right: 1em
-    81%
-      opacity: 0
-    100%
-      width: 0
-      opacity: 0
 
 .muted-status-wrapper
   position: absolute

@@ -22,7 +22,7 @@
     </div>
     <div v-show="trackMuted" class="muted-status-wrapper">
       <div class="text">Buffering...</div>
-      <a href="#" @click="showMutedStatusDescription($event)">Why did I get stuck?</a>
+      <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
     <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">

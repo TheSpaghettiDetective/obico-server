@@ -65,7 +65,7 @@
     </div>
 
     <div id="printers" class="row justify-content-center">
-      <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
+      <LoadingSpinner v-if="loading" class="mt-5" label="Loading..." />
       <printer-card
         v-for="printer in visiblePrinters"
         ref="printer"
@@ -132,6 +132,7 @@ import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import TSDSelect from '@common/TSDSelect.vue'
+import LoadingSpinner from '@common/LoadingSpinner.vue'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -180,7 +181,8 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    TSDSelect
+    TSDSelect,
+    LoadingSpinner,
   },
   created() {
     this.printerWs = PrinterWebSocket()

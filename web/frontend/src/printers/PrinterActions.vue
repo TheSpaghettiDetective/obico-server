@@ -84,7 +84,7 @@
         :disabled="connecting"
         @click="this.onConnectClicked"
       >
-        <b-spinner v-if="connecting" type="grow" small></b-spinner>
+        <LoadingSpinner v-if="connecting" size="1.25em" :color="theme.primary" style="margin-right: .2em" label="Loading..." />
         <i v-else class="fab fa-usb"></i>
         &nbsp;&nbsp;Connect
       </button>
@@ -104,15 +104,21 @@
 </template>
 
 <script>
+import LoadingSpinner from '@common/LoadingSpinner.vue'
+import theme from '../main/main.sass'
 
 export default {
   name: 'PrinterActions',
+  components: {
+    LoadingSpinner
+  },
   props: {
     printer: {},
   },
   data() {
     return {
       connectBtnClicked: false,
+      theme: theme,
     }
   },
   computed: {

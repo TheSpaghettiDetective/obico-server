@@ -27,6 +27,7 @@
     "vue-slider-component": "^3.2.2",
     "vue-sticky-directive": "^0.0.10",
     "vue-sweetalert2": "^3.0.5",
+    "vue-telegram-login": "^2.1.0",
     "vue-video-player": "^5.0.2",
     "vue2-canvas-gauges": "^0.0.0",
     "webrtc-adapter": "^6.4.0"

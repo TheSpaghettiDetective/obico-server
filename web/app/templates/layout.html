@@ -185,6 +185,7 @@
           dsn: '{{ settings.SENTRY_DSN }}',
           ignoreErrors: [
             'window.webkit.messageHandlers',
+            'api.telegram.org',
             /^Network Error$/,
           ]
         });

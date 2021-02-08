@@ -4,7 +4,7 @@
 
 {% block content %}
 <div id="user-preferences-mount">
-  <user-preferences-page>
+  <user-preferences-page v-bind:config='{telegramBotName: "{{telegram_bot_name}}"}'>
   </user-preferences-page>
 </div>
 

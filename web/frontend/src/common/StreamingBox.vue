@@ -75,12 +75,17 @@ import ifvisible from 'ifvisible'
 import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
 import printerStockImgSrc from '@static/img/3d_printer.png'
+import LoadingSpinner from '@common/LoadingSpinner'
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 export default {
   name: 'StreamingBox',
+
+  components: {
+    LoadingSpinner,
+  },
 
   created() {
     this.webrtc = null

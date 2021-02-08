@@ -566,7 +566,7 @@
         </section>
       </div>
       <div v-else class="text-center">
-        <b-spinner class="mt-5" label="Loading..."></b-spinner>
+        <LoadingSpinner class="mt-5" label="Loading..." />
       </div>
     </div>
   </div>
@@ -576,11 +576,13 @@
 import axios from 'axios'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
+import LoadingSpinner from '@common/LoadingSpinner.vue'
 
 export default {
   name: 'UserPreferencesPage',
   components: {
     SavingAnimation,
+    LoadingSpinner,
   },
 
   data() {

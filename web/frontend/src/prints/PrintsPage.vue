@@ -96,7 +96,7 @@
 
     <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
       <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
-      <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+      <LoadingSpinner v-else label="Loading..." />
     </mugen-scroll>
 
     <b-modal
@@ -124,13 +124,15 @@ import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
+import LoadingSpinner from '@common/LoadingSpinner'
 
 export default {
   name: 'PrintsPage',
   components: {
     MugenScroll,
     PrintCard,
-    FullScreenPrintCard
+    FullScreenPrintCard,
+    LoadingSpinner,
   },
   data: function() {
     return {

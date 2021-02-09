@@ -1,10 +1,10 @@
 <template>
   <div class="card-img-top webcam_container">
     <div
-      v-show="slowLinkLoss > 50 && !hiddenByUser"
+      v-show="slowLinkLoss > 50"
       class="slow-link-wrapper"
       ref="slowLinkWrapper"
-      @click="showSlowLinkDescription();"
+      @click="slowLinkClicked"
       @mouseenter="fixSlowLinkTextWidth(); slowLinkShowing = true; slowLinkHiding = false;"
       @mouseleave="fixSlowLinkTextWidth(); slowLinkShowing = false; slowLinkHiding = true;"
     >
@@ -103,6 +103,8 @@ export default {
         this.webrtc.startStream()
       }
     })
+
+    setInterval(() => this.onSlowLink(55), 5000)
   },
 
   props: {
@@ -129,7 +131,6 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      hiddenByUser: false,
     }
   },
 
@@ -242,10 +243,13 @@ export default {
 
     onSlowLink(loss) {
       this.slowLinkLoss += loss
-      this.hiddenByUser = false
     },
 
-    showSlowLinkDescription() {
+    slowLinkClicked() {
+      this.slowLinkShowing = false
+      this.slowLinkHiding = false
+      this.slowLinkLoss = 0
+
       this.$swal({
         title: 'Video frames dropped',
         html: `
@@ -255,16 +259,7 @@ export default {
           <p>Check out <a target="_blank" href="https://www.thespaghettidetective.com/docs/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
         `,
         showCloseButton: true,
-      }).then(() => {
-        this.hideSlowLinkAlert()
       })
-    },
-
-    hideSlowLinkAlert() {
-      this.slowLinkSowing = false
-      this.slowLinkHiding = false
-      this.$refs.slowLinkText.style.width = 0
-      this.hiddenByUser = true
     },
 
     showMutedStatusDescription(event) {
@@ -346,7 +341,7 @@ export default {
     &.show-and-hide
       animation-name: showAndHideText
       animation-duration: 3s
-    
+
     &.showing
       animation-name: showText
       animation-duration: .4s
@@ -359,7 +354,7 @@ export default {
 
     $widthFull: 160px
     $paddingRightFull: 10px
-    
+
     @keyframes showText
       from
         opacity: 0

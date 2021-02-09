@@ -11,6 +11,7 @@ from django.utils import timezone
 import pytz
 from datetime import timedelta
 from PIL import Image
+import backoff
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj
 
@@ -62,6 +63,13 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     if not input_path:
         return None
 
+    ## Somehow im.save may fail with "IOError: broken data stream when reading image file" on 1st call and will succeed on the 2nd
+    @backoff.on_exception(backoff.expo, Exception, max_tries=2)
+    def save_to_bytes(im):
+        img_bytes = io.BytesIO()
+        im.save(img_bytes, "JPEG")
+        return img_bytes
+
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
@@ -73,10 +81,7 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     if printer.settings['webcam_rotate90']:
         tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
-    img_bytes = io.BytesIO()
-    tmp_img.save(img_bytes, "JPEG")
-
-    _, dest_jpg_url = save_file_obj(dest_jpg_path, img_bytes, to_container, long_term_storage=to_long_term_storage)
+    _, dest_jpg_url = save_file_obj(dest_jpg_path, save_to_bytes(tmp_img), to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
 def shortform_duration(total_seconds):

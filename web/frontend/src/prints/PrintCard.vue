@@ -127,7 +127,7 @@
                   @click="onThumbUpClick"
                   class="mx-2 btn-sm"
                 >
-                  <LoadingSpinner v-if="inflightAlertOverwrite" size="1.25em" />
+                  <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-up"></i>
                 </b-button>
                 <b-button
@@ -135,7 +135,7 @@
                   @click="onThumbDownClick"
                   class="mx-2 btn-sm"
                 >
-                  <LoadingSpinner v-if="inflightAlertOverwrite" size="1.25em" />
+                  <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-down"></i>
                 </b-button>
               </div>
@@ -194,7 +194,6 @@ import urls from '../lib/server_urls'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
 import DetectiveWorking from 'common/DetectiveWorking'
-import LoadingSpinner from '@common/LoadingSpinner'
 
 export default {
   name: 'PrintCard',
@@ -202,8 +201,7 @@ export default {
   components: {
     VideoBox,
     Gauge,
-    DetectiveWorking,
-    LoadingSpinner,
+    DetectiveWorking
   },
 
   data: () => {

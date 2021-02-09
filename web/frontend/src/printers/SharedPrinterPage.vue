@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row justify-content-center">
-      <LoadingSpinner v-if="loading" class="mt-5" label="Loading..." />
+      <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
       <div v-if="printer"
         class="col-sm-12 col-lg-6 printer-card"
       >
@@ -39,13 +39,11 @@ import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 import PrinterWebSocket from '@lib/printer_ws'
 import StreamingBox from '@common/StreamingBox'
-import LoadingSpinner from '@common/LoadingSpinner'
 
 export default {
   name: 'SharedPrinterPage',
   components: {
     StreamingBox,
-    LoadingSpinner,
   },
   created(){
     this.printerWs = PrinterWebSocket()

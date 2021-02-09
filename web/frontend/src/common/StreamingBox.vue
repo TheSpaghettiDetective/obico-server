@@ -24,7 +24,7 @@
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
-    <LoadingSpinner v-show="trackMuted || videoLoading" class="loading-icon" />
+    <img v-show="trackMuted || videoLoading" class="loading-icon" :src="require('@static/img/tail-spin.svg')" />
     <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
       <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
       <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -75,17 +75,12 @@ import ifvisible from 'ifvisible'
 import Janus from '@lib/janus'
 import webrtc from '@lib/webrtc_streaming'
 import printerStockImgSrc from '@static/img/3d_printer.png'
-import LoadingSpinner from '@common/LoadingSpinner'
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 export default {
   name: 'StreamingBox',
-
-  components: {
-    LoadingSpinner,
-  },
 
   created() {
     this.webrtc = null

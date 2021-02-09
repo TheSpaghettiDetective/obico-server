@@ -24,7 +24,7 @@
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
-    <img v-show="trackMuted || videoLoading" class="loading-icon" :src="require('@static/img/tail-spin.svg')" />
+    <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
     <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
       <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
       <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
@@ -103,8 +103,6 @@ export default {
         this.webrtc.startStream()
       }
     })
-
-    setInterval(() => this.onSlowLink(55), 5000)
   },
 
   props: {

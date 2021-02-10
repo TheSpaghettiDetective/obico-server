@@ -11,6 +11,7 @@ import phonenumbers
 
 class UserSerializer(serializers.ModelSerializer):
     is_primary_email_verified = serializers.ReadOnlyField()
+    is_dh_unlimited = serializers.ReadOnlyField()
 
     class Meta:
         model = User

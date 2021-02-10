@@ -119,6 +119,10 @@ class User(AbstractUser):
 
         return False
 
+    @property
+    def is_dh_unlimited(self):
+        return self.dh_balance >= UNLIMITED_DH
+
     def has_verified_email(self):
         # Give user 1 day before bugging them to verify their email addresses
 

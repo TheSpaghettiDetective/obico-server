@@ -30,11 +30,13 @@
               </a>
             </li>
 
-            <li v-if="!user" class="nav-item"  v-bind:class="{'active': viewName === 'publictimelapse_list'}">
+            <li v-if="!user" class="nav-item" v-bind:class="{'active': viewName === 'publictimelapse_list'}">
               <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
             </li>
 
-            <slot name="nav_item_pricing"></slot>
+            <li v-if="isEnt" class="nav-item" v-bind:class="{'active': viewName === 'pricing'}">
+              <a class="nav-link" href="/ent/pricing/">Pricing</a>
+            </li>
 
             <li class="nav-item">
               <a class="nav-link" href="https://www.thespaghettidetective.com/help">Help</a>
@@ -52,7 +54,13 @@
               <a class="nav-link" href="/accounts/signup/">Sign up</a>
             </li>
 
-            <slot name="nav_item_dh_balance"></slot>
+            <li v-if="isEnt" class="nav-item">
+              <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
+                  <img :src="require('@static/img/detective-hour-inverse.png')">
+                  <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
+                  <span class="sr-only">Detective Hours</span>
+              </a>
+            </li>
 
             <li v-if="user" class="nav-item dropdown">
               <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
@@ -61,9 +69,7 @@
               </a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes">
                 <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
-
-                <slot name="nav_item_account"></slot>
-
+                <a v-if="isEnt" class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
               </div>
@@ -89,6 +95,7 @@ export default {
     return {
       user: null,
       allowSignUp: false,
+      isEnt: false,
     }
   },
 
@@ -104,9 +111,20 @@ export default {
   },
 
   created() {
-    const {ACCOUNT_ALLOW_SIGN_UP} = JSON.parse(document.querySelector('#settings-json').text)
+    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
+    this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
+  },
+
+  computed: {
+    dhBadgeNum() {
+      if (this.user && this.user.is_dh_unlimited) {
+        return'\u221E'
+      } else {
+        return Math.round(this.user.dh_balance)
+      }
+    }
   },
 }
 </script>

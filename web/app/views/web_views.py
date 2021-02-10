@@ -173,7 +173,7 @@ def integration(request, pk):
 def user_preferences(request, template_dir=None):
     return render(request, get_template_path('user_preferences', template_dir), dict(telegram_bot_name=bot_name))
 
-
+@csrf_exempt
 @login_required
 def test_telegram(request):
     if request.method == 'POST':

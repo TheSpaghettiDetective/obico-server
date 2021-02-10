@@ -9,45 +9,47 @@
       :topOffsets="{'default': 52, 892: 56}"
       :heightMultiplicator="4"
     >
-      <div class="option-drawer">
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-          <div class="panel panel-default">
-            <div
-              id="collapse-one"
-              class="panel-collapse in"
-              role="tabpanel"
-              aria-labelledby="headingOne"
-            >
-              <div class="panel-body p-3">
-                <div>
-                  <div class="sorting-and-filter">
-                    <TSDSelect
-                      id="printer-sorting"
-                      class="my-1 mx-2"
-                      v-model="filters.sort"
-                      :options="sortFilters"
-                      @input="onSortFilterChanged()"
-                    ></TSDSelect>
+      <div class="container">
+        <div class="option-drawer">
+          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div
+                id="collapse-one"
+                class="panel-collapse in"
+                role="tabpanel"
+                aria-labelledby="headingOne"
+              >
+                <div class="panel-body p-3">
+                  <div>
+                    <div class="sorting-and-filter">
+                      <TSDSelect
+                        id="printer-sorting"
+                        class="my-1 mx-2"
+                        v-model="filters.sort"
+                        :options="sortFilters"
+                        @input="onSortFilterChanged()"
+                      ></TSDSelect>
 
-                    <TSDSelect
-                      id="printer-filtering"
-                      class="my-1 mx-2"
-                      v-model="filters.state"
-                      :options="stateFilters"
-                      @input="onStateFilterChanged()"
-                    ></TSDSelect>
+                      <TSDSelect
+                        id="printer-filtering"
+                        class="my-1 mx-2"
+                        v-model="filters.state"
+                        :options="stateFilters"
+                        @input="onStateFilterChanged()"
+                      ></TSDSelect>
+                    </div>
                   </div>
-                </div>
-                <hr />
-                <div>
-                  <a
-                    v-for="printer in visiblePrinters"
-                    :key="printer.id"
-                    :href="'#' + printer.id"
-                    role="button"
-                    class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
-                    <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
-                  </a>
+                  <hr />
+                  <div>
+                    <a
+                      v-for="printer in visiblePrinters"
+                      :key="printer.id"
+                      :href="'#' + printer.id"
+                      role="button"
+                      class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
+                      <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

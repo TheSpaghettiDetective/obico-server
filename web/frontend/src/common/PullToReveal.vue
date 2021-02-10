@@ -4,10 +4,12 @@
       class="pull-to-reveal"
       :data-id="id"
       v-bind:class="{'enabled': enable}"
+      ref="pullToRevealWrapper"
     >
       <slot></slot>
     </div>
     <div v-if="showEdge && status === 'closed'" class="showing-edge"></div>
+    <div class="spaceholder" ref="placeholder"></div>
   </div>
 </template>
 
@@ -48,6 +50,10 @@ export default {
       default() {return 2},
       type: Number,
     },
+    shiftContent: {
+      default() {return true},
+      type: Boolean,
+    },
   },
 
   data() {
@@ -61,6 +67,7 @@ export default {
       const elem = document.querySelector(`.pull-to-reveal[data-id='${this.id}']`)
 
       if (scrollPosition === 0) {
+        // Open
         if (this.topOffsets) {
           const windowWidth = window.innerWidth
 
@@ -81,9 +88,20 @@ export default {
         }
 
         this.status = 'opened'
+
+        // Shift content to not cover it by revealed block
+        if (this.shiftContent) {
+          this.$refs.placeholder.style.height = window.getComputedStyle(this.$refs.pullToRevealWrapper).height
+        }
+        
       } else {
+        // Hide
         elem.style.top = `${-this.maxElementHeight * this.heightMultiplicator}px`
         this.status = 'closed'
+
+        if (this.shiftContent) {
+          this.$refs.placeholder.style.height = 0
+        }
       }
     }
   },
@@ -102,6 +120,7 @@ export default {
       elem.style.top = `${-this.maxElementHeight * this.heightMultiplicator}px`
       elem.style.zIndex = this.zIndex
       elem.style.transition = `all ${this.animationTime}s`
+      this.$refs.placeholder.style.transition = `all ${this.animationTime}s`
 
       // Setup handler to show on scroll up
       const handler = this.toggleBlock
@@ -142,4 +161,7 @@ export default {
   top: 0
   left: 0
   z-index: 2
+
+.spaceholder
+  height: 0
 </style>

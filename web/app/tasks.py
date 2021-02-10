@@ -257,6 +257,7 @@ def clean_up_print_pics(_print):
 
 def generate_print_poster(_print):
     last_pic = last_pic_of_print(_print, 'raw')
+
     rotated_jpg_url = save_print_snapshot(_print.printer,
                             last_pic,
                             f'private/{_print.id}_poster.jpg',

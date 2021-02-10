@@ -2,6 +2,18 @@
 
 {% load bundle from vue %}
 
+{% block navbar %}
+<div id="navbar-mount">
+  <navbar
+    :pull-to-reveal="true"
+    :view-name="'printers'"
+    :user-data="{% if user.is_authenticated and user.is_pro %}{id: '{{user.id}}', email: '{{user.email}}', firstName: '{{user.first_name}}' }{% else %}null{% endif %}"
+    :allow-sign-up="{% if settings.ACCOUNT_ALLOW_SIGN_UP %}true{% else %}false{% endif %}"
+  >
+  </navbar>
+</div>
+{% endblock navbar %}
+
 {% block content %}
 <div id="printer-list-mount">
   <printer-list-page

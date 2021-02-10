@@ -929,7 +929,7 @@ export default {
     },
 
     onTelegramLogout() {
-      this.user.telegram_chat_id = ''
+      this.user.telegram_chat_id = null
       this.updateSetting('telegram_chat_id')
     },
 

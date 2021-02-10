@@ -10,12 +10,8 @@ from operator import itemgetter
 from django.utils import timezone
 import pytz
 from datetime import timedelta
-<<<<<<< HEAD
-from PIL import Image
-=======
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
->>>>>>> master
 import backoff
 
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj

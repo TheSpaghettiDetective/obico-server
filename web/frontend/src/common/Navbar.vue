@@ -17,20 +17,20 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav">
 
-            <li v-if="userData" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
+            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
               <a class="nav-link" href="/printers/">Printer
               </a>
             </li>
-            <li v-if="userData" class="nav-item" v-bind:class="{'active': viewName.includes('prints')}">
+            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('prints')}">
               <a class="nav-link" href="/prints/">Time-lapse
               </a>
             </li>
-            <li v-if="userData" class="nav-item" v-bind:class="{'active': viewName.includes('gcodes')}">
+            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('gcodes')}">
               <a class="nav-link" href="/gcodes/">G-Code
               </a>
             </li>
 
-            <li v-if="!userData" class="nav-item"  v-bind:class="{'active': viewName === 'publictimelapse_list'}">
+            <li v-if="!user" class="nav-item"  v-bind:class="{'active': viewName === 'publictimelapse_list'}">
               <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
             </li>
 
@@ -45,18 +45,18 @@
           </ul>
 
           <ul class="navbar-nav ml-auto">
-            <li v-if="!userData" class="nav-item">
+            <li v-if="!user" class="nav-item">
               <a class="nav-link" href="/accounts/login/">Sign In</a>
             </li>
-            <li v-if="!userData && allowSignUp" class="nav-item">
+            <li v-if="!user && allowSignUp" class="nav-item">
               <a class="nav-link" href="/accounts/signup/">Sign up</a>
             </li>
 
             <slot name="nav_item_dh_balance"></slot>
 
-            <li v-if="userData" class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="userData.id" aria-expanded="false">
-                {{userData.first_name || userData.email}}
+            <li v-if="user" class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
+                {{user.first_name || user.email}}
                 <span class="caret"></span>
               </a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes">
@@ -87,7 +87,8 @@ export default {
 
   data() {
     return {
-      
+      user: null,
+      allowSignUp: false,
     }
   },
 
@@ -100,14 +101,12 @@ export default {
       default() {return ''},
       type: String,
     },
-    userData: { // id, email, first_name (optional); if Null, assumes that user isn't authenticated
-      default() {return null},
-      type: Object,
-    },
-    allowSignUp: {
-      default() {return true},
-      type: Boolean,
-    }
+  },
+
+  created() {
+    const {ACCOUNT_ALLOW_SIGN_UP} = JSON.parse(document.querySelector('#settings-json').text)
+    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
+    this.user = JSON.parse(document.querySelector('#user-json').text)
   },
 }
 </script>
@@ -130,7 +129,7 @@ export default {
 
   a.glowing
     text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #9965f4, 0 0 70px #9965f4, 0 0 80px #9965f4, 0 0 100px #9965f4, 0 0 150px #9965f4
-  
+
   .badge-btn
     position: relative
     height: 1.8rem

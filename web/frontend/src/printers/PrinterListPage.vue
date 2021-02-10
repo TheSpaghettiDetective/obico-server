@@ -58,7 +58,7 @@
       </div>
     </pull-to-reveal>
 
-    <div v-if="!isProAccount" class="row justify-content-center">
+    <div v-if="!user.is_pro" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">
         <div class="form-container" style="margin: 1em 0 -1em 0; padding: 0.5em 1em;">
           <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
@@ -73,7 +73,7 @@
         ref="printer"
         :key="printer.id"
         :printer="printer"
-        :is-pro-account="isProAccount"
+        :is-pro-account="user.is_pro"
         @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
         @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
         @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
@@ -187,6 +187,8 @@ export default {
     PullToReveal
   },
   created() {
+    this.user = JSON.parse(document.querySelector('#user-json').text)
+
     this.printerWs = PrinterWebSocket()
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter
@@ -203,14 +205,9 @@ export default {
       {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
     ]
   },
-  props: {
-    isProAccount: {
-      type: Boolean,
-      required: true
-    },
-  },
   data: function() {
     return {
+      user: null,
       printers: [],
       loading: true,
       filters: {
@@ -439,7 +436,7 @@ export default {
       )
     },
     onPrinterActionStartClicked(printerId) {
-      if (!this.isProAccount) {
+      if (!this.user.is_pro) {
         this.$swal.fire({
           title: 'Wait!',
           html: `

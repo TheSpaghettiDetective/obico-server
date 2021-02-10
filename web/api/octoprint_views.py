@@ -11,7 +11,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import requests
 import json
 import io
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj

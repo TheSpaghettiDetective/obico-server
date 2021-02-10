@@ -68,18 +68,20 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     def save_to_bytes(im):
         img_bytes = io.BytesIO()
         im.save(img_bytes, "JPEG")
+        img_bytes.seek(0)
         return img_bytes
 
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
     tmp_img = Image.open(img_bytes)
-    if printer.settings['webcam_flipH']:
-        tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
-    if printer.settings['webcam_flipV']:
-        tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
-    if printer.settings['webcam_rotate90']:
-        tmp_img = tmp_img.transpose(Image.ROTATE_90)
+    if rotated:
+        if printer.settings['webcam_flipH']:
+            tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
+        if printer.settings['webcam_flipV']:
+            tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
+        if printer.settings['webcam_rotate90']:
+            tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
     _, dest_jpg_url = save_file_obj(dest_jpg_path, save_to_bytes(tmp_img), to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url

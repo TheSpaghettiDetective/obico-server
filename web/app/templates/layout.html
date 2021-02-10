@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_dict from user_dict %}
 {% load bundle from vue %}
 {% load bundlechunk from vue %}
 
@@ -50,6 +51,7 @@
   {% block header_ext %}{% endblock header_ext %}
 
   {{ settings|json_script:"settings-json" }}
+  {{ user|user_dict|json_script:"user-json" }}
 </head>
 
 <body>

@@ -659,6 +659,10 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
+        'telegram_chat_id': {
+          'delay': 1000,
+          'timeoutId': null
+        }
       },
       twilioEnabled: false,
       slackEnabled: false,
@@ -726,6 +730,14 @@ export default {
         this.user.pushover_user_token = newValue
       }
     },
+    telegramChatId: {
+      get: function() {
+        return this.user ? this.user.telegram_chat_id : null
+      },
+      set: function(newValue) {
+        this.user.telegram_chat_id = newValue
+      }
+    },
   },
 
   watch: {
@@ -762,6 +774,11 @@ export default {
     pushoverUserToken: function (newValue, oldValue) {
       if (oldValue !== null) {
         this.updateSetting('pushover_user_token')
+      }
+    },
+    telegramChatId: function (newValue, oldValue) {
+      if (oldValue !== null) {
+        this.updateSetting('telegram_chat_id')
       }
     }
   },
@@ -906,8 +923,8 @@ export default {
       this.patchUser(settingsItem, this.user[settingsItem])
     },
 
-    onTelegramAuth(user) {
-      user.telegram_chat_id = JSON.stringify(user.id)
+    onTelegramAuth(telegram_user) {
+      this.user.telegram_chat_id = JSON.stringify(telegram_user.id)
       this.updateSetting('telegram_chat_id')
     },
 

@@ -16,7 +16,8 @@ from celery.decorators import periodic_task
 from datetime import timedelta
 import tempfile
 import requests
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import copy
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage

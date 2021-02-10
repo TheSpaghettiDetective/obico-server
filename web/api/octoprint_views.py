@@ -11,7 +11,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import requests
 import json
 import io
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
@@ -44,7 +45,7 @@ class OctoPrintPicView(APIView):
         pic_id = str(timezone.now().timestamp())
 
         if not printer.current_print:     # Some times pics come in when current_print is not set - maybe because printer status is out of sync between plugin and server?
-            pic_path = f'{printer.id}/orphan.jpg'
+            pic_path = f'{printer.id}/0.jpg'
         else:
             pic_path = f'{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
         internal_url, external_url = save_file_obj(f'raw/{pic_path}', pic, settings.PICS_CONTAINER, long_term_storage=False)

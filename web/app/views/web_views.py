@@ -23,6 +23,7 @@ from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator, g
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from app.forms import PrinterForm, SocialAccountAwareLoginForm
 from lib import channels
+from lib.integrations.telegram_bot import bot_name, telegram_bot
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
@@ -170,7 +171,21 @@ def integration(request, pk):
 
 @login_required
 def user_preferences(request, template_dir=None):
-    return render(request, get_template_path('user_preferences', template_dir))
+    return render(request, get_template_path('user_preferences', template_dir), dict(telegram_bot_name=bot_name))
+
+@csrf_exempt
+@login_required
+def test_telegram(request):
+    if request.method == 'POST':
+        user = request.user
+        bot = telegram_bot()
+
+        if bot and user.telegram_chat_id:
+            bot.send_message(user.telegram_chat_id, 'Test from TSD', parse_mode='Markdown')  # errors throw
+
+            return JsonResponse(dict(status='Ok'))
+
+    return JsonResponse(dict(status='API error'), status=400)
 
 
 def unsubscribe_email(request):

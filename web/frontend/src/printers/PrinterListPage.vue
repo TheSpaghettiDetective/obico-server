@@ -22,21 +22,21 @@
                 <div class="panel-body p-3">
                   <div>
                     <div class="sorting-and-filter">
-                      <TSDSelect
+                      <Select
                         id="printer-sorting"
                         class="my-1 mx-2"
                         v-model="filters.sort"
                         :options="sortFilters"
                         @input="onSortFilterChanged()"
-                      ></TSDSelect>
+                      ></Select>
 
-                      <TSDSelect
+                      <Select
                         id="printer-filtering"
                         class="my-1 mx-2"
                         v-model="filters.state"
                         :options="stateFilters"
                         @input="onStateFilterChanged()"
-                      ></TSDSelect>
+                      ></Select>
                     </div>
                   </div>
                   <hr />
@@ -46,7 +46,7 @@
                       :key="printer.id"
                       :href="'#' + printer.id"
                       role="button"
-                      class="btn btn-outline-primary btn-sm my-1 mx-2 printer-link">
+                      class="btn btn-outline-primary btn-sm my-1 mx-3 printer-link">
                       <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
                     </a>
                   </div>
@@ -133,7 +133,7 @@ import PrinterCard from './PrinterCard.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
-import TSDSelect from '@common/TSDSelect.vue'
+import Select from '@common/Select.vue'
 import PullToReveal from '@common/PullToReveal.vue'
 
 const PAUSE_PRINT = '/pause_print/'
@@ -183,7 +183,7 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    TSDSelect,
+    Select,
     PullToReveal
   },
   created() {

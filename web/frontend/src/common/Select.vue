@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  name: 'TSDSelect',
+  name: 'Select',
   props: ['options', 'value'],
   methods: {
     onOptionClicked(option) {
@@ -40,25 +40,22 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 @use "~main/theme"
 
 // bootstrap-select has this default
 $tsd-dropdown-with: 220px
 
-.tsd-dropdown-toggle
-  text-align: left
-  width: $tsd-dropdown-with
-
 .tsd-dropdown-menu
   width: $tsd-dropdown-with
 
 .tsd-dropdown-toggle
+  text-align: left
+  width: $tsd-dropdown-with
   color: white
-  background-color: theme.$blue
+  background-color: theme.$primary
   border-radius: 0px
   border: none
-  text-align: left
 
   &:hover
     color: white

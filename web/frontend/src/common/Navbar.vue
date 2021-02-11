@@ -5,16 +5,17 @@
     :maxElementHeight="56"
     :zIndex="9"
     :showEdge="true"
+    v-on:hide="hideDropdowns"
   >
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
       <div class="container">
         <a class="navbar-brand" href="/printers/">
         <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
+        <div class="collapse navbar-collapse" id="navbarResponsive" ref="mobileDropdownContent">
           <ul class="navbar-nav">
 
             <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
@@ -62,12 +63,12 @@
               </a>
             </li>
 
-            <li v-if="user" class="nav-item dropdown">
+            <li v-if="user" class="nav-item dropdown" ref="accountDropdown">
               <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
                 {{user.first_name || user.email}}
                 <span class="caret"></span>
               </a>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes">
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes" ref="accountDropdownContent">
                 <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
                 <a v-if="isEnt" class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
                 <div class="dropdown-divider"></div>
@@ -126,6 +127,24 @@ export default {
       }
     }
   },
+
+  methods: {
+    hideDropdowns() {
+      // Check account dropdown (preferences and logout)
+      const accountDropdown = this.$refs.accountDropdown
+      if (accountDropdown.classList.contains('show')) {
+        accountDropdown.classList.remove('show')
+        this.$refs.accountDropdownContent.classList.remove('show')
+      }
+
+      // Check main menu toggler (on mobiles)
+      const mobileDropdown = this.$refs.mobileDropdown
+      if (mobileDropdown.getAttribute('aria-expanded')) {
+        mobileDropdown.classList.add('collapsed')
+        this.$refs.mobileDropdownContent.classList.remove('show')
+      }
+    }
+  }
 }
 </script>
 

@@ -96,6 +96,8 @@ export default {
         
       } else {
         // Hide
+        this.$emit('hide')
+
         elem.style.top = `${-this.maxElementHeight * this.heightMultiplicator}px`
         this.status = 'closed'
 

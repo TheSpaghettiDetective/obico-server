@@ -523,11 +523,9 @@
           <br>
           <div class="form-group row">
             <div v-if="user.telegram_chat_id">
-              <div class="col-sm-6" id="id_telegram_logout_btn">
-                <div class="btn btn-primary float-left" @click="onTelegramLogout">Unlink Telegram</div>
-              </div>
-              <div class="col-sm-6" id="id_telegram_test_btn">
-                <div class="btn btn-primary float-left" @click="onTelegramTest($event)">Test Telegram Notification</div>
+              <div class="col-md-50">
+                <div class="btn btn-sm btn-primary float-left mr-2" id="id_telegram_logout_btn" @click="onTelegramLogout">Unlink Telegram</div>
+                <div class="btn btn-sm btn-primary float-left" id="id_telegram_test_btn" @click="onTelegramTest($event)">Test Telegram Notification</div>
               </div>
             </div>
             <div v-else>

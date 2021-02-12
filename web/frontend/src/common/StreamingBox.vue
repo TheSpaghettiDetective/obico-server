@@ -85,12 +85,10 @@ export default {
   created() {
     this.webrtc = null
 
-    if (this.isProAccount) {
-      Janus.init({
-        debug: 'all',
-        callback: this.onJanusInitalized
-      })
-    }
+    Janus.init({
+      debug: 'all',
+      callback: this.onJanusInitalized
+    })
 
     ifvisible.on('blur', () => {
       if (this.webrtc) {
@@ -212,7 +210,7 @@ export default {
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
         onData: this.onWebRTCData,
-      })
+      }, this.isProAccount)
 
       EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
 

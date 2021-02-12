@@ -2,11 +2,12 @@ import get from 'lodash/get'
 import Janus from '@lib/janus'
 
 
-function getWebRTCManager(callbacks) {
+function getWebRTCManager(callbacks, videoEnabled) {
   let manager = {
     callbacks: callbacks,
     streamId: undefined,
     streaming: undefined,
+    videoEnabled: videoEnabled ?? false,
 
     connect(wsUri, token) {
       const opaqueId = 'streamingtest-' + Janus.randomString(12)
@@ -162,7 +163,7 @@ function getWebRTCManager(callbacks) {
       if (this.streamId === undefined || this.streaming === undefined) {
         return
       }
-      const body = { 'request': 'watch', id: parseInt(this.streamId) }
+      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(this.streamId) }
       this.streaming.send({ 'message': body })
     },
     stopStream() {

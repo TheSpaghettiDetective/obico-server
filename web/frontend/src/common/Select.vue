@@ -46,30 +46,36 @@ export default {
 // bootstrap-select has this default
 $tsd-dropdown-with: 220px
 
-.tsd-dropdown-menu
+::v-deep .tsd-dropdown-menu
   width: $tsd-dropdown-with
 
-.tsd-dropdown-toggle
+::v-deep .tsd-dropdown-toggle.btn-light
   text-align: left
   width: $tsd-dropdown-with
   color: white
   background-color: theme.$primary
   border-radius: 0px
   border: none
+  box-shadow: none
 
   &:hover
     color: white
     background-color: theme.$blue
+  
+  &[aria-expanded="true"], &:focus
+    color: white !important
+    background-color: theme.$blue !important
+    // border: none !important
 
   &:after
     margin-left: 0px
 
-.tsd-dropdown-selected-title
+::v-deep .tsd-dropdown-selected-title
   width: 99%
   float: left
 
-.tsd-dropdown-active-item
-  color: white
-  background-color: theme.$blue
+// .tsd-dropdown-active-item
+//   color: white
+//   background-color: theme.$blue
 
 </style>

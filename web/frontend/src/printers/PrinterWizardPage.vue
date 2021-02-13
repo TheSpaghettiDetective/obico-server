@@ -1,6 +1,6 @@
 <template>
 <div class="row justify-content-center">
-  <div class="col-sm-12 col-lg-10 wizard-container">
+  <div class="col-sm-12 col-lg-10 wizard-container form-container">
     <div v-if="verifiedPrinter" class="text-center py-5">
       <img
         :src="require('../../../app/static/img/checkmark.png')" />
@@ -326,7 +326,6 @@ export default {
   border-radius: 300px
 
 .wizard-container
-  margin: 2em 0em
   padding: 1em
   background: theme.$body-bg
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important

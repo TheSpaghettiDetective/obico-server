@@ -198,7 +198,8 @@ a.link {
   border: none !important;
 
   @include respond-below(md) {
-    padding: 2.5em 1em;
+    padding: 2em;
+    margin: 0 -15px;
   }
 
   .form-control {

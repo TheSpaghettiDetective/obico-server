@@ -10,7 +10,6 @@
       v-for="option in options"
       :key="option.value"
       :active="value == option.value"
-      :active-class="'tsd-dropdown-active-item'"
       @click="onOptionClicked(option)"
     >{{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i></b-dropdown-item>
   </b-dropdown>
@@ -60,11 +59,11 @@ $tsd-dropdown-with: 220px
 
   &:hover
     color: white
-    background-color: theme.$blue
-  
+    background-color: theme.$primary
+
   &[aria-expanded="true"], &:focus
     color: white !important
-    background-color: theme.$blue !important
+    background-color: theme.$primary !important
     // border: none !important
 
   &:after
@@ -73,9 +72,5 @@ $tsd-dropdown-with: 220px
 ::v-deep .tsd-dropdown-selected-title
   width: 99%
   float: left
-
-// .tsd-dropdown-active-item
-//   color: white
-//   background-color: theme.$blue
 
 </style>

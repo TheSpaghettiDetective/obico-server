@@ -4,7 +4,7 @@
     :id="'main-nav'"
     :maxElementHeight="56"
     :zIndex="9"
-    :showEdge="true"
+    :showEdge="pullToReveal"
     v-on:hide="hideDropdowns"
   >
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">

@@ -254,75 +254,6 @@ class Printer(SafeDeleteModel):
 
         return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False)
 
-    def update_current_print(self, filename, current_print_ts):
-        if current_print_ts == -1:      # Not printing
-            if self.current_print:
-                if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
-                    self.unset_current_print()
-                else:
-                    LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
-
-            return
-
-        # currently printing
-
-        if self.current_print:
-            if self.current_print.ext_id == current_print_ts:
-                return
-            # Unknown bug in plugin that causes current_print_ts not unique
-
-            if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
-                LOGGER.warn(
-                    f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
-
-                return
-            LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
-            self.unset_current_print()
-            self.set_current_print(filename, current_print_ts)
-        else:
-            self.set_current_print(filename, current_print_ts)
-
-    def unset_current_print(self):
-        print = self.current_print
-        self.current_print = None
-        self.save()
-
-        self.printerprediction.reset_for_new_print()
-
-        if print.cancelled_at is None:
-            print.finished_at = timezone.now()
-            print.save()
-
-        PrintEvent.create(print, PrintEvent.ENDED)
-        self.send_should_watch_status()
-
-    def set_current_print(self, filename, current_print_ts):
-        if not current_print_ts or current_print_ts == -1:
-            raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
-
-        try:
-            cur_print, _ = Print.objects.get_or_create(
-                user=self.user,
-                printer=self,
-                ext_id=current_print_ts,
-                defaults={'filename': filename.strip(), 'started_at': timezone.now()},
-            )
-        except IntegrityError:
-            raise ResurrectionError('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
-
-        if cur_print.ended_at():
-            if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
-                return
-            else:
-                raise ResurrectionError('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
-
-        self.current_print = cur_print
-        self.save()
-
-        self.printerprediction.reset_for_new_print()
-        PrintEvent.create(cur_print, PrintEvent.STARTED)
-        self.send_should_watch_status()
-
     ## return: succeeded? ##
     def resume_print(self, mute_alert=False):
         if self.current_print is None:  # when a link on an old email is clicked
@@ -393,8 +324,9 @@ class Printer(SafeDeleteModel):
     def send_octoprint_command(self, command, args={}):
         channels.send_msg_to_printer(self.id, {'commands': [{'cmd': command, 'args': args}]})
 
-    def send_should_watch_status(self):
-        self.refresh_from_db()
+    def send_should_watch_status(self, refresh=True):
+        if refresh:
+            self.refresh_from_db()
         channels.send_msg_to_printer(self.id, {'remote_status': {'should_watch': self.should_watch()}})
 
     def __str__(self):
@@ -525,7 +457,10 @@ class Print(SafeDeleteModel):
     filename = models.CharField(max_length=1000, null=False, blank=False)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
+    estimated_finished_at = models.DateTimeField(null=True)
+    gone_at = models.DateTimeField(null=True)
     cancelled_at = models.DateTimeField(null=True)
+    status_at = models.DateTimeField(null=True)
     uploaded_at = models.DateTimeField(null=True)
     alerted_at = models.DateTimeField(null=True)
     alert_acknowledged_at = models.DateTimeField(null=True)
@@ -567,6 +502,8 @@ class Print(SafeDeleteModel):
 class PrintEvent(models.Model):
     STARTED = 'STARTED'
     ENDED = 'ENDED'
+    DETECTED = 'DETECTED'
+    GONE = 'GONE'
     PAUSED = 'PAUSED'
     RESUMED = 'RESUMED'
     ALERT_MUTED = 'ALERT_MUTED'
@@ -574,14 +511,16 @@ class PrintEvent(models.Model):
 
     EVENT_TYPE = (
         (STARTED, STARTED),
+        (DETECTED, DETECTED),
         (ENDED, ENDED),
+        (GONE, GONE),
         (PAUSED, PAUSED),
         (RESUMED, RESUMED),
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
     )
 
-    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
+    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED, GONE)
 
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
@@ -592,7 +531,8 @@ class PrintEvent(models.Model):
     alert_muted = models.BooleanField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def create(print, event_type):
+    @classmethod
+    def create(cls, print, event_type):
         event = PrintEvent.objects.create(
             print=print,
             event_type=event_type,
@@ -601,6 +541,8 @@ class PrintEvent(models.Model):
 
         if event_type in PrintEvent.ENDED:
             celery_app.send_task(settings.PRINT_EVENT_HANDLER, args=[print.id])
+
+        return event
 
 
 class SharedResource(models.Model):

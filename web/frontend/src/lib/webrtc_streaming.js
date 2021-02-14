@@ -163,7 +163,7 @@ function getWebRTCManager(callbacks, videoEnabled) {
       if (this.streamId === undefined || this.streaming === undefined) {
         return
       }
-      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(this.streamId) }
+      const body = { 'request': 'watch', offer_video: this.videoEnabled, id: parseInt(this.streamId) }
       this.streaming.send({ 'message': body })
     },
     stopStream() {

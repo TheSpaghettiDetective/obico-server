@@ -11,11 +11,8 @@ import logging
 from django.utils import timezone
 from django.conf import settings
 from django.core import serializers
-from django.db.models import Q
 from celery import shared_task
 from celery.decorators import periodic_task
-from celery.task.schedules import crontab
-from raven.contrib.django.raven_compat.models import client as sentryClient
 from datetime import timedelta
 import tempfile
 import requests
@@ -27,7 +24,6 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
-from .models import Print
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -37,54 +33,6 @@ from lib.notifications import send_print_notification
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
-
-# if estimated_finished_at + this is in the past then
-# its time to emit PrintEvent.GONE
-GONE_DELTA = timedelta(hours=4)
-
-# if unclosed print without estimate has an older
-# updated_at than this then its time to close it (last resort)
-ABS_GONE_DELTA = timedelta(days=7)
-
-
-@periodic_task(run_every=(crontab(minute='0,10,20,30,40,50')))
-def mark_prints_as_gone():
-    from api.octoprint_messages import on_PrintGone
-
-    # going to close unfinished prints
-    # where estimated finish time + delta is reached
-    dt = timezone.now() - GONE_DELTA
-    qs = Print.objects.filter(
-        finished_at__isnull=True,
-        cancelled_at__isnull=True,
-        estimated_finished_at__isnull=False,
-        estimated_finished_at__lt=dt,
-        # extra safety
-        updated_at__lt=dt,
-    ).select_related('printer')
-
-    # let's limit count
-    for _print in qs[:1000]:
-        on_PrintGone(_print.printer, _print, timezone.now())
-
-    # going to close unfinished prints without any estimate and updates
-    dt = timezone.now() - ABS_GONE_DELTA
-    qs = Print.objects.filter(
-        # may not have status_at (prints created before this commit goes live)
-        Q(status_at__lt=dt, updated_at__lt=dt) | Q(status_at__isnull=True, updated_at__lt=dt),
-        finished_at__isnull=True,
-        cancelled_at__isnull=True,
-        # if has estimate then it is handled above
-        estimated_finished_at__isnull=True,
-    ).select_related('printer')
-
-    # let's limit count
-    for _print in qs[:1000]:
-        sentryClient.captureMessage(
-            f'Print never finished/estimated | printer_id: {_print.printer_id} print_id: {_print.id}',
-        )
-        on_PrintGone(_print.printer, _print, timezone.now())
-
 
 @shared_task
 def process_print_events(print_id):

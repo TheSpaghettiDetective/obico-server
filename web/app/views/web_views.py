@@ -148,8 +148,8 @@ def printer_shared(request, share_token=None):
 
 
 @login_required
-def control_printer(request, pk):
-    return render(request, 'printer_control.html', {'printer': get_printer_or_404(pk, request)})
+def printer_control(request, pk):
+    return render(request, 'printer_control.html')
 
 
 @login_required

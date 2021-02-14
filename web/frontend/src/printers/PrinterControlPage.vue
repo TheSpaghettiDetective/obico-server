@@ -8,7 +8,7 @@
               <div class="printer-name">{{ printer.name }}</div>
             </div>
           </div>
-          <streaming-box :printer="printer" :isProAccount="isProAccount" />
+          <streaming-box :printer="printer" :isProAccount="user.is_pro" />
           <div class="card-body" :class="{'overlay': !idle}">
             <div
               class="overlay-top text-center"
@@ -78,6 +78,7 @@
 </template>
 
 <script>
+  import split from 'lodash/split'
   import axios from 'axios'
   import urls from '@lib/server_urls'
   import { normalizedPrinter } from '@lib/normalizers'
@@ -114,6 +115,8 @@
         axis: AXIS,
         directions: DIRECTIONS,
 
+        user: null,
+        printerId: null,
         printer: null,
 
         // Current distance and possible options
@@ -126,27 +129,22 @@
     },
 
     props: {
-      printerId: {
-        type: String,
-        required: true,
-      },
-      isProAccount: {
-        type: Boolean,
-        required: true,
-      },
       shareToken: {
         type: String,
         required: false
       },
     },
 
-    mounted() {
+    created() {
+      this.user = JSON.parse(document.querySelector('#user-json').text)
+      this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
+
       this.printerWs = PrinterWebSocket()
 
       this.fetchPrinter(this.printerId).then(() => {
         this.webrtc = null
 
-        if (this.isProAccount) {
+        if (this.user.is_pro) {
           Janus.init({
             debug: 'all',
             callback: this.onJanusInitalized

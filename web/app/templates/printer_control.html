@@ -13,10 +13,7 @@
 
 {% block content %}
 <div id="printer-control-mount">
-  <printer-control-page
-    printer-id="{{ printer.id }}"
-    :is-pro-account="{% if user.is_pro %}true{% else %}false{% endif %}"
-  ></printer-control-page>
+  <printer-control-page></printer-control-page>
 </div>
 
 {% bundle 'printers' %}

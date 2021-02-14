@@ -168,6 +168,11 @@ function getWebRTCManager(callbacks) {
       this.streaming.send({ 'message': body })
       this.streaming.hangup()
     },
+    sendPassThruMessage(message) {
+      if (this.streaming) {
+        this.streaming.send({text: JSON.stringify(message), success: function() {}})
+      }
+    }
   }
 
   return manager

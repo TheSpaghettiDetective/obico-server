@@ -2,11 +2,12 @@ import get from 'lodash/get'
 import Janus from '@lib/janus'
 
 
-function getWebRTCManager(callbacks) {
+function getWebRTCManager(callbacks, videoEnabled) {
   let manager = {
     callbacks: callbacks,
     streamId: undefined,
     streaming: undefined,
+    videoEnabled: videoEnabled ?? false,
 
     connect(wsUri, token) {
       const opaqueId = 'streamingtest-' + Janus.randomString(12)
@@ -75,9 +76,11 @@ function getWebRTCManager(callbacks) {
               slowLink: function(uplink, lost) {
                 self.onSlowLink(lost)
               },
-              ondataopen: function () {
+              ondataopen: function() {
               },
-              ondata: function () {
+              ondata: function(rawData) {
+                self.onData(rawData)
+
               },
               oncleanup: function() {
                 self.onCleanup()
@@ -145,7 +148,7 @@ function getWebRTCManager(callbacks) {
       this.callbacks.onTrackMuted()
     },
     onTrackUnmuted() {
-        this.callbacks.onTrackUnmuted()
+      this.callbacks.onTrackUnmuted()
     },
     onSlowLink(lost) {
       this.callbacks.onSlowLink(lost)
@@ -153,11 +156,14 @@ function getWebRTCManager(callbacks) {
     onCleanup() {
       this.callbacks.onCleanup()
     },
+    onData(rawData) {
+      this.callbacks.onData(rawData)
+    },
     startStream() {
       if (this.streamId === undefined || this.streaming === undefined) {
         return
       }
-      const body = { 'request': 'watch', id: parseInt(this.streamId) }
+      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(this.streamId) }
       this.streaming.send({ 'message': body })
     },
     stopStream() {

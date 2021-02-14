@@ -73,6 +73,7 @@ import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 
 import Janus from '@lib/janus'
+import EventBus from '@lib/event_bus'
 import webrtc from '@lib/webrtc_streaming'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 
@@ -81,16 +82,13 @@ let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 export default {
   name: 'StreamingBox',
-
   created() {
     this.webrtc = null
 
-    if (this.isProAccount) {
-      Janus.init({
-        debug: 'all',
-        callback: this.onJanusInitalized
-      })
-    }
+    Janus.init({
+      debug: 'all',
+      callback: this.onJanusInitalized
+    })
 
     ifvisible.on('blur', () => {
       if (this.webrtc) {
@@ -211,7 +209,10 @@ export default {
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
-      })
+        onData: this.onWebRTCData,
+      }, this.isProAccount)
+
+      EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
 
       this.openWebRTCForPrinter()
     },
@@ -231,6 +232,26 @@ export default {
     onWebRTCCleanup() {
       this.isVideoVisible = false
     },
+
+    onWebRTCData(jsonData) {
+      let msg = {}
+      try {
+        msg = JSON.parse(jsonData)
+      } catch {
+        // parse error
+      }
+      if ('passthru' in msg) {
+        EventBus.$emit('gotPassthruOverDatachannel', this.printer.id, msg)
+      }
+    },
+
+    sendOverDatachannel(printerId, msg) {
+      if (this.printer && printerId == this.printer.id) {
+        if (this.webrtc && this.webrtc.streaming) {
+          this.webrtc.streaming.data({text: JSON.stringify(msg), success: () => {}})
+        }
+      }
+     },
 
     /** Video warning handling */
 

@@ -119,24 +119,16 @@
         axis: AXIS,
         directions: DIRECTIONS,
 
-<<<<<<< HEAD
         user: null,
         printerId: null,
-=======
->>>>>>> Implement PrinterControl JS logic
         printer: null,
 
         // Current distance and possible options
         jogDistance: 10,
         jogDistanceOptions: [0.1, 1, 10, 100],
 
-<<<<<<< HEAD
-        // If false, controls are blocked
-        idle: true,
-=======
         // If true, controls are blocked
         idle: false,
->>>>>>> Implement PrinterControl JS logic
       }
     },
 
@@ -151,24 +143,16 @@
       },
     },
 
-<<<<<<< HEAD
     created() {
       this.user = JSON.parse(document.querySelector('#user-json').text)
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
 
-=======
-    mounted() {
->>>>>>> Implement PrinterControl JS logic
       this.printerWs = PrinterWebSocket()
 
       this.fetchPrinter(this.printerId).then(() => {
         this.webrtc = null
 
-<<<<<<< HEAD
         if (this.user.is_pro) {
-=======
-        if (this.isProAccount) {
->>>>>>> Implement PrinterControl JS logic
           Janus.init({
             debug: 'all',
             callback: this.onJanusInitalized

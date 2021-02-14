@@ -235,9 +235,9 @@
 <script>
 import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
+import moment from 'moment'
 import Gauge from '@common/Gauge'
 import StreamingBox from '@common/StreamingBox'
-import { toDuration } from '@lib/printers.js'
 import { getLocalPref, setLocalPref } from '@lib/pref'
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
@@ -287,7 +287,7 @@ export default {
       return !this.printer.not_watching_reason
     },
     timeRemaining() {
-      return toDuration(
+      return this.toDuration(
         this.secondsLeft, this.printer.isPrinting)
     },
     timeTotal() {
@@ -295,7 +295,7 @@ export default {
       if (this.secondsPrinted && this.secondsLeft) {
         secs = this.secondsPrinted + this.secondsLeft
       }
-      return toDuration(
+      return this.toDuration(
         secs,
         this.printer.isPrinting)
     },
@@ -370,6 +370,29 @@ export default {
     onStatusTempToggleClicked() {
       this.section_toggles.statusTemp = !this.section_toggles.statusTemp
       setLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), this.section_toggles.statusTemp)
+    },
+    toDuration (seconds, isPrinting) {
+      if (seconds == null || seconds == 0) {
+        return {
+          valid: false,
+          printing: isPrinting,
+        }
+      } else {
+        var d = moment.duration(seconds, 'seconds')
+        var h = Math.floor(d.asHours())
+        var m = d.minutes()
+        var s = d.seconds()
+        return {
+          valid: true,
+          printing: isPrinting,
+          hours: h,
+          showHours: (h>0),
+          minutes: m,
+          showMinutes: (h>0 || m>0),
+          seconds: s,
+          showSeconds: (h==0 && m==0)
+        }
+      }
     },
   },
 }

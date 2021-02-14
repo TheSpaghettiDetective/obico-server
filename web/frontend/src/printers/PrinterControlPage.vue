@@ -120,8 +120,8 @@
         jogDistance: 10,
         jogDistanceOptions: [0.1, 1, 10, 100],
 
-        // If true, controls are blocked
-        idle: false,
+        // If false, controls are blocked
+        idle: true,
       }
     },
 

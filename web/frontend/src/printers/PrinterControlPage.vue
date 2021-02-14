@@ -8,11 +8,7 @@
               <div class="printer-name">{{ printer.name }}</div>
             </div>
           </div>
-<<<<<<< HEAD
           <streaming-box :printer="printer" :isProAccount="user.is_pro" />
-=======
-          <streaming-box :printer="printer" :isProAccount="isProAccount" />
->>>>>>> Implement PrinterControl JS logic
           <div class="card-body" :class="{'overlay': !idle}">
             <div
               class="overlay-top text-center"

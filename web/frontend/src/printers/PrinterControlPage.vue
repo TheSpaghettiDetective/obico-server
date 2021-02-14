@@ -133,10 +133,6 @@
         type: String,
         required: false
       },
-      shareToken: {
-        type: String,
-        required: false
-      },
     },
 
     created() {

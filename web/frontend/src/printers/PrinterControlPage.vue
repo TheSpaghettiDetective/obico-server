@@ -135,12 +135,8 @@
         this.printerId,
         urls.printerWebSocket(this.printerId),
         (data) => {
-          // TODO: a more reliable way to make srue webrtc connection is open only once
-          const webrtcConnected = this.printer
-
           this.printer = normalizedPrinter(data)
-
-          if (!webrtcConnected) {
+          if (this.webrtc && !this.webrtc.initialized) {
             this.webrtc.openForPrinter(this.printer)
           }
         }

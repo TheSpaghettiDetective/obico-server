@@ -9,6 +9,7 @@ let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 export default function WebRTCConnection(videoEnabled) {
   let self = {
     callbacks: {},
+    initialized: false,
     streamId: undefined,
     streaming: undefined,
     videoEnabled: videoEnabled ?? false,
@@ -31,6 +32,7 @@ export default function WebRTCConnection(videoEnabled) {
         Janus.init({
             debug: 'all',
             callback: () => {
+                self.initialized = true
                 if (!Janus.isWebrtcSupported()) {
                     return
                 }
@@ -196,15 +198,18 @@ export default function WebRTCConnection(videoEnabled) {
     onData(rawData) {
       self.callbacks.onData(rawData)
     },
+    channelOpen() {
+      return !(self.streamId === undefined || self.streaming === undefined)
+    },
     startStream() {
-      if (self.streamId === undefined || self.streaming === undefined) {
+      if (!self.channelOpen()) {
         return
       }
       const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
       self.streaming.send({ 'message': body })
     },
     stopStream() {
-      if (self.streamId === undefined || self.streaming === undefined) {
+    if (!self.channelOpen()) {
         return
       }
       const body = { 'request': 'stop' }

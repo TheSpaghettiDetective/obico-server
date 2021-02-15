@@ -56,7 +56,7 @@
           type="button"
           id="not-a-failure"
           class="btn btn-outline-primary btn-sm float-right"
-          @click="onNotAFailureClicked($event, printer.id, false)"
+          @click="onNotAFailureClicked($event, false)"
         >Not a failure?</button>
       </div>
 
@@ -298,12 +298,12 @@ export default {
       },
     }
   },
-  crated() {
+  created() {
     this.printerWs = PrinterWebSocket(
-      this.printerId,
-      urls.printerWS(this.printerId),
+      this.printer.id,
+      urls.printerWS(this.printer.id),
       (data) => {
-        this.reinsertPrinter(normalizedPrinter(data))
+        this.$emit('PrinterUpdated', normalizedPrinter(data))
       }
     )
     this.printerWs.openPrinterWebSocket()
@@ -397,7 +397,7 @@ export default {
       this.section_toggles.statusTemp = !this.section_toggles.statusTemp
       setLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), this.section_toggles.statusTemp)
     },
-    onNotAFailureClicked(ev, printerId, resumePrint) {
+    onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
         html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
@@ -408,7 +408,7 @@ export default {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
             this.sendPrinterAction(
-              printerId,
+              this.printer.id,
               MUTE_CURRENT_PRINT,
               false
             )
@@ -416,12 +416,12 @@ export default {
         }
         if (resumePrint) {
           this.sendPrinterAction(
-            printerId,
+            this.printer.id,
             RESUME_PRINT,
             true)
         } else {
           this.sendPrinterAction(
-            printerId,
+            this.printer.id,
             ACK_ALERT_NOT_FAILED,
             false)
         }
@@ -429,50 +429,42 @@ export default {
 
       ev.preventDefault()
     },
-    onWatchForFailuresToggled(printerId) {
-      let p = this.printers.find((p) => p.id == printerId)
-      if (p) {
-        p.watching_enabled = !p.watching_enabled
-        this.updatePrinter(p)
-      }
+    onWatchForFailuresToggled() {
+      this.printer.watching_enabled = !this.printer.watching_enabled
+      this.updatePrinter(this.printer)
     },
-    onPauseOnFailureToggled(printerId) {
-      let p = this.printers.find((p) => p.id == printerId)
-      if (p) {
-        p.action_on_failure = p.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
-        this.updatePrinter(p)
-      }
+    onPauseOnFailureToggled() {
+      this.printer.action_on_failure = this.printer.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
+      this.updatePrinter(this.printer)
     },
-    onPrinterActionPauseClicked(printerId) {
+    onPrinterActionPauseClicked() {
       this.$swal.Confirm.fire({
         html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings/#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
       }).then((result) => {
         if (result.value) {
-          this.sendPrinterAction(printerId, PAUSE_PRINT, true)
+          this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
         }
       })
     },
-    onPrinterActionResumeClicked(ev, printerId) {
-      let printer = this.printers.find((p) => p.id == printerId)
-      if (printer.alertUnacknowledged) {
-        this.onNotAFailureClicked(ev, printerId, true)
+    onPrinterActionResumeClicked(ev) {
+      if (this.printer.alertUnacknowledged) {
+        this.onNotAFailureClicked(ev, true)
       } else {
-        this.sendPrinterAction(printerId, RESUME_PRINT, true)
+        this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
       }
     },
-    onPrinterActionCancelClicked(printerId) {
+    onPrinterActionCancelClicked() {
       this.$swal.Confirm.fire({
         text: 'Once cancelled, the print can no longer be resumed.',
       }).then((result) => {
         if (result.value) {
           // When it is confirmed
-          this.sendPrinterAction(printerId, CANCEL_PRINT, true)
+          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
         }
       })
     },
-    onPrinterActionConnectClicked(printerId) {
+    onPrinterActionConnectClicked() {
       this.printerWs.passThruToPrinter(
-        printerId,
         { func: 'get_connection_options', target: '_printer' },
         (err, connectionOptions) => {
           if (err) {
@@ -509,7 +501,6 @@ export default {
                     result.value.baudrate
                   ]
                   this.printerWs.passThruToPrinter(
-                    printerId,
                     { func: 'connect', target: '_printer',
                       args: args }
                   )
@@ -520,8 +511,8 @@ export default {
         }
       )
     },
-    onPrinterActionStartClicked(printerId) {
-      if (!this.user.is_pro) {
+    onPrinterActionStartClicked() {
+      if (!this.isProAccount) {
         this.$swal.fire({
           title: 'Wait!',
           html: `
@@ -532,8 +523,6 @@ export default {
         })
         return
       }
-
-      let printer = this.printers.find((p) => p.id == printerId)
 
       axios
         .get(
@@ -548,24 +537,21 @@ export default {
           this.$swal.openModalWithComponent(
             StartPrint,
             {
-              printerId: printerId,
               gcodeFiles: gcodeFiles,
               onGcodeFileSelected: this.onGcodeFileSelected,
             },
             {
-              title: 'Print on ' + printer.name,
+              title: 'Print on ' + this.printer.name,
               showConfirmButton: false,
               showCancelButton: true,
             }
           )
         })
     },
-    onGcodeFileSelected(printerId, gcodeFiles, gcodeFileId) {
+    onGcodeFileSelected(gcodeFiles, gcodeFileId) {
       // actionsDiv.find('button').attr('disabled', true) // TODO
-      let printer = this.printers.find((p) => p.id == printerId)
 
       this.printerWs.passThruToPrinter(
-        printerId,
         { func: 'download',
           target: 'file_downloader',
           args: filter(gcodeFiles, { id: gcodeFileId })
@@ -585,7 +571,7 @@ export default {
           <div class="text-center">
             <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
             <h5 class="py-3">
-              Uploading G-Code to ${printer.name} ...
+              Uploading G-Code to ${this.printer.name} ...
             </h5>
             <p>
               ${targetPath}
@@ -598,8 +584,7 @@ export default {
           })
 
           let checkPrinterStatus = () => {
-            let updatedPrinter = this.printers.find((p) => p.id == printerId)
-            if (get(updatedPrinter, 'status.state.text') == 'Operational') {
+            if (get(this.printer, 'status.state.text') == 'Operational') {
               setTimeout(checkPrinterStatus, 1000)
             } else {
               this.$swal.close()
@@ -610,13 +595,12 @@ export default {
       )
     },
 
-    onPrinterActionControlClicked(printerId) {
-      window.location = urls.printerControl(printerId)
+    onPrinterActionControlClicked() {
+      window.location = urls.printerControl(this.printer.id)
     },
 
-    onTempEditClicked(printerId, item) {
-      let printer = this.printers.find((p) => p.id == printerId)
-      let tempProfiles = get(printer, 'settings.temp_profiles', [])
+    onTempEditClicked(item) {
+      let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
       let presets
       let maxTemp = 350
 
@@ -651,7 +635,6 @@ export default {
         if (result.value) {
           let targetTemp = result.value.target
           this.printerWs.passThruToPrinter(
-            printer.id,
             {
               func: 'set_temperature',
               target: '_printer',

@@ -19,10 +19,10 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
   })
 
   ifvisible.on('focus', function(){
-    self.openPrinterWebSocket(self.printerId, self.wsUri, self.onMessageReceived)
+    self.openPrinterWebSocket()
   })
 
-  self.on_passThruReceived = function(printerId, msg) {
+  self.on_passThruReceived = function(msg) {
     var refId = msg.passthru.ref
     if (refId && self.passthruQueue.get(refId)) {
       var callback = self.passthruQueue.get(refId)
@@ -38,7 +38,7 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
     self.ws.onmessage = function (e) {
       var msg = JSON.parse(e.data)
       if ('passthru' in msg) {
-        self.on_passThruReceived(self.printerId, msg)
+        self.on_passThruReceived(msg)
       } else {
         onMessageReceived(msg)
       }
@@ -49,7 +49,7 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
   }
 
 
-  self.passThruToPrinter = function(printerId, msg, callback) {
+  self.passThruToPrinter = function(msg, callback) {
     if (self.canSend()) {
       if (callback) {
         var refId = Math.random().toString()
@@ -66,7 +66,7 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
       }
       let msgObj = {passthru: msg}
       self.ws.send(JSON.stringify(msgObj))
-      EventBus.$emit('sendOverDatachannel', printerId, msgObj)
+      EventBus.$emit('sendOverDatachannel', self.printerId, msgObj)
       return msgObj
     } else {
       if (callback){

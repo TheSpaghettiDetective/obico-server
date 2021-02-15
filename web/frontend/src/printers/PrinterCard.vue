@@ -653,15 +653,15 @@ export default {
             action_on_failure: printer.action_on_failure,
           })
         .then(response => {
-          this.printers.map(p => {
-            if (p.id == response.data.id) {
-              return normalizedPrinter(response.data)
-            }
-            return p
-          })
+          if (response.data.succeeded) {
+            const p = normalizedPrinter(response.data.printer)
+            this.$emit('PrinterUpdated', p)
+          } else {
+            throw response
+          }
         })
         .catch(response => {
-          console.log(response)
+          console.error(response)
           this.$swal.Toast.fire({
             icon: 'error',
             title: 'Failed to update printer!',

@@ -156,7 +156,7 @@
         }
 
         const payload = {func: func, target: '_printer', args: args}
-        const msgObj = this.printerWs.passThruToPrinter(this.printerId, payload)
+        const msgObj = this.printerWs.passThruToPrinter(payload)
         if (this.webrtc) {
           this.webrtc.sendPassThruMessage(msgObj)
         }

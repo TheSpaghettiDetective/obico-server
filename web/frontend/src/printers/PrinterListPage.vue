@@ -73,7 +73,7 @@
         :key="printer.id"
         :printer="printer"
         :is-pro-account="user.is_pro"
-        @PrinterUpdated="reinsertPrinter(printer)"
+        @PrinterUpdated="onPrinterUpdated"
       ></printer-card>
     </div>
 
@@ -292,7 +292,7 @@ export default {
       this.printers.push(printer)
     },
 
-    reinsertPrinter(printer) {
+    onPrinterUpdated(printer) {
       let index = this.printers.findIndex(p => p.id == printer.id)
       if (index < 0) {
         // FIXME any alert here?

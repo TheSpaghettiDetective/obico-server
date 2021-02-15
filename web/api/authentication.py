@@ -63,16 +63,6 @@ class PrinterServiceTokenAuthentication(TokenAuthentication):
         return printer.user, printer
 
 
-class PrinterShareTokenAuthentication(TokenAuthentication):
-    def authenticate_credentials(self, key, request=None):
-        try:
-            printer = SharedResource.objects.select_related('printer').get(share_token=key).printer
-        except ObjectDoesNotExist:
-            return None
-
-        return printer.user, printer
-
-
 def TokenAuthMiddlewareStack(inner): return PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))
 
 

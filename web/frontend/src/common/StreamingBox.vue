@@ -179,7 +179,7 @@ export default {
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
 
-      var videoTracks = stream.getVideoTracks()
+      const videoTracks = stream.getVideoTracks()
       if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
         // No remote video
         this.isVideoVisible = false

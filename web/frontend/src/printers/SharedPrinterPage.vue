@@ -46,9 +46,18 @@ export default {
     StreamingBox,
   },
   created(){
-    this.printerWs = PrinterWebSocket()
     this.webrtc = null
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
+
+    this.printerWs = PrinterWebSocket(
+      this.shareToken,
+      urls.printerSharedWS(this.shareToken),
+      (data) => {
+        this.printer = normalizedPrinter(data)
+        this.loading = false
+      }
+    )
+    this.printerWs.openPrinterWebSocket()
   },
   data: function() {
     return {
@@ -58,18 +67,6 @@ export default {
       loading: true,
     }
   },
-  mounted() {
-    const url = urls.printerSharedWS(this.shareToken)
-    this.printerWs.openPrinterWebSockets(
-      this.shareToken,
-      url,
-      (data) => {
-        this.printer = normalizedPrinter(data)
-        this.loading = false
-      }
-    )
-  }
-
 }
 </script>
 

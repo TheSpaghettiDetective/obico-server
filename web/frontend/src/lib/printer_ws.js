@@ -4,21 +4,22 @@ import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import EventBus from '@lib/event_bus'
 
-function PrinterWebSocket() {
+
+export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
   var self = {}
 
-  self.desiredWsList = new Map()
-  self.wsList = new Map()
+  self.printerId = printerId
+  self.wsUri = wsUri
+  self.onMessageReceived = onMessageReceived
+  self.ws = null
   self.passthruQueue = new Map()
 
   ifvisible.on('blur', function(){
-    closeWebSockets()
+    self.closeWebSocket()
   })
 
   ifvisible.on('focus', function(){
-    self.desiredWsList.forEach( function(args, printerId) {
-      self.openPrinterWebSockets(printerId, args[0], args[1])
-    })
+    self.openPrinterWebSocket(self.printerId, self.wsUri, self.onMessageReceived)
   })
 
   self.on_passThruReceived = function(printerId, msg) {
@@ -32,29 +33,24 @@ function PrinterWebSocket() {
 
   EventBus.$on('gotPassthruOverDatachannel', self.on_passThruReceived)
 
-  self.openPrinterWebSockets = function(printerId, wsUri, onMessageReceived) {
-
-    self.desiredWsList.set(printerId, [wsUri, onMessageReceived])
-
-    var printerSocket = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri)
-    self.wsList.set(printerId, printerSocket)
-    printerSocket.onmessage = function (e) {
+  self.openPrinterWebSocket = function() {
+    self.ws = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri)
+    self.ws.onmessage = function (e) {
       var msg = JSON.parse(e.data)
       if ('passthru' in msg) {
-        self.on_passThruReceived(printerId, msg)
+        self.on_passThruReceived(self.printerId, msg)
       } else {
         onMessageReceived(msg)
       }
     }
 
-    ensureWebsocketClosed(printerSocket)
-    setTimeout( function () { heartbeat(printerSocket) }, 30*1000)
+    self.ensureWebsocketClosed()
+    setTimeout( function () { self.heartbeat() }, 30*1000)
   }
 
 
   self.passThruToPrinter = function(printerId, msg, callback) {
-    var pSocket = self.wsList.get(printerId)
-    if (pSocket) {
+    if (self.canSend()) {
       if (callback) {
         var refId = Math.random().toString()
         self.passthruQueue.set(refId, callback)
@@ -69,7 +65,7 @@ function PrinterWebSocket() {
         }, 10*1000)
       }
       let msgObj = {passthru: msg}
-      pSocket.send(JSON.stringify(msgObj))
+      self.ws.send(JSON.stringify(msgObj))
       EventBus.$emit('sendOverDatachannel', printerId, msgObj)
       return msgObj
     } else {
@@ -81,37 +77,35 @@ function PrinterWebSocket() {
 
   // Helper methods
 
-  function ensureWebsocketClosed(ws) {
-    ws.onclose = function () {
-      self.wsList.forEach( function(v, k) {
-        if (v == ws) {
-          self.wsList.delete(k)
-        }
-      })
+  self.ensureWebsocketClosed = function() {
+    self.ws.onclose = function () {
+      self.ws = null
     }
-    ws.onerror = function () {
-      ws.close()
+    self.ws.onerror = function () {
+      self.ws.close()
     }
   }
 
-  function closeWebSockets() {
-    self.wsList.forEach( function(v) {
-      v.close()
-    })
+  self.closeWebSocket = function() {
+    if (self.ws) {
+        self.ws.close()
+    }
   }
 
   // Heartbeat to maintain the presence of connection
   // Adapted from https://stackoverflow.com/questions/50876766/how-to-implement-ping-pong-request-for-websocket-connection-alive-in-javascript
 
-  function heartbeat(printerSocket) {
-    if (!printerSocket) return
-    if (printerSocket.readyState !== 1) return
-    printerSocket.send(JSON.stringify({}))
-    setTimeout( function () { heartbeat(printerSocket) }, 30*1000)
+  self.heartbeat = function() {
+    if (!self.canSend()) {
+        return
+    }
+    self.ws.send(JSON.stringify({}))
+    setTimeout( function () { self.heartbeat() }, 30*1000)
+  }
+
+  self.canSend = function() {
+    return self.ws && self.ws.readyState === 1
   }
 
   return self
 }
-
-
-export default PrinterWebSocket

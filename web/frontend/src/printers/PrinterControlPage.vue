@@ -9,11 +9,11 @@
             </div>
           </div>
           <streaming-box :printer="printer" :isProAccount="user.is_pro" />
-          <div class="card-body" :class="{'overlay': !idle}">
+          <div class="card-body" :class="{'overlay': !printer.isIdle}">
             <div
               class="overlay-top text-center"
               style="left: 50%; margin-left: -102px; top: 50%; margin-top: -85px;"
-              v-show="!idle"
+              v-show="!printer.isIdle"
             >
               <div>Printer controls are disabled</div>
               <div>because the printer is not idle.</div>
@@ -79,7 +79,6 @@
 
 <script>
   import split from 'lodash/split'
-  import axios from 'axios'
   import urls from '@lib/server_urls'
   import { normalizedPrinter } from '@lib/normalizers'
   import StreamingBox from '@common/StreamingBox'
@@ -117,24 +116,12 @@
         // Current distance and possible options
         jogDistance: 10,
         jogDistanceOptions: [0.1, 1, 10, 100],
-
-        // If true, controls are blocked
-        idle: false,
       }
-    },
-
-    props: {
-      shareToken: {
-        type: String,
-        required: false
-      },
     },
 
     created() {
       this.user = JSON.parse(document.querySelector('#user-json').text)
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
-
-      this.printerWs = PrinterWebSocket()
 
       this.fetchPrinter()
 
@@ -146,11 +133,14 @@
     methods: {
       // Get printer info
       fetchPrinter() {
-        axios
-          .get(urls.printer(this.printerId))
-          .then(response => {
-            this.printer = normalizedPrinter(response.data)
-          })
+        this.printerWs = PrinterWebSocket(
+          this.printerId,
+          urls.printerWS(this.printerId),
+          (data) => {
+            this.printer = normalizedPrinter(data)
+          }
+        )
+        this.printerWs.openPrinterWebSocket()
       },
 
       // Control request after button click

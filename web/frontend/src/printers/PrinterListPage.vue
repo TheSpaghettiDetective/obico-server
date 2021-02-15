@@ -643,7 +643,7 @@ export default {
     openWSForPrinter(printer) {
       let printerId = printer.id
       const url = urls.printerWS(printer.id)
-      this.printerWs.openPrinterWebSockets(
+      this.printerWs.openPrinterWebSocket(
         printerId,
         url,
         (data) => {

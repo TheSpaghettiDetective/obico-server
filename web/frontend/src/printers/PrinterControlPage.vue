@@ -135,7 +135,7 @@
       fetchPrinter() {
         this.printerWs = PrinterWebSocket(
           this.printerId,
-          urls.printerWS(this.printerId),
+          urls.printerWebSocket(this.printerId),
           (data) => {
             this.printer = normalizedPrinter(data)
           }

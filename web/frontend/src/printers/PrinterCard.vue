@@ -301,7 +301,7 @@ export default {
   created() {
     this.printerWs = PrinterWebSocket(
       this.printer.id,
-      urls.printerWS(this.printer.id),
+      urls.printerWebSocket(this.printer.id),
       (data) => {
         this.$emit('PrinterUpdated', normalizedPrinter(data))
       }

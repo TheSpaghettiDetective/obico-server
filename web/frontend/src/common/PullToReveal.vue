@@ -46,7 +46,7 @@ export default {
       }
 
       const elemHeight = parseInt(window.getComputedStyle(elem).height)
-      elem.style.top = `-${elemHeight + 10}px`
+      elem.style.top = `-${elemHeight * 2}px`
     }
   },
 
@@ -90,7 +90,7 @@ export default {
 
         this.$emit('hide')
 
-        elem.style.top = `-${elemHeight + 10}px`
+        elem.style.top = `-${elemHeight * 2}px`
         this.status = 'closed'
 
         if (this.shiftContent) {

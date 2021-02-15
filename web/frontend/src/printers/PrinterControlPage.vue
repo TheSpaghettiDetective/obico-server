@@ -1,7 +1,7 @@
 <template>
   <div class="container my-5">
     <div class="row justify-content-center" style="margin: -24px -31px 0px;">
-      <div v-if="printer" :id="printer.id" :data-auth-token="printer.auth_token" class="col-sm-12 col-lg-8 printer-card">
+      <div v-if="printer" class="col-sm-12 col-lg-8 printer-card">
         <div class="card">
           <div class="card-header">
             <div class="title-box">
@@ -84,11 +84,6 @@
   import { normalizedPrinter } from '@lib/normalizers'
   import StreamingBox from '@common/StreamingBox'
   import PrinterWebSocket from '@lib/printer_ws'
-  import Janus from '@lib/janus'
-  import webrtc from '@lib/webrtc_streaming'
-
-  let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
-  let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
   const AXIS = {
     x: 'x',
@@ -141,16 +136,7 @@
 
       this.printerWs = PrinterWebSocket()
 
-      this.fetchPrinter(this.printerId).then(() => {
-        this.webrtc = null
-
-        if (this.user.is_pro) {
-          Janus.init({
-            debug: 'all',
-            callback: this.onJanusInitalized
-          })
-        }
-      })
+      this.fetchPrinter()
 
       // Get jogDistance from localStorage or set default value
       const storageValue = localStorage.getItem(`mm-per-step-${this.printerId}`)
@@ -160,7 +146,7 @@
     methods: {
       // Get printer info
       fetchPrinter() {
-        return axios
+        axios
           .get(urls.printer(this.printerId))
           .then(response => {
             this.printer = normalizedPrinter(response.data)
@@ -184,30 +170,6 @@
         if (this.webrtc) {
           this.webrtc.sendPassThruMessage(msgObj)
         }
-      },
-
-      openWebRTCForPrinter() {
-        let url, token
-        if (this.shareToken) {
-          url = printerSharedWebRTCUrl(this.shareToken)
-          token = this.shareToken
-        } else {
-          url = printerWebRTCUrl(this.printerId)
-          token = this.printer.auth_token
-        }
-        this.webrtc.connect(
-          url,
-          token
-        )
-      },
-
-      onJanusInitalized() {
-        if (!Janus.isWebrtcSupported()) {
-          return
-        }
-
-        this.webrtc = webrtc.getWebRTCManager()
-        this.openWebRTCForPrinter()
       },
     },
 

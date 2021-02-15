@@ -70,37 +70,30 @@
 
 <script>
 import get from 'lodash/get'
-import ifvisible from 'ifvisible'
 
 import Janus from '@lib/janus'
 import EventBus from '@lib/event_bus'
-import webrtc from '@lib/webrtc_streaming'
+import WebRTCConnection from '@lib/webrtc'
 import printerStockImgSrc from '@static/img/3d_printer.png'
-
-let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
-let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 export default {
   name: 'StreamingBox',
   created() {
-    this.webrtc = null
+      this.webrtc = WebRTCConnection({
+        onRemoteStream: this.onWebRTCRemoteStream,
+        onCleanup: this.onWebRTCCleanup,
+        onSlowLink: this.onSlowLink,
+        onTrackMuted: () => this.trackMuted = true,
+        onTrackUnmuted: () => this.trackMuted = false,
+        onData: this.onWebRTCData,
+      }, this.isProAccount)
 
-    Janus.init({
-      debug: 'all',
-      callback: this.onJanusInitalized
-    })
-
-    ifvisible.on('blur', () => {
-      if (this.webrtc) {
-        this.webrtc.stopStream()
+      if (this.shareToken) {
+        this.webrtc.openForShareToken(this.shareToken)
+      } else {
+        this.webrtc.openForPrinter(this.printer)
       }
-    })
-
-    ifvisible.on('focus', () => {
-      if (this.webrtc) {
-        this.webrtc.startStream()
-      }
-    })
+      EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
   },
 
   props: {
@@ -181,40 +174,6 @@ export default {
     },
     onLoadStart() {
       this.videoLoading = true
-    },
-
-    openWebRTCForPrinter() {
-      let url, token
-      if (this.shareToken) {
-        url = printerSharedWebRTCUrl(this.shareToken)
-        token = this.shareToken
-      } else {
-        url = printerWebRTCUrl(this.printer.id)
-        token = this.printer.auth_token
-      }
-      this.webrtc.connect(
-        url,
-        token
-      )
-    },
-
-    onJanusInitalized() {
-      if (!Janus.isWebrtcSupported()) {
-        return
-      }
-
-      this.webrtc = webrtc.getWebRTCManager({
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onCleanup: this.onWebRTCCleanup,
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => this.trackMuted = true,
-        onTrackUnmuted: () => this.trackMuted = false,
-        onData: this.onWebRTCData,
-      }, this.isProAccount)
-
-      EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
-
-      this.openWebRTCForPrinter()
     },
 
     onWebRTCRemoteStream(stream) {

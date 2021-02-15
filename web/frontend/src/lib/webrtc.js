@@ -1,15 +1,57 @@
 import get from 'lodash/get'
+import ifvisible from 'ifvisible'
+
 import Janus from '@lib/janus'
 
+let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
+let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
-function getWebRTCManager(callbacks, videoEnabled) {
-  let manager = {
+export default function WebRTCConnection(callbacks, videoEnabled) {
+  let self = {
     callbacks: callbacks,
     streamId: undefined,
     streaming: undefined,
     videoEnabled: videoEnabled ?? false,
 
+    openForShareToken(shareToken) {
+      self.connect(
+        printerSharedWebRTCUrl(shareToken),
+        shareToken
+      )
+    },
+
+    openForPrinter(printer) {
+      self.connect(
+        printerWebRTCUrl(printer.id),
+        printer.auth_token
+      )
+    },
+
     connect(wsUri, token) {
+        Janus.init({
+            debug: 'all',
+            callback: () => {
+                if (!Janus.isWebrtcSupported()) {
+                    return
+                }
+                self.connectJanusWebSocket(wsUri, token)
+            }
+          })
+
+          ifvisible.on('blur', () => {
+            if (this.webrtc) {
+              this.webrtc.stopStream()
+            }
+          })
+
+          ifvisible.on('focus', () => {
+            if (this.webrtc) {
+              this.webrtc.startStream()
+            }
+          })
+    },
+
+    connectJanusWebSocket(wsUri, token) {
       const opaqueId = 'streamingtest-' + Janus.randomString(12)
 
       var iceServers = [{urls:['stun:stun.l.google.com:19302']}]
@@ -29,7 +71,6 @@ function getWebRTCManager(callbacks, videoEnabled) {
           })
       }
 
-      let self = this
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers,
@@ -181,10 +222,5 @@ function getWebRTCManager(callbacks, videoEnabled) {
     }
   }
 
-  return manager
-}
-
-
-export default {
-  getWebRTCManager,
+  return self
 }

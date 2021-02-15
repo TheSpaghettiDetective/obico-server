@@ -1,14 +1,15 @@
 <template>
   <div>
-    <pull-to-reveal
-      :enable="true"
-      :id="'filters'"
-      :maxElementHeight="210"
-      :animationTime=".7"
-      :zIndex="8"
-      :topOffsets="{'default': 52, 892: 56}"
-      :heightMultiplicator="4"
+    <PullToReveal
+      :shiftContent="true"
+      :showEdge="true"
+      @hide="closeMenus"
     >
+      <Navbar
+        :pull-to-reveal="true"
+        view-name="printers"
+        ref="navbar"
+      />
       <div class="container">
         <div class="option-drawer">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -21,7 +22,7 @@
               >
                 <div class="panel-body p-3">
                   <div>
-                    <div class="sorting-and-filter">
+                    <div class="sorting-and-filter" ref="filters">
                       <Select
                         id="printer-sorting"
                         class="my-1 mx-2"
@@ -56,7 +57,7 @@
           </div>
         </div>
       </div>
-    </pull-to-reveal>
+    </PullToReveal>
 
     <div v-if="!user.is_pro" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">
@@ -66,7 +67,7 @@
       </div>
     </div>
 
-    <div id="printers" class="row justify-content-center mt-2">
+    <div id="printers" class="row justify-content-center pt-2">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
       <printer-card
         v-for="printer in visiblePrinters"
@@ -134,6 +135,7 @@ import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import Select from '@common/Select.vue'
+import Navbar from '@common/Navbar.vue'
 import PullToReveal from '@common/PullToReveal.vue'
 
 const PAUSE_PRINT = '/pause_print/'
@@ -184,7 +186,8 @@ export default {
   components: {
     PrinterCard,
     Select,
-    PullToReveal
+    Navbar,
+    PullToReveal,
   },
   created() {
     this.user = JSON.parse(document.querySelector('#user-json').text)
@@ -651,6 +654,18 @@ export default {
         }
       )
     },
+
+    closeMenus() {
+      this.$refs.navbar.hideDropdowns()
+
+      const dropdowns = this.$refs.filters.querySelectorAll('.dropdown')
+      dropdowns.forEach(dropdown => {
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show')
+          dropdown.querySelector('.dropdown-menu').classList.remove('show')
+        }
+      })
+    }
   },
 
   mounted() {

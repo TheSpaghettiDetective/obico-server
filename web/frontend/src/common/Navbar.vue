@@ -1,96 +1,81 @@
 <template>
-  <pull-to-reveal
-    :enable="pullToReveal"
-    :id="'main-nav'"
-    :maxElementHeight="56"
-    :zIndex="9"
-    :showEdge="pullToReveal"
-    v-on:hide="hideDropdowns"
-  >
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-      <div class="container">
-        <a class="navbar-brand" href="/printers/">
-        <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive" ref="mobileDropdownContent">
-          <ul class="navbar-nav">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="/printers/">
+      <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive" ref="mobileDropdownContent">
+        <ul class="navbar-nav">
 
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
-              <a class="nav-link" href="/printers/">Printer
-              </a>
-            </li>
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('prints')}">
-              <a class="nav-link" href="/prints/">Time-lapse
-              </a>
-            </li>
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('gcodes')}">
-              <a class="nav-link" href="/gcodes/">G-Code
-              </a>
-            </li>
+          <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
+            <a class="nav-link" href="/printers/">Printer
+            </a>
+          </li>
+          <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('prints')}">
+            <a class="nav-link" href="/prints/">Time-lapse
+            </a>
+          </li>
+          <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('gcodes')}">
+            <a class="nav-link" href="/gcodes/">G-Code
+            </a>
+          </li>
 
-            <li v-if="!user" class="nav-item" v-bind:class="{'active': viewName === 'publictimelapse_list'}">
-              <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
-            </li>
+          <li v-if="!user" class="nav-item" v-bind:class="{'active': viewName === 'publictimelapse_list'}">
+            <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
+          </li>
 
-            <li v-if="isEnt" class="nav-item" v-bind:class="{'active': viewName === 'pricing'}">
-              <a class="nav-link" href="/ent/pricing/">Pricing</a>
-            </li>
+          <li v-if="isEnt" class="nav-item" v-bind:class="{'active': viewName === 'pricing'}">
+            <a class="nav-link" href="/ent/pricing/">Pricing</a>
+          </li>
 
-            <li class="nav-item">
-              <a class="nav-link" href="https://www.thespaghettidetective.com/help">Help</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="https://discord.gg/hsMwGpD">Forum</a>
-            </li>
-          </ul>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.thespaghettidetective.com/help">Help</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://discord.gg/hsMwGpD">Forum</a>
+          </li>
+        </ul>
 
-          <ul class="navbar-nav ml-auto">
-            <li v-if="!user" class="nav-item">
-              <a class="nav-link" href="/accounts/login/">Sign In</a>
-            </li>
-            <li v-if="!user && allowSignUp" class="nav-item">
-              <a class="nav-link" href="/accounts/signup/">Sign up</a>
-            </li>
+        <ul class="navbar-nav ml-auto">
+          <li v-if="!user" class="nav-item">
+            <a class="nav-link" href="/accounts/login/">Sign In</a>
+          </li>
+          <li v-if="!user && allowSignUp" class="nav-item">
+            <a class="nav-link" href="/accounts/signup/">Sign up</a>
+          </li>
 
-            <li v-if="isEnt" class="nav-item">
-              <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
-                  <img :src="require('@static/img/detective-hour-inverse.png')">
-                  <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
-                  <span class="sr-only">Detective Hours</span>
-              </a>
-            </li>
+          <li v-if="isEnt" class="nav-item">
+            <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
+                <img :src="require('@static/img/detective-hour-inverse.png')">
+                <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
+                <span class="sr-only">Detective Hours</span>
+            </a>
+          </li>
 
-            <li v-if="user" class="nav-item dropdown" ref="accountDropdown">
-              <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
-                {{user.first_name || user.email}}
-                <span class="caret"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes" ref="accountDropdownContent">
-                <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
-                <a v-if="isEnt" class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
-              </div>
-            </li>
-          </ul>
-        </div>
+          <li v-if="user" class="nav-item dropdown" ref="accountDropdown">
+            <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
+              {{user.first_name || user.email}}
+              <span class="caret"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes" ref="accountDropdownContent">
+              <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
+              <a v-if="isEnt" class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
+            </div>
+          </li>
+        </ul>
       </div>
-    </nav>
-  </pull-to-reveal>
+    </div>
+  </nav>
 </template>
 
 <script>
-import PullToReveal from './PullToReveal.vue'
-
 export default {
   name: 'Navbar',
-
-  components: {
-    PullToReveal,
-  },
 
   data() {
     return {
@@ -101,10 +86,6 @@ export default {
   },
 
   props: {
-    pullToReveal: {
-      default() {return false},
-      type: Boolean,
-    },
     viewName: {
       default() {return ''},
       type: String,

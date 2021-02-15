@@ -43,9 +43,7 @@
           </div>
         </div>
       </div>
-
-      <streaming-box :printer="printer" :isProAccount="isProAccount" />
-
+      <streaming-box :printer="printer" :webrtc="webrtc" />
       <div
         v-if="printer.alertUnacknowledged"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -243,6 +241,7 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import { normalizedPrinter } from '@lib/normalizers'
 import PrinterWebSocket from '@lib/printer_ws'
+import WebRTCConnection from '@lib/webrtc'
 import Gauge from '@common/Gauge'
 import StreamingBox from '@common/StreamingBox'
 import { getLocalPref, setLocalPref } from '@lib/pref'
@@ -296,6 +295,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
+      webrtc: WebRTCConnection(this.isProAccount),
     }
   },
   created() {
@@ -307,6 +307,8 @@ export default {
       }
     )
     this.printerWs.openPrinterWebSocket()
+
+    this.webrtc.openForPrinter(this.printer)
   },
   computed: {
     isWatching() {

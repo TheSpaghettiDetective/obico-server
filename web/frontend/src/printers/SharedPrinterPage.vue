@@ -9,11 +9,7 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box
-            :printer="printer"
-            :is-pro-account=true
-            :shareToken="shareToken"
-          />
+          <streaming-box :printer="printer" :webrtc="webrtc" />
           <div class="p-3 p-md-5">
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
             <a
@@ -38,6 +34,7 @@ import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
 import PrinterWebSocket from '@lib/printer_ws'
+import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 
 export default {
@@ -46,7 +43,6 @@ export default {
     StreamingBox,
   },
   created(){
-    this.webrtc = null
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
 
     this.printerWs = PrinterWebSocket(
@@ -58,6 +54,7 @@ export default {
       }
     )
     this.printerWs.openPrinterWebSocket()
+    this.webrtc.openForShareToken(this.shareToken)
   },
   data: function() {
     return {
@@ -65,6 +62,7 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
+      webrtc: WebRTCConnection(true),
     }
   },
 }

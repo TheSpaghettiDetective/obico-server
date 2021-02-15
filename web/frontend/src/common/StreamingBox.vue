@@ -48,7 +48,6 @@
         </div>
         <div
           v-show="showVideo"
-          id="webrtc-stream"
           class="webcam_fixed_ratio_inner ontop full"
         >
           <video
@@ -73,27 +72,23 @@ import get from 'lodash/get'
 
 import Janus from '@lib/janus'
 import EventBus from '@lib/event_bus'
-import WebRTCConnection from '@lib/webrtc'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 
 export default {
   name: 'StreamingBox',
   created() {
-      this.webrtc = WebRTCConnection({
+    if (this.webrtc) {
+      this.webrtc.callbacks = {
+        ...this.webrtc.callbacks,
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
         onData: this.onWebRTCData,
-      }, this.isProAccount)
-
-      if (this.shareToken) {
-        this.webrtc.openForShareToken(this.shareToken)
-      } else {
-        this.webrtc.openForPrinter(this.printer)
       }
-      EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
+    }
+    EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
   },
 
   props: {
@@ -101,13 +96,9 @@ export default {
       type: Object,
       required: true
     },
-    shareToken: {
-      type: String,
-      required: false
-    },
-    isProAccount: {
-      type: Boolean,
-      required: true
+    webrtc: {
+      type: Object,
+      required: false,
     },
   },
 

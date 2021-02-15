@@ -6,9 +6,9 @@ import Janus from '@lib/janus'
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
-export default function WebRTCConnection(callbacks, videoEnabled) {
+export default function WebRTCConnection(videoEnabled) {
   let self = {
-    callbacks: callbacks,
+    callbacks: {},
     streamId: undefined,
     streaming: undefined,
     videoEnabled: videoEnabled ?? false,
@@ -39,15 +39,11 @@ export default function WebRTCConnection(callbacks, videoEnabled) {
           })
 
           ifvisible.on('blur', () => {
-            if (this.webrtc) {
-              this.webrtc.stopStream()
-            }
+            self.stopStream()
           })
 
           ifvisible.on('focus', () => {
-            if (this.webrtc) {
-              this.webrtc.startStream()
-            }
+            self.startStream()
           })
     },
 
@@ -183,41 +179,41 @@ export default function WebRTCConnection(callbacks, videoEnabled) {
     onRemoteStream(stream) {
       Janus.debug(' ::: Got a remote stream :::')
       Janus.debug(stream)
-      this.callbacks.onRemoteStream(stream)
+      self.callbacks.onRemoteStream(stream)
     },
     onTrackMuted() {
-      this.callbacks.onTrackMuted()
+      self.callbacks.onTrackMuted()
     },
     onTrackUnmuted() {
-      this.callbacks.onTrackUnmuted()
+      self.callbacks.onTrackUnmuted()
     },
     onSlowLink(lost) {
-      this.callbacks.onSlowLink(lost)
+      self.callbacks.onSlowLink(lost)
     },
     onCleanup() {
-      this.callbacks.onCleanup()
+      self.callbacks.onCleanup()
     },
     onData(rawData) {
-      this.callbacks.onData(rawData)
+      self.callbacks.onData(rawData)
     },
     startStream() {
-      if (this.streamId === undefined || this.streaming === undefined) {
+      if (self.streamId === undefined || self.streaming === undefined) {
         return
       }
-      const body = { 'request': 'watch', offer_video: this.videoEnabled, id: parseInt(this.streamId) }
-      this.streaming.send({ 'message': body })
+      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
+      self.streaming.send({ 'message': body })
     },
     stopStream() {
-      if (this.streamId === undefined || this.streaming === undefined) {
+      if (self.streamId === undefined || self.streaming === undefined) {
         return
       }
       const body = { 'request': 'stop' }
-      this.streaming.send({ 'message': body })
-      this.streaming.hangup()
+      self.streaming.send({ 'message': body })
+      self.streaming.hangup()
     },
     sendPassThruMessage(message) {
-      if (this.streaming) {
-        this.streaming.send({text: JSON.stringify(message), success: function() {}})
+      if (self.streaming) {
+        self.streaming.send({text: JSON.stringify(message), success: function() {}})
       }
     }
   }

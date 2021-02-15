@@ -8,7 +8,7 @@
               <div class="printer-name">{{ printer.name }}</div>
             </div>
           </div>
-          <streaming-box :printer="printer" :isProAccount="user.is_pro" />
+          <streaming-box :printer="printer" :webrtc="webrtc" />
           <div class="card-body" :class="{'overlay': !printer.isIdle}">
             <div
               class="overlay-top text-center"
@@ -83,6 +83,7 @@
   import { normalizedPrinter } from '@lib/normalizers'
   import StreamingBox from '@common/StreamingBox'
   import PrinterWebSocket from '@lib/printer_ws'
+  import WebRTCConnection from '@lib/webrtc'
 
   const AXIS = {
     x: 'x',
@@ -112,6 +113,7 @@
         user: null,
         printerId: null,
         printer: null,
+        webrtc: null,
 
         // Current distance and possible options
         jogDistance: 10,
@@ -123,26 +125,30 @@
       this.user = JSON.parse(document.querySelector('#user-json').text)
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
 
-      this.fetchPrinter()
-
       // Get jogDistance from localStorage or set default value
       const storageValue = localStorage.getItem(`mm-per-step-${this.printerId}`)
       this.jogDistance = storageValue ? storageValue : this.jogDistance
+
+      this.webrtc = WebRTCConnection(this.user.is_pro)
+
+      this.printerWs = PrinterWebSocket(
+        this.printerId,
+        urls.printerWebSocket(this.printerId),
+        (data) => {
+          // TODO: a more reliable way to make srue webrtc connection is open only once
+          const webrtcConnected = this.printer
+
+          this.printer = normalizedPrinter(data)
+
+          if (!webrtcConnected) {
+            this.webrtc.openForPrinter(this.printer)
+          }
+        }
+      )
+      this.printerWs.openPrinterWebSocket()
     },
 
     methods: {
-      // Get printer info
-      fetchPrinter() {
-        this.printerWs = PrinterWebSocket(
-          this.printerId,
-          urls.printerWebSocket(this.printerId),
-          (data) => {
-            this.printer = normalizedPrinter(data)
-          }
-        )
-        this.printerWs.openPrinterWebSocket()
-      },
-
       // Control request after button click
       control(axis, direction) {
         let args = []

@@ -240,7 +240,7 @@ import axios from 'axios'
 
 import urls from '@lib/server_urls'
 import { normalizedPrinter } from '@lib/normalizers'
-import PrinterWebSocket from '@lib/printer_ws'
+import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'
 import Gauge from '@common/Gauge'
 import StreamingBox from '@common/StreamingBox'
@@ -299,16 +299,17 @@ export default {
     }
   },
   created() {
-    this.printerWs = PrinterWebSocket(
+    this.printerComm = PrinterComm(
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
       (data) => {
         this.$emit('PrinterUpdated', normalizedPrinter(data))
       }
     )
-    this.printerWs.openPrinterWebSocket()
+    this.printerComm.connect()
 
-    this.webrtc.openForPrinter(this.printer)
+    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+    this.printerComm.setWebRTC(this.webrtc)
   },
   computed: {
     isWatching() {
@@ -466,7 +467,7 @@ export default {
       })
     },
     onPrinterActionConnectClicked() {
-      this.printerWs.passThruToPrinter(
+      this.printerComm.passThruToPrinter(
         { func: 'get_connection_options', target: '_printer' },
         (err, connectionOptions) => {
           if (err) {
@@ -502,7 +503,7 @@ export default {
                     result.value.port,
                     result.value.baudrate
                   ]
-                  this.printerWs.passThruToPrinter(
+                  this.printerComm.passThruToPrinter(
                     { func: 'connect', target: '_printer',
                       args: args }
                   )
@@ -553,7 +554,7 @@ export default {
     onGcodeFileSelected(gcodeFiles, gcodeFileId) {
       // actionsDiv.find('button').attr('disabled', true) // TODO
 
-      this.printerWs.passThruToPrinter(
+      this.printerComm.passThruToPrinter(
         { func: 'download',
           target: 'file_downloader',
           args: filter(gcodeFiles, { id: gcodeFileId })
@@ -636,7 +637,7 @@ export default {
         }).then((result) => {
         if (result.value) {
           let targetTemp = result.value.target
-          this.printerWs.passThruToPrinter(
+          this.printerComm.passThruToPrinter(
             {
               func: 'set_temperature',
               target: '_printer',

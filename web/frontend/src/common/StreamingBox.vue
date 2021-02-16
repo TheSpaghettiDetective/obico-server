@@ -71,7 +71,6 @@
 import get from 'lodash/get'
 
 import Janus from '@lib/janus'
-import EventBus from '@lib/event_bus'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 
 export default {
@@ -85,10 +84,8 @@ export default {
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
-        onData: this.onWebRTCData,
       }
     }
-    EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
   },
 
   props: {
@@ -182,26 +179,6 @@ export default {
     onWebRTCCleanup() {
       this.isVideoVisible = false
     },
-
-    onWebRTCData(jsonData) {
-      let msg = {}
-      try {
-        msg = JSON.parse(jsonData)
-      } catch {
-        // parse error
-      }
-      if ('passthru' in msg) {
-        EventBus.$emit('gotPassthruOverDatachannel', this.printer.id, msg)
-      }
-    },
-
-    sendOverDatachannel(printerId, msg) {
-      if (this.printer && printerId == this.printer.id) {
-        if (this.webrtc && this.webrtc.streaming) {
-          this.webrtc.streaming.data({text: JSON.stringify(msg), success: () => {}})
-        }
-      }
-     },
 
     /** Video warning handling */
 

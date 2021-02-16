@@ -2,16 +2,16 @@
 import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
-import EventBus from '@lib/event_bus'
 
-
-export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
+export default function PrinterComm(printerId, wsUri, onMessageReceived) {
   var self = {}
 
   self.printerId = printerId
   self.wsUri = wsUri
   self.onMessageReceived = onMessageReceived
+
   self.ws = null
+  self.webrtc = null
   self.passthruQueue = new Map()
 
   ifvisible.on('blur', function(){
@@ -19,7 +19,7 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
   })
 
   ifvisible.on('focus', function(){
-    self.openPrinterWebSocket()
+    self.connect()
   })
 
   self.on_passThruReceived = function(msg) {
@@ -31,9 +31,7 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
     }
   }
 
-  EventBus.$on('gotPassthruOverDatachannel', self.on_passThruReceived)
-
-  self.openPrinterWebSocket = function() {
+  self.connect = function() {
     self.ws = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri)
     self.ws.onmessage = function (e) {
       var msg = JSON.parse(e.data)
@@ -48,6 +46,20 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
     setTimeout( function () { self.heartbeat() }, 30*1000)
   }
 
+  self.setWebRTC = function(webrtc) {
+    self.webrtc = webrtc
+    self.webrtc.callbacks.onData = (jsonData) => {
+        let msg = {}
+        try {
+            msg = JSON.parse(jsonData)
+        } catch {
+            // parse error
+        }
+        if ('passthru' in msg) {
+            self.on_passThruReceived(msg)
+        }
+    }
+  }
 
   self.passThruToPrinter = function(msg, callback) {
     if (self.canSend()) {
@@ -64,10 +76,11 @@ export default function PrinterWebSocket(printerId, wsUri, onMessageReceived) {
           }
         }, 10*1000)
       }
-      let msgObj = {passthru: msg}
-      self.ws.send(JSON.stringify(msgObj))
-      EventBus.$emit('sendOverDatachannel', self.printerId, msgObj)
-      return msgObj
+      const msgStr = JSON.stringify({passthru: msg})
+      if (self.webrtc) {
+        self.webrtc.sendData(msgStr)
+      }
+      self.ws.send(msgStr)
     } else {
       if (callback){
         callback('Message not passed through. No suitable WebSocket.')

@@ -21,10 +21,10 @@ export default function WebRTCConnection(videoEnabled) {
       )
     },
 
-    openForPrinter(printer) {
+    openForPrinter(printerId, authToken) {
       self.connect(
-        printerWebRTCUrl(printer.id),
-        printer.auth_token
+        printerWebRTCUrl(printerId),
+        authToken
       )
     },
 
@@ -216,9 +216,10 @@ export default function WebRTCConnection(videoEnabled) {
       self.streaming.send({ 'message': body })
       self.streaming.hangup()
     },
-    sendPassThruMessage(message) {
-      if (self.streaming) {
-        self.streaming.send({text: JSON.stringify(message), success: function() {}})
+
+    sendData(data) {
+      if (self.channelOpen()) {
+        self.streaming.data({text: data, success: () => {}})
       }
     }
   }

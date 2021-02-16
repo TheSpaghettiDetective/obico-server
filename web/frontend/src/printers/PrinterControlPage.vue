@@ -82,7 +82,7 @@
   import urls from '@lib/server_urls'
   import { normalizedPrinter } from '@lib/normalizers'
   import StreamingBox from '@common/StreamingBox'
-  import PrinterWebSocket from '@lib/printer_ws'
+  import PrinterComm from '@lib/printer_comm'
   import WebRTCConnection from '@lib/webrtc'
 
   const AXIS = {
@@ -131,17 +131,18 @@
 
       this.webrtc = WebRTCConnection(this.user.is_pro)
 
-      this.printerWs = PrinterWebSocket(
+      this.printerComm = PrinterComm(
         this.printerId,
         urls.printerWebSocket(this.printerId),
         (data) => {
           this.printer = normalizedPrinter(data)
           if (this.webrtc && !this.webrtc.initialized) {
-            this.webrtc.openForPrinter(this.printer)
+            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            this.printerComm.setWebRTC(this.webrtc)
           }
         }
       )
-      this.printerWs.openPrinterWebSocket()
+      this.printerComm.connect()
     },
 
     methods: {
@@ -158,10 +159,7 @@
         }
 
         const payload = {func: func, target: '_printer', args: args}
-        const msgObj = this.printerWs.passThruToPrinter(payload)
-        if (this.webrtc) {
-          this.webrtc.sendPassThruMessage(msgObj)
-        }
+        this.printerComm.passThruToPrinter(payload)
       },
     },
 

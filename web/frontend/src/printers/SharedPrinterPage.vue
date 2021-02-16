@@ -33,7 +33,7 @@ import split from 'lodash/split'
 import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
-import PrinterWebSocket from '@lib/printer_ws'
+import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 
@@ -45,15 +45,15 @@ export default {
   created(){
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
 
-    this.printerWs = PrinterWebSocket(
+    this.printerComm = PrinterComm(
       this.shareToken,
-      urls.printerSharedWS(this.shareToken),
+      urls.printerSharedWebSocket(this.shareToken),
       (data) => {
         this.printer = normalizedPrinter(data)
         this.loading = false
       }
     )
-    this.printerWs.openPrinterWebSocket()
+    this.printerComm.connect()
     this.webrtc.openForShareToken(this.shareToken)
   },
   data: function() {

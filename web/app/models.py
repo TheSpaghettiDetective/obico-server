@@ -112,9 +112,7 @@ class User(AbstractUser):
 
     @property
     def is_primary_email_verified(self):
-        if EmailAddress.objects.filter(user=self, email=self.email,
-                                       verified=True).exists():
-
+        if EmailAddress.objects.filter(user=self, email=self.email, verified=True).exists():
             return True
 
         return False
@@ -122,11 +120,6 @@ class User(AbstractUser):
     @property
     def is_dh_unlimited(self):
         return self.dh_balance >= UNLIMITED_DH
-
-    def has_verified_email(self):
-        # Give user 1 day before bugging them to verify their email addresses
-
-        return timezone.now() - timedelta(days=1) < self.date_joined or EmailAddress.objects.filter(user=self, verified=True).exists()
 
     def has_valid_pushbullet_token(self):
         if not self.pushbullet_access_token:

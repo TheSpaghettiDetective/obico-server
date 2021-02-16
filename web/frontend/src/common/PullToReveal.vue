@@ -1,10 +1,15 @@
 <template>
-  <div class="wrapper">
-    <div class="pull-to-reveal" ref="pullToRevealWrapper">
-      <slot></slot>
+  <div class="wrapper" ref="pullToRevealWrapper">
+    <div>
+      <div class="pull-to-reveal">
+        <slot v-if="enable"></slot>
+      </div>
+      <div v-show="showEdge" class="showing-edge"></div>
+      <div class="spaceholder"></div>
     </div>
-    <div v-show="showEdge" class="showing-edge" ref="showingEdge"></div>
-    <div class="spaceholder" ref="spaceholder"></div>
+    <div ref="staticWrapper">
+      <slot v-if="!enable"></slot>
+    </div>
   </div>
 </template>
 
@@ -21,6 +26,10 @@ export default {
       default() {return true},
       type: Boolean,
     },
+    enable: {
+      default() {return true},
+      type: Boolean,
+    },
   },
 
   data() {
@@ -30,40 +39,101 @@ export default {
     }
   },
 
-  mounted() {
-    const elem = this.$refs.pullToRevealWrapper
-    const spaceholder = this.$refs.spaceholder
-    // const showingEdge = this.$refs.showingEdge
-    const animationTime = this.animationTime
-
-    elem.style.transition = `all ${animationTime}s`
-    spaceholder.style.transition = `all ${animationTime}s`
-
-    window.onload = function() {
-      // Scroll down by 1px be able to scroll up right after page load
-      if (window.scrollY === 0) {
-        window.scrollBy({top: 1, behavior: 'smooth'})
+  watch: {
+    enable(enabled) {
+      if(enabled) {
+        this.destroyDisabled()
+        this.initEnabled()
+      } else {
+        this.destroyEnabled()
+        this.initDisabled()
       }
-
-      const elemHeight = parseInt(window.getComputedStyle(elem).height)
-      elem.style.top = `-${elemHeight * 2}px`
     }
   },
 
-  created() {
-    window.addEventListener('scroll', this.handleScroll)
-    document.querySelector('body').style.minHeight = '101vh'
+  mounted() {
+    if (this.enable) {
+      this.initEnabled()
+    } else {
+      this.initDisabled()
+    }
   },
 
   destroyed() {
-    window.removeEventListener('scroll', this.handleScroll)
-    document.querySelector('body').style.minHeight = ''
+    if (this.enable) {
+      this.destroyEnabled()
+    } else {
+      this.destroyDisabled()
+    }
   },
 
   methods: {
+    initEnabled() {
+      window.addEventListener('scroll', this.handleScroll)
+      document.querySelector('body').style.minHeight = '101vh'
+
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+      const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
+      // const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
+      const animationTime = this.animationTime
+
+      elem.style.transition = `all ${animationTime}s`
+      spaceholder.style.transition = `all ${animationTime}s`
+
+      window.onload = function() {
+        // Scroll down by 1px be able to scroll up right after page load
+        if (window.scrollY === 0) {
+          window.scrollBy({top: 1, behavior: 'smooth'})
+        }
+
+        const elemHeight = parseInt(window.getComputedStyle(elem).height)
+        elem.style.top = `-${elemHeight * 2}px`
+      }
+    },
+
+    destroyEnabled() {
+      window.removeEventListener('scroll', this.handleScroll)
+      document.querySelector('body').style.minHeight = ''
+
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+      const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
+
+      elem.style.transition = 'none'
+      spaceholder.style.transition = 'none'
+      elem.style.top = '-999px'
+    },
+
+    initDisabled() {
+      const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
+
+      showingEdge.style.display = 'none'
+
+      const staticWrapper = this.$refs.staticWrapper
+      staticWrapper.style.position = 'absolute'
+      staticWrapper.style.width = '100%'
+      staticWrapper.style.top = '0'
+      staticWrapper.style.left = '0'
+      staticWrapper.style.zIndex = '1'
+
+      window.onload = function() {
+        const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
+        document.querySelector('body').style.paddingTop = `${elemHeight}px`
+      }
+    },
+
+    destroyDisabled() {
+      const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
+      showingEdge.style.display = 'block'
+
+      const staticWrapper = this.$refs.staticWrapper
+      staticWrapper.style.display = 'none'
+
+      document.querySelector('body').style.paddingTop = 0
+    },
+
     handleScroll() {
       const scrollPosition = window.pageYOffset
-      const elem = this.$refs.pullToRevealWrapper
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
       const elemHeight = parseInt(window.getComputedStyle(elem).height)
 
       if (scrollPosition === 0) {
@@ -78,7 +148,7 @@ export default {
 
         // Shift content to not cover it by revealed block
         if (this.shiftContent) {
-          this.$refs.spaceholder.style.height = `${elemHeight}px`
+          this.$refs.pullToRevealWrapper.querySelector('.spaceholder').style.height = `${elemHeight}px`
         }
         
       } else {
@@ -94,10 +164,9 @@ export default {
         this.status = 'closed'
 
         if (this.shiftContent) {
-          this.$refs.spaceholder.style.height = 0
+          this.$refs.pullToRevealWrapper.querySelector('.spaceholder').style.height = 0
         }
       }
-
     }
   }
 }

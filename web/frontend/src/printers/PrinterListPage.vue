@@ -3,13 +3,13 @@
     <pull-to-reveal
       :shiftContent="true"
       :showEdge="true"
+      :enable="printers.length > 0"
       @hide="closeMenus"
     >
-      <Navbar
-        :pull-to-reveal="true"
+      <navbar
         view-name="printers"
         ref="navbar"
-      />
+      ></navbar>
       <div v-if="printers.length > 1" class="container">
         <div class="option-drawer">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -241,7 +241,7 @@ export default {
     },
     hiddenPrinterCount() {
       return this.printers.length - this.visiblePrinters.length
-    }
+    },
 
   },
   methods: {
@@ -308,13 +308,15 @@ export default {
     closeMenus() {
       this.$refs.navbar.hideDropdowns()
 
-      const dropdowns = this.$refs.filters.querySelectorAll('.dropdown')
-      dropdowns.forEach(dropdown => {
-        if (dropdown.classList.contains('show')) {
-          dropdown.classList.remove('show')
-          dropdown.querySelector('.dropdown-menu').classList.remove('show')
-        }
-      })
+      if (this.$refs.filters) {
+        const dropdowns = this.$refs.filters.querySelectorAll('.dropdown')
+        dropdowns.forEach(dropdown => {
+          if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show')
+            dropdown.querySelector('.dropdown-menu').classList.remove('show')
+          }
+        })
+      }
     }
   },
 }

@@ -59,7 +59,7 @@
       </div>
     </pull-to-reveal>
 
-    <div v-if="!user.is_pro" class="row justify-content-center">
+    <div v-if="!user.is_pro && printers.length > 0" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">
         <div class="form-container" style="margin: 1em 0 -1em 0; padding: 0.5em 1em;">
           <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>

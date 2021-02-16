@@ -463,12 +463,21 @@ form#printer_form {
     min-height: 194px;
     padding: 20px 16px;
 
+    &:hover {
+      background: none;
+    }
+
     a {
       text-align: center;
       &:hover {
         text-decoration: none;
       }
     }
+  }
+
+  &.vue-dropzone > .dz-preview .dz-details {
+    border-radius: 20px;
+    background-color: $primary;
   }
 }
 

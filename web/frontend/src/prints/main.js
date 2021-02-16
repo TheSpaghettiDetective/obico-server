@@ -12,8 +12,16 @@ Vue.use(VueSwal)
 Vue.use(Sticky)
 Vue.use(VueMoment)
 
+import Navbar from '@common/Navbar.vue'
 import PrintsPage from './PrintsPage.vue'
 import PrintPage from './PrintPage.vue'
+import UploadPrintPage from './UploadPrintPage.vue'
+
+if (document.getElementById('navbar-mount')) {
+  new Vue({
+    components: { Navbar }
+  }).$mount('#navbar-mount')
+}
 
 if (document.getElementById('prints-mount')) {
   new Vue({
@@ -25,4 +33,10 @@ if (document.getElementById('print-mount')) {
   new Vue({
     components: { PrintPage }
   }).$mount('#print-mount')
+}
+
+if (document.getElementById('upload-print-mount')) {
+  new Vue({
+    components: { UploadPrintPage }
+  }).$mount('#upload-print-mount')
 }

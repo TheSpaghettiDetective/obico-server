@@ -1,47 +1,27 @@
 {% extends settings.TEMPLATE_LAYOUT %}
-{% load static %}
+
+{% load bundle from vue %}
+
+{% block navbar %}
+<div id="navbar-mount">
+  <navbar view-name="upload-print"></navbar>
+</div>
+{% endblock navbar %}
 
 {% block content %}
+<div id="upload-print-mount">
+  <upload-print-page csrf="{{ csrf_token }}"></upload-print-page>
+</div>
 
-<div class="row justify-content-center pt-5 pb-2">
-  <div class="col-sm-12 col-lg-8 text-center">
-    <h1>Upload Time-lapse</h1>
-  </div>
-</div>
-<div class="row justify-content-center pb-2">
-  <div class="col-sm-12 col-lg-8  text-center">
-    <p>Upload time-lapse videos to see if The Detective can correctly tell the bad prints from the good ones.</p>
-  </div>
-</div>
-<div class="row justify-content-center">
-  <div class="col-sm-12 col-lg-8">
-    <form action="?" id="print-upload" class="dropzone upload-box">
-      {% csrf_token %}
-      <div class="dz-message needsclick">
-        <i class="fas fa-upload fa-2x"></i> <br />
-        Drop files here or click to upload.<br />
-        *.mp4 or *.mpg files only. Up to 200MB each.
-        <div class="fallback">
-          <input name="file" type="file" multiple />
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-<div class="row justify-content-center py-5">
-  <div id="tl-uploaded" class="col-sm-12 col-lg-8 text-center" style="display: none;">
-    <img style="height: auto; width: 12rem;" src="{% static 'img/detective-working.gif' %}" />
-    <div class="py-2 text-center">
-      <div class="py-2">The Detective is busy looking at the time-lapse video(s) you
-        uploaded.</div>
-      <div>We will send you email when she is done.</div><a href="/prints/">Check status now >>></a>
-    </div>
-  </div>
-</div>
+{% bundle 'prints' %}
 
 {% endblock content %}
 
+
 {% block page_js %}
-<script src="{% static 'js/upload_print.js' %}"></script>
+<script>
+  // TODO: Remove after removing non-vue Dropzone.js library 
+  Dropzone.autoDiscover = false;
+</script>
 
 {% endblock page_js %}

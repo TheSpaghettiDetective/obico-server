@@ -104,25 +104,38 @@ export default function WebRTCConnection(videoEnabled) {
                 self.onMessage(msg, jsep)
               },
               onremotestream: function(stream) {
-                self.onRemoteStream(stream)
+                Janus.debug(' ::: Got a remote stream :::')
+                Janus.debug(stream)
+                if ('onRemoteStream' in self.callbacks) {
+                    self.callbacks.onRemoteStream(stream)
+                }
               },
               ontrackmuted: function() {
-                  self.onTrackMuted()
+                if ('onTrackMuted' in self.callbacks) {
+                    self.callbacks.onTrackMuted()
+                }
               },
               ontrackunmuted: function() {
-                self.onTrackUnmuted()
+                if ('onTrackUnmuted' in self.callbacks) {
+                    self.callbacks.onTrackUnmuted()
+                }
               },
               slowLink: function(uplink, lost) {
-                self.onSlowLink(lost)
+                if ('onSlowLink' in self.callbacks) {
+                    self.callbacks.onSlowLink(lost)
+                }
               },
               ondataopen: function() {
               },
               ondata: function(rawData) {
-                self.onData(rawData)
-
+                if ('onData' in self.callbacks) {
+                    self.callbacks.onData(rawData)
+                }
               },
               oncleanup: function() {
-                self.onCleanup()
+                if ('onCleanup' in self.callbacks) {
+                    self.callbacks.onCleanup()
+                }
               }
             })
         },
@@ -177,26 +190,6 @@ export default function WebRTCConnection(videoEnabled) {
             }
           })
       }
-    },
-    onRemoteStream(stream) {
-      Janus.debug(' ::: Got a remote stream :::')
-      Janus.debug(stream)
-      self.callbacks.onRemoteStream(stream)
-    },
-    onTrackMuted() {
-      self.callbacks.onTrackMuted()
-    },
-    onTrackUnmuted() {
-      self.callbacks.onTrackUnmuted()
-    },
-    onSlowLink(lost) {
-      self.callbacks.onSlowLink(lost)
-    },
-    onCleanup() {
-      self.callbacks.onCleanup()
-    },
-    onData(rawData) {
-      self.callbacks.onData(rawData)
     },
     channelOpen() {
       return !(self.streamId === undefined || self.streaming === undefined)

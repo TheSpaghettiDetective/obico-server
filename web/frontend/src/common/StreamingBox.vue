@@ -180,26 +180,6 @@ export default {
       this.isVideoVisible = false
     },
 
-    onWebRTCData(jsonData) {
-      let msg = {}
-      try {
-        msg = JSON.parse(jsonData)
-      } catch {
-        // parse error
-      }
-      if ('passthru' in msg) {
-        EventBus.$emit('gotPassthruOverDatachannel', this.printer.id, msg)
-      }
-    },
-
-    sendOverDatachannel(printerId, msg) {
-      if (this.printer && printerId == this.printer.id) {
-        if (this.webrtc && this.webrtc.streaming) {
-          this.webrtc.streaming.data({text: JSON.stringify(msg), success: () => {}})
-        }
-      }
-     },
-
     /** Video warning handling */
 
     fixSlowLinkTextWidth() {

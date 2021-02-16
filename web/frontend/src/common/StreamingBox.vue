@@ -48,7 +48,6 @@
         </div>
         <div
           v-show="showVideo"
-          id="webrtc-stream"
           class="webcam_fixed_ratio_inner ontop full"
         >
           <video
@@ -70,37 +69,23 @@
 
 <script>
 import get from 'lodash/get'
-import ifvisible from 'ifvisible'
 
 import Janus from '@lib/janus'
-import EventBus from '@lib/event_bus'
-import webrtc from '@lib/webrtc_streaming'
 import printerStockImgSrc from '@static/img/3d_printer.png'
-
-let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
-let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
 export default {
   name: 'StreamingBox',
   created() {
-    this.webrtc = null
-
-    Janus.init({
-      debug: 'all',
-      callback: this.onJanusInitalized
-    })
-
-    ifvisible.on('blur', () => {
-      if (this.webrtc) {
-        this.webrtc.stopStream()
+    if (this.webrtc) {
+      this.webrtc.callbacks = {
+        ...this.webrtc.callbacks,
+        onRemoteStream: this.onWebRTCRemoteStream,
+        onCleanup: this.onWebRTCCleanup,
+        onSlowLink: this.onSlowLink,
+        onTrackMuted: () => this.trackMuted = true,
+        onTrackUnmuted: () => this.trackMuted = false,
       }
-    })
-
-    ifvisible.on('focus', () => {
-      if (this.webrtc) {
-        this.webrtc.startStream()
-      }
-    })
+    }
   },
 
   props: {
@@ -108,13 +93,9 @@ export default {
       type: Object,
       required: true
     },
-    shareToken: {
-      type: String,
-      required: false
-    },
-    isProAccount: {
-      type: Boolean,
-      required: true
+    webrtc: {
+      type: Object,
+      required: false,
     },
   },
 
@@ -183,44 +164,10 @@ export default {
       this.videoLoading = true
     },
 
-    openWebRTCForPrinter() {
-      let url, token
-      if (this.shareToken) {
-        url = printerSharedWebRTCUrl(this.shareToken)
-        token = this.shareToken
-      } else {
-        url = printerWebRTCUrl(this.printer.id)
-        token = this.printer.auth_token
-      }
-      this.webrtc.connect(
-        url,
-        token
-      )
-    },
-
-    onJanusInitalized() {
-      if (!Janus.isWebrtcSupported()) {
-        return
-      }
-
-      this.webrtc = webrtc.getWebRTCManager({
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onCleanup: this.onWebRTCCleanup,
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => this.trackMuted = true,
-        onTrackUnmuted: () => this.trackMuted = false,
-        onData: this.onWebRTCData,
-      }, this.isProAccount)
-
-      EventBus.$on('sendOverDatachannel', this.sendOverDatachannel)
-
-      this.openWebRTCForPrinter()
-    },
-
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
 
-      var videoTracks = stream.getVideoTracks()
+      const videoTracks = stream.getVideoTracks()
       if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
         // No remote video
         this.isVideoVisible = false

@@ -1,14 +1,15 @@
 <template>
   <div>
-    <pull-to-reveal
-      :enable="true"
-      :id="'filters'"
-      :maxElementHeight="210"
-      :animationTime=".7"
-      :zIndex="8"
-      :topOffsets="{'default': 52, 892: 56}"
-      :heightMultiplicator="4"
+    <PullToReveal
+      :shiftContent="true"
+      :showEdge="true"
+      @hide="closeMenus"
     >
+      <Navbar
+        :pull-to-reveal="true"
+        view-name="printers"
+        ref="navbar"
+      />
       <div class="container">
         <div class="option-drawer">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -21,7 +22,7 @@
               >
                 <div class="panel-body p-3">
                   <div>
-                    <div class="sorting-and-filter">
+                    <div class="sorting-and-filter" ref="filters">
                       <Select
                         id="printer-sorting"
                         class="my-1 mx-2"
@@ -56,7 +57,7 @@
           </div>
         </div>
       </div>
-    </pull-to-reveal>
+    </PullToReveal>
 
     <div v-if="!user.is_pro" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">
@@ -66,24 +67,14 @@
       </div>
     </div>
 
-    <div id="printers" class="row justify-content-center mt-2">
+    <div id="printers" class="row justify-content-center pt-2">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
       <printer-card
         v-for="printer in visiblePrinters"
-        ref="printer"
         :key="printer.id"
         :printer="printer"
         :is-pro-account="user.is_pro"
-        @NotAFailureClicked="onNotAFailureClicked($event, printer.id, false)"
-        @WatchForFailuresToggled="onWatchForFailuresToggled(printer.id)"
-        @PauseOnFailureToggled="onPauseOnFailureToggled(printer.id)"
-        @PrinterActionPauseClicked="onPrinterActionPauseClicked(printer.id)"
-        @PrinterActionResumeClicked="onPrinterActionResumeClicked($event, printer.id)"
-        @PrinterActionCancelClicked="onPrinterActionCancelClicked(printer.id)"
-        @PrinterActionConnectClicked="onPrinterActionConnectClicked(printer.id)"
-        @PrinterActionStartClicked="onPrinterActionStartClicked(printer.id)"
-        @PrinterActionControlClicked="onPrinterActionControlClicked(printer.id)"
-        @TempEditClicked="onTempEditClicked(printer.id, $event)"
+        @PrinterUpdated="onPrinterUpdated"
       ></printer-card>
     </div>
 
@@ -116,31 +107,17 @@
 
 <script>
 import axios from 'axios'
-import moment from 'moment'
-import filesize from 'filesize'
-import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
-import filter from 'lodash/filter'
 
 import { getLocalPref, setLocalPref } from '@lib/pref'
 import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
-import PrinterWebSocket from '@lib/printer_ws'
-
 import PrinterCard from './PrinterCard.vue'
-import StartPrint from './StartPrint.vue'
-import ConnectPrinter from './ConnectPrinter.vue'
-import TempTargetEditor from './TempTargetEditor.vue'
 import Select from '@common/Select.vue'
+import Navbar from '@common/Navbar.vue'
 import PullToReveal from '@common/PullToReveal.vue'
-
-const PAUSE_PRINT = '/pause_print/'
-const RESUME_PRINT = '/resume_print/'
-const CANCEL_PRINT = '/cancel_print/'
-const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
-const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
 const SortOrder = {
   Asc: 'asc',
@@ -184,12 +161,12 @@ export default {
   components: {
     PrinterCard,
     Select,
-    PullToReveal
+    Navbar,
+    PullToReveal,
   },
   created() {
     this.user = JSON.parse(document.querySelector('#user-json').text)
 
-    this.printerWs = PrinterWebSocket()
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter
     this.SortOrder = SortOrder
@@ -204,6 +181,8 @@ export default {
       {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
       {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
     ]
+
+    this.fetchPrinters()
   },
   data: function() {
     return {
@@ -312,325 +291,11 @@ export default {
         this.filters.state
       )
     },
-    onNotAFailureClicked(ev, printerId, resumePrint) {
-      this.$swal.Confirm.fire({
-        title: 'Noted!',
-        html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.dismiss == 'cancel') {
-          // Hack: So that 2 APIs are not called at the same time
-          setTimeout(() => {
-            this.sendPrinterAction(
-              printerId,
-              MUTE_CURRENT_PRINT,
-              false
-            )
-          }, 1000)
-        }
-        if (resumePrint) {
-          this.sendPrinterAction(
-            printerId,
-            RESUME_PRINT,
-            true)
-        } else {
-          this.sendPrinterAction(
-            printerId,
-            ACK_ALERT_NOT_FAILED,
-            false)
-        }
-      })
-
-      ev.preventDefault()
-    },
-    onWatchForFailuresToggled(printerId) {
-      let p = this.printers.find((p) => p.id == printerId)
-      if (p) {
-        p.watching_enabled = !p.watching_enabled
-        this.updatePrinter(p)
-      }
-    },
-    onPauseOnFailureToggled(printerId) {
-      let p = this.printers.find((p) => p.id == printerId)
-      if (p) {
-        p.action_on_failure = p.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
-        this.updatePrinter(p)
-      }
-    },
-    onPrinterActionPauseClicked(printerId) {
-      this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings/#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
-      }).then((result) => {
-        if (result.value) {
-          this.sendPrinterAction(printerId, PAUSE_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionResumeClicked(ev, printerId) {
-      let printer = this.printers.find((p) => p.id == printerId)
-      if (printer.alertUnacknowledged) {
-        this.onNotAFailureClicked(ev, printerId, true)
-      } else {
-        this.sendPrinterAction(printerId, RESUME_PRINT, true)
-      }
-    },
-    onPrinterActionCancelClicked(printerId) {
-      this.$swal.Confirm.fire({
-        text: 'Once cancelled, the print can no longer be resumed.',
-      }).then((result) => {
-        if (result.value) {
-          // When it is confirmed
-          this.sendPrinterAction(printerId, CANCEL_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionConnectClicked(printerId) {
-      this.printerWs.passThruToPrinter(
-        printerId,
-        { func: 'get_connection_options', target: '_printer' },
-        (err, connectionOptions) => {
-          if (err) {
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: 'Failed to connect!',
-            })
-          } else {
-            if (connectionOptions.ports.length < 1) {
-              this.$swal.Toast.fire({
-                icon: 'error',
-                title: 'Uh-Oh. No printer is found on the serial port.',
-              })
-            } else {
-              this.$swal.openModalWithComponent(
-                ConnectPrinter,
-                {
-                  connectionOptions: connectionOptions,
-                },
-                {
-                  confirmButtonText: 'Connect',
-                  showCancelButton: true,
-                  preConfirm: () => {
-                    return {
-                      port: document.getElementById('connect-port').value,
-                      baudrate: document.getElementById('connect-baudrate').value
-                    }
-                  }
-                }
-              ).then((result) => {
-                if (result.value) {
-                  let args = [
-                    result.value.port,
-                    result.value.baudrate
-                  ]
-                  this.printerWs.passThruToPrinter(
-                    printerId,
-                    { func: 'connect', target: '_printer',
-                      args: args }
-                  )
-                }
-              })
-            }
-          }
-        }
-      )
-    },
-    onPrinterActionStartClicked(printerId) {
-      if (!this.user.is_pro) {
-        this.$swal.fire({
-          title: 'Wait!',
-          html: `
-              <h5 class="mb-3">You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to start a remote print job. </h5>
-              <p>Remote G-Code upload and print start is a Pro feature.</p>
-              <p>With <a href="/ent/pricing/">little more than 1 Starbucks per month</a>, you can upgrade to a Pro account.</p>
-            `
-        })
-        return
-      }
-
-      let printer = this.printers.find((p) => p.id == printerId)
-
-      axios
-        .get(
-          urls.gcodes(),
-        ).then((response) => {
-          let gcodeFiles = response.data
-          gcodeFiles.forEach(function (gcodeFile) {
-            gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
-            gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
-          })
-
-          this.$swal.openModalWithComponent(
-            StartPrint,
-            {
-              printerId: printerId,
-              gcodeFiles: gcodeFiles,
-              onGcodeFileSelected: this.onGcodeFileSelected,
-            },
-            {
-              title: 'Print on ' + printer.name,
-              showConfirmButton: false,
-              showCancelButton: true,
-            }
-          )
-        })
-    },
-    onGcodeFileSelected(printerId, gcodeFiles, gcodeFileId) {
-      // actionsDiv.find('button').attr('disabled', true) // TODO
-      let printer = this.printers.find((p) => p.id == printerId)
-
-      this.printerWs.passThruToPrinter(
-        printerId,
-        { func: 'download',
-          target: 'file_downloader',
-          args: filter(gcodeFiles, { id: gcodeFileId })
-        },
-        (err, ret) => {
-          if (err || ret.error) {
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: err ? err : ret.error,
-            })
-            return
-          }
-
-          let targetPath = ret.target_path
-
-          let html =`
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-            <h5 class="py-3">
-              Uploading G-Code to ${printer.name} ...
-            </h5>
-            <p>
-              ${targetPath}
-            </p>
-          </div>`
-
-          this.$swal.fire({
-            html: html,
-            showConfirmButton: false
-          })
-
-          let checkPrinterStatus = () => {
-            let updatedPrinter = this.printers.find((p) => p.id == printerId)
-            if (get(updatedPrinter, 'status.state.text') == 'Operational') {
-              setTimeout(checkPrinterStatus, 1000)
-            } else {
-              this.$swal.close()
-            }
-          }
-          checkPrinterStatus()
-        }
-      )
-    },
-
-    onPrinterActionControlClicked(printerId) {
-      window.location = urls.printerControl(printerId)
-    },
-
-    onTempEditClicked(printerId, item) {
-      let printer = this.printers.find((p) => p.id == printerId)
-      let tempProfiles = get(printer, 'settings.temp_profiles', [])
-      let presets
-      let maxTemp = 350
-
-      if (item.key == 'bed') {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['bed']}}
-        )
-        maxTemp = 140
-      } else {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['extruder']}}
-        )
-      }
-
-      this.$swal.openModalWithComponent(
-        TempTargetEditor,
-        {
-          presets: presets,
-          maxTemp: maxTemp,
-          curTarget: item.target,
-        },
-        {
-          title: 'Set ' + item.toolName + ' Temperature',
-          confirmButtonText: 'Confirm',
-          showCancelButton: true,
-          preConfirm: () => {
-            return {
-              target: parseInt(document.getElementById('target-temp').value)
-            }
-          }
-        }).then((result) => {
-        if (result.value) {
-          let targetTemp = result.value.target
-          this.printerWs.passThruToPrinter(
-            printer.id,
-            {
-              func: 'set_temperature',
-              target: '_printer',
-              args: [item.key, targetTemp]
-            })
-        }
-      })
-    },
-
-    updatePrinter(printer) {
-      return axios
-        .patch(
-          urls.printer(printer.id),
-          {
-            watching_enabled: printer.watching_enabled,
-            action_on_failure: printer.action_on_failure,
-          })
-        .then(response => {
-          this.printers.map(p => {
-            if (p.id == response.data.id) {
-              return normalizedPrinter(response.data)
-            }
-            return p
-          })
-        })
-        .catch(response => {
-          console.log(response)
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: 'Failed to update printer!',
-          }) // FIXME this was not handled in original code. sentry?
-        })
-    },
-
-    sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios
-        .get(urls.printerAction(printerId, path))
-        .then(() => {
-          let toastHtml = ''
-          if (isOctoPrintCommand) {
-            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
-                  '<p>It may take a while to be executed by OctoPrint.</p>'
-          }
-          if (toastHtml != '') {
-            this.$swal.Toast.fire({
-              icon: 'success',
-              html: toastHtml,
-            })
-          }
-        })
-    },
-
-    shouldVideoBeFull(printer) {
-      let hasImage = get(printer, 'pic.img_url')
-      let shouldBeThumb = printer.alertUnacknowledged && hasImage
-      return !shouldBeThumb
-    },
-
     insertPrinter(printer) {
       this.printers.push(printer)
-      this.openWSForPrinter(printer)
     },
 
-    reinsertPrinter(printer) {
+    onPrinterUpdated(printer) {
       let index = this.printers.findIndex(p => p.id == printer.id)
       if (index < 0) {
         // FIXME any alert here?
@@ -640,22 +305,18 @@ export default {
       this.$set(this.printers, index, printer)
     },
 
-    openWSForPrinter(printer) {
-      let printerId = printer.id
-      const url = urls.printerWS(printer.id)
-      this.printerWs.openPrinterWebSockets(
-        printerId,
-        url,
-        (data) => {
-          this.reinsertPrinter(normalizedPrinter(data))
-        }
-      )
-    },
-  },
+    closeMenus() {
+      this.$refs.navbar.hideDropdowns()
 
-  mounted() {
-    this.fetchPrinters()
-  }
+      const dropdowns = this.$refs.filters.querySelectorAll('.dropdown')
+      dropdowns.forEach(dropdown => {
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show')
+          dropdown.querySelector('.dropdown-menu').classList.remove('show')
+        }
+      })
+    }
+  },
 }
 </script>
 

@@ -43,9 +43,7 @@
           </div>
         </div>
       </div>
-
-      <streaming-box :printer="printer" :isProAccount="isProAccount" />
-
+      <streaming-box :printer="printer" :webrtc="webrtc" />
       <div
         v-if="printer.alertUnacknowledged"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -56,7 +54,7 @@
           type="button"
           id="not-a-failure"
           class="btn btn-outline-primary btn-sm float-right"
-          @click="$emit('NotAFailureClicked', $event, printer.id)"
+          @click="onNotAFailureClicked($event, false)"
         >Not a failure?</button>
       </div>
 
@@ -84,12 +82,12 @@
         id="printer-actions"
         class="container"
         v-bind="actionsProps"
-        @PrinterActionPauseClicked="$emit('PrinterActionPauseClicked', $event)"
-        @PrinterActionResumeClicked="$emit('PrinterActionResumeClicked', $event)"
-        @PrinterActionCancelClicked="$emit('PrinterActionCancelClicked', $event)"
-        @PrinterActionConnectClicked="$emit('PrinterActionConnectClicked', $event)"
-        @PrinterActionStartClicked="$emit('PrinterActionStartClicked', $event)"
-        @PrinterActionControlClicked="$emit('PrinterActionControlClicked', $event)"
+        @PrinterActionPauseClicked="onPrinterActionPauseClicked"
+        @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
+        @PrinterActionCancelClicked="onPrinterActionCancelClicked"
+        @PrinterActionConnectClicked="onPrinterActionConnectClicked"
+        @PrinterActionStartClicked="onPrinterActionStartClicked"
+        @PrinterActionControlClicked="onPrinterActionControlClicked"
       ></PrinterActions>
       <div class="info-section settings">
         <button
@@ -136,7 +134,7 @@
                       name="watching_enabled"
                       class="custom-control-input update-printer"
                       :id="'watching_enabled-toggle-' + printer.id"
-                      @click="$emit('WatchForFailuresToggled')"
+                      @click="onWatchForFailuresToggled"
                       :checked="watchForFailures"
                     >
                     <label
@@ -164,7 +162,7 @@
                       name="pause_on_failure"
                       class="custom-control-input update-printer"
                       :id="'pause-toggle-' + printer.id"
-                      @click="$emit('PauseOnFailureToggled')"
+                      @click="onPauseOnFailureToggled"
                       :checked="pauseOnFailure"
                     >
                     <label
@@ -224,7 +222,7 @@
             v-if="section_toggles.statusTemp && statusTempProps.show"
             id="status_temp_block"
             v-bind="statusTempProps"
-            @TempEditClicked="$emit('TempEditClicked', $event)"
+            @TempEditClicked="onTempEditClicked"
           ></StatusTemp>
         </div>
       </div>
@@ -235,14 +233,31 @@
 <script>
 import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
+import moment from 'moment'
+import filesize from 'filesize'
+import filter from 'lodash/filter'
+import axios from 'axios'
+
+import urls from '@lib/server_urls'
+import { normalizedPrinter } from '@lib/normalizers'
+import PrinterComm from '@lib/printer_comm'
+import WebRTCConnection from '@lib/webrtc'
 import Gauge from '@common/Gauge'
 import StreamingBox from '@common/StreamingBox'
-import { toDuration } from '@lib/printers.js'
 import { getLocalPref, setLocalPref } from '@lib/pref'
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
+import StartPrint from './StartPrint.vue'
+import ConnectPrinter from './ConnectPrinter.vue'
+import TempTargetEditor from './TempTargetEditor.vue'
 
+
+const PAUSE_PRINT = '/pause_print/'
+const RESUME_PRINT = '/resume_print/'
+const CANCEL_PRINT = '/cancel_print/'
+const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
+const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
 const Show = true
 const Hide = false
@@ -280,14 +295,28 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
+      webrtc: WebRTCConnection(this.isProAccount),
     }
+  },
+  created() {
+    this.printerComm = PrinterComm(
+      this.printer.id,
+      urls.printerWebSocket(this.printer.id),
+      (data) => {
+        this.$emit('PrinterUpdated', normalizedPrinter(data))
+      }
+    )
+    this.printerComm.connect()
+
+    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+    this.printerComm.setWebRTC(this.webrtc)
   },
   computed: {
     isWatching() {
       return !this.printer.not_watching_reason
     },
     timeRemaining() {
-      return toDuration(
+      return this.toDuration(
         this.secondsLeft, this.printer.isPrinting)
     },
     timeTotal() {
@@ -295,7 +324,7 @@ export default {
       if (this.secondsPrinted && this.secondsLeft) {
         secs = this.secondsPrinted + this.secondsLeft
       }
-      return toDuration(
+      return this.toDuration(
         secs,
         this.printer.isPrinting)
     },
@@ -370,6 +399,325 @@ export default {
     onStatusTempToggleClicked() {
       this.section_toggles.statusTemp = !this.section_toggles.statusTemp
       setLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), this.section_toggles.statusTemp)
+    },
+    onNotAFailureClicked(ev, resumePrint) {
+      this.$swal.Confirm.fire({
+        title: 'Noted!',
+        html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.dismiss == 'cancel') {
+          // Hack: So that 2 APIs are not called at the same time
+          setTimeout(() => {
+            this.sendPrinterAction(
+              this.printer.id,
+              MUTE_CURRENT_PRINT,
+              false
+            )
+          }, 1000)
+        }
+        if (resumePrint) {
+          this.sendPrinterAction(
+            this.printer.id,
+            RESUME_PRINT,
+            true)
+        } else {
+          this.sendPrinterAction(
+            this.printer.id,
+            ACK_ALERT_NOT_FAILED,
+            false)
+        }
+      })
+
+      ev.preventDefault()
+    },
+    onWatchForFailuresToggled() {
+      this.printer.watching_enabled = !this.printer.watching_enabled
+      this.updatePrinter(this.printer)
+    },
+    onPauseOnFailureToggled() {
+      this.printer.action_on_failure = this.printer.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
+      this.updatePrinter(this.printer)
+    },
+    onPrinterActionPauseClicked() {
+      this.$swal.Confirm.fire({
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings/#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+      }).then((result) => {
+        if (result.value) {
+          this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
+        }
+      })
+    },
+    onPrinterActionResumeClicked(ev) {
+      if (this.printer.alertUnacknowledged) {
+        this.onNotAFailureClicked(ev, true)
+      } else {
+        this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+      }
+    },
+    onPrinterActionCancelClicked() {
+      this.$swal.Confirm.fire({
+        text: 'Once cancelled, the print can no longer be resumed.',
+      }).then((result) => {
+        if (result.value) {
+          // When it is confirmed
+          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
+        }
+      })
+    },
+    onPrinterActionConnectClicked() {
+      this.printerComm.passThruToPrinter(
+        { func: 'get_connection_options', target: '_printer' },
+        (err, connectionOptions) => {
+          if (err) {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: 'Failed to connect!',
+            })
+          } else {
+            if (connectionOptions.ports.length < 1) {
+              this.$swal.Toast.fire({
+                icon: 'error',
+                title: 'Uh-Oh. No printer is found on the serial port.',
+              })
+            } else {
+              this.$swal.openModalWithComponent(
+                ConnectPrinter,
+                {
+                  connectionOptions: connectionOptions,
+                },
+                {
+                  confirmButtonText: 'Connect',
+                  showCancelButton: true,
+                  preConfirm: () => {
+                    return {
+                      port: document.getElementById('connect-port').value,
+                      baudrate: document.getElementById('connect-baudrate').value
+                    }
+                  }
+                }
+              ).then((result) => {
+                if (result.value) {
+                  let args = [
+                    result.value.port,
+                    result.value.baudrate
+                  ]
+                  this.printerComm.passThruToPrinter(
+                    { func: 'connect', target: '_printer',
+                      args: args }
+                  )
+                }
+              })
+            }
+          }
+        }
+      )
+    },
+    onPrinterActionStartClicked() {
+      if (!this.isProAccount) {
+        this.$swal.fire({
+          title: 'Wait!',
+          html: `
+              <h5 class="mb-3">You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to start a remote print job. </h5>
+              <p>Remote G-Code upload and print start is a Pro feature.</p>
+              <p>With <a href="/ent/pricing/">little more than 1 Starbucks per month</a>, you can upgrade to a Pro account.</p>
+            `
+        })
+        return
+      }
+
+      axios
+        .get(
+          urls.gcodes(),
+        ).then((response) => {
+          let gcodeFiles = response.data
+          gcodeFiles.forEach(function (gcodeFile) {
+            gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
+            gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
+          })
+
+          this.$swal.openModalWithComponent(
+            StartPrint,
+            {
+              gcodeFiles: gcodeFiles,
+              onGcodeFileSelected: this.onGcodeFileSelected,
+            },
+            {
+              title: 'Print on ' + this.printer.name,
+              showConfirmButton: false,
+              showCancelButton: true,
+            }
+          )
+        })
+    },
+    onGcodeFileSelected(gcodeFiles, gcodeFileId) {
+      // actionsDiv.find('button').attr('disabled', true) // TODO
+
+      this.printerComm.passThruToPrinter(
+        { func: 'download',
+          target: 'file_downloader',
+          args: filter(gcodeFiles, { id: gcodeFileId })
+        },
+        (err, ret) => {
+          if (err || ret.error) {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: err ? err : ret.error,
+            })
+            return
+          }
+
+          let targetPath = ret.target_path
+
+          let html =`
+          <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
+            <h5 class="py-3">
+              Uploading G-Code to ${this.printer.name} ...
+            </h5>
+            <p>
+              ${targetPath}
+            </p>
+          </div>`
+
+          this.$swal.fire({
+            html: html,
+            showConfirmButton: false
+          })
+
+          let checkPrinterStatus = () => {
+            if (get(this.printer, 'status.state.text') == 'Operational') {
+              setTimeout(checkPrinterStatus, 1000)
+            } else {
+              this.$swal.close()
+            }
+          }
+          checkPrinterStatus()
+        }
+      )
+    },
+
+    onPrinterActionControlClicked() {
+      window.location = urls.printerControl(this.printer.id)
+    },
+
+    onTempEditClicked(item) {
+      let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
+      let presets
+      let maxTemp = 350
+
+      if (item.key == 'bed') {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['bed']}}
+        )
+        maxTemp = 140
+      } else {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['extruder']}}
+        )
+      }
+
+      this.$swal.openModalWithComponent(
+        TempTargetEditor,
+        {
+          presets: presets,
+          maxTemp: maxTemp,
+          curTarget: item.target,
+        },
+        {
+          title: 'Set ' + item.toolName + ' Temperature',
+          confirmButtonText: 'Confirm',
+          showCancelButton: true,
+          preConfirm: () => {
+            return {
+              target: parseInt(document.getElementById('target-temp').value)
+            }
+          }
+        }).then((result) => {
+        if (result.value) {
+          let targetTemp = result.value.target
+          this.printerComm.passThruToPrinter(
+            {
+              func: 'set_temperature',
+              target: '_printer',
+              args: [item.key, targetTemp]
+            })
+        }
+      })
+    },
+
+    updatePrinter(printer) {
+      return axios
+        .patch(
+          urls.printer(printer.id),
+          {
+            watching_enabled: printer.watching_enabled,
+            action_on_failure: printer.action_on_failure,
+          })
+        .then(response => {
+          if (response.data.succeeded) {
+            const p = normalizedPrinter(response.data.printer)
+            this.$emit('PrinterUpdated', p)
+          } else {
+            throw response
+          }
+        })
+        .catch(response => {
+          console.error(response)
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: 'Failed to update printer!',
+          }) // FIXME this was not handled in original code. sentry?
+        })
+    },
+
+    sendPrinterAction(printerId, path, isOctoPrintCommand) {
+      axios
+        .get(urls.printerAction(printerId, path))
+        .then(() => {
+          let toastHtml = ''
+          if (isOctoPrintCommand) {
+            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
+                  '<p>It may take a while to be executed by OctoPrint.</p>'
+          }
+          if (toastHtml != '') {
+            this.$swal.Toast.fire({
+              icon: 'success',
+              html: toastHtml,
+            })
+          }
+        })
+    },
+
+    shouldVideoBeFull(printer) {
+      let hasImage = get(printer, 'pic.img_url')
+      let shouldBeThumb = printer.alertUnacknowledged && hasImage
+      return !shouldBeThumb
+    },
+
+    toDuration (seconds, isPrinting) {
+      if (seconds == null || seconds == 0) {
+        return {
+          valid: false,
+          printing: isPrinting,
+        }
+      } else {
+        var d = moment.duration(seconds, 'seconds')
+        var h = Math.floor(d.asHours())
+        var m = d.minutes()
+        var s = d.seconds()
+        return {
+          valid: true,
+          printing: isPrinting,
+          hours: h,
+          showHours: (h>0),
+          minutes: m,
+          showMinutes: (h>0 || m>0),
+          seconds: s,
+          showSeconds: (h==0 && m==0)
+        }
+      }
     },
   },
 }

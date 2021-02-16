@@ -1,15 +1,55 @@
 import get from 'lodash/get'
+import ifvisible from 'ifvisible'
+
 import Janus from '@lib/janus'
 
+let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
+let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
-function getWebRTCManager(callbacks, videoEnabled) {
-  let manager = {
-    callbacks: callbacks,
+export default function WebRTCConnection(videoEnabled) {
+  let self = {
+    callbacks: {},
+    initialized: false,
     streamId: undefined,
     streaming: undefined,
     videoEnabled: videoEnabled ?? false,
 
+    openForShareToken(shareToken) {
+      self.connect(
+        printerSharedWebRTCUrl(shareToken),
+        shareToken
+      )
+    },
+
+    openForPrinter(printerId, authToken) {
+      self.connect(
+        printerWebRTCUrl(printerId),
+        authToken
+      )
+    },
+
     connect(wsUri, token) {
+        Janus.init({
+            debug: 'all',
+            callback: () => {
+                self.initialized = true
+                if (!Janus.isWebrtcSupported()) {
+                    return
+                }
+                self.connectJanusWebSocket(wsUri, token)
+            }
+          })
+
+          ifvisible.on('blur', () => {
+            self.stopStream()
+          })
+
+          ifvisible.on('focus', () => {
+            self.startStream()
+          })
+    },
+
+    connectJanusWebSocket(wsUri, token) {
       const opaqueId = 'streamingtest-' + Janus.randomString(12)
 
       var iceServers = [{urls:['stun:stun.l.google.com:19302']}]
@@ -29,7 +69,6 @@ function getWebRTCManager(callbacks, videoEnabled) {
           })
       }
 
-      let self = this
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers,
@@ -142,44 +181,48 @@ function getWebRTCManager(callbacks, videoEnabled) {
     onRemoteStream(stream) {
       Janus.debug(' ::: Got a remote stream :::')
       Janus.debug(stream)
-      this.callbacks.onRemoteStream(stream)
+      self.callbacks.onRemoteStream(stream)
     },
     onTrackMuted() {
-      this.callbacks.onTrackMuted()
+      self.callbacks.onTrackMuted()
     },
     onTrackUnmuted() {
-      this.callbacks.onTrackUnmuted()
+      self.callbacks.onTrackUnmuted()
     },
     onSlowLink(lost) {
-      this.callbacks.onSlowLink(lost)
+      self.callbacks.onSlowLink(lost)
     },
     onCleanup() {
-      this.callbacks.onCleanup()
+      self.callbacks.onCleanup()
     },
     onData(rawData) {
-      this.callbacks.onData(rawData)
+      self.callbacks.onData(rawData)
+    },
+    channelOpen() {
+      return !(self.streamId === undefined || self.streaming === undefined)
     },
     startStream() {
-      if (this.streamId === undefined || this.streaming === undefined) {
+      if (!self.channelOpen()) {
         return
       }
-      const body = { 'request': 'watch', offer_video: this.videoEnabled, id: parseInt(this.streamId) }
-      this.streaming.send({ 'message': body })
+      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
+      self.streaming.send({ 'message': body })
     },
     stopStream() {
-      if (this.streamId === undefined || this.streaming === undefined) {
+    if (!self.channelOpen()) {
         return
       }
       const body = { 'request': 'stop' }
-      this.streaming.send({ 'message': body })
-      this.streaming.hangup()
+      self.streaming.send({ 'message': body })
+      self.streaming.hangup()
     },
+
+    sendData(data) {
+      if (self.channelOpen()) {
+        self.streaming.data({text: data, success: () => {}})
+      }
+    }
   }
 
-  return manager
-}
-
-
-export default {
-  getWebRTCManager,
+  return self
 }

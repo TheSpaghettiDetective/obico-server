@@ -35,7 +35,7 @@ class WebConsumer(JsonWebsocketConsumer):
             if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
                 self.printer = self.current_user()
             else:
-                # Exception for un-authenticated or un-authorized access
+                # Throw exception in case of un-authenticated or un-authorized access
                 self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
             async_to_sync(self.channel_layer.group_add)(
@@ -66,7 +66,10 @@ class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
     def printer_status(self, data):
         try:
-            serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
+            if self.scope['path'].startswith('/ws/share_token/'):
+                serializer = PublicPrinterSerializer(Printer.with_archived.get(id=self.printer.id))
+            else:
+                serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
             self.send_json(serializer.data)
         except:
             sentryClient.captureException()

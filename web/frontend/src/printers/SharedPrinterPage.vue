@@ -9,11 +9,7 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box
-            :printer="printer"
-            :is-pro-account=true
-            :shareToken="shareToken"
-          />
+          <streaming-box :printer="printer" :webrtc="webrtc" />
           <div class="p-3 p-md-5">
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
             <a
@@ -37,7 +33,8 @@ import split from 'lodash/split'
 import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
-import PrinterWebSocket from '@lib/printer_ws'
+import PrinterComm from '@lib/printer_comm'
+import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 
 export default {
@@ -46,9 +43,18 @@ export default {
     StreamingBox,
   },
   created(){
-    this.printerWs = PrinterWebSocket()
-    this.webrtc = null
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
+
+    this.printerComm = PrinterComm(
+      this.shareToken,
+      urls.printerSharedWebSocket(this.shareToken),
+      (data) => {
+        this.printer = normalizedPrinter(data)
+        this.loading = false
+      }
+    )
+    this.printerComm.connect()
+    this.webrtc.openForShareToken(this.shareToken)
   },
   data: function() {
     return {
@@ -56,20 +62,9 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
+      webrtc: WebRTCConnection(true),
     }
   },
-  mounted() {
-    const url = urls.printerSharedWS(this.shareToken)
-    this.printerWs.openPrinterWebSockets(
-      this.shareToken,
-      url,
-      (data) => {
-        this.printer = normalizedPrinter(data)
-        this.loading = false
-      }
-    )
-  }
-
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PullToReveal
+    <pull-to-reveal
       :shiftContent="true"
       :showEdge="true"
       @hide="closeMenus"
@@ -10,7 +10,7 @@
         view-name="printers"
         ref="navbar"
       />
-      <div class="container">
+      <div v-if="printers.length > 1" class="container">
         <div class="option-drawer">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             <div class="panel panel-default">
@@ -57,7 +57,7 @@
           </div>
         </div>
       </div>
-    </PullToReveal>
+    </pull-to-reveal>
 
     <div v-if="!user.is_pro" class="row justify-content-center">
       <div class="col-sm-12 col-lg-6">

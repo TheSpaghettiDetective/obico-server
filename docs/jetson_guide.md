@@ -1,6 +1,6 @@
 # Run TSD server on Jetson Nano
 
-Thanks to Raymond's work, you can now easily run TSD server on Jetson.
+Thanks to Raymond's work, you can now easily run TSD server on a 4GB Jetson.
 
 ## Software requirements
 

@@ -23,6 +23,10 @@ router.register(
     r'onetimeverificationcodes',
     viewsets.OneTimeVerificationCodeViewSet,
     'OneTimeVerificationCodeViewSet')
+router.register(
+    r'sharedresources',
+    viewsets.SharedResourceViewSet,
+    'SharedResourceViewSet')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

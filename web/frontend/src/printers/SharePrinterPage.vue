@@ -99,7 +99,7 @@
     created() {
       this.user = JSON.parse(document.querySelector('#user-json').text)
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
-      this.fetchPrinter()
+      this.fetchSharedResources()
     },
 
     computed: {
@@ -121,12 +121,11 @@
 
     methods: {
       // Get printer data
-      fetchPrinter() {
+      fetchSharedResources() {
         return axios
-          .get(urls.printer(this.printerId))
+          .get(urls.sharedResources({'printer_id': this.printerId}))
           .then(response => {
-            this.printer = normalizedPrinter(response.data)
-            console.log(this.printer)
+            this.printer = normalizedPrinter(response.data.printer)
           })
       },
 

@@ -18,10 +18,10 @@ import requests
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    calc_normalized_p)
+    SharedResource, calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
@@ -368,3 +368,27 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             return Response(self.serializer_class(code, many=False).data)
         else:
             raise Http404("Requested resource does not exist")
+
+
+class SharedResourceViewSet(mixins.ListModelMixin,
+                                  mixins.CreateModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = SharedResourceSerializer
+
+    def list(self, request):
+        return self.response_from_printer(request)
+
+    def create(self, request):
+        printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
+        return self.response_from_printer(request)
+
+    def response_from_printer(self, request):
+        printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        return Response(self.serializer_class(
+            SharedResource.objects.select_related('printer').filter(printer=printer),
+            many=True)
+            .data)

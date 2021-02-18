@@ -96,23 +96,10 @@
       }
     },
 
-    props: {
-      csrf: {
-        type: String,
-        required: true
-      },
-    },
-
     created() {
       this.user = JSON.parse(document.querySelector('#user-json').text)
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
       this.fetchPrinter()
-    },
-
-    mounted() {
-      console.log(this.user)
-      console.log(this.printer)
-      console.log(window.location)
     },
 
     computed: {
@@ -128,22 +115,7 @@
 
     watch: {
       share(val) {
-        if (val) {
-          // TODO: rewrite with new API
-
-          let bodyFormData = new FormData()
-          bodyFormData.append('shared', 'on')
-
-          axios
-            .post('', bodyFormData, {headers: {'X-CSRFToken': this.csrf}})
-            .then(response => {
-              console.log(response)
-            })
-
-          this.token = 'token'
-        } else {
-          this.token = ''
-        }
+        this.changeShareStatus(val)
       }
     },
 
@@ -158,6 +130,7 @@
           })
       },
 
+      // Copy share link to clipboard
       copyToClipboard() {
         this.copyStatus = true
 
@@ -170,27 +143,20 @@
           console.error('Fallback: Oops, unable to copy', err)
           this.copyMessage = 'Failed!'
         }
+      },
 
-        // $('#copy-to-clipboard').tooltip({
-        //     trigger: 'click',
-        //     placement: 'bottom'
-        // });
-
-        // var clipboard = new ClipboardJS('#copy-to-clipboard');
-        // clipboard.on('success', function (e) {
-        //     setTooltip(e.trigger, 'Copied!');
-        //     hideTooltip(e.trigger);
-        // });
-
-        // clipboard.on('error', function (e) {
-        //     setTooltip(e.trigger, 'Failed!');
-        //     hideTooltip(e.trigger);
-        // });
+      // API call to get shareLink or disable sharing
+      changeShareStatus(status) {
+        return axios
+          .post(urls.sharePrinter(this.printerId), {share: status})
+          .then(response => {
+            if (response.data) {
+              this.token = response.data.token
+            } else {
+              this.token = ''
+            }
+          })
       }
     }
   }
 </script>
-
-<style lang="sass" scoped>
-
-</style>

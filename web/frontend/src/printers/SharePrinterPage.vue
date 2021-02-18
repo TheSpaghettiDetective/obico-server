@@ -75,8 +75,8 @@
   import axios from 'axios'
   import { normalizedPrinter } from '@lib/normalizers'
   import urls from '@lib/server_urls'
-  import PullToReveal from '@/common/PullToReveal.vue'
-  import Navbar from '@/common/Navbar.vue'
+  import PullToReveal from '@common/PullToReveal.vue'
+  import Navbar from '@common/Navbar.vue'
 
   export default {
     components: {
@@ -108,7 +108,7 @@
           const url = window.location
           return `${url.protocol}//${url.host}/printers/share_token/${this.token}/`
         }
-        
+
         return ''
       }
     },

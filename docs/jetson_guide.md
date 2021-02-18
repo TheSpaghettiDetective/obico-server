@@ -10,6 +10,10 @@ The following software is required before you start installing the server:
   - [Flashing Software](https://www.balena.io/etcher/)
   - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
 
+- pip and pip3.
+    - Run `sudo apt install python-pip`
+    - Run `sudo apt install python-pip3`
+
 - [Docker-compose](https://docs.docker.com/compose/install/#install-using-pip) (Docker is already pre-loaded with JetPack). Currently, there is no established method of installing Docker-compose that we know will work first try for the newest version of JetPack. However, we do have a list of methods/resources that can be referred to on how to do this.
     - Method 1: [pipenv](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
         - Run `pip install --user pipenv` to install pipenv.
@@ -17,10 +21,13 @@ The following software is required before you start installing the server:
 
     - Method 2: [pip](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
         - Run `sudo pip install docker-compose` to (hopefully) install docker-compose.
+   
+		- Method 3: [pip3](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
+        - Run `sudo pip3 install docker-compose` to (hopefully) install docker-compose.
+   
+    - Method 4: [Install some required dependencies before running the install](https://dev.to/rohansawant/installing-docker-and-docker-compose-on-the-jetson-nano-4gb-2gb-in-2-simple-steps-1f4i). Follow the listed guide.
 
-    - Method 3: [Install some required dependencies before running the install](https://dev.to/rohansawant/installing-docker-and-docker-compose-on-the-jetson-nano-4gb-2gb-in-2-simple-steps-1f4i). Follow the listed guide.
-
-    - Method 4: [Aquire help from the Offical Discord](https://discord.gg/5bnFgzGWHY). Please first look at [this](https://discord.com/channels/614543405724205137/648759742881071124/811686583043620923) thread to see if any part of it may help you before you post. 
+    - Method 5: [Aquire help from the Offical Discord](https://discord.gg/5bnFgzGWHY). Please first look at [this](https://discord.com/channels/614543405724205137/648759742881071124/811686583043620923) thread to see if any part of it may help you before you post. 
   
 - git ([how to install](https://git-scm.com/downloads)).
 
@@ -32,9 +39,9 @@ The following software is required before you start installing the server:
 git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 ```
 
-2. Modify and create a couple files:
+2. Create a couple files:
 
-  - Create and or open `docker-compose.override.yml` file. (this file can be found directly in the `TheSpaghettiDetective` folder. If not there, create it).
+  - Create a `docker-compose.override.yml` file directly in the `TheSpaghettiDetective` folder.
 
   - Modify file to include:
 
@@ -50,13 +57,13 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
       runtime: nvidia
   ```
 
-  - Edit `web/Dockerfile`.
+  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/web` folder.
 
-  - Change `FROM thespaghettidetective/web:base-1.1` to `FROM raymondh2/web:aarch64`
+  - Modify file to include `FROM raymondh2/web:aarch64`
 
-  - Edit `ml_api/Dockerfile`.
+  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/ml_api` folder.
 
-  - Change `FROM thespaghettidetective/ml_api:base` to `FROM raymondh2/ml_api:jetson`
+  - Modify file to include `FROM raymondh2/web:aarch64` `FROM raymondh2/ml_api:jetson`
   
  3. Run it!
  

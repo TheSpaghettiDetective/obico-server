@@ -131,7 +131,8 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
 # For public APIs
 
 class PublicPrinterSerializer(serializers.ModelSerializer):
+    pic = serializers.DictField(read_only=True)
 
     class Meta:
         model = Printer
-        fields = ('name', 'settings')
+        fields = ('name', 'pic', 'settings')

@@ -15,14 +15,14 @@ The following software is required before you start installing the server:
     - Run `sudo apt install python-pip3`
 
 - [Docker-compose](https://docs.docker.com/compose/install/#install-using-pip) (Docker is already pre-loaded with JetPack). Currently, there is no established method of installing Docker-compose that we know will work first try for the newest version of JetPack. However, we do have a list of methods/resources that can be referred to on how to do this.
-    - Method 1: [pipenv](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
+	- Method 1: [pipenv](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
         - Run `pip install --user pipenv` to install pipenv.
         - Run `sudo pipenv install docker-compose` to (hopefully) install docker-compose. This may take a while.
 
-    - Method 2: [pip](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
+	- Method 2: [pip](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
         - Run `sudo pip install docker-compose` to (hopefully) install docker-compose.
-   
-		- Method 3: [pip3](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
+    
+	- Method 3: [pip3](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
         - Run `sudo pip3 install docker-compose` to (hopefully) install docker-compose.
    
     - Method 4: [Install some required dependencies before running the install](https://dev.to/rohansawant/installing-docker-and-docker-compose-on-the-jetson-nano-4gb-2gb-in-2-simple-steps-1f4i). Follow the listed guide.

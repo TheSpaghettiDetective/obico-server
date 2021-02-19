@@ -2,11 +2,11 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
-
-from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
-from app.models import calc_normalized_p
-
 import phonenumbers
+
+from app.models import (
+    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
+    SharedResource, calc_normalized_p)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -126,6 +126,14 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = OneTimeVerificationCode
         fields = ('id', 'printer', 'code', 'expired_at', 'verified_at',)
+
+
+class SharedResourceSerializer(serializers.ModelSerializer):
+    printer = PrinterSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = SharedResource
+        fields = ('id', 'printer', 'share_token',)
 
 
 # For public APIs

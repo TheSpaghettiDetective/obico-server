@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
 from django.conf import settings
 
-from .view_helpers import get_printer_or_404, get_template_path
+from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 

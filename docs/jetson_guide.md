@@ -63,7 +63,7 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 
   - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/ml_api` folder.
 
-  - Modify file to include `FROM raymondh2/web:aarch64` `FROM raymondh2/ml_api:jetson`
+  - Modify file to include `FROM raymondh2/ml_api:jetson`
   
  3. Run it!
  

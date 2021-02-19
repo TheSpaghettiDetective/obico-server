@@ -133,6 +133,8 @@ def rewrite_html(prefix, content):
     return content\
         .replace(b'var BASEURL = "/',
                  f'var BASEURL = "{prefix}/'.encode())\
+        .replace(b'var REDIRECT_URL = "/',
+                 f'var REDIRECT_URL = "{prefix}/'.encode())\
         .replace(b'var BASE_URL = "/',
                  f'var BASE_URL = "{prefix}/'.encode())\
         .replace(b'var GCODE_WORKER = "/',

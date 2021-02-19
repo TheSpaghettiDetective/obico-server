@@ -532,6 +532,7 @@
               <vue-telegram-login
                 mode="callback"
                 :telegram-login="config.telegramBotName"
+                request-access="write"
                 @callback="onTelegramAuth" />
             </div>
           </div>

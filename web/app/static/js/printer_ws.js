@@ -27,15 +27,21 @@ function PrinterWebSocket() {
         printerSocket.onmessage = function (e) {
             var msg = JSON.parse(e.data)
             if ('passthru' in msg) {
-                var refId = msg.passthru.ref;
-                if (refId && self.passthruQueue.get(refId)) {
-                    var callback = self.passthruQueue.get(refId);
-                    self.passthruQueue.delete(refId);
-                    callback(null, msg.passthru.ret);
-                }
+              printerSocket.on_passThruMessage(msg);
             } else {
-                onMessageReceived(msg);
+              onMessageReceived(msg);
             }
+        };
+
+        printerSocket.on_passThruMessage = function (msg) {
+          if ('passthru' in msg) {
+              var refId = msg.passthru.ref;
+              if (refId && self.passthruQueue.get(refId)) {
+                  var callback = self.passthruQueue.get(refId);
+                  self.passthruQueue.delete(refId);
+                  callback(null, msg.passthru.ret);
+              }
+          }
         };
 
         ensureWebsocketClosed(printerSocket);
@@ -43,13 +49,14 @@ function PrinterWebSocket() {
     }
 
 
-    self.passThruToPrinter = function(printerId, msgObj, callback) {
+    self.passThruToPrinter = function(printerId, msg, callback) {
         var pSocket = self.wsList.get(printerId);
+        let msgObj = {passthru: msg};
         if (pSocket) {
             if (callback) {
                 var refId = Math.random().toString();
                 self.passthruQueue.set(refId, callback);
-                _.assign(msgObj, {ref: refId});
+                _.assign(msg, {ref: refId});
                 setTimeout(function() {
                     if (self.passthruQueue.has(refId)) {
                         Toast.fire({
@@ -59,7 +66,8 @@ function PrinterWebSocket() {
                     }
                 }, 10*1000);
             }
-            pSocket.send(JSON.stringify({passthru: msgObj}));
+            pSocket.send(JSON.stringify(msgObj));
+            return msgObj;
         } else {
             if (callback){
                 callback("Message not passed through. No suitable WebSocket.");

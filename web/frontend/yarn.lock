@@ -3097,6 +3097,11 @@ dotenv@^8.2.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
+dropzone@^5.5.1:
+  version "5.7.6"
+  resolved "https://registry.yarnpkg.com/dropzone/-/dropzone-5.7.6.tgz#a5ebb603ea2aaf630118c37a7be59bb3444ad6e1"
+  integrity sha512-z38j+PZsH38rFGOK2rQ877t6c0cPos053fPp3RKaDvCDjAw4KflQQGn7BhCWeFq9Zl1hinB8khPrQdJ6cIBryQ==
+
 duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
@@ -8509,6 +8514,13 @@ vue2-canvas-gauges@^0.0.0:
   integrity sha1-OmNcmDG56SjupcofV10KTcmacSw=
   dependencies:
     canvas-gauges Mikhus/canvas-gauges
+
+vue2-dropzone@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/vue2-dropzone/-/vue2-dropzone-3.6.0.tgz#b4bb4b64de1cbbb3b88f04b24878e06780a51546"
+  integrity sha512-YXC1nCWIZvfa98e/i6h+EshZCkFSxFEh0Sxr9ODfThAPPDVhAzLLlz/4XIx0NGO1QeSy6htwSstte47R7vVhLQ==
+  dependencies:
+    dropzone "^5.5.1"
 
 vue@^2.6.10, vue@^2.6.11:
   version "2.6.11"

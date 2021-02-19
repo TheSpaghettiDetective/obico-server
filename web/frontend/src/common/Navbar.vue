@@ -1,13 +1,6 @@
 <template>
-  <pull-to-reveal
-    :enable="pullToReveal"
-    :id="'main-nav'"
-    :maxElementHeight="56"
-    :zIndex="9"
-    :showEdge="true"
-    v-on:hide="hideDropdowns"
-  >
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top flex-column">
       <div class="container">
         <a class="navbar-brand" href="/printers/">
         <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
@@ -79,18 +72,17 @@
         </div>
       </div>
     </nav>
-  </pull-to-reveal>
+    <div v-if="needsEmailVerification" class="alert alert-warning text-center" role="alert">
+      You will not get notified by email on print failure, as your primary email address is not verified. <a href="/accounts/email/">Verify your email address.</a>
+    </div>
+  </div>
 </template>
 
 <script>
-import PullToReveal from './PullToReveal.vue'
+import moment from 'moment'
 
 export default {
   name: 'Navbar',
-
-  components: {
-    PullToReveal,
-  },
 
   data() {
     return {
@@ -101,10 +93,6 @@ export default {
   },
 
   props: {
-    pullToReveal: {
-      default() {return false},
-      type: Boolean,
-    },
     viewName: {
       default() {return ''},
       type: String,
@@ -125,6 +113,11 @@ export default {
       } else {
         return Math.round(this.user.dh_balance)
       }
+    },
+    needsEmailVerification() {
+        // Give user 1 day before bugging them to verify their email addresses
+        const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
+        return this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day
     }
   },
 

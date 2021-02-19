@@ -2,11 +2,11 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
-
-from app.models import User, Print, Printer, GCodeFile, PrintShotFeedback, MobileDevice, OneTimeVerificationCode
-from app.models import calc_normalized_p
-
 import phonenumbers
+
+from app.models import (
+    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
+    SharedResource, calc_normalized_p)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'date_joined', 'groups', 'user_permissions',)
+        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions',)
         extra_kwargs = {
             'id': {'read_only': True},
             'email': {'read_only': True},
@@ -128,10 +128,19 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
         fields = ('id', 'printer', 'code', 'expired_at', 'verified_at',)
 
 
+class SharedResourceSerializer(serializers.ModelSerializer):
+    printer = PrinterSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = SharedResource
+        fields = ('id', 'printer', 'share_token',)
+
+
 # For public APIs
 
 class PublicPrinterSerializer(serializers.ModelSerializer):
+    pic = serializers.DictField(read_only=True)
 
     class Meta:
         model = Printer
-        fields = ('name', 'settings')
+        fields = ('name', 'pic', 'settings')

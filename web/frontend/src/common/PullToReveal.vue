@@ -1,15 +1,15 @@
 <template>
-  <div class="wrapper">
-    <div
-      class="pull-to-reveal"
-      :data-id="id"
-      v-bind:class="{'enabled': enable}"
-      ref="pullToRevealWrapper"
-    >
-      <slot></slot>
+  <div class="wrapper" ref="pullToRevealWrapper">
+    <div>
+      <div class="pull-to-reveal">
+        <slot v-if="enable"></slot>
+      </div>
+      <div v-show="showEdge" class="showing-edge"></div>
+      <div class="spaceholder"></div>
     </div>
-    <div v-if="showEdge && status === 'closed'" class="showing-edge"></div>
-    <div class="spaceholder" ref="placeholder"></div>
+    <div ref="staticWrapper">
+      <slot v-if="!enable"></slot>
+    </div>
   </div>
 </template>
 
@@ -18,39 +18,15 @@ export default {
   name: 'PullToReveal',
 
   props: {
-    id: {
-      type: String,
-      required: true
-    },
-    enable: {
-      default() {return true},
-      type: Boolean,
-    },
-    maxElementHeight: {
-      type: Number,
-      required: true
-    },
-    animationTime: {
-      default() {return .5},
-      type: Number,
-    },
-    topOffsets: {
-      default() {return null},
-      type: Object,
-    },
-    zIndex: {
-      default() {return 9},
-      type: Number,
-    },
     showEdge: {
       default() {return false},
       type: Boolean,
     },
-    heightMultiplicator: {
-      default() {return 2},
-      type: Number,
-    },
     shiftContent: {
+      default() {return true},
+      type: Boolean,
+    },
+    enable: {
       default() {return true},
       type: Boolean,
     },
@@ -59,111 +35,162 @@ export default {
   data() {
     return {
       status: 'closed',
+      animationTime: .5,
     }
   },
 
-  methods: {
-    toggleBlock(scrollPosition) {
-      const elem = document.querySelector(`.pull-to-reveal[data-id='${this.id}']`)
-
-      if (scrollPosition === 0) {
-        // Open
-        if (this.topOffsets) {
-          const windowWidth = window.innerWidth
-
-          let maxAppropriate = 0
-          for (const offset in this.topOffsets) {
-            if (offset !== 'default' && windowWidth <= offset && this.topOffsets[offset] > maxAppropriate) {
-              maxAppropriate = this.topOffsets[offset]
-            }
-          }
-          
-          if (!maxAppropriate) {
-            maxAppropriate = this.topOffsets['default']
-          }
-
-          elem.style.top = `${maxAppropriate}px`
-        } else {
-          elem.style.top = 0
-        }
-
-        this.status = 'opened'
-
-        // Shift content to not cover it by revealed block
-        if (this.shiftContent) {
-          this.$refs.placeholder.style.height = window.getComputedStyle(this.$refs.pullToRevealWrapper).height
-        }
-        
+  watch: {
+    enable(enabled) {
+      if(enabled) {
+        this.destroyDisabled()
+        this.initEnabled()
       } else {
-        // Hide
-        this.$emit('hide')
-
-        elem.style.top = `${-this.maxElementHeight * this.heightMultiplicator}px`
-        this.status = 'closed'
-
-        if (this.shiftContent) {
-          this.$refs.placeholder.style.height = 0
-        }
+        this.destroyEnabled()
+        this.initDisabled()
       }
     }
   },
 
   mounted() {
     if (this.enable) {
-      // Scroll down by 1px be able to scroll up right after page load
+      this.initEnabled()
+    } else {
+      this.initDisabled()
+    }
+  },
+
+  destroyed() {
+    if (this.enable) {
+      this.destroyEnabled()
+    } else {
+      this.destroyDisabled()
+    }
+  },
+
+  methods: {
+    initEnabled() {
+      window.addEventListener('scroll', this.handleScroll)
+      document.querySelector('body').style.minHeight = '101vh'
+
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+      const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
+      // const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
+      const animationTime = this.animationTime
+
+      elem.style.transition = `all ${animationTime}s`
+      spaceholder.style.transition = `all ${animationTime}s`
+
       window.onload = function() {
+        // Scroll down by 1px be able to scroll up right after page load
         if (window.scrollY === 0) {
           window.scrollBy({top: 1, behavior: 'smooth'})
         }
+
+        const elemHeight = parseInt(window.getComputedStyle(elem).height)
+        elem.style.top = `-${elemHeight * 2}px`
       }
+    },
 
-      // Dynamic styles
-      const elem = document.querySelector(`.pull-to-reveal[data-id='${this.id}']`)
-      elem.style.top = `${-this.maxElementHeight * this.heightMultiplicator}px`
-      elem.style.zIndex = this.zIndex
-      elem.style.transition = `all ${this.animationTime}s`
-      this.$refs.placeholder.style.transition = `all ${this.animationTime}s`
+    destroyEnabled() {
+      window.removeEventListener('scroll', this.handleScroll)
+      document.querySelector('body').style.minHeight = ''
 
-      // Setup handler to show on scroll up
-      const handler = this.toggleBlock
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+      const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
 
-      let lastKnownScrollPosition = 0
-      let ticking = false
+      elem.style.transition = 'none'
+      spaceholder.style.transition = 'none'
+      elem.style.top = '-999px'
+    },
 
-      document.addEventListener('scroll', function() {
-        lastKnownScrollPosition = window.scrollY
+    initDisabled() {
+      const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
 
-        if (!ticking) {
-          window.requestAnimationFrame(function() {
-            handler(lastKnownScrollPosition)
-            ticking = false
-          })
+      showingEdge.style.display = 'none'
 
-          ticking = true
+      const staticWrapper = this.$refs.staticWrapper
+      staticWrapper.style.position = 'absolute'
+      staticWrapper.style.width = '100%'
+      staticWrapper.style.top = '0'
+      staticWrapper.style.left = '0'
+      staticWrapper.style.zIndex = '1'
+
+      window.onload = function() {
+        const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
+        document.querySelector('body').style.paddingTop = `${elemHeight}px`
+      }
+    },
+
+    destroyDisabled() {
+      const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
+      showingEdge.style.display = 'block'
+
+      const staticWrapper = this.$refs.staticWrapper
+      staticWrapper.style.display = 'none'
+
+      document.querySelector('body').style.paddingTop = 0
+    },
+
+    handleScroll() {
+      const scrollPosition = window.pageYOffset
+      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+      const elemHeight = parseInt(window.getComputedStyle(elem).height)
+
+      if (scrollPosition === 0) {
+        // Open
+
+        if (this.status === 'opened') {
+          return
         }
-      })
+        
+        elem.style.top = 0
+        this.status = 'opened'
+
+        // Shift content to not cover it by revealed block
+        if (this.shiftContent) {
+          this.$refs.pullToRevealWrapper.querySelector('.spaceholder').style.height = `${elemHeight}px`
+        }
+        
+      } else {
+        // Hide
+
+        if (this.status === 'closed') {
+          return
+        }
+
+        this.$emit('hide')
+
+        elem.style.top = `-${elemHeight * 2}px`
+        this.status = 'closed'
+
+        if (this.shiftContent) {
+          this.$refs.pullToRevealWrapper.querySelector('.spaceholder').style.height = 0
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
+  @use "~main/theme"
 
-.pull-to-reveal.enabled
-  position: fixed
-  left: 0
-  width: 100%
+  .pull-to-reveal
+    position: fixed
+    left: 0
+    width: 100%
+    z-index: 1
+    top: -9999px
 
-.showing-edge
-  width: 100%
-  height: 10px
-  background-color: #4E5D6C
-  position: fixed
-  top: 0
-  left: 0
-  z-index: 2
+  .showing-edge
+    width: 100%
+    height: 10px
+    background-color: #4E5D6C
+    position: absolute
+    top: 0
+    left: 0
+    z-index: -1
 
-.spaceholder
-  height: 0
+  .spaceholder
+    height: 0
 </style>

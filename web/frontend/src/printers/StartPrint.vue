@@ -1,15 +1,15 @@
 <template>
   <div>
-    <input 
-      class="form-control" 
-      id="myInput" 
-      type="text" 
+    <input
+      class="form-control"
+      id="myInput"
+      type="text"
       placeholder="Search file name ..."
       v-model="searchText"
     >
     <br>
     <div>
-      <div 
+      <div
         v-for="gcf in visibleGcodeFiles"
         :key="gcf.id"
         class="card"
@@ -24,8 +24,8 @@
               <div><span class="text-muted">Uploaded: </span> {{ gcf.created_at }}</div>
             </small>
           </div>
-          <button 
-            type="button" class="send-print btn btn-primary" 
+          <button
+            type="button" class="send-print btn btn-primary"
             @click="onSendPrintClicked(gcf.id)"
             :disabled="isSending"
           >Print <i v-if="isSending" class="fas fa-spinner fa-spin"></i>
@@ -58,10 +58,6 @@ export default {
       type: Function,
       required: true
     },
-    printerId: {
-      type: Number,
-      required: true
-    },
   },
   data() {
     return {
@@ -79,7 +75,7 @@ export default {
   methods: {
     onSendPrintClicked(gcodeFileId) {
       this.isSending = true
-      this.onGcodeFileSelected(this.printerId, this.gcodeFiles, gcodeFileId)
+      this.onGcodeFileSelected(this.gcodeFiles, gcodeFileId)
     }
   }
 }

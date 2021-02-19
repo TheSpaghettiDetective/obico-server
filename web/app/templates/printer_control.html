@@ -1,93 +1,21 @@
 {% extends settings.TEMPLATE_LAYOUT %}
-{% load static %}
-{% load jstemplate %}
+
+{% load bundle from vue %}
+
+{% block navbar %}
+<div id="navbar-mount">
+  <navbar
+    :view-name="'printer-control'"
+  >
+  </navbar>
+</div>
+{% endblock navbar %}
 
 {% block content %}
-
-<div class="row justify-content-center" style="margin: -24px -31px 0px -31px;">
-  <div id="{{ printer.id }}" data-auth-token="{{ printer.auth_token }}" class="col-sm-12 col-lg-8 printer-card">
-    <div class="card">
-      <div class="card-header">
-        <div class="title-box">
-          <div class="printer-name">{{ printer.name }}</div>
-        </div>
-      </div>
-      {% include 'includes/_webcam_stream.html' %}
-      <div class="card-body">
-        <div class="overlay-top text-center"
-        style="left: 50%; margin-left: -102px; top: 50%; margin-top: -85px; display: none">
-          <div>Printer controls are disabled</div>
-          <div>because the printer is not idle.</div>
-        </div>
-        <div class="printer-controls">
-          <div class="xy-controls">
-            <button class="btn" type="button" data-axis="y" data-dir="up">
-              <i class="fas fa-angle-up fa-lg"></i>
-            </button>
-            <div class="x-controls">
-              <button class="btn" type="button" data-axis="x" data-dir="down">
-                <i class="fas fa-angle-left fa-lg"></i>
-              </button>
-              <button class="btn" type="button" data-axis="xy" data-dir="home">
-                <i class="fas fa-home fa-lg"></i>
-              </button>
-              <button class="btn" type="button" data-axis="x" data-dir="up">
-                <i class="fas fa-angle-right fa-lg"></i>
-              </button>
-            </div>
-            <button class="btn" type="button" data-axis="y" data-dir="down">
-              <i class="fas fa-angle-down fa-lg"></i>
-            </button>
-          </div>
-          <div class="z-controls">
-            <button class="btn" type="button" data-axis="z" data-dir="up">
-              <i class="fas fa-angle-up fa-lg"></i>
-            </button>
-            <button class="btn" type="button" data-axis="z" data-dir="home">
-              <i class="fas fa-home fa-lg"></i>
-            </button>
-            <button class="btn" type="button" data-axis="z" data-dir="down">
-              <i class="fas fa-angle-down fa-lg"></i>
-            </button>
-          </div>
-        </div>
-        <br />
-        <div class="control-options">
-          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn">
-              <input type="radio" name="jog-distance" value="0.1" autocomplete="off">0.1mm
-            </label>
-            <label class="btn">
-              <input type="radio" name="jog-distance" value="1" autocomplete="off">1mm
-            </label>
-            <label class="btn">
-              <input type="radio" name="jog-distance" value="10" autocomplete="off">10mm
-            </label>
-            <label class="btn">
-              <input type="radio" name="jog-distance" value="100" autocomplete="off">100mm
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div id="printer-control-mount">
+  <printer-control-page></printer-control-page>
 </div>
 
-{% endblock content %}
+{% bundle 'printers' %}
 
-{% block page_js %}
-
-<script type="text/javascript">
-  var printerStockImgSrc = "{% static 'img/3d_printer.png' %}";
-  var loadingIcon = "{% static 'img/tail-spin-lg.svg' %}";
-</script>
-
-<script src="{% static 'js/printer_ws.js' %}"></script>
-<script src="{% static 'js/printer_controls.js' %}"></script>
-
-<script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
-<script src="{% static 'js/janus.js' %}"></script>
-<script src="{% static 'js/webrtc_streaming.js' %}"></script>
-
-{% endblock page_js %}
+{% endblock content%}

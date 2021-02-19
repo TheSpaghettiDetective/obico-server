@@ -13,6 +13,8 @@ import PrinterListPage from './PrinterListPage.vue'
 import SharedPrinterPage from './SharedPrinterPage.vue'
 import PrinterSettingsPage from './PrinterSettingsPage.vue'
 import PrinterWizardPage from './PrinterWizardPage.vue'
+import PrinterControlPage from './PrinterControlPage.vue'
+import SharePrinterPage from './SharePrinterPage.vue'
 
 if (document.getElementById('navbar-mount')) {
   new Vue({
@@ -33,13 +35,25 @@ if (document.getElementById('shared-printer-mount')) {
 }
 
 if (document.getElementById('printer-settings-mount')) {
-    new Vue({
-      components: { PrinterSettingsPage }
-    }).$mount('#printer-settings-mount')
-  }
+  new Vue({
+    components: { PrinterSettingsPage }
+  }).$mount('#printer-settings-mount')
+}
 
-  if (document.getElementById('printer-wizard-mount')) {
-    new Vue({
-      components: { PrinterWizardPage }
-    }).$mount('#printer-wizard-mount')
-  }
+if (document.getElementById('printer-wizard-mount')) {
+  new Vue({
+    components: { PrinterWizardPage }
+  }).$mount('#printer-wizard-mount')
+}
+
+if (document.getElementById('printer-control-mount')) {
+  new Vue({
+    components: { PrinterControlPage }
+  }).$mount('#printer-control-mount')
+}
+
+if (document.getElementById('share-printer-mount')) {
+  new Vue({
+    components: { SharePrinterPage }
+  }).$mount('#share-printer-mount')
+}

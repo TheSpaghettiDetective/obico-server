@@ -76,6 +76,12 @@ $(document).ready(function () {
 
                 var streaming, wsUri, turnToken, turnId;
 
+                printerCard.on('sendPassThruMessage', function (e, message) {
+                  if (streaming) {
+                    streaming.data({text: JSON.stringify(message), success: function() {}})
+                  }
+                });
+
                 if (printerCard.data('share-token')) {
                     wsUri = '/ws/share_token/janus/' + printerCard.data('share-token') + '/';
                     turnToken = printerCard.data('share-token');
@@ -114,6 +120,15 @@ $(document).ready(function () {
                                 ondataopen: function (data) {
                                 },
                                 ondata: function (data) {
+                                  var msg = undefined;
+                                  try {
+                                    msg = JSON.parse(data);
+                                  } catch {
+                                    console.log('cannot parse datachannel message')
+                                  }
+                                  if (msg && 'passthru' in msg) {
+                                    printerCard.trigger('gotPassthruMessage', [msg]);
+                                  }
                                 },
                                 oncleanup: function () {
                                     printerCard.find('.remote-video').hide();

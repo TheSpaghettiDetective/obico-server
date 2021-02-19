@@ -18,12 +18,13 @@ import requests
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    calc_normalized_p)
+    SharedResource, calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
+from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 
 PREDICTION_FETCH_TIMEOUT = 20
@@ -63,49 +64,49 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         succeeded = printer.cancel_print()
 
         return self.send_command_response(printer, succeeded)
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         succeeded = printer.pause_print()
 
         return self.send_command_response(printer, succeeded)
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         succeeded = printer.resume_print()
 
         return self.send_command_response(printer, succeeded)
 
     @action(detail=True, methods=['get'])
     def mute_current_print(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         printer.mute_current_print(request.GET.get('mute_alert', 'false').lower() == 'true')
 
         return self.send_command_response(printer, True)
 
     @action(detail=True, methods=['get'])
     def acknowledge_alert(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         printer.acknowledge_alert(request.GET.get('alert_overwrite'))
 
         return self.send_command_response(printer, True)
 
     @action(detail=True, methods=['post'])
     def send_command(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         printer.send_octoprint_command(request.data['cmd'], request.data['args'])
 
         return self.send_command_response(printer, True)
 
     @action(detail=True, methods=['get'])
     def send_webhook_test(self, request, pk=None):
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         req = requests.post(
             url=settings.EXT_3D_GEEKS_ENDPOINT,
             json=dict(
@@ -117,7 +118,7 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
-        printer = self.current_printer_or_404(pk)
+        printer = get_printer_or_404(pk, request)
         printer.send_should_watch_status()
 
         return self.send_command_response(printer, True)
@@ -127,9 +128,6 @@ class PrinterViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(printer)
 
         return Response(dict(succeeded=succeeded, printer=serializer.data))
-
-    def current_printer_or_404(self, pk):
-        return get_object_or_404(Printer.with_archived.filter(user=self.request.user), pk=pk)
 
 
 class PrintViewSet(viewsets.ModelViewSet):
@@ -370,3 +368,27 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             return Response(self.serializer_class(code, many=False).data)
         else:
             raise Http404("Requested resource does not exist")
+
+
+class SharedResourceViewSet(mixins.ListModelMixin,
+                                  mixins.CreateModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = SharedResourceSerializer
+
+    def list(self, request):
+        return self.response_from_printer(request)
+
+    def create(self, request):
+        printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
+        return self.response_from_printer(request)
+
+    def response_from_printer(self, request):
+        printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        return Response(self.serializer_class(
+            SharedResource.objects.select_related('printer').filter(printer=printer),
+            many=True)
+            .data)

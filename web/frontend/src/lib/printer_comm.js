@@ -23,11 +23,11 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
   })
 
   self.on_passThruReceived = function(msg) {
-    var refId = msg.passthru.ref
+    var refId = msg.ref
     if (refId && self.passthruQueue.get(refId)) {
       var callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
-      callback(null, msg.passthru.ret)
+      callback(null, msg.ret)
     }
   }
 
@@ -36,7 +36,7 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
     self.ws.onmessage = function (e) {
       var msg = JSON.parse(e.data)
       if ('passthru' in msg) {
-        self.on_passThruReceived(msg)
+        self.on_passThruReceived(msg.passthru)
       } else {
         onMessageReceived(msg)
       }
@@ -55,18 +55,16 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
         } catch {
             // parse error
         }
-        if ('passthru' in msg) {
-            self.on_passThruReceived(msg)
-        }
+        self.on_passThruReceived(msg)
     }
   }
 
   self.passThruToPrinter = function(msg, callback) {
     if (self.canSend()) {
+      var refId = Math.random().toString()
+      assign(msg, {ref: refId})
       if (callback) {
-        var refId = Math.random().toString()
         self.passthruQueue.set(refId, callback)
-        assign(msg, {ref: refId})
         setTimeout(function() {
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
@@ -76,11 +74,10 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
           }
         }, 10*1000)
       }
-      const msgStr = JSON.stringify({passthru: msg})
       if (self.webrtc) {
-        self.webrtc.sendData(msgStr)
+        self.webrtc.sendData(JSON.stringify(msg))
       }
-      self.ws.send(msgStr)
+      self.ws.send(JSON.stringify({passthru: msg}))
     } else {
       if (callback){
         callback('Message not passed through. No suitable WebSocket.')

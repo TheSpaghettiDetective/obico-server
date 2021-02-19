@@ -10,9 +10,11 @@ The following software is required before you start installing the server:
   - [Flashing Software](https://www.balena.io/etcher/)
   - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
 
-- pip and pip3.
+- pip and pip3 and upgrade to latest
     - Run `sudo apt install python-pip`
     - Run `sudo apt install python-pip3`
+    - Run `python -m pip install --upgrade pip`
+    - Run `python3 -m pip install --upgrade pip`
 
 - [Docker-compose](https://docs.docker.com/compose/install/#install-using-pip) (Docker is already pre-loaded with JetPack). Currently, there is no established method of installing Docker-compose that we know will work first try for the newest version of JetPack. However, we do have a list of methods/resources that can be referred to on how to do this.
 	- Method 1: [pipenv](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
@@ -29,7 +31,8 @@ The following software is required before you start installing the server:
 
     - Method 5: [Aquire help from the Offical Discord](https://discord.gg/5bnFgzGWHY). Please first look at [this](https://discord.com/channels/614543405724205137/648759742881071124/811686583043620923) thread to see if any part of it may help you before you post. 
   
-- git ([how to install](https://git-scm.com/downloads)).
+- git ([how to install](https://git-scm.com/downloads)) OR via SSH `sudo apt-get install git`
+
 
 ## Get the code and start the server.
 
@@ -39,7 +42,7 @@ The following software is required before you start installing the server:
 git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 ```
 
-2. Create a couple files:
+2. Create and modify a couple files:
 
   - Create a `docker-compose.override.yml` file directly in the `TheSpaghettiDetective` folder.
 
@@ -48,13 +51,14 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
   ```
   version: '2.4'
 
-  services:
+services:
     ml_api:
       build:
         context: ml_api
       environment:
           HAS_GPU: 'True'
       runtime: nvidia
+      
   ```
 
   - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/web` folder.
@@ -72,5 +76,10 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
  ```
 
 4. Go grab a coffee. Step 3 will take 15-30 minutes.
+
+## Set Docker to run on startup
+In a terminal : `sudo systemctl enable docker`
+and then reboot : `sudo reboot`
+
 
 You can then follow the remaining steps by following the instructions in [README.md].

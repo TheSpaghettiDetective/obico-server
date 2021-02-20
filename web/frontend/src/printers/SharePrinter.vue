@@ -33,18 +33,18 @@
               <input
                 type="text"
                 id="secret-token-input"
-                class="form-control"
+                class="form-control shared-link-text"
                 aria-label="Secret token"
                 readonly
                 :value="sharedLink"
                 ref="sharedLink"
               >
               <div class="input-group-append">
-                <button id="copy-link" class="btn btn-outline-primary no-corner" type="button"
+                <div id="copy-link" class="btn btn-outline-primary" type="button"
                   data-clipboard-target="#secret-token-input" aria-label="Copy secure link to clipboard"
-                  @click="copyToClipboard">
+                  @click="copyToClipboard" style="border-radius: 0 !important;">
                   <i class="fas fa-clipboard"></i>
-                </button>
+                </div>
                 <b-tooltip :show.sync="copyStatus" target="copy-link" triggers="click" placement="bottom">{{ copyMessage }}</b-tooltip>
               </div>
             </div>
@@ -168,4 +168,8 @@
 hr
   background-color: theme.$white
 
+.shared-link-text
+  color: #fff !important
+  height: 40px
+  border-color: #4E5D6C
 </style>

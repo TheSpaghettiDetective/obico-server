@@ -27,7 +27,7 @@
 
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 
-            <a class="dropdown-item" href="#" @click="onSharePrinter()">
+            <a class="dropdown-item" href="#" @click.prevent="onSharePrinter()">
               <i class="fas fa-share-alt fa-lg"></i>Share
             </a>
             <a class="dropdown-item" :href="octoPrintTunnelUrl()">

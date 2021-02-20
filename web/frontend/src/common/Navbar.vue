@@ -115,6 +115,10 @@ export default {
       }
     },
     needsEmailVerification() {
+        if (!this.user) {
+          return
+        }
+
         // Give user 1 day before bugging them to verify their email addresses
         const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
         return this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day

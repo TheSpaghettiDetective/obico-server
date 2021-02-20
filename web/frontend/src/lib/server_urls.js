@@ -11,7 +11,6 @@ export default {
   printAlertOverwrite: printId => `/api/v1/prints/${printId}/alert_overwrite/`,
   printers: () => '/api/v1/printers/',
   printer: printerId => `/api/v1/printers/${printerId}/`,
-  sharePrinter: printerId => `/api/v1/printers/${printerId}/share/`,
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   pubPrinter: () => '/api/v1p/printer/',
   gcodes: () => '/api/v1/gcodes/',
@@ -20,6 +19,7 @@ export default {
   user: () => '/api/v1/users/me/',
   sharedResources: (paramsObj) => '/api/v1/sharedresources/?'
         + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
+  sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

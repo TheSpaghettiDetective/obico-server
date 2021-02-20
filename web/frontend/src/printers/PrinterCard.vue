@@ -251,7 +251,7 @@ import StatusTemp from './StatusTemp.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
-import SharePrinter from './SharePrinterPage.vue'
+import SharePrinter from './SharePrinter.vue'
 
 
 const PAUSE_PRINT = '/pause_print/'
@@ -726,7 +726,7 @@ export default {
         SharePrinter,
         {
           isProAccount: this.isProAccount,
-          printerId: this.printer.id
+          printer: this.printer
         },
         {
           confirmButtonText: 'Close',

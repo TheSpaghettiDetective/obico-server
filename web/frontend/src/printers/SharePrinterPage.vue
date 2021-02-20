@@ -1,13 +1,9 @@
 <template>
   <div>
-    <pull-to-reveal :enable="false">
-      <navbar view-name="share-printer"></navbar>
-    </pull-to-reveal>
-
-    <div v-if="user && printer" class="row justify-content-center py-3">
+    <div v-if="printer" class="row justify-content-center py-3">
       <div class="col-sm-11 col-md-10 col-lg-8">
         <div class="form-container printer-settings">
-          <div v-if="!user.is_pro">
+          <div v-if="!isProAccount">
             <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to enable Printer feed. </h5>
             <p>Printer feed sharing is a Pro feature.</p>
             <p><a
@@ -67,27 +63,31 @@
         </div>
       </div>
     </div>
+    <div v-else class="text-center py-5">
+      <b-spinner></b-spinner>
+    </div>
   </div>
 </template>
 
 <script>
-  import split from 'lodash/split'
   import axios from 'axios'
   import { normalizedPrinter } from '@lib/normalizers'
   import urls from '@lib/server_urls'
-  import PullToReveal from '@common/PullToReveal.vue'
-  import Navbar from '@common/Navbar.vue'
 
   export default {
-    components: {
-      PullToReveal,
-      Navbar,
+    props: {
+      isProAccount: {
+        type: Boolean,
+        default: false,
+      },
+      printerId: {
+        type: Number,
+        required: true,
+      },
     },
 
     data() {
       return {
-        user: null,
-        printerId: null,
         printer: null,
         share: false,
         token: '',
@@ -97,9 +97,8 @@
     },
 
     created() {
-      this.user = JSON.parse(document.querySelector('#user-json').text)
-      this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
       this.fetchSharedResources()
+      this.getShareStatus()
     },
 
     computed: {
@@ -125,7 +124,9 @@
         return axios
           .get(urls.sharedResources({'printer_id': this.printerId}))
           .then(response => {
-            this.printer = normalizedPrinter(response.data.printer)
+            if (response.data[0]) {
+              this.printer = normalizedPrinter(response.data[0])
+            }
           })
       },
 
@@ -144,10 +145,24 @@
         }
       },
 
-      // API call to get shareLink or disable sharing
+      // Get share status
+      getShareStatus() {
+        return this.callSharePrinterAPI()
+      },
+
+      // Update share status
       changeShareStatus(status) {
+        return this.callSharePrinterAPI({share: status})
+      },
+
+      // API call to get or update share status and set/unset this.token
+      callSharePrinterAPI(data) {
+        if (!data) {
+          data = {}
+        }
+
         return axios
-          .post(urls.sharePrinter(this.printerId), {share: status})
+          .post(urls.sharePrinter(this.printerId), data)
           .then(response => {
             if (response.data) {
               this.token = response.data.token

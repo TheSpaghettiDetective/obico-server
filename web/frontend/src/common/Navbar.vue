@@ -48,7 +48,7 @@
               <a class="nav-link" href="/accounts/signup/">Sign up</a>
             </li>
 
-            <li v-if="isEnt" class="nav-item">
+            <li v-if="isEnt && user" class="nav-item">
               <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
                   <img :src="require('@static/img/detective-hour-inverse.png')">
                   <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
@@ -116,7 +116,7 @@ export default {
     },
     needsEmailVerification() {
         if (!this.user) {
-          return
+          return false
         }
 
         // Give user 1 day before bugging them to verify their email addresses

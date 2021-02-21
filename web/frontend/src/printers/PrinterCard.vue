@@ -27,7 +27,7 @@
 
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 
-            <a class="dropdown-item" :href="shareUrl()">
+            <a class="dropdown-item" href="#" @click.prevent="onSharePrinter()">
               <i class="fas fa-share-alt fa-lg"></i>Share
             </a>
             <a class="dropdown-item" :href="octoPrintTunnelUrl()">
@@ -251,6 +251,7 @@ import StatusTemp from './StatusTemp.vue'
 import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
+import SharePrinter from './SharePrinter.vue'
 
 
 const PAUSE_PRINT = '/pause_print/'
@@ -719,6 +720,19 @@ export default {
         }
       }
     },
+
+    onSharePrinter() {
+      this.$swal.openModalWithComponent(
+        SharePrinter,
+        {
+          isProAccount: this.isProAccount,
+          printer: this.printer
+        },
+        {
+          confirmButtonText: 'Close',
+        }
+      )
+    }
   },
 }
 </script>

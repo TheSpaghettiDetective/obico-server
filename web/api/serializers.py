@@ -129,11 +129,9 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
 
 
 class SharedResourceSerializer(serializers.ModelSerializer):
-    printer = PrinterSerializer(many=False, read_only=True)
-
     class Meta:
         model = SharedResource
-        fields = ('id', 'printer', 'share_token',)
+        fields = ('id', 'printer_id', 'share_token',)
 
 
 # For public APIs

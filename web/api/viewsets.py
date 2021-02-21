@@ -386,6 +386,10 @@ class SharedResourceViewSet(mixins.ListModelMixin,
         SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
         return self.response_from_printer(request)
 
+    def destroy(self, request, pk):
+        get_object_or_404(SharedResource.objects.filter(printer__user=request.user), pk=pk).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def response_from_printer(self, request):
         printer = get_printer_or_404(request.GET.get('printer_id'), request)
         return Response(self.serializer_class(

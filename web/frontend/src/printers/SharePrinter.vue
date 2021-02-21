@@ -104,7 +104,7 @@
       sharedLink() {
         if (this.sharedResource) {
           const url = window.location
-          return `${url.protocol}//${url.host}/printers/share_token/${this.sharedResource}/`
+          return `${url.protocol}//${url.host}/printers/share_token/${this.sharedResource.share_token}/`
         }
 
         return ''
@@ -126,7 +126,7 @@
           .post(urls.sharedResources({'printer_id': this.printer.id}))
           .then(response => {
             if (response.data.length > 0) {
-              this.sharedResource = response.data[0].share_token
+              this.sharedResource = response.data[0]
             }
           })
       },

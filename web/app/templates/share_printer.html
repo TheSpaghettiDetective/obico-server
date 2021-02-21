@@ -1,15 +1,71 @@
 {% extends settings.TEMPLATE_LAYOUT %}
-
-{% load bundle from vue %}
-
-{% block navbar %}
-{% endblock navbar %}
+{% load static %}
 
 {% block content %}
-<div id="share-printer-mount">
-  <share-printer-page></share-printer-page>
+
+<div class="row justify-content-center">
+  <div class="col-sm-11 col-md-10 col-lg-8">
+    <div class="form-container printer-settings">
+      {% if not user.is_pro %}
+      <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to enable Printer feed. </h5>
+      <p>Printer feed sharing is a Pro feature.</p>
+      <p><a
+          href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know">Running
+          TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a
+        Pro account and help us run TSD smoothly.</p>
+      <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
+      {% else %}
+      <h2 class="mb-4">{{ printer.name }} feed sharing</h2>
+      <div class="py-3">
+        <form method="post" action="">
+          {% csrf_token %}
+          <div class="form-group">
+            <div class="custom-control custom-checkbox form-check-inline">
+              <input type="checkbox" name="shared" class="custom-control-input" id="share-checkbox"
+                {% if printer.sharedresource.share_token %}checked{% endif %}>
+              {% if printer.sharedresource.share_token %}
+              <label class="custom-control-label" style="font-size: 16px;" for="share-checkbox">Uncheck to stop printer
+                feed sharing. Click "Save" to de-activate the link.</label>
+              {% else %}
+              <label class="custom-control-label" style="font-size: 16px;" for="share-checkbox">Check to share printer
+                feed via a secure link. Click "Save" to activate the link.</label>
+              {% endif %}
+            </div>
+            {% if printer.sharedresource.share_token %}
+            <div class="input-group mt-4 mb-2">
+              <input type="text" id="secret-token-input" class="form-control"
+                value="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/share_token/{{ printer.sharedresource.share_token }}/"
+                readonly aria-label="Secret token">
+              <div class="input-group-append">
+                <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
+                  data-clipboard-target="#secret-token-input" aria-label="Copy secure link to clipboard">
+                  <i class="fas fa-clipboard"></i>
+                </button>
+              </div>
+            </div>
+            <div class="my-1">Click the clipboard icon above to copy the secure shareable link to your clipboard.</div>
+            <div class="my-1">You can test the shareable link by right-clicking <a
+                href="{{ settings.SITE_USES_HTTPS|yesno:"https,http,http" }}://{{ request.get_host }}/printers/share_token/{{ printer.sharedresource.share_token }}/">here</a>
+              and select "Open Link in Incognito Window".</div>
+            {% endif %}
+            <br />
+            <em class="text-muted">
+              <small>
+                <div>Notes:</div>
+                <ul>
+                  <li>Send the secure link to anyone you want to share your printer feed with. They do NOT need a The
+                    Spaghetti Detective account to see your printer feed.</li>
+                  <li>Anyone with this shareable link will be able to see your printer feed. <a href="https://www.thespaghettidetective.com/docs/printer-feed-sharing/">Learn more about what
+                      they can see.</a></li>
+                </ul>
+              </small></em>
+          </div>
+          <br />
+          <button role="button" class="btn btn-primary float-right">Save</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
-
-{% bundle 'printers' %}
-
-{% endblock content%}
+{% endblock content %}

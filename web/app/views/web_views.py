@@ -229,10 +229,7 @@ def print_shot_feedback(request, pk):
 
 
 def publictimelapse_list(request):
-    timelapses_list = list(PublicTimelapse.objects.order_by('priority').values())
-    page_obj = get_paginator(timelapses_list, request, 9)
-
-    return render(request, 'publictimelapse_list.html', dict(timelapses=page_obj.object_list, page_obj=page_obj))
+    return render(request, 'publictimelapse_list.html')
 
 
 ### Consent page #####

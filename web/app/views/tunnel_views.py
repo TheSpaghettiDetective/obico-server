@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
 from django.conf import settings
 
-from .view_helpers import get_printer_or_404, get_template_path
+from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 
@@ -133,6 +133,8 @@ def rewrite_html(prefix, content):
     return content\
         .replace(b'var BASEURL = "/',
                  f'var BASEURL = "{prefix}/'.encode())\
+        .replace(b'var REDIRECT_URL = "/',
+                 f'var REDIRECT_URL = "{prefix}/'.encode())\
         .replace(b'var BASE_URL = "/',
                  f'var BASE_URL = "{prefix}/'.encode())\
         .replace(b'var GCODE_WORKER = "/',

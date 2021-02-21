@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from allauth.account.views import LoginView
 
-from .view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
+from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from app.forms import PrinterForm, SocialAccountAwareLoginForm

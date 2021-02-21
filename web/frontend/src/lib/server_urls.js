@@ -1,3 +1,6 @@
+import entries from 'lodash/entries'
+import map from 'lodash/map'
+
 export default {
 
   // APIs
@@ -14,6 +17,9 @@ export default {
   tunnelUsage: () => '/api/v1/tunnelusage/',
   verificationCode: () => '/api/v1/onetimeverificationcodes/',
   user: () => '/api/v1/users/me/',
+  sharedResources: (paramsObj) => '/api/v1/sharedresources/?'
+        + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
+  sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

@@ -241,6 +241,7 @@
 
 <script>
 import axios from 'axios'
+import split from 'lodash/split'
 import Slider from 'bootstrap-slider'
 
 import { normalizedPrinter } from '@lib/normalizers'
@@ -334,8 +335,8 @@ export default {
     },
   },
 
-  mounted() {
-    this.printerId = (new URLSearchParams(window.location.search)).get('printerId')
+  created() {
+    this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
     this.fetchPrinter().then(() => {
       // Instantiate sensitivity slider
       const sensitivitySlider = new Slider('#id_sensitivity', {

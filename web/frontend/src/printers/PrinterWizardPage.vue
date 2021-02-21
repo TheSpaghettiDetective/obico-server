@@ -303,7 +303,6 @@ export default {
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">If for some reason you can't upgrade the plugin, follow <a href="/printers/new/">the old process</a> to link OctoPrint.</li>
         <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">set up guide</a>.</li>
         </ul></p>`,
         customClass: {

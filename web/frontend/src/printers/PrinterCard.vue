@@ -384,7 +384,7 @@ export default {
       return `/printers/${this.printer.id}/share/`
     },
     settingsUrl() {
-      return `/printers/settings/?printerId=${this.printer.id}`
+      return `/printers/${this.printer.id}/`
     },
     octoPrintTunnelUrl() {
       return `/tunnel/${this.printer.id}/`

@@ -31,7 +31,6 @@
 import split from 'lodash/split'
 
 import { normalizedPrinter } from '@lib/normalizers'
-
 import urls from '@lib/server_urls'
 import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'

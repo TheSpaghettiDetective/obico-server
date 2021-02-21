@@ -170,7 +170,7 @@ export default {
       return this.printerIdToLink ? 'Re-Link OctoPrint' : 'Link OctoPrint'
     },
     editPrinterUrl() {
-      return `/printers/${this.verifiedPrinter}`
+      return `/printers/${this.verifiedPrinter}/`
     },
     expiryMoment() {
       if (this.verificationCode) {

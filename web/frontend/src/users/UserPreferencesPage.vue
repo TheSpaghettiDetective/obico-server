@@ -46,7 +46,7 @@
           <h2 class="section-title">Notifications</h2>
           <div class="row">
             <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-              <saving-animation :errors="errorMessages.notify_on_done" :saving="saving.notify_on_done" height="small">
+              <saving-animation :errors="errorMessages.notify_on_done" :saving="saving.notify_on_done">
                 <div class="custom-control custom-checkbox form-check-inline">
                   <input
                     type="checkbox"
@@ -64,7 +64,7 @@
           </div>
           <div class="row">
             <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-              <saving-animation :errors="errorMessages.notify_on_canceled" :saving="saving.notify_on_canceled" height="small">
+              <saving-animation :errors="errorMessages.notify_on_canceled" :saving="saving.notify_on_canceled">
                 <div class="custom-control custom-checkbox form-check-inline">
                   <input
                     type="checkbox"
@@ -82,7 +82,7 @@
           </div>
           <div class="row">
             <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-              <saving-animation :errors="errorMessages.account_notification_by_email" :saving="saving.account_notification_by_email" height="small">
+              <saving-animation :errors="errorMessages.account_notification_by_email" :saving="saving.account_notification_by_email">
                 <div class="custom-control custom-checkbox form-check-inline">
                   <input
                     type="checkbox"
@@ -131,7 +131,7 @@
           <div class="row">
             <label class="col-md-2 col-sm-3 col-form-label"></label>
             <div class="col-md-10 col-sm-9 col-form-label">
-              <saving-animation :errors="errorMessages.print_notification_by_email" :saving="saving.print_notification_by_email" height="small">
+              <saving-animation :errors="errorMessages.print_notification_by_email" :saving="saving.print_notification_by_email">
                 <div class="custom-control custom-checkbox form-check-inline">
                   <input
                     type="checkbox"
@@ -450,7 +450,7 @@
           </div>
           <div class="form-group row">
             <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-              <saving-animation :errors="errorMessages.print_notification_by_pushbullet" :saving="saving.print_notification_by_pushbullet" height="small">
+              <saving-animation :errors="errorMessages.print_notification_by_pushbullet" :saving="saving.print_notification_by_pushbullet">
                 <div class="custom-control custom-checkbox form-check-inline">
                   <input
                     type="checkbox"

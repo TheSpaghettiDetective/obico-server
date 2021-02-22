@@ -5,6 +5,8 @@
     </pull-to-reveal>
 
     <div class="timelapse-gallery">
+      
+      <!-- Header -->
       <div class="row">
         <div class="col-sm-12 text-center">
           <h1>Spaghetti Gallery</h1>
@@ -19,21 +21,10 @@
         </div>
       </div>
 
-      <!-- Top pagination -->
-      <!-- <div class="row mb-3">
-        <div class="col-sm-12 pagination-wrapper">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="rows"
-            :per-page="perPage"
-          ></b-pagination>
-        </div>
-      </div> -->
-
       <!-- Timelapses -->
       <div class="row">
         <print-card
-          v-for="timelapse of timelapses"
+          v-for="timelapse of pageTimelapses"
           :key="timelapse.id"
           :print="timelapse"
           :isPublic="true"
@@ -41,21 +32,11 @@
         ></print-card>
       </div>
 
+      <!-- Timelapses loader on scroll down -->
       <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-        <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+        <div v-if="noMoreData" class="text-center p-2">End of public time-lapse list.</div>
         <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
       </mugen-scroll>
-
-      <!-- Top pagination -->
-      <!-- <div class="row my-3">
-        <div class="col-sm-12 pagination-wrapper">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="rows"
-            :per-page="perPage"
-          ></b-pagination>
-        </div>
-      </div> -->
 
       <!-- Full-screen timelapse -->
       <b-modal
@@ -98,8 +79,8 @@
 
     data() {
       return {
-        perPage: 6,
-        currentPage: 1,
+        perLoad: 6,
+        loadsNumber: 1,
         timelapses: [],
         fullScreenPrint: null,
         fullScreenPrintVideoUrl: null,
@@ -109,27 +90,19 @@
     },
 
     created() {
-      this.fetchMoreData()
-      // axios
-      //   .get(urls.publicTimelapse())
-      //   .then(response => {
-      //     for (const timelapse of response.data) {
-      //       this.timelapses.push(this.adaptTimelapseToPrint(timelapse))
-      //     }
-      //     // this.timelapses = response.data
-      //     // console.log('loaded:')
-      //     // console.log(response)
-      //   })
+      axios
+        .get(urls.publicTimelapse())
+        .then(response => {
+          for (const timelapse of response.data) {
+            this.timelapses.push(this.adaptTimelapseToPrint(timelapse))
+          }
+        })
     },
 
     computed: {
       pageTimelapses() {
-        const start = (this.currentPage - 1) * this.perPage
-        const end = start + this.perPage
-        return this.timelapses.slice(start, end)
-      },
-      rows() {
-        return this.timelapses.length
+        const end = (this.loadsNumber - 1) * this.perLoad + this.perLoad
+        return this.timelapses.slice(0, end)
       },
     },
 
@@ -148,37 +121,26 @@
         this.fullScreenPrintVideoUrl = null
       },
 
-
-      // TODO: remove
-      adaptTimelapseToPrint(timelapse) {
-        timelapse.prediction_json_url = timelapse.p_json_url
-        delete timelapse.p_json_url
-        return timelapse
-      },
-
       fetchMoreData() {
         if (this.noMoreData) {
           return
         }
 
         this.loading = true
-        axios
-          .get(urls.publicTimelapse(), {
-            params: {
-              start: this.timelapses.length,
-              limit: this.perPage,
-            }
-          })
-          .then(response => {
-            console.log('data:')
-            console.log(response)
+        setTimeout(() => {
+          this.loadsNumber++
+          this.loading = false
+          if (this.timelapses.length <= (this.loadsNumber * this.perLoad)) {
+            this.noMoreData = true
+          }
+        }, 500)
+      },
 
-            this.loading = false
-            this.noMoreData = response.data.length < this.perPage
-            for (const timelapse of response.data) {
-              this.timelapses.push(this.adaptTimelapseToPrint(timelapse))
-            }
-          })
+      // TODO: remove after API fix
+      adaptTimelapseToPrint(timelapse) {
+        timelapse.prediction_json_url = timelapse.p_json_url
+        delete timelapse.p_json_url
+        return timelapse
       },
     }
   }

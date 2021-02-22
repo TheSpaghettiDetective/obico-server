@@ -9,11 +9,11 @@
             </div>
           </div>
           <streaming-box :printer="printer" :webrtc="webrtc" />
-          <div class="card-body" :class="{'overlay': !printer.isIdle}">
+          <div class="card-body" :class="{'overlay': !printer.isIdle()}">
             <div
               class="overlay-top text-center"
               style="left: 50%; margin-left: -102px; top: 50%; margin-top: -85px;"
-              v-show="!printer.isIdle"
+              v-show="!printer.isIdle()"
             >
               <div>Printer controls are disabled</div>
               <div>because the printer is not idle.</div>

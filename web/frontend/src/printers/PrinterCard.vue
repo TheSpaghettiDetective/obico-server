@@ -45,7 +45,7 @@
       </div>
       <streaming-box :printer="printer" :webrtc="webrtc" />
       <div
-        v-if="printer.alertUnacknowledged"
+        v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
       >
         <i class="fas fa-exclamation-triangle align-middle"></i>
@@ -305,6 +305,14 @@ export default {
       urls.printerWebSocket(this.printer.id),
       (data) => {
         this.$emit('PrinterUpdated', normalizedPrinter(data))
+      },
+      (printerStatus) => {
+        this.$emit('PrinterUpdated', {
+          ...this.printer,
+          ...normalizedPrinter(
+            {status: {...printerStatus.octoprint_data, temperatures: printerStatus.octoprint_temperatures}}
+          ),
+          })
       }
     )
     this.printerComm.connect()
@@ -318,7 +326,7 @@ export default {
     },
     timeRemaining() {
       return this.toDuration(
-        this.secondsLeft, this.printer.isPrinting)
+        this.secondsLeft, this.printer.isPrinting())
     },
     timeTotal() {
       let secs = null
@@ -327,7 +335,7 @@ export default {
       }
       return this.toDuration(
         secs,
-        this.printer.isPrinting)
+        this.printer.isPrinting())
     },
     secondsLeft() {
       return get(this.printer, 'status.progress.printTimeLeft')
@@ -451,7 +459,7 @@ export default {
       })
     },
     onPrinterActionResumeClicked(ev) {
-      if (this.printer.alertUnacknowledged) {
+      if (this.printer.alertUnacknowledged()) {
         this.onNotAFailureClicked(ev, true)
       } else {
         this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
@@ -693,7 +701,7 @@ export default {
 
     shouldVideoBeFull(printer) {
       let hasImage = get(printer, 'pic.img_url')
-      let shouldBeThumb = printer.alertUnacknowledged && hasImage
+      let shouldBeThumb = printer.alertUnacknowledged() && hasImage
       return !shouldBeThumb
     },
 

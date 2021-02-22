@@ -3,12 +3,13 @@ import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
 
-export default function PrinterComm(printerId, wsUri, onMessageReceived) {
+export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
   var self = {}
 
   self.printerId = printerId
   self.wsUri = wsUri
-  self.onMessageReceived = onMessageReceived
+  self.onPrinterUpdateReceived = onPrinterUpdateReceived
+  self.onStatusReceived = onStatusReceived
 
   self.ws = null
   self.webrtc = null
@@ -22,10 +23,10 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
     self.connect()
   })
 
-  self.on_passThruReceived = function(msg) {
-    var refId = msg.ref
+  self.onPassThruReceived = function(msg) {
+    const refId = msg.ref
     if (refId && self.passthruQueue.get(refId)) {
-      var callback = self.passthruQueue.get(refId)
+      const callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
       callback(null, msg.ret)
     }
@@ -36,9 +37,9 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
     self.ws.onmessage = function (e) {
       var msg = JSON.parse(e.data)
       if ('passthru' in msg) {
-        self.on_passThruReceived(msg.passthru)
+        self.onPassThruReceived(msg.passthru)
       } else {
-        onMessageReceived(msg)
+        onPrinterUpdateReceived(msg)
       }
     }
 
@@ -49,13 +50,14 @@ export default function PrinterComm(printerId, wsUri, onMessageReceived) {
   self.setWebRTC = function(webrtc) {
     self.webrtc = webrtc
     self.webrtc.callbacks.onData = (jsonData) => {
-        let msg = {}
-        try {
-            msg = JSON.parse(jsonData)
-        } catch {
-            // parse error
+        const msg = JSON.parse(jsonData)
+        if ('ref' in msg && 'ret' in msg) {
+            self.onPassThruReceived(msg)
+            return
         }
-        self.on_passThruReceived(msg)
+        if (self.onStatusReceived) {
+            self.onStatusReceived(msg)
+        }
     }
   }
 

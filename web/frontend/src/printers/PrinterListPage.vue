@@ -213,10 +213,10 @@ export default {
       let printers = this.printers
       switch (this.filters.state) {
       case StateFilter.OnlineOnly:
-        printers = printers.filter((p) => !p.isDisconnected)
+        printers = printers.filter((p) => !p.isDisconnected())
         break
       case StateFilter.ActiveOnly:
-        printers = printers.filter((p) => p.isPrinting)
+        printers = printers.filter((p) => p.isPrinting())
         break
       case StateFilter.All:
         break
@@ -224,10 +224,10 @@ export default {
 
       switch (this.filters.sort) {
       case SortFilter.DateAsc:
-        printers = sortBy(printers, (p) => p.created_at)
+        printers = sortBy(printers, (p) => p.createdAt())
         break
       case SortFilter.DateDesc:
-        printers = reverse(sortBy(printers, (p) => p.created_at))
+        printers = reverse(sortBy(printers, (p) => p.createdAt()))
         break
       case SortFilter.NameAsc:
         printers = sortBy(printers, (p) => p.name)

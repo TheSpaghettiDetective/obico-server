@@ -135,7 +135,7 @@
         this.printerId,
         urls.printerWebSocket(this.printerId),
         (data) => {
-          this.printer = normalizedPrinter(data)
+          this.printer = normalizedPrinter(data, this.printer)
           if (this.webrtc && !this.webrtc.initialized) {
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             this.printerComm.setWebRTC(this.webrtc)

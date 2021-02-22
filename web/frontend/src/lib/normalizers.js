@@ -16,15 +16,15 @@ export const normalizedPrint = print => {
   return print
 }
 
-export const normalizedPrinter = printer => {
-  return {
-    ...printer,
+export const normalizedPrinter = (newData, oldData) => {
+  const printerMixin = {
     createdAt: function() { return toMomentOrNull(this.created_at) },
     isOffline: function() { return get(this, 'status', null) === null },
     isPaused: function() { return get(this, 'status.state.flags.paused', false) },
     isIdle: function() { return get(this, 'status.state.text', '') === 'Operational' },
     isDisconnected: function() { return get(this, 'status.state.flags.closedOrError', true) },
     isPrinting: function() { return !this.isDisconnected() && get(this, 'status.state.text', '') !== 'Operational' },
+    inTransientState: function() { return get(this, 'status.state.text', '').includes('ing') && get(this, 'status.state.text', '') !== 'Printing' },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
     alertUnacknowledged: function() {
         return get(this, 'current_print.alerted_at')
@@ -34,6 +34,21 @@ export const normalizedPrinter = printer => {
                     moment(get(this, 'current_print.alert_acknowledged_at') || 0)
                 )
     },
+  }
+  if (oldData){
+    if (get(oldData, 'status._ts', -1) > get(newData, 'status._ts', 0)) {
+        delete newData.status
+    }
+    return {
+        ...oldData,
+        ...newData,
+        ...printerMixin,
+    }
+  } else {
+      return {
+          ...newData,
+          ...printerMixin,
+      }
   }
 }
 

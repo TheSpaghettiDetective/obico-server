@@ -12,7 +12,9 @@
           <div
             class="printer-name"
             :class="{'secondary-title': hasCurrentPrintFilename}"
-          >{{ printer.name }}</div>
+          >{{ printer.name }} &nbsp;
+          (<a href="#printer-actions" :class="statusClass">{{ statusText }}</a>)
+          </div>
         </div>
         <div class="dropdown">
           <button
@@ -219,9 +221,9 @@
             </div>
           </div>
           <StatusTemp
-            v-if="section_toggles.statusTemp && statusTempProps.show"
+            v-if="section_toggles.statusTemp && tempProps.show"
             id="status_temp_block"
-            v-bind="statusTempProps"
+            v-bind="tempProps"
             @TempEditClicked="onTempEditClicked"
           ></StatusTemp>
         </div>
@@ -304,15 +306,12 @@ export default {
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
       (data) => {
-        this.$emit('PrinterUpdated', normalizedPrinter(data))
+        this.$emit('PrinterUpdated', normalizedPrinter(data, this.printer))
       },
       (printerStatus) => {
-        this.$emit('PrinterUpdated', {
-          ...this.printer,
-          ...normalizedPrinter(
-            {status: {...printerStatus.octoprint_data, temperatures: printerStatus.octoprint_temperatures}}
-          ),
-          })
+        this.$emit('PrinterUpdated', normalizedPrinter(
+            {status: printerStatus.octoprint_data}, this.printer
+          ))
       }
     )
     this.printerComm.connect()
@@ -361,9 +360,9 @@ export default {
       }
     },
     progressPct() {
-      return get(this.printer, 'status.progress.completion')
+      return get(this.printer, 'status.progress.completion') || 0 // get(this.printer, 'status.progress.completion') may return null
     },
-    statusTempProps() {
+    tempProps() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
       let temperatures = []
@@ -385,6 +384,18 @@ export default {
         editable: editable,
       }
     },
+    statusText() {
+      return get(this.printer, 'status.state.text', 'Offline')
+    },
+    statusClass() {
+      if (this.printer.hasError()) {
+        return 'text-danger'
+      }
+      if (this.printer.isOffline() || this.printer.isDisconnected() || this.printer.inTransientState()) {
+        return 'text-warning'
+      }
+      return 'text-success'
+    }
   },
 
   methods: {
@@ -666,8 +677,7 @@ export default {
           })
         .then(response => {
           if (response.data.succeeded) {
-            const p = normalizedPrinter(response.data.printer)
-            this.$emit('PrinterUpdated', p)
+            this.$emit('PrinterUpdated', normalizedPrinter(response.data.printer, this.printer))
           } else {
             throw response
           }

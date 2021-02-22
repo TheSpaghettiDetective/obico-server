@@ -3,9 +3,7 @@
     <span
       v-if="!valid && !printing"
       >-</span>
-    <i
-      v-if="!valid && printing"
-      class="fa fa-spinner"></i>
+    <b-spinner v-if="!valid && printing" small type="grow" label="Calculating..."></b-spinner>
     <span
       v-if="valid && showHours"
     >&nbsp;{{ hours }}<span class="text-subscript text-muted">h</span></span>

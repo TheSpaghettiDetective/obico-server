@@ -190,12 +190,7 @@ class Printer(SafeDeleteModel):
 
     @property
     def status(self):
-        status_data = cache.printer_status_get(self.id)
-
-        for k, v in status_data.items():
-            status_data[k] = json.loads(v)
-
-        return dict_or_none(status_data)
+        return dict_or_none(cache.printer_status_get(self.id))
 
     @property
     def pic(self):
@@ -245,7 +240,7 @@ class Printer(SafeDeleteModel):
     def actively_printing(self):
         printer_cur_state = cache.printer_status_get(self.id, 'state')
 
-        return printer_cur_state and json.loads(printer_cur_state).get('flags', {}).get('printing', False)
+        return printer_cur_state and printer_cur_state.get('flags', {}).get('printing', False)
 
     def update_current_print(self, filename, current_print_ts):
         if current_print_ts == -1:      # Not printing

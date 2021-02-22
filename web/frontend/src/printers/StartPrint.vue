@@ -28,7 +28,7 @@
             type="button" class="send-print btn btn-primary"
             @click="onSendPrintClicked(gcf.id)"
             :disabled="isSending"
-          >Print <i v-if="isSending" class="fas fa-spinner fa-spin"></i>
+          ><b-spinner small v-if="isSending" label="Loading..."></b-spinner>Print
           </button>
         </div>
       </div>

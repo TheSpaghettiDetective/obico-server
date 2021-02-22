@@ -19,14 +19,17 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
-    octoprint_data: Dict = dict()
-    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
-    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
-    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata')
-    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'currentZ')
-    set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'job')
-    set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
-    cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
+    if status.get('octoprint_data', {}).get('_ts'):   # data format for plugin 1.6.0 and higher
+        cache.printer_status_set(printer.id, json.dumps(status.get('octoprint_data', {})), ex=STATUS_TTL_SECONDS)
+    else:
+        octoprint_data: Dict = dict()
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata')
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'currentZ')
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'job')
+        set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
+        cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
     if status.get('current_print_ts'):
         process_octoprint_status_with_ts(status, printer)

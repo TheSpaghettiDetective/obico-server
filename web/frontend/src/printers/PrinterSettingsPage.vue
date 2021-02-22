@@ -365,7 +365,7 @@ export default {
       return axios
         .get(urls.printer(this.printerId))
         .then(response => {
-          this.printer = normalizedPrinter(response.data)
+          this.printer = normalizedPrinter(response.data, this.printer)
         })
     },
 

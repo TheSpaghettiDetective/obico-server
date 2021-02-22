@@ -135,6 +135,10 @@
           overflow: hidden;
           text-overflow: ellipsis;
         }
+
+        a {
+          text-decoration: underline;
+        }
       }
       .primary-title {
         font-weight: bolder;

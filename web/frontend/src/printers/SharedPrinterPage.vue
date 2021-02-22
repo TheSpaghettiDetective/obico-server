@@ -48,7 +48,7 @@ export default {
       this.shareToken,
       urls.printerSharedWebSocket(this.shareToken),
       (data) => {
-        this.printer = normalizedPrinter(data)
+        this.printer = normalizedPrinter(data, this.printer)
         this.loading = false
       }
     )

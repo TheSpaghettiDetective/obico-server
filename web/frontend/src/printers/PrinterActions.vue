@@ -1,12 +1,18 @@
 <template>
 <div>
-  <div class="row my-2">
+  <div class="row my-2" v-if="!printer.isOffline() && printer.hasError()">
     <div
-      v-if="!printer.isOffline() && printer.hasError()"
       class="col-12 bg-danger text-center">
       <div>OctoPrint Error</div><div>{{ printer.status.state.text }}</div>
     </div>
-
+  </div>
+  <div class="row my-2" v-if="printer.inTransientState()">
+    <div class="col-12 text-center my-3">
+      <b-spinner label="Processing..."></b-spinner>
+      <div>{{ printer.status.state.text }} ...</div>
+    </div>
+  </div>
+  <div class="row my-2" v-else>
     <div
       v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isIdle()"
       class="col-sm-6"
@@ -71,9 +77,9 @@
         <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
       </a>
     </div>
-
+  </div>
+  <div class="row my-2" v-if="!printer.isOffline() && printer.isDisconnected()">
     <div
-      v-if="!printer.isOffline() && printer.isDisconnected()"
       class="col-12 text-center py-2 text-warning"
     >
       <div>Printer is not connected to OctoPrint.</div>
@@ -89,9 +95,9 @@
         &nbsp;&nbsp;Connect
       </button>
     </div>
-
+  </div>
+  <div class="row my-2" v-if="printer.isOffline()">
     <div
-      v-if="printer.isOffline()"
       class="col-12 text-center py-3 text-warning"
     >
       <div>

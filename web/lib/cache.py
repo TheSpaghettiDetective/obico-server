@@ -2,6 +2,7 @@ from django.conf import settings
 from django.utils.timezone import now
 import redis
 import bson
+import json
 
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
@@ -30,21 +31,38 @@ def print_key_prefix(print_id):
     return 'print:{}:'.format(print_id)
 
 
-def printer_status_set(printer_id, mapping, ex=None):
-    cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
-    prefix = printer_key_prefix(printer_id) + 'status'
-    REDIS.hmset(prefix, cleaned_mapping)
-    if ex:
+def printer_status_set(printer_id, mapping, ex):
+    if isinstance(mapping, dict):
+        cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
+        prefix = printer_key_prefix(printer_id) + 'status'
+        REDIS.hmset(prefix, cleaned_mapping)
         REDIS.expire(prefix, ex)
+    else:
+        prefix = printer_key_prefix(printer_id) + 'status_str'
+        REDIS.setex(prefix, ex, mapping)
 
 
 def printer_status_get(printer_id, key=None):
+    prefix = printer_key_prefix(printer_id) + 'status_str'
+    status = REDIS.get(prefix)
+    if status:
+        results = json.loads(status)
+        if key:
+            return results.get(key)
+        else:
+            return results
+
     prefix = printer_key_prefix(printer_id) + 'status'
     if key:
-        return REDIS.hget(prefix, key)
+        v = REDIS.hget(prefix, key)
+        if not v:
+            return None
+        return json.loads(v)
     else:
-        return REDIS.hgetall(prefix)
-
+        status_data = REDIS.hgetall(prefix)
+        for k, v in status_data.items():
+            status_data[k] = json.loads(v)
+        return status_data
 
 def printer_status_delete(printer_id):
     return REDIS.delete(printer_key_prefix(printer_id) + 'status')

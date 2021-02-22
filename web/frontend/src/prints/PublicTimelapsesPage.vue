@@ -20,7 +20,7 @@
       </div>
 
       <!-- Top pagination -->
-      <div class="row mb-3">
+      <!-- <div class="row mb-3">
         <div class="col-sm-12 pagination-wrapper">
           <b-pagination
             v-model="currentPage"
@@ -28,12 +28,12 @@
             :per-page="perPage"
           ></b-pagination>
         </div>
-      </div>
+      </div> -->
 
       <!-- Timelapses -->
       <div class="row">
         <print-card
-          v-for="timelapse of pageTimelapses"
+          v-for="timelapse of timelapses"
           :key="timelapse.id"
           :print="timelapse"
           :isPublic="true"
@@ -41,8 +41,13 @@
         ></print-card>
       </div>
 
+      <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
+        <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+        <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+      </mugen-scroll>
+
       <!-- Top pagination -->
-      <div class="row my-3">
+      <!-- <div class="row my-3">
         <div class="col-sm-12 pagination-wrapper">
           <b-pagination
             v-model="currentPage"
@@ -50,7 +55,7 @@
             :per-page="perPage"
           ></b-pagination>
         </div>
-      </div>
+      </div> -->
 
       <!-- Full-screen timelapse -->
       <b-modal
@@ -71,11 +76,14 @@
 </template>
 
 <script>
+  import axios from 'axios'
+  import urls from '../lib/server_urls'
   import Navbar from '@common/Navbar.vue'
   import PullToReveal from '@common/PullToReveal.vue'
   import PrintCard from './PrintCard.vue'
   import FullScreenPrintCard from './FullScreenPrintCard.vue'
   import findIndex from 'lodash/findIndex'
+  import MugenScroll from 'vue-mugen-scroll'
   
   export default {
     name: 'PublicTimelapsesPage',
@@ -85,82 +93,33 @@
       PullToReveal,
       PrintCard,
       FullScreenPrintCard,
+      MugenScroll,
     },
 
     data() {
       return {
-        perPage: 9,
+        perPage: 6,
         currentPage: 1,
-        timelapses: [
-          {
-            id: 48,
-            title: 'T-00207.mp4',
-            priority: 1,
-            video_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00207.mp4',
-            poster_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00207.mp4.poster.jpg',
-            prediction_json_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00207.mp4.json',
-            creator_name: 'Lila',
-            uploaded_by_id: null,
-            created_at: '2019-02-02T21:21:08.307Z',
-            updated_at: '2020-01-23T21:17:52.731Z',
-            printshotfeedback_set: [],
-          },
-          {
-            id: 2,
-            title: 'T-00002.mp4',
-            priority: 2,
-            video_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00002.mp4',
-            poster_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00002.mp4.poster.jpg',
-            prediction_json_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00002.mp4.json',
-            creator_name: 'Kenneth',
-            uploaded_by_id: null,
-            created_at: '2019-02-02T21:01:22.977Z',
-            updated_at: '2020-01-23T21:17:50.691Z',
-            printshotfeedback_set: [],
-          },
-          {
-            id: 43,
-            title: 'T-00202.mp4',
-            priority: 3,
-            video_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00202.mp4',
-            poster_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00202.mp4.poster.jpg',
-            prediction_json_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00202.mp4.json',
-            creator_name: 'Jimmy',
-            uploaded_by_id: null,
-            created_at: '2019-02-02T21:15:39.060Z',
-            updated_at: '2020-01-23T21:17:54.989Z',
-            printshotfeedback_set: [],
-          },
-          {
-            id: 47,
-            title: 'T-00206.mp4',
-            priority: 4,
-            video_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00206.mp4',
-            poster_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00206.mp4.poster.jpg',
-            prediction_json_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00206.mp4.json',
-            creator_name: 'Jimmy',
-            uploaded_by_id: null,
-            created_at: '2019-02-02T21:16:32.870Z',
-            updated_at: '2020-01-23T21:17:52.653Z',
-            printshotfeedback_set: [],
-          },
-          {
-            id: 4,
-            title: 'T-00004.mp4',
-            priority: 5,
-            video_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00004.mp4',
-            poster_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00004.mp4.poster.jpg',
-            prediction_json_url: 'https://tsd-pub-static.s3.amazonaws.com/pub-tls/T-00004.mp4.json',
-            creator_name: 'Kenneth',
-            uploaded_by_id: null,
-            created_at: '2019-02-02T21:02:06.115Z',
-            updated_at: '2020-01-23T21:17:50.818Z',
-            printshotfeedback_set: [],
-          },
-        ],
+        timelapses: [],
         fullScreenPrint: null,
         fullScreenPrintVideoUrl: null,
+        noMoreData: false,
+        loading: false,
       }
+    },
+
+    created() {
+      this.fetchMoreData()
+      // axios
+      //   .get(urls.publicTimelapse())
+      //   .then(response => {
+      //     for (const timelapse of response.data) {
+      //       this.timelapses.push(this.adaptTimelapseToPrint(timelapse))
+      //     }
+      //     // this.timelapses = response.data
+      //     // console.log('loaded:')
+      //     // console.log(response)
+      //   })
     },
 
     computed: {
@@ -173,7 +132,6 @@
         return this.timelapses.length
       },
     },
-
 
     methods: {
       openFullScreen(printId, videoUrl) {
@@ -188,7 +146,40 @@
       fullScreenClosed() {
         this.fullScreenPrint = null
         this.fullScreenPrintVideoUrl = null
-      }
+      },
+
+
+      // TODO: remove
+      adaptTimelapseToPrint(timelapse) {
+        timelapse.prediction_json_url = timelapse.p_json_url
+        delete timelapse.p_json_url
+        return timelapse
+      },
+
+      fetchMoreData() {
+        if (this.noMoreData) {
+          return
+        }
+
+        this.loading = true
+        axios
+          .get(urls.publicTimelapse(), {
+            params: {
+              start: this.timelapses.length,
+              limit: this.perPage,
+            }
+          })
+          .then(response => {
+            console.log('data:')
+            console.log(response)
+
+            this.loading = false
+            this.noMoreData = response.data.length < this.perPage
+            for (const timelapse of response.data) {
+              this.timelapses.push(this.adaptTimelapseToPrint(timelapse))
+            }
+          })
+      },
     }
   }
 </script>

@@ -227,7 +227,7 @@ class Printer(SafeDeleteModel):
             return '"Watch for failures" is turned off'
 
         if self.user.dh_balance < 0:
-            return "You have ran out of Detective Hours"
+            return "You have run out of Detective Hours"
 
         if not self.actively_printing():
             return "Printer is not actively printing"

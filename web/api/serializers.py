@@ -145,7 +145,11 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 
 
 class PublicTimelapseSerializer(serializers.ModelSerializer):
+    prediction_json_url = serializers.SerializerMethodField()
 
     class Meta:
         model = PublicTimelapse
         fields = '__all__'
+
+    def get_prediction_json_url(self, obj: PublicTimelapse) -> str:
+        return obj.p_json_url

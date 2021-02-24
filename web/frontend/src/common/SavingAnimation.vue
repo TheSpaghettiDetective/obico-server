@@ -85,14 +85,11 @@ export default {
     height: $indicatorSize
     display: block
     position: absolute
-    top: 10px
-    right: -#{$indicatorSize + 16px}
+    top: 0
+    bottom: 0
+    right: -#{$indicatorSize + 12px}
     margin: auto
     z-index: 9
-
-
-  &.small-height:before
-    top: 4px
 
   &.saving-in-progress
     position: relative

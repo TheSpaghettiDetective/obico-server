@@ -106,66 +106,82 @@
                         </label>
                       </div>
                     </saving-animation>
-                    <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause">
-                      <div class="form-inline my-1 checkbox-with-input">
-                        <div class="custom-control custom-checkbox form-check-inline">
+
+                    <div class="form-inline my-1 checkbox-with-input">
+                      <div class="custom-control custom-checkbox form-check-inline">
+                        <input type="checkbox" class="custom-control-input" id="retract-checkbox" v-model="retractFilamentByEnabled">
+                        <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
+                      </div>
+                      <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause" class="mobile-full-width">
+                        <div class="input-group input-group-sm minimal-width arrows-control">
+                          <div class="input-group-prepend">
+                            <button
+                              class="btn btn-outline-secondary arrow"
+                              type="button"
+                              @click="
+                                printer.retract_on_pause = printer.retract_on_pause >= .5 ? Math.round((printer.retract_on_pause - .5) * 10) / 10 : 0;
+                                updateSetting('retract_on_pause');"
+                              :disabled="!retractFilamentByEnabled"
+                            >↓</button>
+                          </div>
                           <input
-                            type="checkbox"
-                            class="custom-control-input"
-                            id="retract-checkbox"
-                            v-model="retractFilamentByEnabled"
-                            >
-                          <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
-                        </div>
-                        <div class="input-group input-group-sm minimal-width">
-                          <input
-                            type="number"
-                            name="retract_on_pause"
-                            step="0.5"
-                            aria-label="Retraction ammount in millimeters"
-                            min="0"
-                            class="form-control field_required"
-                            id="id_retract_on_pause"
-                            v-model="printer.retract_on_pause"
-                            :disabled="!retractFilamentByEnabled"
-                            @change="updateSetting('retract_on_pause')"
-                          >
+                            type="text"
+                            class="form-control text-center field_required"
+                            disabled
+                            aria-describedby="basic-addon1"
+                            :value="printer.retract_on_pause + ' mm'"
+                            :style="{opacity: retractFilamentByEnabled ? 1 : .3}">
                           <div class="input-group-append">
-                            <span class="input-group-text">mm</span>
+                            <button
+                              class="btn btn-outline-secondary arrow"
+                              type="button"
+                              @click="
+                                printer.retract_on_pause = Math.round((printer.retract_on_pause + .5) * 10) / 10;
+                                updateSetting('retract_on_pause');"
+                              :disabled="!retractFilamentByEnabled"
+                            >↑</button>
                           </div>
                         </div>
+                      </saving-animation>
+                    </div>
+
+                    <div class="form-inline my-1 checkbox-with-input">
+                      <div class="custom-control custom-checkbox form-check-inline">
+                        <input type="checkbox" class="custom-control-input" id="lift-z-checkbox" v-model="liftExtruderByEnabled">
+                        <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                       </div>
-                    </saving-animation>
-                    <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause">
-                      <div class="form-inline my-1 checkbox-with-input">
-                        <div class="custom-control custom-checkbox form-check-inline">
+                      <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause" class="mobile-full-width">
+                        <div class="input-group input-group-sm minimal-width arrows-control">
+                          <div class="input-group-prepend">
+                            <button
+                              class="btn btn-outline-secondary arrow"
+                              type="button"
+                              @click="
+                                printer.lift_z_on_pause = printer.lift_z_on_pause >= .5 ? Math.round((printer.lift_z_on_pause - .5) * 10) / 10 : 0;
+                                updateSetting('lift_z_on_pause');"
+                              :disabled="!liftExtruderByEnabled"
+                            >↓</button>
+                          </div>
                           <input
-                            type="checkbox"
-                            class="custom-control-input"
-                            id="lift-z-checkbox"
-                            v-model="liftExtruderByEnabled"
-                          >
-                          <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
-                        </div>
-                        <div class="input-group input-group-sm minimal-width">
-                          <input
-                            type="number"
-                            name="lift_z_on_pause"
-                            step="0.5"
-                            aria-label="Lift Z Axis ammount in millimeters"
-                            min="0"
-                            class="form-control field_required"
-                            id="id_lift_z_on_pause"
-                            :disabled="!liftExtruderByEnabled"
-                            v-model="printer.lift_z_on_pause"
-                            @change="updateSetting('lift_z_on_pause')"
-                          >
+                            type="text"
+                            class="form-control text-center field_required"
+                            disabled
+                            aria-describedby="basic-addon1"
+                            :value="printer.lift_z_on_pause + ' mm'"
+                            :style="{opacity: liftExtruderByEnabled ? 1 : .3}">
                           <div class="input-group-append">
-                            <span class="input-group-text">mm</span>
+                            <button
+                              class="btn btn-outline-secondary arrow"
+                              type="button"
+                              @click="
+                                printer.lift_z_on_pause = Math.round((printer.lift_z_on_pause + .5) * 10) / 10;
+                                updateSetting('lift_z_on_pause');"
+                              :disabled="!liftExtruderByEnabled"
+                            >↑</button>
                           </div>
                         </div>
-                      </div>
-                    </saving-animation>
+                      </saving-animation>
+                    </div>
                   </div>
 
                   <!-- Advanced settngs: sensitivity slider -->
@@ -357,6 +373,10 @@ export default {
     })
   },
 
+  mounted() {
+    // this.setSavingStatus('retract_on_pause', true)
+  },
+
   methods: {
     /**
      * Get actual printer settings
@@ -513,7 +533,13 @@ export default {
   font-size: 16px
 
 .input-group.minimal-width input
-  width: 4rem
+  width: 5rem
+
+@media (max-width: 768px)
+  .mobile-full-width
+    width: 100%
+    margin-top: .25em
+    margin-bottom: .4em
 
 .section-title
   padding-bottom: 5px
@@ -526,4 +552,13 @@ section.danger
   .section-title
     color: theme.$danger
     border-color: theme.$danger
+
+.arrows-control
+  .arrow
+    border-width: 1px
+
+  input
+    border-top-color: theme.$white
+    border-bottom-color: theme.$white
+    color: theme.$white
 </style>

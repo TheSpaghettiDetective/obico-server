@@ -115,10 +115,13 @@ export default {
       staticWrapper.style.left = '0'
       staticWrapper.style.zIndex = '1'
 
-      window.onload = function() {
-        const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
-        document.querySelector('body').style.paddingTop = `${elemHeight}px`
-      }
+      const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
+      document.querySelector('body').style.paddingTop = `${elemHeight}px`
+
+      // window.onload = function() {
+      //   const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
+      //   document.querySelector('body').style.paddingTop = `${elemHeight}px`
+      // }
     },
 
     destroyDisabled() {

@@ -16,6 +16,7 @@ import Navbar from '@common/Navbar.vue'
 import PrintsPage from './PrintsPage.vue'
 import PrintPage from './PrintPage.vue'
 import UploadPrintPage from './UploadPrintPage.vue'
+import PublicTimelapsesPage from './PublicTimelapsesPage.vue'
 
 if (document.getElementById('navbar-mount')) {
   new Vue({
@@ -39,4 +40,10 @@ if (document.getElementById('upload-print-mount')) {
   new Vue({
     components: { UploadPrintPage }
   }).$mount('#upload-print-mount')
+}
+
+if (document.getElementById('timelapses-mount')) {
+  new Vue({
+    components: { PublicTimelapsesPage }
+  }).$mount('#timelapses-mount')
 }

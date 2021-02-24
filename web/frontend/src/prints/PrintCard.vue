@@ -1,7 +1,10 @@
 <template>
   <div class="col-sm-12 col-md-6 col-lg-4 pt-3">
     <div class="card vld-parent">
-      <div class="card-header">
+      <div v-if="isPublic" class="card-header">
+        - By {{ print.creator_name }}
+      </div>
+      <div v-else class="card-header">
         <div :style="{visibility: hasSelectedChangedListener ? 'visible' : 'hidden'}">
           <b-form-checkbox
             v-model="selected"
@@ -76,7 +79,7 @@
         <div v-else>
           <detective-working />
         </div>
-        <div v-show="cardView == 'info'">
+        <div v-show="cardView == 'info' && !isPublic">
           <div class="card-body">
             <div class="container">
               <div class="row">
@@ -109,12 +112,16 @@
           </div>
         </div>
 
-        <div v-show="cardView == 'detective'">
+        <div v-if="isPublic" v-show="normalizedP > 0.4" class="bg-warning alert-banner text-center">
+          <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+        </div>
+
+        <div v-show="cardView == 'detective' || isPublic">
           <gauge
             v-if="print.prediction_json_url"
             :normalizedP="normalizedP"
           />
-          <div class="feedback-section">
+          <div v-if="!isPublic" class="feedback-section">
             <div class="text-center py-2 px-3">
               <div
                 class="lead"
@@ -188,6 +195,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import filter from 'lodash/filter'
+// import get from 'lodash/get'
 
 import {getNormalizedP} from '@lib/normalizers'
 import urls from '../lib/server_urls'
@@ -206,16 +214,21 @@ export default {
 
   data: () => {
     return {
+      ALERT_THRESHOLD: 0.4,
       currentPosition: 0,
       predictions: [],
       selectedCardView: 'detective',
       selected: false,
-      inflightAlertOverwrite: null
+      inflightAlertOverwrite: null,
     }
   },
 
   props: {
-    print: Object
+    print: Object,
+    isPublic: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {
@@ -306,6 +319,11 @@ export default {
     },
 
     normalizedP() {
+      if (this.isPublic) {
+        const num = Math.round(this.predictions.length * this.currentPosition)
+        return this.predictions.length && this.predictions[num] && this.currentPosition ? this.predictions[num].p : 0
+      }
+
       return getNormalizedP(this.predictions, this.currentPosition)
     }
   },
@@ -410,4 +428,8 @@ export default {
 
 .help-text
   line-height: 1.2
+
+.bg-warning.alert-banner
+  position: static
+  display: block
 </style>

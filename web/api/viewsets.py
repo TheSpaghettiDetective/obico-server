@@ -18,10 +18,10 @@ import requests
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, calc_normalized_p)
+    SharedResource, PublicTimelapse, calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, PublicTimelapseSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
@@ -396,3 +396,12 @@ class SharedResourceViewSet(mixins.ListModelMixin,
             SharedResource.objects.select_related('printer').filter(printer=printer),
             many=True)
             .data)
+
+
+class PublicTimelapseViewSet(mixins.ListModelMixin,
+                            viewsets.GenericViewSet):
+    serializer_class = PublicTimelapseSerializer
+
+    def list(self, request, *args, **kwargs):
+        return Response(
+            self.serializer_class(PublicTimelapse.objects.order_by('priority'), many=True).data)

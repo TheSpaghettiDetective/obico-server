@@ -27,6 +27,10 @@ router.register(
     r'sharedresources',
     viewsets.SharedResourceViewSet,
     'SharedResourceViewSet')
+router.register(
+    r'publictimelapse',
+    viewsets.PublicTimelapseViewSet,
+    'PublicTimelapseViewSet')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

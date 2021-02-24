@@ -6,7 +6,7 @@ import phonenumbers
 
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, calc_normalized_p)
+    SharedResource, PublicTimelapse, calc_normalized_p)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -142,3 +142,10 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Printer
         fields = ('name', 'pic', 'settings')
+
+
+class PublicTimelapseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PublicTimelapse
+        fields = '__all__'

@@ -90,9 +90,9 @@
         :disabled="connecting"
         @click="this.onConnectClicked"
       >
-        <b-spinner v-if="connecting" type="grow" small></b-spinner>
+        <b-spinner v-if="connecting" small></b-spinner>
         <i v-else class="fab fa-usb"></i>
-        &nbsp;&nbsp;Connect
+        &nbsp;&nbsp;{{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
       </button>
     </div>
   </div>

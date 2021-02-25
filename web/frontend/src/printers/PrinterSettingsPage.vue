@@ -19,7 +19,6 @@
             >
           </saving-animation>
         </div>
-
         <!-- Potential failure section -->
         <div class="failure-notification">
           <div class="form-group mt-4 mb-4">

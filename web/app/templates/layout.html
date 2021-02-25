@@ -172,6 +172,7 @@
   <script type="text/javascript" src="{% static 'vendor/js/bootstrap-input-spinner.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/js/download.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/js/filesize.min.js' %}"></script>
+  <script src="{% static 'js/shared.js' %}"></script>
 
   <script type="text/javascript">
     var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
@@ -196,7 +197,6 @@
       }
     {% endif %}
   </script>
-  <script src="{% static 'js/shared.js' %}"></script>
   {% block page_js %}{% endblock page_js %}
   {% block body_bottom_ext %}{% endblock body_bottom_ext %}
 </body>

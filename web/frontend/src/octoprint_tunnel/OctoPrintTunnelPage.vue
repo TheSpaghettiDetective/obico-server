@@ -74,7 +74,7 @@ export default {
         })
     }
     setInterval(fetchUsage, 15*1000)
-    fetchUsage()
+    setTimeout(fetchUsage, 4000)
   },
 
   methods: {

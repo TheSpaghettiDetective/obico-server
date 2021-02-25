@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
 from django.conf import settings
+import zlib
 
 from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
@@ -78,7 +79,10 @@ def octoprint_http_tunnel(request, pk):
         resp[k] = v
 
     url_path = urllib.parse.urlparse(path).path
-    content = data['response']['content']
+    if data['response'].get('compressed', False):
+        content = zlib.decompress(data['response']['content'])
+    else:
+        content = data['response']['content']
 
     cache.octoprinttunnel_update_stats(
         request.user.id,

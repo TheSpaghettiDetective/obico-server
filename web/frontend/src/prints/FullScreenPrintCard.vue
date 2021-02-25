@@ -6,8 +6,13 @@
       @timeupdate="onTimeUpdate"
       :fluid="false"
       :autoplay="autoplay"
-      :fullScreenBtn="false"
+      :fullscreenBtn="false"
     />
+
+    <div v-if="isPublic" :style="{opacity: normalizedP > 0.4 ? 1 : 0}" class="bg-warning alert-banner text-center">
+      <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+    </div>
+    
     <gauge
       :normalizedP="normalizedP"
     />
@@ -42,6 +47,10 @@ export default {
     autoplay: {
       type: Boolean,
       default: () => false
+    },
+    isPublic: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -52,7 +61,7 @@ export default {
   },
   computed: {
     normalizedP() {
-      return getNormalizedP(this.predictions, this.currentPosition)
+      return getNormalizedP(this.predictions, this.currentPosition, this.isPublic)
     }
   },
   methods: {
@@ -75,4 +84,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.bg-warning.alert-banner
+  position: static
+  display: block
+  padding: 0.3rem
 </style>

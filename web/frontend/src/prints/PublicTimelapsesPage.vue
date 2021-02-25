@@ -43,13 +43,14 @@
         id="tl-fullscreen-modal"
         size="full"
         @hidden="fullScreenClosed"
-        :hideHeader="true"
+        :title="fullScreenPrintTitle"
         :hideFooter="true"
       >
         <full-screen-print-card
           :print="fullScreenPrint"
           :videoUrl="fullScreenPrintVideoUrl"
           :autoplay="true"
+          :is-public="true"
         />
       </b-modal>
     </div>
@@ -104,6 +105,14 @@
         const end = (this.loadsNumber - 1) * this.perLoad + this.perLoad
         return this.timelapses.slice(0, end)
       },
+
+      fullScreenPrintTitle() {
+        if (this.fullScreenPrint) {
+          return `- By ${this.fullScreenPrint.creator_name}`
+        }
+
+        return ''
+      }
     },
 
     methods: {
@@ -149,4 +158,13 @@
 <style lang="sass" scoped>
 ::v-deep .pagination-wrapper button
   border-radius: 0
+
+::v-deep #tl-fullscreen-modal
+  .modal-full
+    max-width: 100%
+    margin: 0
+
+  .video-js
+    height: 0
+    height: calc(100vh - 243px)
 </style>

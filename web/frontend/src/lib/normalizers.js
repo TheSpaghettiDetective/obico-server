@@ -53,7 +53,8 @@ export const normalizedPrinter = (newData, oldData) => {
 }
 
 
-export const getNormalizedP = (predictions, currentPosition) => {
+export const getNormalizedP = (predictions, currentPosition, isPublic) => {
       const num = Math.round(predictions.length * currentPosition)
-      return get(predictions[num], 'fields.normalized_p', 0)
+      const propName = isPublic ? 'p' : 'fields.normalized_p'
+      return get(predictions[num], `${propName}`, 0)
 }

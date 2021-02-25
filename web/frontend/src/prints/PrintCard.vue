@@ -112,7 +112,8 @@
           </div>
         </div>
 
-        <div v-if="isPublic" v-show="normalizedP > 0.4" class="bg-warning alert-banner text-center">
+        <div v-if="isPublic" class="bg-warning alert-banner text-center" :style="{opacity: normalizedP > 0.4 ? 1 : 0}">
+          <!-- v-show="normalizedP > 0.4" -->
           <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
         </div>
 
@@ -319,12 +320,7 @@ export default {
     },
 
     normalizedP() {
-      if (this.isPublic) {
-        const num = Math.round(this.predictions.length * this.currentPosition)
-        return this.predictions.length && this.predictions[num] && this.currentPosition ? this.predictions[num].p : 0
-      }
-
-      return getNormalizedP(this.predictions, this.currentPosition)
+      return getNormalizedP(this.predictions, this.currentPosition, this.isPublic)
     }
   },
 

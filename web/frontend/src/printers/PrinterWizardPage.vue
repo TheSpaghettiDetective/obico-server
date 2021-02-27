@@ -1,6 +1,6 @@
 <template>
 <div class="row justify-content-center">
-  <pull-to-reveal :enable="false">
+  <pull-to-reveal>
     <navbar view-name="app.views.web_views.edit_printer"></navbar>
   </pull-to-reveal>
 
@@ -149,8 +149,8 @@ import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import theme from '../main/main.sass'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   components: {

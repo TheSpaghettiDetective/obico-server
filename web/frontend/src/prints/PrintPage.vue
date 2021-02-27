@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2 mb-5">
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="app.views.web_views.print"></navbar>
     </pull-to-reveal>
 
@@ -21,8 +21,8 @@ import axios from 'axios'
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   name: 'PrintPage',

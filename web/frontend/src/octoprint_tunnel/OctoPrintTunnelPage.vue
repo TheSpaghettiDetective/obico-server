@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="app.views.tunnel_views.tunnel"></navbar>
     </pull-to-reveal>
 
@@ -20,8 +20,8 @@
 import axios from 'axios'
 import filesize from 'filesize'
 import urls from '@lib/server_urls'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   name: 'OctoPrintTunnelPage',

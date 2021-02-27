@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="app.views.web_views.upload_print"></navbar>
     </pull-to-reveal>
 
@@ -47,8 +47,8 @@
 <script>
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
   export default {
     name: 'UploadPrintPage',

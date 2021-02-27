@@ -1,6 +1,6 @@
 <template>
 <div class="row justify-content-center">
-  <pull-to-reveal :enable="false">
+  <pull-to-reveal>
     <navbar view-name="app.views.web_views.edit_printer"></navbar>
   </pull-to-reveal>
 
@@ -207,8 +207,8 @@ import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
 import NumberInput from '../common/NumberInput.vue'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   components: {

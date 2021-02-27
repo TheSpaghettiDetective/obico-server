@@ -27,7 +27,7 @@ export default {
       type: Boolean,
     },
     enable: {
-      default() {return true},
+      default() {return false},
       type: Boolean,
     },
   },
@@ -145,7 +145,7 @@ export default {
         if (this.status === 'opened') {
           return
         }
-        
+
         elem.style.top = 0
         this.status = 'opened'
 
@@ -153,7 +153,7 @@ export default {
         if (this.shiftContent) {
           this.$refs.pullToRevealWrapper.querySelector('.spaceholder').style.height = `${elemHeight}px`
         }
-        
+
       } else {
         // Hide
 

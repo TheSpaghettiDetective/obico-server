@@ -1,6 +1,6 @@
 <template>
   <div class="timelapse" sticky-container>
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="prints"></navbar>
     </pull-to-reveal>
 
@@ -128,8 +128,8 @@ import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   name: 'PrintsPage',

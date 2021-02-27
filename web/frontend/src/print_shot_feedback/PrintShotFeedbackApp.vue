@@ -1,6 +1,6 @@
 <template>
   <div class="printshots-container row justify-content-center">
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="app.views.web_views.print_shot_feedback"></navbar>
     </pull-to-reveal>
 
@@ -66,8 +66,8 @@ import Consent from './components/Consent'
 import PrintShotCard from './components/PrintShotCard'
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   name: 'PrintShotFeedbackApp',

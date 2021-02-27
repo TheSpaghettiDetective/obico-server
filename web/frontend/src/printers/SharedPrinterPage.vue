@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="printer_shared"></navbar>
     </pull-to-reveal>
 
@@ -39,8 +39,8 @@ import urls from '@lib/server_urls'
 import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 
 export default {
   name: 'SharedPrinterPage',

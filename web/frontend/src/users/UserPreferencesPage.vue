@@ -1,6 +1,6 @@
 <template>
   <div class="row justify-content-center">
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="app.views.web_views.user_preferences"></navbar>
     </pull-to-reveal>
 
@@ -623,8 +623,8 @@
 import axios from 'axios'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
-import PullToReveal from '../common/PullToReveal.vue'
-import Navbar from '../common/Navbar.vue'
+import PullToReveal from '@common/PullToReveal.vue'
+import Navbar from '@common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
 
 export default {

@@ -7,7 +7,7 @@ setupSentry(Vue)
 Vue.use(BootstrapVue)
 Vue.use(VueSwal)
 
-import Navbar from '../common/Navbar.vue'
+import Navbar from '@common/Navbar.vue'
 
 import PrinterListPage from './PrinterListPage.vue'
 import SharedPrinterPage from './SharedPrinterPage.vue'

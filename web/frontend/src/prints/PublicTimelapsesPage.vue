@@ -1,11 +1,11 @@
 <template>
   <div>
-    <pull-to-reveal :enable="false">
+    <pull-to-reveal>
       <navbar view-name="publictimelapse_list"></navbar>
     </pull-to-reveal>
 
     <div class="timelapse-gallery">
-      
+
       <!-- Header -->
       <div class="row">
         <div class="col-sm-12 text-center">
@@ -66,7 +66,7 @@
   import FullScreenPrintCard from './FullScreenPrintCard.vue'
   import findIndex from 'lodash/findIndex'
   import MugenScroll from 'vue-mugen-scroll'
-  
+
   export default {
     name: 'PublicTimelapsesPage',
 

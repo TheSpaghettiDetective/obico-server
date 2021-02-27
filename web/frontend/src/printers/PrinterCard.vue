@@ -13,7 +13,7 @@
             class="printer-name"
             :class="{'secondary-title': hasCurrentPrintFilename}"
           >{{ printer.name }} &nbsp;
-          (<a href="#printer-actions" :class="statusClass">{{ statusText }}</a>)
+          (<a :href="'#printer-actions-' + printer.id" :class="statusClass">{{ statusText }}</a>)
           </div>
         </div>
         <div class="dropdown">
@@ -81,7 +81,7 @@
         <hr />
       </div>
       <PrinterActions
-        id="printer-actions"
+        :id="'printer-actions-' + printer.id"
         class="container"
         v-bind="actionsProps"
         @PrinterActionPauseClicked="onPrinterActionPauseClicked"

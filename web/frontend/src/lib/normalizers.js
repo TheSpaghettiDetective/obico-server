@@ -24,7 +24,7 @@ export const normalizedPrinter = (newData, oldData) => {
     isIdle: function() { return get(this, 'status.state.text', '') === 'Operational' },
     isDisconnected: function() { return get(this, 'status.state.flags.closedOrError', true) },
     isPrinting: function() { return !this.isDisconnected() && get(this, 'status.state.text', '') !== 'Operational' },
-    inTransientState: function() { return get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
+    inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
     alertUnacknowledged: function() {
         return get(this, 'current_print.alerted_at')

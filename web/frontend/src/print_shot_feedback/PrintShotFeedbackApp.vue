@@ -1,5 +1,9 @@
 <template>
   <div class="printshots-container row justify-content-center">
+    <pull-to-reveal :enable="false">
+      <navbar view-name="app.views.web_views.print_shot_feedback"></navbar>
+    </pull-to-reveal>
+
     <div class="col-sm-12 col-lg-6">
       <div class="card">
         <h5 class="card-header text-center">
@@ -62,6 +66,8 @@ import Consent from './components/Consent'
 import PrintShotCard from './components/PrintShotCard'
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 
 export default {
   name: 'PrintShotFeedbackApp',
@@ -69,7 +75,9 @@ export default {
     Consent,
     Loading,
     PrintShotCard,
-    VueSlickCarousel
+    VueSlickCarousel,
+    PullToReveal,
+    Navbar,
   },
   props: {
     config: {

@@ -1,5 +1,9 @@
 <template>
   <div class="row justify-content-center">
+    <pull-to-reveal :enable="false">
+      <navbar view-name="app.views.web_views.user_preferences"></navbar>
+    </pull-to-reveal>
+
     <div class="col-sm-11 col-md-10 col-lg-8">
       <div v-if="user" class="form-container">
         <!-- Profile -->
@@ -619,13 +623,17 @@
 import axios from 'axios'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
 
 export default {
   name: 'UserPreferencesPage',
   components: {
     SavingAnimation,
-    vueTelegramLogin
+    vueTelegramLogin,
+    PullToReveal,
+    Navbar,
   },
 
   data() {

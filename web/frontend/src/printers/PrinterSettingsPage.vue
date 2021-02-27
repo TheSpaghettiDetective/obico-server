@@ -1,5 +1,9 @@
 <template>
 <div class="row justify-content-center">
+  <pull-to-reveal :enable="false">
+    <navbar view-name="app.views.web_views.edit_printer"></navbar>
+  </pull-to-reveal>
+
   <div class="col-sm-11 col-md-10 col-lg-8">
     <div v-if="printer" class="form-container">
       <section class="settings">
@@ -203,11 +207,15 @@ import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 import SavingAnimation from '../common/SavingAnimation.vue'
 import NumberInput from '../common/NumberInput.vue'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 
 export default {
   components: {
     SavingAnimation,
     NumberInput,
+    PullToReveal,
+    Navbar,
   },
 
   props: {

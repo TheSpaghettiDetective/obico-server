@@ -1,5 +1,9 @@
 <template>
 <div class="row justify-content-center">
+  <pull-to-reveal :enable="false">
+    <navbar view-name="app.views.web_views.edit_printer"></navbar>
+  </pull-to-reveal>
+
   <div class="col-sm-12 col-lg-10 wizard-container form-container">
     <div v-if="verifiedPrinter" class="text-center py-5">
       <img
@@ -145,12 +149,16 @@ import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import theme from '../main/main.sass'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 
 export default {
   components: {
     FormWizard,
     TabContent,
     WizardButton,
+    PullToReveal,
+    Navbar,
   },
   data() {
     return {

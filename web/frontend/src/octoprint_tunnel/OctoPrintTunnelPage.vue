@@ -1,25 +1,36 @@
 <template>
-
-<div>
-  <h4 class="text-center p-2"><img style="height: 1.1em;margin-right: 0.75em;" :src="require('@static/img/octoprint-tunnel.png')" />OctoPrint Secure Tunnel
-  </h4>
-  <div v-if="!isPro" class="text-center pb-2">
-    <span class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">?</a>):</span> <span :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</span>
-    <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. Upgrade to the Pro plan to <a type="button" class="btn btn-sm btn-primary" href="/ent/pricing/">Get Unlimited Usage</a></div>
-  </div>
   <div>
-    <iframe v-if="printerId" :src="iframeUrl()" style='width: 100%; height: 1400px; background: #FFFFFF;'></iframe>
+    <pull-to-reveal :enable="false">
+      <navbar view-name="app.views.tunnel_views.tunnel"></navbar>
+    </pull-to-reveal>
+
+    <h4 class="text-center p-2"><img style="height: 1.1em;margin-right: 0.75em;" :src="require('@static/img/octoprint-tunnel.png')" />OctoPrint Secure Tunnel
+    </h4>
+    <div v-if="!isPro" class="text-center pb-2">
+      <span class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">?</a>):</span> <span :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</span>
+      <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. Upgrade to the Pro plan to <a type="button" class="btn btn-sm btn-primary" href="/ent/pricing/">Get Unlimited Usage</a></div>
+    </div>
+    <div>
+      <iframe v-if="printerId" :src="iframeUrl()" style='width: 100%; height: 1400px; background: #FFFFFF;'></iframe>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
 import axios from 'axios'
 import filesize from 'filesize'
 import urls from '@lib/server_urls'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 
 export default {
   name: 'OctoPrintTunnelPage',
+
+  components: {
+    PullToReveal,
+    Navbar,
+  },
+
   props: {
     printerId: {
       type: Number

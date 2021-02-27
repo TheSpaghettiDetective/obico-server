@@ -1,5 +1,9 @@
 <template>
   <div class="container my-5">
+    <pull-to-reveal :enable="false">
+      <navbar view-name="app.views.web_views.printer_control"></navbar>
+    </pull-to-reveal>
+
     <div class="row justify-content-center" style="margin: -24px -31px 0px;">
       <div v-if="printer" class="col-sm-12 col-lg-8 printer-card">
         <div class="card">
@@ -84,6 +88,8 @@
   import StreamingBox from '@common/StreamingBox'
   import PrinterComm from '@lib/printer_comm'
   import WebRTCConnection from '@lib/webrtc'
+  import PullToReveal from '../common/PullToReveal.vue'
+  import Navbar from '../common/Navbar.vue'
 
   const AXIS = {
     x: 'x',
@@ -103,6 +109,8 @@
 
     components: {
       StreamingBox,
+      PullToReveal,
+      Navbar,
     },
 
     data() {

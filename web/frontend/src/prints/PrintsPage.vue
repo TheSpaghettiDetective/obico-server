@@ -1,5 +1,9 @@
 <template>
   <div class="timelapse" sticky-container>
+    <pull-to-reveal :enable="false">
+      <navbar view-name="prints"></navbar>
+    </pull-to-reveal>
+
     <div
       class="menu-bar px-sm-4 d-flex justify-content-between"
       v-sticky
@@ -124,13 +128,17 @@ import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
+import PullToReveal from '../common/PullToReveal.vue'
+import Navbar from '../common/Navbar.vue'
 
 export default {
   name: 'PrintsPage',
   components: {
     MugenScroll,
     PrintCard,
-    FullScreenPrintCard
+    FullScreenPrintCard,
+    PullToReveal,
+    Navbar,
   },
   data: function() {
     return {

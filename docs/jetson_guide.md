@@ -1,6 +1,6 @@
 # Run TSD server on Jetson Nano
 
-Thanks to Raymond's and LyricPants work, you can now *easily* run TSD server on a 4GB Jetson Nano.
+Thanks to the work of Raymond, LyricPants, and others, you can now *easily* run TSD server on a 4GB Jetson Nano.
 
 ## Software requirements
 
@@ -10,53 +10,19 @@ The following software is required before you start installing the server:
   - [Flashing Software](https://www.balena.io/etcher/)
   - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
 
-- Install all prerequisities, in one command!:
-  - Run `wget -O jetson_TSD_install.sh https://raw.githubusercontent.com/LyricPants66133/Jetson_TSD_Fullinstall/master/full_install_script.sh && sudo sh ./jetson_TSD_install.sh`
-  - Boot up your favorite streaming service and get a hot drink. This can take a long time.
+## Start the Server!
 
-## Start the server.
+Install the entire server, all in one command!:
+*Note: the last JetPack SDK version this has been tested on is jp45.*
+*If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133*
 
-1. Create and modify a couple files in TheSpaghettiDetective repo that has been cloned already for you:
+1. Run 
+```
+git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sudo sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
 
-  - Create a `docker-compose.override.yml` file directly in the `TheSpaghettiDetective` folder.
+```
+2. Boot up your favorite streaming service and get a hot drink. This can take a long time.
 
-  - Modify file to include:
-
-  ```
-  version: '2.4'
-
-services:
-    ml_api:
-      build:
-        context: ml_api
-      environment:
-          HAS_GPU: 'True'
-      runtime: nvidia
-      
-  ```
-
-  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/web` folder.
-
-  - Modify file to include `FROM raymondh2/web:aarch64`
-
-  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/ml_api` folder.
-
-  - Modify file to include `FROM raymondh2/ml_api:jetson`
-  
-2. Run it!
- 
- ```
- pipenv shell
- ```
- ```
- cd TheSpaghettiDetective && sudo docker-compose up -d
- ```
-
-3. Go refill your hot drink. Step 2 might also take a while.
-
-## Set Docker to run on startup
-In a terminal : `sudo systemctl enable docker`
-and then reboot : `sudo reboot`
-
+3. Reboot your Jetson to make sure evrything is running well: `sudo reboot`
 
 You can then follow the remaining steps by following the instructions in [README.md].

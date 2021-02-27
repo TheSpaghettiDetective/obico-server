@@ -46,7 +46,10 @@ services:
 2. Run it!
  
  ```
- pipenv shell && cd TheSpaghettiDetective && sudo docker-compose up -d
+ pipenv shell
+ ```
+ ```
+ cd TheSpaghettiDetective && sudo docker-compose up -d
  ```
 
 3. Go refill your hot drink. Step 2 might also take a while.

@@ -80,12 +80,12 @@ export default {
       elem.style.transition = `all ${animationTime}s`
       spaceholder.style.transition = `all ${animationTime}s`
 
-      window.onload = function() {
-        // Scroll down by 1px be able to scroll up right after page load
-        if (window.scrollY === 0) {
-          window.scrollBy({top: 1, behavior: 'smooth'})
-        }
+      // Scroll down by 1px be able to scroll up right after page load
+      if (window.scrollY === 0) {
+        window.scrollBy({top: 1, behavior: 'smooth'})
+      }
 
+      window.onload = function() {
         const elemHeight = parseInt(window.getComputedStyle(elem).height)
         elem.style.top = `-${elemHeight * 2}px`
       }

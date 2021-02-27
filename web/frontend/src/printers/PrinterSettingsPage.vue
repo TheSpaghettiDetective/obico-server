@@ -53,122 +53,108 @@
             </saving-animation>
           </div>
         </div>
+      </section>
+      <section class="mt-5">
+        <h2 class="section-title">Failure Detection</h2>
+          <div class="card-body p-0 pt-3">
+            <p class="text-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              If you are not sure about the settings below, leave the default values to minimize surprises.
+            </p>
 
-        <!-- Advanced settings section (toggle) -->
-        <div class="advanced">
-          <div class="accordion">
-            <div class="card" style="border: none;">
-              <div class="card-header">
-                <a class="card-link btn-block" data-toggle="collapse" href="#menuone" aria-expanded="false" aria-controls="menuone">
-                  Advanced Settings
-                  <span class="collapsed"><p><b>&gt;</b></p></span>
-                  <span class="expanded"><p><b>&lt;</b></p></span>
-                </a>
-              </div>
-              <div id="menuone" class="collapse">
-                <div class="card-body p-0 pt-3">
-                  <p class="text-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    If you are not sure about the settings below, leave the default values to minimize surprises.
-                  </p>
-
-                  <!-- Advanced settngs: when printer is paused -->
-                  <div class="form-group mt-4">
-                    <div class="form-label text-muted">When print is paused,</div>
-                    <saving-animation :errors="errorMessages.tools_off_on_pause" :saving="saving.tools_off_on_pause">
-                      <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
-                        <input
-                          type="checkbox"
-                          name="tools_off_on_pause"
-                          class="custom-control-input"
-                          id="id_tools_off_on_pause"
-                          v-model="printer.tools_off_on_pause"
-                          @change="updateSetting('tools_off_on_pause')"
-                        >
-                        <label class="custom-control-label" for="id_tools_off_on_pause">
-                          Turn off hotend heater(s)
-                        </label>
-                      </div>
-                    </saving-animation>
-                    <saving-animation :errors="errorMessages.bed_off_on_pause" :saving="saving.bed_off_on_pause">
-                      <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
-                        <input
-                          type="checkbox"
-                          name="bed_off_on_pause"
-                          class="custom-control-input"
-                          id="id_bed_off_on_pause"
-                          v-model="printer.bed_off_on_pause"
-                          @change="updateSetting('bed_off_on_pause')"
-                        >
-                        <label class="custom-control-label" for="id_bed_off_on_pause">
-                          Turn off bed heater
-                        </label>
-                      </div>
-                    </saving-animation>
-
-                    <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause" class="mobile-full-width">
-                      <div class="form-inline my-1 checkbox-with-input">
-                        <div class="custom-control custom-checkbox form-check-inline">
-                          <input type="checkbox" class="custom-control-input" id="retract-checkbox" v-model="retractFilamentByEnabled">
-                          <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
-                        </div>
-                        <number-input
-                          :value="printer.retract_on_pause"
-                          :step=".5"
-                          :disable="!retractFilamentByEnabled"
-                          @change-value="changeRetractOnPause"
-                        ></number-input>
-                      </div>
-                    </saving-animation>
-
-                    <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause" class="mobile-full-width">
-                      <div class="form-inline my-1 checkbox-with-input">
-                        <div class="custom-control custom-checkbox form-check-inline">
-                          <input type="checkbox" class="custom-control-input" id="lift-z-checkbox" v-model="liftExtruderByEnabled">
-                          <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
-                        </div>
-                        <number-input
-                          :value="printer.lift_z_on_pause"
-                          :step=".5"
-                          :disable="!liftExtruderByEnabled"
-                          @change-value="changeLiftExtruderBy"
-                        ></number-input>
-                      </div>
-                    </saving-animation>
-                  </div>
-
-                  <!-- Advanced settngs: sensitivity slider -->
-                  <div class="form-group sensitivity my-4">
-                    <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
-                    <saving-animation :errors="errorMessages.detective_sensitivity" :saving="saving.detective_sensitivity">
-                      <div class="my-2 sensitivity-slider">
-                        <input
-                          id="id_sensitivity"
-                          name="detective_sensitivity"
-                          data-slider-id='sensitivity-slider'
-                          type="text"
-                          data-slider-min="0.8"
-                          data-slider-max="1.2"
-                          data-slider-step="0.05"
-                          :data-slider-value="printer.detective_sensitivity"
-                        />
-                      </div>
-                    </saving-animation>
-                    <div class="hint-low">
-                      Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
-                    </div>
-                    <div class="hint-medium">
-                      Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
-                    </div>
-                    <div class="hint-high">
-                      High - Hit me with all the false alarms. I want to catch as many failures as possible.
-                    </div>
-                  </div>
+            <!-- Advanced settngs: when printer is paused -->
+            <div class="form-group mt-4">
+              <div class="form-label text-muted">When print is paused,</div>
+              <saving-animation :errors="errorMessages.tools_off_on_pause" :saving="saving.tools_off_on_pause">
+                <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
+                  <input
+                    type="checkbox"
+                    name="tools_off_on_pause"
+                    class="custom-control-input"
+                    id="id_tools_off_on_pause"
+                    v-model="printer.tools_off_on_pause"
+                    @change="updateSetting('tools_off_on_pause')"
+                  >
+                  <label class="custom-control-label" for="id_tools_off_on_pause">
+                    Turn off hotend heater(s)
+                  </label>
                 </div>
+              </saving-animation>
+              <saving-animation :errors="errorMessages.bed_off_on_pause" :saving="saving.bed_off_on_pause">
+                <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
+                  <input
+                    type="checkbox"
+                    name="bed_off_on_pause"
+                    class="custom-control-input"
+                    id="id_bed_off_on_pause"
+                    v-model="printer.bed_off_on_pause"
+                    @change="updateSetting('bed_off_on_pause')"
+                  >
+                  <label class="custom-control-label" for="id_bed_off_on_pause">
+                    Turn off bed heater
+                  </label>
+                </div>
+              </saving-animation>
+
+              <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause" class="mobile-full-width">
+                <div class="form-inline my-1 checkbox-with-input">
+                  <div class="custom-control custom-checkbox form-check-inline">
+                    <input type="checkbox" class="custom-control-input" id="retract-checkbox" v-model="retractFilamentByEnabled">
+                    <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
+                  </div>
+                  <number-input
+                    :value="printer.retract_on_pause"
+                    :step=".5"
+                    :disable="!retractFilamentByEnabled"
+                    @change-value="changeRetractOnPause"
+                  ></number-input>
+                </div>
+              </saving-animation>
+
+              <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause" class="mobile-full-width">
+                <div class="form-inline my-1 checkbox-with-input">
+                  <div class="custom-control custom-checkbox form-check-inline">
+                    <input type="checkbox" class="custom-control-input" id="lift-z-checkbox" v-model="liftExtruderByEnabled">
+                    <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
+                  </div>
+                  <number-input
+                    :value="printer.lift_z_on_pause"
+                    :step=".5"
+                    :disable="!liftExtruderByEnabled"
+                    @change-value="changeLiftExtruderBy"
+                  ></number-input>
+                </div>
+              </saving-animation>
+            </div>
+
+            <!-- Advanced settngs: sensitivity slider -->
+            <div class="form-group sensitivity my-4">
+              <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
+              <saving-animation :errors="errorMessages.detective_sensitivity" :saving="saving.detective_sensitivity">
+                <div class="my-2 sensitivity-slider">
+                  <input
+                    id="id_sensitivity"
+                    name="detective_sensitivity"
+                    data-slider-id='sensitivity-slider'
+                    type="text"
+                    data-slider-min="0.8"
+                    data-slider-max="1.2"
+                    data-slider-step="0.05"
+                    :data-slider-value="printer.detective_sensitivity"
+                  />
+                </div>
+              </saving-animation>
+              <div class="hint-low">
+                Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
+              </div>
+              <div class="hint-medium">
+                Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
+              </div>
+              <div class="hint-high">
+                High - Hit me with all the false alarms. I want to catch as many failures as possible.
               </div>
             </div>
           </div>
-        </div>
       </section>
       <section class="mt-5" v-if="extEndpointLength && extEndpointLength > 0">
         <h2 class="section-title">Integration</h2>

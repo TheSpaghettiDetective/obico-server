@@ -1,6 +1,6 @@
 # Run TSD server on Jetson Nano
 
-Thanks to the work of Raymond, LyricPants, and others, you can now *easily* run TSD server on a 4GB Jetson Nano.
+Thanks to the work of Raymond, LyricPants, and others, you can now *easily* run a TSD server on a 4GB Jetson Nano.
 
 ## Software requirements
 
@@ -21,10 +21,9 @@ Install the entire server, all in one command!:
 1. Run 
 ```
 git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sudo sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
-
 ```
-2. Boot up your favorite streaming service and get a hot drink. This can take a long time.
+2. Boot up your favorite streaming service and get a hot drink. This can a while.
 
-3. Reboot your Jetson to make sure evrything is running well: `sudo reboot`
+3. Reboot your Jetson to make sure everything is running well: `sudo reboot`
 
 You can then follow the remaining steps by following the instructions in [README.md].

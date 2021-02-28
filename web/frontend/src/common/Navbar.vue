@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top flex-column">
+    <nav v-if="!isInMobile" class="navbar navbar-expand-lg navbar-dark bg-dark static-top flex-column">
       <div class="container">
         <a class="navbar-brand" href="/printers/">
         <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
@@ -89,6 +89,7 @@ export default {
       user: null,
       allowSignUp: false,
       isEnt: false,
+      isInMobile: false,
     }
   },
 
@@ -104,6 +105,7 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.isInMobile = window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
   },
 
   computed: {

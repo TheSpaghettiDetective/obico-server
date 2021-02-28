@@ -13,7 +13,9 @@ The following software is required before you start installing the server:
 ## Start the Server!
 
 Install the entire server, all in one command!:
+
 *Note: the last JetPack SDK version this has been tested on is jp45.*
+
 *If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133*
 
 1. Run 

@@ -67,17 +67,25 @@
         </div>
       </div>
       <div>
-        <video-box
-          v-if="videoUrl"
-          :videoUrl="videoUrl"
-          :posterUrl="print.poster_url"
-          :fluid="true"
-          :fullscreenBtn="hasFullscreenListener"
-          @timeupdate="onTimeUpdate"
-          @fullscreen="$emit('fullscreen', print.id, videoUrl)"
-        />
+        <div class="position-relative" v-if="print.video_archived_at">
+          <img class="mw-100" :src="posterSrc" />
+          <div class="archived-info">
+            <div class="text">Video is deleted. <a href="#" @click="showVideoArchivedDescription($event)">Why?</a></div>
+          </div>
+        </div>
         <div v-else>
-          <detective-working />
+          <video-box
+            v-if="videoUrl"
+            :videoUrl="videoUrl"
+            :posterUrl="print.poster_url"
+            :fluid="true"
+            :fullscreenBtn="hasFullscreenListener"
+            @timeupdate="onTimeUpdate"
+            @fullscreen="$emit('fullscreen', print.id, videoUrl)"
+          />
+          <div v-else>
+            <detective-working />
+          </div>
         </div>
         <div v-show="cardView == 'info' && !isPublic">
           <div class="card-body">
@@ -203,6 +211,7 @@ import urls from '../lib/server_urls'
 import VideoBox from '../common/VideoBox'
 import Gauge from '../common/Gauge'
 import DetectiveWorking from 'common/DetectiveWorking'
+import printerStockImgSrc from '@static/img/3d_printer.png'
 
 export default {
   name: 'PrintCard',
@@ -321,7 +330,11 @@ export default {
 
     normalizedP() {
       return getNormalizedP(this.predictions, this.currentPosition, this.isPublic)
-    }
+    },
+
+    posterSrc() {
+      return this.print.poster_url || printerStockImgSrc
+    },
   },
 
   methods: {
@@ -379,7 +392,17 @@ export default {
         return ts.fromNow()
       }
     },
-
+    showVideoArchivedDescription(event) {
+      event.preventDefault()
+      this.$swal({
+        title: 'Time-lapse video deleted',
+        html: `
+          <p>Time-lapse videos older than 6-months are deleted from TSD server as they are rarely needed and cost significant amount to store in the cloud.</p>
+          <p>If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please <a href="mailto:support@thespaghettidetective.com?subject=Please%20keep%20my%20timelapse%20videos">contact us</a>.</p>
+          `,
+        showCloseButton: true,
+      })
+    },
   },
   mounted() {
     if (this.print.prediction_json_url) {
@@ -428,4 +451,14 @@ export default {
 .bg-warning.alert-banner
   position: static
   display: block
+
+.archived-info
+  position: absolute
+  width: 100%
+  z-index: 10
+  bottom: 0
+  left: 0
+  background-color: rgba(0,0,0,.6)
+  text-align: center
+  padding: 10px 0
 </style>

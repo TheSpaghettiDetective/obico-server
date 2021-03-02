@@ -1,6 +1,6 @@
 # Run TSD server on Jetson Nano
 
-Thanks to Raymond's work, you can now easily run TSD server on a 4GB Jetson.
+Thanks to the work of Raymond, LyricPants, and others, you can now *easily* run a TSD server on a 4GB Jetson Nano.
 
 ## Software requirements
 
@@ -10,76 +10,20 @@ The following software is required before you start installing the server:
   - [Flashing Software](https://www.balena.io/etcher/)
   - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
 
-- pip and pip3 and upgrade to latest
-    - Run `sudo apt install python-pip`
-    - Run `sudo apt install python-pip3`
-    - Run `python -m pip install --upgrade pip`
-    - Run `python3 -m pip install --upgrade pip`
+## Start the Server!
 
-- [Docker-compose](https://docs.docker.com/compose/install/#install-using-pip) (Docker is already pre-loaded with JetPack). Currently, there is no established method of installing Docker-compose that we know will work first try for the newest version of JetPack. However, we do have a list of methods/resources that can be referred to on how to do this.
-	- Method 1: [pipenv](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
-        - Run `pip install --user pipenv` to install pipenv.
-        - Run `sudo pipenv install docker-compose` to (hopefully) install docker-compose. This may take a while.
+Install the entire server, all in one command!:
 
-	- Method 2: [pip](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
-        - Run `sudo pip install docker-compose` to (hopefully) install docker-compose.
-    
-	- Method 3: [pip3](https://docs.docker.com/compose/install/#install-using-pip) (Alternative install options)
-        - Run `sudo pip3 install docker-compose` to (hopefully) install docker-compose.
-   
-    - Method 4: [Install some required dependencies before running the install](https://dev.to/rohansawant/installing-docker-and-docker-compose-on-the-jetson-nano-4gb-2gb-in-2-simple-steps-1f4i). Follow the listed guide.
+*Note: the last JetPack SDK version this has been tested on is jp45.*
 
-    - Method 5: [Aquire help from the Offical Discord](https://discord.gg/5bnFgzGWHY). Please first look at [this](https://discord.com/channels/614543405724205137/648759742881071124/811686583043620923) thread to see if any part of it may help you before you post. 
-  
-- git ([how to install](https://git-scm.com/downloads)) OR via SSH `sudo apt-get install git`
+*If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133*
 
-
-## Get the code and start the server.
-
-1. Get the code:
-
+1. Run 
 ```
-git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git && git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sudo sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
 ```
+2. Boot up your favorite streaming service and get a hot drink. This can a while.
 
-2. Create and modify a couple files:
-
-  - Create a `docker-compose.override.yml` file directly in the `TheSpaghettiDetective` folder.
-
-  - Modify file to include:
-
-  ```
-  version: '2.4'
-
-services:
-    ml_api:
-      build:
-        context: ml_api
-      environment:
-          HAS_GPU: 'True'
-      runtime: nvidia
-      
-  ```
-
-  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/web` folder.
-
-  - Modify file to include `FROM raymondh2/web:aarch64`
-
-  - Create a `docker-compose.override.yml` file in the `TheSpaghettiDetective/ml_api` folder.
-
-  - Modify file to include `FROM raymondh2/ml_api:jetson`
-  
- 3. Run it!
- 
- ```
- cd TheSpaghettiDetective && sudo docker-compose up -d
- ```
-
-4. Go grab a coffee. Step 3 will take 15-30 minutes.
-
-## Set Docker to run on startup
-In a terminal : `sudo systemctl enable docker`
-and then reboot : `sudo reboot`
-
+3. Reboot your Jetson to make sure everything is running well: `sudo reboot`
 
 You can then follow the remaining steps by following the instructions in [README.md].

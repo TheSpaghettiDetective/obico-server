@@ -26,4 +26,4 @@ git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git && 
 
 3. Reboot your Jetson to make sure everything is running well: `sudo reboot`
 
-You can then follow the remaining steps by following the instructions in [README.md].
+You can then complete setup by following the remaining steps, starting at Basic Server Configuration in [README.md](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective#basic-server-configuration).

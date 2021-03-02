@@ -133,7 +133,7 @@ After you have closed the wizard or if you already had the TSD plguin installed:
 
 1. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
 
-    <img src="https://github.com/ryryog25/TSD-fork-resources/blob/main/Screen%20Shot%202021-03-02%20at%209.20.58%20AM.png?raw=true" width="500">
+    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
 
 1. Now, after going back to The Spaghetti Detective plugin settings, click "Troubleshooting"
 
@@ -141,7 +141,7 @@ After you have closed the wizard or if you already had the TSD plguin installed:
 
 1. Now, click "Re-run Wizard" which will allow you to connect to your server.
 
-    <img src="https://github.com/ryryog25/TSD-fork-resources/blob/main/Screen%20Shot%202021-03-02%20at%209.46.02%20AM.png?raw=true" width="500">
+    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Test-and-Rerun.png" width="500">
 
 1. After making sure you agree to the [Privacy Policy](https://www.thespaghettidetective.com/privacy.html) and the [Terms of Use](https://www.thespaghettidetective.com/terms.html) you can click "Setup Plugin"
 

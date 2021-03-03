@@ -109,25 +109,50 @@ That's it! You now have a fully-functional The Spaghetti Detective server that y
 
 # Configure The Spaghetti Detective OctoPrint Plugin to use your own server
 
-Before you can configure The Spaghetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spaghetti Detective server you just built and obtain the secret token for that. To do so:
+Before you can configure The Spaghetti Detective OctoPrint Plugin to use your own server, you need add a printer to The Spaghetti Detective server you just built and obtain the 6-digit Verification Code for that. To do so:
 
 1. Pointing your browser to `http://your_server_ip:3334`.
 
 1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user).
 
-1. Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-2-add-a-new-printer) and obtain the secret token. *Note: Do it on your own server, not on [The Spaghetti Detective cloud](https://app.thespaghettidetective.com).*
+1. Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-2-add-a-new-printer) and obtain the 6-digit Verification Code. *Note: Do it on your own server, not on [The Spaghetti Detective cloud](https://app.thespaghettidetective.com).*
 
-Then, on The Spaghetti Detective plugin settings page:
+Then, navigate to octoprint to setup the plugin side of things:
 
-1. Check the box "I have my own TSD server. Don't check this unless you know what you are doing."
+1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-install-access-anywhere---the-spaghetti-detective-plugin-in-octoprint).
 
-2. Enter `http://your_server_ip:3334`.
+1. After restarting, close the wizard, there is something that needs to be configured first.
 
-3. Enter the secret token you copied from the previous step.
+After you have closed the wizard or if you already had the TSD plguin installed:
 
-4. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
+1. Open the OctoPrint Settings and navigate to "Access Anywhere - The Spaghetti Detective"
 
-![Site configuration](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/plugin_config.png)
+1. Click "Settings"
+
+1. Find and change the Server Address to `http://your_server_ip:3334/` (use https:// if you have it, if you aren't sure, just use http://) you MUST include the "http://" and trailing "/"
+
+1. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
+
+    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
+
+1. Now, after going back to The Spaghetti Detective plugin settings, click "Troubleshooting"
+
+1. To make sure that you entered in your Server Address correctly, click "Test" under Server Connection Test. If this succeeded, great! If not, go back and make sure your Server Address is correct and that you can still reach your TSD server.
+
+1. Now, click "Re-run Wizard" which will allow you to connect to your server.
+
+    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Test-and-Rerun.png" width="500">
+
+1. After making sure you agree to the [Privacy Policy](https://www.thespaghettidetective.com/privacy.html) and the [Terms of Use](https://www.thespaghettidetective.com/terms.html) you can click "Setup Plugin"
+
+1. Click "Web Setup," since the app does not support private servers.
+
+1. Make sure that you still have your 6-digit Verification Code, and then click "Continue"
+
+1. Enter in your code and octoprint should automatically link to your printer!
+
+1. Give you printer a fancy name and enjoy The Spaghetti Detective! 
+
 
 # Advanced server configuration
 
@@ -152,4 +177,3 @@ Check out the [FAQ document](docs/faq.md). If you can't find the answer there, [
 
 # Thanks
 ![BrowserStack](https://lh4.googleusercontent.com/wyCKLuED8i1E6mvA8Moiwd5VSq2jXHXPOel85bqnW-rUU_tXBr0c1aSIhY7SHH1jKTaf7AF7vA=s50-h50-e365 "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.
-

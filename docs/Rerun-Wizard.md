@@ -6,7 +6,7 @@ If you, for whatever reason need to run this wizard again, it can be done easily
 
 1. Click "Troubleshooting" from the two options.
 
-1. Scroll down to the bottom of the page and click "Re-run Wizard" which will run the wizard.
+1. Scroll down to the bottom of the page and click "Re-run Wizard" which will run the setup wizard that pops up upon installing the TSD plugin.
 
     <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.png" width="500">
 

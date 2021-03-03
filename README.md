@@ -121,37 +121,15 @@ Then, navigate to octoprint to setup the plugin side of things:
 
 1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-install-access-anywhere---the-spaghetti-detective-plugin-in-octoprint).
 
-1. After restarting, close the wizard, there is something that needs to be configured first.
+1. After restarting, go through the wizard as described in [the setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/), until you are at the last step that asks for the 6-digit Verification Code.
 
-After you have closed the wizard or if you already had the TSD plguin installed:
+1. Expand "Advanced Server Configuration".  Find and change the Server Address to `http://your_server_ip:3334` (use https:// if you have HTTPS configured, if you aren't sure, just use http://). You MUST include the "http://".
 
-1. Open the OctoPrint Settings and navigate to "Access Anywhere - The Spaghetti Detective"
-
-1. Click "Settings"
-
-1. Find and change the Server Address to `http://your_server_ip:3334/` (use https:// if you have it, if you aren't sure, just use http://) you MUST include the "http://" and trailing "/"
-
-1. Click "Save". OctoPrint isn't necessarily smarter than Django after all.
-
-    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
-
-1. Now, after going back to The Spaghetti Detective plugin settings, click "Troubleshooting"
-
-1. To make sure that you entered in your Server Address correctly, click "Test" under Server Connection Test. If this succeeded, great! If not, go back and make sure your Server Address is correct and that you can still reach your TSD server.
-
-1. Now, click "Re-run Wizard" which will allow you to connect to your server.
-
-    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Test-and-Rerun.png" width="500">
-
-1. After making sure you agree to the [Privacy Policy](https://www.thespaghettidetective.com/privacy.html) and the [Terms of Use](https://www.thespaghettidetective.com/terms.html) you can click "Setup Plugin"
-
-1. Click "Web Setup," since the app does not support private servers.
-
-1. Make sure that you still have your 6-digit Verification Code, and then click "Continue"
+<img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
 
 1. Enter in your code and octoprint should automatically link to your printer!
 
-1. Give you printer a fancy name and enjoy The Spaghetti Detective! 
+1. Give you printer a fancy name and enjoy The Spaghetti Detective!
 
 
 # Advanced server configuration

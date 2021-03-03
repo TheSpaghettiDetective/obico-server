@@ -125,7 +125,7 @@ Then, navigate to octoprint to setup the plugin side of things:
 
 1. Expand "Advanced Server Configuration".  Find and change the Server Address to `http://your_server_ip:3334` (use https:// if you have HTTPS configured, if you aren't sure, just use http://). You MUST include the "http://".
 
-<img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
+    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Change-Server-Address.png" width="500">
 
 1. Enter in your code and octoprint should automatically link to your printer!
 

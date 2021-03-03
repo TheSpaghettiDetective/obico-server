@@ -119,7 +119,7 @@ Before you can configure The Spaghetti Detective OctoPrint Plugin to use your ow
 
 Then, navigate to octoprint to setup the plugin side of things:
 
-1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-install-access-anywhere---the-spaghetti-detective-plugin-in-octoprint). 
+1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-install-access-anywhere---the-spaghetti-detective-plugin-in-octoprint).
 
 1. After restarting, go through the wizard as described in [the setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/), until you are at the last step that asks for the 6-digit Verification Code. *Note: If TSD plugin for OctoPrint has been installed before and you do not see the wizard, click [here](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.md).*
 

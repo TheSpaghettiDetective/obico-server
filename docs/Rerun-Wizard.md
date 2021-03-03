@@ -1,4 +1,4 @@
-###Re-run The Spaghetti Detective Plugin Setup Wizard
+# Re-run The Spaghetti Detective Plugin Setup Wizard
 
 If you, for whatever reason need to run this wizard again, it can be done easily without uninstalling the plugin via these instructions:
 

@@ -20,7 +20,7 @@ Install the entire server, all in one command!:
 
 1. Run 
 ```
-git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git && git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sudo sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
+git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
 ```
 2. Boot up your favorite streaming service and get a hot drink. This can a while.
 

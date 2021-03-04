@@ -8,7 +8,7 @@ There are several ways to further debug this issue.
 
 Follow [these steps](https://www.thespaghettidetective.com/docs/webcam-feed-is-not-showing) to make sure your TSD plugin, as well as the webcam, is configured correctly.
 
-### If the secret token is tested successfully, but you still can't see the webcam.
+### If the Server Connection Test returns successfully, but you still can't see the webcam.
 
 In this case, you can download the "octoprint.log" ([here is how](https://community.octoprint.org/t/where-can-i-find-octoprints-and-octopis-log-files/299))file and check for any errors.
 
@@ -20,7 +20,7 @@ it means TSD plugin can't access the configured webcam URL.
 
 ### You are seeing error message after pressing the "Test" button on TSD settings page.
 
-Most likely you will see <span style="color:red">Connection error. Please check OctoPrint's internet connection.</span>.
+Most likely you will see <span style="color:red">Failed to contact server. Is OctoPrint connected to Internet?</span>.
 
 ![server connection error](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/onpremise-server-error.png)
 

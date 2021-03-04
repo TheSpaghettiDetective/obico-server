@@ -1,134 +1,24 @@
 {% extends settings.TEMPLATE_LAYOUT %}
-{% load static %}
-{% load bootstrap_pagination %}
-{% load humanize %}
 
-{% block page_css %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.css"/>
-{% endblock %}
+{% load bundle from vue %}
+
+{% block navbar %}
+{% endblock navbar %}
 
 {% block content %}
+<div id="gcodes-page-mount">
+  <g-codes-page csrf="{{ csrf_token }}"></g-control-page>
+</div>
 
-{% if not user.is_pro %}
-<div class="row justify-content-center">
-  <div class="col-sm-11 col-md-10 col-lg-8">
-    <div class="form-container printer-settings">
-      <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
-      <p>G-Code remote upload and printing is a Pro feature.</p>
-      <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
-      <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
-    </div>
-  </div>
-</div>
-{% else %}
-<div>
-  <div class="row my-3 justify-content-center">
-    <div class="col-sm-12 col-lg-10">
-          <form action="upload/" id="gcode-upload" class="dropzone upload-box">
-            {% csrf_token %}
-            <div class="dz-message needsclick">
-              <i class="fas fa-upload fa-2x"></i> <br />
-              Drop files here or click to upload.<br />
-              G-Code files only. Up to 200MB each.
-              <div class="fallback">
-                <input name="file" type="file" multiple />
-              </div>
-            </div>
-          </form>
-    </div>
-  </div>
-  <div class="row justify-content-center">
-    <div class="col-sm-12 col-lg-10">
-      <div class="form-container" style="margin-top: 0rem;">
-      <table id="dtOrderExample" class="table table-striped" cellspacing="0" width="100%">
-        <thead>
-          <tr>
-            <th>File name
-            </th>
-            <th>File size (bytes)
-            </th>
-            <th>Uploaded
-            </th>
-            <th>
-            </th>
-          </tr>
-        </thead>
-      </table>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
+{% bundle 'printers' %}
 
 {% endblock content %}
 
+
 {% block page_js %}
-
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
-
-<script type="text/javascript">
-  $.fn.dataTable.moment( 'MMMM Do, YYYY' );
-  var table = $('#dtOrderExample').DataTable({
-    ajax: {
-      url: '/api/v1/gcodes/',
-      dataSrc: ''
-    },
-    columns: [
-      { data: 'filename' },
-      { data: 'num_bytes' },
-      {
-        data: 'created_at',
-        render: function (data) {
-          return moment(data).format('MMMM Do, YYYY');
-        }
-      },
-      { data: null,
-        orderable: false,
-        render: function (data) {
-          return '<a role="button" class="btn btn-outline-danger btn-sm borderless" onclick="deleteGCode(' + data.id + ')"><i class="fas fa-trash-alt fa-lg"></i></a>';
-        }
-      }
-    ],
-    "order": [[ 2, "desc" ]],
-    "language": {
-      "emptyTable": "No G-Codes found. Upload some. 👆"
-    }
-  });
-
-  // Can't be put inside document.ready(). https://github.com/enyo/dropzone/issues/1423
-  // Also https://stackoverflow.com/questions/33672327/dropzone-events-not-working-need-a-success-call-back
+<script>
+  // TODO: Remove after removing non-vue Dropzone.js library 
   Dropzone.autoDiscover = false;
-
-  Dropzone.options.gcodeUpload = {
-    paramName: "file", // The name that will be used to transfer the file
-    withCredentials: true,
-    maxFilesize: 200, // MB
-    acceptedFiles: '.g,.gcode,.gco',
-    timeout: 60 * 60 * 1000, // For large files
-    // acceptedFiles: "*",
-    init: function () {
-      this.on("success", function (file) {
-        table.ajax.reload();
-      });
-    },
-  };
-
-  $('#gcode-upload').dropzone();
-
-  function deleteGCode(gcodeFileId) {
-    $.ajax({
-        url: '/api/v1/gcodes/' + gcodeFileId + '/',
-        type: 'DELETE',
-        dataType: 'json',
-    }).done(function (result) {
-        Toast.fire({
-            type: 'success',
-            text: 'G-Code deleted successfully!',
-        });
-        table.ajax.reload();
-    });
-  }
 </script>
 
 {% endblock page_js %}

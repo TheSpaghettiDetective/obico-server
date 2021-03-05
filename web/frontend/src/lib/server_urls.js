@@ -15,6 +15,7 @@ export default {
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   pubPrinter: () => '/api/v1p/printer/',
   gcodes: (page, page_size) => `/api/v1/gcodes/?page=${page}&page_size=${page_size ? page_size : 24}`,
+  gcode: gcodeId => `/api/v1/gcodes/${gcodeId}/`,
   tunnelUsage: () => '/api/v1/tunnelusage/',
   verificationCode: () => '/api/v1/onetimeverificationcodes/',
   user: () => '/api/v1/users/me/',

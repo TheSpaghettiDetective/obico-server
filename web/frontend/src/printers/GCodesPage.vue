@@ -284,7 +284,7 @@
 
       removeItem(id) {
         axios
-          .delete(urls.gcodes() + `${id}/`, )
+          .delete(urls.gcode(id), )
           .then(() => {
             for (let i = 0; i < this.gcodes.length; i++) {
               const deleted = this.gcodes[i]

@@ -43,16 +43,6 @@
           <div class="col-sm-12 col-lg-10">
             <div class="gcodes-wrapper">
               <div class="control-panel">
-                <div class="entries-number">
-                  <span class="text">Show</span>
-                  <select v-model="pageLimit">
-                    <option :value="10">10</option>
-                    <option :value="25">25</option>
-                    <option :value="50">50</option>
-                    <option :value="100">100</option>
-                  </select>
-                  <span class="text">entries</span>
-                </div>
                 <div class="entries-search">
                   <span class="text">Search:</span>
                   <input type="text" v-model="searchTerm">
@@ -97,7 +87,7 @@
               </div>
 
               <div class="gcode-items-wrapper">
-                <div v-for="item in PageGCodes" :key="item.id" class="item">
+                <div v-for="item in gcodesToShow" :key="item.id" class="item">
                   <div class="item-info">
                     <div class="filename">{{ item.filename }}</div>
                     <div class="filesize">{{ item.filesize }}</div>
@@ -111,25 +101,10 @@
                 </div>
               </div>
 
-              <!-- Pagination info -->
-              <div class="pagination-panel">
-                <div class="items-number">
-                  Showing
-                  {{ ((currentPage - 1) * pageLimit + 1) }}
-                  to
-                  {{ Math.min(gcodesToShow.length, (((currentPage - 1) * pageLimit) + pageLimit)) }}
-                  of
-                  {{ gcodesToShow.length }}
-                  entries
-                </div>
-                <div class="controls">
-                  <b-pagination
-                    v-model="currentPage"
-                    :total-rows="rows"
-                    :per-page="pageLimit"
-                  ></b-pagination>
-                </div>
-              </div>
+              <mugen-scroll :handler="fetchGCodes" :should-handle="!loading" class="text-center p-4">
+                <div v-if="noMoreData" class="text-center p-2">End of your G-Codes list.</div>
+                <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+              </mugen-scroll>
             </div>
           </div>
         </div>
@@ -147,6 +122,7 @@
   import axios from 'axios'
   import moment from 'moment'
   import filesize from 'filesize'
+  import MugenScroll from 'vue-mugen-scroll'
 
   const SORTING = {
     NAME: 1,
@@ -166,6 +142,7 @@
       Navbar,
       PullToReveal,
       vueDropzone: vue2Dropzone,
+      MugenScroll,
     },
 
     props: {
@@ -185,29 +162,19 @@
           url: 'upload/',
           headers: { 'X-CSRFToken': this.csrf },
         },
-        gcodes: null,
+        gcodes: [],
         searchTerm: '',
-        pageLimit: 10,
         activeSorting: SORTING.NAME,
         sortDirection: SORT_DIRECTION.ASC,
         sorting: SORTING,
         direction: SORT_DIRECTION,
         currentPage: 1,
-
+        loading: false,
+        noMoreData: false,
       }
     },
 
     computed: {
-      rows() {
-        return this.gcodesToShow.length
-      },
-
-      PageGCodes() {
-        const startIndex = (this.currentPage - 1) * this.pageLimit
-        const endIndex = startIndex + this.pageLimit
-        return this.gcodesToShow.slice(startIndex, endIndex)
-      },
-
       gcodesToShow() {
         let gcodes = this.gcodes
 
@@ -273,21 +240,36 @@
 
     methods: {
       gcodeUploadSuccess() {
-        this.fetchGCodes()
-        this.$refs.gcodesDropzone.removeAllFiles()
+        location.reload()
       },
 
       fetchGCodes() {
-        return axios
-          .get(urls.gcodes())
-          .then(response => {
-            let gcodeFiles = response.data
+        if (this.noMoreData) {
+          return
+        }
 
-            gcodeFiles.forEach(function (gcodeFile) {
-              gcodeFile.uploaded = moment(gcodeFile.created_at).fromNow()
-              gcodeFile.filesize = filesize(gcodeFile.num_bytes)
-            })
-            this.gcodes = gcodeFiles
+        this.loading = true
+
+        return axios
+          .get(urls.gcodesPage(this.currentPage))
+          .then(response => {
+            this.loading = false
+
+            this.noMoreData = response.data.next === null
+            let gcodeFiles = response.data.results
+
+            if (gcodeFiles) {
+              gcodeFiles.forEach(function (gcodeFile) {
+                gcodeFile.uploaded = moment(gcodeFile.created_at).fromNow()
+                gcodeFile.filesize = filesize(gcodeFile.num_bytes)
+              })
+
+              this.gcodes.push(...gcodeFiles)
+              this.currentPage += 1
+            }
+          }).catch(err => {
+            console.log(err)
+            this.noMoreData = true
           })
       },
 
@@ -305,8 +287,19 @@
           .delete(urls.gcodes() + `${id}/`, )
           .then(() => {
             for (let i = 0; i < this.gcodes.length; i++) {
-              if (this.gcodes[i].id === id) {
+              const deleted = this.gcodes[i]
+
+              if (deleted.id === id) {
                 this.gcodes.splice(i, 1)
+
+                // Toast for user
+                let toastHtml = ''
+                toastHtml += `<h6 class="text-danger">${deleted.filename} successfully deleted!</h6>`
+
+                this.$swal.Toast.fire({
+                  // icon: 'success',
+                  html: toastHtml,
+                })
               }
             }
           })
@@ -323,35 +316,23 @@
     padding: 2em
 
   .control-panel
-    display: flex
-    justify-content: space-between
     border-bottom: 1px solid theme.$table-border-color
     padding-bottom: 16px
-
-    .entries-number
-      select
-        margin: 0 0.5em
-        background-color: theme.$gray-200
-        border: 1px solid theme.$gray-200
-        color: theme.$white
-        border-radius: 3px
-        padding: .2em
-        outline: none
-
-        &:focus
-          border-color: theme.$white
     
     .entries-search
-      text-align: right
+      display: flex
+      justify-content: space-between
+      align-items: center
+      margin-top: 0
 
       input
         background-color: theme.$gray-200
         border: 1px solid theme.$gray-200
         color: theme.$white
-        margin-left: .5em
         border-radius: 3px
         outline: none
         padding: .2em .5em
+        width: calc(100% - 70px)
 
         &:focus
           border-color: theme.$white
@@ -362,7 +343,6 @@
       
       .entries-search
         text-align: left
-        margin-top: 16px
 
   .sorting-panel
     display: flex
@@ -449,22 +429,22 @@
           div
             margin-left: 0
         
-  .pagination-panel
-    display: flex
-    align-items: center
-    justify-content: space-between
-    padding-top: 2em
+  // .pagination-panel
+  //   display: flex
+  //   align-items: center
+  //   justify-content: space-between
+  //   padding-top: 2em
 
-    ::v-deep button
-      border-radius: 0
+  //   ::v-deep button
+  //     border-radius: 0
 
-    ul
-      margin-bottom: 0
+  //   ul
+  //     margin-bottom: 0
     
-    @media (max-width: 768px)
-      &
-        flex-direction: column
+  //   @media (max-width: 768px)
+  //     &
+  //       flex-direction: column
 
-      div + div
-        margin-top: 1em
+  //     div + div
+  //       margin-top: 1em
 </style>

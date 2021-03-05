@@ -50,7 +50,13 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   self.setWebRTC = function(webrtc) {
     self.webrtc = webrtc
     self.webrtc.callbacks.onData = (jsonData) => {
-        const msg = JSON.parse(jsonData)
+        let msg = {}
+        try {
+            msg = JSON.parse(jsonData)
+        } catch (error) {
+            console.log(msg)
+            throw(error)
+        }
         if ('ref' in msg && 'ret' in msg) {
             self.onPassThruReceived(msg)
             return

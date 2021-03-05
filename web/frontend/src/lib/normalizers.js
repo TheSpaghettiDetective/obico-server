@@ -1,5 +1,6 @@
 import moment from 'moment'
 import get from 'lodash/get'
+import filesize from 'filesize'
 
 export const toMomentOrNull = datetimeStr => {
   if (!datetimeStr) {
@@ -14,6 +15,14 @@ export const normalizedPrint = print => {
   print.uploaded_at = toMomentOrNull(print.uploaded_at)
   print.has_alerts = Boolean(print.alerted_at)
   return print
+}
+
+export const normalizedGcode = gcode => {
+  gcode.created_at = toMomentOrNull(gcode.created_at)
+  gcode.updated_at = toMomentOrNull(gcode.updated_at)
+  gcode.deleted = toMomentOrNull(gcode.deleted)
+  gcode.filesize = filesize(gcode.num_bytes)
+  return gcode
 }
 
 export const normalizedPrinter = (newData, oldData) => {
@@ -58,3 +67,4 @@ export const getNormalizedP = (predictions, currentPosition, isPublic) => {
       const propName = isPublic ? 'p' : 'fields.normalized_p'
       return get(predictions[num], `${propName}`, 0)
 }
+

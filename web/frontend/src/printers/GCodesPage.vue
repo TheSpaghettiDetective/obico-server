@@ -91,7 +91,7 @@
                   <div class="item-info">
                     <div class="filename">{{ item.filename }}</div>
                     <div class="filesize">{{ item.filesize }}</div>
-                    <div class="uploaded">{{ item.uploaded }}</div>
+                    <div class="uploaded">{{ item.created_at.fromNow() }}</div>
                   </div>
                   <div class="remove-button-wrapper">
                     <div class="remove-button" @click="removeItem(item.id)">
@@ -120,9 +120,8 @@
   import 'vue2-dropzone/dist/vue2Dropzone.min.css'
   import urls from '@lib/server_urls'
   import axios from 'axios'
-  import moment from 'moment'
-  import filesize from 'filesize'
   import MugenScroll from 'vue-mugen-scroll'
+  import { normalizedGcode} from '../lib/normalizers'
 
   const SORTING = {
     NAME: 1,
@@ -217,8 +216,8 @@
 
           case SORTING.UPLOADED:
             gcodes.sort(function(a, b) {
-              const uploadedA = moment(a.created_at).unix()
-              const uploadedB = moment(b.created_at).unix()
+              const uploadedA = a.created_at.unix()
+              const uploadedB = b.created_at.unix()
 
               if (sortDirection === SORT_DIRECTION.ASC) {
                 return uploadedA - uploadedB
@@ -240,7 +239,12 @@
 
     methods: {
       gcodeUploadSuccess() {
-        location.reload()
+        this.$refs.gcodesDropzone.removeAllFiles()
+
+        this.gcodes = []
+        this.currentPage = 1
+        this.noMoreData = false
+        this.fetchGCodes()
       },
 
       fetchGCodes() {
@@ -259,12 +263,7 @@
             let gcodeFiles = response.data.results
 
             if (gcodeFiles) {
-              gcodeFiles.forEach(function (gcodeFile) {
-                gcodeFile.uploaded = moment(gcodeFile.created_at).fromNow()
-                gcodeFile.filesize = filesize(gcodeFile.num_bytes)
-              })
-
-              this.gcodes.push(...gcodeFiles)
+              this.gcodes.push(...gcodeFiles.map(data => normalizedGcode(data)))
               this.currentPage += 1
             }
           }).catch(err => {
@@ -428,23 +427,4 @@
 
           div
             margin-left: 0
-
-  // .pagination-panel
-  //   display: flex
-  //   align-items: center
-  //   justify-content: space-between
-  //   padding-top: 2em
-
-  //   ::v-deep button
-  //     border-radius: 0
-
-  //   ul
-  //     margin-bottom: 0
-
-  //   @media (max-width: 768px)
-  //     &
-  //       flex-direction: column
-
-  //     div + div
-  //       margin-top: 1em
 </style>

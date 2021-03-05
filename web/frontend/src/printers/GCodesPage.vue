@@ -204,7 +204,7 @@
               return 0
             })
             break
-          
+
           case SORTING.SIZE:
             gcodes.sort(function(a, b) {
               if (sortDirection === SORT_DIRECTION.ASC) {
@@ -214,7 +214,7 @@
               }
             })
             break
-          
+
           case SORTING.UPLOADED:
             gcodes.sort(function(a, b) {
               const uploadedA = moment(a.created_at).unix()
@@ -251,7 +251,7 @@
         this.loading = true
 
         return axios
-          .get(urls.gcodesPage(this.currentPage))
+          .get(urls.gcodes(this.currentPage))
           .then(response => {
             this.loading = false
 
@@ -318,7 +318,7 @@
   .control-panel
     border-bottom: 1px solid theme.$table-border-color
     padding-bottom: 16px
-    
+
     .entries-search
       display: flex
       justify-content: space-between
@@ -336,11 +336,11 @@
 
         &:focus
           border-color: theme.$white
-    
+
     @media (max-width: 768px)
       &
         flex-direction: column
-      
+
       .entries-search
         text-align: left
 
@@ -366,22 +366,22 @@
       .direction
         font-size: .8rem
         opacity: .3
-    
+
     .sorting-option.active .direction
       opacity: 1
-    
+
     @media (max-width: 768px)
       &
         flex-direction: column
         padding: 1em 0
-      
+
       .sorting-option
         margin-left: 0
         margin-bottom: 4px
-      
+
       .remove-button-placeholder
         display: none
-  
+
   .gcode-items-wrapper
     .item
       display: flex
@@ -394,7 +394,7 @@
       .item-info
         display: flex
         width: 100%
-        
+
         div
           flex: 1
           margin-left: 30px
@@ -413,7 +413,7 @@
         &:hover
           background-color: theme.$danger
           cursor: pointer
-      
+
       @media (max-width: 768px)
         &
           padding: .6em 0
@@ -428,7 +428,7 @@
 
           div
             margin-left: 0
-        
+
   // .pagination-panel
   //   display: flex
   //   align-items: center
@@ -440,7 +440,7 @@
 
   //   ul
   //     margin-bottom: 0
-    
+
   //   @media (max-width: 768px)
   //     &
   //       flex-direction: column

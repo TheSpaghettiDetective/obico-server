@@ -12,6 +12,8 @@ from django.conf import settings
 from django.http import HttpRequest
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework.pagination import PageNumberPagination
+
 
 import requests
 
@@ -29,6 +31,9 @@ from config.celery import celery_app
 
 PREDICTION_FETCH_TIMEOUT = 20
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 6
+    page_size_query_param = 'page_size'
 
 class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
@@ -240,9 +245,27 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = GCodeFileSerializer
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')
+
+    # TODO: remove this override and go back to DRF's standard pagination impl when we no longer need to support the legacy format.
+    def list(self, request, *args, **kwargs):
+        page_num = request.GET.get('page')
+        if page_num:
+            queryset = self.filter_queryset(self.get_queryset())
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            results = self.get_queryset()
+            return Response(self.serializer_class(results, many=True).data)
 
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,

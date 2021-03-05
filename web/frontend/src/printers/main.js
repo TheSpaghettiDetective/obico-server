@@ -15,6 +15,7 @@ import PrinterSettingsPage from './PrinterSettingsPage.vue'
 import PrinterWizardPage from './PrinterWizardPage.vue'
 import PrinterControlPage from './PrinterControlPage.vue'
 import SharePrinter from './SharePrinter.vue'
+import GCodesPage from './GCodesPage.vue'
 
 if (document.getElementById('navbar-mount')) {
   new Vue({
@@ -56,4 +57,10 @@ if (document.getElementById('share-printer-mount')) {
   new Vue({
     components: { SharePrinter }
   }).$mount('#share-printer-mount')
+}
+
+if (document.getElementById('gcodes-page-mount')) {
+  new Vue({
+    components: { GCodesPage }
+  }).$mount('#gcodes-page-mount')
 }

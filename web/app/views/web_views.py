@@ -223,9 +223,7 @@ def consent(request):
 
 @login_required
 def gcodes(request, template_dir=None):
-    gcodes = GCodeFile.objects.filter(user=request.user)
-
-    return render(request, get_template_path('gcode_files', template_dir), dict(gcodes=gcodes))
+    return render(request, get_template_path('gcode_files', template_dir))
 
 
 @login_required

@@ -549,9 +549,9 @@ export default {
 
       axios
         .get(
-          urls.gcodes(),
+          urls.gcodes(1, 500),
         ).then((response) => {
-          let gcodeFiles = response.data
+          let gcodeFiles = response.data.results
           gcodeFiles.forEach(function (gcodeFile) {
             gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
             gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)

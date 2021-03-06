@@ -44,8 +44,10 @@
             <div class="gcodes-wrapper">
               <div class="control-panel">
                 <div class="entries-search">
-                  <span class="text">Search:</span>
-                  <input type="text" v-model="searchTerm">
+                  <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                  </div>
+                  <input type="text" v-model="searchTerm" placeholder="Search">
                 </div>
               </div>
 
@@ -319,19 +321,32 @@
     padding-bottom: 16px
 
     .entries-search
-      display: flex
-      justify-content: space-between
-      align-items: center
       margin-top: 0
+      position: relative
+      height: 34px
+
+      .search-icon
+        position: absolute
+        top: 0
+        line-height: 34px
+        left: .5em
+        opacity: .8
 
       input
         background-color: theme.$gray-200
         border: 1px solid theme.$gray-200
         color: theme.$white
-        border-radius: 3px
         outline: none
-        padding: .2em .5em
-        width: calc(100% - 70px)
+        padding: .2em .5em .2em 2em
+        width: 100%
+        height: 100%
+
+        &::placeholder
+          color: theme.$gray-600
+
+        &:after
+          // content: ""
+
 
         &:focus
           border-color: theme.$white

@@ -1,8 +1,13 @@
 <template>
   <div>
-    <search-input v-model="searchText"></search-input>
+    <div class="control-panel">
+      <search-input v-model="searchText" class="search-input"></search-input>
+      <a role="button" class="btn btn-outline-primary" href="/gcodes/" title="Upload more G-Code">
+        <i class="fas fa-upload fa-lg mx-2"></i>
+      </a>
+    </div>
     <br>
-    <div>
+    <div v-if="gcodeFiles.length">
       <div
         v-for="gcf in visibleGcodeFiles"
         :key="gcf.id"
@@ -14,8 +19,8 @@
             {{ gcf.filename }}
             </strong>
             <small class="gcode-info mt-1" style="display: flex; flex-wrap: wrap;">
-              <div class="pr-3"><span class="text-muted">Size: </span> {{ gcf.num_bytes }}</div>
-              <div><span class="text-muted">Uploaded: </span> {{ gcf.created_at }}</div>
+              <div class="pr-3"><span class="text-muted">Size: </span> {{ gcf.filesize }}</div>
+              <div><span class="text-muted">Uploaded: </span> {{ gcf.created_at.fromNow() }}</div>
             </small>
           </div>
           <button
@@ -26,15 +31,9 @@
           </button>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-body" style="display: flex; justify-content: space-between;">
-          <a type="button" href="/gcodes/" class="btn btn-primary btn-block">
-            <i class="fas fa-upload"></i>
-            &nbsp;Upload more G-Code
-          </a>
-        </div>
-      </div>
+    </div>
+    <div v-else>
+      <p class="text-center font-weight-bold my-3">No G-Codes yet. You can upload them <a href="/gcodes/">here</a>.</p>
     </div>
   </div>
 </template>
@@ -45,7 +44,7 @@ import SearchInput from '@common/SearchInput.vue'
 export default {
   name: 'StartPrint',
   components: {
-    SearchInput
+    SearchInput,
   },
   props: {
     gcodeFiles: {
@@ -60,7 +59,7 @@ export default {
   data() {
     return {
       searchText: '',
-      isSending: false
+      isSending: false,
     }
   },
   computed: {
@@ -74,7 +73,19 @@ export default {
     onSendPrintClicked(gcodeFileId) {
       this.isSending = true
       this.onGcodeFileSelected(this.gcodeFiles, gcodeFileId)
-    }
+    },
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.control-panel
+  display: flex
+
+  .search-input
+    flex: 1
+
+  .btn
+    margin-left: 10px
+    flex: 0 0 auto
+</style>

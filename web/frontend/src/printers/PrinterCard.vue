@@ -236,12 +236,11 @@
 import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
 import moment from 'moment'
-import filesize from 'filesize'
 import filter from 'lodash/filter'
 import axios from 'axios'
 
 import urls from '@lib/server_urls'
-import { normalizedPrinter } from '@lib/normalizers'
+import { normalizedPrinter, normalizedGcode } from '@lib/normalizers'
 import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'
 import Gauge from '@common/Gauge'
@@ -549,13 +548,9 @@ export default {
 
       axios
         .get(
-          urls.gcodes(1, 500),
+          urls.gcodes(1, 1000),
         ).then((response) => {
-          let gcodeFiles = response.data.results
-          gcodeFiles.forEach(function (gcodeFile) {
-            gcodeFile.created_at = moment(gcodeFile.created_at).fromNow()
-            gcodeFile.num_bytes = filesize(gcodeFile.num_bytes)
-          })
+          let gcodeFiles = [...response.data.results.map(gcode => normalizedGcode(gcode))]
 
           this.$swal.openModalWithComponent(
             StartPrint,
@@ -566,7 +561,7 @@ export default {
             {
               title: 'Print on ' + this.printer.name,
               showConfirmButton: false,
-              showCancelButton: true,
+              showCloseButton: true,
             }
           )
         })

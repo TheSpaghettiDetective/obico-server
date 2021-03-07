@@ -30,12 +30,14 @@
 
   .search-wrapper
     position: relative
-    height: 35px
 
     .search-icon
+      height: 100%
+      display: flex
+      flex-direction: column
+      justify-content: center
       position: absolute
       top: 0
-      line-height: 35px
       left: .5em
       opacity: .8
 

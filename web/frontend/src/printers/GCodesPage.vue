@@ -43,7 +43,7 @@
           <div class="col-sm-12 col-lg-10">
             <div class="gcodes-wrapper">
               <div class="control-panel">
-                <search-input v-model="searchText"></search-input>
+                <search-input v-model="searchText" class="search-input"></search-input>
               </div>
 
               <div class="sorting-panel">
@@ -316,43 +316,8 @@
     border-bottom: 1px solid theme.$table-border-color
     padding-bottom: 16px
 
-    .entries-search
-      margin-top: 0
-      position: relative
-      height: 34px
-
-      .search-icon
-        position: absolute
-        top: 0
-        line-height: 34px
-        left: .5em
-        opacity: .8
-
-      input
-        background-color: theme.$gray-200
-        border: 1px solid theme.$gray-200
-        color: theme.$white
-        outline: none
-        padding: .2em .5em .2em 2em
-        width: 100%
-        height: 100%
-
-        &::placeholder
-          color: theme.$gray-600
-
-        &:after
-          // content: ""
-
-
-        &:focus
-          border-color: theme.$white
-
-    @media (max-width: 768px)
-      &
-        flex-direction: column
-
-      .entries-search
-        text-align: left
+    .search-input
+      height: 35px
 
   .sorting-panel
     display: flex

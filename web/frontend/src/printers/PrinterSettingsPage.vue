@@ -107,10 +107,9 @@
                     <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                   </div>
                   <number-input
-                    :value="printer.retract_on_pause"
+                    v-model="retractOnPause"
                     :step=".5"
                     :disable="!retractFilamentByEnabled"
-                    @change-value="changeRetractOnPause"
                   ></number-input>
                 </div>
               </saving-animation>
@@ -122,10 +121,9 @@
                     <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                   </div>
                   <number-input
-                    :value="printer.lift_z_on_pause"
+                    v-model="liftExtruderBy"
                     :step=".5"
                     :disable="!liftExtruderByEnabled"
-                    @change-value="changeLiftExtruderBy"
                   ></number-input>
                 </div>
               </saving-animation>
@@ -261,6 +259,16 @@ export default {
         this.updateSetting('retract_on_pause')
       },
     },
+    retractOnPause: {
+      get() {
+        return this.printer ? this.printer.retract_on_pause : null
+      },
+      set(newValue) {
+        if (this.printer) {
+          this.printer.retract_on_pause = newValue
+        }
+      }
+    },
     liftExtruderByEnabled: {
       get(){
         return this.printer.lift_z_on_pause > 0
@@ -273,6 +281,16 @@ export default {
         }
         this.updateSetting('lift_z_on_pause')
       },
+    },
+    liftExtruderBy: {
+      get() {
+        return this.printer ? this.printer.lift_z_on_pause : null
+      },
+      set(newValue) {
+        if (this.printer) {
+          this.printer.lift_z_on_pause = newValue
+        }
+      }
     },
     integrationUrl() {
       return `/printers/${this.printerId}/integration/`
@@ -296,6 +314,16 @@ export default {
     printerName: function (newValue, oldValue) {
       if (oldValue !== null) {
         this.updateSetting('name')
+      }
+    },
+    retractOnPause: function(newValue, oldValue) {
+      if (oldValue !== null) {
+        this.changeRetractOnPause(newValue)
+      }
+    },
+    liftExtruderBy: function(newValue, oldValue) {
+      if (oldValue !== null) {
+        this.changeLiftExtruderBy(newValue)
       }
     },
   },

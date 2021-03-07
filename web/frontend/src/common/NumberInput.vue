@@ -5,8 +5,8 @@
         class="btn btn-outline-secondary control-button"
         type="button"
         @click="
-          value = value > 0 ? Math.round((value - step) * 10) / 10 : 0;
-          $emit('change-value', value);
+          inputValue = inputValue > 0 ? Math.round((inputValue - step) * 10) / 10 : 0;
+          $emit('input', inputValue);
         "
         :disabled="disable"
       >↓</button>
@@ -16,15 +16,16 @@
       class="form-control text-center field_required"
       disabled
       aria-describedby="basic-addon1"
-      :value="value + ' mm'"
-      :style="{opacity: disable ? .3 : 1}">
+      :value="inputValue + ' mm'"
+      :style="{opacity: disable ? .3 : 1}"
+    >
     <div class="input-group-append">
       <button
         class="btn btn-outline-secondary control-button"
         type="button"
         @click="
-          value = Math.round((value + step) * 10) / 10;
-          $emit('change-value', value);
+          inputValue = Math.round((inputValue + step) * 10) / 10;
+          $emit('input', inputValue);
         "
         :disabled="disable"
       >↑</button>
@@ -49,6 +50,18 @@
         type: Boolean,
         default: false
       },
+    },
+
+    data() {
+      return {
+        inputValue: this.value
+      }
+    },
+
+    watch: {
+      value(newValue) {
+        this.inputValue = newValue
+      }
     },
   }
 </script>

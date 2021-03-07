@@ -92,15 +92,22 @@ export default {
     },
 
     destroyEnabled() {
-      window.removeEventListener('scroll', this.handleScroll)
-      document.querySelector('body').style.minHeight = ''
+      if (window) {
+        window.removeEventListener('scroll', this.handleScroll)
+      }
 
-      const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
-      const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
+      if (document) {
+        document.querySelector('body').style.minHeight = ''
+      }
 
-      elem.style.transition = 'none'
-      spaceholder.style.transition = 'none'
-      elem.style.top = '-999px'
+      if (this.$refs.pullToRevealWrapper) {
+        const elem = this.$refs.pullToRevealWrapper.querySelector('.pull-to-reveal')
+        elem.style.transition = 'none'
+        elem.style.top = '-999px'
+
+        const spaceholder = this.$refs.pullToRevealWrapper.querySelector('.spaceholder')
+        spaceholder.style.transition = 'none'
+      }
     },
 
     initDisabled() {
@@ -125,13 +132,19 @@ export default {
     },
 
     destroyDisabled() {
-      const showingEdge = this.$refs.pullToRevealWrapper.querySelector('.showing-edge')
-      showingEdge.style.display = 'block'
+      const showingEdge = this.$refs.pullToRevealWrapper
+      if (showingEdge) {
+        showingEdge.querySelector('.showing-edge').style.display = 'block'
+      }
 
       const staticWrapper = this.$refs.staticWrapper
-      staticWrapper.style.display = 'none'
+      if (staticWrapper) {
+        staticWrapper.style.display = 'none'
+      }
 
-      document.querySelector('body').style.paddingTop = 0
+      if (document) {
+        document.querySelector('body').style.paddingTop = 0
+      }
     },
 
     handleScroll() {

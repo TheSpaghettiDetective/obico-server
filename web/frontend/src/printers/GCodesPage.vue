@@ -26,7 +26,7 @@
               id="dropzone"
               :options="dropzoneOptions"
               :useCustomSlot="true"
-              @vdropzone-success="gcodeUploadSuccess"
+              @vdropzone-queue-complete="gcodeUploadSuccess"
               ref="gcodesDropzone"
             >
               <div class="dz-message needsclick">
@@ -160,12 +160,12 @@
           url: 'upload/',
           headers: { 'X-CSRFToken': this.csrf },
         },
-        gcodes: [],
         searchText: '',
         activeSorting: SORTING.NAME,
         sortDirection: SORT_DIRECTION.ASC,
         sorting: SORTING,
         direction: SORT_DIRECTION,
+        gcodes: [],
         currentPage: 1,
         loading: false,
         noMoreData: false,

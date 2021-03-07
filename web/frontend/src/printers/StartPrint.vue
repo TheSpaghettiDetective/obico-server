@@ -1,12 +1,6 @@
 <template>
   <div>
-    <input
-      class="form-control"
-      id="myInput"
-      type="text"
-      placeholder="Search file name ..."
-      v-model="searchText"
-    >
+    <search-input v-model="searchText"></search-input>
     <br>
     <div>
       <div
@@ -46,9 +40,13 @@
 </template>
 
 <script>
+import SearchInput from '@common/SearchInput.vue'
 
 export default {
   name: 'StartPrint',
+  components: {
+    SearchInput
+  },
   props: {
     gcodeFiles: {
       type: Array,

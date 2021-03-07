@@ -43,12 +43,7 @@
           <div class="col-sm-12 col-lg-10">
             <div class="gcodes-wrapper">
               <div class="control-panel">
-                <div class="entries-search">
-                  <div class="search-icon">
-                    <i class="fas fa-search"></i>
-                  </div>
-                  <input type="text" v-model="searchTerm" placeholder="Search">
-                </div>
+                <search-input v-model="searchText"></search-input>
               </div>
 
               <div class="sorting-panel">
@@ -124,6 +119,7 @@
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode} from '../lib/normalizers'
+  import SearchInput from '@common/SearchInput.vue'
 
   const SORTING = {
     NAME: 1,
@@ -144,6 +140,7 @@
       PullToReveal,
       vueDropzone: vue2Dropzone,
       MugenScroll,
+      SearchInput,
     },
 
     props: {
@@ -164,7 +161,7 @@
           headers: { 'X-CSRFToken': this.csrf },
         },
         gcodes: [],
-        searchTerm: '',
+        searchText: '',
         activeSorting: SORTING.NAME,
         sortDirection: SORT_DIRECTION.ASC,
         sorting: SORTING,
@@ -183,9 +180,8 @@
           return []
         }
 
-        if (this.searchTerm) {
-          gcodes = gcodes.filter(item => item.filename.match(this.searchTerm))
-        }
+        const query = this.searchText.toLowerCase()
+        gcodes = gcodes.filter((gcf) => gcf.filename.toLowerCase().indexOf(query) > -1)
 
         const sortDirection = this.sortDirection
 

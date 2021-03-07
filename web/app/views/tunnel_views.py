@@ -6,8 +6,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import condition
 from django.utils.timezone import now
 from django.conf import settings
+from django.utils.http import parse_etags
+
 import zlib
 
 from lib.view_helpers import get_printer_or_404, get_template_path
@@ -18,20 +21,64 @@ import logging
 logger = logging.getLogger()
 
 
+PLUGIN_STATIC_RE = re.compile(r'/plugin/[\w_-]+/static/')
+URL_PREFIX = '/octoprint/{pk}'
+
+
+def should_cache(path):
+    return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path)
+
+
+def fix_etag(etag):
+    return f'"{etag}"' if etag and '"' not in etag else etag
+
+
 @login_required
 def tunnel(request, pk, template_dir=None):
     printer = get_printer_or_404(pk, request)
     return render(request, get_template_path('tunnel', template_dir), {'printer': printer})
 
 
+def fetch_static_etag(request, pk, *args, **kwargs):
+    prefix = URL_PREFIX.format(pk=pk)
+    path = request.get_full_path()[len(prefix):]
+
+    if should_cache(path):
+        cached_etag = cache.octoprinttunnel_get_etag(pk, path)
+        if cached_etag:
+            return cached_etag
+
+    return None
+
+
+def save_static_etag(func):
+    @functools.wraps(func)
+    def inner(request, pk, *args, **kwargs):
+        response = func(request, pk, *args, **kwargs)
+
+        if response.status_code in (200, 304):
+            prefix = URL_PREFIX.format(pk=pk)
+            path = request.get_full_path()[len(prefix):]
+
+            if should_cache(path):
+                etag = fix_etag(response.get('Etag', ''))
+                if etag:
+                    cache.octoprinttunnel_update_etag(pk, path, etag)
+
+        return response
+    return inner
+
+
 @csrf_exempt
 @login_required
+@save_static_etag
+@condition(etag_func=fetch_static_etag)
 def octoprint_http_tunnel(request, pk):
     get_printer_or_404(pk, request)
     if request.user.tunnel_usage_over_cap():
         return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><h3 style="color: red;">Your month-to-date usage of OctoPrint Tunneling is over the free limit. Upgrade to The Spaghetti Detective Pro plan for unlimited tunneling, or wait for the reset of free limit at the start of the next month.</h3></center></body></html>', status=412)
 
-    prefix = f'/octoprint/{pk}'
+    prefix = URL_PREFIX.format(pk=pk)
     method = request.method.lower()
     path = request.get_full_path()[len(prefix):]
 
@@ -76,6 +123,10 @@ def octoprint_http_tunnel(request, pk):
     for k, v in data['response']['headers'].items():
         if k in ['Content-Length', 'Content-Encoding']:
             continue
+
+        if k == 'Etag':
+            v = fix_etag(v)
+
         resp[k] = v
 
     url_path = urllib.parse.urlparse(path).path
@@ -86,7 +137,7 @@ def octoprint_http_tunnel(request, pk):
 
     cache.octoprinttunnel_update_stats(
         request.user.id,
-        (len(content)+ 240) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out. 240 bytes header overhead
+        (len(content) + 240) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out. 240 bytes header overhead
     )
 
     if content_type and content_type.startswith('text/html'):
@@ -111,7 +162,6 @@ def octoprint_http_tunnel(request, pk):
                          _rewrite_ws_connect_path, ensure_bytes(content))
 
     resp.write(content)
-
     return resp
 
 

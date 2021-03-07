@@ -3,6 +3,7 @@ from django.utils.timezone import now
 import redis
 import bson
 import json
+from typing import Optional
 
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
@@ -21,6 +22,9 @@ TUNNEL_RSP_EXPIRE_SECS = 60
 
 # sent/received stats expiration
 TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
+
+# etag cache expiration
+TUNNEL_ETAG_EXPIRE_SECS = 3600 * 24 * 3
 
 
 def printer_key_prefix(printer_id):
@@ -63,6 +67,7 @@ def printer_status_get(printer_id, key=None):
         for k, v in status_data.items():
             status_data[k] = json.loads(v)
         return status_data
+
 
 def printer_status_delete(printer_id):
     return REDIS.delete(printer_key_prefix(printer_id) + 'status')
@@ -181,6 +186,20 @@ def octoprinttunnel_update_stats(user_id, delta):
 def octoprinttunnel_get_stats(user_id):
     key = octoprinttunnel_stats_key(now())
     return int(REDIS.hget(key, str(user_id)) or '0')
+
+
+def octoprinttunnel_etag_key(printer_id: int, path: str) -> str:
+    return f'{TUNNEL_PREFIX}.etags.{printer_id}.{path}'
+
+
+def octoprinttunnel_get_etag(printer_id: int, path: str) -> Optional[str]:
+    key = octoprinttunnel_etag_key(printer_id, path)
+    return REDIS.get(key) or None
+
+
+def octoprinttunnel_update_etag(printer_id: int, path: str, etag: str) -> None:
+    key = octoprinttunnel_etag_key(printer_id, path)
+    REDIS.setex(key, TUNNEL_ETAG_EXPIRE_SECS, etag)
 
 
 def print_status_mobile_push_set(print_id, mobile_platform, ex):

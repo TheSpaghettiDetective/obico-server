@@ -46,7 +46,7 @@ def process_print_events(print_id):
 
 @shared_task
 def compile_timelapse(print_id):
-    _print = Print.objects.select_related('printer').get(id=print_id)
+    _print = Print.objects.all_with_deleted().select_related('printer').get(id=print_id)
 
     to_dir = os.path.join(tempfile.gettempdir(), 'tl_' + str(_print.id))
     shutil.rmtree(to_dir, ignore_errors=True)
@@ -96,6 +96,8 @@ def compile_timelapse(print_id):
                 p_json = [{}]
                 num_missing_p_json += 1
                 if num_missing_p_json > 5:
+                    shutil.rmtree(to_dir, ignore_errors=True)
+                    clean_up_print_pics(_print)
                     raise Exception('Too many missing p_json files.')
 
             prediction_json += p_json

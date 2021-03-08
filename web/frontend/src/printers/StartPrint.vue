@@ -80,6 +80,7 @@ export default {
 
 <style lang="sass" scoped>
 .control-panel
+  margin-top: 1rem
   display: flex
 
   .search-input

@@ -559,7 +559,7 @@ export default {
               onGcodeFileSelected: this.onGcodeFileSelected,
             },
             {
-              title: 'Print on ' + this.printer.name,
+              title: 'Start print on "' + this.printer.name + '"',
               showConfirmButton: false,
               showCloseButton: true,
             }

@@ -185,9 +185,6 @@ class Printer(SafeDeleteModel):
     objects = PrinterManager()
     with_archived = SafeDeleteManager()
 
-    if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords(excluded_fields=['updated_at'])
-
     @property
     def status(self):
         return dict_or_none(cache.printer_status_get(self.id))
@@ -532,9 +529,6 @@ class Print(SafeDeleteModel):
     video_archived_at = models.DateTimeField(null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    if os.environ.get('ENALBE_HISTORY', '') == 'True':
-        history = HistoricalRecords(excluded_fields=['updated_at'])
 
     def ended_at(self):
         return self.cancelled_at or self.finished_at

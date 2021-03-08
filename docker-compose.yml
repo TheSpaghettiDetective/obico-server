@@ -30,7 +30,6 @@ x-web-defaults: &web-defaults
     #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
     #TWILIO_AUTH_TOKEN:
     #TWILIO_FROM_NUMBER:
-    #ENALBE_HISTORY:
     #ML_API_TOKEN:
     #SENTRY_DSN:
     #TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token

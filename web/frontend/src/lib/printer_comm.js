@@ -54,8 +54,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
         try {
             msg = JSON.parse(jsonData)
         } catch (error) {
-            console.log(typeof msg)
-            console.log(msg)
+            console.log(jsonData)
             throw(error)
         }
         if ('ref' in msg && 'ret' in msg) {

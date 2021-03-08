@@ -35,7 +35,13 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   self.connect = function() {
     self.ws = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri)
     self.ws.onmessage = function (e) {
-      var msg = JSON.parse(e.data)
+      let msg = {}
+      try {
+          msg = JSON.parse(e.data)
+      } catch (error) {
+          console.log(e.data)
+          throw(error)
+      }
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
       } else {

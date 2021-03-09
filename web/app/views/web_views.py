@@ -61,7 +61,7 @@ def printers(request):
 @login_required
 def edit_printer(request, pk, template_dir=None):
     if pk == 'wizard':
-        return render(request, get_template_path('new_printer_wizard', template_dir))
+        return render(request, get_template_path('printer_wizard', template_dir))
     else:
         return render(request, get_template_path('printer_settings', template_dir))
 

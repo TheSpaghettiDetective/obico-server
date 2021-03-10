@@ -8,11 +8,7 @@
 {% endblock navbar %}
 
 <div id="octoprint-tunnel-mount">
-  <octo-print-tunnel-page
-  :printer-id={{ printer.id }}
-  :is-pro={{ printer.user.is_pro|yesno:"true,false" }}
-  :usage-cap={{ settings.OCTOPRINT_TUNNEL_CAP }}
-  >
+  <octo-print-tunnel-page>
   </octo-print-tunnel-page>
 </div>
 

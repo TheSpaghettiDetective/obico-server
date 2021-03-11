@@ -102,8 +102,10 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   // Helper methods
 
   self.ensureWebsocketClosed = function() {
-    self.ws.onclose = function () {
-      self.ws = null
+    self.ws.onclose = function (ev) {
+      if (self.ws === ev.target) {
+        self.ws = null
+      }
     }
     self.ws.onerror = function () {
       self.ws.close()

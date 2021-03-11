@@ -305,12 +305,11 @@ export default {
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
       (data) => {
-        this.$emit('PrinterUpdated', normalizedPrinter(data, this.printer))
+        this.$emit('PrinterUpdated', this.updatedPrinter(data))
       },
       (printerStatus) => {
-        this.$emit('PrinterUpdated', normalizedPrinter(
-            {status: printerStatus.octoprint_data}, this.printer
-          ))
+        this.$emit('PrinterUpdated', this.updatedPrinter(
+            {status: printerStatus.octoprint_data}))
       }
     )
     this.printerComm.connect()
@@ -398,6 +397,9 @@ export default {
   },
 
   methods: {
+    updatedPrinter(newData) {
+      return normalizedPrinter(newData, this.printer)
+    },
     shareUrl() {
       return `/printers/${this.printer.id}/share/`
     },

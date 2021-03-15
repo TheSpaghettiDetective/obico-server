@@ -68,14 +68,13 @@
       v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isIdle()"
       class="col-sm-6"
     >
-      <a
+      <button
         type="button"
-        role="button"
         class="btn btn-outline-secondary btn-block mt-2 mb-2"
         @click="$emit('PrinterActionControlClicked', $event)"
       >
         <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
-      </a>
+      </button>
     </div>
   </div>
   <div class="row my-2" v-if="!printer.isOffline() && printer.isDisconnected()">

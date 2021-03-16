@@ -108,7 +108,9 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       }
     }
     self.ws.onerror = function () {
-      self.ws.close()
+      if (self.ws) {
+        self.ws.close()
+      }
     }
   }
 

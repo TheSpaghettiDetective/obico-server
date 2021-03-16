@@ -214,7 +214,7 @@ export default {
       this.$swal({
         title: 'Webcam stream buffering',
         html: `
-          <p>When you see the messaging about webcam stream is "buffering" occassionaly, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:</p>
+          <p>When you see the messaging about webcam stream is "buffering" occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:</p>
           <p class="lead">1. A constricted video stream on <strong>your Raspberry Pi. The most common reasons are:</p>
           <ul>
             <li>Camera resolution is set too high.</li>

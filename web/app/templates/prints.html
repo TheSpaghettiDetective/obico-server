@@ -7,8 +7,7 @@
 
 {% block content %}
 <div id="prints-mount">
-  <prints-page>
-  </prints-page>
+  <prints-page :app-platform="'{{ app_platform }}'"></prints-page>
 </div>
 
 {% bundle 'prints' %}

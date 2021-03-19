@@ -17,9 +17,8 @@
 
     <div v-else class="row">
       <div class="col-12">
-
         <!-- Dropzone -->
-        <div class="row my-3 justify-content-center">
+        <div v-if="appPlatform !=='ios'" class="row my-3 justify-content-center">
           <div class="col-sm-12 col-lg-10">
             <vue-dropzone
               class="upload-box"
@@ -145,6 +144,10 @@
 
     props: {
       csrf: {
+        type: String,
+        requeired: true,
+      },
+      appPlatform: {
         type: String,
         requeired: true,
       },

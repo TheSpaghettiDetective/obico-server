@@ -11,7 +11,7 @@
       sticky-side="both"
       on-stick="onMenuStick"
     >
-      <a role="button" class="btn btn-outline-primary" href="/prints/upload/">
+      <a v-if="appPlatform !=='ios'" role="button" class="btn btn-outline-primary" href="/prints/upload/">
         <i class="fas fa-upload fa-lg mx-2"></i>
       </a>
       <div>
@@ -151,6 +151,12 @@ export default {
       fullScreenPrint: null,
       fullScreenPrintVideoUrl: null
     }
+  },
+  props: {
+    appPlatform: {
+      type: String,
+      requeired: true,
+    },
   },
   computed: {
     filterBtnVariant() {

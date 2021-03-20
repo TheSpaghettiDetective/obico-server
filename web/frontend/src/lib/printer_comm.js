@@ -60,8 +60,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
         try {
             msg = JSON.parse(jsonData)
         } catch (error) {
-            console.log(jsonData)
-            throw(error)
+            // Any garbage sent to the Janus UDP port will be forwarded here.
         }
         if ('ref' in msg && 'ret' in msg) {
             self.onPassThruReceived(msg)

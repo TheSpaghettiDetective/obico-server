@@ -199,7 +199,8 @@ SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '50/hour',
-    }
+    },
+    'EXCEPTION_HANDLER': 'app.debug.custom_exception_handler'
 }
 
 # Google recaptcha V3

@@ -7,7 +7,7 @@
 
 {% block content %}
 <div id="gcodes-page-mount">
-  <g-codes-page csrf="{{ csrf_token }}" :app-platform="'{{ app_platform }}'"></g-control-page>
+  <g-codes-page csrf="{{ csrf_token }}"></g-control-page>
 </div>
 
 {% bundle 'printers' %}

@@ -118,7 +118,8 @@
   import urls from '@lib/server_urls'
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
-  import { normalizedGcode} from '../lib/normalizers'
+  import { normalizedGcode } from '@lib/normalizers'
+  import { isIOS } from '@lib/app_platform'
   import SearchInput from '@common/SearchInput.vue'
 
   const SORTING = {
@@ -148,10 +149,6 @@
         type: String,
         requeired: true,
       },
-      appPlatform: {
-        type: String,
-        requeired: true,
-      },
     },
 
     data() {
@@ -160,7 +157,7 @@
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: this.appPlatform === '' ? '.g,.gcode,.gco' : 'file/*', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
+          acceptedFiles: isIOS() ? 'file/*' : '.g,.gcode,.gco', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
           url: 'upload/',
           headers: { 'X-CSRFToken': this.csrf },
         },

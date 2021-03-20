@@ -80,6 +80,7 @@
 
 <script>
 import moment from 'moment'
+import { isMobile } from '@lib/app_platform'
 
 export default {
   name: 'Navbar',
@@ -105,7 +106,7 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
-    this.isInMobile = window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
+    this.isInMobile = isMobile() || window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
   },
 
   computed: {

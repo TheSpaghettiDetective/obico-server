@@ -49,6 +49,7 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
+import { isIOS } from '@lib/app_platform'
 
   export default {
     name: 'UploadPrintPage',
@@ -64,10 +65,6 @@ import Navbar from '@common/Navbar.vue'
         type: String,
         requeired: true,
       },
-      appPlatform: {
-        type: String,
-        requeired: true,
-      },
     },
 
     data() {
@@ -76,7 +73,7 @@ import Navbar from '@common/Navbar.vue'
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: this.appPlatform === '' ? 'video/mp4, video/mpeg' : 'file/*', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
+          acceptedFiles: isIOS() ? 'file/*' : 'video/mp4, video/mpeg', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
           url: '?',
           headers: {'X-CSRFToken': this.csrf},
         },

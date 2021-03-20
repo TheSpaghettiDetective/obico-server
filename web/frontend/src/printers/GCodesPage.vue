@@ -148,6 +148,10 @@
         type: String,
         requeired: true,
       },
+      appPlatform: {
+        type: String,
+        requeired: true,
+      },
     },
 
     data() {
@@ -156,7 +160,7 @@
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: '.g,.gcode,.gco',
+          acceptedFiles: this.appPlatform === '' ? '.g,.gcode,.gco' : 'file/*', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
           url: 'upload/',
           headers: { 'X-CSRFToken': this.csrf },
         },

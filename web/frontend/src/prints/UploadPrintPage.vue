@@ -64,6 +64,10 @@ import Navbar from '@common/Navbar.vue'
         type: String,
         requeired: true,
       },
+      appPlatform: {
+        type: String,
+        requeired: true,
+      },
     },
 
     data() {
@@ -72,7 +76,7 @@ import Navbar from '@common/Navbar.vue'
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: 'video/mp4, video/mpeg',
+          acceptedFiles: this.appPlatform === '' ? 'video/mp4, video/mpeg' : 'file/*', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
           url: '?',
           headers: {'X-CSRFToken': this.csrf},
         },

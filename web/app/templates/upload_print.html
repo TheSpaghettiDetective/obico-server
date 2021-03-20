@@ -7,7 +7,7 @@
 
 {% block content %}
 <div id="upload-print-mount">
-  <upload-print-page csrf="{{ csrf_token }}"></upload-print-page>
+  <upload-print-page csrf="{{ csrf_token }}" :app-platform="'{{ app_platform }}'"></upload-print-page>
 </div>
 
 {% bundle 'prints' %}
@@ -17,7 +17,7 @@
 
 {% block page_js %}
 <script>
-  // TODO: Remove after removing non-vue Dropzone.js library 
+  // TODO: Remove after removing non-vue Dropzone.js library
   Dropzone.autoDiscover = false;
 </script>
 

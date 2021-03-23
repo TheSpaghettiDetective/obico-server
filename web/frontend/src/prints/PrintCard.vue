@@ -177,7 +177,7 @@
               <small v-if="focusedFeedbackEligible">
                 <span
                   v-if="focusedFeedbackCompleted"
-                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the botton again to change your feedback.</span>
+                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the button again to change your feedback.</span>
                 <span v-else>
                   With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
                   <a

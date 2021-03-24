@@ -144,7 +144,9 @@ def integration(request, pk):
 
 @login_required
 def user_preferences(request, template_dir=None):
-    return render(request, get_template_path('user_preferences', template_dir), dict(telegram_bot_name=bot_name))
+    params = dict(telegram_bot_name=bot_name) if bot_name else dict()
+
+    return render(request, get_template_path('user_preferences', template_dir), params)
 
 @csrf_exempt
 @login_required

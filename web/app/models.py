@@ -100,7 +100,6 @@ class User(AbstractUser):
     pushover_user_token = models.CharField(max_length=45, null=True, blank=True)
     print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
 
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -385,19 +384,6 @@ class Printer(SafeDeleteModel):
         return str(self.id)
 
 
-class HeaterTracker(models.Model):
-    class Meta:
-        unique_together = ('printer', 'name')
-
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
-    name = models.CharField(max_length=16, blank=False)
-    target = models.FloatField()
-    reached = models.BooleanField()
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class PrinterCommand(models.Model):
     PENDING = 'PENDING'
     SENT = 'SENT'
@@ -664,6 +650,7 @@ class OneTimeVerificationCodeManager(models.Manager):
 def two_hours_later():
     return timezone.now() + timedelta(hours=2)
 
+
 class OneTimeVerificationCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     printer = models.ForeignKey(Printer, on_delete=models.SET_NULL, blank=True, null=True)
@@ -676,3 +663,29 @@ class OneTimeVerificationCode(models.Model):
 
     objects = OneTimeVerificationCodeManager()
     with_expired = models.Manager()
+
+
+class HeaterTracker(models.Model):
+    class Meta:
+        unique_together = ('printer', 'name')
+
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
+    name = models.CharField(max_length=16, blank=False)
+    target = models.FloatField()
+    reached = models.BooleanField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class PrintHeaterTarget(models.Model):
+    class Meta:
+        unique_together = ('print', 'name')
+
+    print = models.ForeignKey(Print, on_delete=models.CASCADE)
+    name = models.CharField(max_length=16, blank=False)
+    target = models.FloatField()
+    offset = models.FloatField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

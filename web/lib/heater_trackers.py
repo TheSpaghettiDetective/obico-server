@@ -4,9 +4,11 @@ from datetime import datetime
 from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
-from app.models import Printer, HeaterTracker
+from app.models import Printer, Print, HeaterTracker, PrintHeaterTarget
 from lib.mobile_notifications import send_heater_event
 from django.utils.timezone import now
+from django.db import IntegrityError
+
 
 COOLDOWN_THRESHOLD = 35.0  # degree celsius
 TARGET_REACHED_DELTA = 3.0  # degree celsius
@@ -177,6 +179,23 @@ def update_heater_trackers(printer: Printer,
                 heater_name=event.state.name,
                 # 0.0 for pleasing mypy, actual cannot be None here
                 actual_temperature=event.state.actual or 0.0)
+
+            if event.type == HeaterEventType.TARGET_REACHED:
+                # Trying to save the moment when target first
+                # reached for a (print, heater) pair.
+                # This does not happen often.
+                try:
+                    PrintHeaterTarget.objects.create(
+                        print_id=printer.current_print_id,
+                        name=event.state.name,
+                        target=event.state.target or 0.0,
+                        offset=event.state.offset or 0.0,
+                        created_at=new_updated_at,
+                        updated_at=new_updated_at)
+                except IntegrityError:
+                    # means db has data already,
+                    # all good
+                    pass
 
     # removing obsolete entries
     if trackersd:

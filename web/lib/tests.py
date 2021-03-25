@@ -215,13 +215,13 @@ class HeaterTrackerTestCase(TransactionTestCase):
             {'h0': {'actual': 60.0, 'target': 60.0, 'offset': 0}}
         )
 
-        self.assertEqual(print.heatertargetreached_set.first().name, 'h0')
-        self.assertEqual(print.heatertargetreached_set.first().target, 60.0)
+        self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
+        self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)
 
         process_heater_temps(
             self.printer,
             {'h0': {'actual': 80.0, 'target': 80.0, 'offset': 0}}
         )
 
-        self.assertEqual(print.heatertargetreached_set.first().name, 'h0')
-        self.assertEqual(print.heatertargetreached_set.first().target, 60.0)
+        self.assertEqual(print.PrintHeaterTarget_set.first().name, 'h0')
+        self.assertEqual(print.PrintHeaterTarget_set.first().target, 60.0)

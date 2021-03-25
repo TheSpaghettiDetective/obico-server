@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
-from app.models import Printer, Print, HeaterTracker, HeaterTargetReached
+from app.models import Printer, Print, HeaterTracker, PrintHeaterTarget
 from lib.mobile_notifications import send_heater_event
 from django.utils.timezone import now
 from django.db import IntegrityError
@@ -185,7 +185,7 @@ def update_heater_trackers(printer: Printer,
                 # reached for a (print, heater) pair.
                 # This does not happen often.
                 try:
-                    HeaterTargetReached.objects.create(
+                    PrintHeaterTarget.objects.create(
                         print_id=printer.current_print_id,
                         name=event.state.name,
                         target=event.state.target or 0.0,

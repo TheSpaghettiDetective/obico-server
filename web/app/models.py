@@ -384,19 +384,6 @@ class Printer(SafeDeleteModel):
         return str(self.id)
 
 
-class HeaterTracker(models.Model):
-    class Meta:
-        unique_together = ('printer', 'name')
-
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
-    name = models.CharField(max_length=16, blank=False)
-    target = models.FloatField()
-    reached = models.BooleanField()
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class PrinterCommand(models.Model):
     PENDING = 'PENDING'
     SENT = 'SENT'
@@ -678,7 +665,20 @@ class OneTimeVerificationCode(models.Model):
     with_expired = models.Manager()
 
 
-class HeaterTargetReached(models.Model):
+class HeaterTracker(models.Model):
+    class Meta:
+        unique_together = ('printer', 'name')
+
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
+    name = models.CharField(max_length=16, blank=False)
+    target = models.FloatField()
+    reached = models.BooleanField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class PrintHeaterTarget(models.Model):
     class Meta:
         unique_together = ('print', 'name')
 

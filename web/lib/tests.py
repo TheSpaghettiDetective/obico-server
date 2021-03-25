@@ -1,12 +1,12 @@
-from django.test import TestCase
+from django.test import TransactionTestCase
 from unittest.mock import patch
 
 
-from app.models import User, HeaterTracker, Printer
+from app.models import User, HeaterTracker, Printer, Print
 from .heater_trackers import process_heater_temps
 
 
-class HeaterTrackerTestCase(TestCase):
+class HeaterTrackerTestCase(TransactionTestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="a@test")
@@ -203,3 +203,25 @@ class HeaterTrackerTestCase(TestCase):
         )
 
         self.assertEqual(ret1, 1)
+
+    def test_heater_target_is_saved_when_first_reached(self):
+        print = Print.objects.create(printer=self.printer, user=self.user)
+        self.printer.current_print = print
+        self.printer.save()
+
+        # very first gets reached if target is in actual+-delta
+        process_heater_temps(
+            self.printer,
+            {'h0': {'actual': 60.0, 'target': 60.0, 'offset': 0}}
+        )
+
+        self.assertEqual(print.heatertargetreached_set.first().name, 'h0')
+        self.assertEqual(print.heatertargetreached_set.first().target, 60.0)
+
+        process_heater_temps(
+            self.printer,
+            {'h0': {'actual': 80.0, 'target': 80.0, 'offset': 0}}
+        )
+
+        self.assertEqual(print.heatertargetreached_set.first().name, 'h0')
+        self.assertEqual(print.heatertargetreached_set.first().target, 60.0)

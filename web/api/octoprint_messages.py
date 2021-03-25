@@ -19,6 +19,11 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
+    # for backward compatibility
+    if status.get('octoprint_data'):
+        if 'octoprint_temperatures' in status:
+            status['octoprint_data']['temperatures'] = status['octoprint_temperatures']
+
     if status.get('octoprint_data', {}).get('_ts'):   # data format for plugin 1.6.0 and higher
         cache.printer_status_set(printer.id, json.dumps(status.get('octoprint_data', {})), ex=STATUS_TTL_SECONDS)
     else:
@@ -28,7 +33,7 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
         set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata')
         set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'currentZ')
         set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'job')
-        set_as_str_if_present(octoprint_data, status, 'octoprint_temperatures', 'temperatures')
+        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'temperatures')
         cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
     if status.get('current_print_ts'):
@@ -36,7 +41,7 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
 
     channels.send_status_to_web(printer.id)
 
-    temps = status.get('octoprint_temperatures', None)
+    temps = status.get('octoprint_data', {}).get('temperatures', None)
     if temps:
         process_heater_temps(printer, temps)
 

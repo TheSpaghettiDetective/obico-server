@@ -3,6 +3,9 @@ from raven.contrib.django.raven_compat.models import client as sentryClient
 import sys
 import re
 
+from django.contrib.sessions.models import Session
+from django.forms import model_to_dict
+
 RE_TSD_APP_PLATFORM = re.compile(r'TSDApp-(?P<platform>\w+)|TSDApp|;\ wv\)')
 
 TO_APP_PLATFORM = {
@@ -23,6 +26,11 @@ def get_app_platform(user_agent):
 def custom_exception_handler(exc, context):
     if context and 'request' in context:
         if get_app_platform(context['request'].META.get('HTTP_USER_AGENT', '')):
-            sentryClient.captureException(exc_info=sys.exc_info())
+            extra = {'session_key': 'nocookie'}
+            if context['request'].COOKIES.get('sessionid'):
+                sess = Session.objects.filter(session_key=context['request'].COOKIES['sessionid']).first()
+                extra = model_to_dict(sess) if sess else {'session_key': 'doesnotexist'}
+
+            sentryClient.captureException(exc_info=sys.exc_info(), extra=extra)
     response = exception_handler(exc, context)
     return response

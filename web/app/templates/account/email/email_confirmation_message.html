@@ -1,10 +1,7 @@
-{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Hello from {{ site_name }}!
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}
+Thanks for signing up for The Spaghetti Detective! You’re almost ready to settle The Detective into your home, start a print, and relax - The Detective has got your back!
 <br /><br />
-You're receiving this e-mail because user {{ user_display }} has given yours as an e-mail address to connect their account.
+If you want to receive emails when a print failure is detected, or when your print is done, please click <a href="{{ activate_url }}">this link</a> to verify your email address.
 <br /><br />
-To confirm this is correct, go to:<br />
-<a href="{{ activate_url }}">{{ activate_url }}</a>
-<br /><br />
-{% endblocktrans %}{% endautoescape %}
-{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Thank you from {{ site_name }}!
-{% endblocktrans %}
+Please don't forget to add our email address <strong>support@thespaghettidetective.com</strong> to your contact list so that our emails won't end up in your spam folder.
+{% endautoescape %}

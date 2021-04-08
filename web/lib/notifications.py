@@ -483,13 +483,15 @@ def send_print_notification_discord(_print):
     if not _print.printer.user.discord_webhook:
         return
 
+    color = 0xcf142b if _print.is_canceled() else 0x33a532
+
     text = f"""Hi {_print.printer.user.first_name or ''},
 
 Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
 """
 
     try:
-        send_discord_notification(_print.printer, text, 0xcf142b, _print.printer.user.discord_webhook, _print.poster_url)
+        send_discord_notification(_print.printer, text, color, _print.printer.user.discord_webhook, _print.poster_url)
     except Exception as e:
         LOGGER.error(e)
 

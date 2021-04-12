@@ -140,7 +140,7 @@ def send_to_device(msg, mobile_device):
         message = Message(
             data=msg,
             android=AndroidConfig(priority='high'),
-            apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True))),
+            apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True, category='post'))),
             token=mobile_device.device_token)
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):

@@ -13,8 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 from django.forms import model_to_dict
 import newrelic.agent
-from channels_presence.models import Room
-from channels_presence.models import Presence
 from django.db.models import F
 
 
@@ -38,12 +36,14 @@ class WebConsumer(JsonWebsocketConsumer):
                 # Throw exception in case of un-authenticated or un-authorized access
                 self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
+            self.group_name = channels.web_group_name(self.printer.id)
+
             async_to_sync(self.channel_layer.group_add)(
-                channels.web_group_name(self.printer.id),
+                self.group_name,
                 self.channel_name
             )
             self.accept()
-            Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
+            channels.broadcast_ws_connection_change(self.group_name)
             self.printer_status(None)   # Send printer status to web frontend as soon as it connects
         except:
             LOGGER.exception("Websocket failed to connect")
@@ -55,11 +55,16 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.web_group_name(self.printer.id),
             self.channel_name
         )
-        Room.objects.remove(channels.web_group_name(self.printer.id), self.channel_name)
+        channels.broadcast_ws_connection_change(
+            channels.web_group_name(self.printer.id))
 
     @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
-        Presence.objects.touch(self.channel_name)
+        channels.touch_channel(
+            channels.web_group_name(self.printer.id),
+            self.channel_name
+        )
+
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
 
@@ -86,16 +91,17 @@ class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         self.anomaly_tracker = AnomalyTracker(now())
+        self.group_name = channels.octo_group_name(self.current_printer().id)
 
         if self.current_printer().is_authenticated:
             async_to_sync(self.channel_layer.group_add)(
-                channels.octo_group_name(self.current_printer().id),
+                self.group_name,
                 self.channel_name
             )
             self.accept()
-            Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
+            channels.broadcast_ws_connection_change(self.group_name)
             # Send remote status to OctoPrint as soon as it connects
-            self.current_printer().send_should_watch_status()
+            self.current_printer().send_should_watch_status(refresh=False)
             channels.send_viewing_status(self.current_printer().id)
         else:
             self.close()
@@ -103,10 +109,10 @@ class OctoPrintConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         LOGGER.warn("OctoPrintConsumer: Closed websocket with code: {}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
-            channels.octo_group_name(self.current_printer().id),
+            self.group_name,
             self.channel_name
         )
-        Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
+        channels.broadcast_ws_connection_change(self.group_name)
 
         # disconnect all octoprint tunnels
         channels.send_message_to_octoprinttunnel(
@@ -116,7 +122,10 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        Presence.objects.touch(self.channel_name)
+        channels.touch_channel(
+            self.group_name,
+            self.channel_name
+        )
         try:
             printer = Printer.with_archived.annotate(
                 ext_id=F('current_print__ext_id')
@@ -202,6 +211,10 @@ class JanusWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):
+        channels.touch_channel(
+            channels.janus_web_group_name(self.printer.id),
+            self.channel_name
+        )
         channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
     @newrelic.agent.background_task()
@@ -217,23 +230,22 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
+            self.group_name = channels.octoprinttunnel_group_name(
+                self.printer.id)
             # Exception for un-authenticated or un-authorized access
             self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
-            self.group_name = channels.octoprinttunnel_group_name(
-                self.printer.id)
 
             async_to_sync(self.channel_layer.group_add)(
                 self.group_name,
                 self.channel_name
             )
             self.accept()
-            Room.objects.add(
-                self.group_name,
-                self.channel_name)
+
+            channels.broadcast_ws_connection_change(self.group_name)
 
             channels.send_msg_to_printer(
                 self.printer.id,
@@ -255,9 +267,8 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
             self.channel_name)
-        Room.objects.remove(
-            self.group_name,
-            self.channel_name)
+
+        channels.broadcast_ws_connection_change(self.group_name)
 
         channels.send_msg_to_printer(
             self.printer.id,
@@ -273,11 +284,15 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
+        channels.touch_channel(
+            self.group_name,
+            self.channel_name
+        )
+
         if self.printer.user.tunnel_usage_over_cap():
             return
 
         try:
-            Presence.objects.touch(self.channel_name)
             channels.send_msg_to_printer(
                 self.printer.id,
                 {

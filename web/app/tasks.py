@@ -21,7 +21,6 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 import copy
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage
-from channels_presence.models import Room
 
 from .models import *
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
@@ -222,18 +221,6 @@ def service_webhook(print_id, event_type, **kwargs):
         url= settings.EXT_3D_GEEKS_ENDPOINT,
         json=webhook_payload
     )
-
-# Websocket connection count house upkeep jobs
-
-@periodic_task(run_every=timedelta(seconds=120))
-def prune_channel_presence():
-    Room.objects.prune_presences(age=120)
-
-
-@periodic_task(run_every=timedelta(seconds=1200))
-def prune_channel_rooms():
-    Room.objects.prune_rooms()
-
 
 # helper functions
 

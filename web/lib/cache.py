@@ -70,7 +70,8 @@ def printer_status_get(printer_id, key=None):
 
 
 def printer_status_delete(printer_id):
-    return REDIS.delete(printer_key_prefix(printer_id) + 'status')
+    REDIS.delete(printer_key_prefix(printer_id) + 'status_str')
+    REDIS.delete(printer_key_prefix(printer_id) + 'status')
 
 
 def printer_pic_set(printer_id, mapping, ex=None):

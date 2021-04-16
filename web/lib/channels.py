@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 from . import cache
 
-CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = 120
+CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = 1200
 
 
 def octo_group_name(printer_id):

@@ -1,9 +1,12 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import json
+import time
 from django.dispatch import receiver
 
 from . import cache
+
+CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = 120
 
 
 def octo_group_name(printer_id):
@@ -93,10 +96,22 @@ def send_viewing_status(printer_id, viewing_count=None):
     send_msg_to_printer(printer_id, {'remote_status': {'viewing': viewing_count > 0}})
 
 
-async def async_get_num_ws_connections(group_name):
+async def async_get_num_ws_connections(group_name, threshold=None, current_time=None):
+    threshold = threshold if threshold is not None else CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS
+    current_time = time.time() if current_time is None else current_time
     chlayer = get_channel_layer()
     async with chlayer.connection(chlayer.consistent_hash(group_name)) as conn:
-        return await conn.zcount(chlayer._group_key(group_name))
-
+        return await conn.zcount(
+            chlayer._group_key(group_name),
+            min=current_time - threshold)
 
 get_num_ws_connections = async_to_sync(async_get_num_ws_connections)
+
+
+async def touch_channel(group_name, channel_name):
+    chlayer = get_channel_layer()
+    # group_add adds or updates existing channel in a redis sorted set,
+    # and sets current time as score.. just what we need
+    await chlayer.group_add(group_name, channel_name)
+
+touch_channel = async_to_sync(touch_channel)

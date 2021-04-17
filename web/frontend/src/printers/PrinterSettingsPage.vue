@@ -255,7 +255,7 @@ export default {
     },
     retractOnPause: {
       get() {
-        return this.printer ? this.printer.retract_on_pause : null
+        return this.printer ? this.printer.retract_on_pause : undefined
       },
       set(newValue) {
         if (this.printer) {
@@ -278,7 +278,7 @@ export default {
     },
     liftExtruderBy: {
       get() {
-        return this.printer ? this.printer.lift_z_on_pause : null
+        return this.printer ? this.printer.lift_z_on_pause : undefined
       },
       set(newValue) {
         if (this.printer) {
@@ -296,7 +296,7 @@ export default {
 
     printerName: {
       get: function() {
-        return this.printer ? this.printer.name : null
+        return this.printer ? this.printer.name : undefined
       },
       set: function(newValue) {
         this.printer.name = newValue
@@ -306,17 +306,17 @@ export default {
 
   watch: {
     printerName: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('name')
       }
     },
     retractOnPause: function(newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.changeRetractOnPause(newValue)
       }
     },
     liftExtruderBy: function(newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.changeLiftExtruderBy(newValue)
       }
     },

@@ -683,7 +683,7 @@ export default {
   computed: {
     firstName: {
       get: function() {
-        return this.user ? this.user.first_name : null
+        return this.user ? this.user.first_name : undefined
       },
       set: function(newValue) {
         this.user.first_name = newValue
@@ -691,7 +691,7 @@ export default {
     },
     lastName: {
       get: function() {
-        return this.user ? this.user.last_name : null
+        return this.user ? this.user.last_name : undefined
       },
       set: function(newValue) {
         this.user.last_name = newValue
@@ -699,7 +699,7 @@ export default {
     },
     phoneCountryCode: {
       get: function() {
-        return this.user ? this.user.phone_country_code : null
+        return this.user ? this.user.phone_country_code : undefined
       },
       set: function(newValue) {
         this.user.phone_country_code = newValue
@@ -707,7 +707,7 @@ export default {
     },
     phoneNumber: {
       get: function() {
-        return this.user ? this.user.phone_number : null
+        return this.user ? this.user.phone_number : undefined
       },
       set: function(newValue) {
         this.user.phone_number = newValue
@@ -715,7 +715,7 @@ export default {
     },
     pushbulletToken: {
       get: function() {
-        return this.user ? this.user.pushbullet_access_token : null
+        return this.user ? this.user.pushbullet_access_token : undefined
       },
       set: function(newValue) {
         this.user.pushbullet_access_token = newValue
@@ -723,7 +723,7 @@ export default {
     },
     discordWebhook: {
       get: function() {
-        return this.user ? this.user.discord_webhook : null
+        return this.user ? this.user.discord_webhook : undefined
       },
       set: function(newValue) {
         this.user.discord_webhook = newValue
@@ -731,7 +731,7 @@ export default {
     },
     pushoverUserToken: {
       get: function() {
-        return this.user ? this.user.pushover_user_token : null
+        return this.user ? this.user.pushover_user_token : undefined
       },
       set: function(newValue) {
         this.user.pushover_user_token = newValue
@@ -739,7 +739,7 @@ export default {
     },
     telegramChatId: {
       get: function() {
-        return this.user ? this.user.telegram_chat_id : null
+        return this.user ? this.user.telegram_chat_id : undefined
       },
       set: function(newValue) {
         this.user.telegram_chat_id = newValue
@@ -749,42 +749,42 @@ export default {
 
   watch: {
     firstName: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('first_name')
       }
     },
     lastName: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('last_name')
       }
     },
     phoneCountryCode: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('phone_country_code')
       }
     },
     phoneNumber: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('phone_number')
       }
     },
     pushbulletToken: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('pushbullet_access_token')
       }
     },
     discordWebhook: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('discord_webhook')
       }
     },
     pushoverUserToken: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('pushover_user_token')
       }
     },
     telegramChatId: function (newValue, oldValue) {
-      if (oldValue !== null) {
+      if (oldValue !== undefined) {
         this.updateSetting('telegram_chat_id')
       }
     }

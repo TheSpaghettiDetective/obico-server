@@ -141,11 +141,9 @@ class OctoPrintConsumer(AsyncWebsocketConsumer):
             if 'janus' in data:
                 await channels.async_send_janus_to_web(self.current_printer().id, data.get('janus'))
             elif 'http.tunnel' in data:
-                await sync_to_async(
-                    cache.octoprinttunnel_http_response_set(
-                        data['http.tunnel']['ref'],
-                        data['http.tunnel']
-                    )
+                cache.octoprinttunnel_http_response_set(
+                    data['http.tunnel']['ref'],
+                    data['http.tunnel']
                 )
             elif 'ws.tunnel' in data:
                 await channels.async_send_message_to_octoprinttunnel(
@@ -239,12 +237,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
-            self.group_name = channels.octoprinttunnel_group_name(
-                self.printer.id)
-            # Exception for un-authenticated or un-authorized access
             self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
+            self.group_name = channels.octoprinttunnel_group_name(
+                self.printer.id)
+            # Exception for un-authenticated or un-authorized access
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
 

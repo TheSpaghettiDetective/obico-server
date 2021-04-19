@@ -1,4 +1,4 @@
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from channels.layers import get_channel_layer
 import json
 import time
@@ -25,29 +25,35 @@ def octoprinttunnel_group_name(printer_id):
     return 'octoprinttunnel.{}'.format(printer_id)
 
 
-def send_msg_to_printer(printer_id, msg_dict):
+async def async_send_msg_to_printer(printer_id, msg_dict):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
     })
     layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
+    await layer.group_send(
         octo_group_name(printer_id),
         msg_dict,
     )
 
 
-def send_message_to_web(printer_id, msg_dict):
+send_msg_to_printer = async_to_sync(async_send_msg_to_printer)
+
+
+async def async_send_message_to_web(printer_id, msg_dict):
     msg_dict.update({'type': 'web.message'})    # mapped to -> web_message in consumer
     layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
+    await layer.group_send(
         web_group_name(printer_id),
         msg_dict,
     )
 
 
-def send_status_to_web(printer_id):
+send_msg_to_web = async_to_sync(async_send_message_to_web)
+
+
+async def async_send_status_to_web(printer_id):
     layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
+    await layer.group_send(
         web_group_name(printer_id),
         {
             'type': 'printer.status',         # mapped to -> printer_status in consumer
@@ -55,9 +61,12 @@ def send_status_to_web(printer_id):
     )
 
 
-def send_janus_to_web(printer_id, msg):
+send_status_to_web = async_to_sync(async_send_status_to_web)
+
+
+async def async_send_janus_to_web(printer_id, msg):
     layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
+    await layer.group_send(
         janus_web_group_name(printer_id),
         {
             'type': 'janus.message',         # mapped to -> janus_message in consumer
@@ -65,35 +74,45 @@ def send_janus_to_web(printer_id, msg):
         }
     )
 
+send_janus_to_web = async_to_sync(async_send_janus_to_web)
 
-def send_message_to_octoprinttunnel(group_name, data):
+
+async def async_send_message_to_octoprinttunnel(group_name, data):
     msg_dict = {
         # mapped to -> octoprinttunnel_message in consumer
         'type': 'octoprinttunnel.message',
         'data': data
     }
     layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
+    await layer.group_send(
         group_name,
         msg_dict,
     )
 
 
-def broadcast_ws_connection_change(group_name):
+send_message_to_octoprinttunnel = async_to_sync(async_send_message_to_octoprinttunnel)
+
+
+async def async_broadcast_ws_connection_change(group_name):
     (group, printer_id) = group_name.split('.')
     if group == 'p_web':
-        send_viewing_status(printer_id, get_num_ws_connections(group_name))
+        await async_send_viewing_status(printer_id, get_num_ws_connections(group_name))
     if group == 'p_octo':
-        if get_num_ws_connections(group_name) <= 0:
-            cache.printer_status_delete(printer_id)
-        send_status_to_web(printer_id)
+        if await async_get_num_ws_connections(group_name) <= 0:
+            await sync_to_async(cache.async_printer_status_delete)(printer_id)
+        await async_send_status_to_web(printer_id)
 
 
-def send_viewing_status(printer_id, viewing_count=None):
+broadcast_ws_connection_change = async_to_sync(async_broadcast_ws_connection_change)
+
+
+async def async_send_viewing_status(printer_id, viewing_count=None):
     if viewing_count is None:
         viewing_count = get_num_ws_connections(web_group_name(printer_id))
 
     send_msg_to_printer(printer_id, {'remote_status': {'viewing': viewing_count > 0}})
+
+send_viewing_status = async_to_sync(async_send_viewing_status)
 
 
 async def async_get_num_ws_connections(group_name, threshold=None, current_time=None):

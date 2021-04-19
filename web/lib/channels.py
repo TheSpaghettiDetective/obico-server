@@ -7,7 +7,10 @@ from django.dispatch import receiver
 
 from . import cache
 
-CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = 1200
+CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = {
+    '*': 1200,
+    'p_octo': 120,
+}
 
 
 def octo_group_name(printer_id):
@@ -141,7 +144,11 @@ send_should_watch_status = async_to_sync(async_send_should_watch_status)
 
 
 async def async_get_num_ws_connections(group_name, threshold=None, current_time=None):
-    threshold = threshold if threshold is not None else CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS
+    if threshold is None:
+        threshold = CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS.get(
+            group_name.split('.')[0],
+            CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS['*'])
+
     current_time = time.time() if current_time is None else current_time
     chlayer = get_channel_layer()
     async with chlayer.connection(chlayer.consistent_hash(group_name)) as conn:

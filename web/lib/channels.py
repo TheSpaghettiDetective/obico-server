@@ -1,5 +1,6 @@
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
 import json
 import time
 from django.dispatch import receiver
@@ -25,15 +26,22 @@ def octoprinttunnel_group_name(printer_id):
     return 'octoprinttunnel.{}'.format(printer_id)
 
 
-async def async_send_msg_to_printer(printer_id, msg_dict):
+async def async_send_msg_to_printer(printer_id, msg_dict, to_channel=None):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
     })
     layer = get_channel_layer()
-    await layer.group_send(
-        octo_group_name(printer_id),
-        msg_dict,
-    )
+
+    if to_channel is not None:
+        await layer.send(
+            to_channel,
+            msg_dict,
+        )
+    else:
+        await layer.group_send(
+            octo_group_name(printer_id),
+            msg_dict,
+        )
 
 
 send_msg_to_printer = async_to_sync(async_send_msg_to_printer)
@@ -106,13 +114,28 @@ async def async_broadcast_ws_connection_change(group_name):
 broadcast_ws_connection_change = async_to_sync(async_broadcast_ws_connection_change)
 
 
-async def async_send_viewing_status(printer_id, viewing_count=None):
+async def async_send_viewing_status(printer_id, viewing_count=None, to_channel=None):
     if viewing_count is None:
-        viewing_count = get_num_ws_connections(web_group_name(printer_id))
+        viewing_count = await get_num_ws_connections(web_group_name(printer_id))
 
-    send_msg_to_printer(printer_id, {'remote_status': {'viewing': viewing_count > 0}})
+    await async_send_msg_to_printer(
+        printer_id,
+        {'remote_status': {'viewing': viewing_count > 0}},
+        to_channel=to_channel,
+    )
 
 send_viewing_status = async_to_sync(async_send_viewing_status)
+
+
+def async_send_should_watch_status(printer, to_channel=None):
+    await async_send_msg_to_printer(
+        printer.id,
+        {'remote_status': {'should_watch': await database_sync_to_async(printer.should_watch())}},
+        to_channel=to_channel,
+    )
+
+
+send_should_watch_status = async_to_sync(async_send_should_watch_status)
 
 
 async def async_get_num_ws_connections(group_name, threshold=None, current_time=None):

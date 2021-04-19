@@ -9,7 +9,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-sm-12 text-center">
-          <h1>Spaghetti Gallery</h1>
+          <h1>The Spaghetti Gallery</h1>
         </div>
       </div>
       <div class="row">

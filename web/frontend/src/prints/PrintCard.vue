@@ -70,7 +70,7 @@
         <div class="position-relative" v-if="print.video_archived_at">
           <img class="mw-100" :src="posterSrc" />
           <div class="archived-info">
-            <div class="text">Video is deleted. <a href="#" @click="showVideoArchivedDescription($event)">Why?</a></div>
+            <div class="text">Video file is deleted. <a href="#" @click="showVideoArchivedDescription($event)">Why?</a></div>
           </div>
         </div>
         <div v-else>

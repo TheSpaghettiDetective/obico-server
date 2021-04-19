@@ -127,10 +127,6 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.channel_name
         )
         try:
-            printer = Printer.with_archived.annotate(
-                ext_id=F('current_print__ext_id')
-            ).get(id=self.current_printer().id)
-
             if text_data:
                 data = json.loads(text_data)
             else:
@@ -149,8 +145,12 @@ class OctoPrintConsumer(WebsocketConsumer):
                     data['ws.tunnel'],
                 )
             elif 'passthru' in data:
-                channels.send_message_to_web(printer.id, data)
+                channels.send_message_to_web(self.current_printer().id, data)
             else:
+                printer = Printer.with_archived.annotate(
+                    ext_id=F('current_print__ext_id')
+                ).get(id=self.current_printer().id)
+
                 ex: Optional[Exception] = None
                 data['_now'] = now()
                 try:

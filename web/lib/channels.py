@@ -108,10 +108,10 @@ async def async_get_num_ws_connections(group_name, threshold=None, current_time=
 get_num_ws_connections = async_to_sync(async_get_num_ws_connections)
 
 
-async def touch_channel(group_name, channel_name):
+async def async_touch_channel(group_name, channel_name):
     chlayer = get_channel_layer()
     # group_add adds or updates existing channel in a redis sorted set,
     # and sets current time as score.. just what we need
     await chlayer.group_add(group_name, channel_name)
 
-touch_channel = async_to_sync(touch_channel)
+touch_channel = async_to_sync(async_touch_channel)

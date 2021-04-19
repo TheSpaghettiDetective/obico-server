@@ -12,7 +12,7 @@ redis==3.2.0
 django-simple-history==2.7.0
 jsonfield==2.0.2
 django-bootstrap-pagination==1.7.0
-newrelic==4.12.0.113
+newrelic==6.2.0.156
 raven==6.10.0
 django-settings-export==1.2.1
 oauth2client==4.1.3

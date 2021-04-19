@@ -118,10 +118,10 @@ class OctoPrintConsumer(AsyncWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
-        await channels.aync_broadcast_ws_connection_change(self.group_name)
+        await channels.async_broadcast_ws_connection_change(self.group_name)
 
         # disconnect all octoprint tunnels
-        await channels.aync_send_message_to_octoprinttunnel(
+        await channels.async_send_message_to_octoprinttunnel(
             channels.octoprinttunnel_group_name(self.current_printer().id),
             {'type': 'octoprint_close', 'ref': 'ALL'},
         )

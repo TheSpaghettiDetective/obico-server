@@ -104,10 +104,12 @@ send_message_to_octoprinttunnel = async_to_sync(async_send_message_to_octoprintt
 async def async_broadcast_ws_connection_change(group_name):
     (group, printer_id) = group_name.split('.')
     if group == 'p_web':
-        await async_send_viewing_status(printer_id, get_num_ws_connections(group_name))
+        await async_send_viewing_status(
+            printer_id,
+            await async_get_num_ws_connections(group_name))
     if group == 'p_octo':
         if await async_get_num_ws_connections(group_name) <= 0:
-            await sync_to_async(cache.async_printer_status_delete)(printer_id)
+            await sync_to_async(cache.printer_status_delete)(printer_id)
         await async_send_status_to_web(printer_id)
 
 
@@ -116,7 +118,7 @@ broadcast_ws_connection_change = async_to_sync(async_broadcast_ws_connection_cha
 
 async def async_send_viewing_status(printer_id, viewing_count=None, to_channel=None):
     if viewing_count is None:
-        viewing_count = await get_num_ws_connections(web_group_name(printer_id))
+        viewing_count = await async_get_num_ws_connections(web_group_name(printer_id))
 
     await async_send_msg_to_printer(
         printer_id,
@@ -127,10 +129,10 @@ async def async_send_viewing_status(printer_id, viewing_count=None, to_channel=N
 send_viewing_status = async_to_sync(async_send_viewing_status)
 
 
-def async_send_should_watch_status(printer, to_channel=None):
+async def async_send_should_watch_status(printer, to_channel=None):
     await async_send_msg_to_printer(
         printer.id,
-        {'remote_status': {'should_watch': await database_sync_to_async(printer.should_watch())}},
+        {'remote_status': {'should_watch': await database_sync_to_async(printer.should_watch)()}},
         to_channel=to_channel,
     )
 

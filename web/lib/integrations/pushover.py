@@ -17,6 +17,8 @@ class PushoverPriority(IntEnum) :
 # message and title should be strings, attachment should be a file-like object
 def pushover_notification(user_key, message, title = None, attachment = None, priority = None):
     API_URL = "https://api.pushover.net/1/messages.json"
+    RETRY = 60 # seconds
+    EXPIRE = 120 # seconds
 
     if len(message) > 1024:
         raise PushoverException("Maximum message size of 1024 characters exceeded!")
@@ -35,7 +37,12 @@ def pushover_notification(user_key, message, title = None, attachment = None, pr
         payload["title"] = title
 
     if priority:
-        payload["priority"] = priority
+        payload["priority"] = int(priority)
+
+        if priority == PushoverPriority.EMERGENCY:
+            # retry every RETRY seconds for EXPIRE seconds total
+            payload["retry"] = RETRY
+            payload["expire"] = EXPIRE
 
     files = None
     if attachment:

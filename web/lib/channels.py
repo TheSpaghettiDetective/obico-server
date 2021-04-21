@@ -34,23 +34,16 @@ def get_channel_layer_for_group(group_name):
     return get_channel_layer()
 
 
-def send_msg_to_printer(printer_id, msg_dict, to_channel=None):
+def send_msg_to_printer(printer_id, msg_dict):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
     })
     group_name = octo_group_name(printer_id)
     layer = get_channel_layer_for_group(group_name)
-
-    if to_channel:
-        async_to_sync(layer.send)(
-            to_channel,
-            msg_dict,
-        )
-    else:
-        async_to_sync(layer.group_send)(
-            group_name,
-            msg_dict,
-        )
+    async_to_sync(layer.group_send)(
+        group_name,
+        msg_dict,
+    )
 
 
 def send_message_to_web(printer_id, msg_dict):
@@ -102,31 +95,23 @@ def send_message_to_octoprinttunnel(group_name, data):
 def broadcast_ws_connection_change(group_name):
     (group, printer_id) = group_name.split('.')
     if group == 'p_web':
-        send_viewing_status(printer_id)
+        send_remote_status_to_printer(printer_id=printer_id)
     if group == 'p_octo':
         if get_num_ws_connections(group_name) <= 0:
             cache.printer_status_delete(printer_id)
         send_status_to_web(printer_id)
 
 
-def send_viewing_status(printer_id, viewing_count=None):
-    if viewing_count is None:
-        viewing_count = get_num_ws_connections(web_group_name(printer_id))
+def get_remote_status_msg(printer_id, should_watch):
+    data = dict(viewing=get_num_ws_connections(web_group_name(printer_id)) > 0)
+    if should_watch is not None:
+        data.update(dict(should_watch=should_watch))
 
-    send_msg_to_printer(printer_id, get_remote_status_msg(viewing=viewing_count > 0))
-
-
-def get_remote_status_msg(printer=None, **data):
-    if printer:
-        data.update(
-            viewing=get_num_ws_connections(web_group_name(printer.id)) > 0,
-            should_watch=printer.should_watch()
-        )
     return {'remote_status': data}
 
 
-def send_remote_status_to_printer(printer, to_channel=None):
-    send_msg_to_printer(printer.id, get_remote_status_msg(printer=printer), to_channel=to_channel)
+def send_remote_status_to_printer(printer_id, should_watch=None):
+    send_msg_to_printer(printer_id, get_remote_status_msg(printer_id=printer_id, should_watch=should_watch))
 
 
 async def async_get_num_ws_connections(group_name, threshold=None, current_time=None):

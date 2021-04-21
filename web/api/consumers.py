@@ -106,7 +106,7 @@ class OctoPrintConsumer(WebsocketConsumer):
                 channels.broadcast_ws_connection_change(self.group_name)
                 # Send remote status to OctoPrint as soon as it connects
                 self.printer_message(
-                    channels.get_remote_status_msg(printer=self.current_printer())
+                    channels.get_remote_status_msg(printer_id=self.current_printer().id, should_watch=self.current_printer().should_watch())
                 )
             else:
                 self.close()

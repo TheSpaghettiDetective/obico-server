@@ -28,30 +28,39 @@ def octoprinttunnel_group_name(printer_id):
     return 'octoprinttunnel.{}'.format(printer_id)
 
 
+def get_channel_layer_for_group(group_name):
+    if group_name.startswith('p_octo'):
+        return get_channel_layer('octoprint')
+    return get_channel_layer()
+
+
 def send_msg_to_printer(printer_id, msg_dict):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
     })
-    layer = get_channel_layer()
+    group_name = octo_group_name(printer_id)
+    layer = get_channel_layer_for_group(group_name)
     async_to_sync(layer.group_send)(
-        octo_group_name(printer_id),
+        group_name,
         msg_dict,
     )
 
 
 def send_message_to_web(printer_id, msg_dict):
     msg_dict.update({'type': 'web.message'})    # mapped to -> web_message in consumer
-    layer = get_channel_layer()
+    group_name = web_group_name(printer_id)
+    layer = get_channel_layer_for_group(group_name)
     async_to_sync(layer.group_send)(
-        web_group_name(printer_id),
+        group_name,
         msg_dict,
     )
 
 
 def send_status_to_web(printer_id):
-    layer = get_channel_layer()
+    group_name = web_group_name(printer_id)
+    layer = get_channel_layer_for_group(group_name)
     async_to_sync(layer.group_send)(
-        web_group_name(printer_id),
+        group_name,
         {
             'type': 'printer.status',         # mapped to -> printer_status in consumer
         }
@@ -59,9 +68,10 @@ def send_status_to_web(printer_id):
 
 
 def send_janus_to_web(printer_id, msg):
-    layer = get_channel_layer()
+    group_name = janus_web_group_name(printer_id)
+    layer = get_channel_layer_for_group(group_name)
     async_to_sync(layer.group_send)(
-        janus_web_group_name(printer_id),
+        group_name,
         {
             'type': 'janus.message',         # mapped to -> janus_message in consumer
             'msg': msg,
@@ -75,7 +85,7 @@ def send_message_to_octoprinttunnel(group_name, data):
         'type': 'octoprinttunnel.message',
         'data': data
     }
-    layer = get_channel_layer()
+    layer = get_channel_layer_for_group(group_name)
     async_to_sync(layer.group_send)(
         group_name,
         msg_dict,
@@ -106,7 +116,7 @@ async def async_get_num_ws_connections(group_name, threshold=None, current_time=
             CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS['*'])
 
     current_time = time.time() if current_time is None else current_time
-    chlayer = get_channel_layer()
+    chlayer = get_channel_layer_for_group(group_name)
     async with chlayer.connection(chlayer.consistent_hash(group_name)) as conn:
         return await conn.zcount(
             chlayer._group_key(group_name),
@@ -116,7 +126,7 @@ get_num_ws_connections = async_to_sync(async_get_num_ws_connections)
 
 
 async def async_touch_channel(group_name, channel_name):
-    chlayer = get_channel_layer()
+    chlayer = get_channel_layer_for_group(group_name)
     # group_add adds or updates existing channel in a redis sorted set,
     # and sets current time as score.. just what we need
     await chlayer.group_add(group_name, channel_name)

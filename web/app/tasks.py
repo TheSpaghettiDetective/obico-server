@@ -281,6 +281,7 @@ def send_timelapse_detection_done_email(_print):
     ctx = {
         'print': _print,
         'unsub_url': 'https://app.thespaghettidetective.com/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
+        'prints_link': site.build_full_url('/prints/'),
     }
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
     message = get_template('email/upload_print_processed.html').render(ctx)

@@ -88,6 +88,9 @@ class WebConsumer(JsonWebsocketConsumer):
 
 
 class OctoPrintConsumer(WebsocketConsumer):
+
+    channel_layer_alias = 'octoprint'
+
     @newrelic.agent.background_task()
     def connect(self):
         self.anomaly_tracker = AnomalyTracker(now())
@@ -223,7 +226,6 @@ class JanusWebConsumer(WebsocketConsumer):
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
-
     # default 1000 does not trigger retries in octoprint webapp
     OCTO_WS_ERROR_CODE = 3000
 

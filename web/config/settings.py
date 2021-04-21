@@ -322,6 +322,15 @@ CHANNEL_LAYERS = {
             'expiry': 60,
         },
     },
+    'octoprint': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [REDIS_URL],
+            'capacity': 1500,
+            'expiry': 60,
+            'group_expiry': 120,
+        },
+    }
 }
 
 # Settings to store and serve uploaded images

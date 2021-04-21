@@ -4,10 +4,9 @@ import time
 import json
 import datetime
 
-from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer, AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
+from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import async_to_sync
 import logging
 from raven.contrib.django.raven_compat.models import client as sentryClient
 from django.core.exceptions import ObjectDoesNotExist
@@ -88,47 +87,42 @@ class WebConsumer(JsonWebsocketConsumer):
         return self.scope['user']
 
 
-class OctoPrintConsumer(AsyncWebsocketConsumer):
+class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
-    async def connect(self):
+    def connect(self):
         self.anomaly_tracker = AnomalyTracker(now())
         self.group_name = channels.octo_group_name(self.current_printer().id)
 
         if self.current_printer().is_authenticated:
-            # TODO can accept come first?
-            await self.accept()
-            await self.channel_layer.group_add(
+            async_to_sync(self.channel_layer.group_add)(
                 self.group_name,
                 self.channel_name
             )
-            await channels.async_broadcast_ws_connection_change(
-                self.group_name)
-
+            self.accept()
+            channels.broadcast_ws_connection_change(self.group_name)
             # Send remote status to OctoPrint as soon as it connects
-            await channels.async_send_should_watch_status(
-                printer=self.current_printer(), to_channel=self.channel_name)
-            await channels.async_send_viewing_status(
-                self.current_printer().id, to_channel=self.channel_name)
+            self.current_printer().send_should_watch_status(refresh=False)
+            channels.send_viewing_status(self.current_printer().id)
         else:
-            await self.close()
+            self.close()
 
-    async def disconnect(self, close_code):
+    def disconnect(self, close_code):
         LOGGER.warn("OctoPrintConsumer: Closed websocket with code: {}".format(close_code))
-        await self.channel_layer.group_discard(
+        async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
             self.channel_name
         )
-        await channels.async_broadcast_ws_connection_change(self.group_name)
+        channels.broadcast_ws_connection_change(self.group_name)
 
         # disconnect all octoprint tunnels
-        await channels.async_send_message_to_octoprinttunnel(
+        channels.send_message_to_octoprinttunnel(
             channels.octoprinttunnel_group_name(self.current_printer().id),
             {'type': 'octoprint_close', 'ref': 'ALL'},
         )
 
     @newrelic.agent.background_task()
-    async def receive(self, text_data=None, bytes_data=None, **kwargs):
-        await channels.async_touch_channel(
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
+        channels.touch_channel(
             self.group_name,
             self.channel_name
         )
@@ -139,52 +133,51 @@ class OctoPrintConsumer(AsyncWebsocketConsumer):
                 data = bson.loads(bytes_data)
 
             if 'janus' in data:
-                await channels.async_send_janus_to_web(self.current_printer().id, data.get('janus'))
+                channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
             elif 'http.tunnel' in data:
                 cache.octoprinttunnel_http_response_set(
                     data['http.tunnel']['ref'],
                     data['http.tunnel']
                 )
             elif 'ws.tunnel' in data:
-                await channels.async_send_message_to_octoprinttunnel(
+                channels.send_message_to_octoprinttunnel(
                     channels.octoprinttunnel_group_name(self.current_printer().id),
                     data['ws.tunnel'],
                 )
             elif 'passthru' in data:
-                await channels.async_send_message_to_web(
-                    self.current_printer().id, data)
+                channels.send_message_to_web(self.current_printer().id, data)
             else:
-                printer = await database_sync_to_async(Printer.with_archived.annotate(
+                printer = Printer.with_archived.annotate(
                     ext_id=F('current_print__ext_id')
-                ).get)(id=self.current_printer().id)
+                ).get(id=self.current_printer().id)
 
                 ex: Optional[Exception] = None
                 data['_now'] = now()
                 try:
-                    await database_sync_to_async(process_octoprint_status)(printer, data)
-                    await database_sync_to_async(self.anomaly_tracker.track)(printer, data)
+                    process_octoprint_status(printer, data)
+                    self.anomaly_tracker.track(printer, data)
                 except ResurrectionError as ex:
-                    await database_sync_to_async(self.anomaly_tracker.track)(printer, data, ex)
+                    self.anomaly_tracker.track(printer, data, ex)
 
         except ObjectDoesNotExist:
             import traceback; traceback.print_exc()
-            await self.close()
+            self.close()
         except Exception:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
-            await database_sync_to_async(sentryClient.captureException)()
+            sentryClient.captureException()
 
     @newrelic.agent.background_task()
-    async def printer_message(self, data):
+    def printer_message(self, data):
         try:
             as_binary = data.get('as_binary', False)
             if as_binary:
-                await self.send(text_data=None, bytes_data=bson.dumps(data))
+                self.send(text_data=None, bytes_data=bson.dumps(data))
             else:
-                await self.send(text_data=json.dumps(data))
+                self.send(text_data=json.dumps(data))
         except:  # sentry doesn't automatically capture consumer errors
             LOGGER.error(data)
             import traceback; traceback.print_exc()
-            await database_sync_to_async(sentryClient.captureException)()
+            sentryClient.captureException()
 
     def current_printer(self):
         return self.scope['user']
@@ -237,12 +230,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
-            self.printer = Printer.objects.select_related('user').get(
-                user=self.current_user(),
-                id=self.scope['url_route']['kwargs']['printer_id'])
             self.group_name = channels.octoprinttunnel_group_name(
                 self.printer.id)
             # Exception for un-authenticated or un-authorized access
+            self.printer = Printer.objects.select_related('user').get(
+                user=self.current_user(),
+                id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
 

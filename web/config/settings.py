@@ -318,6 +318,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [REDIS_URL],
+            'prefix': 'layer.default',
             'capacity': 1500,
             'expiry': 60,
         },
@@ -326,6 +327,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [REDIS_URL],
+            'prefix': 'layer.octoprint',
             'capacity': 1500,
             'expiry': 60,
             'group_expiry': 120,

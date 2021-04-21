@@ -3,6 +3,7 @@ from channels.layers import get_channel_layer
 import json
 import time
 from django.dispatch import receiver
+from django.conf import settings
 
 from . import cache
 
@@ -137,3 +138,19 @@ async def async_touch_channel(group_name, channel_name):
     await chlayer.group_add(group_name, channel_name)
 
 touch_channel = async_to_sync(async_touch_channel)
+
+
+def get_channel_layer_msg_count(layer_name):
+    prefix = get_channel_layer(layer_name).prefix
+    keys = set(cache.REDIS.keys(f'{prefix}specific.*!'))
+    with cache.REDIS.pipeline() as pipe:
+        for key in keys:
+            pipe.zcount(key, min=0, max="+inf")
+        return sum(pipe.execute())
+
+
+def get_all_channel_layer_msg_count():
+    return {
+        layer_name: get_channel_layer_msg_count(layer_name)
+        for layer_name in settings.CHANNEL_LAYERS.keys()
+    }

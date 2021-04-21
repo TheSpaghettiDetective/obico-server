@@ -33,7 +33,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="https://www.thespaghettidetective.com/help">Help</a>
+              <a class="nav-link" href="https://help.thespaghettidetective.com/">Help</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="https://discord.gg/hsMwGpD">Forum</a>

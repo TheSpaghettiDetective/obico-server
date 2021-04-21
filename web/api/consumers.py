@@ -93,20 +93,25 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def connect(self):
-        self.anomaly_tracker = AnomalyTracker(now())
-        self.group_name = channels.octo_group_name(self.current_printer().id)
+        try:
+            self.anomaly_tracker = AnomalyTracker(now())
+            self.group_name = channels.octo_group_name(self.current_printer().id)
 
-        if self.current_printer().is_authenticated:
-            async_to_sync(self.channel_layer.group_add)(
-                self.group_name,
-                self.channel_name
-            )
-            self.accept()
-            channels.broadcast_ws_connection_change(self.group_name)
-            # Send remote status to OctoPrint as soon as it connects
-            self.current_printer().send_should_watch_status(refresh=False)
-            channels.send_viewing_status(self.current_printer().id)
-        else:
+            if self.current_printer().is_authenticated:
+                async_to_sync(self.channel_layer.group_add)(
+                    self.group_name,
+                    self.channel_name
+                )
+                self.accept()
+                channels.broadcast_ws_connection_change(self.group_name)
+                # Send remote status to OctoPrint as soon as it connects
+                self.printer_message(
+                    channels.get_remote_status_msg(printer_id=self.current_printer().id, should_watch=self.current_printer().should_watch())
+                )
+            else:
+                self.close()
+        except Exception:
+            LOGGER.exception("Octoprint failed to connect")
             self.close()
 
     def disconnect(self, close_code):
@@ -232,12 +237,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
         try:
-            self.group_name = channels.octoprinttunnel_group_name(
-                self.printer.id)
-            # Exception for un-authenticated or un-authorized access
             self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
+            self.group_name = channels.octoprinttunnel_group_name(
+                self.printer.id)
+            # Exception for un-authenticated or un-authorized access
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
 

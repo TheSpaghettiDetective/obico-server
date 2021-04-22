@@ -56,8 +56,6 @@ def pushover_notification(user_key, message, title = None, attachment = None, pr
             }
 
     req = requests.post(API_URL, data=payload, files = files)
-
-    if req.status_code != requests.codes.ok:
-        raise req.raise_for_status
+    req.raise_for_status()
 
     return True

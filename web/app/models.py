@@ -380,7 +380,7 @@ class Printer(SafeDeleteModel):
         if refresh:
             self.refresh_from_db()
 
-        channels.send_remote_status_to_printer(self.id, self.should_watch()())
+        channels.send_remote_status_to_printer(self.id, self.should_watch())
 
     def __str__(self):
         return str(self.id)

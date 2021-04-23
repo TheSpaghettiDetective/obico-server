@@ -12,6 +12,8 @@ If you are on Windows Server, follow [this Windows Server-specific guide](docs/s
 
 If you are on a NVIDIA Jetson Nano, follow [this Jetson Nano specific guide](docs/jetson_guide.md) instead.
 
+If you are on UNRAID, follow [this UNRAID specific guide](docs/unraid_guide.md) instead.
+
 If you otherwise prefer textual instructions, follow the steps below.
 
 ## Prerequisites

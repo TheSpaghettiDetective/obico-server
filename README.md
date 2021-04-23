@@ -140,6 +140,7 @@ Feeling adventurous? [Go advanced](docs/advanced_config.md).
 
 ## Upgrade server
 
+    cd TheSpaghettiDetective
     git pull
     sudo docker-compose up --build -d
 

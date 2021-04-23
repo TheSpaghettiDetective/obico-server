@@ -117,13 +117,13 @@ Before you can configure The Spaghetti Detective OctoPrint Plugin to use your ow
 
 1. Log in as a user (you can just login with `root@example.com` but it's more secure to use a non-admin user).
 
-1. Add a new printer as described in [this guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-2-add-a-new-printer) and obtain the 6-digit Verification Code. *Note: Do it on your own server, not on [The Spaghetti Detective cloud](https://app.thespaghettidetective.com).*
+1. Add a new printer as described in [this guide](https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/Steps/291120,291121,291132,291127,291125,292885,292884,291129,293337,293336) and obtain the 6-digit Verification Code. *Note: Do it on your own server, not on [The Spaghetti Detective cloud](https://app.thespaghettidetective.com).*
 
 Then, navigate to octoprint to setup the plugin side of things:
 
-1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/#step-1-install-access-anywhere---the-spaghetti-detective-plugin-in-octoprint).
+1. Make sure that you have installed the [TSD plugin](https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/Steps/291120,291121,291132).
 
-1. After restarting, go through the wizard as described in [the setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/), until you are at the last step that asks for the 6-digit Verification Code. *Note: If TSD plugin for OctoPrint has been installed before and you do not see the wizard, click [here](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.md).*
+1. After restarting, go through the wizard as described in [the setup guide](https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/), until you are at the last step that asks for the 6-digit Verification Code. *Note: If TSD plugin for OctoPrint has been installed before and you do not see the wizard, click [here](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.md).*
 
 1. Expand "Advanced Server Configuration".  Find and change the Server Address to `http://your_server_ip:3334` (use https:// if you have HTTPS configured, if you aren't sure, just use http://). You MUST include the "http://".
 

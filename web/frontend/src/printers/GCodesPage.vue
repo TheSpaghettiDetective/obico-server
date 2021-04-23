@@ -9,7 +9,7 @@
         <div class="form-container printer-settings">
           <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
           <p>G-Code remote upload and printing is a Pro feature.</p>
-          <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/#what-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
+          <p><a href="https://help.thespaghettidetective.com/kb/guide/en/free-plan-vs-pro-plan-My6yGUkT4T/Steps/294248,294251,294249,294250">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
           <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
         </div>
       </div>

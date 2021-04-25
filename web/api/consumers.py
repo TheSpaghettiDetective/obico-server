@@ -194,7 +194,7 @@ class JanusWebConsumer(WebsocketConsumer):
             self.close()
 
     def disconnect(self, close_code):
-        LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
+        LOGGER.warn("JanusWebConsumer: Closed websocket with code: {}".format(close_code))
         async_to_sync(self.channel_layer.group_discard)(
             channels.janus_web_group_name(self.printer.id),
             self.channel_name
@@ -221,20 +221,15 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
                 id=self.scope['url_route']['kwargs']['printer_id'])
+            self.accept()
+
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
-            self.group_name = channels.octoprinttunnel_group_name(
-                self.printer.id)
 
             async_to_sync(self.channel_layer.group_add)(
-                self.group_name,
-                self.channel_name
+                channels.octoprinttunnel_group_name(self.printer.id),
+                self.channel_name,
             )
-            self.accept()
-            Room.objects.add(
-                self.group_name,
-                self.channel_name)
-
             channels.send_msg_to_printer(
                 self.printer.id,
                 {
@@ -253,11 +248,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         LOGGER.warn(f'OctoprintTunnelWebConsumer: Closed websocket with code: {close_code}')
         async_to_sync(self.channel_layer.group_discard)(
-            self.group_name,
-            self.channel_name)
-        Room.objects.remove(
-            self.group_name,
-            self.channel_name)
+            channels.octoprinttunnel_group_name(self.printer.id),
+            self.channel_name,
+        )
 
         channels.send_msg_to_printer(
             self.printer.id,
@@ -277,7 +270,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             return
 
         try:
-            Presence.objects.touch(self.channel_name)
             channels.send_msg_to_printer(
                 self.printer.id,
                 {

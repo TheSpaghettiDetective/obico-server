@@ -45,7 +45,7 @@ export const normalizedPrinter = (newData, oldData) => {
     },
   }
   if (oldData){
-    if (get(oldData, 'status._ts', -1) > get(newData, 'status._ts', get(oldData, 'status._ts', 0))) {
+    if (get(oldData, 'status._ts', -1) > get(newData, 'status._ts', 0)) {
         delete newData.status
     }
     return {

@@ -29,6 +29,7 @@ LOGGER = logging.getLogger(__name__)
 class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
+        self.last_touch = time.time()
         try:
             if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
                 self.printer = self.current_user()
@@ -60,10 +61,12 @@ class WebConsumer(JsonWebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
-        channels.touch_channel(
-            channels.web_group_name(self.printer.id),
-            self.channel_name
-        )
+        if abs(time.time() - self.last_touch) > channels.TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            channels.touch_channel(
+                channels.web_group_name(self.printer.id),
+                self.channel_name
+            )
 
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
@@ -93,6 +96,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def connect(self):
+        self.last_touch = time.time()
         try:
             self.anomaly_tracker = AnomalyTracker(now())
             self.group_name = channels.octo_group_name(self.current_printer().id)
@@ -130,10 +134,13 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        channels.touch_channel(
-            self.group_name,
-            self.channel_name
-        )
+        if abs(time.time() - self.last_touch) > channels.TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            channels.touch_channel(
+                self.group_name,
+                self.channel_name
+            )
+
         try:
             if text_data:
                 data = json.loads(text_data)
@@ -194,6 +201,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 class JanusWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def connect(self):
+        self.last_touch = time.time()
         try:
             if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
                 self.printer = self.scope['user']
@@ -219,10 +227,13 @@ class JanusWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):
-        channels.touch_channel(
-            channels.janus_web_group_name(self.printer.id),
-            self.channel_name
-        )
+        if abs(time.time() - self.last_touch) > channels.TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            channels.touch_channel(
+                channels.janus_web_group_name(self.printer.id),
+                self.channel_name
+            )
+
         channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
     @newrelic.agent.background_task()
@@ -236,6 +247,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def connect(self):
+        self.last_touch = time.time()
         try:
             self.printer = Printer.objects.select_related('user').get(
                 user=self.current_user(),
@@ -291,10 +303,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        channels.touch_channel(
-            self.group_name,
-            self.channel_name
-        )
+        if abs(time.time() - self.last_touch) > channels.TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            channels.touch_channel(
+                self.group_name,
+                self.channel_name
+            )
 
         if self.printer.user.tunnel_usage_over_cap():
             return

@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 from . import cache
 
+TOUCH_MIN_SECS = 30
 CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = {
     '*': 1200,
     'p_octo': 120,

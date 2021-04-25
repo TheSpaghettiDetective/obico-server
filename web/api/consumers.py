@@ -88,30 +88,22 @@ class WebConsumer(JsonWebsocketConsumer):
 
 
 class OctoPrintConsumer(WebsocketConsumer):
-
-    channel_layer_alias = 'octoprint'
-
     @newrelic.agent.background_task()
     def connect(self):
-        try:
-            self.anomaly_tracker = AnomalyTracker(now())
-            self.group_name = channels.octo_group_name(self.current_printer().id)
+        self.anomaly_tracker = AnomalyTracker(now())
+        self.group_name = channels.octo_group_name(self.current_printer().id)
 
-            if self.current_printer().is_authenticated:
-                async_to_sync(self.channel_layer.group_add)(
-                    self.group_name,
-                    self.channel_name
-                )
-                self.accept()
-                channels.broadcast_ws_connection_change(self.group_name)
-                # Send remote status to OctoPrint as soon as it connects
-                self.printer_message(
-                    channels.get_remote_status_msg(printer_id=self.current_printer().id, should_watch=self.current_printer().should_watch())
-                )
-            else:
-                self.close()
-        except Exception:
-            LOGGER.exception("Octoprint failed to connect")
+        if self.current_printer().is_authenticated:
+            async_to_sync(self.channel_layer.group_add)(
+                self.group_name,
+                self.channel_name
+            )
+            self.accept()
+            channels.broadcast_ws_connection_change(self.group_name)
+            # Send remote status to OctoPrint as soon as it connects
+            self.current_printer().send_should_watch_status(refresh=False)
+            channels.send_viewing_status(self.current_printer().id)
+        else:
             self.close()
 
     def disconnect(self, close_code):

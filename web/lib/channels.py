@@ -9,6 +9,7 @@ from . import cache
 CHANNEL_CONSIDERED_ALIVE_IF_TOUCHED_IN_SECS = {
     '*': 1200,
     'p_octo': 120,
+    'octoprinttunnel': 120,
 }
 
 

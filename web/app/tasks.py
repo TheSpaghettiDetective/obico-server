@@ -28,6 +28,7 @@ from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_p
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import cache
+from lib import site
 from lib.notifications import send_print_notification
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 

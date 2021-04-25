@@ -88,11 +88,11 @@ class OctoPrintConsumer(WebsocketConsumer):
         self.anomaly_tracker = AnomalyTracker(now())
 
         if self.current_printer().is_authenticated:
+            self.accept()
             async_to_sync(self.channel_layer.group_add)(
                 channels.octo_group_name(self.current_printer().id),
                 self.channel_name
             )
-            self.accept()
             Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
             # Send remote status to OctoPrint as soon as it connects
             self.current_printer().send_should_watch_status(refresh=False)

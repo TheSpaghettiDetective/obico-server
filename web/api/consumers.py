@@ -223,18 +223,19 @@ class JanusWebConsumer(WebsocketConsumer):
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
+
     # default 1000 does not trigger retries in octoprint webapp
     OCTO_WS_ERROR_CODE = 3000
 
     @newrelic.agent.background_task()
     def connect(self):
         try:
-            self.printer = Printer.objects.select_related('user').get(
-                user=self.current_user(),
-                id=self.scope['url_route']['kwargs']['printer_id'])
             self.group_name = channels.octoprinttunnel_group_name(
                 self.printer.id)
             # Exception for un-authenticated or un-authorized access
+            self.printer = Printer.objects.select_related('user').get(
+                user=self.current_user(),
+                id=self.scope['url_route']['kwargs']['printer_id'])
             self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
             self.ref = self.scope['path']
 

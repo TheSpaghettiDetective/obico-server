@@ -332,6 +332,13 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def octoprinttunnel_message(self, msg, **kwargs):
         try:
+            if abs(time.time() - self.last_touch) > channels.TOUCH_MIN_SECS:
+                self.last_touch = time.time()
+                channels.touch_channel(
+                    self.group_name,
+                    self.channel_name
+                )
+
             # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}
             payload = msg['data']
 

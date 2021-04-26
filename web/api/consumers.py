@@ -26,7 +26,7 @@ from app.models import Print, Printer, ResurrectionError
 from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
-
+TOUCH_MIN_SECS = 30
 
 class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
@@ -38,11 +38,13 @@ class WebConsumer(JsonWebsocketConsumer):
                 # Throw exception in case of un-authenticated or un-authorized access
                 self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
+            self.accept()
+
             async_to_sync(self.channel_layer.group_add)(
                 channels.web_group_name(self.printer.id),
                 self.channel_name
             )
-            self.accept()
+            self.last_touch = time.time()
             Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
             self.printer_status(None)   # Send printer status to web frontend as soon as it connects
         except:
@@ -59,7 +61,10 @@ class WebConsumer(JsonWebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
-        Presence.objects.touch(self.channel_name)
+        if time.time() - self.last_touch > TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            Presence.objects.touch(self.channel_name)
+
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
 
@@ -93,6 +98,7 @@ class OctoPrintConsumer(WebsocketConsumer):
                 channels.octo_group_name(self.current_printer().id),
                 self.channel_name
             )
+            self.last_touch = time.time()
             Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
             # Send remote status to OctoPrint as soon as it connects
             self.printer_message({'remote_status':{
@@ -118,7 +124,10 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        Presence.objects.touch(self.channel_name)
+        if time.time() - self.last_touch > TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            Presence.objects.touch(self.channel_name)
+
         try:
             if text_data:
                 data = json.loads(text_data)

@@ -119,7 +119,6 @@
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode } from '@lib/normalizers'
-  import { isIOS } from '@lib/app_platform'
   import SearchInput from '@common/SearchInput.vue'
 
   const SORTING = {
@@ -157,7 +156,7 @@
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: isIOS() ? 'file/*' : '.g,.gcode,.gco', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
+          acceptedFiles: '.g,.gcode,.gco',
           url: 'upload/',
           headers: { 'X-CSRFToken': this.csrf },
         },

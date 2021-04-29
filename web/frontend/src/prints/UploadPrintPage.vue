@@ -49,7 +49,6 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-import { isIOS } from '@lib/app_platform'
 
   export default {
     name: 'UploadPrintPage',
@@ -73,7 +72,7 @@ import { isIOS } from '@lib/app_platform'
           withCredentials: true,
           maxFilesize: 200, // MB
           timeout: 60 * 60 * 1000, // For large files
-          acceptedFiles: isIOS() ? 'file/*' : 'video/mp4, video/mpeg', // use file/* to so that stupid ios want show camera and stupid apple reviewer won't freak out.
+          acceptedFiles: 'video/mp4, video/mpeg',
           url: '?',
           headers: {'X-CSRFToken': this.csrf},
         },

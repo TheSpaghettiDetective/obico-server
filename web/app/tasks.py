@@ -69,7 +69,7 @@ def compile_timelapse(print_id):
             _, mp4_file_url = save_file_obj('private/{}'.format(mp4_filename), mp4_file, settings.TIMELAPSE_CONTAINER)
 
         _print.video_url = mp4_file_url
-        _print.save()
+        _print.save(keep_deleted=True)
 
     # build tagged timelapse
     print_pics = list_dir(f'tagged/{pic_dir}/', settings.PICS_CONTAINER, long_term_storage=False)
@@ -109,7 +109,7 @@ def compile_timelapse(print_id):
 
         _print.tagged_video_url = mp4_file_url
         _print.prediction_json_url = json_url
-        _print.save()
+        _print.save(keep_deleted=True)
 
     shutil.rmtree(to_dir, ignore_errors=True)
     clean_up_print_pics(_print)
@@ -129,7 +129,7 @@ def preprocess_timelapse(self, user_id, video_path, filename):
     with open(converted_mp4_path, 'rb') as mp4_file:
         _, video_url = save_file_obj(f'private/{_print.id}.mp4', mp4_file, settings.TIMELAPSE_CONTAINER)
     _print.video_url = video_url
-    _print.save()
+    _print.save(keep_deleted=True)
 
     detect_timelapse.delay(_print.id)
     os.remove(tmp_file_path)
@@ -198,7 +198,7 @@ def detect_timelapse(self, print_id):
     _print.tagged_video_url = mp4_file_url
     _print.prediction_json_url = json_url
     _print.poster_url = poster_file_url
-    _print.save()
+    _print.save(keep_deleted=True)
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
     send_timelapse_detection_done_email(_print)
@@ -273,7 +273,7 @@ def generate_print_poster(_print):
                             to_long_term_storage=True)
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
-        _print.save()
+        _print.save(keep_deleted=True)
 
     # Save the unrotated snapshot so that it is still viewable even after the print is done.
     unrotated_jpg_url = save_print_snapshot(_print.printer,

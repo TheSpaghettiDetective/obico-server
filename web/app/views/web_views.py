@@ -125,20 +125,6 @@ def printer_control(request, pk):
     return render(request, 'printer_control.html')
 
 
-@login_required
-def integration(request, pk):
-    printer = get_printer_or_404(pk, request)
-    if request.method == "POST":
-        if request.POST.get('enable') == 't' and not printer.service_token:
-            printer.service_token = hexlify(os.urandom(24)).decode()
-            printer.save()
-        elif request.POST.get('enable') == 'f':
-            printer.service_token = None
-            printer.save()
-            messages.success(request, "3D Geeks integration has been turned off successfully.")
-
-    return render(request, 'printer_integration.html', {'printer': printer})
-
 # User preferences
 
 

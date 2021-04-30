@@ -210,12 +210,6 @@ export default {
     Navbar,
   },
 
-  props: {
-    extEndpointLength: {
-      type: Number
-    },
-  },
-
   data() {
     return {
       printer: null,
@@ -285,9 +279,6 @@ export default {
           this.printer.lift_z_on_pause = newValue
         }
       }
-    },
-    integrationUrl() {
-      return `/printers/${this.printerId}/integration/`
     },
 
     printerWizardUrl() {

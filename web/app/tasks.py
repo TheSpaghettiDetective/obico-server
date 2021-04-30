@@ -205,25 +205,6 @@ def detect_timelapse(self, print_id):
     delete_dir(f'uploaded/{_print.user.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
 
 
-# Print events handler
-
-@shared_task
-def service_webhook(print_id, event_type, **kwargs):
-    if not settings.EXT_3D_GEEKS_ENDPOINT:
-        return
-
-    _print = Print.objects.select_related('printer__user').filter(id=print_id).first()
-
-    # Silently ignore the print event when the print is already gone, most likely because it's too short to be kept.
-    if not _print:
-        return
-
-    webhook_payload = service_webhook_payload(event_type, _print, kwargs)
-    req = requests.post(
-        url= settings.EXT_3D_GEEKS_ENDPOINT,
-        json=webhook_payload
-    )
-
 # Websocket connection count house upkeep jobs
 
 @periodic_task(run_every=timedelta(seconds=120))
@@ -332,17 +313,3 @@ def select_print_shots_for_feedback(_print):
                             rotated=True,
                             to_long_term_storage=False)
         PrintShotFeedback.objects.create(print=_print, image_url=rotated_jpg_url)
-
-
-def service_webhook_payload(event_type, _print, extra_dict):
-    if not _print.printer.service_token:
-        return None
-
-    payload= dict(
-        token=_print.printer.service_token,
-        event=event_type,
-        printer=_print.printer.name,
-        print=_print.filename
-    )
-    payload.update(extra_dict)
-    return payload

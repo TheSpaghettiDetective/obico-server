@@ -99,7 +99,7 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
                   'lift_z_on_pause', 'detective_sensitivity',
                   'pic', 'status', 'settings', 'current_print',
-                  'normalized_p', 'auth_token', 'archived_at', 'service_token')
+                  'normalized_p', 'auth_token', 'archived_at',)
 
     def get_normalized_p(self, obj: Printer) -> float:
         return calc_normalized_p(obj.detective_sensitivity,

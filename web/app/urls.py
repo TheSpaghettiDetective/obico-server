@@ -14,7 +14,6 @@ urlpatterns = [
     path('printers/<pk>/', web_views.edit_printer),
     path('printers/<int:pk>/delete/', web_views.delete_printer),
     path('printers/<int:pk>/control/', web_views.printer_control),
-    path('printers/<int:pk>/integration/', web_views.integration),
     path('printers/share_token/<share_token>/', web_views.printer_shared, name='printer_shared'),
     path('publictimelapses/', web_views.publictimelapse_list, name='publictimelapse_list'),
     path('user_preferences/', web_views.user_preferences),

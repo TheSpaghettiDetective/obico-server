@@ -53,16 +53,6 @@ class PrinterWSAuthMiddleWare:
         return self.inner(scope)
 
 
-class PrinterServiceTokenAuthentication(TokenAuthentication):
-    def authenticate_credentials(self, key, request=None):
-        try:
-            printer = Printer.objects.select_related('user').get(service_token=key)
-        except ObjectDoesNotExist:
-            return None
-
-        return printer.user, printer
-
-
 def TokenAuthMiddlewareStack(inner): return PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))
 
 

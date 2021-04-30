@@ -7,12 +7,9 @@ from lib import channels
 from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
 from app.models import PrintEvent, Printer
-from app.tasks import service_webhook
 from lib.heater_trackers import process_heater_temps
 
 STATUS_TTL_SECONDS = 240
-SVC_WEBHOOK_PROGRESS_PCTS = [25, 50, 75]
-
 
 def process_octoprint_status(printer: Printer, status: Dict) -> None:
     octoprint_settings = status.get('octoprint_settings')
@@ -64,10 +61,9 @@ def process_octoprint_status_with_ts(op_status, printer):
     if not printer.current_print:
         return
 
-    # Notification for mobile devices or for external service webhooks such as 3D Geeks
+    # Notification for mobile devices
     # This has to happen before event saving, as `current_print` may change after event saving.
     mobile_notifications.send_if_needed(printer.current_print, op_event, op_data)
-    call_service_webhook_if_needed(printer, op_event, op_data)
 
     if op_event.get('event_type') in ('PrintCancelled', 'PrintFailed'):
         printer.current_print.cancelled_at = timezone.now()
@@ -82,20 +78,3 @@ def process_octoprint_status_with_ts(op_status, printer):
         printer.current_print.paused_at = None
         printer.current_print.save()
         PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
-
-
-def call_service_webhook_if_needed(printer, op_event, op_data):
-    if not printer.service_token:
-        return
-
-    if op_event.get('event_type') in mobile_notifications.PRINT_EVENTS:
-        service_webhook.delay(printer.current_print.id, op_event.get('event_type'))
-
-    print_time = op_data.get('progress', {}).get('printTime')
-    print_time_left = op_data.get('progress', {}).get('printTimeLeft')
-    pct = op_data.get('progress', {}).get('completion')
-    last_progress = cache.print_progress_get(printer.current_print.id)
-    next_progress_pct = next(iter(list(filter(lambda x: x > last_progress, SVC_WEBHOOK_PROGRESS_PCTS))), None)
-    if pct and print_time and print_time_left and next_progress_pct and pct >= next_progress_pct:
-        cache.print_progress_set(printer.current_print.id, next_progress_pct)
-        service_webhook.delay(printer.current_print.id, 'PrintProgress', percent=pct, timeleft=int(print_time_left), currenttime=int(print_time))

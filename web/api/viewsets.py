@@ -109,18 +109,6 @@ class PrinterViewSet(viewsets.ModelViewSet):
 
         return self.send_command_response(printer, True)
 
-    @action(detail=True, methods=['get'])
-    def send_webhook_test(self, request, pk=None):
-        printer = get_printer_or_404(pk, request)
-        req = requests.post(
-            url=settings.EXT_3D_GEEKS_ENDPOINT,
-            json=dict(
-                token=printer.service_token,
-                event="test"))
-        req.raise_for_status()
-
-        return Response(dict(status='okay'))
-
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
         printer = get_printer_or_404(pk, request)

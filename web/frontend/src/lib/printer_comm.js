@@ -2,6 +2,7 @@
 import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
+import LZString from 'lz-string'
 
 export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
   var self = {}
@@ -55,20 +56,39 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   self.setWebRTC = function(webrtc) {
     self.webrtc = webrtc
-    self.webrtc.callbacks.onData = (jsonData) => {
-        let msg = {}
-        try {
-            msg = JSON.parse(jsonData)
-        } catch (error) {
-            // Any garbage sent to the Janus UDP port will be forwarded here.
-        }
-        if ('ref' in msg && 'ret' in msg) {
-            self.onPassThruReceived(msg)
-            return
-        }
-        if (self.onStatusReceived) {
-            self.onStatusReceived(msg)
-        }
+
+    function parseJsonData(jsonData) {
+      let msg = {}
+      try {
+        msg = JSON.parse(jsonData)
+      } catch (error) {
+        // Any garbage sent to the Janus UDP port will be forwarded here.
+      }
+
+      if ('ref' in msg && 'ret' in msg) {
+        self.onPassThruReceived(msg)
+        return
+      }
+
+      if (self.onStatusReceived) {
+        self.onStatusReceived(msg)
+      }
+    }
+
+    self.webrtc.callbacks.onData = (maybeBlob) => {
+      if (maybeBlob instanceof Blob) {
+        const reader = new FileReader()
+        reader.addEventListener('loadend', (e) => {
+          const compressed = e.srcElement.result
+          const jsonData = LZString.decompressFromUTF16(compressed)
+          if (jsonData) {
+            parseJsonData(jsonData)
+          }
+        })
+        reader.readAsText(maybeBlob)
+      } else {
+        parseJsonData(maybeBlob)
+      }
     }
   }
 

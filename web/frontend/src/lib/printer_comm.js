@@ -56,31 +56,39 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   self.setWebRTC = function(webrtc) {
     self.webrtc = webrtc
-    self.webrtc.callbacks.onData = (mightBeCompressedData) => {
+
+    function parseJsonData(jsonData) {
       let msg = {}
-      let jsonData = ''
-
       try {
-        jsonData = LZString.decompressFromBase64(mightBeCompressedData)
-        if (jsonData === null) {
-          jsonData = mightBeCompressedData
-        }
-      } catch {
-          jsonData = mightBeCompressedData
+        msg = JSON.parse(jsonData)
+      } catch (error) {
+        // Any garbage sent to the Janus UDP port will be forwarded here.
       }
-      try {
-            msg = JSON.parse(jsonData)
-        } catch (error) {
-            // Any garbage sent to the Janus UDP port will be forwarded here.
-        }
 
-        if ('ref' in msg && 'ret' in msg) {
-            self.onPassThruReceived(msg)
-            return
-        }
-        if (self.onStatusReceived) {
-            self.onStatusReceived(msg)
-        }
+      if ('ref' in msg && 'ret' in msg) {
+        self.onPassThruReceived(msg)
+        return
+      }
+
+      if (self.onStatusReceived) {
+        self.onStatusReceived(msg)
+      }
+    }
+
+    self.webrtc.callbacks.onData = (maybeBlob) => {
+      if (maybeBlob instanceof Blob) {
+        const reader = new FileReader()
+        reader.addEventListener('loadend', (e) => {
+          const compressed = e.srcElement.result
+          const jsonData = LZString.decompressFromUTF16(compressed)
+          if (jsonData) {
+            parseJsonData(jsonData)
+          }
+        })
+        reader.readAsText(maybeBlob)
+      } else {
+        parseJsonData(maybeBlob)
+      }
     }
   }
 

@@ -63,9 +63,10 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
         msg = JSON.parse(jsonData)
       } catch (error) {
         // Any garbage sent to the Janus UDP port will be forwarded here.
+        return
       }
 
-      if ('ref' in msg && 'ret' in msg) {
+      if (msg && 'ref' in msg && 'ret' in msg) {
         self.onPassThruReceived(msg)
         return
       }
@@ -76,6 +77,10 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     }
 
     self.webrtc.callbacks.onData = (maybeBin) => {
+      if (!maybeBin) {
+        return
+      }
+
       if (maybeBin instanceof ArrayBuffer) {
         try {
           const jsonData = pako.ungzip(new Uint8Array(maybeBin), {'to': 'string'})

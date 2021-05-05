@@ -5,7 +5,7 @@
     </pull-to-reveal>
 
     <div v-if="!isPro" class="floating-panel text-center pb-2">
-      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">?</a>)</div>
+      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://help.thespaghettidetective.com/kb/guide/en/octoprint-tunneling-Osas3m3O3L/Steps/300026,361069,366057,300029">?</a>)</div>
       <div :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</div>
       <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent/pricing/">Get Unlimited Tunneling</a></div>
     </div>
@@ -66,7 +66,7 @@ export default {
 
   mounted() {
     this.$swal.DismissableToast({
-        html: '<h4 class="text-center p-2"><img style="height: 1.1em;margin-right: 0.75em;" src="/static/img/octoprint-tunnel.png" />OctoPrint Secure Tunnel</h4><div class="p-1">It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.</div><div class="p-1"><a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-secure">Learn more about OctoPrint Tunneling\'s security and page load speed. <i class="fas fa-external-link-alt"></i></a></div>',
+        html: '<h4 class="text-center p-2"><img style="height: 1.1em;margin-right: 0.75em;" src="/static/img/octoprint-tunnel.png" />OctoPrint Secure Tunnel</h4><div class="p-1">It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.</div><div class="p-1"><a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/octoprint-tunneling-Osas3m3O3L/Steps/300026,361069,300029">Learn more about OctoPrint Tunneling\'s security and page load speed. <i class="fas fa-external-link-alt"></i></a></div>',
         customClass: {
           container: 'dark-backdrop',
         },

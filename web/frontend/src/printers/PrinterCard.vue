@@ -72,7 +72,7 @@
           <div class="text-warning">The Detective Is Not Watching</div>
           <small
             v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
+          >{{ printer.not_watching_reason }}. <a href="https://help.thespaghettidetective.com/kb/guide/en/why-is-the-detective-not-watching-jUGzXPoRIH/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
           <div></div>
         </div>
         <Gauge

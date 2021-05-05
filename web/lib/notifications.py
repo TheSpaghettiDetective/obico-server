@@ -511,7 +511,7 @@ def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, ve
     if img_url:
         # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
         try:
-            if not ipaddress.ip_address(urlparse(img_url).hostname).is_global:
+            if settings.EMAIL_INCLUDE_SNAPSHOTS or not ipaddress.ip_address(urlparse(img_url).hostname).is_global:
                 attachments = [('Image.jpg', requests.get(img_url).content, 'image/jpeg')]
         except:
             pass

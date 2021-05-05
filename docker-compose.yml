@@ -15,10 +15,10 @@ x-web-defaults: &web-defaults
     EMAIL_HOST_PASSWORD:    # -> your email account password
     EMAIL_PORT: 587  # DO NOT surround it with quotes. Otherwise email won't be sent!
     EMAIL_USE_TLS: 'True'
-    EMAIL_INCLUDE_SNAPSHOTS: 'False'
     DEFAULT_FROM_EMAIL: 'changeme@example.com'
     DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
     SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
+    SITE_IS_PUBLIC: 'False' # set it to 'True' if the site configured in django admin is accessible from the internet
     SOCIAL_LOGIN: 'False'
     REDIS_URL: 'redis://redis:6379'
     DATABASE_URL: 'sqlite:////app/db.sqlite3'

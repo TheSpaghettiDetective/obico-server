@@ -9,7 +9,6 @@ from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
 from urllib.parse import urlparse
-import ipaddress
 from raven.contrib.django.raven_compat.models import client as sentryClient
 import smtplib
 import backoff
@@ -161,7 +160,7 @@ def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_pa
         file_url = None
         try:
             file_url = rotated_jpg_url
-            if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
+            if not settings.SITE_IS_PUBLIC:
                 pb.upload_file(requests.get(file_url).content, 'Detected Failure.jpg')
         except:
             pass
@@ -405,7 +404,7 @@ def send_print_notification_pushbullet(_print):
     file_url = None
     try:
         file_url = _print.poster_url
-        if not ipaddress.ip_address(urlparse(file_url).hostname).is_global:
+        if not settings.SITE_IS_PUBLIC:
             pb.upload_file(requests.get(file_url).content, 'Snapshot.jpg')
     except:
         pass
@@ -511,7 +510,7 @@ def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, ve
     if img_url:
         # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
         try:
-            if settings.EMAIL_INCLUDE_SNAPSHOTS or not ipaddress.ip_address(urlparse(img_url).hostname).is_global:
+            if not settings.SITE_IS_PUBLIC:
                 attachments = [('Image.jpg', requests.get(img_url).content, 'image/jpeg')]
         except:
             pass

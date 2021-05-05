@@ -194,6 +194,7 @@ STATICFILES_DIRS = [
 
 SITE_ID = 1
 SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
+SITE_IS_PUBLIC = os.environ.get('SITE_IS_PUBLIC', 'False') == 'True'
 
 # DRF settings:
 

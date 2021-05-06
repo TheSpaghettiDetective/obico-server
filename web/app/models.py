@@ -99,6 +99,7 @@ class User(AbstractUser):
     print_notification_by_discord = models.BooleanField(null=False, blank=False, default=True)
     pushover_user_token = models.CharField(max_length=45, null=True, blank=True)
     print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
+    mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

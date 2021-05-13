@@ -13,11 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 from django.forms import model_to_dict
 import newrelic.agent
-from channels_presence.models import Room
-from channels_presence.models import Presence
 from django.db.models import F
 
 
+from lib.presence import presence
 from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
@@ -27,6 +26,7 @@ from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
+
 
 class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
@@ -45,7 +45,7 @@ class WebConsumer(JsonWebsocketConsumer):
                 self.channel_name
             )
             self.last_touch = time.time()
-            Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
+            presence.add_to_group(channels.web_group_name(self.printer.id), self.channel_name)
             self.printer_status(None)   # Send printer status to web frontend as soon as it connects
         except:
             LOGGER.exception("Websocket failed to connect")
@@ -57,13 +57,13 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.web_group_name(self.printer.id),
             self.channel_name
         )
-        Room.objects.remove(channels.web_group_name(self.printer.id), self.channel_name)
+        presence.remove_from_group(channels.web_group_name(self.printer.id), self.channel_name)
 
     @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
         if time.time() - self.last_touch > TOUCH_MIN_SECS:
             self.last_touch = time.time()
-            Presence.objects.touch(self.channel_name)
+            presence.touch(channels.web_group_name(self.printer.id), self.channel_name)
 
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
@@ -99,10 +99,10 @@ class OctoPrintConsumer(WebsocketConsumer):
                 self.channel_name
             )
             self.last_touch = time.time()
-            Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
+            presence.add_to_group(channels.octo_group_name(self.current_printer().id), self.channel_name)
             # Send remote status to OctoPrint as soon as it connects
-            self.printer_message({'remote_status':{
-                'viewing': channels.num_ws_connections(channels.web_group_name(self.current_printer().id)) > 0,
+            self.printer_message({'remote_status': {
+                'viewing': presence.get_group_size(channels.web_group_name(self.current_printer().id)) > 0,
                 'should_watch': self.current_printer().should_watch(),
             }})
         else:
@@ -114,7 +114,9 @@ class OctoPrintConsumer(WebsocketConsumer):
             channels.octo_group_name(self.current_printer().id),
             self.channel_name
         )
-        Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
+
+        presence.remove_from_group(
+            channels.octo_group_name(self.current_printer().id), self.channel_name)
 
         # disconnect all octoprint tunnels
         channels.send_message_to_octoprinttunnel(
@@ -126,7 +128,7 @@ class OctoPrintConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         if time.time() - self.last_touch > TOUCH_MIN_SECS:
             self.last_touch = time.time()
-            Presence.objects.touch(self.channel_name)
+            presence.touch(channels.octo_group_name(self.current_printer().id), self.channel_name)
 
         try:
             if text_data:

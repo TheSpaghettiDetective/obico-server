@@ -1,8 +1,10 @@
 import os
 import re
 from firebase_admin.messaging import Message, send, Notification, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
+from firebase_admin._messaging_encoder import MessageEncoder
 import firebase_admin
 from django.utils.timezone import now
+from django.forms import model_to_dict
 from raven.contrib.django.raven_compat.models import client as sentryClient
 
 from .utils import save_print_snapshot, shortform_duration, shortform_localtime
@@ -142,6 +144,11 @@ def send_to_device(msg, mobile_device):
             android=AndroidConfig(priority='high'),
             apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True, category='post'))),
             token=mobile_device.device_token)
+
+        # TODO remove after fixing fcm bug
+        encoded = MessageEncoder().default(message)  # noqa: F841
+        device_dict = model_to_dict(mobile_device)   # noqa: F841
+
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
         MobileDevice.objects.filter(device_token=mobile_device.device_token).update(deactivated_at=now())

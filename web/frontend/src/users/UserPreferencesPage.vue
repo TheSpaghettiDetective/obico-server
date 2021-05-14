@@ -78,7 +78,7 @@
                     @change="updateSetting('notify_on_canceled')"
                   >
                   <label class="custom-control-label" for="id_notify_on_canceled">
-                    Notify me when print job is canceled
+                    Notify me when print job is cancelled
                   </label>
                 </div>
               </saving-animation>

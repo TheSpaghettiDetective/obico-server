@@ -120,7 +120,7 @@ export default {
       staticWrapper.style.width = '100%'
       staticWrapper.style.top = '0'
       staticWrapper.style.left = '0'
-      staticWrapper.style.zIndex = '1'
+      staticWrapper.style.zIndex = '10'
 
       const elemHeight = parseInt(window.getComputedStyle(staticWrapper).height)
       document.querySelector('body').style.paddingTop = `${elemHeight}px`
@@ -195,7 +195,7 @@ export default {
     position: fixed
     left: 0
     width: 100%
-    z-index: 1
+    z-index: 10
     top: -9999px
 
   .showing-edge

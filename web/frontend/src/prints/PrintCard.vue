@@ -425,9 +425,6 @@ export default {
   justify-content: space-between
   align-items: center
 
-.card-header label.active
-  z-index: 0
-
 .seg-control-icon
   height: 1.2rem
 

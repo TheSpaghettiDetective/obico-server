@@ -22,7 +22,7 @@ Install the entire server, all in one command!:
 ```
 git clone https://github.com/LyricPants66133/Jetson_TSD_Fullinstall.git && sh Jetson_TSD_Fullinstall/jetson_TSD_install.sh
 ```
-2. Boot up your favorite streaming service and get a hot drink. This can a while.
+2. Boot up your favorite streaming service and get a hot drink. This can take a while.
 
 3. Reboot your Jetson to make sure everything is running well: `sudo reboot`
 

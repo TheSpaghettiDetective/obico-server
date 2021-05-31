@@ -3,7 +3,8 @@
     <nav v-if="!isInMobile" class="navbar navbar-expand-lg navbar-dark bg-dark static-top flex-column">
       <div class="container">
         <a class="navbar-brand" href="/printers/">
-        <img :src="require('@static/img/logo-inverted.png')" style="height: 32px;" alt="The Spaghetti Detective" /></a>
+          <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective"></dark-light-image>
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
           aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
           <span class="navbar-toggler-icon"></span>
@@ -81,9 +82,14 @@
 <script>
 import moment from 'moment'
 import { isMobile } from '@lib/app_platform'
+import DarkLightImage from '@common/DarkLightImage.vue'
 
 export default {
   name: 'Navbar',
+
+  components: {
+    DarkLightImage,
+  },
 
   data() {
     return {
@@ -155,11 +161,11 @@ export default {
   a.navbar-brand
     margin-top: -3px
 
+    ::v-deep img
+      height: 32px
+
   .nav-item
     text-transform: uppercase
-
-    &.active, &:hover
-      background-color: #596a7b
 
   .user-menu
     text-transform: none

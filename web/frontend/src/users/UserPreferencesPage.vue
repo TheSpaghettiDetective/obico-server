@@ -6,6 +6,44 @@
 
     <div class="col-sm-11 col-md-10 col-lg-8">
       <div v-if="user" class="form-container">
+        <!-- Personalization -->
+        <section class="personalization">
+          <h2 class="section-title">Personalization</h2>
+          <div class="form-group row mt-3">
+            <label class="col-md-2 col-sm-3 col-form-label">Theme</label>
+            <div class="col-sm-9 col-md-10">
+              <div class="theme-controls">
+                <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 312.812 312.812" class="icon" :class="{'active': themeValue === themes.Dark}">
+                    <path d="M305.2 178.159c-3.2-.8-6.4 0-9.2 2-10.4 8.8-22.4 16-35.6 20.8-12.4 4.8-26 7.2-40.4 7.2-32.4 0-62-13.2-83.2-34.4-21.2-21.2-34.4-50.8-34.4-83.2 0-13.6 2.4-26.8 6.4-38.8 4.4-12.8 10.8-24.4 19.2-34.4 3.6-4.4 2.8-10.8-1.6-14.4-2.8-2-6-2.8-9.2-2-34 9.2-63.6 29.6-84.8 56.8-20.4 26.8-32.4 60-32.4 96 0 43.6 17.6 83.2 46.4 112s68 46.4 112 46.4c36.8 0 70.8-12.8 98-34 27.6-21.6 47.6-52.4 56-87.6 1.6-5.6-1.6-11.2-7.2-12.4z"/>
+                  </svg>
+                  <div class="label">
+                    <span class="dark" v-show="themeValue === themes.Dark">DARK</span>
+                    <span class="light" v-show="themeValue === themes.Light">LIGHT</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.16 45.16" class="icon" :class="{'active': themeValue === themes.Light}">
+                    <path d="M22.58 11.269c-6.237 0-11.311 5.075-11.311 11.312s5.074 11.312 11.311 11.312c6.236 0 11.311-5.074 11.311-11.312S28.816 11.269 22.58 11.269zM22.58 7.944a2.207 2.207 0 01-2.207-2.206V2.207a2.207 2.207 0 114.414 0v3.531a2.207 2.207 0 01-2.207 2.206zM22.58 37.215a2.207 2.207 0 00-2.207 2.207v3.53a2.207 2.207 0 104.414 0v-3.53a2.208 2.208 0 00-2.207-2.207zM32.928 12.231a2.208 2.208 0 010-3.121l2.497-2.497a2.207 2.207 0 113.121 3.121l-2.497 2.497a2.207 2.207 0 01-3.121 0zM12.231 32.93a2.205 2.205 0 00-3.121 0l-2.497 2.496a2.207 2.207 0 003.121 3.121l2.497-2.498a2.204 2.204 0 000-3.119zM37.215 22.58c0-1.219.988-2.207 2.207-2.207h3.531a2.207 2.207 0 110 4.413h-3.531a2.206 2.206 0 01-2.207-2.206zM7.944 22.58a2.207 2.207 0 00-2.207-2.207h-3.53a2.207 2.207 0 100 4.413h3.531a2.206 2.206 0 002.206-2.206zM32.928 32.93a2.208 2.208 0 013.121 0l2.497 2.497a2.205 2.205 0 11-3.121 3.12l-2.497-2.497a2.205 2.205 0 010-3.12zM12.231 12.231a2.207 2.207 0 000-3.121L9.734 6.614a2.207 2.207 0 00-3.121 3.12l2.497 2.497a2.205 2.205 0 003.121 0z"/>
+                  </svg>
+                  <div class="active-indicator" :class="{'right': themeValue === themes.Light}">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+                <div class="custom-control custom-checkbox form-check-inline system-theme-control">
+                  <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="id_theme_system"
+                    v-model="systemTheme"
+                  >
+                  <label class="custom-control-label" for="id_theme_system">
+                    Sync theme with system settings
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Profile -->
         <section class="profile">
           <h2 class="section-title">Profile</h2>
@@ -626,6 +664,7 @@ import SavingAnimation from '../common/SavingAnimation.vue'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
+import { Themes, theme, selectTheme } from '../main/themes.js'
 
 export default {
   name: 'UserPreferencesPage',
@@ -677,10 +716,20 @@ export default {
       combinedInputs: { // Send changes to API only if all the other values in the array have data
         phone: ['phone_country_code', 'phone_number'],
       },
+      themes: Themes,
+      systemTheme: theme.system,
     }
   },
 
   computed: {
+    themeValue: {
+      get: function() {
+        return theme.value
+      },
+      set: function(newValue) {
+        theme.value = newValue
+      }
+    },
     firstName: {
       get: function() {
         return this.user ? this.user.first_name : undefined
@@ -748,6 +797,11 @@ export default {
   },
 
   watch: {
+    systemTheme: function(newValue) {
+      if (newValue) {
+        selectTheme(this.themes.System)
+      }
+    },
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('first_name')
@@ -808,6 +862,15 @@ export default {
   },
 
   methods: {
+    /**
+     * Toggle color theme
+     */
+    toggleTheme() {
+      let newTheme = this.themeValue === this.themes.Light ? this.themes.Dark : this.themes.Light
+      this.systemTheme = false
+      selectTheme(newTheme)
+    },
+
     /**
      * Get actual user preferences
      */
@@ -963,7 +1026,72 @@ export default {
 section:not(:first-child)
   margin-top: 60px
 
-  .section-title
-    border-bottom: 1px solid theme.$white
+.theme-controls
+  display: flex
+  align-items: center
+
+.theme-toggle
+  display: inline-flex
+  align-items: center
+  background-color: rgb(var(--color-bg-secondary))
+  border-radius: 100px
+  position: relative
+  margin-right: 26px
+
+  &:hover
+    cursor: pointer
+
+  & > *
+    position: relative
+    z-index: 2
+
+  .icon
+    flex: 0 0 18px
+    height: 18px
+    margin: 10px
+
+    path
+      fill: rgb(var(--color-icon-disabled))
+      transition: all .3s ease-out
+  
+    &.active path
+      fill: rgb(var(--color-icon-active))
+
+  .label
+    flex: 1
+    text-align: center
+    font-size: 12px
+    color: #fff
+    padding: 0 8px
+    
+  .active-indicator
+    position: absolute
+    width: calc(100% - 10px)
+    height: 30px
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    margin: auto
+    z-index: 1
+    transition: all .3s ease-out
+
+    .circle
+      position: absolute
+      width: 30px
+      height: 30px
+      border-radius: 30px
+      background-color: #fff
+      transition: all .3s ease-in-out
+
+    &.right
+      transform: translateX(100%)
+
+      .circle
+        transform: translateX(-100%)
+
+.system-theme-control
+  position: relative
+  z-index: 3
 
 </style>

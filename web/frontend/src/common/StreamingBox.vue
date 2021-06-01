@@ -218,13 +218,13 @@ export default {
           <p class="lead">1. A constricted video stream on <strong>your Raspberry Pi. The most common reasons are:</p>
           <ul>
             <li>Camera resolution is set too high.</li>
-            <li>Camera framerate is set too high. This is only when you set <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/compatibility-mode-streaming-GaERh2rUjr/">the compatibility mode</a> to "always".</li>
+            <li>Camera framerate is set too high. This is only when you set <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/compatibility-mode-streaming-GaERh2rUjr">the compatibility mode</a> to "always".</li>
             <li>The upload speed of your Raspberry Pi is too low.</li>
           </ul>
           <p class="lead">2. The internet connection of your computer or phone is not fast enough.</p>
           <p class="lead">3. Your webcam is not properly connected to your Raspberry Pi.</p>
           <br>
-          <p>You should leave the compatibility mode to "auto", unless you have <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/compatibility-mode-streaming-GaERh2rUjr/Steps/300081,300084">a good reason to it to "always".</a></p>
+          <p>You should leave the compatibility mode to "auto", unless you have <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/compatibility-mode-streaming-GaERh2rUjr">a good reason to it to "always".</a></p>
           <p>As a rule of thumb, for every 300k-pixel resolution (640x480), you need to have 1.5Mbps upload bandwidth to stream smoothly at 25fps. This means if you set the webcam resolution to 1024x768 (~800k pixels), you need to have 4.5Mbps upload bandwidth. Also remember that the upload bandwidth of your Raspberry Pi may not be the same as your computer, even if they are connected to the same Wi-Fi network. This is because Raspberry Pi's Wi-Fi chip is weaker than the most computers'.</p>
         `,
         showCloseButton: true,

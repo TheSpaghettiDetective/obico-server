@@ -8,7 +8,8 @@
   position: relative;
   outline: none;
 
-  background-color: black;
+  // background-color: black;
+  background-color: rgb(var(--color-bg-video));
 
   .webcam_rotated {
     position: relative;
@@ -155,9 +156,9 @@
 
       &.failure-alert {
         a {
-          color: darken($primary, 20);
+          color: rgb(var(--color-primary-d-20));
           &:hover {
-            color: darken($primary, 35);
+            color: rgb(var(--color-primary-d-35));
           }
         }
       }
@@ -167,7 +168,7 @@
       width: 33px;
       height: 33px;
       position: relative;
-      color: $gray-200;
+      color: rgb(var(--color-gray-200-2));
       font-size: 1rem;
       padding: 0rem 1.5rem;
       i {
@@ -175,8 +176,8 @@
         transform: translate(-50%, -50%);
       }
       &.pressed {
-        color: lighten($primary, 5);
-        border-bottom: solid thin $primary;
+        color: rgb(var(--color-primary-l-5));
+        border-bottom: solid thin rgb(var(--color-primary));
       }
     }
 
@@ -189,7 +190,7 @@
         height: 60px !important;
         margin: 8px !important;
         // border: solid thick;
-        background: $primary;
+        background: rgb(var(--color-primary));
       }
 
       .xy-controls {
@@ -222,7 +223,7 @@
         .btn {
           border: solid thin;
           &.active {
-            background: $primary;
+            background: rgb(var(--color-primary));
           }
         }
       }
@@ -244,7 +245,7 @@
       height:100%;
       top:0;
       left:0;
-      background:rgba(0,0,0,0.7);
+      background:rgb(var(--color-bg-overlay) / 0.8);
       opacity: 1;
   }
 }
@@ -262,7 +263,7 @@
     a {
       text-align: center;
       border: thin dashed;
-      border-color: darken($primary, 10);
+      border-color: rgb(var(--color-primary-d-10));
       padding: 5em 3em;
 
       &:hover {
@@ -293,7 +294,7 @@ form#printer_form {
     }
   }
   .form-control {
-    border: 1px solid $gray-200;
+    border: 1px solid rgb(var(--color-gray-200));
   }
 
   .sensitivity {
@@ -326,7 +327,7 @@ form#printer_form {
       color: $primary !important;
 
       &:after {
-        background: $primary;
+        background: rgb(var(--color-primary));
       }
     }
   }
@@ -363,7 +364,7 @@ form#printer_form {
 
       #connected {
         i {
-          color: $success;
+          color: rgb(var(--color-success));
         }
       }
     }
@@ -453,15 +454,15 @@ form#printer_form {
   .card-img-overlay {
     top: initial;
     padding: 0.5rem;
-    background-color: rgba($gray-200, 0.7);
+    background-color: rgb(var(--color-gray-200) / 0.7)
   }
 }
 
 .upload-box {
   &.dropzone {
     border: thin dashed;
-    border-color: darken($primary, 10);
-    color: $primary;
+    border-color: rgb(var(--color-primary-d-10));
+    color: rgb(var(--color-primary));
     background: none;
     margin: auto;
     min-height: 194px;
@@ -481,7 +482,7 @@ form#printer_form {
 
   &.vue-dropzone > .dz-preview .dz-details {
     border-radius: 20px;
-    background-color: $primary;
+    background-color: rgb(var(--color-primary));
   }
 }
 
@@ -490,7 +491,7 @@ form#printer_form {
   padding: 2rem 0rem;
   .token {
     padding: 1.5rem 3rem 2.5rem;
-    border: $color-form-bg thin dashed;
+    border: rgb(var(--color-form-bg)) thin dashed;
     margin-bottom: 2rem;
     text-align: center;
 
@@ -505,7 +506,7 @@ form#printer_form {
 .option-drawer{
   width:100%;
   margin-bottom: -0.5rem;
-  background: $color-bg-dark;
+  background: rgb(var(--color-bg-dark));
   .panel-heading {
     padding: 0;
     border:0;
@@ -518,7 +519,7 @@ form#printer_form {
         color: $primary;
         line-height: 0.8;
         &:hover {
-          color: darken($primary, 8);
+          color: rgb(var(--color-primary-d-8));
         }
       }
     }
@@ -535,6 +536,6 @@ form#printer_form {
     transition-duration: 0.2s;
   }
   hr {
-    background-color: lighten($body-bg, 10);
+    background-color: rgb(var(--color-body-bg-l-10));
   }
 }

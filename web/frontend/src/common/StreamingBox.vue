@@ -267,7 +267,7 @@ export default {
   position: absolute
   height: $height
   z-index: 10
-  background-color: theme.$white
+  background-color: rgb(var(--color-white))
   border-radius: $height
   top: 10px
   left: 10px
@@ -356,7 +356,7 @@ export default {
     font-size: 12px
     line-height: 20px
     text-align: center
-    color: theme.$white
+    color: rgb(var(--color-white))
 
 .muted-status-wrapper
   position: absolute

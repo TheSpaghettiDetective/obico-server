@@ -166,7 +166,7 @@
 @use "~main/theme"
 
 hr
-  background-color: theme.$white
+  background-color: rgb(var(--color-white))
 
 .shared-link-text
   color: #fff !important

@@ -170,8 +170,8 @@ export default {
   .user-menu
     text-transform: none
 
-  a.glowing
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #9965f4, 0 0 70px #9965f4, 0 0 80px #9965f4, 0 0 100px #9965f4, 0 0 150px #9965f4
+  // a.glowing
+  //   text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #9965f4, 0 0 70px #9965f4, 0 0 80px #9965f4, 0 0 100px #9965f4, 0 0 150px #9965f4
 
   .badge-btn
     position: relative
@@ -187,7 +187,7 @@ export default {
       top: 1px
       height: 18px
       border-radius: 4px
-      background-color: #9965f4
+      // background-color: #9965f4
       transition: transform 0.2s
 
       /* Animation */

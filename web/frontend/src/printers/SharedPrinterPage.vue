@@ -18,8 +18,7 @@
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
             <a
               href="https://www.thespaghettidetective.com/">
-              <img class="logo-img"
-                :src="require('@static/img/logo-inverted.png')" />
+              <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective" class="logo-img"></dark-light-image>
             </a>
             <hr />
             <br /><br />
@@ -41,6 +40,7 @@ import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
+import DarkLightImage from '@common/DarkLightImage.vue'
 
 export default {
   name: 'SharedPrinterPage',
@@ -48,6 +48,7 @@ export default {
     StreamingBox,
     PullToReveal,
     Navbar,
+    DarkLightImage,
   },
   created(){
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
@@ -75,17 +76,19 @@ export default {
 }
 </script>
 
- <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
-<style lang="sass">
+<style lang="sass" scoped>
 @use "~main/theme"
 
 #printer-list-page
   margin-top: 1.5rem
 
 .menu-bar
-  background-color: darken(theme.$color-bg-dark, 10)
+  background-color: rgb(var(--color-bg-dark-d-10))
   padding: 0.75rem
 
-.logo-img
+.printer-card
+  margin-bottom: 1.5rem
+
+::v-deep .logo-img img
   width: 100%
 </style>

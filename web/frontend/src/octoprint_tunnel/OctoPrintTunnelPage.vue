@@ -99,7 +99,7 @@ export default {
 .tunnel-iframe
     width: 100%
     height: 100vh
-    background: theme.$white
+    background: rgb(var(--color-white))
     position: absolute
     top: 0
     left: 0
@@ -111,7 +111,7 @@ export default {
   bottom: 15px
   right: 15px
   box-shadow: 2px 2px 10px rgba(0,0,0,.3)
-  background-color: theme.$body-bg
+  background-color: rgb(var(--color-body-bg))
   padding: 10px
   max-width: 300px
   z-index: 10

@@ -158,8 +158,8 @@ export default {
   opacity: 0.5
 
 .page-visiting
-  color: theme.$primary
+  color: rgb(var(--color-primary))
 
 .page-unvisited
-  color: darken(theme.$secondary, 20)
+  color: rgb(var(--color-gray-100-d-20))
 </style>

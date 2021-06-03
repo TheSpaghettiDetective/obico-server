@@ -1,7 +1,7 @@
 
 
 Telegram Step by Step
-My Base: Fresh Install Ubuntu 20.04
+My Base: Fresh Install Ubuntu 20.04.
 
 
 First of all need to install VIA SSH (I`m using Putty)

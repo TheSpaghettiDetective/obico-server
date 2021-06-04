@@ -162,7 +162,7 @@ export default {
     margin-top: -3px
 
     ::v-deep img
-      height: 32px
+      width: 232px
 
   .nav-item
     text-transform: uppercase

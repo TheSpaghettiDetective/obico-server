@@ -14,7 +14,7 @@ export const Themes = {
 // Default values
 export const theme = Vue.observable({
   value: Themes.Dark,
-  system: true
+  system: false
 })
 
 
@@ -128,7 +128,8 @@ export function initTheme() {
   console.log('Init theme')
 
   let themeValue = localStorage.getItem('colorTheme')
-  let themeSystem = themeValue === null || themeValue === Themes.System
+  let themeSystem = themeValue === Themes.System
+  // let themeSystem = themeValue === null || themeValue === Themes.System
 
   if (themeSystem) {
     if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
@@ -136,6 +137,10 @@ export function initTheme() {
     } else {
       themeValue = Themes.Dark
     }
+  }
+
+  if (themeValue === null) {
+    themeValue = theme.value // Set default value
   }
 
   colors.forEach(function(color) {

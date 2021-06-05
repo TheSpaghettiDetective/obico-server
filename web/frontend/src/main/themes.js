@@ -63,6 +63,7 @@ const colors = [
 
   {name: 'white-primary',            values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#9965f4'}},
   {name: 'primary-white',            values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#FFFFFF'}},
+  {name: 'primary-light',            values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#EBEBEB'}},
 
   {name: 'text',                     values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'text-subdued',             values: {[Themes.Light]: '#7E8285', [Themes.Dark]: '#FFFFFF'}},
@@ -84,17 +85,19 @@ const colors = [
 
   {name: 'form-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2b3e50'}},
   {name: 'body-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2B3E50'}},
+  {name: 'body-bg-darker',           values: {[Themes.Light]: '#f6f9fc', [Themes.Dark]: '#2B3E50'}},
   {name: 'bg-dark',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#293b4d'}},
   {name: 'white',                    values: {[Themes.Light]: '#000000', [Themes.Dark]: '#FFFFFF'}},
   {name: 'dark-white',               values: {[Themes.Light]: '#2B3E50', [Themes.Dark]: '#FFFFFF'}},
   {name: 'black',                    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#000000'}},
   {name: 'success',                  values: {[Themes.Light]: '#5cb85c', [Themes.Dark]: '#5cb85c'}},
   {name: 'danger',                   values: {[Themes.Light]: '#df706d', [Themes.Dark]: '#d9534f'}},
+  {name: 'border',                  values: {[Themes.Light]: '#abb6c2', [Themes.Dark]: '#666666'}},
 
 
   // Derivatives from SASS functions (lighted, darken, etc.)
 
-  {name: 'primary-l-12',             values: {[Themes.Light]: '#bf9ef8', [Themes.Dark]: '#bf9ef8'}},
+  {name: 'primary-l-12',             values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#bf9ef8'}},
   {name: 'primary-l-10',             values: {[Themes.Light]: '#b995f7', [Themes.Dark]: '#b995f7'}},
   {name: 'primary-l-7',              values: {[Themes.Light]: '#af86f6', [Themes.Dark]: '#af86f6'}},
   {name: 'primary-l-5',              values: {[Themes.Light]: '#a97df6', [Themes.Dark]: '#a97df6'}},
@@ -105,14 +108,16 @@ const colors = [
 
   {name: 'body-bg-l-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#3d5871'}},
   {name: 'body-bg-l-5p',             values: {[Themes.Light]: '#F1F1F1', [Themes.Dark]: '#344b61'}},
-  {name: 'body-bg-l-3',              values: {[Themes.Light]: '#30465a', [Themes.Dark]: '#30465a'}},
+  {name: 'body-bg-l-3',              values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#30465a'}},
   {name: 'body-bg-d-5',              values: {[Themes.Light]: '#f2f2f2', [Themes.Dark]: '#22313f'}},
   {name: 'body-bg-d-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#19242f'}},
+  {name: 'body-bg-d-10-darker',      values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#19242f'}},
+  {name: 'body-bg-d-10-lighter',     values: {[Themes.Light]: '#E7E7E7', [Themes.Dark]: '#252F3A'}},
 
   {name: 'gray-100-d-20',            values: {[Themes.Light]: '#9f9f9f', [Themes.Dark]: '#b8b8b8'}},
   {name: 'gray-100-d-30',            values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#9f9f9f'}},
 
-  {name: 'white-d-60',               values: {[Themes.Light]: '#666666', [Themes.Dark]: '#666666'}},
+  {name: 'white-d-60',               values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#666666'}},
   {name: 'bg-dark-d-10',             values: {[Themes.Light]: '#9A65F4', [Themes.Dark]: '#17222c'}},
 ]
 

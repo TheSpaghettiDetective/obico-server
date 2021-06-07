@@ -5,7 +5,7 @@ import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
 import 'common/filters'
 import setupSentry from '@lib/sentry'
-import { initTheme } from '../main/themes.js'
+import { initTheme } from '@main/themes'
 
 initTheme()
 setupSentry(Vue)

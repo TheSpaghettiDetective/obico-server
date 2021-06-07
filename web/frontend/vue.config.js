@@ -26,6 +26,7 @@ let vueConfig = {
         lib: path.join(__dirname, 'src/lib'),
         '@common': path.join(__dirname, 'src/common'),
         '@lib': path.join(__dirname, 'src/lib'),
+        '@main': path.join(__dirname, 'src/main'),
         '@static': path.join(__dirname, '../app/static'),
       }
     },

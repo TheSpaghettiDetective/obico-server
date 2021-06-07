@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueSwal from 'common/VueSwal'
 import { BootstrapVue } from 'bootstrap-vue'
 import setupSentry from '@lib/sentry'
-import { initTheme } from '../main/themes.js'
+import { initTheme } from '@main/themes'
 
 initTheme()
 setupSentry(Vue)

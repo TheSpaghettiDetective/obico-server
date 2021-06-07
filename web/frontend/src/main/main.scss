@@ -410,7 +410,7 @@ a.link {
         top:8px;
         right:20px;
         font-size:20px;
-        color:white;
+        color: rgb(var(--color-dark-white));
         -webkit-animation: minus 0.5s;
       }
       @keyframes minus {

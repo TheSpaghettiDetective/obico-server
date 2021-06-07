@@ -1,6 +1,10 @@
 <template>
   <div>
-    <nav v-if="!isInMobile" class="navbar navbar-expand-lg navbar-dark bg-dark static-top flex-column">
+    <nav
+      v-if="!isInMobile"
+      class="navbar navbar-expand-lg bg-dark static-top flex-column"
+      :class="{'navbar-dark': theme === themes.Dark, 'navbar-light': theme === themes.Light}"
+    >
       <div class="container">
         <a class="navbar-brand" href="/printers/">
           <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective"></dark-light-image>
@@ -88,6 +92,7 @@
 import moment from 'moment'
 import { isMobile } from '@lib/app_platform'
 import DarkLightImage from '@common/DarkLightImage.vue'
+import { Themes, theme } from '../main/themes.js'
 
 export default {
   name: 'Navbar',
@@ -102,6 +107,7 @@ export default {
       allowSignUp: false,
       isEnt: false,
       isInMobile: false,
+      themes: Themes,
     }
   },
 
@@ -121,6 +127,10 @@ export default {
   },
 
   computed: {
+    theme() {
+      return theme.value
+    },
+
     dhBadgeNum() {
       if (this.user && this.user.is_dh_unlimited) {
         return'\u221E'

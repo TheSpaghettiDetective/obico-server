@@ -8,6 +8,6 @@ If you, for whatever reason need to run this wizard again, it can be done easily
 
 1. Scroll down to the bottom of the page and click "Re-run Wizard" which will run the setup wizard that pops up upon installing the TSD plugin.
 
-    <img src="https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.png" width="500">
+    <img src="img/Rerun-Wizard.png" width="500">
 
 You can then follow the on-screen instructions to set up your printer.

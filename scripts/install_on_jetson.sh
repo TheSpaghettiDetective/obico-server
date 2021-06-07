@@ -15,3 +15,5 @@ services:
 EOT
 
 sudo docker-compose up -d
+
+sudo systemctl enable docker

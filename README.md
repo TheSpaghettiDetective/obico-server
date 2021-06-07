@@ -79,7 +79,7 @@ sake, this document assumes the server port is 3334.
 
 ## Configure Django site
 
-1. On Django admin page, click "Sites", and click the only entry "example.com" to bring up the site you need to configure. Change "Domain name" to `your_server_ip:3334`. No "http://", "https://" prefix or trailing "/", otherwise it will NOT work.
+1. In the same browser window, go to the address `http://your_server_ip:3334/admin/sites/site/1/change/`. Change "Domain name" to `your_server_ip:3334`. No "http://", "https://" prefix or trailing "/", otherwise it will NOT work.
 
 2. Click "Save". Yes it's correct that Django is not as smart as most people think. ;)
 

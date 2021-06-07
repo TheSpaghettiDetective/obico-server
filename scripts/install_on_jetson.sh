@@ -13,3 +13,5 @@ services:
     environment:
         HAS_GPU: 'True'
 EOT
+
+sudo docker-compose up -d

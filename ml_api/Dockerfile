@@ -1,4 +1,4 @@
-FROM thespaghettidetective/ml_api:base-1.0
+FROM thespaghettidetective/ml_api:base-1.1
 WORKDIR /app
 EXPOSE 3333
 

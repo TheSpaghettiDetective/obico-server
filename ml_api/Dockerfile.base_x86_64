@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-runtime-ubuntu16.04
+FROM nvidia/cuda:10.2-runtime-ubuntu18.04
 WORKDIR /app
 EXPOSE 3333
 RUN apt update && \

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-sudo apt install -y python python-pip curl libffi-dev python-openssl libssl-dev zlib1g-dev gcc g++ make
+sudo apt update && sudo apt install -y python python-pip curl libffi-dev python-openssl libssl-dev zlib1g-dev gcc g++ make
 sudo python -m pip install --upgrade pip setuptools wheel
 sudo python -m pip install docker-compose
 
@@ -13,3 +13,7 @@ services:
     environment:
         HAS_GPU: 'True'
 EOT
+
+sudo docker-compose up -d
+
+sudo systemctl enable docker

@@ -22,7 +22,7 @@ it means TSD plugin can't access the configured webcam URL.
 
 Most likely you will see <span style="color:red">Failed to contact server. Is OctoPrint connected to Internet?</span>.
 
-![server connection error](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/onpremise-server-error.png)
+![server connection error](img/onpremise-server-error.png)
 
  This error is quite general and vague (because it needs to be understadable for users who are not tech-savvy). You can do a few things to dig further:
 

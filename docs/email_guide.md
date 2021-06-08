@@ -12,7 +12,7 @@ It isn't uncommon that you can't send emails despite the fact that you have conf
 
 1. In the "Action" drop down list, select "Send test email". Click "Go".
 
-![Send test email](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/send_test_email.png)
+![Send test email](img/send_test_email.png)
 
 ## Step-by-step email server configuration and trouble-shooting guide
 

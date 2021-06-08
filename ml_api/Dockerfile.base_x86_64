@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-runtime-ubuntu18.04
+FROM nvidia/cuda:9.0-runtime-ubuntu16.04
 WORKDIR /app
 EXPOSE 3333
 RUN apt update && \
@@ -9,4 +9,5 @@ RUN apt update && \
 
 RUN pip install --upgrade pip
 ADD requirements.txt requirements_x86_64.txt ./
+# This will have errors, apparently because python 3.5 is out of support. At some point we need to recompile darknet against higher version of cuda.
 RUN pip install -r requirements_x86_64.txt

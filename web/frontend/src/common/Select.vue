@@ -52,18 +52,18 @@ $tsd-dropdown-with: 220px
   text-align: left
   width: $tsd-dropdown-with
   color: white
-  background-color: theme.$primary
+  background-color: rgb(var(--color-primary))
   border-radius: 0px
   border: none
   box-shadow: none
 
   &:hover
     color: white
-    background-color: theme.$primary
+    background-color: rgb(var(--color-primary))
 
   &[aria-expanded="true"], &:focus
     color: white !important
-    background-color: theme.$primary !important
+    background-color: rgb(var(--color-primary)) !important
     // border: none !important
 
   &:after

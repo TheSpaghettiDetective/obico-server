@@ -74,8 +74,8 @@
       border-width: 1px
 
     input
-      border-top-color: theme.$white
-      border-bottom-color: theme.$white
-      color: theme.$white
+      border-top-color: rgb(var(--color-white))
+      border-bottom-color: rgb(var(--color-white))
+      color: rgb(var(--color-white))
       width: 5rem
 </style>

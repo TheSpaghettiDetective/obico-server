@@ -512,13 +512,13 @@ export default {
 
 .section-title
   padding-bottom: 5px
-  border-bottom: 1px solid theme.$white
+  border-bottom: 1px solid rgb(var(--color-white))
 
 .form-label
   font-size: 18px
 
 section.danger
   .section-title
-    color: theme.$danger
-    border-color: theme.$danger
+    color: rgb(var(--color-danger))
+    border-color: rgb(var(--color-danger))
 </style>

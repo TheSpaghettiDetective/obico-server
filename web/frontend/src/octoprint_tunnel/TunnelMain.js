@@ -3,7 +3,9 @@ import VueSwal from 'common/VueSwal'
 
 import OctoPrintTunnelPage from './OctoPrintTunnelPage.vue'
 import setupSentry from '@lib/sentry'
+import { initTheme } from '@main/themes'
 
+initTheme()
 setupSentry(Vue)
 Vue.use(VueSwal)
 

@@ -6,6 +6,45 @@
 
     <div class="col-sm-11 col-md-10 col-lg-8">
       <div v-if="user" class="form-container">
+        <!-- Personalization -->
+        <section class="personalization">
+          <h2 class="section-title">Personalization</h2>
+          <div class="form-group row mt-3">
+            <label class="col-md-2 col-sm-3 col-form-label">Theme</label>
+            <div class="col-sm-9 col-md-10">
+              <div class="theme-controls">
+                <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.68 39.68" class="icon" :class="{'active': themeValue === themes.Dark}">
+                    <path d="M39.58 27.19A20.63 20.63 0 1112.49.09a1.08 1.08 0 011.18 1.77A17.08 17.08 0 0037.82 26a1.08 1.08 0 011.76 1.19z" />
+                  </svg>
+                  <div class="label">
+                    <span class="dark" v-show="themeValue === themes.Dark">DARK</span>
+                    <span class="light" v-show="themeValue === themes.Light">LIGHT</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.07 42.07" class="icon" :class="{'active': themeValue === themes.Light}">
+                    <circle cx="21.04" cy="21.04" r="10.55"/>
+                    <path d="M19.68 5.77a1.36 1.36 0 002.71 0V1.36a1.36 1.36 0 10-2.71 0zM9.28 11.2a1.36 1.36 0 001.92-1.92L8.08 6.16a1.36 1.36 0 00-1.92 1.92zM5.77 22.39a1.36 1.36 0 000-2.71H1.36a1.36 1.36 0 100 2.71zM11.2 32.79a1.36 1.36 0 10-1.92-1.92L6.16 34a1.36 1.36 0 101.92 1.92zM22.39 36.3a1.36 1.36 0 00-2.71 0v4.41a1.36 1.36 0 102.71 0zM32.79 30.87a1.36 1.36 0 10-1.92 1.92L34 35.91A1.36 1.36 0 1035.91 34zM36.3 19.68a1.36 1.36 0 000 2.71h4.41a1.36 1.36 0 100-2.71zM30.87 9.28a1.36 1.36 0 101.92 1.92l3.12-3.12A1.36 1.36 0 1034 6.16z"/>
+                  </svg>
+                  <div class="active-indicator" :class="{'right': themeValue === themes.Light}">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+                <div class="custom-control custom-checkbox form-check-inline system-theme-control">
+                  <input
+                    type="checkbox"
+                    class="custom-control-input"
+                    id="id_theme_system"
+                    v-model="systemTheme"
+                  >
+                  <label class="custom-control-label" for="id_theme_system">
+                    Sync theme with system settings
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Profile -->
         <section class="profile">
           <h2 class="section-title">Profile</h2>
@@ -626,6 +665,7 @@ import SavingAnimation from '../common/SavingAnimation.vue'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
+import { Themes, theme, selectTheme } from '../main/themes.js'
 
 export default {
   name: 'UserPreferencesPage',
@@ -677,10 +717,20 @@ export default {
       combinedInputs: { // Send changes to API only if all the other values in the array have data
         phone: ['phone_country_code', 'phone_number'],
       },
+      themes: Themes,
+      systemTheme: theme.system,
     }
   },
 
   computed: {
+    themeValue: {
+      get: function() {
+        return theme.value
+      },
+      set: function(newValue) {
+        theme.value = newValue
+      }
+    },
     firstName: {
       get: function() {
         return this.user ? this.user.first_name : undefined
@@ -748,6 +798,11 @@ export default {
   },
 
   watch: {
+    systemTheme: function(newValue) {
+      if (newValue) {
+        selectTheme(this.themes.System)
+      }
+    },
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('first_name')
@@ -808,6 +863,15 @@ export default {
   },
 
   methods: {
+    /**
+     * Toggle color theme
+     */
+    toggleTheme() {
+      let newTheme = this.themeValue === this.themes.Light ? this.themes.Dark : this.themes.Light
+      this.systemTheme = false
+      selectTheme(newTheme)
+    },
+
     /**
      * Get actual user preferences
      */
@@ -963,7 +1027,72 @@ export default {
 section:not(:first-child)
   margin-top: 60px
 
-  .section-title
-    border-bottom: 1px solid theme.$white
+.theme-controls
+  display: flex
+  align-items: center
+
+.theme-toggle
+  display: inline-flex
+  align-items: center
+  background-color: rgb(var(--color-bg-secondary))
+  border-radius: 100px
+  position: relative
+  margin-right: 26px
+
+  &:hover
+    cursor: pointer
+
+  & > *
+    position: relative
+    z-index: 2
+
+  .icon
+    flex: 0 0 18px
+    height: 18px
+    margin: 10px
+
+    path, circle
+      fill: rgb(var(--color-icon-disabled))
+      transition: all .3s ease-out
+  
+    &.active path, &.active circle
+      fill: rgb(var(--color-icon-active))
+
+  .label
+    flex: 1
+    text-align: center
+    font-size: 12px
+    color: #fff
+    padding: 0 8px
+    
+  .active-indicator
+    position: absolute
+    width: calc(100% - 9px)
+    height: 30px
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    margin: auto
+    z-index: 1
+    transition: all .3s ease-out
+
+    .circle
+      position: absolute
+      width: 30px
+      height: 30px
+      border-radius: 30px
+      background-color: #fff
+      transition: all .3s ease-in-out
+
+    &.right
+      transform: translateX(100%)
+
+      .circle
+        transform: translateX(-100%)
+
+.system-theme-control
+  position: relative
+  z-index: 3
 
 </style>

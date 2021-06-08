@@ -330,6 +330,6 @@ export default {
   margin-top: 1.5rem
 
 .menu-bar
-  background-color: darken(theme.$color-bg-dark, 10)
+  background-color: rgb(var(--color-bg-dark-d-10))
   padding: 0.75rem
 </style>

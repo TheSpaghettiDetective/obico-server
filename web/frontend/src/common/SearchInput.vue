@@ -42,17 +42,17 @@
       opacity: .8
 
     input
-      background-color: theme.$gray-200
-      border: 1px solid theme.$gray-200
-      color: theme.$white
+      background-color: rgb(var(--color-input-dark-bg))
+      border: 1px solid rgb(var(--color-input-dark-bg))
+      color: rgb(var(--color-text))
       outline: none
       padding: .2em .5em .2em 2em
       width: 100%
       height: 100%
 
       &::placeholder
-        color: theme.$gray-600
+        color: rgb(var(--color-gray-600))
 
       &:focus
-        border-color: theme.$white
+        border-color: rgb(var(--color-white))
 </style>

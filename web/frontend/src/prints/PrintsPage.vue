@@ -11,7 +11,7 @@
       sticky-side="both"
       on-stick="onMenuStick"
     >
-      <a role="button" class="btn btn-outline-primary" href="/prints/upload/">
+      <a role="button" class="btn btn-outline-primary upload-icon" href="/prints/upload/">
         <i class="fas fa-upload fa-lg mx-2"></i>
       </a>
       <div>
@@ -273,15 +273,14 @@ export default {
 }
 </script>
 
- <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
-<style lang="sass">
+<style lang="sass" scoped>
 @use "~main/theme"
 
 .timelapse
   margin-top: 1.5rem
 
 .menu-bar
-  background-color: darken(theme.$color-bg-dark, 10)
+  background-color: rgb(var(--color-bg-dark-d-10))
   padding: 0.75rem
 
 #tl-fullscreen-modal
@@ -293,4 +292,19 @@ export default {
 
   .video-js
     height: calc(100vh - 200px)
+
+.btn-outline-primary.upload-icon
+  color: rgb(var(--color-white-primary))
+  border-color: rgb(var(--color-white-primary))
+
+  &:hover
+    color: rgb(var(--color-primary-white))
+    background-color: rgb(var(--color-white-primary))
+
+::v-deep .btn-outline-secondary
+  color: #fff
+  border-color: #fff
+
+  &:hover
+    color: rgb(var(--color-text-inverted))
 </style>

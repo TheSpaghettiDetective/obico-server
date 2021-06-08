@@ -309,11 +309,11 @@
   @use "~main/theme"
 
   .gcodes-wrapper
-    background-color: theme.$body-bg
+    background-color: rgb(var(--color-body-bg))
     padding: 2em
 
   .control-panel
-    border-bottom: 1px solid theme.$table-border-color
+    border-bottom: 1px solid rgb(var(--color-bg))
     padding-bottom: 16px
 
     .search-input
@@ -322,7 +322,7 @@
   .sorting-panel
     display: flex
     padding: 1em calc(1em + 30px) 1em 1em
-    border-bottom: 1px solid theme.$table-border-color
+    border-bottom: 1px solid rgb(var(--color-bg))
 
     .sorting-option
       flex: 1
@@ -364,7 +364,7 @@
       padding: .6em 1em
 
       &:nth-child(2n)
-        background-color: lighten(theme.$body-bg, 5%)
+        background-color: rgb(var(--color-body-bg-l-5p))
 
       .item-info
         display: flex
@@ -386,7 +386,7 @@
         transition: background-color .2s ease-out
 
         &:hover
-          background-color: theme.$danger
+          background-color: rgb(var(--color-danger))
           cursor: pointer
 
       @media (max-width: 768px)

@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueSwal from 'common/VueSwal'
 import setupSentry from '@lib/sentry'
+import { initTheme } from '@main/themes'
 
+initTheme()
 setupSentry(Vue)
 Vue.use(VueSwal)
 

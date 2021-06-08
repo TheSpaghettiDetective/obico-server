@@ -70,12 +70,12 @@ export default {
 @use "~main/theme"
 
 b
-  color: theme.$primary
+  color: rgb(var(--color-primary))
 
 img
   width: 200px
   display: block
 
 .example
-  color: theme.$primary
+  color: rgb(var(--color-primary))
 </style>

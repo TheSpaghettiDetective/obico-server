@@ -26,7 +26,7 @@ export default {
 @use "~main/theme"
 
 .btn-group-toggle
-  background: theme.$body-bg
+  background: rgb(var(--color-body-bg))
   border-radius: 300px
   .btn
     border: solid thin darken(white, 60)

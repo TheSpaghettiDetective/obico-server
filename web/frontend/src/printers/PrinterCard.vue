@@ -67,9 +67,10 @@
         <div
           v-if="!isWatching"
           class="overlay-top text-center"
-          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -15px;"
+          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -55px;"
         >
-          <div class="text-warning">The Detective Is Not Watching</div>
+          <H1><i class="far fa-eye-slash"></i></H1>
+          <h5 class="text-warning">The Detective Is Not Watching</h5>
           <small
             v-if="printer.not_watching_reason"
           >{{ printer.not_watching_reason }}. <a href="https://help.thespaghettidetective.com/kb/guide/en/why-is-the-detective-not-watching-jUGzXPoRIH/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>

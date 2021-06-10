@@ -20,20 +20,20 @@ export const theme = Vue.observable({
 
 /**
  * Colors for each theme
- * 
+ *
  * NOTICE #1:
  * Add colors in full HEX format like "#ffffff". Shortcuts like "#fff" will cause errors.
- * 
+ *
  * NOTICE #2:
  * If you add new color here, don't forget to add it's default value to main.scss file:
  * 1. Add color into this list
  * 2. Open page in browser
  * 3. Copy calculated css-variable from DevTools (will look like "--color-bg: 35 49 65;")
  * 4. Paste it in main.scss file inside :root styles
- * 
+ *
  * Colors usage in CSS:
  * background: rgb(var(--color-body-bg-d-10))
- * 
+ *
  * Why translate HEX to RGB?
  * It's a trick to be able to add transparency to any color without creating new variable. For
  * example, primary color "#9965f4" will be trasformed to "153 101 244" (RGB numbers). Since rgb()
@@ -41,7 +41,7 @@ export const theme = Vue.observable({
  * color as "rgb(153 101 244 / .5)" or using variable "rgb(var(--color-primary) / .5)". If you'll
  * find more elegant way to implement it or you won't need transparency change, feel free to get rid
  * of HEXtoRGB() function and use colors directly.
- * 
+ *
  * HINT: install 'Color Highlight' VSCode extension to see actual colors here
  */
 const colors = [

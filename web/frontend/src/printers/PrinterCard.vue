@@ -67,7 +67,7 @@
         <div
           v-if="!isWatching"
           class="overlay-top text-center"
-          style="left: 0; width: 100%; top: 50%; margin-top: -55px;"
+          style="left: 50%; margin-left: -102px; top: 50%; margin-top: -55px;"
         >
           <H1><i class="far fa-eye-slash"></i></H1>
           <h5 class="text-warning">The Detective Is Not Watching</h5>

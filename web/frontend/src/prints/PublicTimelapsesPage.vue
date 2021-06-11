@@ -158,13 +158,4 @@
 <style lang="sass" scoped>
 ::v-deep .pagination-wrapper button
   border-radius: 0
-
-::v-deep #tl-fullscreen-modal
-  .modal-full
-    max-width: 100%
-    margin: 0
-
-  .video-js
-    height: 0
-    height: calc(100vh - 243px)
 </style>

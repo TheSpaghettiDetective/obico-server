@@ -74,6 +74,7 @@
       border-width: 1px
 
     input
+      background-color: rgb(var(--color-input-dark-bg))
       border-top-color: rgb(var(--color-white))
       border-bottom-color: rgb(var(--color-white))
       color: rgb(var(--color-white))

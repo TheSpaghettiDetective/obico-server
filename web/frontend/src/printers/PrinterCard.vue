@@ -78,6 +78,7 @@
         </div>
         <Gauge
           :normalizedP="printer.normalized_p"
+          :isWatching="isWatching"
         />
         <hr />
       </div>

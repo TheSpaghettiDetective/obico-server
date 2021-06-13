@@ -228,7 +228,6 @@ export default {
       currentPosition: 0,
       predictions: [],
       selectedCardView: 'detective',
-      selected: false,
       inflightAlertOverwrite: null,
     }
   },
@@ -238,7 +237,11 @@ export default {
     isPublic: {
       type: Boolean,
       default: false
-    }
+    },
+    selected: {
+      type: Boolean,
+      default: false
+    },
   },
 
   computed: {

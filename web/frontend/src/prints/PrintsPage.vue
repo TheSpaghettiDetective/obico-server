@@ -1,19 +1,21 @@
 <template>
-  <div class="timelapse" sticky-container>
+  <div sticky-container>
     <pull-to-reveal>
       <navbar view-name="prints"></navbar>
     </pull-to-reveal>
 
     <div
-      class="menu-bar px-sm-4 d-flex justify-content-between"
+      class="menu-bar px-sm-4 d-flex justify-content-between align-items-center"
       v-sticky
       sticky-offset="{top: 0, bottom: 30}"
       sticky-side="both"
       on-stick="onMenuStick"
     >
-      <a role="button" class="btn btn-outline-primary upload-icon" href="/prints/upload/">
-        <i class="fas fa-upload fa-lg mx-2"></i>
-      </a>
+      <b-form-checkbox
+        v-model="allPrintsSelected"
+        size="lg"
+        class="text-decoration-none"
+      ></b-form-checkbox>
       <div>
         <b-dropdown
           toggle-class="text-decoration-none no-corner no-border no-shadow"
@@ -76,7 +78,7 @@
 
         <button
           type="button"
-          class="btn ml-3"
+          class="btn mx-2 btn-sm"
           :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
           :disabled="!anyPrintsSelected"
           @click="onDeleteBtnClick"
@@ -84,6 +86,9 @@
           <i class="fas fa-trash-alt"></i>
           Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
         </button>
+        <a role="button" class="btn btn-sm btn-outline-primary upload-icon" href="/prints/upload/">
+          <i class="fas fa-upload fa-lg mx-2"></i>
+        </a>
       </div>
     </div>
     <div class="row">
@@ -91,6 +96,7 @@
         v-for="print of prints"
         :key="print.id"
         :print="print"
+        :selected="selectedPrintIds.has(print.id)"
         @selectedChanged="onSelectedChanged"
         @printDeleted="onPrintDeleted"
         @printDataChanged="printDataChanged"
@@ -123,6 +129,7 @@
 import axios from 'axios'
 import findIndex from 'lodash/findIndex'
 import MugenScroll from 'vue-mugen-scroll'
+import map from 'lodash/map'
 
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
@@ -165,8 +172,20 @@ export default {
 
     anyPrintsSelected() {
       return this.selectedPrintIds.size > 0
-    }
+    },
+
+    allPrintsSelected: {
+      get: function () {
+        return this.selectedPrintIds.size >= this.prints.length
+      },
+      set: function (selected) {
+        if (selected) {
+          this.selectedPrintIds = new Set(map(this.prints, 'id'))
+        }
+      }
+    },
   },
+
   methods: {
     fetchMoreData() {
       if (this.noMoreData) {
@@ -192,7 +211,7 @@ export default {
 
     refetchData() {
       this.prints = []
-      this.selectedPrintIds = []
+      this.selectedPrintIds = new Set()
       this.noMoreData = false
       this.fetchMoreData()
     },
@@ -276,12 +295,9 @@ export default {
 <style lang="sass" scoped>
 @use "~main/theme"
 
-.timelapse
-  margin-top: 1.5rem
-
 .menu-bar
   background-color: rgb(var(--color-bg-dark-d-10))
-  padding: 0.75rem
+  padding: 0.75rem 1.25rem
 
 #tl-fullscreen-modal
   .modal-full

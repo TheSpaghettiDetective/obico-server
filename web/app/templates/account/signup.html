@@ -34,6 +34,9 @@
       {% endif %}
 
       <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
+      {% for error in form.non_field_errors %}
+      <div class="text-danger">{{ error }}</div>
+      {% endfor %}
       <form class="signup form-signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">
         {% csrf_token %}
         <input type="hidden" name="recaptcha_token" id='recaptcha'>

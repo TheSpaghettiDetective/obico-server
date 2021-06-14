@@ -50,8 +50,12 @@ class RecaptchaSignupForm(SignupForm):
         super().clean()
 
         # captcha verification
+        recaptcha_token = self.cleaned_data.get('recaptcha_token')
+        if not recaptcha_token:
+            raise ValidationError('ReCAPTCHA is invalid.')
+
         data = {
-            'response': self.cleaned_data['recaptcha_token'],
+            'response': recaptcha_token,
             'secret': settings.RECAPTCHA_SECRET_KEY
         }
         response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)

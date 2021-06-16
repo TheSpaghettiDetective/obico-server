@@ -201,6 +201,7 @@ SITE_IS_PUBLIC = os.environ.get('SITE_IS_PUBLIC', 'False') == 'True'
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '50/hour',
+        'linkhelper': '720/hour',  # 5s rate per ip
     },
     'EXCEPTION_HANDLER': 'app.debug.custom_exception_handler'
 }
@@ -354,3 +355,9 @@ ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
+
+# Downstream proxy may set ip in x-real-ip or x-forwarded-for.
+# In our standard docker-compose setup REMOTE_ADDR is going to be the same for
+# all requests.
+REQUEST_IP_HEADER_NAME = os.environ.get(
+    'REQUEST_IP_HEADER_NAME', 'REMOTE_ADDR')

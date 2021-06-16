@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 import os
+import time
 from binascii import hexlify
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
@@ -13,7 +15,6 @@ from django.http import HttpRequest
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
-
 
 import requests
 
@@ -28,12 +29,21 @@ from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
+from .linkhelper import (
+    redis__push_message_for_device,
+    redis__active_devices_for_ip_hash,
+    DeviceMessage,
+    get_ip_address_from_api_request,
+    str_to_hash
+)
 
 PREDICTION_FETCH_TIMEOUT = 20
+
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 6
     page_size_query_param = 'page_size'
+
 
 class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
@@ -44,7 +54,7 @@ class UserViewSet(viewsets.GenericViewSet):
     def me(self, request):
         user = request.user
         if request.method == 'PATCH':
-            serializer = self.serializer_class(user, data=request.data, partial=True) # set partial=True to update a data partially
+            serializer = self.serializer_class(user, data=request.data, partial=True)  # set partial=True to update a data partially
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 user.refresh_from_db()
@@ -322,8 +332,8 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
 
 
 class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
-                                  mixins.RetrieveModelMixin,
-                                  viewsets.GenericViewSet):
+                                     mixins.RetrieveModelMixin,
+                                     viewsets.GenericViewSet):
     throttle_classes = [AnonRateThrottle]
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = OneTimeVerificationCodeSerializer
@@ -341,7 +351,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
         if not code:
             seed()
             while True:
-                new_code = '%06d' % (int(random()*1500450271) % 1000000)
+                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
                 if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
                     break
 
@@ -353,8 +363,9 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
         if not request.user or not request.user.is_authenticated:
             raise Http404("Requested resource does not exist")
 
-        code = get_object_or_404(OneTimeVerificationCode.with_expired.select_related('printer')
-                .filter(user=request.user), pk=kwargs["pk"])
+        code = get_object_or_404(
+            OneTimeVerificationCode.with_expired.select_related('printer').filter(user=request.user),
+            pk=kwargs["pk"])
         return Response(self.serializer_class(code, many=False).data)
 
     @action(detail=False, methods=['get'])
@@ -366,7 +377,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                 printer = Printer.objects.create(
                     name="My Awesome Cloud Printer",
                     user=code.user,
-                    auth_token = hexlify(os.urandom(10)).decode())
+                    auth_token=hexlify(os.urandom(10)).decode())
                 code.printer = printer
             else:
                 # Reset the auth_token for security reason
@@ -382,9 +393,9 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
 
 class SharedResourceViewSet(mixins.ListModelMixin,
-                                  mixins.CreateModelMixin,
-                                  mixins.DestroyModelMixin,
-                                  viewsets.GenericViewSet):
+                            mixins.CreateModelMixin,
+                            mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = SharedResourceSerializer
@@ -410,9 +421,60 @@ class SharedResourceViewSet(mixins.ListModelMixin,
 
 
 class PublicTimelapseViewSet(mixins.ListModelMixin,
-                            viewsets.GenericViewSet):
+                             viewsets.GenericViewSet):
     serializer_class = PublicTimelapseSerializer
 
     def list(self, request, *args, **kwargs):
         return Response(
             self.serializer_class(PublicTimelapse.objects.order_by('priority'), many=True).data)
+
+
+class LinkHelperViewSet(viewsets.ViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @action(detail=False, methods=['get'])
+    def query(self, request):
+        ip = get_ip_address_from_api_request(request)
+        ip_hash = str_to_hash(ip)
+
+        devices = redis__active_devices_for_ip_hash(ip_hash)
+        return Response({"devices": [device.asdict() for device in devices]})
+
+    @action(detail=False, methods=['post'])
+    def push_verify_code_task(self, request):
+        ip = get_ip_address_from_api_request(request)
+        ip_hash = str_to_hash(ip)
+
+        code = self.request.query_params.get('code')
+        if code is None:
+            raise ValidationError({'code': "missing param"})
+
+        device_id = self.request.query_params.get('device_id')
+        if device_id is None:
+            raise ValidationError({'device_id': "missing param"})
+
+        redis__push_message_for_device(
+            ip_hash,
+            device_id,
+            DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
+        )
+
+        return Response({'success': True})
+
+    @action(detail=False, methods=['post'])
+    def push_identify_task(self, request):
+        ip = get_ip_address_from_api_request(request)
+        ip_hash = str_to_hash(ip)
+
+        device_id = self.request.query_params.get('device_id')
+        if device_id is None:
+            raise ValidationError({'device_id': "missing param"})
+
+        redis__push_message_for_device(
+            ip_hash,
+            device_id,
+            DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})
+        )
+
+        return Response({'success': True})

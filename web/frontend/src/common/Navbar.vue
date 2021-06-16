@@ -153,14 +153,14 @@ export default {
     hideDropdowns() {
       // Check account dropdown (preferences and logout)
       const accountDropdown = this.$refs.accountDropdown
-      if (accountDropdown.classList.contains('show')) {
+      if (accountDropdown && accountDropdown.classList.contains('show')) {
         accountDropdown.classList.remove('show')
         this.$refs.accountDropdownContent.classList.remove('show')
       }
 
       // Check main menu toggler (on mobiles)
       const mobileDropdown = this.$refs.mobileDropdown
-      if (mobileDropdown.getAttribute('aria-expanded')) {
+      if (mobileDropdown && mobileDropdown.getAttribute('aria-expanded')) {
         mobileDropdown.classList.add('collapsed')
         this.$refs.mobileDropdownContent.classList.remove('show')
       }

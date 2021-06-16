@@ -153,3 +153,8 @@ class PublicTimelapseSerializer(serializers.ModelSerializer):
 
     def get_prediction_json_url(self, obj: PublicTimelapse) -> str:
         return obj.p_json_url
+
+
+class LinkHelperQueryResponseSerializer(serializers.Serializer):
+    hostname = serializers.CharField(required=True, max_length=253)
+    printerprofile = serializers.CharField(required=False, allow_blank=True)

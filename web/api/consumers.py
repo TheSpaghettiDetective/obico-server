@@ -3,6 +3,8 @@ import bson
 import time
 import json
 import datetime
+import functools
+import urllib.parse
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -20,13 +22,16 @@ from django.db.models import F
 
 from lib import cache
 from lib import channels
+from lib.utils import str_to_hash
 from .octoprint_messages import process_octoprint_status
 from app.models import *
 from app.models import Print, Printer, ResurrectionError
 from .serializers import *
+from .serializers import LinkHelperQueryResponseSerializer
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
+
 
 class WebConsumer(JsonWebsocketConsumer):
     @newrelic.agent.background_task()
@@ -101,7 +106,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.last_touch = time.time()
             Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
             # Send remote status to OctoPrint as soon as it connects
-            self.printer_message({'remote_status':{
+            self.printer_message({'remote_status': {
                 'viewing': channels.num_ws_connections(channels.web_group_name(self.current_printer().id)) > 0,
                 'should_watch': self.current_printer().should_watch(),
             }})
@@ -324,6 +329,121 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     def current_user(self):
         return self.scope['user']
+
+
+def catch_all(f):
+    @functools.wraps(f)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return f(self, *args, **kwargs)
+        except Exception:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            sentryClient.captureException()
+    return wrapper
+
+
+def catch_all_and_close(f):
+    @functools.wraps(f)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return f(self, *args, **kwargs)
+        except Exception:  # sentry doesn't automatically capture consumer errors
+            import traceback; traceback.print_exc()
+            sentryClient.captureException()
+            self.close()
+    return wrapper
+
+
+class LinkHelperConsumer(WebsocketConsumer):
+
+    @catch_all_and_close
+    def connect(self):
+        ip = self.get_client_ip()
+        self.ip_hash = str_to_hash(ip)
+
+        device_id = urllib.parse.parse_qs(
+            self.scope['query_string']
+        )[b'device_id'][0].decode()
+
+        if not device_id.isalnum() or len(device_id) != 32:
+            raise Exception('LinkHelperConsumer: unexpected device_id')
+        self.device_id = device_id
+
+        self.accept()
+        LOGGER.debug(f"LinkHelperConsumer: detected ip: {ip} ip_hash: {self.ip_hash} device_id: {self.device_id}")
+
+        async_to_sync(self.channel_layer.group_add)(
+            channels.linkhelper_group_name(self.ip_hash),
+            self.channel_name,
+        )
+
+    def disconnect(self, close_code):
+        LOGGER.warn("LinkHelperConsumer: Closed websocket with code: {}".format(close_code))
+        if hasattr(self, 'ip_hash'):
+            async_to_sync(self.channel_layer.group_discard)(
+                channels.linkhelper_group_name(self.ip_hash),
+                self.channel_name
+            )
+
+    @catch_all
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
+        LOGGER.debug(f"LinkHelperConsumer: received {text_data}")
+        (msg, ref, data) = json.loads(text_data or '')
+
+        if msg == 'query_response':
+            assert ref
+            serializer = LinkHelperQueryResponseSerializer(data=data)
+            if not serializer.is_valid():
+                LOGGER.error(f"LinkHelperConsumer[{self.ip_hash}]: invalid device info ({serializer})")
+                return
+
+            cache.insert_linkhelper_query_response(
+                ip_hash=self.ip_hash,
+                ref=ref,
+                device_id=self.device_id,
+                device_info=serializer.validated_data,
+            )
+
+    @catch_all
+    def query_message(self, event):
+        LOGGER.debug(f"LinkHelperConsumer: query event ({event})")
+        ip_hash, ref = event['ip_hash'], event['ref']
+        if self.ip_hash != ip_hash:
+            # we check this to avoid very ugly bugs,
+            # without another bug this is impossible
+            raise Exception("LinkHelperConsumer: ip_hash mismatch")
+
+        self.send(text_data=json.dumps(('query', ref, {})))
+
+    @catch_all
+    def verify_code_message(self, event):
+        ip_hash, device_id, code = event['ip_hash'], event['device_id'], event['code']
+        if self.ip_hash != ip_hash:
+            # we check this to avoid very ugly bugs,
+            # without another bug this is impossible
+            raise Exception("LinkHelperConsumer: ip_hash mismatch")
+
+        if device_id != self.device_id:
+            # np, its not meant for this connection
+            return
+
+        self.send(text_data=json.dumps(('verify_code', None, {'device_id': device_id, 'code': code})))
+
+    def get_client_ip(self) -> str:
+        scope = self.scope
+        headers = {k: v for (k, v) in scope['headers']}
+        ip = headers.get(b'x-real-ip', b'').decode()
+
+        if ip:
+            return ip
+
+        try:
+            ip = scope['client'][0]
+            return ip
+        except (KeyError, IndexError):
+            pass
+
+        raise Exception("cannot find out real ip")
 
 
 class AnomalyTracker:

@@ -21,6 +21,10 @@ def octoprinttunnel_group_name(printer_id):
     return 'octoprinttunnel.{}'.format(printer_id)
 
 
+def linkhelper_group_name(ip_hash):
+    return 'linkhelper.{}'.format(ip_hash)
+
+
 def send_msg_to_printer(printer_id, msg_dict):
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
@@ -86,3 +90,28 @@ def broadcast_ws_connection_change(sender, room, **kwargs):
 def num_ws_connections(group_name):
     rooms = Room.objects.filter(channel_name=group_name)      # room.channel_name is actually the room name (= group name)
     return rooms[0].get_anonymous_count() if len(rooms) > 0 else 0
+
+
+def send_linkhelper_query_msg(ip_hash, ref):  # type: (str, str) -> None
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        linkhelper_group_name(ip_hash),
+        {
+            'type': 'query.message',
+            'ip_hash': ip_hash,
+            'ref': ref
+        }
+    )
+
+
+def send_linkhelper_verify_code_msg(ip_hash, device_id, code):
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        linkhelper_group_name(ip_hash),
+        {
+            'type': 'verify_code.message',
+            'ip_hash': ip_hash,
+            'device_id': device_id,
+            'code': code,
+        }
+    )

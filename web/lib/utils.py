@@ -6,6 +6,7 @@ import tempfile
 import os
 import io
 import shutil
+import hashlib
 from operator import itemgetter
 from django.utils import timezone
 import pytz
@@ -94,3 +95,7 @@ def shortform_localtime(seconds_from_now, tz):
         return '--:--'
 
     return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M%p")
+
+
+def str_to_hash(s: str) -> str:
+    return hashlib.md5(s.encode('utf8')).hexdigest()

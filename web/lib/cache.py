@@ -3,7 +3,7 @@ from django.utils.timezone import now
 import redis
 import bson
 import json
-from typing import Optional
+from typing import Optional, List
 
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
@@ -25,6 +25,9 @@ TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
 
 # etag cache expiration
 TUNNEL_ETAG_EXPIRE_SECS = 3600 * 24 * 3
+
+# query responses expire in this amount
+LINKHELPER_DEVICE_INFO_EXPIRE_SECS = 1800
 
 
 def printer_key_prefix(printer_id):
@@ -206,5 +209,25 @@ def octoprinttunnel_update_etag(printer_id: int, path: str, etag: str) -> None:
 def print_status_mobile_push_set(print_id, mobile_platform, ex):
     REDIS.set(f'{print_key_prefix(print_id)}:psmp:{mobile_platform}', 'pushed', ex=ex)
 
+
 def print_status_mobile_push_get(print_id, mobile_platform):
     return REDIS.get(f'{print_key_prefix(print_id)}:psmp:{mobile_platform}')
+
+
+def linkhelper_query_prefix(ip_hash, ref):  # type: (str, str) -> str
+    return f'linkhelper:{ip_hash}:device_info:{ref}'
+
+
+def insert_linkhelper_query_response(ip_hash, ref, device_id, device_info):  # type: (str, str, dict) -> None
+    key = linkhelper_query_prefix(ip_hash, ref)
+    data = {'device_id': device_id, 'device_info': device_info}
+    with REDIS.pipeline() as conn:
+        conn.rpush(key, json.dumps(data))
+        conn.expire(key, LINKHELPER_DEVICE_INFO_EXPIRE_SECS)
+        conn.execute()
+
+
+def get_linkhelper_query_responses(ip_hash, ref, max_count=25):  # type: (str, int) -> List[dict]
+    key = linkhelper_query_prefix(ip_hash, ref)
+    raw_data = REDIS.lrange(key, 0, max_count)
+    return [json.loads(raw) for raw in raw_data]

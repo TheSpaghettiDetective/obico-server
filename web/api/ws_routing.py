@@ -4,6 +4,7 @@ from . import consumers
 
 websocket_urlpatterns = [
     url(r'^ws/dev/$', consumers.OctoPrintConsumer),
+    url(r'^ws/unlinked-dev/$', consumers.LinkHelperConsumer),
     url(r'^ws/web/(?P<printer_id>[^/]+)/$', consumers.WebConsumer),
     url(r'^ws/janus/(?P<printer_id>[^/]+)/$', consumers.JanusWebConsumer),
     url(r'^ws/token/web/(?P<token>[^/]+)/$', consumers.WebConsumer),

@@ -31,6 +31,10 @@ router.register(
     r'publictimelapse',
     viewsets.PublicTimelapseViewSet,
     'PublicTimelapseViewSet')
+router.register(
+    r'linkhelper',
+    viewsets.LinkHelperViewSet,
+    'LinkHelperViewSet')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

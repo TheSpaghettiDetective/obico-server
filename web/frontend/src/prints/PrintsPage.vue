@@ -257,7 +257,7 @@ export default {
               this.$swal.Toast.fire({
                 title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
               })
-              this.selectedPrintIds = []
+              this.selectedPrintIds = new Set()
             })
         }
       })

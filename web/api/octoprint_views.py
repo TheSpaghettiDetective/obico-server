@@ -29,6 +29,7 @@ from lib.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
+from raven.contrib.django.raven_compat.models import client as sentryClient
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -184,22 +185,22 @@ def cap_image_size(pic):
         None)
 
 
-def report_exceptions(msg, logger, *exception_classes):
-    def outer(f):
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            try:
-                return f(*args, **kwargs)
-            except exception_classes:
-                logger.exception(msg)
-        return wrapper
-    return outer
+def report_validationerror(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except ValidationError:
+            LOGGER.exception('validationerror')
+            sentryClient.captureException()
+            raise
+    return wrapper
 
 
 class OctoLinkHelperView(APIView):
     throttle_scope = 'linkhelper'
 
-    @report_exceptions("invalid deviceinfo", LOGGER, ValidationError)
+    @report_validationerror
     def post(self, request, format=None):
         client_ip, is_routable = get_client_ip(request)
 

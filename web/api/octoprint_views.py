@@ -13,13 +13,12 @@ import requests
 import json
 import io
 import functools
+from ipware import get_client_ip
 
 from .linkhelper import (
     DeviceInfo,
     redis__pull_messages_for_device,
-    redis__update_presence_for_device,
-    str_to_hash,
-    get_ip_address_from_api_request)
+    redis__update_presence_for_device,)
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
@@ -202,19 +201,18 @@ class OctoLinkHelperView(APIView):
 
     @report_exceptions("invalid deviceinfo", LOGGER, ValidationError)
     def post(self, request, format=None):
-        ip = get_ip_address_from_api_request(request)
-        ip_hash = str_to_hash(ip)
+        client_ip, is_routable = get_client_ip(request)
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 
         redis__update_presence_for_device(
-            ip_hash=ip_hash,
+            client_ip=client_ip,
             device_id=device_info.device_id,
             device_info=device_info,
         )
 
         messages = redis__pull_messages_for_device(
-            ip_hash=ip_hash,
+            client_ip=client_ip,
             device_id=device_info.device_id
         )
         return Response({'messages': [m.asdict() for m in messages]})

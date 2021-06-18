@@ -11,9 +11,6 @@ from lib.cache import REDIS
 
 from django.conf import settings
 
-# real ip header (when behind a proxy)
-REQUEST_IP_HEADER_NAME = getattr(settings, 'REQUEST_IP_HEADER_NAME', None)
-
 # message to device will expire in ..
 LINKHELPER_MESSAGE_EXPIRATION_SECS = 10
 
@@ -21,16 +18,16 @@ LINKHELPER_MESSAGE_EXPIRATION_SECS = 10
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
 
 
-def redis__presence_prefix(ip_hash: str) -> str:
-    return f'linkhelper:{ip_hash}:presence'
+def redis__presence_prefix(client_ip: str) -> str:
+    return f'linkhelper:{client_ip}:presence'
 
 
-def redis__device_info_prefix(ip_hash: str, device_id: str) -> str:
-    return f'linkhelper:{ip_hash}:device_info:{device_id}'
+def redis__device_info_prefix(client_ip: str, device_id: str) -> str:
+    return f'linkhelper:{client_ip}:device_info:{device_id}'
 
 
-def redis__to_device_message_queue_prefix(ip_hash: str, device_id: str) -> str:
-    return f'linkhelper:{ip_hash}:messages_to:{device_id}'
+def redis__to_device_message_queue_prefix(client_ip: str, device_id: str) -> str:
+    return f'linkhelper:{client_ip}:messages_to:{device_id}'
 
 
 class DeviceInfoSerializer(serializers.Serializer):
@@ -110,7 +107,7 @@ class DeviceMessage:
 
 
 def redis__push_message_for_device(
-    ip_hash: str,
+    client_ip: str,
     device_id: str,
     message: DeviceMessage,
     cur_time: Optional[float] = None,
@@ -118,7 +115,7 @@ def redis__push_message_for_device(
 ) -> None:
     t = cur_time if cur_time is not None else time.time()
     raw = message.to_json()
-    key = redis__to_device_message_queue_prefix(ip_hash, device_id)
+    key = redis__to_device_message_queue_prefix(client_ip, device_id)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(key, min="-inf", max=t - expiration_secs)
         conn.zadd(key, {raw: t})
@@ -127,14 +124,14 @@ def redis__push_message_for_device(
 
 
 def redis__pull_messages_for_device(
-    ip_hash: str,
+    client_ip: str,
     device_id: str,
     message_count: int = 3,
     cur_time: Optional[float] = None,
     expiration_secs: int = LINKHELPER_MESSAGE_EXPIRATION_SECS
 ) -> List[DeviceMessage]:
     t = cur_time if cur_time is not None else time.time()
-    key = redis__to_device_message_queue_prefix(ip_hash, device_id)
+    key = redis__to_device_message_queue_prefix(client_ip, device_id)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(key, min='-inf', max=t - expiration_secs)
         conn.zpopmin(key, message_count)
@@ -149,15 +146,15 @@ def redis__pull_messages_for_device(
     return messages
 
 
-def redis__active_devices_for_ip_hash(
-    ip_hash: str,
+def redis__active_devices_for_client_ip(
+    client_ip: str,
     cur_time: Optional[float] = None,
     expiration_secs: int = LINKHELPER_PRESENCE_EXPIRATION_SECS,
 ) -> List[DeviceInfo]:
     t = cur_time if cur_time is not None else time.time()
 
     # fetch active decice ids
-    key = redis__presence_prefix(ip_hash)
+    key = redis__presence_prefix(client_ip)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(key, min="-inf", max=t - expiration_secs)
         conn.zrangebyscore(key, min=t - expiration_secs, max='+inf')
@@ -167,7 +164,7 @@ def redis__active_devices_for_ip_hash(
     device_ids = ret1[1]
     with REDIS.pipeline() as conn:
         for device_id in device_ids:
-            conn.get(redis__device_info_prefix(ip_hash, device_id))
+            conn.get(redis__device_info_prefix(client_ip, device_id))
         ret2 = conn.execute()
 
     dinfos = []
@@ -183,7 +180,7 @@ def redis__active_devices_for_ip_hash(
 
 
 def redis__update_presence_for_device(
-    ip_hash: str,
+    client_ip: str,
     device_id: str,
     device_info: DeviceInfo,
     cur_time: Optional[float] = None,
@@ -192,30 +189,10 @@ def redis__update_presence_for_device(
 ) -> None:
     t = cur_time if cur_time is not None else time.time()
     raw = device_info.to_json()
-    key = redis__presence_prefix(ip_hash)
-    info_key = redis__device_info_prefix(ip_hash, device_id)
+    key = redis__presence_prefix(client_ip)
+    info_key = redis__device_info_prefix(client_ip, device_id)
     with REDIS.pipeline() as conn:
         conn.zadd(key, {device_id: t})
         conn.expire(key, expiration_secs)
         conn.setex(info_key, expiration_secs, raw)
         conn.execute()
-
-
-def str_to_hash(s: str) -> str:
-    return hashlib.md5(s.encode('utf8')).hexdigest()
-
-
-def get_ip_address_from_api_request(request: Request) -> str:
-    if REQUEST_IP_HEADER_NAME:
-        ip = request.headers.get(
-            REQUEST_IP_HEADER_NAME, '').split(',')[-1].strip()
-        if ip:
-            return ip
-
-        # support for REMOTE_ADDR
-        ip = request.META.get(REQUEST_IP_HEADER_NAME, '')
-        if ip:
-            return ip.strip()
-
-    raise Exception(
-        f'could not find ip address in header {REQUEST_IP_HEADER_NAME}')

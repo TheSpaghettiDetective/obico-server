@@ -15,8 +15,8 @@ from django.http import HttpRequest
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
-
 import requests
+from ipware import get_client_ip
 
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
@@ -31,10 +31,8 @@ from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 from .linkhelper import (
     redis__push_message_for_device,
-    redis__active_devices_for_ip_hash,
+    redis__active_devices_for_client_ip,
     DeviceMessage,
-    get_ip_address_from_api_request,
-    str_to_hash
 )
 
 PREDICTION_FETCH_TIMEOUT = 20
@@ -435,16 +433,14 @@ class LinkHelperViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def query(self, request):
-        ip = get_ip_address_from_api_request(request)
-        ip_hash = str_to_hash(ip)
+        client_ip, is_routable = get_client_ip(request)
 
-        devices = redis__active_devices_for_ip_hash(ip_hash)
+        devices = redis__active_devices_for_client_ip(client_ip)
         return Response({"devices": [device.asdict() for device in devices]})
 
     @action(detail=False, methods=['post'])
     def push_verify_code_task(self, request):
-        ip = get_ip_address_from_api_request(request)
-        ip_hash = str_to_hash(ip)
+        client_ip, is_routable = get_client_ip(request)
 
         code = self.request.query_params.get('code')
         if code is None:
@@ -455,7 +451,7 @@ class LinkHelperViewSet(viewsets.ViewSet):
             raise ValidationError({'device_id': "missing param"})
 
         redis__push_message_for_device(
-            ip_hash,
+            client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
         )
@@ -464,15 +460,14 @@ class LinkHelperViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
     def push_identify_task(self, request):
-        ip = get_ip_address_from_api_request(request)
-        ip_hash = str_to_hash(ip)
+        client_ip, is_routable = get_client_ip(request)
 
         device_id = self.request.query_params.get('device_id')
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
         redis__push_message_for_device(
-            ip_hash,
+            client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})
         )

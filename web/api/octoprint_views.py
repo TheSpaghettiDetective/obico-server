@@ -5,25 +5,35 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
+from rest_framework.exceptions import ValidationError
 from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import requests
 import json
 import io
-from PIL import Image, ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
+import functools
 
+from .linkhelper import (
+    DeviceInfo,
+    redis__pull_messages_for_device,
+    redis__update_presence_for_device,
+    str_to_hash,
+    get_ip_address_from_api_request)
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from app.models import *
+from app.models import Printer, PrinterPrediction
 from lib.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
+
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
@@ -117,7 +127,7 @@ class OctoPrinterView(APIView):
         return self.get_response(request.auth, request.user)
 
 
-## Helper methods
+# Helper methods
 
 def alert_suppressed(printer):
     if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
@@ -173,3 +183,38 @@ def cap_image_size(pic):
         pic.content_type,
         len(output.getbuffer()),
         None)
+
+
+def report_exceptions(msg, logger, *exception_classes):
+    def outer(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except exception_classes:
+                logger.exception(msg)
+        return wrapper
+    return outer
+
+
+class OctoLinkHelperView(APIView):
+    throttle_scope = 'linkhelper'
+
+    @report_exceptions("invalid deviceinfo", LOGGER, ValidationError)
+    def post(self, request, format=None):
+        ip = get_ip_address_from_api_request(request)
+        ip_hash = str_to_hash(ip)
+
+        device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
+
+        redis__update_presence_for_device(
+            ip_hash=ip_hash,
+            device_id=device_info.device_id,
+            device_info=device_info,
+        )
+
+        messages = redis__pull_messages_for_device(
+            ip_hash=ip_hash,
+            device_id=device_info.device_id
+        )
+        return Response({'messages': [m.asdict() for m in messages]})

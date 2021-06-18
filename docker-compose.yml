@@ -26,6 +26,7 @@ x-web-defaults: &web-defaults
     ML_API_HOST: 'http://ml_api:3333'
     ACCOUNT_ALLOW_SIGN_UP: 'False'  # -> set to 'True' if you want to open sign up form
     WEBPACK_LOADER_ENABLED:
+    REQUEST_IP_HEADER_NAME:
 
     #### Optional env vars below this line ###
     #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars

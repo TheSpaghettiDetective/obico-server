@@ -29,7 +29,7 @@ from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
-from .linkhelper import (
+from .printer_discovery import (
     redis__push_message_for_device,
     redis__active_devices_for_client_ip,
     DeviceMessage,
@@ -427,7 +427,7 @@ class PublicTimelapseViewSet(mixins.ListModelMixin,
             self.serializer_class(PublicTimelapse.objects.order_by('priority'), many=True).data)
 
 
-class LinkHelperViewSet(viewsets.ViewSet):
+class PrinterDiscoveryViewSet(viewsets.ViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 

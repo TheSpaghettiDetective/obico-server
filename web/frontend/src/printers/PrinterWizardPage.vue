@@ -240,7 +240,7 @@ export default {
         })
       }
     },
-    url() {
+    verificationCodeUrl() {
       const baseUrl = urls.verificationCode()
       if (!this.verificationCode){ // Never retrieved veification code. Get one.
         if (this.printerIdToLink) {
@@ -294,7 +294,7 @@ export default {
      */
     getVerificationCode() {
       axios
-        .get(this.url())
+        .get(this.verificationCodeUrl())
         .then((resp) => {
           if (resp.data) {
             if (resp.data) {

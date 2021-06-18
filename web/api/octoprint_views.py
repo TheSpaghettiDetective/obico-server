@@ -15,7 +15,7 @@ import io
 import functools
 from ipware import get_client_ip
 
-from .linkhelper import (
+from .printer_discovery import (
     DeviceInfo,
     redis__pull_messages_for_device,
     redis__update_presence_for_device,)
@@ -197,8 +197,7 @@ def report_validationerror(f):
     return wrapper
 
 
-class OctoLinkHelperView(APIView):
-    throttle_scope = 'linkhelper'
+class OctoPrinterDiscoveryView(APIView):
 
     @report_validationerror
     def post(self, request, format=None):

@@ -32,14 +32,14 @@ router.register(
     viewsets.PublicTimelapseViewSet,
     'PublicTimelapseViewSet')
 router.register(
-    r'linkhelper',
-    viewsets.LinkHelperViewSet,
-    'LinkHelperViewSet')
+    r'printer_discovery',
+    viewsets.PrinterDiscoveryViewSet,
+    'PrinterDiscoveryViewSet')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
     path('v1/octo/pic/', octoprint_views.OctoPrintPicView.as_view()),
     path('v1/octo/ping/', octoprint_views.OctoPrinterView.as_view()),  # For compatibility with plugin < 1.5.0
     path('v1/octo/printer/', octoprint_views.OctoPrinterView.as_view()),
-    path('v1/octo/unlinked/', octoprint_views.OctoLinkHelperView.as_view()),
+    path('v1/octo/unlinked/', octoprint_views.OctoPrinterDiscoveryView.as_view()),
 ]

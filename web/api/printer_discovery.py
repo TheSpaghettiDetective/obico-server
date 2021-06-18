@@ -19,15 +19,15 @@ LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
 
 
 def redis__presence_prefix(client_ip: str) -> str:
-    return f'linkhelper:{client_ip}:presence'
+    return f'printer_discovery:{client_ip}:presence'
 
 
 def redis__device_info_prefix(client_ip: str, device_id: str) -> str:
-    return f'linkhelper:{client_ip}:device_info:{device_id}'
+    return f'printer_discovery:{client_ip}:device_info:{device_id}'
 
 
 def redis__to_device_message_queue_prefix(client_ip: str, device_id: str) -> str:
-    return f'linkhelper:{client_ip}:messages_to:{device_id}'
+    return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
 class DeviceInfoSerializer(serializers.Serializer):

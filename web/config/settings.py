@@ -200,8 +200,7 @@ SITE_IS_PUBLIC = os.environ.get('SITE_IS_PUBLIC', 'False') == 'True'
 
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '50/hour',
-        'linkhelper': '720/hour',  # 5s rate per ip
+        'anon': '3600/hour',
     },
     'EXCEPTION_HANDLER': 'app.debug.custom_exception_handler'
 }

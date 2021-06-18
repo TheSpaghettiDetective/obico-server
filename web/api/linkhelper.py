@@ -213,8 +213,9 @@ def get_ip_address_from_api_request(request: Request) -> str:
             return ip
 
         # support for REMOTE_ADDR
-        ip = request.META[REQUEST_IP_HEADER_NAME]
+        ip = request.META.get(REQUEST_IP_HEADER_NAME, '')
         if ip:
-            return ip
+            return ip.strip()
 
-    raise Exception('could not determine ip address')
+    raise Exception(
+        f'could not find ip address in header {REQUEST_IP_HEADER_NAME}')

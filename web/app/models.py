@@ -18,6 +18,7 @@ from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
+from random import random, seed
 
 from config.celery import celery_app
 from lib import cache, channels
@@ -646,6 +647,22 @@ class MobileDevice(models.Model):
 class OneTimeVerificationCodeManager(models.Manager):
     def get_queryset(self):
         return super(OneTimeVerificationCodeManager, self).get_queryset().filter(expired_at__gte=timezone.now())
+
+    def get_or_create(self, user, printer_id_to_link = None):
+        if printer_id_to_link:
+            code = self.select_related('printer').filter(printer_id=printer_id_to_link, user=user).first()
+        else:
+            code = self.select_related('printer').filter(user=user).first()
+
+        if not code:
+            seed()
+            while True:
+                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
+                if not self.filter(code=new_code):    # doesn't collide with existing code
+                    break
+
+            code = self.create(user=user, code=new_code, printer_id=printer_id_to_link)
+        return code
 
 
 def two_hours_later():

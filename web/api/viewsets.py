@@ -342,21 +342,7 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             raise Http404("Requested resource does not exist")
 
         printer_id_to_link = request.GET.get('printer_id')
-        if printer_id_to_link:
-            code = OneTimeVerificationCode.objects.select_related('printer').filter(printer_id=printer_id_to_link, user=request.user).first()
-        else:
-            code = OneTimeVerificationCode.objects.select_related('printer').filter(user=request.user).first()
-
-        if not code:
-            seed()
-            while True:
-                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
-                if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
-                    break
-
-            code = OneTimeVerificationCode.objects.create(user=request.user, code=new_code, printer_id=printer_id_to_link)
-
-        return Response(self.serializer_class(code, many=False).data)
+        return Response(self.serializer_class(OneTimeVerificationCode.objects.get_or_create(request.user, printer_id_to_link), many=False).data)
 
     def retrieve(self, request, *args, **kwargs):
         if not request.user or not request.user.is_authenticated:
@@ -432,8 +418,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    @action(detail=False, methods=['get'])
-    def query(self, request):
+    def list(self, request):
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
@@ -441,21 +426,20 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         devices = get_active_devices_for_client_ip(client_ip)
-        return Response({"devices": [device.asdict() for device in devices]})
+        return Response([device.asdict() for device in devices])
 
-    @action(detail=False, methods=['post'])
-    def push_verify_code_task(self, request):
+    def create(self, request):
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
 
-        code = self.request.query_params.get('code')
+        code = self.request.data.get('code')
         if code is None:
             raise ValidationError({'code': "missing param"})
 
-        device_id = self.request.query_params.get('device_id')
+        device_id = self.request.data.get('device_id')
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
@@ -463,26 +447,6 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
-        )
-
-        return Response({'queued': True})
-
-    @action(detail=False, methods=['post'])
-    def push_identify_task(self, request):
-        client_ip, is_routable = get_client_ip(request)
-
-        # must guard against possible None or blank value as client_ip
-        if not client_ip:
-            raise ImproperlyConfigured("cannot determine client_ip")
-
-        device_id = self.request.query_params.get('device_id')
-        if device_id is None:
-            raise ValidationError({'device_id': "missing param"})
-
-        push_message_for_device(
-            client_ip,
-            device_id,
-            DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})
         )
 
         return Response({'queued': True})

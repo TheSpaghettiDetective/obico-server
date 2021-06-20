@@ -22,6 +22,7 @@ export default {
   sharedResources: (paramsObj) => '/api/v1/sharedresources/?'
         + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
+  printerDiscover: () => '/api/v1/printer_discovery/',
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

@@ -12,7 +12,7 @@ from lib.cache import REDIS
 from django.conf import settings
 
 # message to device will expire in ..
-LINKHELPER_MESSAGE_EXPIRATION_SECS = 10
+LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10

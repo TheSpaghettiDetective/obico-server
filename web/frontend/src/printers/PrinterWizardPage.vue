@@ -53,7 +53,40 @@
     </div>
 
     <div v-else>
+      <div v-if="discovering">
+        <h2>
+          <img class="header-img"
+            :src="require('../../../app/static/img/octo-inverted.png')" />
+          {{title}}
+        </h2>
+        <div v-if="discoveredPrinters.length === 0">
+          <h4 class="row justify-content-center">
+          <b-spinner type="grow" label="Loading..."></b-spinner>
+          Scanning for OctoPrint...
+          </h4>
+        </div>
+        <div v-else>
+          <div class="lead">We have found {{discoveredPrinters.length}} OctoPrint(s) on your local network:</div>
+          <div v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id">
+            {{discoveredPrinter.device_id}}
+            <button class="btn btn-primary" @click="linkPrinter(discoveredPrinter.device_id)">Link</button>
+          </div>
+        </div>
+        <div v-if="discoveryCount > 4">
+          <div class="lead">Can't find the OctoPrint you are trying to link? Please make sure:</div>
+          <ul>
+            <li>The device, such as the Raspberry Pi, is powered on.</li>
+          </ul>
+          <div>If you didn't buy a hardware kit with The Spaghetti Detective already integrated, such as TH3D's EZPi, please also make sure:</div>
+          <ul>
+            <li>You have installed the "Access Anywhere - The Spaghetti Detective" plugin.</li>
+            <li>The "Access Anywhere - The Spaghetti Detective" plugin version is <span class="font-weight-bold">1.7.0 or higher</span>.</li>
+            <li class="text-warning">You have restarted the OctoPrint after the installation.</li>
+          </ul>
+        </div>
+      </div>
       <form-wizard
+        v-else
         color="rgb(var(--color-primary))"
         step-size="sm"
       >
@@ -176,6 +209,8 @@ import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
 
+const MAX_DISCOVERY_CALLS = 200
+
 export default {
   components: {
     FormWizard,
@@ -199,8 +234,15 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
-      }
+      },
+      discovering: true,
+      discoveryCount: 0,
+      discoveredPrinters: [],
     }
+  },
+
+  created() {
+    this.discoverPrinter()
   },
 
   computed: {
@@ -226,6 +268,9 @@ export default {
       } else {
         return '-'
       }
+    },
+    failedToDiscoverPrinter() {
+      return this.discoveryCount >= MAX_DISCOVERY_CALLS
     }
   },
   methods: {
@@ -366,12 +411,9 @@ export default {
         .get(this.verificationCodeUrl())
         .then((resp) => {
           if (resp.data) {
-            if (resp.data) {
-              this.verificationCode = resp.data
-              if (this.verificationCode.verified_at) {
-                this.verifiedPrinter = resp.data.printer
-                clearInterval(this.codeInterval)
-              }
+            this.verificationCode = resp.data
+            if (this.verificationCode.verified_at) {
+              this.verifiedPrinter = resp.data.printer
             }
           }
         })
@@ -395,6 +437,33 @@ export default {
     zoomIn(event) {
       event.target.classList.toggle('zoomedIn')
     },
+
+    callPrinterDiscoveryApi() {
+      this.discoveryCount += 1
+      axios
+        .get(urls.printerDiscover())
+        .then((resp) => {
+          this.discoveredPrinters = resp.data
+        })
+    },
+
+    discoverPrinter() {
+      this.callPrinterDiscoveryApi()
+      if (this.failedToDiscoverPrinter) {
+        return
+      }
+      setTimeout(() => {
+        this.discoverPrinter()
+      }, 3000)
+    },
+
+    linkPrinter(deviceId) {
+      axios
+        .post(urls.printerDiscover(), { device_id: deviceId })
+        .then((resp) => {
+          this.discoveredPrinters = resp.data
+        })
+    }
   }
 }
 </script>

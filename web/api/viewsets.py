@@ -342,7 +342,21 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
             raise Http404("Requested resource does not exist")
 
         printer_id_to_link = request.GET.get('printer_id')
-        return Response(self.serializer_class(OneTimeVerificationCode.objects.get_or_create(request.user, printer_id_to_link), many=False).data)
+        if printer_id_to_link:
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(printer_id=printer_id_to_link, user=request.user).first()
+        else:
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(user=request.user).first()
+
+        if not code:
+            seed()
+            while True:
+                new_code = '%06d' % (int(random() * 1500450271) % 1000000)
+                if not OneTimeVerificationCode.objects.filter(code=new_code):    # doesn't collide with existing code
+                    break
+
+            code = OneTimeVerificationCode.objects.create(user=request.user, code=new_code, printer_id=printer_id_to_link)
+
+        return Response(self.serializer_class(code, many=False).data)
 
     def retrieve(self, request, *args, **kwargs):
         if not request.user or not request.user.is_authenticated:

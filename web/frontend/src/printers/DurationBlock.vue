@@ -13,6 +13,10 @@
     <span
       v-if="valid && showSeconds"
     >&nbsp;{{ seconds }}<span class="text-subscript text-muted">s</span></span>
+    <span class="text-subscript text-muted">&nbsp;->&nbsp;</span>
+    <span
+      v-if="valid && endTime !== null"
+    >&nbsp;{{ endTime }}</span>
   </div>
 </template>
 

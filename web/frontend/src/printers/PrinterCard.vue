@@ -734,7 +734,7 @@ export default {
           showMinutes: (h>0 || m>0),
           seconds: s,
           showSeconds: (h==0 && m==0),
-          endTime: moment().add(seconds, 'seconds').format('hh:mm A')
+          endTime: moment().add(seconds, 'seconds').format('HH:MM')
         }
       }
     },

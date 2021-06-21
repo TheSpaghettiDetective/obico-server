@@ -7,7 +7,7 @@
     <div class="col-sm-11 col-md-10 col-lg-8">
       <div v-if="user" class="form-container">
         <!-- Personalization -->
-        <section class="personalization">
+        <section v-if="!isInMobile" class="personalization">
           <h2 class="section-title">Personalization</h2>
           <div class="form-group row mt-3">
             <label class="col-md-2 col-sm-3 col-form-label">Theme</label>
@@ -29,6 +29,9 @@
                     <div class="circle"></div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
                 <div class="custom-control custom-checkbox form-check-inline system-theme-control">
                   <input
                     type="checkbox"
@@ -40,7 +43,6 @@
                     Sync theme with system settings
                   </label>
                 </div>
-              </div>
             </div>
           </div>
         </section>
@@ -666,6 +668,7 @@ import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
 import { Themes, theme, selectTheme } from '../main/themes.js'
+import { isMobile } from '@lib/app_platform'
 
 export default {
   name: 'UserPreferencesPage',
@@ -852,13 +855,14 @@ export default {
     },
   },
 
-  mounted() {
+  created() {
     if (document.querySelector('#settings-json')) {
       const {TWILIO_ENABLED, SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN} = JSON.parse(document.querySelector('#settings-json').text)
       this.twilioEnabled = !!TWILIO_ENABLED
       this.slackEnabled = !!SLACK_CLIENT_ID
       this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
     }
+    this.isInMobile = isMobile() || window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
     this.fetchUser()
   },
 
@@ -1054,7 +1058,7 @@ section:not(:first-child)
     path, circle
       fill: rgb(var(--color-icon-disabled))
       transition: all .3s ease-out
-  
+
     &.active path, &.active circle
       fill: rgb(var(--color-icon-active))
 
@@ -1064,7 +1068,7 @@ section:not(:first-child)
     font-size: 12px
     color: #fff
     padding: 0 8px
-    
+
   .active-indicator
     position: absolute
     width: calc(100% - 9px)

@@ -5,15 +5,14 @@
   </pull-to-reveal>
 
   <div class="col-sm-12 col-lg-10 wizard-container form-container" :class="{'logo-bg': verifiedPrinter }">
-    
+
     <div v-if="verifiedPrinter" class="text-center py-5">
       <svg class="success-checkmark" viewBox="0 0 446 410" xmlns="http://www.w3.org/2000/svg">
         <path d="M173.26 409.06C77.84 409.06 0.200012 331.43 0.200012 236C0.200012 140.57 77.84 62.94 173.26 62.94C268.68 62.94 346.32 140.57 346.32 236C346.32 331.43 268.69 409.06 173.26 409.06ZM173.26 86.06C90.59 86.06 23.33 153.32 23.33 235.99C23.33 318.66 90.59 385.92 173.26 385.92C255.93 385.92 323.19 318.67 323.19 236C323.19 153.33 255.93 86.07 173.26 86.07V86.06Z" />
         <path d="M173.26 293.77L95.82 216.34L117.04 195.12L173.26 251.35L424 0.600006L445.22 21.81L173.26 293.77Z" />
       </svg>
 
-      <h2 class="pb-4">Successfully linked to your account!</h2>
-      <br />
+      <h3 class="pb-4">Successfully linked to your account!</h3>
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <saving-animation :errors="errorMessages.printer_name" :saving="saving.printer_name">
           <div class="printer-name-input">
@@ -29,22 +28,26 @@
             >
           </div>
         </saving-animation>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">Give your printer a shiny name.</div>
+        </div>
       </div>
+      <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+        <div class="mt-4">
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+        </div>
         <div class="mt-5">
           <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
         </div>
         <div>
-          <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>
+          <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
         </div>
         <div class="mt-4">
           <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
-        </div>
-        <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
         </div>
       </div>
     </div>
@@ -504,10 +507,9 @@ li
     right: calc(50% - #{$size / 2})
 
 .success-checkmark
-  width: 256px
-  height: 170px
+  height: 6rem
   margin-bottom: 1.5rem
-  
+
   path
     fill: rgb(var(--color-dark-white))
 
@@ -527,7 +529,6 @@ li
   input
     padding: .4em 2.4em
     width: 100%
-    border-radius: 300px
     font-size: 20px
     text-align: center
 </style>

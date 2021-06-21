@@ -5,6 +5,7 @@
     </div>
     <input
       type="text"
+      class="dark"
       placeholder="Search"
       :value="value"
       @input="$emit('input', $event.target.value)"
@@ -42,17 +43,7 @@
       opacity: .8
 
     input
-      background-color: rgb(var(--color-input-dark-bg))
-      border: 1px solid rgb(var(--color-input-dark-bg))
-      color: rgb(var(--color-text))
-      outline: none
       padding: .2em .5em .2em 2em
       width: 100%
       height: 100%
-
-      &::placeholder
-        color: rgb(var(--color-gray-600))
-
-      &:focus
-        border-color: rgb(var(--color-white))
 </style>

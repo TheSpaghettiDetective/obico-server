@@ -121,6 +121,16 @@ const colors = [
   {name: 'bg-dark-d-10',             values: {[Themes.Light]: '#9A65F4', [Themes.Dark]: '#17222c'}},
 ]
 
+const urls = [
+  {
+    name: 'logo-bg',
+    values: {
+      [Themes.Light]: 'url("/static/img/logo-bg/logo-bg_light.svg")',
+      [Themes.Dark]: 'url("/static/img/logo-bg/logo-bg_dark.svg")'
+    }
+  },
+]
+
 // Converts HEX color to RGB
 function HEXtoRGB(color) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
@@ -151,6 +161,10 @@ export function initTheme() {
   colors.forEach(function(color) {
     const RGB = HEXtoRGB(color.values[themeValue])
     document.documentElement.style.setProperty(`--color-${color.name}`, `${RGB[0]} ${RGB[1]} ${RGB[2]}`)
+  })
+
+  urls.forEach(function(url) {
+    document.documentElement.style.setProperty(`--url-${url.name}`, url.values[themeValue])
   })
 
   theme.value = themeValue

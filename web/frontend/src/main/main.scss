@@ -518,3 +518,18 @@ a.link {
     height: calc(100vh - 243px);
   }
 }
+
+input.dark {
+  background-color: rgb(var(--color-input-dark-bg));
+  border: 1px solid rgb(var(--color-input-dark-bg));
+  color: rgb(var(--color-text));
+  outline: none;
+
+  &::placeholder {
+    color: rgb(var(--color-gray-600));
+  }
+
+  &:focus {
+    border-color: rgb(var(--color-white));
+  }
+}

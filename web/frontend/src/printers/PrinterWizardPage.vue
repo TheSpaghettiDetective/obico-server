@@ -4,20 +4,33 @@
     <navbar view-name="app.views.web_views.edit_printer"></navbar>
   </pull-to-reveal>
 
-  <div class="col-sm-12 col-lg-10 wizard-container form-container">
+  <div class="col-sm-12 col-lg-10 wizard-container form-container" :class="{'logo-bg': verifiedPrinter }">
+    
     <div v-if="verifiedPrinter" class="text-center py-5">
       <svg class="success-checkmark" viewBox="0 0 446 410" xmlns="http://www.w3.org/2000/svg">
         <path d="M173.26 409.06C77.84 409.06 0.200012 331.43 0.200012 236C0.200012 140.57 77.84 62.94 173.26 62.94C268.68 62.94 346.32 140.57 346.32 236C346.32 331.43 268.69 409.06 173.26 409.06ZM173.26 86.06C90.59 86.06 23.33 153.32 23.33 235.99C23.33 318.66 90.59 385.92 173.26 385.92C255.93 385.92 323.19 318.67 323.19 236C323.19 153.33 255.93 86.07 173.26 86.07V86.06Z" />
         <path d="M173.26 293.77L95.82 216.34L117.04 195.12L173.26 251.35L424 0.600006L445.22 21.81L173.26 293.77Z" />
       </svg>
 
-      <h2>{{verifiedPrinter.name}}</h2>
-      <div class="lead">Successfully linked to your account!</div>
-      <br /><br />
+      <h2 class="pb-4">Successfully linked to your account!</h2>
+      <br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-        <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
-        </div>
+        <saving-animation :errors="errorMessages.printer_name" :saving="saving.printer_name">
+          <div class="printer-name-input">
+            <div class="edit-icon">
+              <i class="fas fa-pen"></i>
+            </div>
+            <input
+              type="text"
+              class="dark"
+              placeholder="Printer name"
+              v-model="verifiedPrinter.name"
+              @input="updatePrinterName"
+            >
+          </div>
+        </saving-animation>
+      </div>
+      <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <div class="mt-5">
           <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
         </div>
@@ -30,8 +43,12 @@
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
         </div>
+        <div class="mt-4">
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+        </div>
       </div>
     </div>
+
     <div v-else>
       <form-wizard
         color="rgb(var(--color-primary))"
@@ -154,6 +171,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
+import SavingAnimation from '../common/SavingAnimation.vue'
 
 export default {
   components: {
@@ -162,6 +180,7 @@ export default {
     WizardButton,
     PullToReveal,
     Navbar,
+    SavingAnimation,
   },
   data() {
     return {
@@ -169,7 +188,15 @@ export default {
       verificationCode: null,
       verifiedPrinter: null,
       onVerificationStep: false,
-      copied: false
+      copied: false,
+      saving: {},
+      errorMessages: {},
+      delayedSubmit: { // Make pause before sending new value to API
+        'printer_name': {
+          'delay': 1000,
+          'timeoutId': null
+        },
+      }
     }
   },
 
@@ -199,6 +226,45 @@ export default {
     }
   },
   methods: {
+    setSavingStatus(propName, status) {
+      if (status) {
+        delete this.errorMessages[propName]
+      }
+      this.$set(this.saving, propName, status)
+    },
+
+    updatePrinterName() {
+      if ('name' in this.verifiedPrinter && this.verifiedPrinter.name) {
+        const delayInfo = this.delayedSubmit['printer_name']
+        if (delayInfo['timeoutId']) {
+          clearTimeout(delayInfo['timeoutId'])
+        }
+
+        this.delayedSubmit['printer_name']['timeoutId'] = setTimeout(() => {
+          this.setSavingStatus('printer_name', true)
+
+          // Make request to API
+          return axios
+            .patch(urls.printer(this.verifiedPrinter.id), {
+              'name': this.verifiedPrinter.name
+            })
+            .catch(err => {
+              console.log(err)
+            })
+            .then(() => {
+              this.setSavingStatus('printer_name', false)
+            })
+
+        }, delayInfo['delay'])
+        return
+      } else {
+        const delayInfo = this.delayedSubmit['printer_name']
+        if (delayInfo['timeoutId']) {
+          clearTimeout(delayInfo['timeoutId'])
+        }
+      }
+    },
+
     /**
      * Functions prevTab() and nextTab() are used to remove .checked class from circle steps
      * following current step (.checked class isn't removed by default after clicking Back
@@ -301,6 +367,7 @@ export default {
               this.verificationCode = resp.data
               if (this.verificationCode.verified_at) {
                 this.verifiedPrinter = resp.data.printer
+                clearInterval(this.codeInterval)
               }
             }
           }
@@ -341,6 +408,12 @@ export default {
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
+
+  &.logo-bg
+    background-image: var(--url-logo-bg)
+    background-repeat: no-repeat
+    background-position: -250px 100px
+    background-size: 500px
 
 .btn-back
   color: rgb(var(--color-white))
@@ -437,4 +510,24 @@ li
   
   path
     fill: rgb(var(--color-dark-white))
+
+.printer-name-input
+  position: relative
+
+  .edit-icon
+    height: 100%
+    display: flex
+    flex-direction: column
+    justify-content: center
+    position: absolute
+    top: 0
+    left: 1em
+    opacity: .5
+
+  input
+    padding: .4em 2.4em
+    width: 100%
+    border-radius: 300px
+    font-size: 20px
+    text-align: center
 </style>

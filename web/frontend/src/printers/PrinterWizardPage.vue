@@ -5,15 +5,14 @@
   </pull-to-reveal>
 
   <div class="col-sm-12 col-lg-10 wizard-container form-container" :class="{'logo-bg': verifiedPrinter }">
-    
+
     <div v-if="verifiedPrinter" class="text-center py-5">
       <svg class="success-checkmark" viewBox="0 0 446 410" xmlns="http://www.w3.org/2000/svg">
         <path d="M173.26 409.06C77.84 409.06 0.200012 331.43 0.200012 236C0.200012 140.57 77.84 62.94 173.26 62.94C268.68 62.94 346.32 140.57 346.32 236C346.32 331.43 268.69 409.06 173.26 409.06ZM173.26 86.06C90.59 86.06 23.33 153.32 23.33 235.99C23.33 318.66 90.59 385.92 173.26 385.92C255.93 385.92 323.19 318.67 323.19 236C323.19 153.33 255.93 86.07 173.26 86.07V86.06Z" />
         <path d="M173.26 293.77L95.82 216.34L117.04 195.12L173.26 251.35L424 0.600006L445.22 21.81L173.26 293.77Z" />
       </svg>
 
-      <h2 class="pb-4">Successfully linked to your account!</h2>
-      <br />
+      <h3 class="pb-4">Successfully linked to your account!</h3>
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <saving-animation :errors="errorMessages.printer_name" :saving="saving.printer_name">
           <div class="printer-name-input">
@@ -29,22 +28,26 @@
             >
           </div>
         </saving-animation>
+        <div>
+          <div class="text-muted mx-auto text-center font-weight-light">Give your printer a shiny name.</div>
+        </div>
       </div>
+      <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+        <div class="mt-4">
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+        </div>
         <div class="mt-5">
           <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
         </div>
         <div>
-          <div class="text-muted mx-auto text-center font-weight-light">So that The Detective can send you text (SMS) on print failures.</div>
+          <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
         </div>
         <div class="mt-4">
           <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
-        </div>
-        <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
         </div>
       </div>
     </div>
@@ -55,8 +58,10 @@
         step-size="sm"
       >
         <h2 slot="title">
-          <img class="header-img"
-            :src="require('../../../app/static/img/octo-inverted.png')" />
+          <svg class="header-img"  viewBox="0 0 165 152" xmlns="http://www.w3.org/2000/svg">
+            <path class="tone-1" d="M162.703 74.7397C162.703 74.6597 162.643 74.5297 162.573 74.3397C161.403 70.4597 153.253 43.7297 132.123 32.7997C110.123 21.4397 81.0226 16.9397 53.2126 46.3497C17.3626 84.2697 57.8826 125.68 61.1726 151.06H16.1726C-4.90742 111.25 -2.72743 75.1097 7.69257 50.4797C20.1726 21.0897 62.1726 -8.60031 105.753 2.30969C180.713 21.0697 162.703 74.7397 162.703 74.7397Z" />
+            <path class="tone-2" d="M163 72.8212C162.526 71.6245 161.887 69.9878 161.29 68.8218C160.945 67.9524 160.552 67.1022 160.115 66.2748C160.115 66.2748 159.796 65.436 159.785 65.4258C156.88 60.608 154.871 56.5165 150.275 52.6705C146.377 49.3988 142.103 46.597 137.541 44.3238C136.974 44.0374 136.407 43.7509 135.841 43.5055C119.17 35.6804 98.5736 34.2279 80.9447 43.7816C59.926 55.1868 61.8527 72.4223 68.7456 86.3028V86.3846C70.6573 90.1567 72.9056 93.7511 75.4633 97.1249C75.4633 97.1249 75.4633 97.1249 75.4633 97.1249C77.1521 99.3968 78.9648 101.575 80.8932 103.651C88.3321 111.609 95.1529 125.622 99.8306 136.68C102.468 142.929 104.426 148.248 105.384 151H59.823C59.8326 150.963 59.8326 150.924 59.823 150.887C58.5144 125.847 14.9522 83.674 51.704 45.0807C79.5228 15.9081 108.599 20.3679 130.565 31.6298C151.625 42.4519 161.475 68.4535 162.887 72.4121C162.938 72.6064 162.969 72.7599 163 72.8212Z" />
+          </svg>
           {{title}}
         </h2>
         <tab-content v-if="printerIdToLink" title="Open Plugin Settings">
@@ -428,6 +433,12 @@ export default {
   margin-right: 12px
   margin-bottom: 8px
 
+  .tone-1
+    fill: rgb(var(--color-icon-tunneling-tone-1))
+    
+  .tone-2
+    fill: rgb(var(--color-icon-tunneling-tone-2))
+
 .img-container
   background: rgb(var(--color-body-bg-d-5))
   padding: 1rem
@@ -495,7 +506,7 @@ li
     display: block
     width: $size
     height: $size
-    background-image: url("/static/img/logo-square.png")
+    background-image: var(--url-logo-bg)
     background-size: $size $size
     position: absolute
     top: calc(50% - #{$size / 2})
@@ -504,10 +515,9 @@ li
     right: calc(50% - #{$size / 2})
 
 .success-checkmark
-  width: 256px
-  height: 170px
+  height: 6rem
   margin-bottom: 1.5rem
-  
+
   path
     fill: rgb(var(--color-dark-white))
 
@@ -527,7 +537,6 @@ li
   input
     padding: .4em 2.4em
     width: 100%
-    border-radius: 300px
     font-size: 20px
     text-align: center
 </style>

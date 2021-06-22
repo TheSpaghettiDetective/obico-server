@@ -59,9 +59,9 @@
   {% block body_top_ext %}{% endblock body_top_ext %}
   {% block navbar %}
   {% with view_name=request.resolver_match.view_name %}
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+  <nav class="navbar navbar-expand-lg bg-dark static-top" id="dynaic-navbar">
     <div class="container">
-      <a class="navbar-brand" href="/printers/"><img
+      <a class="navbar-brand" href="/printers/"><img id="dynamic-logo"
           src="{% static 'img/logo-inverted.png' %}" style="height: 32px;" alt="The Spaghetti Detective" /></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
         aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,6 +138,9 @@
       <p>&copy; The Spaghetti Detective {% now "Y" %}. All Rights Reserved.</p>
     </div>
   </footer>
+
+  <!-- Dark / Light theme -->
+  <script type="text/javascript" src="{% static 'js/theme.js' %}"></script>
 
   <!-- Optional JavaScript -->
   <!-- Optional: include a polyfill for ES6 Promises for IE11 and Android browser -->

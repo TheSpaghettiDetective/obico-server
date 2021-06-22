@@ -22,6 +22,15 @@
         height: auto;
         padding: 10px;
         font-size: 16px;
+
+        background-color: rgb(var(--color-input-bg));
+        color: rgb(var(--color-input-text));
+
+        &[readonly] {
+            background-color: rgb(var(--color-color-2) / 0.4);
+            color: white;
+            border: 1px solid rgb(var(--color-form-bg));
+        }
     }
     .form-control:focus {
         z-index: 2;
@@ -52,7 +61,7 @@
     }
 
     a{
-        color:#fff;
+        color:rgb(var(--color-text))
     }
 
     #logreg-form .lines{

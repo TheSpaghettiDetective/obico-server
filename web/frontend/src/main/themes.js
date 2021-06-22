@@ -119,6 +119,10 @@ const colors = [
 
   {name: 'white-d-60',               values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#666666'}},
   {name: 'bg-dark-d-10',             values: {[Themes.Light]: '#9A65F4', [Themes.Dark]: '#17222c'}},
+
+  // Icon colors
+  {name: 'icon-tunneling-tone-1',    values: {[Themes.Light]: '#4e5d6c', [Themes.Dark]: '#EAEAEA'}},
+  {name: 'icon-tunneling-tone-2',    values: {[Themes.Light]: '#1d2935', [Themes.Dark]: '#CDCDCD'}},
 ]
 
 const urls = [
@@ -127,6 +131,13 @@ const urls = [
     values: {
       [Themes.Light]: 'url("/static/img/logo-bg/logo-bg_light.svg")',
       [Themes.Dark]: 'url("/static/img/logo-bg/logo-bg_dark.svg")'
+    }
+  },
+  {
+    name: 'tail-spin',
+    values: {
+      [Themes.Light]: 'url("/static/img/tail-spin/tail-spin_light.svg")',
+      [Themes.Dark]: 'url("/static/img/tail-spin/tail-spin_dark.svg")'
     }
   },
 ]

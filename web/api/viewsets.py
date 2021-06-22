@@ -30,8 +30,8 @@ from lib import cache
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 from .printer_discovery import (
-    redis__push_message_for_device,
-    redis__active_devices_for_client_ip,
+    push_message_for_device,
+    get_active_devices_for_client_ip,
     DeviceMessage,
 )
 
@@ -435,7 +435,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     def query(self, request):
         client_ip, is_routable = get_client_ip(request)
 
-        devices = redis__active_devices_for_client_ip(client_ip)
+        devices = get_active_devices_for_client_ip(client_ip)
         return Response({"devices": [device.asdict() for device in devices]})
 
     @action(detail=False, methods=['post'])
@@ -450,7 +450,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
-        redis__push_message_for_device(
+        push_message_for_device(
             client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
@@ -466,7 +466,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
-        redis__push_message_for_device(
+        push_message_for_device(
             client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})

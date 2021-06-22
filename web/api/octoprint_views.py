@@ -17,8 +17,8 @@ from ipware import get_client_ip
 
 from .printer_discovery import (
     DeviceInfo,
-    redis__pull_messages_for_device,
-    redis__update_presence_for_device,)
+    pull_messages_for_device,
+    update_presence_for_device)
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
@@ -205,13 +205,13 @@ class OctoPrinterDiscoveryView(APIView):
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 
-        redis__update_presence_for_device(
+        update_presence_for_device(
             client_ip=client_ip,
             device_id=device_info.device_id,
             device_info=device_info,
         )
 
-        messages = redis__pull_messages_for_device(
+        messages = pull_messages_for_device(
             client_ip=client_ip,
             device_id=device_info.device_id
         )

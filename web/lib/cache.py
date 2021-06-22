@@ -3,7 +3,8 @@ from django.utils.timezone import now
 import redis
 import bson
 import json
-from typing import Optional
+from typing import List, Optional
+
 
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
@@ -25,6 +26,17 @@ TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
 
 # etag cache expiration
 TUNNEL_ETAG_EXPIRE_SECS = 3600 * 24 * 3
+
+
+def disco_device_presence_prefix(client_ip: str) -> str:
+    return f'printer_discovery:{client_ip}:presence'
+
+
+def disco_to_device_message_queue_prefix(
+    client_ip: str,
+    device_id: str
+) -> str:
+    return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
 def printer_key_prefix(printer_id):
@@ -208,3 +220,63 @@ def print_status_mobile_push_set(print_id, mobile_platform, ex):
 
 def print_status_mobile_push_get(print_id, mobile_platform):
     return REDIS.get(f'{print_key_prefix(print_id)}:psmp:{mobile_platform}')
+
+
+def disco_update_raw_device_info(
+    client_ip: str,
+    device_id: str,
+    raw_deviceinfo: str,
+    cur_time: float,
+    expiration_secs: int
+) -> None:
+    tordset_key = disco_device_presence_prefix(client_ip)
+    with REDIS.pipeline() as conn:
+        conn.zadd(tordset_key, {raw_deviceinfo: cur_time})
+        conn.expire(tordset_key, expiration_secs)
+        conn.execute()
+
+
+def disco_get_active_raw_device_infos(
+    client_ip: str,
+    cur_time: float,
+    expiration_secs: int
+) -> List[str]:
+    tordset_key = disco_device_presence_prefix(client_ip)
+    with REDIS.pipeline() as conn:
+        conn.zremrangebyscore(
+            tordset_key, min="-inf", max=cur_time - expiration_secs)
+        conn.zrangebyscore(
+            tordset_key, min=cur_time - expiration_secs, max='+inf')
+        raw_deviceinfos = conn.execute()[1]
+        return raw_deviceinfos
+
+
+def disco_push_raw_device_message(
+    client_ip: str,
+    device_id: str,
+    raw_message: str,
+    cur_time: float,
+    expiration_secs: int
+) -> None:
+    tordset_key = disco_to_device_message_queue_prefix(client_ip, device_id)
+    with REDIS.pipeline() as conn:
+        conn.zremrangebyscore(
+            tordset_key, min="-inf", max=cur_time - expiration_secs)
+        conn.zadd(tordset_key, {raw_message: cur_time})
+        conn.expire(tordset_key, expiration_secs)
+        conn.execute()
+
+
+def disco_pop_raw_device_messages(
+    client_ip: str,
+    device_id: str,
+    cur_time: float,
+    expiration_secs: int,
+    message_count: int
+) -> List[str]:
+    tordset_key = disco_to_device_message_queue_prefix(client_ip, device_id)
+    with REDIS.pipeline() as conn:
+        conn.zremrangebyscore(
+            tordset_key, min='-inf', max=cur_time - expiration_secs)
+        conn.zpopmin(tordset_key, message_count)
+        return [raw_msg for (raw_msg, _) in conn.execute()[1]]

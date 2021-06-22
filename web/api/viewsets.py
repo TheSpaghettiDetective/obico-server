@@ -12,6 +12,7 @@ from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
+from django.core.exceptions import ImproperlyConfigured
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
@@ -435,12 +436,20 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     def query(self, request):
         client_ip, is_routable = get_client_ip(request)
 
+        # must guard against possible None or blank value as client_ip
+        if not client_ip:
+            raise ImproperlyConfigured("cannot determine client_ip")
+
         devices = get_active_devices_for_client_ip(client_ip)
         return Response({"devices": [device.asdict() for device in devices]})
 
     @action(detail=False, methods=['post'])
     def push_verify_code_task(self, request):
         client_ip, is_routable = get_client_ip(request)
+
+        # must guard against possible None or blank value as client_ip
+        if not client_ip:
+            raise ImproperlyConfigured("cannot determine client_ip")
 
         code = self.request.query_params.get('code')
         if code is None:
@@ -461,6 +470,10 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['post'])
     def push_identify_task(self, request):
         client_ip, is_routable = get_client_ip(request)
+
+        # must guard against possible None or blank value as client_ip
+        if not client_ip:
+            raise ImproperlyConfigured("cannot determine client_ip")
 
         device_id = self.request.query_params.get('device_id')
         if device_id is None:

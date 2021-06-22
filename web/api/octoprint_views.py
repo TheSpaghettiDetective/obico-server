@@ -9,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.exceptions import ImproperlyConfigured
 import requests
 import json
 import io
@@ -202,6 +203,10 @@ class OctoPrinterDiscoveryView(APIView):
     @report_validationerror
     def post(self, request, format=None):
         client_ip, is_routable = get_client_ip(request)
+
+        # must guard against possible None or blank value as client_ip
+        if not client_ip:
+            raise ImproperlyConfigured("cannot determine client_ip")
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 

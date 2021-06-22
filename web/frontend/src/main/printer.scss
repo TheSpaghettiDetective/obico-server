@@ -168,7 +168,7 @@
       width: 33px;
       height: 33px;
       position: relative;
-      color: rgb(var(--color-gray-200-2));
+      color: rgb(var(--color-less-emphasis-body-text));
       font-size: 1rem;
       padding: 0rem 1.5rem;
       i {
@@ -176,8 +176,8 @@
         transform: translate(-50%, -50%);
       }
       &.pressed {
-        color: rgb(var(--color-primary-l-5));
-        border-bottom: solid thin rgb(var(--color-primary));
+        color: rgb(var(--color-tsd-purple));
+        border-bottom: solid thin rgb(var(--color-tsd-purple));
       }
     }
 
@@ -190,7 +190,7 @@
         height: 60px !important;
         margin: 8px !important;
         // border: solid thick;
-        background: rgb(var(--color-primary));
+        background: rgb(var(--color-tsd-purple));
       }
 
       .xy-controls {
@@ -223,7 +223,7 @@
         .btn {
           border: solid thin;
           &.active {
-            background: rgb(var(--color-primary));
+            background: rgb(var(--color-tsd-purple));
           }
         }
       }
@@ -245,8 +245,8 @@
       height:100%;
       top:0;
       left:0;
-      background:rgb(var(--color-bg-overlay));
-      opacity: 0.8;
+      background:rgb(var(--color-overlay));
+      opacity: 0.9;
   }
 }
 
@@ -294,7 +294,7 @@ form#printer_form {
     }
   }
   .form-control {
-    border: 1px solid rgb(var(--color-gray-200));
+    border: 1px solid rgb(var(--color-light-background));
   }
 
   .sensitivity {
@@ -327,7 +327,7 @@ form#printer_form {
       color: $primary !important;
 
       &:after {
-        background: rgb(var(--color-primary));
+        background: rgb(var(--color-tsd-purple));
       }
     }
   }
@@ -364,7 +364,7 @@ form#printer_form {
 
       #connected {
         i {
-          color: rgb(var(--color-success));
+          color: rgb(var(--color-positive-green));
         }
       }
     }
@@ -454,7 +454,7 @@ form#printer_form {
   .card-img-overlay {
     top: initial;
     padding: 0.5rem;
-    background-color: rgb(var(--color-gray-200) / 0.7)
+    background-color: rgb(var(--color-light-background) / 0.7)
   }
 }
 
@@ -462,7 +462,7 @@ form#printer_form {
   &.dropzone {
     border: thin dashed;
     border-color: rgb(var(--color-primary-d-10));
-    color: rgb(var(--color-primary));
+    color: rgb(var(--color-tsd-purple));
     background: none;
     margin: auto;
     min-height: 194px;
@@ -482,7 +482,7 @@ form#printer_form {
 
   &.vue-dropzone > .dz-preview .dz-details {
     border-radius: 20px;
-    background-color: rgb(var(--color-primary));
+    background-color: rgb(var(--color-tsd-purple));
   }
 }
 
@@ -491,7 +491,7 @@ form#printer_form {
   padding: 2rem 0rem;
   .token {
     padding: 1.5rem 3rem 2.5rem;
-    border: rgb(var(--color-form-bg)) thin dashed;
+    border: rgb(var(--color-bg-body)) thin dashed;
     margin-bottom: 2rem;
     text-align: center;
 
@@ -506,7 +506,7 @@ form#printer_form {
 .option-drawer{
   width:100%;
   margin-bottom: -0.5rem;
-  background: rgb(var(--color-bg-dark));
+  background: rgb(var(--color-medium-background));
   .panel-heading {
     padding: 0;
     border:0;
@@ -518,9 +518,6 @@ form#printer_form {
         padding: 0;
         color: $primary;
         line-height: 0.8;
-        &:hover {
-          color: rgb(var(--color-primary-d-8));
-        }
       }
     }
     &.active {
@@ -536,6 +533,6 @@ form#printer_form {
     transition-duration: 0.2s;
   }
   hr {
-    background-color: rgb(var(--color-body-bg-l-10));
+    background-color: rgb(var(--color-dividers));
   }
 }

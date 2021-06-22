@@ -44,14 +44,11 @@
     input
       background-color: rgb(var(--color-input-dark-bg))
       border: 1px solid rgb(var(--color-input-dark-bg))
-      color: rgb(var(--color-text))
+      color: rgb(var(--color-main-text))
       outline: none
       padding: .2em .5em .2em 2em
       width: 100%
       height: 100%
-
-      &::placeholder
-        color: rgb(var(--color-gray-600))
 
       &:focus
         border-color: rgb(var(--color-white))

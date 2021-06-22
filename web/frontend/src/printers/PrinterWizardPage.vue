@@ -34,7 +34,7 @@
     </div>
     <div v-else>
       <form-wizard
-        color="rgb(var(--color-primary))"
+        color="rgb(var(--color-tsd-purple))"
         step-size="sm"
       >
         <h2 slot="title">
@@ -337,7 +337,7 @@ export default {
 
 .wizard-container
   padding: 1em
-  background: rgb(var(--color-body-bg))
+  background: rgb(var(--color-bg-body))
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
@@ -372,7 +372,7 @@ img
   width: 21rem
   height: 60px
   background-color: rgb(var(--color-body-bg-d-10))
-  color: rgb(var(--color-text))
+  color: rgb(var(--color-main-text))
   font-size: 2rem
   font-weight: 500
   letter-spacing: 0.5em
@@ -436,5 +436,5 @@ li
   margin-bottom: 1.5rem
   
   path
-    fill: rgb(var(--color-dark-white))
+    fill: rgb(var(--color-main-text))
 </style>

@@ -432,10 +432,10 @@ export default {
   height: 1.2rem
 
 .info-icon path
-  fill: rgb(var(--color-dark-white))
+  fill: rgb(var(--color-main-text))
 
 .feedback-section
-  background-color: rgb(var(--color-bg-dark))
+  background-color: rgb(var(--color-medium-background))
 
 .bounce-enter-active
   animation: bounce-in .5s

@@ -70,12 +70,12 @@ export default {
 @use "~main/theme"
 
 b
-  color: rgb(var(--color-primary))
+  color: rgb(var(--color-tsd-purple))
 
 img
   width: 200px
   display: block
 
 .example
-  color: rgb(var(--color-primary))
+  color: rgb(var(--color-tsd-purple))
 </style>

@@ -3,7 +3,7 @@
 
 table.pricing {
     background: rgb(var(--color-body-bg-d-10-lighter));
-    color: rgb(var(--color-text));
+    color: rgb(var(--color-main-text));
 
     th {
         font-size: 1.2em;
@@ -15,7 +15,7 @@ table.pricing {
 }
 
 .user-subscription table {
-    color: rgb(var(--color-text));
+    color: rgb(var(--color-main-text));
 }
 
 .pricing {
@@ -24,7 +24,7 @@ table.pricing {
     }
 
     .btn-group-toggle {
-        background: rgb(var(--color-body-bg));
+        background: rgb(var(--color-bg-body));
         .btn {
             border: solid thin rgb(var(--color-white-d-60));
 
@@ -37,9 +37,9 @@ table.pricing {
     .price-matrix {
         div[class^="col-"] {
             padding: 0px;
-            border-top: solid thin rgb(var(--color-border));
-            border-bottom: solid thin rgb(var(--color-border));
-            border-right: solid thin rgb(var(--color-border));
+            border-top: solid thin rgb(var(--color-dividers));
+            border-bottom: solid thin rgb(var(--color-dividers));
+            border-right: solid thin rgb(var(--color-dividers));
             background: rgb(var(--color-body-bg-darker));
 
             >div {
@@ -66,8 +66,8 @@ table.pricing {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                border-bottom: solid thin rgb(var(--color-border));
-                border-top: solid thin rgb(var(--color-border));
+                border-bottom: solid thin rgb(var(--color-dividers));
+                border-top: solid thin rgb(var(--color-dividers));
             }
 
             .feature-header {
@@ -76,7 +76,7 @@ table.pricing {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                color: rgb(var(--color-gray-100-d-30));
+                color: rgb(var(--color-less-emphasis-body-text));
             }
 
             .features {
@@ -101,20 +101,20 @@ table.pricing {
                 i {
                     padding-right: 0.7rem;
                     padding-top: 0.35rem;
-                    color: rgb(var(--color-primary-l-12));
+                    color: rgb(var(--color-tsd-purple));
                 }
             }
         }
 
         @include respond-above(sm) {
             >div:first-child {
-                border-left: solid thin rgb(var(--color-border));
+                border-left: solid thin rgb(var(--color-dividers));
             }
         }
 
         @include respond-below(md) {
             >div {
-                border-left: solid thin rgb(var(--color-border));
+                border-left: solid thin rgb(var(--color-dividers));
             }
         }
 
@@ -132,7 +132,7 @@ table.pricing {
 
             .price-unit {
                 font-size: 18px;
-                color: rgb(var(--color-gray-100-d-30));
+                color: rgb(var(--color-less-emphasis-body-text));
             }
         }
     }
@@ -141,7 +141,7 @@ table.pricing {
     font-weight: normal;
 
     .btn.btn-num-spinner {
-        color: rgb(var(--color-text));
+        color: rgb(var(--color-main-text));
     }
 
     .input-group {
@@ -173,7 +173,7 @@ table.pricing {
     .custom-radio.recommended {
         .tag {
             margin-left: 0.5em;
-            background: rgb(var(--color-primary));
+            background: rgb(var(--color-tsd-purple));
             border: solid thin;
             border-radius: 4px;
             padding: 0px 3px;

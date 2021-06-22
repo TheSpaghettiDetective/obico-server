@@ -519,6 +519,6 @@ export default {
 
 section.danger
   .section-title
-    color: rgb(var(--color-danger))
-    border-color: rgb(var(--color-danger))
+    color: rgb(var(--color-negative-red))
+    border-color: rgb(var(--color-negative-red))
 </style>

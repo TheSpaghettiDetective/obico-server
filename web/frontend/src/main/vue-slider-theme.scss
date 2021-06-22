@@ -13,7 +13,7 @@
 
 /* process style */
 .vue-slider-process {
-  background-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-tsd-purple));
   border-radius: 15px;
 }
 
@@ -61,8 +61,8 @@
   text-align: center;
   color: #fff;
   border-radius: 5px;
-  border-color: rgb(var(--color-primary));
-  background-color: rgb(var(--color-primary));
+  border-color: rgb(var(--color-tsd-purple));
+  background-color: rgb(var(--color-tsd-purple));
   box-sizing: content-box;
 }
 .vue-slider-dot-tooltip-inner::after {

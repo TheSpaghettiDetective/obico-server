@@ -216,7 +216,7 @@ export default {
       padding: 0.5rem 0.24rem
   
 .detective-hours path
-  fill: rgb(var(--color-dark-white))
+  fill: rgb(var(--color-main-text))
 </style>
 
 

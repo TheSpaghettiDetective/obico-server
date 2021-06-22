@@ -201,7 +201,7 @@ export default {
   .showing-edge
     width: 100%
     height: 10px
-    background-color: rgb(var(--color-gray-200))
+    background-color: rgb(var(--color-medium-background))
     position: absolute
     top: 0
     left: 0

@@ -111,7 +111,7 @@ export default {
   bottom: 15px
   right: 15px
   box-shadow: 2px 2px 10px rgba(0,0,0,.3)
-  background-color: rgb(var(--color-body-bg))
+  background-color: rgb(var(--color-bg-body))
   padding: 10px
   max-width: 300px
   z-index: 10

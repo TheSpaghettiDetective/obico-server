@@ -181,5 +181,5 @@
 
 <style lang="sass" scoped>
 ::v-deep .control-options .btn
-  color: rgb(var(--color-text))
+  color: rgb(var(--color-main-text))
 </style>

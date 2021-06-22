@@ -158,7 +158,7 @@ export default {
   opacity: 0.5
 
 .page-visiting
-  color: rgb(var(--color-primary))
+  color: rgb(var(--color-tsd-purple))
 
 .page-unvisited
   color: rgb(var(--color-gray-100-d-20))

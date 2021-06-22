@@ -1,33 +1,22 @@
-from typing import List, Optional
 import dataclasses
-import time
 import json
-import hashlib
+import time
 
 from rest_framework import serializers
-from rest_framework.request import Request
+from typing import Optional, List
 
-from lib.cache import REDIS
-
-from django.conf import settings
+from lib.cache import (
+    disco_push_raw_device_message,
+    disco_pop_raw_device_messages,
+    disco_update_raw_device_info,
+    disco_get_active_raw_device_infos,
+)
 
 # message to device will expire in ..
 LINKHELPER_MESSAGE_EXPIRATION_SECS = 10
 
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
-
-
-def redis__presence_prefix(client_ip: str) -> str:
-    return f'printer_discovery:{client_ip}:presence'
-
-
-def redis__device_info_prefix(client_ip: str, device_id: str) -> str:
-    return f'printer_discovery:{client_ip}:device_info:{device_id}'
-
-
-def redis__to_device_message_queue_prefix(client_ip: str, device_id: str) -> str:
-    return f'printer_discovery:{client_ip}:messages_to:{device_id}'
 
 
 class DeviceInfoSerializer(serializers.Serializer):
@@ -106,7 +95,7 @@ class DeviceMessage:
         return dataclasses.asdict(self)
 
 
-def redis__push_message_for_device(
+def push_message_for_device(
     client_ip: str,
     device_id: str,
     message: DeviceMessage,
@@ -115,15 +104,16 @@ def redis__push_message_for_device(
 ) -> None:
     t = cur_time if cur_time is not None else time.time()
     raw = message.to_json()
-    key = redis__to_device_message_queue_prefix(client_ip, device_id)
-    with REDIS.pipeline() as conn:
-        conn.zremrangebyscore(key, min="-inf", max=t - expiration_secs)
-        conn.zadd(key, {raw: t})
-        conn.expire(key, expiration_secs)
-        conn.execute()
+    disco_push_raw_device_message(
+        client_ip=client_ip,
+        device_id=device_id,
+        raw_message=raw,
+        cur_time=t,
+        expiration_secs=expiration_secs
+    )
 
 
-def redis__pull_messages_for_device(
+def pull_messages_for_device(
     client_ip: str,
     device_id: str,
     message_count: int = 3,
@@ -131,44 +121,38 @@ def redis__pull_messages_for_device(
     expiration_secs: int = LINKHELPER_MESSAGE_EXPIRATION_SECS
 ) -> List[DeviceMessage]:
     t = cur_time if cur_time is not None else time.time()
-    key = redis__to_device_message_queue_prefix(client_ip, device_id)
-    with REDIS.pipeline() as conn:
-        conn.zremrangebyscore(key, min='-inf', max=t - expiration_secs)
-        conn.zpopmin(key, message_count)
-        ret = conn.execute()
 
-    raw_messages = ret[1]
+    raw_messages = disco_pop_raw_device_messages(
+        client_ip=client_ip,
+        device_id=device_id,
+        cur_time=t,
+        expiration_secs=expiration_secs,
+        message_count=message_count,
+    )
+
     messages = []
-    for (raw, _) in raw_messages:
+    for raw in raw_messages:
         msg = DeviceMessage.from_json(raw)
         if msg is not None:
             messages.append(msg)
     return messages
 
 
-def redis__active_devices_for_client_ip(
+def get_active_devices_for_client_ip(
     client_ip: str,
     cur_time: Optional[float] = None,
     expiration_secs: int = LINKHELPER_PRESENCE_EXPIRATION_SECS,
 ) -> List[DeviceInfo]:
     t = cur_time if cur_time is not None else time.time()
 
-    # fetch active decice ids
-    key = redis__presence_prefix(client_ip)
-    with REDIS.pipeline() as conn:
-        conn.zremrangebyscore(key, min="-inf", max=t - expiration_secs)
-        conn.zrangebyscore(key, min=t - expiration_secs, max='+inf')
-        ret1 = conn.execute()
-
-    # fetch device info for all device id
-    device_ids = ret1[1]
-    with REDIS.pipeline() as conn:
-        for device_id in device_ids:
-            conn.get(redis__device_info_prefix(client_ip, device_id))
-        ret2 = conn.execute()
+    raw_deviceinfos = disco_get_active_raw_device_infos(
+        client_ip=client_ip,
+        cur_time=t,
+        expiration_secs=expiration_secs,
+    )
 
     dinfos = []
-    for device_info_raw in ret2:
+    for device_info_raw in raw_deviceinfos:
         # might have expired in the meantime, skip it
         if not device_info_raw:
             continue
@@ -179,7 +163,7 @@ def redis__active_devices_for_client_ip(
     return dinfos
 
 
-def redis__update_presence_for_device(
+def update_presence_for_device(
     client_ip: str,
     device_id: str,
     device_info: DeviceInfo,
@@ -189,10 +173,9 @@ def redis__update_presence_for_device(
 ) -> None:
     t = cur_time if cur_time is not None else time.time()
     raw = device_info.to_json()
-    key = redis__presence_prefix(client_ip)
-    info_key = redis__device_info_prefix(client_ip, device_id)
-    with REDIS.pipeline() as conn:
-        conn.zadd(key, {device_id: t})
-        conn.expire(key, expiration_secs)
-        conn.setex(info_key, expiration_secs, raw)
-        conn.execute()
+    return disco_update_raw_device_info(
+        client_ip=client_ip,
+        device_id=device_id,
+        raw_deviceinfo=raw,
+        cur_time=t,
+        expiration_secs=expiration_secs)

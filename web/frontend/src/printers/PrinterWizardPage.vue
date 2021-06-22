@@ -53,12 +53,14 @@
     </div>
 
     <div v-else>
-      <div v-if="discovering">
-        <h2>
-          <img class="header-img"
-            :src="require('../../../app/static/img/octo-inverted.png')" />
-          {{title}}
-        </h2>
+      <div v-if="autolinking">
+        <div class="discover-header">
+          <h2>
+            <img class="header-img"
+              :src="require('../../../app/static/img/octo-inverted.png')" />
+            {{title}}
+          </h2>
+        </div>
         <div v-if="discoveredPrinters.length === 0">
           <h4 class="row justify-content-center">
           <b-spinner type="grow" label="Loading..."></b-spinner>
@@ -67,22 +69,24 @@
         </div>
         <div v-else>
           <div class="lead">We have found {{discoveredPrinters.length}} OctoPrint(s) on your local network:</div>
-          <div v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" class="discovered-printers">
-            <div>
+          <div class="list-group">
+            <a href="#" v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" class="list-group-item list-group-item-action discovered-printers">
               <div>
-                <img class="logo-img"
-                  :src="require('@static/img/octoprint_logo.png')" />
-                <img class="logo-img"
-                  :src="require('@static/img/raspberry_pi.png')" />
+                <div>
+                  <img class="logo-img"
+                    :src="require('@static/img/octoprint_logo.png')" />
+                  <img class="logo-img"
+                    :src="require('@static/img/raspberry_pi.png')" />
+                </div>
+                <div>
+                  Rasbperry Pi 4 B Rev 2
+                </div>
+                <div>
+                  <a href="#">192.168.0.23</a>
+                </div>
               </div>
-              <div>
-                Rasbperry Pi 4 B Rev 2
-              </div>
-              <div>
-                <a href="#">192.168.0.23</a>
-              </div>
-            </div>
-            <button class="btn btn-primary" @click="autoLinkPrinter(discoveredPrinter.device_id)">Link</button>
+              <button class="btn btn-primary" @click="autoLinkPrinter(discoveredPrinter.device_id)">Link</button>
+            </a>
           </div>
         </div>
         <div v-if="discoveryCount > 4">
@@ -96,6 +100,10 @@
             <li>The "Access Anywhere - The Spaghetti Detective" plugin version is <span class="font-weight-bold">1.7.0 or higher</span>.</li>
             <li class="text-warning">You have restarted the OctoPrint after the installation.</li>
           </ul>
+        </div>
+        <div>
+          Can't find the OctoPrint?
+          <a class="link ml-1" @click="switchToManual">Link OctoPrint using a 6-digit code >>></a>
         </div>
       </div>
       <form-wizard
@@ -248,7 +256,7 @@ export default {
           'timeoutId': null
         },
       },
-      discovering: true,
+      autolinking: true,
       discoveryCount: 0,
       discoveredPrinters: [],
     }
@@ -425,7 +433,7 @@ export default {
       this.callVerificationCodeApi()
       setTimeout(() => {
         this.getVerificationCode()
-      }, 5000)
+      }, 30000)
     },
 
     showVerificationCodeHelpModal() {
@@ -472,6 +480,10 @@ export default {
         .then((resp) => {
           this.discoveredPrinters = resp.data
         })
+    },
+
+    switchToManual() {
+      this.autolinking = false
     }
   }
 }
@@ -609,6 +621,12 @@ li
     width: 100%
     font-size: 20px
     text-align: center
+
+.discover-header
+  padding: 15px
+  position: relative
+  border-radius: 3px 3px 0 0
+  text-align: center
 
 .discovered-printers
   display: flex

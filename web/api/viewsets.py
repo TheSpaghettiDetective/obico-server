@@ -428,6 +428,7 @@ class PublicTimelapseViewSet(mixins.ListModelMixin,
 
 
 class PrinterDiscoveryViewSet(viewsets.ViewSet):
+    throttle_classes = [AnonRateThrottle]
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 

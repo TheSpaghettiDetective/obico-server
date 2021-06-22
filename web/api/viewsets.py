@@ -465,7 +465,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
         )
 
-        return Response({'success': True})
+        return Response({'queued': True})
 
     @action(detail=False, methods=['post'])
     def push_identify_task(self, request):
@@ -485,4 +485,4 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})
         )
 
-        return Response({'success': True})
+        return Response({'queued': True})

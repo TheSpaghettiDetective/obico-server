@@ -34,13 +34,19 @@ class DeviceInfoSerializer(serializers.Serializer):
         required=True, max_length=253, allow_blank=True)
     printerprofile = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
+    host_or_ip = serializers.CharField(
+        required=False, max_length=253, allow_blank=True)
+    port = serializers.IntegerField(
+        required=False, default=80)
+    machine_type = serializers.CharField(
+        required=True, max_length=253, allow_blank=True)
 
 
 class DeviceMessageSerializer(serializers.Serializer):
     device_id = serializers.CharField(
         required=True, min_length=32, max_length=32)
     type = serializers.CharField(required=True, max_length=64)
-    data = serializers.DictField(required=True)
+    data = serializers.DictField(required=True)  # type: ignore
 
 
 @dataclasses.dataclass
@@ -52,13 +58,16 @@ class DeviceInfo:
     octopi_version: str
     rpi_model: str
     printerprofile: str
+    host_or_ip: str
+    port: int
+    machine_type: str
 
     @classmethod
     def from_dict(cls, data) -> 'DeviceInfo':
         serializer = DeviceInfoSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         validated = serializer.validated_data
-        return DeviceInfo(**{k: (v or '') for (k, v) in validated.items()})
+        return DeviceInfo(**{k: v for (k, v) in validated.items()})
 
     @classmethod
     def from_json(cls, raw: str) -> 'DeviceInfo':

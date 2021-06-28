@@ -51,7 +51,7 @@
     </div>
 
     <div v-else>
-      <div v-if="autolinking">
+      <div v-if="autolinking" class="discover">
         <div class="discover-header">
           <h3>
             <img class="header-img"
@@ -60,32 +60,26 @@
           </h3>
         </div>
         <div v-if="discoveredPrinters.length === 0">
-          <h4 class="row justify-content-center">
-          <b-spinner type="grow" label="Loading..."></b-spinner>
-          Scanning for OctoPrint...
-          </h4>
+          <div class="lead row justify-content-center">
+          Scanning for OctoPrint ...
+          </div>
+          <div class="row justify-content-center">
+            <b-spinner small type="grow" label="Loading..."></b-spinner>
+            <b-spinner small type="grow" label="Loading..."></b-spinner>
+            <b-spinner small type="grow" label="Loading..."></b-spinner>
+          </div>
         </div>
         <div v-else>
-          <div class="lead">We have found {{discoveredPrinters.length}} OctoPrint(s) on your local network:</div>
+          <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
           <div class="list-group">
             <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
           </div>
         </div>
-        <div v-if="discoveryCount > 4">
-          <div class="lead">Can't find the OctoPrint you are trying to link? Please make sure:</div>
-          <ul>
-            <li>The device, such as the Raspberry Pi, is powered on.</li>
-          </ul>
-          <div>If you didn't buy a hardware kit with The Spaghetti Detective already integrated, such as TH3D's EZPi, please also make sure:</div>
-          <ul>
-            <li>You have installed the "Access Anywhere - The Spaghetti Detective" plugin.</li>
-            <li>The "Access Anywhere - The Spaghetti Detective" plugin version is <span class="font-weight-bold">1.7.0 or higher</span>.</li>
-            <li class="text-warning">You have restarted the OctoPrint after the installation.</li>
-          </ul>
-        </div>
-        <div>
-          Can't find the OctoPrint?
-          <a class="link ml-1" @click="switchToManual">Link OctoPrint using a 6-digit code >>></a>
+        <b-collapse v-model="shouldShowDiscoveryHelp" class="discover-help">
+          <div><a class="link font-weight-bold" @click="showAutoDiscoveryHelpModal">Why am I not seeing the OctoPrint I am trying to link?</a></div>
+        </b-collapse>
+        <div class="my-3">
+          <button class="btn btn-block btn-outline-secondary" @click="autolinking=false">Link OctoPrint Using 6-Digit Code</button>
         </div>
       </div>
       <form-wizard
@@ -214,7 +208,7 @@ import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
 import DiscoveredPrinter from './DiscoveredPrinter.vue'
 
-const MAX_DISCOVERY_CALLS = 200 // Scaning for up to 1 hour
+const MAX_DISCOVERY_CALLS = 720 // Scaning for up to 1 hour
 
 export default {
   components: {
@@ -244,6 +238,7 @@ export default {
       autolinking: true,
       discoveryCount: 0,
       discoveredPrinters: [],
+      shouldShowDiscoveryHelp: false,
     }
   },
 
@@ -415,7 +410,7 @@ export default {
       this.callVerificationCodeApi()
       setTimeout(() => {
         this.getVerificationCode()
-      }, 3000)
+      }, 5000)
     },
 
     showVerificationCodeHelpModal() {
@@ -441,6 +436,9 @@ export default {
       if (!this.autolinking) {
         return
       }
+      if (this.discoveryCount > 4) {
+        this.shouldShowDiscoveryHelp = true
+      }
       if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
         this.autolinking = false
         this.$swal.Toast.fire({
@@ -460,7 +458,7 @@ export default {
       this.callPrinterDiscoveryApi()
       setTimeout(() => {
         this.discoverPrinter()
-      }, 3000)
+      }, 5000)
     },
 
     autoLinkPrinter(deviceId) {
@@ -471,9 +469,26 @@ export default {
         })
     },
 
-    switchToManual() {
-      this.autolinking = false
-    }
+    showAutoDiscoveryHelpModal() {
+      this.$swal.fire({
+        title: 'Can\'t find the OctoPrint you want to link?',
+        html: `
+          <ul>
+            <li>The device, such as the Raspberry Pi, is powered on.</li>
+            <li>The device is connected to the same local network as your phone/computer. Otherwise, you will need to switch to using 6-digit code.</li>
+          </ul>
+          <div>If you didn't buy a hardware kit with The Spaghetti Detective already integrated, such as TH3D's EZPi, please also make sure:</div>
+          <ul>
+            <li>You have installed the "Access Anywhere - The Spaghetti Detective" plugin.</li>
+            <li>The plugin version is 1.7.0 or higher.</li>
+            <li>You have restarted the OctoPrint after the installation.</li>
+          </ul>`,
+        customClass: {
+          container: 'dark-backdrop',
+        },
+      })
+    },
+
   }
 }
 </script>
@@ -609,9 +624,24 @@ li
     font-size: 20px
     text-align: center
 
-.discover-header
-  padding: 15px
-  position: relative
-  border-radius: 3px 3px 0 0
-  text-align: center
+.discover
+  min-height: 35rem
+  padding: 0 18px 38px
+
+  .discover-header
+    padding: 15px
+    position: relative
+    border-radius: 3px 3px 0 0
+    text-align: center
+
+  .spinner-grow
+    margin: 12px 12px
+
+  .discover-help
+    border-color: rgb(var(--color-white-primary))
+    margin: 1.5rem 0
+    padding: 0.75rem
+
+  li
+    margin: initial
 </style>

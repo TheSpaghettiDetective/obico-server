@@ -3,7 +3,7 @@
   <div>
     <img class="logo-img"
       :src="require('@static/img/octoprint_logo.png')" />
-    <img class="logo-img"
+    <img v-if="discoveredPrinter.rpi_model" class="logo-img"
       :src="require('@static/img/raspberry_pi.png')" />
   </div>
   <div>

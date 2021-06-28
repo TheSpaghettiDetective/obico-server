@@ -53,11 +53,11 @@
     <div v-else>
       <div v-if="autolinking">
         <div class="discover-header">
-          <h2>
+          <h3>
             <img class="header-img"
               :src="require('../../../app/static/img/octo-inverted.png')" />
             {{title}}
-          </h2>
+          </h3>
         </div>
         <div v-if="discoveredPrinters.length === 0">
           <h4 class="row justify-content-center">
@@ -68,23 +68,7 @@
         <div v-else>
           <div class="lead">We have found {{discoveredPrinters.length}} OctoPrint(s) on your local network:</div>
           <div class="list-group">
-            <a href="#" v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" class="list-group-item list-group-item-action discovered-printers">
-              <div>
-                <div>
-                  <img class="logo-img"
-                    :src="require('@static/img/octoprint_logo.png')" />
-                  <img class="logo-img"
-                    :src="require('@static/img/raspberry_pi.png')" />
-                </div>
-                <div>
-                  Rasbperry Pi 4 B Rev 2
-                </div>
-                <div>
-                  <a href="#">192.168.0.23</a>
-                </div>
-              </div>
-              <button class="btn btn-primary" @click="autoLinkPrinter(discoveredPrinter.device_id)">Link</button>
-            </a>
+            <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
           </div>
         </div>
         <div v-if="discoveryCount > 4">
@@ -109,12 +93,12 @@
         color="rgb(var(--color-primary))"
         step-size="sm"
       >
-        <h2 slot="title">
+        <h3 slot="title">
           <svg class="header-img"  viewBox="0 0 165 152">
             <use href="#svg-octoprint-logo" />
           </svg>
           {{title}}
-        </h2>
+        </h3>
         <tab-content v-if="printerIdToLink" title="Open Plugin Settings">
           <div class="container">
             <div class="row justify-content-center pb-3">
@@ -228,8 +212,9 @@ import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
+import DiscoveredPrinter from './DiscoveredPrinter.vue'
 
-const MAX_DISCOVERY_CALLS = 200
+const MAX_DISCOVERY_CALLS = 200 // Scaning for up to 1 hour
 
 export default {
   components: {
@@ -239,6 +224,7 @@ export default {
     PullToReveal,
     Navbar,
     SavingAnimation,
+    DiscoveredPrinter,
   },
   data() {
     return {
@@ -290,9 +276,6 @@ export default {
         return '-'
       }
     },
-    failedToDiscoverPrinter() {
-      return this.discoveryCount >= MAX_DISCOVERY_CALLS
-    }
   },
   methods: {
     setSavingStatus(propName, status) {
@@ -432,7 +415,7 @@ export default {
       this.callVerificationCodeApi()
       setTimeout(() => {
         this.getVerificationCode()
-      }, 30000)
+      }, 3000)
     },
 
     showVerificationCodeHelpModal() {
@@ -455,6 +438,16 @@ export default {
     },
 
     callPrinterDiscoveryApi() {
+      if (!this.autolinking) {
+        return
+      }
+      if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
+        this.autolinking = false
+        this.$swal.Toast.fire({
+          title: 'No OctoPrint discovered on your local network. Switched to manual linking.',
+        })
+      }
+
       this.discoveryCount += 1
       axios
         .get(urls.printerDiscover())
@@ -465,9 +458,6 @@ export default {
 
     discoverPrinter() {
       this.callPrinterDiscoveryApi()
-      if (this.failedToDiscoverPrinter) {
-        return
-      }
       setTimeout(() => {
         this.discoverPrinter()
       }, 3000)
@@ -565,6 +555,7 @@ li
 
 <style lang="sass">
 // Unscoped styles to style plugin elements
+// TODO merge 2 style blocks
 @use "~main/theme"
 
 // Step label (not active)
@@ -623,11 +614,4 @@ li
   position: relative
   border-radius: 3px 3px 0 0
   text-align: center
-
-.discovered-printers
-  display: flex
-  align-items: center
-  justify-content: space-between
-  .logo-img
-    height: 2.5rem
 </style>

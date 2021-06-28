@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.exceptions import ValidationError
+from rest_framework.throttling import AnonRateThrottle
 from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -199,6 +200,7 @@ def report_validationerror(f):
 
 
 class OctoPrinterDiscoveryView(APIView):
+    throttle_classes = [AnonRateThrottle]
 
     @report_validationerror
     def post(self, request, format=None):

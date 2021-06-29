@@ -51,46 +51,7 @@
     </div>
 
     <div v-else>
-      <div v-if="autolinking" class="discover">
-        <div class="discover-header">
-          <h3>
-            <img class="header-img"
-              :src="require('../../../app/static/img/octo-inverted.png')" />
-            {{title}}
-          </h3>
-        </div>
-        <div class="discover-body">
-          <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
-            <div class="spinner-border" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="lead">
-            Scanning...
-            </div>
-          </div>
-          <div v-else>
-            <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
-            <div class="list-group">
-              <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
-            </div>
-          </div>
-          <div class="text-muted mt-5">
-            <div>Can't find the OctoPrint you need to link? Please make sure:</div>
-            <ul>
-            <li>The Raspberry Pi is powered on.</li>
-            <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-            <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
-          </ul>
-
-          </div>
-          <div v-if="discoveryCount>=2" class="discover-help">
-            Still not seeing the OctoPrint you want to link?
-            <a class="link" @click="autolinking=false">Link using 6-digit code instead.</a>
-          </div>
-        </div>
-      </div>
       <form-wizard
-        v-else
         color="rgb(var(--color-primary))"
         step-size="sm"
       >
@@ -143,7 +104,40 @@
             </div>
           </div>
         </tab-content>
-        <tab-content title="Plugin Wizard">
+        <tab-content v-if="autolinking" title="Link It!">
+          <div class="discover">
+            <div class="discover-body">
+              <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
+                <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                <div class="lead">
+                Scanning...
+                </div>
+              </div>
+              <div v-else>
+                <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
+                <div class="list-group">
+                  <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+                </div>
+              </div>
+              <div class="text-muted mt-5">
+                <div>Can't find the OctoPrint you need to link? Please make sure:</div>
+                <ul>
+                <li>The Raspberry Pi is powered on.</li>
+                <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+                <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+              </ul>
+
+              </div>
+              <div v-if="discoveryCount>=2" class="discover-help">
+                Still not seeing the OctoPrint you want to link?
+                <a class="link" @click="autolinking=false">Link using 6-digit code instead.</a>
+              </div>
+            </div>
+          </div>
+        </tab-content>
+        <tab-content v-else title="Plugin Wizard" >
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
@@ -164,7 +158,7 @@
             </div>
           </div>
         </tab-content>
-        <tab-content title="Enter Code">
+        <tab-content v-if="!autolinking" title="Enter Code">
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
@@ -188,10 +182,10 @@
 
         <template slot="footer" slot-scope="props">
           <div class="wizard-footer-left">
-            <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab();" class="btn btn-link btn-back">&lt; Back</wizard-button>
+            <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
           </div>
           <div class="wizard-footer-right">
-            <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab();" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
+            <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
           </div>
         </template>
       </form-wizard>
@@ -326,11 +320,11 @@ export default {
      */
     prevTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
-      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
+      this.onVerificationStep = false
     },
-    nextTab() {
+    nextTab(activeStep) {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
-      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
+      this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
 
       if (this.onVerificationStep) {
         const copyFunc = this.copyCode
@@ -630,12 +624,6 @@ li
 
 .discover
   padding: 0 18px 38px
-
-  .discover-header
-    padding: 15px
-    position: relative
-    border-radius: 3px 3px 0 0
-    text-align: center
 
   .discover-body
     min-height: 30rem

@@ -104,7 +104,12 @@
             </div>
           </div>
         </tab-content>
-        <tab-content v-if="autolinking" title="Link It!">
+        <tab-content v-if="autoDiscovering" title="Link It!">
+          <loading :active="autoLinking"
+            :can-cancel="true"
+            :on-cancel="cancelAutoLinking"
+            >
+          </loading>
           <div class="discover">
             <div class="discover-body">
               <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
@@ -132,7 +137,7 @@
               </div>
               <div v-if="discoveryCount>=2" class="discover-help">
                 Still not seeing the OctoPrint you want to link?
-                <a class="link" @click="autolinking=false">Link using 6-digit code instead.</a>
+                <a class="link" @click="autoDiscovering=false">Link using 6-digit code instead.</a>
               </div>
             </div>
           </div>
@@ -158,7 +163,7 @@
             </div>
           </div>
         </tab-content>
-        <tab-content v-if="!autolinking" title="Enter Code">
+        <tab-content v-if="!autoDiscovering" title="Enter Code">
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
@@ -203,6 +208,10 @@ import moment from 'moment'
 import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+// TODO: this should be configured as global. But for some reason it doesn't work.
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
 import sortBy from 'lodash/sortBy'
 import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
@@ -217,6 +226,7 @@ export default {
     FormWizard,
     TabContent,
     WizardButton,
+    Loading,
     PullToReveal,
     Navbar,
     SavingAnimation,
@@ -237,9 +247,10 @@ export default {
           'timeoutId': null
         },
       },
-      autolinking: true,
+      autoDiscovering: true,
       discoveryCount: 0,
       discoveredPrinters: [],
+      autoLinking: false,
     }
   },
 
@@ -434,11 +445,11 @@ export default {
     },
 
     callPrinterDiscoveryApi() {
-      if (!this.autolinking) {
+      if (!this.autoDiscovering) {
         return
       }
       if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
-        this.autolinking = false
+        this.autoDiscovering = false
         this.$swal.Toast.fire({
           title: 'No OctoPrint discovered on your local network. Switched to manual linking.',
         })
@@ -446,7 +457,7 @@ export default {
 
       this.discoveryCount += 1
       axios
-        .get(urls.printerDiscover())
+        .get(urls.printerDiscovery())
         .then((resp) => {
           this.discoveredPrinters = sortBy(resp.data, (p) => p.device_id)
         })
@@ -460,33 +471,24 @@ export default {
     },
 
     autoLinkPrinter(deviceId) {
-      axios
-        .post(urls.printerDiscover(), { code: this.verificationCode.code, device_id: deviceId })
-        .then((resp) => {
-          this.discoveredPrinters = resp.data
-        })
+      axios.post(urls.printerDiscovery(), { code: this.verificationCode.code, device_id: deviceId })
+      this.autoLinking = true
+      // Declare failure if nothing is linked after 20s
+      setTimeout(() => {
+        if (this.autoLinking && !this.verifiedPrinter) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
+          })
+          this.autoDiscovering = false
+        }
+        this.autoLinking = false
+      }, 20000)
     },
 
-    showAutoDiscoveryHelpModal() {
-      this.$swal.fire({
-        title: 'Can\'t find the OctoPrint you want to link?',
-        html: `
-          <ul>
-            <li>The device, such as the Raspberry Pi, is powered on.</li>
-            <li>The device is connected to the same local network as your phone/computer. Otherwise, you will need to switch to using 6-digit code.</li>
-          </ul>
-          <div>If you didn't buy a hardware kit with The Spaghetti Detective already integrated, such as TH3D's EZPi, please also make sure:</div>
-          <ul>
-            <li>You have installed the "Access Anywhere - The Spaghetti Detective" plugin.</li>
-            <li>The plugin version is 1.7.0 or higher.</li>
-            <li>You have restarted the OctoPrint after the installation.</li>
-          </ul>`,
-        customClass: {
-          container: 'dark-backdrop',
-        },
-      })
-    },
-
+    cancelAutoLinking() {
+      this.autoLinking = false
+    }
   }
 }
 </script>

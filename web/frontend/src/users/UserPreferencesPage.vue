@@ -14,16 +14,15 @@
             <div class="col-sm-9 col-md-10">
               <div class="theme-controls">
                 <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.68 39.68" class="icon" :class="{'active': themeValue === themes.Dark}">
-                    <path d="M39.58 27.19A20.63 20.63 0 1112.49.09a1.08 1.08 0 011.18 1.77A17.08 17.08 0 0037.82 26a1.08 1.08 0 011.76 1.19z" />
+                  <svg viewBox="0 0 39.68 39.68" fill="currentColor" class="icon" :class="{'active': themeValue === themes.Dark}">
+                    <use href="#svg-moon-icon" />
                   </svg>
                   <div class="label">
                     <span class="dark" v-show="themeValue === themes.Dark">DARK</span>
                     <span class="light" v-show="themeValue === themes.Light">LIGHT</span>
                   </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.07 42.07" class="icon" :class="{'active': themeValue === themes.Light}">
-                    <circle cx="21.04" cy="21.04" r="10.55"/>
-                    <path d="M19.68 5.77a1.36 1.36 0 002.71 0V1.36a1.36 1.36 0 10-2.71 0zM9.28 11.2a1.36 1.36 0 001.92-1.92L8.08 6.16a1.36 1.36 0 00-1.92 1.92zM5.77 22.39a1.36 1.36 0 000-2.71H1.36a1.36 1.36 0 100 2.71zM11.2 32.79a1.36 1.36 0 10-1.92-1.92L6.16 34a1.36 1.36 0 101.92 1.92zM22.39 36.3a1.36 1.36 0 00-2.71 0v4.41a1.36 1.36 0 102.71 0zM32.79 30.87a1.36 1.36 0 10-1.92 1.92L34 35.91A1.36 1.36 0 1035.91 34zM36.3 19.68a1.36 1.36 0 000 2.71h4.41a1.36 1.36 0 100-2.71zM30.87 9.28a1.36 1.36 0 101.92 1.92l3.12-3.12A1.36 1.36 0 1034 6.16z"/>
+                  <svg viewBox="0 0 42.07 42.07" fill="currentColor" class="icon" :class="{'active': themeValue === themes.Light}">
+                    <use href="#svg-sun-icon" />
                   </svg>
                   <div class="active-indicator" :class="{'right': themeValue === themes.Light}">
                     <div class="circle"></div>
@@ -1054,13 +1053,10 @@ section:not(:first-child)
     flex: 0 0 18px
     height: 18px
     margin: 10px
+    color: rgb(var(--color-icon-disabled))
 
-    path, circle
-      fill: rgb(var(--color-icon-disabled))
-      transition: all .3s ease-out
-
-    &.active path, &.active circle
-      fill: rgb(var(--color-icon-active))
+    &.active
+      color: rgb(var(--color-icon-active))
 
   .label
     flex: 1

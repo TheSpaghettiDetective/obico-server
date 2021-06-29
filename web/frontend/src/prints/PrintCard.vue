@@ -27,10 +27,8 @@
             <dark-light-image path="logo-square" ext="png" alt="TSD" class="seg-control-icon"></dark-light-image>
           </b-form-radio>
           <b-form-radio value="info" class="no-corner no-shadow">
-            <svg class="seg-control-icon info-icon" viewBox="0 0 348 348" xmlns="http://www.w3.org/2000/svg">
-              <path d="M139.45 137.81L138 145.45H150.37C150.37 145.45 157.28 148.36 154.73 160C152.18 171.64 126 251.29 126 251.29C126 251.29 121.27 267.66 132.18 273.84C143.09 280.02 175.1 288.03 203.84 239.65L198.38 235.29C198.38 235.29 181.27 259.66 174 256C174 256 168.91 257.46 174 238.91C179.09 220.36 208.19 130.15 208.19 130.15H195.82L139.45 137.81Z"/>
-              <path d="M197.73 104.7C211.438 104.7 222.55 93.5877 222.55 79.88C222.55 66.1723 211.438 55.06 197.73 55.06C184.022 55.06 172.91 66.1723 172.91 79.88C172.91 93.5877 184.022 104.7 197.73 104.7Z" />
-              <path d="M174 347.06C78.57 347.06 0.940002 269.43 0.940002 174C0.940002 78.57 78.57 0.940002 174 0.940002C269.43 0.940002 347.06 78.57 347.06 174C347.06 269.43 269.43 347.06 174 347.06ZM174 24.06C91.33 24.06 24.07 91.32 24.07 173.99C24.07 256.66 91.33 323.93 174 323.93C256.67 323.93 323.93 256.67 323.93 174C323.93 91.33 256.67 24.07 174 24.07V24.06Z"/>
+            <svg class="seg-control-icon" fill="currentColor" viewBox="0 0 348 348">
+              <use href="#svg-info-icon" />
             </svg>
           </b-form-radio>
         </b-form-radio-group>
@@ -430,9 +428,6 @@ export default {
 
 .seg-control-icon, ::v-deep .seg-control-icon img
   height: 1.2rem
-
-.info-icon path
-  fill: rgb(var(--color-dark-white))
 
 .feedback-section
   background-color: rgb(var(--color-bg-dark))

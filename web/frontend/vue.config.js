@@ -58,6 +58,9 @@ let vueConfig = {
     users: {
       entry: 'src/users/main.js',
     },
+    common: {
+      entry: 'src/common/main.js',
+    },
   },
 
   chainWebpack: config => {

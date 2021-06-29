@@ -19,6 +19,7 @@ let vueConfig = {
   css: { sourceMap: true },
 
   configureWebpack: {
+    devtool: 'source-map',
     resolve: {
       alias: {
         main: path.join(__dirname, 'src/main'),

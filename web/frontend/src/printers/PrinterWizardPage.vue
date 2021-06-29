@@ -60,10 +60,10 @@
           </h3>
         </div>
         <div class="discover-body">
-          <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-          </div>
-          <div v-if="discoveredPrinters.length === 0">
+          <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
             <div class="lead">
             Scanning...
             </div>
@@ -209,6 +209,7 @@ import moment from 'moment'
 import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import sortBy from 'lodash/sortBy'
 import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
@@ -453,7 +454,7 @@ export default {
       axios
         .get(urls.printerDiscover())
         .then((resp) => {
-          this.discoveredPrinters = resp.data
+          this.discoveredPrinters = sortBy(resp.data, (p) => p.device_id)
         })
     },
 
@@ -641,7 +642,6 @@ li
     display: flex
     flex-direction: column
     justify-content: center
-    align-items: center
 
     .spinner-border
       width: 5rem

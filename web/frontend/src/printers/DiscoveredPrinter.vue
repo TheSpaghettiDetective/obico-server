@@ -17,7 +17,7 @@
       <a :href="octoPrintUrl">{{octoPrintUrl}}</a>
     </div>
   </div>
-  <button class="btn btn-primary" @click="$emit('auto-link-printer', discoveredPrinter.device_id)">Link</button>
+  <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', discoveredPrinter.device_id)">Link</button>
 </div>
 </template>
 
@@ -47,7 +47,8 @@ export default {
 .discovered-printers
   display: flex
   align-items: center
-  justify-content: space-between
+  flex-wrap: wrap
+
   .logo-img
     height: 2.5rem
 </style>

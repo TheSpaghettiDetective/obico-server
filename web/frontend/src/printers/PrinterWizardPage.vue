@@ -59,27 +59,34 @@
             {{title}}
           </h3>
         </div>
-        <div v-if="discoveredPrinters.length === 0">
-          <div class="lead row justify-content-center">
-          Scanning for OctoPrint ...
+        <div class="discover-body">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
           </div>
-          <div class="row justify-content-center">
-            <b-spinner small type="grow" label="Loading..."></b-spinner>
-            <b-spinner small type="grow" label="Loading..."></b-spinner>
-            <b-spinner small type="grow" label="Loading..."></b-spinner>
+          <div v-if="discoveredPrinters.length === 0">
+            <div class="lead">
+            Scanning...
+            </div>
           </div>
-        </div>
-        <div v-else>
-          <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
-          <div class="list-group">
-            <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+          <div v-else>
+            <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
+            <div class="list-group">
+              <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+            </div>
           </div>
-        </div>
-        <b-collapse v-model="shouldShowDiscoveryHelp" class="discover-help">
-          <div><a class="link font-weight-bold" @click="showAutoDiscoveryHelpModal">Why am I not seeing the OctoPrint I am trying to link?</a></div>
-        </b-collapse>
-        <div class="my-3">
-          <button class="btn btn-block btn-outline-secondary" @click="autolinking=false">Link OctoPrint Using 6-Digit Code</button>
+          <div class="text-muted mt-5">
+            <div>Can't find the OctoPrint you need to link? Please make sure:</div>
+            <ul>
+            <li>The Raspberry Pi is powered on.</li>
+            <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+            <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+          </ul>
+
+          </div>
+          <div v-if="discoveryCount>=2" class="discover-help">
+            Still not seeing the OctoPrint you want to link?
+            <a class="link" @click="autolinking=false">Link using 6-digit code instead.</a>
+          </div>
         </div>
       </div>
       <form-wizard
@@ -238,7 +245,6 @@ export default {
       autolinking: true,
       discoveryCount: 0,
       discoveredPrinters: [],
-      shouldShowDiscoveryHelp: false,
     }
   },
 
@@ -436,9 +442,6 @@ export default {
       if (!this.autolinking) {
         return
       }
-      if (this.discoveryCount > 4) {
-        this.shouldShowDiscoveryHelp = true
-      }
       if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
         this.autolinking = false
         this.$swal.Toast.fire({
@@ -625,7 +628,6 @@ li
     text-align: center
 
 .discover
-  min-height: 35rem
   padding: 0 18px 38px
 
   .discover-header
@@ -634,13 +636,24 @@ li
     border-radius: 3px 3px 0 0
     text-align: center
 
+  .discover-body
+    min-height: 30rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+
+    .spinner-border
+      width: 5rem
+      height: 5rem
+      margin-bottom: 0.8rem
+
   .spinner-grow
     margin: 12px 12px
 
   .discover-help
-    border-color: rgb(var(--color-white-primary))
+    align-self: flex-end
     margin: 1.5rem 0
-    padding: 0.75rem
 
   li
     margin: initial

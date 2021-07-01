@@ -15,7 +15,7 @@
         {{discoveredPrinter.machine_type}}
       </div>
       <div v-if="discoveredPrinter.host_or_ip" class="text-muted small">
-        IP ddress: {{discoveredPrinter.host_or_ip}}
+        IP address: {{discoveredPrinter.host_or_ip}}
       </div>
       <div v-if="discoveredPrinter.hostname" class="text-muted small">
         Hostname: {{discoveredPrinter.hostname}}

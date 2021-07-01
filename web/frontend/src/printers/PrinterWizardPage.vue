@@ -611,7 +611,7 @@ li
 
 .discover
   .discover-body
-    min-height: 20rem
+    min-height: 25rem
     display: flex
     flex-direction: column
     justify-content: center

@@ -432,8 +432,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    @action(detail=False, methods=['get'])
-    def query(self, request):
+    def list(self, request):
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
@@ -441,21 +440,20 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         devices = get_active_devices_for_client_ip(client_ip)
-        return Response({"devices": [device.asdict() for device in devices]})
+        return Response([device.asdict() for device in devices])
 
-    @action(detail=False, methods=['post'])
-    def push_verify_code_task(self, request):
+    def create(self, request):
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
 
-        code = self.request.query_params.get('code')
+        code = self.request.data.get('code')
         if code is None:
             raise ValidationError({'code': "missing param"})
 
-        device_id = self.request.query_params.get('device_id')
+        device_id = self.request.data.get('device_id')
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
@@ -463,26 +461,6 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             client_ip,
             device_id,
             DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
-        )
-
-        return Response({'queued': True})
-
-    @action(detail=False, methods=['post'])
-    def push_identify_task(self, request):
-        client_ip, is_routable = get_client_ip(request)
-
-        # must guard against possible None or blank value as client_ip
-        if not client_ip:
-            raise ImproperlyConfigured("cannot determine client_ip")
-
-        device_id = self.request.query_params.get('device_id')
-        if device_id is None:
-            raise ValidationError({'device_id': "missing param"})
-
-        push_message_for_device(
-            client_ip,
-            device_id,
-            DeviceMessage.from_dict({'device_id': device_id, 'type': 'identify', 'data': {}})
         )
 
         return Response({'queued': True})

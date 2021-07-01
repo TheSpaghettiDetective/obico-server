@@ -28,11 +28,15 @@ TUNNEL_STATS_EXPIRE_SECS = 3600 * 24 * 30 * 6
 TUNNEL_ETAG_EXPIRE_SECS = 3600 * 24 * 3
 
 
-def disco_device_presence_prefix(client_ip: str) -> str:
+def disco_device_presence_key(client_ip: str) -> str:
     return f'printer_discovery:{client_ip}:presence'
 
 
-def disco_to_device_message_queue_prefix(
+def disco_device_info_key(client_ip: str, device_id: str) -> str:
+    return f'printer_discovery:{client_ip}:device_info:{device_id}'
+
+
+def disco_to_device_message_queue_key(
     client_ip: str,
     device_id: str
 ) -> str:
@@ -229,10 +233,12 @@ def disco_update_raw_device_info(
     cur_time: float,
     expiration_secs: int
 ) -> None:
-    tordset_key = disco_device_presence_prefix(client_ip)
+    tordset_key = disco_device_presence_key(client_ip)
+    device_info_key = disco_device_info_key(client_ip, device_id)
     with REDIS.pipeline() as conn:
-        conn.zadd(tordset_key, {raw_deviceinfo: cur_time})
+        conn.zadd(tordset_key, {device_id: cur_time})
         conn.expire(tordset_key, expiration_secs)
+        conn.setex(device_info_key, expiration_secs, raw_deviceinfo)
         conn.execute()
 
 
@@ -241,14 +247,26 @@ def disco_get_active_raw_device_infos(
     cur_time: float,
     expiration_secs: int
 ) -> List[str]:
-    tordset_key = disco_device_presence_prefix(client_ip)
+    tordset_key = disco_device_presence_key(client_ip)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(
             tordset_key, min="-inf", max=cur_time - expiration_secs)
         conn.zrangebyscore(
             tordset_key, min=cur_time - expiration_secs, max='+inf')
-        raw_deviceinfos = conn.execute()[1]
-        return raw_deviceinfos
+        device_ids = conn.execute()[1]
+
+    with REDIS.pipeline() as conn:
+        # TODO / DEBUG: REDIS.mget somehow freezes
+        # so for now I'm doing it the verbose way
+        for device_id in device_ids:
+            conn.get(disco_device_info_key(client_ip, device_id))
+        raw_device_infos = conn.execute()
+
+    return [
+        raw_device_info
+        for raw_device_info in raw_device_infos
+        if raw_device_info is not None  # might be None when expired
+    ]
 
 
 def disco_push_raw_device_message(
@@ -258,7 +276,7 @@ def disco_push_raw_device_message(
     cur_time: float,
     expiration_secs: int
 ) -> None:
-    tordset_key = disco_to_device_message_queue_prefix(client_ip, device_id)
+    tordset_key = disco_to_device_message_queue_key(client_ip, device_id)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(
             tordset_key, min="-inf", max=cur_time - expiration_secs)
@@ -274,7 +292,7 @@ def disco_pop_raw_device_messages(
     expiration_secs: int,
     message_count: int
 ) -> List[str]:
-    tordset_key = disco_to_device_message_queue_prefix(client_ip, device_id)
+    tordset_key = disco_to_device_message_queue_key(client_ip, device_id)
     with REDIS.pipeline() as conn:
         conn.zremrangebyscore(
             tordset_key, min='-inf', max=cur_time - expiration_secs)

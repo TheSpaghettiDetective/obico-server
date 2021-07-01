@@ -55,12 +55,12 @@
         color="rgb(var(--color-primary))"
         step-size="sm"
       >
-        <h2 slot="title">
+        <h3 slot="title">
           <svg class="header-img"  viewBox="0 0 165 152">
             <use href="#svg-octoprint-logo" />
           </svg>
           {{title}}
-        </h2>
+        </h3>
         <tab-content v-if="printerIdToLink" title="Open Plugin Settings">
           <div class="container">
             <div class="row justify-content-center pb-3">
@@ -104,7 +104,45 @@
             </div>
           </div>
         </tab-content>
-        <tab-content title="Plugin Wizard">
+        <tab-content v-if="autoDiscovering" title="Link It!">
+          <loading :active="autoLinking"
+            :can-cancel="true"
+            :on-cancel="cancelAutoLinking"
+            >
+          </loading>
+          <div class="discover">
+            <div class="discover-body">
+              <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
+                <div class="spinner-border big" role="status">
+                  <span class="sr-only"></span>
+                </div>
+                <div class="lead">
+                Scanning...
+                </div>
+              </div>
+              <div v-else>
+                <div class="lead my-3">
+                  <div class="spinner-border" role="status">
+                  <span class="sr-only"></span>
+                </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
+                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+              </div>
+              <div class="mt-5 mb-2">
+                Can't find the OctoPrint you want to link?
+                Switch to <a class="btn btn-primary btn-sm" @click="autoDiscovering=false">Manual Setup</a> instead.
+              </div>
+              <div v-if="discoveryCount>=2" class="text-muted">
+                <div>To link your OctoPrint, please make sure:</div>
+                <ul>
+                  <li>The Raspberry Pi is powered on.</li>
+                  <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+                  <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </tab-content>
+        <tab-content v-else title="Plugin Wizard" >
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8">
@@ -125,7 +163,7 @@
             </div>
           </div>
         </tab-content>
-        <tab-content title="Enter Code">
+        <tab-content v-if="!autoDiscovering" title="Enter Code">
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
@@ -149,10 +187,10 @@
 
         <template slot="footer" slot-scope="props">
           <div class="wizard-footer-left">
-            <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab();" class="btn btn-link btn-back">&lt; Back</wizard-button>
+            <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
           </div>
           <div class="wizard-footer-right">
-            <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab();" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
+            <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
           </div>
         </template>
       </form-wizard>
@@ -170,19 +208,29 @@ import moment from 'moment'
 import urls from '@lib/server_urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+// TODO: this should be configured as global. But for some reason it doesn't work.
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
+import sortBy from 'lodash/sortBy'
 import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
+import DiscoveredPrinter from './DiscoveredPrinter.vue'
+
+const MAX_DISCOVERY_CALLS = 720 // Scaning for up to 1 hour
 
 export default {
   components: {
     FormWizard,
     TabContent,
     WizardButton,
+    Loading,
     PullToReveal,
     Navbar,
     SavingAnimation,
+    DiscoveredPrinter,
   },
   data() {
     return {
@@ -198,8 +246,17 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
-      }
+      },
+      autoDiscovering: true,
+      discoveryCount: 0,
+      discoveredPrinters: [],
+      autoLinking: false,
     }
+  },
+
+  created() {
+    this.discoverPrinter()
+    this.getVerificationCode()
   },
 
   computed: {
@@ -225,7 +282,7 @@ export default {
       } else {
         return '-'
       }
-    }
+    },
   },
   methods: {
     setSavingStatus(propName, status) {
@@ -274,22 +331,13 @@ export default {
      */
     prevTab() {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
-      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
+      this.onVerificationStep = false
     },
-    nextTab() {
+    nextTab(activeStep) {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
-
-      this.onVerificationStep = document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').id === 'step-PluginWizard1'
+      this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
 
       if (this.onVerificationStep) {
-        if (!this.codeInterval) {
-          this.getVerificationCode()
-
-          this.codeInterval = setInterval(() => {
-            this.getVerificationCode()
-          }, 5000)
-        }
-
         const copyFunc = this.copyCode
 
         let ctrlDown = false, ctrlKey = 17, cmdKey = 91, cKey = 67
@@ -357,43 +405,75 @@ export default {
       }
     },
 
-    /**
-     * Get verification code from API
-     */
-    getVerificationCode() {
+    callVerificationCodeApi() {
       axios
         .get(this.verificationCodeUrl())
         .then((resp) => {
           if (resp.data) {
-            if (resp.data) {
-              this.verificationCode = resp.data
-              if (this.verificationCode.verified_at) {
-                this.verifiedPrinter = resp.data.printer
-                clearInterval(this.codeInterval)
-              }
+            this.verificationCode = resp.data
+            if (this.verificationCode.verified_at) {
+              this.verifiedPrinter = resp.data.printer
             }
           }
         })
     },
 
-    showVerificationCodeHelpModal() {
-      this.$swal.fire({
-        title: 'Can\'t find the page to enter the 6-digit code?',
-        html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
-        <p><ul>
-        <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
-        <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/">set up guide</a>.</li>
-        </ul></p>`,
-        customClass: {
-          container: 'dark-backdrop',
-        },
-      })
+    getVerificationCode() {
+      this.callVerificationCodeApi()
+      setTimeout(() => {
+        this.getVerificationCode()
+      }, 5000)
     },
 
     zoomIn(event) {
       event.target.classList.toggle('zoomedIn')
     },
+
+    callPrinterDiscoveryApi() {
+      if (!this.autoDiscovering) {
+        return
+      }
+      if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
+        this.autoDiscovering = false
+        this.$swal.Toast.fire({
+          title: 'No OctoPrint discovered on your local network. Switched to manual linking.',
+        })
+      }
+
+      this.discoveryCount += 1
+      axios
+        .get(urls.printerDiscovery())
+        .then((resp) => {
+          this.discoveredPrinters = sortBy(resp.data, (p) => p.device_id)
+        })
+    },
+
+    discoverPrinter() {
+      this.callPrinterDiscoveryApi()
+      setTimeout(() => {
+        this.discoverPrinter()
+      }, 5000)
+    },
+
+    autoLinkPrinter(deviceId) {
+      axios.post(urls.printerDiscovery(), { code: this.verificationCode.code, device_id: deviceId })
+      this.autoLinking = true
+      // Declare failure if nothing is linked after 20s
+      setTimeout(() => {
+        if (this.autoLinking && !this.verifiedPrinter) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
+          })
+          this.autoDiscovering = false
+        }
+        this.autoLinking = false
+      }, 20000)
+    },
+
+    cancelAutoLinking() {
+      this.autoLinking = false
+    }
   }
 }
 </script>
@@ -475,6 +555,7 @@ li
 
 <style lang="sass">
 // Unscoped styles to style plugin elements
+// TODO merge 2 style blocks
 @use "~main/theme"
 
 // Step label (not active)
@@ -527,4 +608,26 @@ li
     width: 100%
     font-size: 20px
     text-align: center
+
+.discover
+  .discover-body
+    min-height: 25rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+
+    .spinner-border
+      width: 1.2em
+      height: 1.2em
+      margin-right: 0.2em
+      &.big
+        width: 5rem
+        height: 5rem
+        margin-bottom: 0.8rem
+
+  .spinner-grow
+    margin: 12px 12px
+
+  li
+    margin: initial
 </style>

@@ -113,31 +113,31 @@
           <div class="discover">
             <div class="discover-body">
               <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
-                <div class="spinner-border" role="status">
-                  <span class="sr-only">Loading...</span>
+                <div class="spinner-border big" role="status">
+                  <span class="sr-only"></span>
                 </div>
                 <div class="lead">
                 Scanning...
                 </div>
               </div>
               <div v-else>
-                <div class="lead my-3">{{discoveredPrinters.length}} OctoPrint(s) found on local network:</div>
-                <div class="list-group">
-                  <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
-                </div>
+                <div class="lead my-3">
+                  <div class="spinner-border" role="status">
+                  <span class="sr-only"></span>
+                </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
+                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
               </div>
-              <div class="text-muted mt-5">
-                <div>Can't find the OctoPrint you need to link? Please make sure:</div>
+              <div class="mt-5 mb-2">
+                Can't find the OctoPrint you want to link?
+                Switch to <a class="btn btn-primary btn-sm" @click="autoDiscovering=false">Manual Setup</a> instead.
+              </div>
+              <div v-if="discoveryCount>=2" class="text-muted">
+                <div>To link your OctoPrint, please make sure:</div>
                 <ul>
-                <li>The Raspberry Pi is powered on.</li>
-                <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
-              </ul>
-
-              </div>
-              <div v-if="discoveryCount>=2" class="discover-help">
-                Still not seeing the OctoPrint you want to link?
-                <a class="link" @click="autoDiscovering=false">Link using 6-digit code instead.</a>
+                  <li>The Raspberry Pi is powered on.</li>
+                  <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+                  <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -425,21 +425,6 @@ export default {
       }, 5000)
     },
 
-    showVerificationCodeHelpModal() {
-      this.$swal.fire({
-        title: 'Can\'t find the page to enter the 6-digit code?',
-        html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
-        <p><ul>
-        <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
-        <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/">set up guide</a>.</li>
-        </ul></p>`,
-        customClass: {
-          container: 'dark-backdrop',
-        },
-      })
-    },
-
     zoomIn(event) {
       event.target.classList.toggle('zoomedIn')
     },
@@ -625,25 +610,23 @@ li
     text-align: center
 
 .discover
-  padding: 0 18px 38px
-
   .discover-body
-    min-height: 30rem
+    min-height: 20rem
     display: flex
     flex-direction: column
     justify-content: center
 
     .spinner-border
-      width: 5rem
-      height: 5rem
-      margin-bottom: 0.8rem
+      width: 1.2em
+      height: 1.2em
+      margin-right: 0.2em
+      &.big
+        width: 5rem
+        height: 5rem
+        margin-bottom: 0.8rem
 
   .spinner-grow
     margin: 12px 12px
-
-  .discover-help
-    align-self: flex-end
-    margin: 1.5rem 0
 
   li
     margin: initial

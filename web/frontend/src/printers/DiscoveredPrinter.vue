@@ -1,23 +1,37 @@
 <template>
-<div class="list-group-item list-group-item-action discovered-printers">
-  <div>
-    <img class="logo-img"
-      :src="require('@static/img/octoprint_logo.png')" />
+<div class="discovered-printers mt-4">
+  <div class="flex-grow-0 pt-1 mr-2">
     <img v-if="discoveredPrinter.rpi_model" class="logo-img"
       :src="require('@static/img/raspberry_pi.png')" />
+    <img v-else class="logo-img"
+      :src="require('@static/img/octoprint_logo.png')" />
   </div>
-  <div>
-    <div v-if="discoveredPrinter.rpi_model">
-      {{discoveredPrinter.rpi_model}}
+  <div class="row flex-grow-1 ml-1 link-action">
+    <div class="col-sm-12 col-md-10 pb-2">
+      <div v-if="discoveredPrinter.rpi_model">
+        {{discoveredPrinter.rpi_model}}
+      </div>
+      <div v-if="discoveredPrinter.machine_type">
+        {{discoveredPrinter.machine_type}}
+      </div>
+      <div v-if="discoveredPrinter.host_or_ip" class="text-muted small">
+        IP ddress: {{discoveredPrinter.host_or_ip}}
+      </div>
+      <div v-if="discoveredPrinter.hostname" class="text-muted small">
+        Hostname: {{discoveredPrinter.hostname}}
+      </div>
+      <div v-if="discoveredPrinter.octopi_version" class="text-muted small">
+        OctoPi: {{discoveredPrinter.octopi_version}}
+      </div>
+      <div v-if="discoveredPrinter.os" class="text-muted small">
+        OS: {{discoveredPrinter.os}}
+      </div>
     </div>
-    <div v-if="discoveredPrinter.machine_type">
-      {{discoveredPrinter.machine_type}}
-    </div>
-    <div v-if="octoPrintUrl">
-      <a :href="octoPrintUrl">{{octoPrintUrl}}</a>
+    <div class="col-sm-12 col-md-2 center px-3">
+      <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', discoveredPrinter.device_id)">Link</button>
     </div>
   </div>
-  <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', discoveredPrinter.device_id)">Link</button>
+
 </div>
 </template>
 
@@ -30,14 +44,6 @@ export default {
       required: true
     },
   },
-  computed: {
-    octoPrintUrl() {
-      if (this.discoveredPrinter.host_or_ip && this.discoveredPrinter.port) {
-        return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port}`
-      }
-      return null
-    },
-  }
 }
 </script>
 
@@ -46,9 +52,16 @@ export default {
 
 .discovered-printers
   display: flex
-  align-items: center
-  flex-wrap: wrap
+  flex-direction: columns
 
   .logo-img
-    height: 2.5rem
+    height: 3.5rem
+
+  .link-action
+    border-left: solid thin
+
+.center
+  display: flex
+  justify-content: center
+  align-items: center
 </style>

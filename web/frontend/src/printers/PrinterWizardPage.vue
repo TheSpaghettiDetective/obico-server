@@ -381,7 +381,7 @@ export default {
      * Copy verification code to clipboard (on appropriate step)
      */
     copyCode() {
-      if (this.onVerificationStep) {
+      if (this.onVerificationStep && this.verificationCode) {
         let textArea = document.createElement('textarea')
         textArea.value = this.verificationCode.code
 

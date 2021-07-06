@@ -251,6 +251,7 @@ export default {
       discoveryCount: 0,
       discoveredPrinters: [],
       autoLinking: false,
+      apiCallIntervalId: null,
     }
   },
 
@@ -420,8 +421,12 @@ export default {
 
     getVerificationCode() {
       this.callVerificationCodeApi()
-      setTimeout(() => {
-        this.getVerificationCode()
+      this.apiCallIntervalId = setInterval(() => {
+        if (this.verifiedPrinter) {
+          clearInterval(this.apiCallIntervalId)
+        } else {
+          this.callVerificationCodeApi()
+        }
       }, 5000)
     },
 

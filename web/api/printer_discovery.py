@@ -36,8 +36,6 @@ class DeviceInfoSerializer(serializers.Serializer):
         required=True, max_length=253, allow_blank=True)
     host_or_ip = serializers.CharField(
         required=False, max_length=253, allow_blank=True)
-    port = serializers.IntegerField(
-        required=False, default=80)
     machine_type = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
 
@@ -59,7 +57,6 @@ class DeviceInfo:
     rpi_model: str
     printerprofile: str
     host_or_ip: str
-    port: int
     machine_type: str
 
     @classmethod

@@ -343,9 +343,15 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
 
         printer_id_to_link = request.GET.get('printer_id')
         if printer_id_to_link:
-            code = OneTimeVerificationCode.objects.select_related('printer').filter(printer_id=printer_id_to_link, user=request.user).first()
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(
+                printer_id=printer_id_to_link,
+                user=request.user
+            ).first()
         else:
-            code = OneTimeVerificationCode.objects.select_related('printer').filter(user=request.user).first()
+            code = OneTimeVerificationCode.objects.select_related('printer').filter(
+                printer__isnull=True,
+                user=request.user
+            ).first()
 
         if not code:
             seed()

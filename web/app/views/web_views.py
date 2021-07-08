@@ -193,19 +193,6 @@ def publictimelapse_list(request):
     return render(request, 'publictimelapse_list.html')
 
 
-### Consent page #####
-
-@login_required
-def consent(request):
-    if request.method == 'POST':
-        user = request.user
-        user.consented_at = timezone.now()
-        user.save()
-
-        return redirect('/printers/')
-    else:
-        return render(request, 'consent.html')
-
 ### GCode File page ###
 
 

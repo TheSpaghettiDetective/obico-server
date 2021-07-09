@@ -1,8 +1,6 @@
 import os
 from binascii import hexlify
 import re
-import time
-import json
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -29,7 +27,14 @@ from app.tasks import preprocess_timelapse
 
 
 def index(request):
-    return redirect('/printers/')
+    if request.user.is_authenticated:
+        if hasattr(settings, 'ACCOUNT_SIGNUP_REDIRECT_URL') and \
+                Printer.objects.filter(user=request.user).count() == 0:
+            return redirect(settings.ACCOUNT_SIGNUP_REDIRECT_URL)
+        else:
+            return redirect('/printers/')
+    else:
+        return redirect('/accounts/login/')
 
 
 class SocialAccountAwareLoginView(LoginView):

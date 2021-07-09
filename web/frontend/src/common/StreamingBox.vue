@@ -26,8 +26,42 @@
     </div>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
     <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
-      <button type="button" class="btn btn-sm no-corner" :class="{ active: showVideo }" @click="forceStreamingSrc('VIDEO')"><i class="fas fa-video"></i></button>
-      <button type="button" class="btn btn-sm no-corner " :class="{ active: !showVideo }" @click="forceStreamingSrc('IMAGE')"><i class="fas fa-camera"></i></button>
+      <div class="dropdown">
+        <button
+          class="btn icon-btn"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          :aria-label="printer.name + ' Controls'"
+        ><i class="fas fa-ellipsis-v"></i>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right">
+          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc(null)">
+            <span class="title" :class="{'active': stickyStreamingSrc === null}">
+              <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
+              Auto
+            </span><br>
+            <span class="description">Show the best quality stream that is available</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc('VIDEO')">
+            <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
+              <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
+              Premium webcam streaming view
+            </span><br>
+            <span class="description">Premium-only feature (25 fps)</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc('IMAGE')">
+            <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
+              <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
+              Detective webcam view
+            </span><br>
+            <span class="description">Shows detection boxes if present (0.1 fps)</span>
+          </a>
+        </div>
+      </div>
     </div>
     <div
       :class="webcamRotateClass"
@@ -247,20 +281,27 @@ export default {
   z-index: 100
 
 .streaming-switch
-  background-color: rgba(255, 255, 255, 0.4)
-  border: solid thin #888
   position: absolute
-  display: flex
-  flex-flow: column
-  right: 4px
-  top: 4px
+  right: 20px
+  top: 20px
   z-index: 100
 
+  .dropdown-item
+    .title.active
+      color: rgb(var(--color-primary))
+      i
+        margin-right: 2px
+
+    .description
+      font-size: 0.8em
+      opacity: .5
+
   .btn
-    color: #444444
-    &.active
-      color: #ffffff
-      background-color: rgba(0,0,0,0.6)
+    overflow: hidden
+    color: #fff !important
+    opacity: .8
+    &:hover, &:focus
+      opacity: 1
 
 .slow-link-wrapper
   $height: 24px

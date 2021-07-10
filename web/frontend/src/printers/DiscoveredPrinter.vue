@@ -23,7 +23,7 @@
       <div v-if="discoveredPrinter.octopi_version" class="text-muted small">
         OctoPi: {{discoveredPrinter.octopi_version}}
       </div>
-      <div v-if="discoveredPrinter.os" class="text-muted small">
+      <div v-if="!discoveredPrinter.octopi_version && discoveredPrinter.os" class="text-muted small">
         OS: {{discoveredPrinter.os}}
       </div>
     </div>

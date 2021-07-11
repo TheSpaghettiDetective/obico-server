@@ -6,7 +6,7 @@
       :class="{'navbar-dark': theme === themes.Dark, 'navbar-light': theme === themes.Light}"
     >
       <div class="container">
-        <a class="navbar-brand" href="/printers/">
+        <a class="navbar-brand" href="/">
           <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective"></dark-light-image>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"

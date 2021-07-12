@@ -313,7 +313,7 @@
     padding: 2em
 
   .control-panel
-    border-bottom: 1px solid rgb(var(--color-bg))
+    border-bottom: 1px solid rgb(var(--color-divider))
     padding-bottom: 16px
 
     .search-input
@@ -322,7 +322,7 @@
   .sorting-panel
     display: flex
     padding: 1em calc(1em + 30px) 1em 1em
-    border-bottom: 1px solid rgb(var(--color-bg))
+    border-bottom: 1px solid rgb(var(--color-divider))
 
     .sorting-option
       flex: 1

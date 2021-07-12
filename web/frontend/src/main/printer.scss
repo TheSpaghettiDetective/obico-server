@@ -8,8 +8,7 @@
   position: relative;
   outline: none;
 
-  // background-color: black;
-  background-color: rgb(var(--color-bg-video));
+  background-color: rgb(var(--color-surface-secondary));
 
   .webcam_rotated {
     position: relative;
@@ -155,10 +154,12 @@
       }
 
       &.failure-alert {
-        a {
-          color: rgb(var(--color-primary-d-20));
+        button {
+          color: rgb(var(--color-on-warning));
+          border-color: rgb(var(--color-on-warning));
           &:hover {
-            color: rgb(var(--color-primary-d-35));
+            color: rgb(var(--color-on-warning-2));
+            background-color: rgb(var(--color-on-warning));
           }
         }
       }
@@ -176,7 +177,7 @@
         transform: translate(-50%, -50%);
       }
       &.pressed {
-        color: rgb(var(--color-primary-l-5));
+        color: rgb(var(--color-primary));
         border-bottom: solid thin rgb(var(--color-primary));
       }
     }
@@ -245,7 +246,7 @@
       height:100%;
       top:0;
       left:0;
-      background:rgb(var(--color-bg-overlay));
+      background:rgb(var(--color-overlay));
       opacity: 0.8;
   }
 }
@@ -263,10 +264,12 @@
     a {
       text-align: center;
       border: thin dashed;
-      border-color: rgb(var(--color-primary-d-10));
+      color: rgb(var(--color-primary));
+      border-color: rgb(var(--color-primary));
       padding: 5em 3em;
 
       &:hover {
+        color: rgb(var(--color-primary-600));
         text-decoration: none;
       }
     }
@@ -461,7 +464,7 @@ form#printer_form {
 .upload-box {
   &.dropzone {
     border: thin dashed;
-    border-color: rgb(var(--color-primary-d-10));
+    border-color: rgb(var(--color-primary));
     color: rgb(var(--color-primary));
     background: none;
     margin: auto;
@@ -469,6 +472,7 @@ form#printer_form {
     padding: 20px 16px;
 
     &:hover {
+      color: rgb(var(--color-primary-600));
       background: none;
     }
 
@@ -506,23 +510,11 @@ form#printer_form {
 .option-drawer{
   width:100%;
   margin-bottom: -0.5rem;
-  background: rgb(var(--color-bg-dark));
+  background: rgb(var(--color-surface-secondary));
   .panel-heading {
     padding: 0;
     border:0;
 
-    .panel-title {
-      button {
-        text-align: center;
-        display:block;
-        padding: 0;
-        color: $primary;
-        line-height: 0.8;
-        &:hover {
-          color: rgb(var(--color-primary-d-8));
-        }
-      }
-    }
     &.active {
       i {
         -webkit-transform: rotate(180deg);

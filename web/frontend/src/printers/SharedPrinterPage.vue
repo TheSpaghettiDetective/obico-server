@@ -82,10 +82,6 @@ export default {
 #printer-list-page
   margin-top: 1.5rem
 
-.menu-bar
-  background-color: rgb(var(--color-bg-dark-d-10))
-  padding: 0.75rem
-
 .printer-card
   margin-bottom: 1.5rem
 

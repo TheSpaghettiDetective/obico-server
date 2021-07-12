@@ -80,7 +80,7 @@ $custom-file-border-color:          $gray-200 !default;
 // Dropdowns
 
 $dropdown-bg:                       $gray-200 !default;
-$dropdown-divider-bg:               rgba($black,.15) !default;
+$dropdown-divider-bg:               rgb(var(--color-divider));
 
 $dropdown-link-color:               $body-color !default;
 $dropdown-link-hover-color:         $dropdown-link-color !default;

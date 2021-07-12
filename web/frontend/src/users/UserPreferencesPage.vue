@@ -1037,7 +1037,7 @@ section:not(:first-child)
 .theme-toggle
   display: inline-flex
   align-items: center
-  background-color: rgb(var(--color-bg-secondary))
+  background-color: rgb(var(--color-toggle-background))
   border-radius: 100px
   position: relative
   margin-right: 26px
@@ -1053,10 +1053,10 @@ section:not(:first-child)
     flex: 0 0 18px
     height: 18px
     margin: 10px
-    color: rgb(var(--color-icon-disabled))
+    color: rgb(var(--color-toggle-icon-disabled))
 
     &.active
-      color: rgb(var(--color-icon-active))
+      color: rgb(var(--color-toggle-icon-active))
 
   .label
     flex: 1

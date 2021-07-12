@@ -103,7 +103,7 @@ export default {
 @use "~main/theme"
 
 .consent-section
-  background: rgb(var(--color-bg-dark))
+  background: rgb(var(--color-surface-secondary))
 
 .feedback-estimate
   font-size: 1.2em

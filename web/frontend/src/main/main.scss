@@ -3,56 +3,6 @@
 
 // Dark theme by default
 :root {
-  --color-bg: 35 49 65;
-  --color-bg-body: 45 62 79;
-  --color-bg-secondary: 80 93 109;
-  --color-bg-video: 0 0 0;
-  --color-bg-overlay: 0 0 0;
-  --color-footer-bg: 0 0 0;
-  --color-footer-text: 152 152 152;
-  --color-input-bg: 255 255 255;
-  --color-input-text: 73 80 87;
-  --color-input-dark-bg: 78 93 108;
-  --color-icon-active: 75 91 105;
-  --color-icon-disabled: 168 174 182;
-  --color-white-primary: 153 101 244;
-  --color-primary-white: 255 255 255;
-  --color-text: 235 235 235;
-  --color-text-subdued: 255 255 255;
-  --color-text-inverted: 40 48 58;
-  --color-color: 255 255 255;
-  --color-color-2: 204 204 204;
-  --color-primary: 153 101 244;
-  --color-gray-100: 235 235 235;
-  --color-gray-200: 78 93 108;
-  --color-gray-200-2: 78 93 108;
-  --color-gray-200-hover: 89 106 123;
-  --color-gray-600: 134 142 150;
-  --color-form-bg: 43 62 80;
-  --color-body-bg: 43 62 80;
-  --color-bg-dark: 41 59 77;
-  --color-white: 255 255 255;
-  --color-dark-white: 255 255 255;
-  --color-black: 0 0 0;
-  --color-success: 92 184 92;
-  --color-danger: 217 83 79;
-  --color-primary-l-12: 191 158 248;
-  --color-primary-l-10: 185 149 247;
-  --color-primary-l-7: 175 134 246;
-  --color-primary-l-5: 169 125 246;
-  --color-primary-d-8: 128 63 241;
-  --color-primary-d-10: 121 53 241;
-  --color-primary-d-20: 93 16 227;
-  --color-primary-d-35: 64 11 155;
-  --color-body-bg-l-10: 61 88 113;
-  --color-body-bg-l-5p: 52 75 97;
-  --color-body-bg-l-3: 48 70 90;
-  --color-body-bg-d-5: 34 49 63;
-  --color-body-bg-d-10: 25 36 47;
-  --color-gray-100-d-20: 184 184 184;
-  --color-gray-100-d-30: 159 159 159;
-  --color-white-d-60: 102 102 102;
-  --color-bg-dark-d-10: 23 34 44;
 }
 
 /*** Global styles */
@@ -61,7 +11,7 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
-  background: rgb(var(--color-bg));
+  background: rgb(var(--color-background));
   color: rgb(var(--color-text));
 }
 
@@ -127,8 +77,8 @@ button, .btn {
 footer {
   padding: 25px 0;
   text-align: center;
-  color: rgb(var(--color-footer-text));
-  background-color: rgb(var(--color-footer-bg));
+  color: rgb(var(--color-text));
+  background-color: rgb(var(--color-surface-secondary));
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -155,7 +105,7 @@ footer {
 
 .navbar {
   padding: 0.5rem 1rem;
-  background: rgb(var(--color-gray-200)) !important;
+  background: rgb(var(--color-surface-primary)) !important;
 
   a.navbar-brand {
     margin-top: -3px;
@@ -163,15 +113,15 @@ footer {
   .nav-item {
     text-transform: uppercase;
     &.active, &:hover {
-      background-color: rgb(var(--color-gray-200-hover));
+      background-color: rgb(var(--color-hover) / .075);
 
-      .nav-link {
-        color: #fff !important;
-      }
+      // .nav-link {
+      //   color: #fff !important;
+      // }
     }
   }
   .nav-link {
-    color: rgb(var(--color-text-subdued)) !important;
+    color: rgb(var(--color-text-primary)) !important;
   }
   .user-menu {
     text-transform: none;
@@ -219,12 +169,12 @@ hr {
 }
 
 a.link {
-  color: rgb(var(--color-primary-l-7)) !important;
+  color: rgb(var(--color-primary)) !important;
   text-decoration: none;
   background-color: transparent;
 
   &:hover {
-      color: rgb(var(--color-primary)) !important;
+      color: rgb(var(--color-primary-600)) !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }
@@ -233,14 +183,12 @@ a.link {
 .icon-btn {
   background-color: transparent;
   border: none;
-  // color: rgba(255,255,255,0.75);
-  color: rgb(var(--color-primary-white) / .75);
+  color: rgb(var(--color-text-primary) / .75);
 
   &:hover, &:active, &:focus {
     background-color: transparent !important;
     border: none !important;
-    // color: rgba(255,255,255, 1.0) !important;
-    color: rgb(var(--color-primary-white)) !important;
+    color: rgb(var(--color-text-primary)) !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
   }
@@ -259,7 +207,7 @@ a.link {
 .form-container {
   margin: 3em 0em;
   padding: 2.5em;
-  background: rgb(var(--color-bg-body));
+  background: rgb(var(--color-surface-primary));
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   border: none !important;
@@ -367,7 +315,7 @@ a.link {
     width: 100% !important;
   }
   .slider-selection {
-    background: rgb(var(--color-primary-l-10));
+    background: rgb(var(--color-primary-400));
   }
   .slider-handle {
     background: rgb(var(--color-primary));
@@ -428,7 +376,7 @@ a.link {
 /** Shared styles for printer and print cards */
 
 .card {
-  background-color: rgb(var(--color-gray-200));
+  background-color: rgb(var(--color-surface-primary));
 
   .gauge-container {
     padding: 0 16px;
@@ -440,7 +388,7 @@ a.link {
       border-bottom: solid thin rgb(var(--color-gray-200-2));
     }
 
-    background: rgb(var(--color-bg-dark));
+    background: rgb(var(--color-surface-secondary));
     .row {
       padding: 0.3em 0em 0.1em;
       text-align: center;
@@ -473,7 +421,7 @@ a.link {
 }
 
 .text-muted {
-  color: rgb(var(--color-text) / .4) !important;
+  color: rgb(var(--color-text-secondary)) !important;
 }
 
 .btn-outline {
@@ -496,13 +444,14 @@ a.link {
 }
 
 .dropdown-menu {
-  background-color: rgb(var(--color-gray-200));
+  background-color: rgb(var(--color-surface-primary));
+  // TODO: check
 
   .dropdown-item {
     color: rgb(var(--color-text));
 
     &:hover {
-      background-color: rgb(var(--color-white) / .075);
+      background-color: rgb(var(--color-hover) / .075);
     }
   }
 }
@@ -532,4 +481,29 @@ input.dark {
   &:focus {
     border-color: rgb(var(--color-white));
   }
+}
+
+a {
+  color: rgb(var(--color-primary));
+
+  &:hover {
+    text-decoration: none;
+    color: rgb(var(--color-primary-600));
+  }
+}
+
+.card-header {
+  background-color: transparent;
+}
+
+.btn-outline-secondary:not(:disabled):not(.disabled):active,
+.btn-outline-secondary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-secondary.dropdown-toggle {
+  color: inherit;
+  border-color: inherit;
+  background: none;
+}
+
+.btn-light.disabled, .btn-light:disabled {
+  color: rgb(var(--color-text-primary));
 }

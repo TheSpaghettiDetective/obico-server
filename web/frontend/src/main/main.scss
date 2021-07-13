@@ -3,19 +3,18 @@
 
 // Dark theme by default
 :root {
-  --color-primary-400: 154 106 239;
+  --color-primary-variant: 154 106 239;
   --color-primary: 165 123 238;
-  --color-primary-600: 177 139 243;
   --color-on-primary: 255 255 255;
   --color-secondary: 235 235 235;
   --color-on-secondary: 40 48 58;
-  --color-success-400: 77 160 77;
+  --color-success-variant: 77 160 77;
   --color-success: 92 184 92;
   --color-on-success: 255 255 255;
-  --color-danger-400: 217 83 79;
+  --color-danger-variant: 217 83 79;
   --color-danger: 223 112 109;
   --color-on-danger: 255 255 255;
-  --color-warning-400: 191 136 59;
+  --color-warning-variant: 191 136 59;
   --color-warning: 199 148 75;
   --color-on-warning: 255 255 255;
   --color-on-warning-2: 0 0 0;
@@ -205,7 +204,7 @@ a.link {
   background-color: transparent;
 
   &:hover {
-      color: rgb(var(--color-primary-600)) !important;
+      color: rgb(var(--color-primary-variant)) !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }
@@ -348,7 +347,7 @@ a.link {
     width: 100% !important;
   }
   .slider-selection {
-    background: rgb(var(--color-primary-400));
+    background: rgb(var(--color-primary-variant));
   }
   .slider-handle {
     background: rgb(var(--color-primary));
@@ -509,7 +508,7 @@ a {
 
   &:hover {
     text-decoration: none;
-    color: rgb(var(--color-primary-600));
+    color: rgb(var(--color-primary-variant));
   }
 }
 
@@ -606,8 +605,8 @@ input, input.form-control {
   background-color: rgb(var(--color-primary));
 
   &:hover {
-    background-color: rgb(var(--color-primary-400));
-    border-color: rgb(var(--color-primary-400));
+    background-color: rgb(var(--color-primary-variant));
+    border-color: rgb(var(--color-primary-variant));
   }
 }
 
@@ -617,8 +616,8 @@ input, input.form-control {
   color: rgb(var(--color-on-danger));
 
   &:hover {
-    background-color: rgb(var(--color-danger-400));
-    border-color: rgb(var(--color-danger-400));
+    background-color: rgb(var(--color-danger-variant));
+    border-color: rgb(var(--color-danger-variant));
     color: rgb(var(--color-on-danger));
   }
 }
@@ -633,8 +632,8 @@ input, input.form-control {
   color: rgb(var(--color-on-success));
 
   &:hover {
-    background-color: rgb(var(--color-success-400));
-    border-color: rgb(var(--color-success-400));
+    background-color: rgb(var(--color-success-variant));
+    border-color: rgb(var(--color-success-variant));
     color: rgb(var(--color-on-success));
   }
 }
@@ -649,7 +648,7 @@ input, input.form-control {
 
 a.text-success {
   &:hover, &:focus {
-    color: rgb(var(--color-success-400)) !important;
+    color: rgb(var(--color-success-variant)) !important;
   }
 }
 
@@ -659,7 +658,7 @@ a.text-success {
 
 a.text-warning {
   &:hover, &:focus {
-    color: rgb(var(--color-warning-400)) !important;
+    color: rgb(var(--color-warning-variant)) !important;
   }
 }
 

@@ -45,7 +45,7 @@ export const theme = Vue.observable({
  * HINT: install 'Color Highlight' VSCode extension to see actual colors here
  */
 const colors = [
-  {name: 'primary-400',              values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
+  {name: 'primary-variant',              values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
   {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#A57BEE'}},
   {name: 'primary-600',              values: {[Themes.Light]: '#874CF0', [Themes.Dark]: '#B18BF3'}},
   {name: 'on-primary',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
@@ -53,15 +53,15 @@ const colors = [
   {name: 'secondary',                values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'on-secondary',             values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
 
-  {name: 'success-400',              values: {[Themes.Light]: '#78D878', [Themes.Dark]: '#4DA04D'}},
+  {name: 'success-variant',              values: {[Themes.Light]: '#78D878', [Themes.Dark]: '#4DA04D'}},
   {name: 'success',                  values: {[Themes.Light]: '#6EC66E', [Themes.Dark]: '#5CB85C'}},
   {name: 'on-success',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'danger-400',               values: {[Themes.Light]: '#DF706D', [Themes.Dark]: '#D9534F'}},
+  {name: 'danger-variant',               values: {[Themes.Light]: '#DF706D', [Themes.Dark]: '#D9534F'}},
   {name: 'danger',                   values: {[Themes.Light]: '#D9534F', [Themes.Dark]: '#DF706D'}},
   {name: 'on-danger',                values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'warning-400',              values: {[Themes.Light]: '#FFC677', [Themes.Dark]: '#BF883B'}},
+  {name: 'warning-variant',              values: {[Themes.Light]: '#FFC677', [Themes.Dark]: '#BF883B'}},
   {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#C7944B'}},
   {name: 'on-warning',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
   {name: 'on-warning-2',             values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'}},

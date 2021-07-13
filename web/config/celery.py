@@ -28,7 +28,7 @@ celery_app.conf.task_routes = {
     'app.tasks.process_print_events': {'queue': 'realtime'},
     'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},
     'app_ent.tasks.process_print_events_ent': {'queue': 'realtime'},
-    'app_ent.tasks.send_welcome_email': {'queue': 'realtime'},
+    'app_ent.tasks.setup_free_trial': {'queue': 'realtime'},
     'app_ent.tasks.send_free_trial_expiring_message': {'queue': 'realtime'},
 }
 

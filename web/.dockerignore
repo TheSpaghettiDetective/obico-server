@@ -1,0 +1,5 @@
+__pycache__
+static_build
+frontend/node_modules
+celerybeat-schedule
+db.sqlite3

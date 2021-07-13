@@ -161,5 +161,5 @@ export default {
   color: rgb(var(--color-primary))
 
 .page-unvisited
-  color: rgb(var(--color-gray-100-d-20))
+  color: rgb(var(--color-divider))
 </style>

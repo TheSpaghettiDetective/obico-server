@@ -32,7 +32,7 @@ export const theme = Vue.observable({
  * 4. Paste it in main.scss file inside :root styles
  *
  * Colors usage in CSS:
- * background: rgb(var(--color-body-bg-d-10))
+ * background: rgb(var(--color-...))
  *
  * Why translate HEX to RGB?
  * It's a trick to be able to add transparency to any color without creating new variable. For
@@ -45,14 +45,24 @@ export const theme = Vue.observable({
  * HINT: install 'Color Highlight' VSCode extension to see actual colors here
  */
 const colors = [
-  {name: 'primary-400',              values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}}, // MEMO: in case of change check slider at printer's settings
-  {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#A57BEE'}}, // assuming as "primary-500"
+  {name: 'primary-400',              values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
+  {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#A57BEE'}},
   {name: 'primary-600',              values: {[Themes.Light]: '#874CF0', [Themes.Dark]: '#B18BF3'}},
+  {name: 'on-primary',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'success',                  values: {[Themes.Light]: '#5cb85c', [Themes.Dark]: '#5cb85c'}},
-  {name: 'danger',                   values: {[Themes.Light]: '#df706d', [Themes.Dark]: '#d9534f'}},
+  {name: 'secondary',                values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
+  {name: 'on-secondary',             values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
 
-  {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#f0ad4e'}},
+  {name: 'success-400',              values: {[Themes.Light]: '#78D878', [Themes.Dark]: '#4DA04D'}},
+  {name: 'success',                  values: {[Themes.Light]: '#6EC66E', [Themes.Dark]: '#5CB85C'}},
+  {name: 'on-success',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
+
+  {name: 'danger-400',               values: {[Themes.Light]: '#DF706D', [Themes.Dark]: '#D9534F'}},
+  {name: 'danger',                   values: {[Themes.Light]: '#D9534F', [Themes.Dark]: '#DF706D'}},
+  {name: 'on-danger',                values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
+
+  {name: 'warning-400',              values: {[Themes.Light]: '#FFC677', [Themes.Dark]: '#BF883B'}},
+  {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#C7944B'}},
   {name: 'on-warning',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
   {name: 'on-warning-2',             values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'}},
 
@@ -62,74 +72,19 @@ const colors = [
   {name: 'overlay',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#000000'}},
   {name: 'hover',                    values: {[Themes.Light]: '#666666', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'divider',                  values: {[Themes.Light]: '#abb6c2', [Themes.Dark]: '#334A62'}},
+  {name: 'divider',                  values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'}},
 
   {name: 'text-primary',             values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'text-secondary',           values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'}},
 
-  // Toggle
-  {name: 'toggle-background',        values: {[Themes.Light]: '#A67DF6', [Themes.Dark]: '#37475A'}},
-  {name: 'toggle-icon-active',       values: {[Themes.Light]: '#A680E5', [Themes.Dark]: '#4B5B69'}},
-  {name: 'toggle-icon-disabled',     values: {[Themes.Light]: '#D3BEF5', [Themes.Dark]: '#A8AEB6'}},
+  {name: 'input-background',         values: {[Themes.Light]: '#EEF1F3', [Themes.Dark]: '#37475A'}},
 
-
-
-
-  {name: 'primary-light',            values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#EBEBEB'}},
-  {name: 'gray-200-hover',           values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#596a7b'}},
-  {name: 'white-d-60',               values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#666666'}},
-  {name: 'bg-dark-d-10',             values: {[Themes.Light]: '#9A65F4', [Themes.Dark]: '#17222c'}},
-
-
-
-
-  {name: 'input-bg',                 values: {[Themes.Light]: '#E9E9E9', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'input-text',               values: {[Themes.Light]: '#23304B', [Themes.Dark]: '#495057'}},
-  {name: 'input-dark-bg',            values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#4E5D6C'}},
-
-
-  {name: 'text',                     values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
-  {name: 'text-subdued',             values: {[Themes.Light]: '#7E8285', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'text-inverted',            values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
-
-  {name: 'color',                    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'color-2',                  values: {[Themes.Light]: '#CCCCCC', [Themes.Dark]: '#CCCCCC'}},
-
-
-  // From SASS variables
-
-  {name: 'gray-100',                 values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
-  {name: 'gray-200',                 values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#4E5D6C'}},
-  {name: 'gray-200-2',               values: {[Themes.Light]: '#cccccc', [Themes.Dark]: '#4E5D6C'}},
-  {name: 'gray-600',                 values: {[Themes.Light]: '#868e96', [Themes.Dark]: '#868e96'}},
-
-  {name: 'form-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2b3e50'}},
-  {name: 'body-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2B3E50'}},
-  {name: 'body-bg-darker',           values: {[Themes.Light]: '#f6f9fc', [Themes.Dark]: '#2B3E50'}},
-  {name: 'bg-dark',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#293b4d'}},
-  {name: 'white',                    values: {[Themes.Light]: '#000000', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'dark-white',               values: {[Themes.Light]: '#2B3E50', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'black',                    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#000000'}},
-  
-  {name: 'border',                  values: {[Themes.Light]: '#abb6c2', [Themes.Dark]: '#666666'}},
-
-
-  // Derivatives from SASS functions (lighted, darken, etc.)
-
-  {name: 'body-bg-l-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#3d5871'}},
-  {name: 'body-bg-l-5p',             values: {[Themes.Light]: '#F1F1F1', [Themes.Dark]: '#344b61'}},
-  {name: 'body-bg-l-3',              values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#30465a'}},
-  {name: 'body-bg-d-5',              values: {[Themes.Light]: '#f2f2f2', [Themes.Dark]: '#22313f'}},
-  {name: 'body-bg-d-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#19242f'}},
-  {name: 'body-bg-d-10-darker',      values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#19242f'}},
-  {name: 'body-bg-d-10-lighter',     values: {[Themes.Light]: '#E7E7E7', [Themes.Dark]: '#252F3A'}},
-
-  {name: 'gray-100-d-20',            values: {[Themes.Light]: '#9f9f9f', [Themes.Dark]: '#b8b8b8'}},
-  {name: 'gray-100-d-30',            values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#9f9f9f'}},
+  {name: 'table-accent-1',           values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#27323F'}},
+  {name: 'table-accent-2',           values: {[Themes.Light]: '#EDEDED', [Themes.Dark]: '#1B242E'}},
 
   // Icon colors
-  {name: 'icon-tunneling-tone-1',    values: {[Themes.Light]: '#4e5d6c', [Themes.Dark]: '#EAEAEA'}},
-  {name: 'icon-tunneling-tone-2',    values: {[Themes.Light]: '#1d2935', [Themes.Dark]: '#CDCDCD'}},
+  {name: 'icon-tunneling-1',         values: {[Themes.Light]: '#4e5d6c', [Themes.Dark]: '#EAEAEA'}},
+  {name: 'icon-tunneling-2',         values: {[Themes.Light]: '#1d2935', [Themes.Dark]: '#CDCDCD'}},
 ]
 
 const urls = [

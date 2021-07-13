@@ -506,7 +506,7 @@ export default {
 
 .wizard-container
   padding: 1em
-  background: rgb(var(--color-body-bg))
+  background: rgb(var(--color-surface-primary))
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
@@ -518,7 +518,7 @@ export default {
     background-size: 500px
 
 .btn-back
-  color: rgb(var(--color-white))
+  color: rgb(var(--color-text-primary))
   min-width: auto
 
 .container
@@ -531,7 +531,7 @@ export default {
   margin-bottom: 8px
 
 .img-container
-  background: rgb(var(--color-body-bg-d-5))
+  background: rgb(var(--color-surface-secondary) / .6)
   padding: 1rem
   text-align: center
 
@@ -546,8 +546,8 @@ img
   text-align: center
   width: 21rem
   height: 60px
-  background-color: rgb(var(--color-body-bg-d-10))
-  color: rgb(var(--color-text))
+  background-color: rgb(var(--color-input-background))
+  color: rgb(var(--color-text-primary))
   font-size: 2rem
   font-weight: 500
   letter-spacing: 0.5em
@@ -580,7 +580,7 @@ li
 
 // Step label (not active)
 .wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
-  color: rgb(var(--color-white))
+  color: rgb(var(--color-text-primary))
 
 // Adjust numbers in the circles (form steps)
 .wizard-nav.wizard-nav-pills .wizard-icon-circle i

@@ -309,7 +309,7 @@
   @use "~main/theme"
 
   .gcodes-wrapper
-    background-color: rgb(var(--color-body-bg))
+    background-color: rgb(var(--color-surface-primary))
     padding: 2em
 
   .control-panel
@@ -364,7 +364,7 @@
       padding: .6em 1em
 
       &:nth-child(2n)
-        background-color: rgb(var(--color-body-bg-l-5p))
+        background-color: rgb(var(--color-table-accent-1) / .4)
 
       .item-info
         display: flex

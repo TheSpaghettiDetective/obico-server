@@ -12,7 +12,7 @@
         <i class="fas fa-exclamation"></i>
       </div>
       <div
-        class="text text-warning"
+        class="text"
         ref="slowLinkText"
         v-bind:class="{
           'show-and-hide': !slowLinkShowing && !slowLinkHiding,
@@ -312,7 +312,7 @@ export default {
   position: absolute
   height: $height
   z-index: 10
-  background-color: rgb(var(--color-white))
+  background-color: rgb(var(--color-overlay) / .2)
   border-radius: $height
   top: 10px
   left: 10px
@@ -401,7 +401,7 @@ export default {
     font-size: 12px
     line-height: 20px
     text-align: center
-    color: rgb(var(--color-white))
+    color: rgb(var(--color-on-warning))
 
 .muted-status-wrapper
   position: absolute

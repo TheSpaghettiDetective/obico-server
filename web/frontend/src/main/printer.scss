@@ -169,7 +169,7 @@
       width: 33px;
       height: 33px;
       position: relative;
-      color: rgb(var(--color-gray-200-2));
+      color: rgb(var(--color-divider));
       font-size: 1rem;
       padding: 0rem 1.5rem;
       i {
@@ -295,9 +295,6 @@ form#printer_form {
       padding-bottom: 0.15rem;
       padding-top: 0.15rem;
     }
-  }
-  .form-control {
-    border: 1px solid rgb(var(--color-gray-200));
   }
 
   .sensitivity {
@@ -457,7 +454,6 @@ form#printer_form {
   .card-img-overlay {
     top: initial;
     padding: 0.5rem;
-    background-color: rgb(var(--color-gray-200) / 0.7)
   }
 }
 
@@ -495,7 +491,7 @@ form#printer_form {
   padding: 2rem 0rem;
   .token {
     padding: 1.5rem 3rem 2.5rem;
-    border: rgb(var(--color-form-bg)) thin dashed;
+    border: rgb(var(--color-divider)) thin dashed;
     margin-bottom: 2rem;
     text-align: center;
 
@@ -528,6 +524,6 @@ form#printer_form {
     transition-duration: 0.2s;
   }
   hr {
-    background-color: rgb(var(--color-body-bg-l-10));
+    background-color: rgb(var(--color-divider));
   }
 }

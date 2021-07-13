@@ -166,10 +166,12 @@
 @use "~main/theme"
 
 hr
-  background-color: rgb(var(--color-white))
+  background-color: rgb(var(--color-divider))
 
 .shared-link-text
-  color: #fff !important
+  color: rgb(var(--text-primary)) !important
   height: 40px
-  border-color: #4E5D6C
+  border-color: rgb(var(--color-divider))
+  background-color: rgb(var(--color-input-background)) !important
+    
 </style>

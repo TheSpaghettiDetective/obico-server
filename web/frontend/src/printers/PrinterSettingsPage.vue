@@ -512,7 +512,7 @@ export default {
 
 .section-title
   padding-bottom: 5px
-  border-bottom: 1px solid rgb(var(--color-white))
+  border-bottom: 1px solid rgb(var(--color-text-primary))
 
 .form-label
   font-size: 18px

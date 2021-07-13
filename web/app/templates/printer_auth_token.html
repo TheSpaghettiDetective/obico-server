@@ -7,40 +7,44 @@
   {% if printers.count > 1 %}
   <div class="row justify-content-center">
       <div class="col-sm-11 col-lg-8">
-          <p>You have more than one printers. Which printer do you want to get secret token for?</p>
-          <ul>
-          {% for printer in printers %}
-            <li><a href={% url 'printer_auth_token' printer.id %}>{{ printer.name }} >></a></li>
-          {% endfor %}
-        </ul>
+          <div class="form-container">
+            <p>You have more than one printers. Which printer do you want to get secret token for?</p>
+            <ul>
+            {% for printer in printers %}
+              <li><a href={% url 'printer_auth_token' printer.id %}>{{ printer.name }} >></a></li>
+            {% endfor %}
+          </ul>
+          </div>
     </div>
   </div>
   {% else %}
   {% for printer in printers %}
   <div class="row justify-content-center">
     <div class="col-sm-11 col-lg-8">
-      <div class="token">
-        <h5>The secret token for printer "{{ printer.name }}" is:</h5>
-        <div class="input-group">
-          <input id="printer-auth-token" type="text" class="form-control" value={{printer.auth_token}}>
-          <div class="input-group-append">
-            <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
-              data-clipboard-target="#printer-auth-token">
-              <i class="fas fa-clipboard"></i>
-            </button>
+      <div class="form-container">
+        <div class="token">
+          <h5>The secret token for printer "{{ printer.name }}" is:</h5>
+          <div class="input-group">
+            <input id="printer-auth-token" type="text" class="form-control" value={{printer.auth_token}}>
+            <div class="input-group-append">
+              <button id="copy-to-clipboard" class="btn btn-outline-primary no-corner" type="button"
+                data-clipboard-target="#printer-auth-token">
+                <i class="fas fa-clipboard"></i>
+              </button>
+            </div>
           </div>
         </div>
+        <p>What do I do with this secret token?</p>
+        <ol>
+          <li>If you haven't done so, please <a href="https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/Steps/291120,291121,291132">install The
+              Spaghetti Detective OctoPrint plugin</a>.</li>
+          <li>Open OctoPrint settings dialog. Scroll to the bottom and select "The Spaghetti Detective".</li>
+          <li>Click&nbsp;&nbsp;<i class="fas fa-clipboard text-primary"></i>&nbsp;&nbsp;or use keyboard to copy the
+            token above, and paste it to "Secret Token" box on the settings page.</li>
+          <li><span class="text-warning">Don't forget to click "Save".</span> I know it sounds stupid but...</li>
+        </ol>
+        <img src="{% static 'img/paste_token.png' %}" alt="Plugin configuration instructions"  style="width: 100%" />
       </div>
-      <p>What do I do with this secret token?</p>
-      <ol>
-        <li>If you haven't done so, please <a href="https://help.thespaghettidetective.com/kb/guide/en/setup-the-spaghetti-detective-using-the-web-app-dbCcgiR0Tr/Steps/291120,291121,291132">install The
-            Spaghetti Detective OctoPrint plugin</a>.</li>
-        <li>Open OctoPrint settings dialog. Scroll to the bottom and select "The Spaghetti Detective".</li>
-        <li>Click&nbsp;&nbsp;<i class="fas fa-clipboard text-primary"></i>&nbsp;&nbsp;or use keyboard to copy the
-          token above, and paste it to "Secret Token" box on the settings page.</li>
-        <li><span class="text-warning">Don't forget to click "Save".</span> I know it sounds stupid but...</li>
-      </ol>
-      <img src="{% static 'img/paste_token.png' %}" alt="Plugin configuration instructions"  style="width: 100%" />
     </div>
   </div>
   {% endfor %}

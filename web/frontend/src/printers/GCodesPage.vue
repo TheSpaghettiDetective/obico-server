@@ -309,7 +309,7 @@
   @use "~main/theme"
 
   .gcodes-wrapper
-    background-color: rgb(var(--color-surface-primary))
+    background-color: rgb(var(--color-surface-secondary))
     padding: 2em
 
   .control-panel
@@ -387,6 +387,7 @@
 
         &:hover
           background-color: rgb(var(--color-danger))
+          color: rgb(var(--color-on-primary))
           cursor: pointer
 
       @media (max-width: 768px)

@@ -409,7 +409,7 @@ export default {
   z-index: 10
   bottom: 0
   left: 0
-  background-color: rgb(var(--color-surface-primary) / .5)
+  background-color: rgb(var(--color-overlay) / .9)
   text-align: center
   padding: 10px 0
 </style>

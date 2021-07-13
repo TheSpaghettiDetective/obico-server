@@ -506,7 +506,7 @@ export default {
 
 .wizard-container
   padding: 1em
-  background: rgb(var(--color-surface-primary))
+  background: rgb(var(--color-surface-secondary))
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important

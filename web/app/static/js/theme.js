@@ -41,24 +41,23 @@ const theme = {
  * HINT: install 'Color Highlight' VSCode extension to see actual colors here
  */
  const colors = [
-  {name: 'primary-variant',              values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
+  {name: 'primary-variant',          values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
   {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#A57BEE'}},
-  {name: 'primary-600',              values: {[Themes.Light]: '#874CF0', [Themes.Dark]: '#B18BF3'}},
   {name: 'on-primary',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
   {name: 'secondary',                values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'on-secondary',             values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
 
-  {name: 'success-variant',              values: {[Themes.Light]: '#78D878', [Themes.Dark]: '#4DA04D'}},
-  {name: 'success',                  values: {[Themes.Light]: '#6EC66E', [Themes.Dark]: '#5CB85C'}},
+  {name: 'success',                  values: {[Themes.Light]: '#5cb85c', [Themes.Dark]: '#5cb85c'}},
+  {name: 'success-variant',          values: {[Themes.Light]: '#4CAE4C', [Themes.Dark]: '#4CAE4C'}},
   {name: 'on-success',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'danger-variant',               values: {[Themes.Light]: '#DF706D', [Themes.Dark]: '#D9534F'}},
-  {name: 'danger',                   values: {[Themes.Light]: '#D9534F', [Themes.Dark]: '#DF706D'}},
+  {name: 'danger',                   values: {[Themes.Light]: '#d9534f', [Themes.Dark]: '#d9534f'}},
+  {name: 'danger-variant',           values: {[Themes.Light]: '#C2413D', [Themes.Dark]: '#C2413D'}},
   {name: 'on-danger',                values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'warning-variant',              values: {[Themes.Light]: '#FFC677', [Themes.Dark]: '#BF883B'}},
-  {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#C7944B'}},
+  {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#f0ad4e'}},
+  {name: 'warning-variant',          values: {[Themes.Light]: '#DB9A3F', [Themes.Dark]: '#DB9A3F'}},
   {name: 'on-warning',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
   {name: 'on-warning-2',             values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'}},
 
@@ -73,7 +72,7 @@ const theme = {
   {name: 'text-primary',             values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'text-secondary',           values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'}},
 
-  {name: 'input-background',         values: {[Themes.Light]: '#EEF1F3', [Themes.Dark]: '#37475A'}},
+  {name: 'input-background',         values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'}},
 
   {name: 'table-accent-1',           values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#27323F'}},
   {name: 'table-accent-2',           values: {[Themes.Light]: '#EDEDED', [Themes.Dark]: '#1B242E'}},

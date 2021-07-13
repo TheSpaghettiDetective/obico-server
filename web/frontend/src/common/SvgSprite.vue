@@ -71,5 +71,5 @@
     fill: rgb(var(--color-icon-tunneling-2))
 
 #svg-video-placeholder
-  fill: rgb(var(--color-secondary) / .4)
+  fill: rgb(255 255 255 / .3)
 </style>

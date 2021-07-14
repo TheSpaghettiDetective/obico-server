@@ -132,7 +132,6 @@ export function initTheme() {
 
   colors.forEach(function(color) {
     const RGB = HEXtoRGB(color.values[themeValue])
-    console.log(color.name, color.values[themeValue], RGB)
     document.documentElement.style.setProperty(`--color-${color.name}`, `${RGB[0]} ${RGB[1]} ${RGB[2]}`)
   })
 

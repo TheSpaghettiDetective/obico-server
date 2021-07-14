@@ -76,7 +76,10 @@ class WebConsumer(JsonWebsocketConsumer):
             else:
                 serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
             self.send_json(serializer.data)
-        except:
+        except Printer.DoesNotExist:
+            sentryClient.captureException()
+            self.close()
+        except Exception:
             sentryClient.captureException()
 
     @newrelic.agent.background_task()

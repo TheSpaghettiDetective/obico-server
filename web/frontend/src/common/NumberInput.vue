@@ -73,10 +73,22 @@
     .control-button
       border-width: 1px
 
+    .btn-outline-secondary
+      border-color: rgb(var(--color-divider))
+      background-color: rgb(var(--color-input-background))
+
+      &:hover, &:focus
+        color: rgb(var(--color-text-primary))
+        background-color: rgb(var(--color-input-background))
+        opacity: .8
+        outline: none
+        box-shadow: none
+    
+
     input
-      background-color: rgb(var(--color-input-dark-bg))
-      border-top-color: rgb(var(--color-white))
-      border-bottom-color: rgb(var(--color-white))
-      color: rgb(var(--color-white))
+      background-color: rgb(var(--color-input-background))
+      border-top-color: rgb(var(--color-divider))
+      border-bottom-color: rgb(var(--color-divider))
+      color: rgb(var(--color-text-primary))
       width: 5rem
 </style>

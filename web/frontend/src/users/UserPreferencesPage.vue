@@ -1037,7 +1037,7 @@ section:not(:first-child)
 .theme-toggle
   display: inline-flex
   align-items: center
-  background-color: rgb(var(--color-bg-secondary))
+  background-color: rgb(var(--color-input-background))
   border-radius: 100px
   position: relative
   margin-right: 26px
@@ -1053,21 +1053,21 @@ section:not(:first-child)
     flex: 0 0 18px
     height: 18px
     margin: 10px
-    color: rgb(var(--color-icon-disabled))
+    color: #ABB6C2
 
     &.active
-      color: rgb(var(--color-icon-active))
+      color: #4B5B69
 
   .label
     flex: 1
     text-align: center
     font-size: 12px
-    color: #fff
+    color: rgb(var(--color-text-primary))
     padding: 0 8px
 
   .active-indicator
     position: absolute
-    width: calc(100% - 9px)
+    width: calc(100% - 8px)
     height: 30px
     top: 0
     bottom: 0

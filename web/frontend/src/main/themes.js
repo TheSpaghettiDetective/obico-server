@@ -32,7 +32,7 @@ export const theme = Vue.observable({
  * 4. Paste it in main.scss file inside :root styles
  *
  * Colors usage in CSS:
- * background: rgb(var(--color-body-bg-d-10))
+ * background: rgb(var(--color-...))
  *
  * Why translate HEX to RGB?
  * It's a trick to be able to add transparency to any color without creating new variable. For
@@ -45,84 +45,45 @@ export const theme = Vue.observable({
  * HINT: install 'Color Highlight' VSCode extension to see actual colors here
  */
 const colors = [
-  {name: 'bg',                       values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'}},
-  {name: 'bg-body',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2D3E4F'}},
-  {name: 'bg-secondary',             values: {[Themes.Light]: '#A67DF6', [Themes.Dark]: '#505D6D'}},
-  {name: 'bg-video',                 values: {[Themes.Light]: '#ADB7C3', [Themes.Dark]: '#000000'}},
-  {name: 'bg-overlay',               values: {[Themes.Light]: '#FAFAFA', [Themes.Dark]: '#000000'}},
+  {name: 'primary-variant',          values: {[Themes.Light]: '#B289F8', [Themes.Dark]: '#9A6AEF'}},
+  {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#A57BEE'}},
+  {name: 'on-primary',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'footer-bg',                values: {[Themes.Light]: '#ACB6C2', [Themes.Dark]: '#000000'}},
-  {name: 'footer-text',              values: {[Themes.Light]: '#405464', [Themes.Dark]: '#989898'}},
+  {name: 'secondary',                values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
+  {name: 'on-secondary',             values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
 
-  {name: 'input-bg',                 values: {[Themes.Light]: '#E9E9E9', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'input-text',               values: {[Themes.Light]: '#23304B', [Themes.Dark]: '#495057'}},
-  {name: 'input-dark-bg',            values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#4E5D6C'}},
-
-  {name: 'icon-active',              values: {[Themes.Light]: '#A680E5', [Themes.Dark]: '#4B5B69'}},
-  {name: 'icon-disabled',            values: {[Themes.Light]: '#D3BEF5', [Themes.Dark]: '#A8AEB6'}},
-
-  {name: 'white-primary',            values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#9965f4'}},
-  {name: 'primary-white',            values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'primary-light',            values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#EBEBEB'}},
-
-  {name: 'text',                     values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
-  {name: 'text-subdued',             values: {[Themes.Light]: '#7E8285', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'text-inverted',            values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'}},
-
-  {name: 'color',                    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'color-2',                  values: {[Themes.Light]: '#CCCCCC', [Themes.Dark]: '#CCCCCC'}},
-
-
-  // From SASS variables
-
-  {name: 'primary',                  values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#9965f4'}},
-
-  {name: 'gray-100',                 values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
-  {name: 'gray-200',                 values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#4E5D6C'}},
-  {name: 'gray-200-2',               values: {[Themes.Light]: '#cccccc', [Themes.Dark]: '#4E5D6C'}},
-  {name: 'gray-200-hover',           values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#596a7b'}},
-  {name: 'gray-600',                 values: {[Themes.Light]: '#868e96', [Themes.Dark]: '#868e96'}},
-
-  {name: 'form-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2b3e50'}},
-  {name: 'body-bg',                  values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#2B3E50'}},
-  {name: 'body-bg-darker',           values: {[Themes.Light]: '#f6f9fc', [Themes.Dark]: '#2B3E50'}},
-  {name: 'bg-dark',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#293b4d'}},
-  {name: 'white',                    values: {[Themes.Light]: '#000000', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'dark-white',               values: {[Themes.Light]: '#2B3E50', [Themes.Dark]: '#FFFFFF'}},
-  {name: 'black',                    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#000000'}},
   {name: 'success',                  values: {[Themes.Light]: '#5cb85c', [Themes.Dark]: '#5cb85c'}},
-  {name: 'danger',                   values: {[Themes.Light]: '#df706d', [Themes.Dark]: '#d9534f'}},
-  {name: 'border',                  values: {[Themes.Light]: '#abb6c2', [Themes.Dark]: '#666666'}},
+  {name: 'success-variant',          values: {[Themes.Light]: '#4CAE4C', [Themes.Dark]: '#4CAE4C'}},
+  {name: 'on-success',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
+  {name: 'danger',                   values: {[Themes.Light]: '#d9534f', [Themes.Dark]: '#d9534f'}},
+  {name: 'danger-variant',           values: {[Themes.Light]: '#C2413D', [Themes.Dark]: '#C2413D'}},
+  {name: 'on-danger',                values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
 
-  // Derivatives from SASS functions (lighted, darken, etc.)
+  {name: 'warning',                  values: {[Themes.Light]: '#f0ad4e', [Themes.Dark]: '#f0ad4e'}},
+  {name: 'warning-variant',          values: {[Themes.Light]: '#DB9A3F', [Themes.Dark]: '#DB9A3F'}},
+  {name: 'on-warning',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
+  {name: 'on-warning-2',             values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'}},
 
-  {name: 'primary-l-12',             values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#bf9ef8'}},
-  {name: 'primary-l-10',             values: {[Themes.Light]: '#b995f7', [Themes.Dark]: '#b995f7'}},
-  {name: 'primary-l-7',              values: {[Themes.Light]: '#af86f6', [Themes.Dark]: '#af86f6'}},
-  {name: 'primary-l-5',              values: {[Themes.Light]: '#a97df6', [Themes.Dark]: '#a97df6'}},
-  {name: 'primary-d-8',              values: {[Themes.Light]: '#803ff1', [Themes.Dark]: '#803ff1'}},
-  {name: 'primary-d-10',             values: {[Themes.Light]: '#7935f1', [Themes.Dark]: '#7935f1'}},
-  {name: 'primary-d-20',             values: {[Themes.Light]: '#5d10e3', [Themes.Dark]: '#5d10e3'}},
-  {name: 'primary-d-35',             values: {[Themes.Light]: '#400b9b', [Themes.Dark]: '#400b9b'}},
+  {name: 'background',               values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'}},
+  {name: 'surface-primary',          values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#485B71'}},
+  {name: 'surface-secondary',        values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#2D3E4F'}},
+  {name: 'overlay',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#000000'}},
+  {name: 'hover',                    values: {[Themes.Light]: '#666666', [Themes.Dark]: '#ffffff'}},
 
-  {name: 'body-bg-l-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#3d5871'}},
-  {name: 'body-bg-l-5p',             values: {[Themes.Light]: '#F1F1F1', [Themes.Dark]: '#344b61'}},
-  {name: 'body-bg-l-3',              values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#30465a'}},
-  {name: 'body-bg-d-5',              values: {[Themes.Light]: '#f2f2f2', [Themes.Dark]: '#22313f'}},
-  {name: 'body-bg-d-10',             values: {[Themes.Light]: '#e6e6e6', [Themes.Dark]: '#19242f'}},
-  {name: 'body-bg-d-10-darker',      values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#19242f'}},
-  {name: 'body-bg-d-10-lighter',     values: {[Themes.Light]: '#E7E7E7', [Themes.Dark]: '#252F3A'}},
+  {name: 'divider',                  values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'}},
 
-  {name: 'gray-100-d-20',            values: {[Themes.Light]: '#9f9f9f', [Themes.Dark]: '#b8b8b8'}},
-  {name: 'gray-100-d-30',            values: {[Themes.Light]: '#b8b8b8', [Themes.Dark]: '#9f9f9f'}},
+  {name: 'text-primary',             values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
+  {name: 'text-secondary',           values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'}},
 
-  {name: 'white-d-60',               values: {[Themes.Light]: '#9965f4', [Themes.Dark]: '#666666'}},
-  {name: 'bg-dark-d-10',             values: {[Themes.Light]: '#9A65F4', [Themes.Dark]: '#17222c'}},
+  {name: 'input-background',         values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'}},
+
+  {name: 'table-accent-1',           values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#27323F'}},
+  {name: 'table-accent-2',           values: {[Themes.Light]: '#EDEDED', [Themes.Dark]: '#1B242E'}},
 
   // Icon colors
-  {name: 'icon-tunneling-tone-1',    values: {[Themes.Light]: '#4e5d6c', [Themes.Dark]: '#EAEAEA'}},
-  {name: 'icon-tunneling-tone-2',    values: {[Themes.Light]: '#1d2935', [Themes.Dark]: '#CDCDCD'}},
+  {name: 'icon-tunneling-1',         values: {[Themes.Light]: '#4e5d6c', [Themes.Dark]: '#EAEAEA'}},
+  {name: 'icon-tunneling-2',         values: {[Themes.Light]: '#1d2935', [Themes.Dark]: '#CDCDCD'}},
 ]
 
 const urls = [
@@ -171,6 +132,7 @@ export function initTheme() {
 
   colors.forEach(function(color) {
     const RGB = HEXtoRGB(color.values[themeValue])
+    console.log(color.name, color.values[themeValue], RGB)
     document.documentElement.style.setProperty(`--color-${color.name}`, `${RGB[0]} ${RGB[1]} ${RGB[2]}`)
   })
 

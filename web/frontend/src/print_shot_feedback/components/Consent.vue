@@ -10,7 +10,7 @@
       Estimated time to finish:
       <span class="feedback-estimate">{{ this.estimatedFeedbackTime }}</span>
     </p>
-    <p class="text-muted font-weight-light">
+    <p class="font-weight-light">
       Help The Detective get better by giving her in-depth feedback on the snapshots of the print.
       You will earn
       <strong
@@ -103,7 +103,7 @@ export default {
 @use "~main/theme"
 
 .consent-section
-  background: rgb(var(--color-bg-dark))
+  background: rgb(var(--color-surface-secondary))
 
 .feedback-estimate
   font-size: 1.2em

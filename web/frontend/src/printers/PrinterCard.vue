@@ -762,10 +762,4 @@ export default {
   width: 20px
   margin-right: 12px
   margin-bottom: 6px
-
-  // &.tunneling
-  //   .tone-1
-  //     fill: rgb(var(--color-icon-tunneling-tone-1))
-  //   .tone-2
-  //     fill: rgb(var(--color-icon-tunneling-tone-2))
 </style>

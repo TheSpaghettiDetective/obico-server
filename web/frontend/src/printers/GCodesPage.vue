@@ -309,11 +309,11 @@
   @use "~main/theme"
 
   .gcodes-wrapper
-    background-color: rgb(var(--color-body-bg))
+    background-color: rgb(var(--color-surface-secondary))
     padding: 2em
 
   .control-panel
-    border-bottom: 1px solid rgb(var(--color-bg))
+    border-bottom: 1px solid rgb(var(--color-divider))
     padding-bottom: 16px
 
     .search-input
@@ -322,7 +322,7 @@
   .sorting-panel
     display: flex
     padding: 1em calc(1em + 30px) 1em 1em
-    border-bottom: 1px solid rgb(var(--color-bg))
+    border-bottom: 1px solid rgb(var(--color-divider))
 
     .sorting-option
       flex: 1
@@ -364,7 +364,7 @@
       padding: .6em 1em
 
       &:nth-child(2n)
-        background-color: rgb(var(--color-body-bg-l-5p))
+        background-color: rgb(var(--color-table-accent-1) / .4)
 
       .item-info
         display: flex
@@ -387,6 +387,7 @@
 
         &:hover
           background-color: rgb(var(--color-danger))
+          color: rgb(var(--color-on-primary))
           cursor: pointer
 
       @media (max-width: 768px)

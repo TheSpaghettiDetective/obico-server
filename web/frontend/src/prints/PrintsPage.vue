@@ -296,7 +296,7 @@ export default {
 @use "~main/theme"
 
 .menu-bar
-  background-color: rgb(var(--color-bg-dark-d-10))
+  background-color: rgb(var(--color-surface-secondary))
   padding: 0.75rem 1.25rem
 
 #tl-fullscreen-modal
@@ -309,18 +309,11 @@ export default {
   .video-js
     height: calc(100vh - 200px)
 
-.btn-outline-primary.upload-icon
-  color: rgb(var(--color-white-primary))
-  border-color: rgb(var(--color-white-primary))
-
-  &:hover
-    color: rgb(var(--color-primary-white))
-    background-color: rgb(var(--color-white-primary))
-
 ::v-deep .btn-outline-secondary
-  color: #fff
-  border-color: #fff
+  color: rgb(var(--color-text-primary))
+  border-color: rgb(var(--color-text-primary))
 
   &:hover
-    color: rgb(var(--color-text-inverted))
+    background: none
+    opacity: .8
 </style>

@@ -12,7 +12,7 @@
         <i class="fas fa-exclamation"></i>
       </div>
       <div
-        class="text text-warning"
+        class="text"
         ref="slowLinkText"
         v-bind:class="{
           'show-and-hide': !slowLinkShowing && !slowLinkHiding,
@@ -74,11 +74,15 @@
           class="webcam_fixed_ratio_inner full"
         >
           <img
+            v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
             :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             :src="taggedSrc"
             :alt="printer.name + ' current image'"
           />
+          <svg v-else viewBox="0 0 1200 1200" width="100%" height="100%">
+            <use :href="'#' + printerStockImgSrc" />
+          </svg>
         </div>
         <div
           v-show="showVideo"
@@ -105,7 +109,6 @@
 import get from 'lodash/get'
 
 import Janus from '@lib/janus'
-import printerStockImgSrc from '@static/img/3d_printer.png'
 
 export default {
   name: 'StreamingBox',
@@ -142,12 +145,13 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
+      printerStockImgSrc: 'svg-video-placeholder'
     }
   },
 
   computed: {
     taggedImgAvailable() {
-      return this.taggedSrc !== printerStockImgSrc
+      return this.taggedSrc !== this.printerStockImgSrc
     },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
@@ -183,7 +187,7 @@ export default {
       }
     },
     taggedSrc() {
-      return get(this.printer, 'pic.img_url', printerStockImgSrc)
+      return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
     },
   },
 
@@ -308,7 +312,7 @@ export default {
   position: absolute
   height: $height
   z-index: 10
-  background-color: rgb(var(--color-white))
+  background-color: rgb(var(--color-overlay) / .2)
   border-radius: $height
   top: 10px
   left: 10px
@@ -397,7 +401,7 @@ export default {
     font-size: 12px
     line-height: 20px
     text-align: center
-    color: rgb(var(--color-white))
+    color: rgb(var(--color-on-warning))
 
 .muted-status-wrapper
   position: absolute
@@ -405,7 +409,7 @@ export default {
   z-index: 10
   bottom: 0
   left: 0
-  background-color: rgba(0,0,0,.6)
+  background-color: rgb(var(--color-overlay) / .9)
   text-align: center
   padding: 10px 0
 </style>

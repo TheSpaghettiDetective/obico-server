@@ -430,7 +430,7 @@ export default {
   height: 1.2rem
 
 .feedback-section
-  background-color: rgb(var(--color-bg-dark))
+  background-color: rgb(var(--color-surface-secondary))
 
 .bounce-enter-active
   animation: bounce-in .5s
@@ -464,5 +464,5 @@ export default {
   padding: 10px 0
 
 ::v-deep .vjs-poster, ::v-deep .video-js
-  background-color: rgb(var(--color-bg-video))
+  background-color: #000
 </style>

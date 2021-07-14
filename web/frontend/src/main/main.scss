@@ -3,56 +3,36 @@
 
 // Dark theme by default
 :root {
-  --color-bg: 35 49 65;
-  --color-bg-body: 45 62 79;
-  --color-bg-secondary: 80 93 109;
-  --color-bg-video: 0 0 0;
-  --color-bg-overlay: 0 0 0;
-  --color-footer-bg: 0 0 0;
-  --color-footer-text: 152 152 152;
-  --color-input-bg: 255 255 255;
-  --color-input-text: 73 80 87;
-  --color-input-dark-bg: 78 93 108;
-  --color-icon-active: 75 91 105;
-  --color-icon-disabled: 168 174 182;
-  --color-white-primary: 153 101 244;
-  --color-primary-white: 255 255 255;
-  --color-text: 235 235 235;
-  --color-text-subdued: 255 255 255;
-  --color-text-inverted: 40 48 58;
-  --color-color: 255 255 255;
-  --color-color-2: 204 204 204;
-  --color-primary: 153 101 244;
-  --color-gray-100: 235 235 235;
-  --color-gray-200: 78 93 108;
-  --color-gray-200-2: 78 93 108;
-  --color-gray-200-hover: 89 106 123;
-  --color-gray-600: 134 142 150;
-  --color-form-bg: 43 62 80;
-  --color-body-bg: 43 62 80;
-  --color-bg-dark: 41 59 77;
-  --color-white: 255 255 255;
-  --color-dark-white: 255 255 255;
-  --color-black: 0 0 0;
+  --color-primary-variant: 154 106 239;
+  --color-primary: 165 123 238;
+  --color-on-primary: 255 255 255;
+  --color-secondary: 235 235 235;
+  --color-on-secondary: 40 48 58;
   --color-success: 92 184 92;
+  --color-success-variant: 76 174 76;
+  --color-on-success: 255 255 255;
   --color-danger: 217 83 79;
-  --color-primary-l-12: 191 158 248;
-  --color-primary-l-10: 185 149 247;
-  --color-primary-l-7: 175 134 246;
-  --color-primary-l-5: 169 125 246;
-  --color-primary-d-8: 128 63 241;
-  --color-primary-d-10: 121 53 241;
-  --color-primary-d-20: 93 16 227;
-  --color-primary-d-35: 64 11 155;
-  --color-body-bg-l-10: 61 88 113;
-  --color-body-bg-l-5p: 52 75 97;
-  --color-body-bg-l-3: 48 70 90;
-  --color-body-bg-d-5: 34 49 63;
-  --color-body-bg-d-10: 25 36 47;
-  --color-gray-100-d-20: 184 184 184;
-  --color-gray-100-d-30: 159 159 159;
-  --color-white-d-60: 102 102 102;
-  --color-bg-dark-d-10: 23 34 44;
+  --color-danger-variant: 194 65 61;
+  --color-on-danger: 255 255 255;
+  --color-warning: 240 173 78;
+  --color-warning-variant: 219 154 63;
+  --color-on-warning: 255 255 255;
+  --color-on-warning-2: 0 0 0;
+  --color-background: 35 49 65;
+  --color-surface-primary: 72 91 113;
+  --color-surface-secondary: 45 62 79;
+  --color-overlay: 0 0 0;
+  --color-hover: 255 255 255;
+  --color-divider: 106 123 138;
+  --color-text-primary: 235 235 235;
+  --color-text-secondary: 170 172 176;
+  --color-input-background: 66 86 107;
+  --color-table-accent-1: 39 50 63;
+  --color-table-accent-2: 27 36 46;
+  --color-icon-tunneling-1: 234 234 234;
+  --color-icon-tunneling-2: 205 205 205;
+  --url-logo-bg: url(/static/img/logo-bg/logo-bg_dark.svg);
+  --url-tail-spin: url(/static/img/tail-spin/tail-spin_dark.svg);
 }
 
 /*** Global styles */
@@ -61,8 +41,8 @@ body {
   position: relative;
   min-height: 100vh;
   padding-bottom: 74px; /* Should be equal to the height of your footer */
-  background: rgb(var(--color-bg));
-  color: rgb(var(--color-text));
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-text-primary));
 }
 
 .borderless {
@@ -103,7 +83,7 @@ button, .btn {
 .custom-switch {
   .custom-control-label {
     &::before {
-      background: rgb(var(--color-color) / 0.4)
+      background: rgb(255 255 255 / 0.4)
     }
   }
 }
@@ -127,8 +107,8 @@ button, .btn {
 footer {
   padding: 25px 0;
   text-align: center;
-  color: rgb(var(--color-footer-text));
-  background-color: rgb(var(--color-footer-bg));
+  color: rgb(var(--color-text-primary));
+  background-color: rgb(var(--color-surface-secondary));
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -155,7 +135,7 @@ footer {
 
 .navbar {
   padding: 0.5rem 1rem;
-  background: rgb(var(--color-gray-200)) !important;
+  background: rgb(var(--color-surface-primary)) !important;
 
   a.navbar-brand {
     margin-top: -3px;
@@ -163,15 +143,15 @@ footer {
   .nav-item {
     text-transform: uppercase;
     &.active, &:hover {
-      background-color: rgb(var(--color-gray-200-hover));
+      background-color: rgb(var(--color-hover) / .075);
 
-      .nav-link {
-        color: #fff !important;
-      }
+      // .nav-link {
+      //   color: #fff !important;
+      // }
     }
   }
   .nav-link {
-    color: rgb(var(--color-text-subdued)) !important;
+    color: rgb(var(--color-text-primary)) !important;
   }
   .user-menu {
     text-transform: none;
@@ -211,7 +191,7 @@ footer {
 }
 
 hr {
-  background-color: rgb(var(--color-form-bg));
+  background-color: rgb(var(--color-divider));
 }
 
 .alert {
@@ -219,12 +199,12 @@ hr {
 }
 
 a.link {
-  color: rgb(var(--color-primary-l-7)) !important;
+  color: rgb(var(--color-primary)) !important;
   text-decoration: none;
   background-color: transparent;
 
   &:hover {
-      color: rgb(var(--color-primary)) !important;
+      color: rgb(var(--color-primary-variant)) !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }
@@ -233,14 +213,12 @@ a.link {
 .icon-btn {
   background-color: transparent;
   border: none;
-  // color: rgba(255,255,255,0.75);
-  color: rgb(var(--color-primary-white) / .75);
+  color: rgb(var(--color-text-primary) / .75);
 
   &:hover, &:active, &:focus {
     background-color: transparent !important;
     border: none !important;
-    // color: rgba(255,255,255, 1.0) !important;
-    color: rgb(var(--color-primary-white)) !important;
+    color: rgb(var(--color-text-primary)) !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
   }
@@ -259,7 +237,7 @@ a.link {
 .form-container {
   margin: 3em 0em;
   padding: 2.5em;
-  background: rgb(var(--color-bg-body));
+  background: rgb(var(--color-surface-secondary));
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   border: none !important;
@@ -270,20 +248,22 @@ a.link {
   }
 
   .form-control {
-    background-color: rgb(var(--color-input-bg));
-    color: rgb(var(--color-input-text));
+    background-color: rgb(var(--color-input-background));
+    color: rgb(var(--color-text-primary));
 
     &[readonly] {
-      background-color: rgb(var(--color-color-2) / 0.4);
-      color: white;
-      border: 1px solid rgb(var(--color-form-bg));
+      opacity: .6;
     }
   }
 
   h2 {
     border-bottom-style: solid;
     border-bottom-width: thin;
-    border-bottom-color: rgb(var(--color-text));
+    border-bottom-color: rgb(var(--color-text-primary));
+
+    &.text-danger {
+      border-bottom-color: rgb(var(--color-danger));
+    }
   }
 }
 
@@ -314,20 +294,20 @@ a.link {
 }
 
 .swal2-popup {
-  background-color: rgb(var(--color-body-bg-d-5)) !important;
+  background-color: rgb(var(--color-surface-secondary)) !important;
   border-radius: unset !important;
   .swal2-title, .swal2-content, #swal2-content {
-    color: rgb(var(--color-gray-100)) !important;
+    color: rgb(var(--color-text-primary)) !important;
     text-align: left !important;
   }
 
   &.swal2-modal {
     .swal2-content {
-      color: rgb(var(--color-gray-100)) !important;
+      color: rgb(var(--color-text-primary)) !important;
       font-size: 1rem !important;
     }
     .swal2-title {
-      color: rgb(var(--color-gray-100)) !important;
+      color: rgb(var(--color-text-primary)) !important;
       font-size: 1.4rem !important;
     }
     .swal2-actions {
@@ -367,7 +347,7 @@ a.link {
     width: 100% !important;
   }
   .slider-selection {
-    background: rgb(var(--color-primary-l-10));
+    background: rgb(var(--color-primary-variant));
   }
   .slider-handle {
     background: rgb(var(--color-primary));
@@ -396,9 +376,11 @@ a.link {
 
 .accordion, #accordion {
   .card {
-      background: rgb(var(--color-body-bg));
+      background: rgb(var(--color-surface-secondary));
+      border-color: rgb(var(--color-divider) / .6);
   }
   .card-header {
+    border-color: rgb(var(--color-divider) / .6);
       a {
           color: inherit;
           text-decoration: none;
@@ -410,7 +392,6 @@ a.link {
         top:8px;
         right:20px;
         font-size:20px;
-        color: rgb(var(--color-dark-white));
         -webkit-animation: minus 0.5s;
       }
       @keyframes minus {
@@ -428,7 +409,7 @@ a.link {
 /** Shared styles for printer and print cards */
 
 .card {
-  background-color: rgb(var(--color-gray-200));
+  background-color: rgb(var(--color-surface-primary));
 
   .gauge-container {
     padding: 0 16px;
@@ -437,10 +418,10 @@ a.link {
     &.settings {
       text-align: center;
       padding-top: 7px;
-      border-bottom: solid thin rgb(var(--color-gray-200-2));
+      border-bottom: solid thin rgb(var(--color-divider));
     }
 
-    background: rgb(var(--color-bg-dark));
+    background: rgb(var(--color-surface-secondary));
     .row {
       padding: 0.3em 0em 0.1em;
       text-align: center;
@@ -455,7 +436,7 @@ a.link {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: solid thin rgb(var(--color-gray-200-2));
+      border-bottom: solid thin rgb(var(--color-divider));
       label {
         font-size: 1rem;
         text-align: left;
@@ -473,36 +454,37 @@ a.link {
 }
 
 .text-muted {
-  color: rgb(var(--color-text) / .4) !important;
+  color: rgb(var(--color-text-secondary)) !important;
 }
 
 .btn-outline {
-  color: rgb(var(--color-text));
+  color: rgb(var(--color-text-primary));
 
   &:hover {
-    color: rgb(var(--color-text));
+    color: rgb(var(--color-text-primary));
   }
 }
 
 .btn-outline-secondary {
-  color: rgb(var(--color-text));
-  border-color: rgb(var(--color-text));
+  color: rgb(var(--color-secondary));
+  border-color: rgb(var(--color-secondary));
 
   &:hover {
-    background-color: rgb(var(--color-text));
-    color: rgb(var(--color-text-inverted));
-    border-color: rgb(var(--color-text));
+    background-color: rgb(var(--color-secondary));
+    border-color: rgb(var(--color-secondary));
+    color: rgb(var(--color-on-secondary));
   }
 }
 
 .dropdown-menu {
-  background-color: rgb(var(--color-gray-200));
+  background-color: rgb(var(--color-surface-primary));
 
   .dropdown-item {
-    color: rgb(var(--color-text));
+    color: rgb(var(--color-text-primary));
 
-    &:hover {
-      background-color: rgb(var(--color-white) / .075);
+    &:hover:not(.active) {
+      background-color: rgb(var(--color-hover) / .075);
+      color: rgb(var(--color-text-primary));
     }
   }
 }
@@ -519,17 +501,187 @@ a.link {
   }
 }
 
-input.dark {
-  background-color: rgb(var(--color-input-dark-bg));
-  border: 1px solid rgb(var(--color-input-dark-bg));
-  color: rgb(var(--color-text));
+
+
+a {
+  color: rgb(var(--color-primary));
+
+  &:hover {
+    text-decoration: none;
+    color: rgb(var(--color-primary-variant));
+  }
+}
+
+.alert a {
+  &:hover {
+    color: inherit;
+    opacity: .8;
+  }
+}
+
+.card-header {
+  background-color: transparent;
+}
+
+.btn-outline-secondary:not(:disabled):not(.disabled):active,
+.btn-outline-secondary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-secondary.dropdown-toggle {
+  color: inherit;
+  border-color: inherit;
+  background: none;
+}
+
+.btn-light.disabled, .btn-light:disabled {
+  color: rgb(var(--color-text-primary));
+}
+
+input, input.form-control {
+  background-color: rgb(var(--color-input-background));
+  border: 1px solid rgb(var(--color-input-background));
+  color: rgb(var(--color-text-primary));
   outline: none;
 
   &::placeholder {
-    color: rgb(var(--color-gray-600));
+    color: rgb(var(--color-text-primary) / .5);
   }
 
-  &:focus {
-    border-color: rgb(var(--color-white));
+  &:focus, &:active {
+    border-color: rgb(var(--color-divider));
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.custom-control-label::before {
+  background-color: rgb(var(--color-surface-secondary));
+  border-color: rgb(var(--color-divider));
+}
+
+.btn-outline-danger {
+  color: rgb(var(--color-danger));
+  border-color: rgb(var(--color-danger));
+
+  &:hover {
+    background-color: rgb(var(--color-danger));
+    border-color: rgb(var(--color-danger));
+    color: rgb(var(--color-on-danger));
+  }
+}
+
+.table {
+  border-color: rgb(var(--color-divider) / .6);
+  color: rgb(var(--color-text-primary));
+
+  th, td {
+    border-color: rgb(var(--color-divider) / .6);
+  }
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgb(var(--color-table-accent-1) / .5);
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+  background-color: rgb(var(--color-table-accent-2) / .5);
+}
+
+.swal2-popup .swal2-styled.swal2-cancel {
+  background-color: rgb(var(--color-secondary) / .6);
+}
+
+.btn-outline-primary {
+  color: rgb(var(--color-primary));
+  border-color: rgb(var(--color-primary));
+
+  &:hover {
+    background-color: rgb(var(--color-primary));
+    border-color: rgb(var(--color-primary));
+    color: rgb(var(--color-on-primary));
+  }
+}
+
+.btn-primary {
+  border-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary));
+
+  &:hover {
+    background-color: rgb(var(--color-primary-variant));
+    border-color: rgb(var(--color-primary-variant));
+  }
+}
+
+.btn-danger {
+  border-color: rgb(var(--color-danger));
+  background-color: rgb(var(--color-danger));
+  color: rgb(var(--color-on-danger));
+
+  &:hover {
+    background-color: rgb(var(--color-danger-variant));
+    border-color: rgb(var(--color-danger-variant));
+    color: rgb(var(--color-on-danger));
+  }
+}
+
+.bg-danger {
+  background-color: rgb(var(--color-danger));
+}
+
+.btn-success {
+  border-color: rgb(var(--color-success));
+  background-color: rgb(var(--color-success));
+  color: rgb(var(--color-on-success));
+
+  &:hover {
+    background-color: rgb(var(--color-success-variant));
+    border-color: rgb(var(--color-success-variant));
+    color: rgb(var(--color-on-success));
+  }
+}
+
+.bg-warning {
+  background-color: rgb(var(--color-warning));
+}
+
+.text-success {
+  color: rgb(var(--color-success)) !important;
+}
+
+a.text-success {
+  &:hover, &:focus {
+    color: rgb(var(--color-success-variant)) !important;
+  }
+}
+
+.text-warning {
+  color: rgb(var(--color-warning)) !important;
+}
+
+a.text-warning {
+  &:hover, &:focus {
+    color: rgb(var(--color-warning-variant)) !important;
+  }
+}
+
+.close:hover {
+  color: rgb(var(--color-on-success));
+  opacity: 1;
+}
+
+.alert-success {
+  background-color: rgb(var(--color-success));
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: rgb(var(--color-on-primary));
+}
+
+.page-item {
+  .page-link {
+    background-color: rgb(var(--color-surface-secondary));
+  }
+
+  &.disabled .page-link {
+    background-color: rgb(var(--color-surface-secondary));
+    opacity: .6;
   }
 }

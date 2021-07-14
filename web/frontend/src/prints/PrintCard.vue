@@ -160,11 +160,14 @@
                   >
                     F
                     <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
-                    <img
+                    <svg
                       v-if="!focusedFeedbackCompleted"
+                      viewBox="0 0 523 360"
                       class="seg-control-icon ml-1"
-                      :src="require('../../../app/static/img/detective-hour-2-primary.png')"
-                    />
+                      fill="currentColor"
+                    >
+                      <use href="#svg-hour-double" />
+                    </svg>
                   </a>
                 </div>
               </transition>

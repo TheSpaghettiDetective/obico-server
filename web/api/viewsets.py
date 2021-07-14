@@ -334,14 +334,11 @@ class MobileDeviceViewSet(viewsets.ModelViewSet):
 class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
                                      mixins.RetrieveModelMixin,
                                      viewsets.GenericViewSet):
-    throttle_classes = [AnonRateThrottle]
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = OneTimeVerificationCodeSerializer
 
     def list(self, request, *args, **kwargs):
-        if not request.user or not request.user.is_authenticated:
-            raise Http404("Requested resource does not exist")
-
         printer_id_to_link = request.GET.get('printer_id')
         if printer_id_to_link:
             code = OneTimeVerificationCode.objects.select_related('printer').filter(
@@ -366,36 +363,10 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
         return Response(self.serializer_class(code, many=False).data)
 
     def retrieve(self, request, *args, **kwargs):
-        if not request.user or not request.user.is_authenticated:
-            raise Http404("Requested resource does not exist")
-
         code = get_object_or_404(
             OneTimeVerificationCode.with_expired.select_related('printer').filter(user=request.user),
             pk=kwargs["pk"])
         return Response(self.serializer_class(code, many=False).data)
-
-    @action(detail=False, methods=['get'])
-    def verify(self, request, *args, **kwargs):
-        code = OneTimeVerificationCode.objects.filter(code=request.GET.get('code')).first()
-
-        if code:
-            if not code.printer:
-                printer = Printer.objects.create(
-                    name="My Awesome Cloud Printer",
-                    user=code.user,
-                    auth_token=hexlify(os.urandom(10)).decode())
-                code.printer = printer
-            else:
-                # Reset the auth_token for security reason
-                code.printer.auth_token = hexlify(os.urandom(10)).decode()
-                code.printer.save()
-
-            code.expired_at = timezone.now()
-            code.verified_at = timezone.now()
-            code.save()
-            return Response(self.serializer_class(code, many=False).data)
-        else:
-            raise Http404("Requested resource does not exist")
 
 
 class SharedResourceViewSet(mixins.ListModelMixin,

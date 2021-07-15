@@ -7,7 +7,9 @@
     >
       <div class="container">
         <a class="navbar-brand" href="/">
-          <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective"></dark-light-image>
+          <svg viewBox="0 0 1965 240" width="232" height="28.34">
+            <use href="#svg-navbar-brand" />
+          </svg>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
           aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
@@ -88,15 +90,12 @@
 <script>
 import moment from 'moment'
 import { isMobile } from '@lib/app_platform'
-import DarkLightImage from '@common/DarkLightImage.vue'
 import { Themes, theme } from '../main/themes.js'
 
 export default {
   name: 'Navbar',
 
-  components: {
-    DarkLightImage,
-  },
+  components: {},
 
   data() {
     return {

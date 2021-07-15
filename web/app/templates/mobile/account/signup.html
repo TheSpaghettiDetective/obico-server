@@ -42,7 +42,7 @@
         {% endif %}
       {% endif %}
 
-      <div style="width: 100%; height: 20px; border-bottom: 1px solid white; margin-bottom: 16px;"></div>
+      <div style="width: 100%; height: 20px; border-bottom: 1px solid rgb(var(--color-divider)); margin-bottom: 16px;"></div>
       <form class="signup form-signup" id="signup_form" method="POST">
         {% csrf_token %}
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}

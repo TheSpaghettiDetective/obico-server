@@ -542,6 +542,14 @@ input, input.form-control {
   color: rgb(var(--color-text-primary));
   outline: none;
 
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover, 
+  &:-webkit-autofill:focus, 
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgb(var(--color-input-background)) inset !important;
+    -webkit-text-fill-color: rgb(var(--color-text-primary)) !important;
+  }
+
   &::placeholder {
     color: rgb(var(--color-text-primary) / .5);
   }

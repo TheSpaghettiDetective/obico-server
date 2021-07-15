@@ -42,7 +42,7 @@
         {% endif %}
         {% csrf_token %}
         {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
-        <div class="input-group">
+        <div class="input-group mb-2">
           {% render_field form.login class="form-control" placeholder="Email address" %}
         </div>
         <div class="input-group">

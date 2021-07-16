@@ -2,7 +2,7 @@
   <div>
     <nav
       v-if="!isInMobile"
-      class="navbar navbar-expand-lg bg-dark static-top flex-column"
+      class="navbar navbar-expand-xl bg-dark static-top flex-column"
       :class="{'navbar-dark': theme === themes.Dark, 'navbar-light': theme === themes.Light}"
     >
       <div class="container">
@@ -205,7 +205,7 @@ export default {
       &:hover
         transform: scale(1.3)
 
-  @media (min-width: 992px)
+  @media (min-width: 1200px)
     padding: 0rem 1rem
 
     .nav-item

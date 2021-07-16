@@ -562,7 +562,7 @@ input, input.form-control {
 }
 
 .custom-control-label::before {
-  background-color: rgb(var(--color-surface-secondary));
+  background-color: rgb(var(--color-input-background));
   border-color: rgb(var(--color-divider));
 }
 

@@ -45,7 +45,7 @@ def process_print_events(print_id):
     compile_timelapse.delay(print_id)
 
 
-@shared_task
+@shared_task(acks_late=True)
 def compile_timelapse(print_id):
     _print = Print.objects.all_with_deleted().select_related('printer').get(id=print_id)
 

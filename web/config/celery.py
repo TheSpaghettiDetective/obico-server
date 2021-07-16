@@ -22,6 +22,7 @@ class MyCelery(celery.Celery):
 celery_app = MyCelery('config')
 celery_app.conf.task_ignore_result = True
 celery_app.conf.task_store_errors_even_if_ignored = True
+celery_app.conf.worker_prefetch_multiplier = 1
 celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
 celery_app.conf.task_routes = {
     'app.tasks.print_notification': {'queue': 'realtime'},

@@ -59,10 +59,13 @@
   {% block body_top_ext %}{% endblock body_top_ext %}
   {% block navbar %}
   {% with view_name=request.resolver_match.view_name %}
-  <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynaic-navbar">
+  <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynamic-navbar">
     <div class="container">
-      <a class="navbar-brand" href="/"><img id="dynamic-logo"
-          src="{% static 'img/logo-inverted.png' %}" style="height: 32px;" alt="The Spaghetti Detective" /></a>
+      <a class="navbar-brand" href="/">
+        <svg viewBox="0 0 1965 240" width="232" height="28.34">
+          <use href="#svg-navbar-brand" />
+        </svg>
+      </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
         aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

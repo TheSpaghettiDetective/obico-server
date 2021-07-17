@@ -150,14 +150,9 @@ function selectTheme(newTheme) {
 // initialize theme for static pages
 initTheme()
 
-// manually control navbar elements
-let navbar = document.getElementById('dynaic-navbar')
-let logo = document.getElementById('dynamic-logo')
+// manually control navbar color
+let navbar = document.getElementById('dynamic-navbar')
 
 if (navbar) {
   navbar.classList.add('navbar-' + theme.value.toLowerCase())
-}
-
-if (logo) {
-  logo.src = '/static/img/navbar-brand/navbar-brand_'+ theme.value.toLowerCase() +'.png'
 }

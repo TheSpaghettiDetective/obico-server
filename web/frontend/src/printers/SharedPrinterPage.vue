@@ -18,7 +18,9 @@
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
             <a
               href="https://www.thespaghettidetective.com/">
-              <dark-light-image path="navbar-brand" ext="png" alt="The Spaghetti Detective" class="logo-img"></dark-light-image>
+              <svg viewBox="0 0 1965 240" width="100%" class="logo-img">
+                <use href="#svg-navbar-brand" />
+              </svg>
             </a>
             <hr />
             <br /><br />
@@ -40,7 +42,6 @@ import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-import DarkLightImage from '@common/DarkLightImage.vue'
 
 export default {
   name: 'SharedPrinterPage',
@@ -48,7 +49,6 @@ export default {
     StreamingBox,
     PullToReveal,
     Navbar,
-    DarkLightImage,
   },
   created(){
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
@@ -84,7 +84,4 @@ export default {
 
 .printer-card
   margin-bottom: 1.5rem
-
-::v-deep .logo-img img
-  width: 100%
 </style>

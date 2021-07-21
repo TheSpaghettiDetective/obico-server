@@ -410,7 +410,8 @@ class SharedResourceViewSet(mixins.ListModelMixin,
 
     def create(self, request):
         printer = get_printer_or_404(request.GET.get('printer_id'), request)
-        SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
+        # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
+        SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
         return self.response_from_printer(request)
 
     def destroy(self, request, pk):

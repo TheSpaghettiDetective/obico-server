@@ -10,10 +10,13 @@ from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ImproperlyConfigured
+from django.http import Http404
 import requests
 import json
 import io
+import os
 from ipware import get_client_ip
+from binascii import hexlify
 
 from .utils import report_validationerror
 from .printer_discovery import (
@@ -25,11 +28,12 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from app.models import Printer, PrinterPrediction
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
 from lib.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
+from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -207,3 +211,38 @@ class OctoPrinterDiscoveryView(APIView):
             device_id=device_info.device_id
         )
         return Response({'messages': [m.asdict() for m in messages]})
+
+
+class OneTimeVerificationCodeVerifyView(APIView):
+    throttle_classes = [AnonRateThrottle]
+
+    def get(self, request, *args, **kwargs):
+        # TODO is kept for backward compatibility
+        return self.post(request, *args, **kwargs)
+
+    @report_validationerror
+    def post(self, request, *args, **kwargs):
+        serializer = VerifyCodeInputSerializer(data={'code': request.GET.get('code')})
+        serializer.is_valid(raise_exception=True)
+
+        code = OneTimeVerificationCode.objects.filter(
+            code=serializer.validated_data['code']).first()
+
+        if code:
+            if not code.printer:
+                printer = Printer.objects.create(
+                    name="My Awesome Cloud Printer",
+                    user=code.user,
+                    auth_token=hexlify(os.urandom(10)).decode())
+                code.printer = printer
+            else:
+                # Reset the auth_token for security reason
+                code.printer.auth_token = hexlify(os.urandom(10)).decode()
+                code.printer.save()
+
+            code.expired_at = timezone.now()
+            code.verified_at = timezone.now()
+            code.save()
+            return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
+        else:
+            raise Http404("Requested resource does not exist")

@@ -153,3 +153,7 @@ class PublicTimelapseSerializer(serializers.ModelSerializer):
 
     def get_prediction_json_url(self, obj: PublicTimelapse) -> str:
         return obj.p_json_url
+
+
+class VerifyCodeInputSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=64, required=True)

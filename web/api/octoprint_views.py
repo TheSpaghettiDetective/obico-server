@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, timedelta
 from django.utils import timezone
 from rest_framework.views import APIView
@@ -14,9 +13,9 @@ from django.core.exceptions import ImproperlyConfigured
 import requests
 import json
 import io
-import functools
 from ipware import get_client_ip
 
+from .utils import report_validationerror
 from .printer_discovery import (
     DeviceInfo,
     pull_messages_for_device,
@@ -31,7 +30,6 @@ from lib.notifications import send_failure_alert
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from raven.contrib.django.raven_compat.models import client as sentryClient
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -39,8 +37,6 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
-
-LOGGER = logging.getLogger(__name__)
 
 
 class OctoPrintPicView(APIView):
@@ -185,18 +181,6 @@ def cap_image_size(pic):
         pic.content_type,
         len(output.getbuffer()),
         None)
-
-
-def report_validationerror(f):
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except ValidationError:
-            LOGGER.exception('validationerror')
-            sentryClient.captureException()
-            raise
-    return wrapper
 
 
 class OctoPrinterDiscoveryView(APIView):

@@ -19,6 +19,7 @@ from rest_framework.pagination import PageNumberPagination
 import requests
 from ipware import get_client_ip
 
+from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
@@ -449,6 +450,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         devices = get_active_devices_for_client_ip(client_ip)
         return Response([device.asdict() for device in devices])
 
+    @report_validationerror
     def create(self, request):
         client_ip, is_routable = get_client_ip(request)
 

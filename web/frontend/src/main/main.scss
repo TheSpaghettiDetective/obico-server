@@ -26,6 +26,7 @@
   --color-divider: 106 123 138;
   --color-text-primary: 235 235 235;
   --color-text-secondary: 170 172 176;
+  --color-text-help: 76 155 232;
   --color-input-background: 66 86 107;
   --color-table-accent-1: 39 50 63;
   --color-table-accent-2: 27 36 46;
@@ -543,8 +544,8 @@ input, input.form-control {
   outline: none;
 
   &:-webkit-autofill,
-  &:-webkit-autofill:hover, 
-  &:-webkit-autofill:focus, 
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px rgb(var(--color-input-background)) inset !important;
     -webkit-text-fill-color: rgb(var(--color-text-primary)) !important;

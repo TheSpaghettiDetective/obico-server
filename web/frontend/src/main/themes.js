@@ -75,6 +75,8 @@ const colors = [
 
   {name: 'text-primary',             values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'}},
   {name: 'text-secondary',           values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'}},
+  {name: 'text-help',                values: {[Themes.Light]: '#4c9be8', [Themes.Dark]: '#4c9be8'}},
+
 
   {name: 'input-background',         values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'}},
 

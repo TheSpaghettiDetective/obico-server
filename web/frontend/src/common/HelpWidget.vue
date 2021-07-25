@@ -14,12 +14,15 @@
           <use href="#svg-question-icon" />
         </svg>
       </div>
-      
+
       <!-- Help widget -->
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
           <div class="header">
-            <div class="title">Details</div>
+            <div class="title">
+              <i class="fas fa-question-circle"></i>
+              In case you were wondering...
+            </div>
             <div class="close-button" @click="show = false">
               <svg viewBox="0 0 16 16" fill="currentColor">
                 <use href="#svg-cross-icon" />
@@ -37,12 +40,12 @@
 /**
  * Pop-up widget to show additional help notes
  * To work properly should wrap raw text
- * 
+ *
  * @example
  * <div>
  *   <help-widget src="...">Webcam streaming</help-widget>
  * </div>
- * 
+ *
  * Don't use like this (it can cause help icon shifting):
  * <help-widget src="...">
  *   <div>Webcam streaming</div>
@@ -104,8 +107,12 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@use "~main/theme"
+
 .help-wrapper
   position: relative
+  text-decoration: underline
+  text-decoration-color: rgb(var(--color-text-help))
   .text
     display: inline
     &:hover
@@ -122,6 +129,7 @@ export default {
   display: inline-block
 
   .question-mark
+    color: rgb(var(--color-text-help))
     transition: all .2s ease-out
     &:hover
       cursor: pointer

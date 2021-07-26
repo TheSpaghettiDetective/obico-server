@@ -122,7 +122,8 @@ export default {
   $widget-width: 360px
   $widget-height: 360px
   $widget-header-height: 40px
-  $x-breakpoint: #{$widget-width * 2 + 20px}
+  $x-breakpoint: #{$widget-width + 20px}
+  $x-breakpoint-2: #{$widget-width * 2 + 20px}
   position: relative
   left: .1rem
   width: 1rem
@@ -145,8 +146,10 @@ export default {
     border-radius: 12px
     overflow: hidden
     background-color: #fff
+    display: flex
+    flex-direction: column
 
-    @media (min-width: $x-breakpoint)
+    @media (min-width: $x-breakpoint-2)
       &.left
         left: 100%
       &.right
@@ -156,15 +159,18 @@ export default {
       &.top
         top: 100%
 
+    @media (max-width: $x-breakpoint-2)
+      left: 0rem
+      right: 0rem
+      top: 0rem
+      bottom: 0rem
+      margin: auto
+      position: fixed
+
     @media (max-width: $x-breakpoint)
       left: 1rem
       right: 1rem
-      top: 3rem
-      bottom: 3rem
-      margin: auto
       width: auto
-      height: auto
-      position: fixed
 
     .header
       color: #28303A
@@ -184,6 +190,9 @@ export default {
         font-size: 16px
         font-weight: 400
         padding-left: 12px
+
+        i 
+          margin-right: .125rem
 
       .close-button
         height: $widget-header-height

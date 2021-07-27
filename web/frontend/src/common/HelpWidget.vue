@@ -29,7 +29,7 @@
               </svg>
             </div>
           </div>
-          <iframe :src="src" frameborder="0" ref="iframe"></iframe>
+          <iframe :src="src" frameborder="0"></iframe>
         </div>
       </transition>
     </div>
@@ -53,7 +53,6 @@
  */
 
 import ClickOutside from 'vue-click-outside'
-import iframeResize from 'iframe-resizer/js/iframeResizer'
 
 export default {
   name: 'HelpWidget',
@@ -75,10 +74,6 @@ export default {
       type: String,
       required: true
     },
-  },
-
-  mounted() {
-    iframeResize({log: true, checkOrigin: false}, this.$refs.iframe)
   },
 
   methods: {

@@ -110,6 +110,7 @@ export default {
 @use "~main/theme"
 
 .help-wrapper
+  display: inline
   position: relative
   text-decoration: underline
   text-decoration-color: rgb(var(--color-text-help))

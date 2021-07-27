@@ -120,7 +120,7 @@ export default {
 
 .widget-wrapper
   $widget-width: 360px
-  $widget-height: 360px
+  $widget-height: 380px
   $widget-header-height: 40px
   $x-breakpoint: #{$widget-width + 20px}
   $x-breakpoint-2: #{$widget-width * 2 + 20px}
@@ -130,6 +130,7 @@ export default {
   display: inline-block
 
   .question-mark
+    display: flex
     color: rgb(var(--color-text-help))
     transition: all .2s ease-out
     &:hover
@@ -191,7 +192,7 @@ export default {
         font-weight: 400
         padding-left: 12px
 
-        i 
+        i
           margin-right: .125rem
 
       .close-button

@@ -143,8 +143,7 @@ export default {
     padding-top: $widget-header-height
     z-index: 10
     position: absolute
-    -webkit-box-shadow: 0px 3px 30px rgba(0, 0, 0, 0.5) !important
-    box-shadow: 0px 3px 30px rgba(0, 0, 0, 0.5) !important
+    box-shadow: var(--shadow-widget)
     border-radius: 12px
     overflow: hidden
     background-color: #fff

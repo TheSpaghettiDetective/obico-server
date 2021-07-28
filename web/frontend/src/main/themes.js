@@ -106,6 +106,16 @@ const urls = [
   },
 ]
 
+const shadows = [
+  {
+    name: 'widget',
+    values: {
+      [Themes.Light]: '0px 3px 30px rgba(0, 0, 0, 0.5)',
+      [Themes.Dark]: '0px 3px 30px rgba(0, 0, 0, 0.5)'
+    }
+  },
+]
+
 // Converts HEX color to RGB
 function HEXtoRGB(color) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
@@ -140,6 +150,10 @@ export function initTheme() {
 
   urls.forEach(function(url) {
     document.documentElement.style.setProperty(`--url-${url.name}`, url.values[themeValue])
+  })
+
+  shadows.forEach(function(shadow) {
+    document.documentElement.style.setProperty(`--shadow-${shadow.name}`, shadow.values[themeValue])
   })
 
   theme.value = themeValue

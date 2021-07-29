@@ -128,14 +128,20 @@ export default {
   position: relative
   left: .1rem
   width: 1rem
+  height: 1rem
   display: inline-block
 
   .question-mark
     display: flex
     color: rgb(var(--color-text-help))
     transition: all .2s ease-out
+    height: 1rem
     &:hover
       cursor: pointer
+
+    svg
+      width: 1rem
+      height: 1rem
 
   .widget
     width: $widget-width

@@ -29,7 +29,92 @@
               </svg>
             </div>
           </div>
-          <iframe :src="src" frameborder="0"></iframe>
+
+          <!-- Help content -->
+          <div class="content">
+
+            <!-- basic-streaming-on-pricing-page -->
+            <template v-if="id === 'basic-streaming-on-pricing-page'">
+              <h1>Basic Streaming is at 1 frame per 10 seconds</h1>
+              <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/liBTaFjkBnU" frameborder="0" allowfullscreen width="100%"></iframe>
+              </div>
+              <i>The stream is on only when the printer is printing.</i>
+              <strong>
+                Learn more about 
+                <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
+              </strong>
+            </template>
+
+            <!-- detective-hours-free-plan-on-pricing-page -->
+            <template v-if="id === 'detective-hours-free-plan-on-pricing-page'">
+              <h1>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h1>
+              <ul>
+                <li>Unused Detective Hours roll over month to month.</li>
+                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
+              </ul>
+              <p>
+                Learn more about 
+                <strong>
+                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
+                </strong>
+              </p>
+            </template>
+            
+            <!-- detective-hours-pro-plan-on-pricing-page -->
+            <template v-if="id === 'detective-hours-pro-plan-on-pricing-page'">
+              <h1>Pro plan includes 50 Detective Hours each month.</h1>
+              <ul>
+                <li>Unused Detective Hours roll over month to month.</li>
+                <li>Detective Hours expire when subscription ends.</li>
+                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
+              </ul>
+              <p>
+                Learn more about
+                <strong>
+                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
+                </strong>
+              </p>
+            </template>
+
+            <!-- premium-streaming-on-pricing-page -->
+            <template v-if="id === 'premium-streaming-on-pricing-page'">
+              <h1>Webcam streaming at 25 frames per second.</h1>
+              <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/liBTaFjkBnU" frameborder="0" allowfullscreen width="100%"></iframe>
+              </div>
+              <i>It is always on regardless if your printer is printing.</i>
+              <p>
+                Learn more about
+                <strong>
+                  <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
+                </strong>
+              </p>
+            </template>
+
+            <!-- tunneling-free-plan-on-pricing-page -->
+            <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
+              <h1>Securely tunnel to your OctoPrint from anywhere.</h1>
+              <p>Free plan is subject to 50MB/month data cap.</p>
+              <p>
+                Learn more about
+                <strong>
+                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
+                </strong>
+              </p>
+            </template>
+
+            <!-- tunneling-pro-plan-on-pricing-page -->
+            <template v-if="id === 'tunneling-pro-plan-on-pricing-page'">
+              <h1>Securely tunnel to your OctoPrint from anywhere. Unlimited.</h1>
+              <p>
+                Learn more about
+                <strong>
+                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
+                </strong>
+              </p>
+            </template>
+          </div>
         </div>
       </transition>
     </div>
@@ -45,11 +130,6 @@
  * <div>
  *   <help-widget src="...">Webcam streaming</help-widget>
  * </div>
- *
- * Don't use like this (it can cause help icon shifting):
- * <help-widget src="...">
- *   <div>Webcam streaming</div>
- * </help-widget>
  */
 
 import ClickOutside from 'vue-click-outside'
@@ -70,7 +150,7 @@ export default {
   },
 
   props: {
-    src: {
+    id: {
       type: String,
       required: true
     },
@@ -81,14 +161,14 @@ export default {
     // Based on help icon position inside viewport
     positionWidget() {
       const widgetWidth = 360 // should be synced with `$widget-width` in styles
-      const widgetHeight = 360 // should be synced with `$widget-height` in styles
+      // const widgetHeight = 360 // should be synced with `$widget-height` in styles
       const minHorizontalSpace = widgetWidth + 10
-      const minVerticalSpace = widgetHeight + 10
+      // const minVerticalSpace = widgetHeight + 10
 
       const helpIconPosition = this.$refs.widgetWrapper.getBoundingClientRect()
 
       const distanceFromRightEdge = window.innerWidth - (helpIconPosition.left + helpIconPosition.width)
-      const distanceFromBottomEdge = window.innerHeight - (helpIconPosition.top + helpIconPosition.height)
+      // const distanceFromBottomEdge = window.innerHeight - (helpIconPosition.top + helpIconPosition.height)
 
       if (distanceFromRightEdge < minHorizontalSpace) {
         this.xDirection = 'right'
@@ -96,11 +176,11 @@ export default {
         this.xDirection = 'left'
       }
 
-      if (distanceFromBottomEdge < minVerticalSpace) {
-        this.yDirection = 'bottom'
-      } else {
-        this.yDirection = 'top'
-      }
+      // if (distanceFromBottomEdge < minVerticalSpace) {
+      //   this.yDirection = 'bottom'
+      // } else {
+      //   this.yDirection = 'top'
+      // }
     },
   }
 }
@@ -121,7 +201,6 @@ export default {
 
 .widget-wrapper
   $widget-width: 360px
-  $widget-height: 380px
   $widget-header-height: 40px
   $x-breakpoint: #{$widget-width + 20px}
   $x-breakpoint-2: #{$widget-width * 2 + 20px}
@@ -145,7 +224,6 @@ export default {
 
   .widget
     width: $widget-width
-    height: $widget-height
     padding-top: $widget-header-height
     z-index: 10
     position: absolute
@@ -169,8 +247,7 @@ export default {
     @media (max-width: $x-breakpoint-2)
       left: 0rem
       right: 0rem
-      top: 0rem
-      bottom: 0rem
+      top: 5rem
       margin: auto
       position: fixed
 
@@ -196,7 +273,7 @@ export default {
         flex: 1
         font-size: 16px
         font-weight: 400
-        padding-left: 12px
+        padding-left: .875rem
 
         i
           margin-right: .125rem
@@ -217,9 +294,48 @@ export default {
           width: #{$widget-header-height * .58}
           height: #{$widget-header-height * .58}
 
-    iframe
-      width: 100%
-      height: 100%
+    .content
+      padding: 1rem .875rem
+      color: #000
+      font-size: 14px
+      font-weight: normal
+
+      & > *
+        margin-bottom: 1em
+        display: block
+
+      h1, h2, h3
+        font-weight: bold
+
+      h1
+        font-size: 1.3em
+      h2
+        font-size: 1.2em
+      h3
+        font-size: 1.1em
+
+      ul
+        padding-left: 2em
+      
+      .video-wrapper
+        position: relative
+        padding-bottom: 56.25%
+        height: 0
+
+        iframe
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+
+      a.external:after
+        content: url('/static/img/link.svg')
+        display: inline-block
+        width: 1em
+        margin-left: .25em
+        position: relative
+        top: .125em
 </style>
 
 <style scoped>

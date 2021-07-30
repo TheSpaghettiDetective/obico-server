@@ -442,6 +442,7 @@ function Janus(gatewayCallbacks) {
   gatewayCallbacks = gatewayCallbacks || {}
   gatewayCallbacks.success = (typeof gatewayCallbacks.success == 'function') ? gatewayCallbacks.success : Janus.noop
   gatewayCallbacks.error = (typeof gatewayCallbacks.error == 'function') ? gatewayCallbacks.error : Janus.noop
+  gatewayCallbacks.wsopened = (typeof gatewayCallbacks.wsopened == 'function') ? gatewayCallbacks.wsopened : Janus.noop
   gatewayCallbacks.destroyed = (typeof gatewayCallbacks.destroyed == 'function') ? gatewayCallbacks.destroyed : Janus.noop
   if(!Janus.initDone) {
     gatewayCallbacks.error('Library not initialized')
@@ -905,6 +906,8 @@ function Janus(gatewayCallbacks) {
         },
 
         'open': function() {
+          callbacks.wsopened()
+
           // We need to be notified about the success
           transactions[transaction] = function(json) {
             Janus.debug(json)

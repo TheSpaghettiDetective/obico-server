@@ -778,6 +778,13 @@ function Janus(gatewayCallbacks) {
         }
         delete transactions[transaction]
       }
+
+      if (json.error.code === 458) {
+        if (websockets) {
+          ws.close(3505, 'No such session')
+        }
+      }
+
       return
     } else if(json['janus'] === 'event') {
       Janus.debug('Got a plugin event on session ' + sessionId)

@@ -605,6 +605,11 @@ function Janus(gatewayCallbacks) {
       }
       return
     }
+
+    if (json.session_id && json.session_id !== sessionId) {
+       return
+    }
+
     if(json['janus'] === 'keepalive') {
       // Nothing happened
       Janus.vdebug('Got a keepalive on session ' + sessionId)

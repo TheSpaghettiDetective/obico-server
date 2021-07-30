@@ -22,6 +22,10 @@
   OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/* eslint-disable no-global-assign, no-redeclare, no-unused-vars, no-empty, no-inner-declarations */
+
+import adapter from 'webrtc-adapter'
+
 // List of sessions
 Janus.sessions = {}
 
@@ -162,7 +166,7 @@ Janus.useDefaultDependencies = function (deps) {
 }
 
 Janus.useOldDependencies = function (deps) {
-  var jq = (deps && deps.jQuery) || jQuery
+  var jq = (deps && deps.jQuery) || jQuery // eslint-disable-line no-undef
   var socketCls = (deps && deps.WebSocket) || WebSocket
   return {
     newWebSocket: function(server, proto) { return new socketCls(server, proto) },
@@ -396,7 +400,7 @@ Janus.init = function(options) {
         Janus.webRTCAdapter.browserDetails.version >= 72) {
       // Chrome does, but it's only usable from version 72 on
       Janus.unifiedPlan = true
-    } else if(!window.RTCRtpTransceiver || !('currentDirection' in RTCRtpTransceiver.prototype)) {
+    } else if(!window.RTCRtpTransceiver || !('currentDirection' in RTCRtpTransceiver.prototype)) { // eslint-disable-line no-undef
       // Safari supports addTransceiver() but not Unified Plan when
       // currentDirection is not defined (see codepen above).
       Janus.unifiedPlan = false
@@ -721,6 +725,10 @@ function Janus(gatewayCallbacks) {
         // Don't warn here because destroyHandle causes this situation.
         return
       }
+
+      // copied from our prev custom release, possibly a bug fix, maybe no longer necessary.
+      pluginHandle.detached = true
+
       pluginHandle.ondetached()
       pluginHandle.detach()
     } else if(json['janus'] === 'media') {
@@ -1251,6 +1259,8 @@ function Janus(gatewayCallbacks) {
             handleRemoteJsep : function(callbacks) { prepareWebrtcPeer(handleId, callbacks) },
             onlocalstream : callbacks.onlocalstream,
             onremotestream : callbacks.onremotestream,
+            ontrackmuted : callbacks.ontrackmuted,
+            ontrackunmuted : callbacks.ontrackunmuted,
             ondata : callbacks.ondata,
             ondataopen : callbacks.ondataopen,
             oncleanup : callbacks.oncleanup,
@@ -1336,6 +1346,8 @@ function Janus(gatewayCallbacks) {
             handleRemoteJsep : function(callbacks) { prepareWebrtcPeer(handleId, callbacks) },
             onlocalstream : callbacks.onlocalstream,
             onremotestream : callbacks.onremotestream,
+            ontrackmuted : callbacks.ontrackmuted,
+            ontrackunmuted : callbacks.ontrackunmuted,
             ondata : callbacks.ondata,
             ondataopen : callbacks.ondataopen,
             oncleanup : callbacks.oncleanup,
@@ -1930,6 +1942,7 @@ function Janus(gatewayCallbacks) {
               if (config.remoteStream) {
                 config.remoteStream.removeTrack(ev.target)
                 pluginHandle.onremotestream(config.remoteStream)
+                pluginHandle.ontrackmuted()
               }
               trackMutedTimeoutId = null
             // Chrome seems to raise mute events only at multiples of 834ms;
@@ -1946,6 +1959,7 @@ function Janus(gatewayCallbacks) {
             try {
               config.remoteStream.addTrack(ev.target)
               pluginHandle.onremotestream(config.remoteStream)
+              pluginHandle.ontrackunmuted()
             } catch(e) {
               Janus.error(e)
             }
@@ -2020,6 +2034,12 @@ function Janus(gatewayCallbacks) {
     if(!jsep) {
       createOffer(handleId, media, callbacks)
     } else {
+      // some firefox vs 420029 fix here, copied from our prev custom release
+      var oldsdp = jsep['sdp']
+      var pattern = /420029/gi
+      var newsdp = oldsdp.replace(pattern,'42e01f')
+      Janus.log(newsdp)
+      jsep['sdp'] = newsdp
       config.pc.setRemoteDescription(jsep)
         .then(function() {
           Janus.log('Remote description accepted!')
@@ -3647,3 +3667,5 @@ function Janus(gatewayCallbacks) {
     return (trickle === false) ? false : true
   }
 }
+
+export default Janus

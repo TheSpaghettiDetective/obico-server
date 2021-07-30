@@ -35,35 +35,32 @@
 
             <!-- basic-streaming-on-pricing-page -->
             <template v-if="id === 'basic-streaming-on-pricing-page'">
-              <h1>Basic Streaming is at 1 frame per 10 seconds</h1>
-              <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/liBTaFjkBnU" frameborder="0" allowfullscreen width="100%"></iframe>
-              </div>
-              <i>The stream is on only when the printer is printing.</i>
+              <p>Basic Streaming is at 0.1fps (1 frame per 10 seconds).</p>
+              <p>The stream is on only when the printer is printing.</p>
               <strong>
-                Learn more about 
+                Learn more about
                 <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
               </strong>
             </template>
 
             <!-- detective-hours-free-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-free-plan-on-pricing-page'">
-              <h1>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h1>
+              <h3>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h3>
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
                 <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
               </ul>
               <p>
-                Learn more about 
+                Learn more about
                 <strong>
                   <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
                 </strong>
               </p>
             </template>
-            
+
             <!-- detective-hours-pro-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-pro-plan-on-pricing-page'">
-              <h1>Pro plan includes 50 Detective Hours each month.</h1>
+              <h3>Pro plan includes 50 Detective Hours each month.</h3>
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
                 <li>Detective Hours expire when subscription ends.</li>
@@ -79,11 +76,11 @@
 
             <!-- premium-streaming-on-pricing-page -->
             <template v-if="id === 'premium-streaming-on-pricing-page'">
-              <h1>Webcam streaming at 25 frames per second.</h1>
               <div class="video-wrapper">
                 <iframe src="https://www.youtube.com/embed/liBTaFjkBnU" frameborder="0" allowfullscreen width="100%"></iframe>
               </div>
-              <i>It is always on regardless if your printer is printing.</i>
+              <h3>Webcam streaming at 25fps (25 frames per second).</h3>
+              <h3>It is always on regardless if your printer is printing.</h3>
               <p>
                 Learn more about
                 <strong>
@@ -94,7 +91,7 @@
 
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
-              <h1>Securely tunnel to your OctoPrint from anywhere.</h1>
+              <p>Securely tunnel to your OctoPrint from anywhere.</p>
               <p>Free plan is subject to 50MB/month data cap.</p>
               <p>
                 Learn more about
@@ -106,7 +103,7 @@
 
             <!-- tunneling-pro-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-pro-plan-on-pricing-page'">
-              <h1>Securely tunnel to your OctoPrint from anywhere. Unlimited.</h1>
+              <h3>Securely tunnel to your OctoPrint from anywhere. Unlimited.</h3>
               <p>
                 Learn more about
                 <strong>
@@ -316,7 +313,7 @@ export default {
 
       ul
         padding-left: 2em
-      
+
       .video-wrapper
         position: relative
         padding-bottom: 56.25%

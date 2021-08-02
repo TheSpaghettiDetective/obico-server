@@ -73,20 +73,24 @@
               <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             </div>
             <div class="col text-right">
-              <a class="button secondaryAction" href="#" data-toggle="modal" data-target="#loginHelpMessage">{% trans "Signed up using web app?" %}</a>
+              <a class="button secondaryAction" href="#" data-toggle="modal" data-target="#loginHelpMessage">{% trans "Having Trouble?" %}</a>
 
               <!-- Modal -->
               <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Signed up using mobile app?" %}</h5>
+                      <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Having trouble?" %}</h5>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
                     <div class="modal-body text-left">
-                      The login credentials are the same for The Spaghetti Detective web app and mobile app. If you signed up using the mobile app, you can log in the web app with the same credential, and vice versa.
+                      <ul>
+                        <li>Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the web app, you can use the same to sign in here.</li>
+                        <li>Did you previously sign up an account using Google or Facebook?</li>
+                        <li><a class="link" href="mailto:support@thespaghettidetective.com">Contact us</a> when everything fails.</li>
+                      </ul>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

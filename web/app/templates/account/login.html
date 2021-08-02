@@ -60,8 +60,34 @@
         {% endif %}
         <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
         <div class="pt-2">
-          <a class="button secondaryAction"
-            href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          <div class="row">
+            <div class="col">
+              <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            </div>
+            <div class="col text-right">
+              <a class="button secondaryAction" href="#" data-toggle="modal" data-target="#loginHelpMessage">{% trans "Signed up using mobile app?" %}</a>
+
+              <!-- Modal -->
+              <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Signed up using mobile app?" %}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body text-left">
+                      The login credentials are the same for The Spaghetti Detective web app and mobile app. If you signed up using the mobile app, you can log in the web app with the same credential, and vice versa.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           {% if settings.ACCOUNT_ALLOW_SIGN_UP %}

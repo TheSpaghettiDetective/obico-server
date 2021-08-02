@@ -673,8 +673,18 @@ a.text-warning {
   }
 }
 
-.close:hover {
+.alert-success .close:hover {
   color: rgb(var(--color-on-success));
+  opacity: 1;
+}
+
+.alert-danger .close:hover {
+  color: rgb(var(--color-on-danger));
+  opacity: 1;
+}
+
+.alert-warning .close:hover {
+  color: rgb(var(--color-on-warning));
   opacity: 1;
 }
 
@@ -695,4 +705,13 @@ a.text-warning {
     background-color: rgb(var(--color-surface-secondary));
     opacity: .6;
   }
+}
+
+
+.modal-content {
+  background-color: rgb(var(--color-surface-secondary));
+}
+
+.modal-content .close {
+  color: rgb(var(--color-text-primary));
 }

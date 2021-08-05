@@ -10,7 +10,9 @@
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% block meta_viewport %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% endblock meta_viewport %}
   <meta name="description" content="Constantly watching your prints in the background so you don't have to.">
   <meta name="author" content="">
 
@@ -144,11 +146,13 @@
 
   {% bundle 'common' %}
 
+  {% block footer %}
   <footer>
     <div class="container">
       <p>&copy; The Spaghetti Detective {% now "Y" %}. All Rights Reserved.</p>
     </div>
   </footer>
+  {% endblock footer %}
 
   <!-- Dark / Light theme -->
   <script type="text/javascript" src="{% static 'js/theme.js' %}"></script>

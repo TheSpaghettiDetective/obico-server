@@ -88,19 +88,28 @@
         </div>
       </div>
     </div>
-
-    <div
-      v-if="hiddenPrinterCount > 0"
-      id="printers-hidden-warning"
-      class="text-warning border-warning text-center border my-3 py-2"
-    >
-      <span id="printers-hidden">{{ hiddenPrinterCount }}</span> printers are
-      hidden by the filtering settings.&nbsp;&nbsp;
-      <a
-        href="#"
-        id="show-all-printers-btn"
-        @click="onShowAllPrintersClicked()"
-      >Show all printers >>></a>
+    <div class="p-5">
+      <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
+        <div class="warning">
+          <span>{{ hiddenPrinterCount }}</span> printers are
+          hidden by the filtering settings.&nbsp;&nbsp;
+          <a
+            role="button"
+            href="#"
+            @click="onShowAllPrintersClicked()"
+          >Show All Printers</a>
+        </div>
+        <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
+      </b-collapse>
+      <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
+        <div class="warning">
+          Some of your printers have been archived.
+          <a
+            href="/ent/printers/archived/"
+          >Find them here >>></a>
+        </div>
+        <a role="button" class="p-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
+      </b-collapse>
     </div>
   </div>
 </template>
@@ -206,6 +215,8 @@ export default {
           SortFilter.DateDesc
         )
       },
+      dontShowFilterWarning: false,
+      shouldShowArchiveWarning: false,
     }
   },
   computed: {
@@ -242,7 +253,9 @@ export default {
     hiddenPrinterCount() {
       return this.printers.length - this.visiblePrinters.length
     },
-
+    shouldShowFilterWarning() {
+      return this.hiddenPrinterCount > 0 && !this.dontShowFilterWarning
+    },
   },
   methods: {
     fetchPrinters() {
@@ -257,10 +270,7 @@ export default {
           this.loading = false
           response.data.forEach((p) => {
             if (p.archived_at) {
-              this.$swal.Toast.fire({
-                html: '<br /><h6>Some of your printers have been archived.</h6><p><a href="/ent/printers/archived/">Find them here.</a></p>',
-                timer: 15000,
-              })
+              this.shouldShowArchiveWarning = true
             } else {
               this.insertPrinter(normalizedPrinter(p))
             }
@@ -328,4 +338,17 @@ export default {
 
 #printer-list-page
   margin-top: 1.5rem
+
+.warning-collapse
+  display: flex
+  color: rgb(var(--color-warning))
+  justify-content: space-between
+  align-items: center
+  border: rgb(var(--color-warning)) thin dashed
+  padding: 0rem 1.5rem
+  margin-bottom: 1rem
+
+  .warning
+    flex-grow: 10
+    text-align: center
 </style>

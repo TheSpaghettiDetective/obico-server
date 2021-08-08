@@ -63,7 +63,7 @@ The Spaghetti Detective server needs to have an IP address that is accessible by
 
 ## Port/Firewall
 
-The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](docs/firewall_guides).
+The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](docs/firewall_guides.md).
 
 You can set up a reverse-proxy, such as nginx, in front of The Spaghetti Detective server, so that it's exposed on a different port. In this case, please use whichever port you choose to expose in the steps below. For simplicity
 sake, this document assumes the server port is 3334.

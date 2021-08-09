@@ -256,6 +256,9 @@ export default {
   },
 
   created() {
+    if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
+      this.autoDiscovering = false
+    }
     this.discoverPrinter()
     this.getVerificationCode()
   },

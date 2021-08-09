@@ -1,5 +1,11 @@
 {% extends settings.TEMPLATE_LAYOUT %}
 
+{% load static %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'vendor/css/bootstrap-select.min.css' %}">
+{% endblock page_css %}
+
 {% load bundle from vue %}
 
 {% block navbar %}
@@ -14,3 +20,7 @@
 {% bundle 'users' %}
 
 {% endblock content%}
+
+{% block page_js %}
+<link rel="stylesheet" href="{% static 'vendor/js/bootstrap-select.min.js' %}">
+{% endblock page_js %}

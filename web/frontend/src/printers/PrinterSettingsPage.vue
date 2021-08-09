@@ -194,6 +194,7 @@
 import axios from 'axios'
 import split from 'lodash/split'
 import Slider from 'bootstrap-slider'
+import 'bootstrap-slider/dist/css/bootstrap-slider.css'
 
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'

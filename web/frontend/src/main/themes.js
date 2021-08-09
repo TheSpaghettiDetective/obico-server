@@ -125,8 +125,6 @@ function HEXtoRGB(color) {
 
 // Defines theme by value saved in LocalStorage or system settings
 export function initTheme() {
-  console.log('Init theme')
-
   let themeValue = localStorage.getItem('colorTheme')
   let themeSystem = themeValue === Themes.System
   // let themeSystem = themeValue === null || themeValue === Themes.System

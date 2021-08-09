@@ -18,27 +18,25 @@
 
   <title>TSD - The Spaghetti Detective</title>
 
-  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <!-- Font Awesome -->
+  <link 
+    rel="stylesheet"
+    href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous"
+  >
 
-  <!-- Bootstrap core CSS-->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
-    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@8.0.1/dist/sweetalert2.min.css"
-    integrity="sha256-/PVkO2+mUlKqE6wgKVXU5Wh4mx3vncHAxLEdpXrziGo=" crossorigin="anonymous">
-  <link href="https://vjs.zencdn.net/7.4.1/video-js.min.css" rel="stylesheet">
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css"
-    integrity="sha256-+xqVrdbLgHjiKF8ULvcwzQ545r7lCVfOqXlNJCB3XOg=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.0/min/dropzone.min.css"
-    integrity="sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
-
+  <link rel="stylesheet" type="text/css" href="{% static 'vendor/css/sweetalert2.min.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
-  <link rel="stylesheet" href="{% static 'vendor/css/smart_wizard.css' %}">
 
   {% bundle 'main' %}
-  {% bundlechunk 'chunk-vendors' %}
+  {% bundlechunk 'chunk-vendors' 'css' %}
+
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
@@ -154,44 +152,32 @@
   </footer>
   {% endblock footer %}
 
-  <!-- Dark / Light theme -->
-  <script type="text/javascript" src="{% static 'js/theme.js' %}"></script>
-
-  <!-- Optional JavaScript -->
   <!-- Optional: include a polyfill for ES6 Promises for IE11 and Android browser -->
-  <script href="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script
-  src="https://code.jquery.com/jquery-3.4.1.min.js"
-  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-  crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-  <script src="//cdn.jsdelivr.net/gh/Mikhus/canvas-gauges@gh-pages/download/2.1.5/all/gauge.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
-    integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
-    integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
-  <script src="https://vjs.zencdn.net/7.4.1/video.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.min.js"
-    integrity="sha256-nviKEC91moGfyFMMzT31WyNxuAvIIgOSkSGi7K6U7EU=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.0/min/dropzone.min.js"
-    integrity="sha256-fIn7+wa+KI2s9jjRMk/rcswRt8mf82rxIXntRYKLofg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/js/bootstrap-select.min.js"></script>
-  <script
-  src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js"
-  integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo"
-  crossorigin="anonymous"></script>
+  <script src="{% static 'vendor/js/polyfill.min.js' %}"></script>
 
-  <script src="{% static 'vendor/js/sweetalert2-8.0.1.all.min.js' %}"
-    integrity="sha256-mG11cus0fNYH261MLgasqxyp+DcMDZOVUvtVey09hP0=" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="{% static 'vendor/js/jquery.smartWizard.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'vendor/js/ifvisible.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'vendor/js/bootstrap-input-spinner.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'vendor/js/download.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'vendor/js/filesize.min.js' %}"></script>
+  <!-- Bootstrap and dependecies -->
+  <script src="{% static 'vendor/js/jquery-3.4.1.min.js' %}"></script>
+  <script src="{% static 'vendor/js/popper.min.js' %}"></script>
+  <script src="{% static 'vendor/js/bootstrap.min.js' %}"></script>
 
+  <!-- Useful libs -->
+  <script src="{% static 'vendor/js/clipboard.min.js' %}"></script>
+  <script src="{% static 'vendor/js/ifvisible.min.js' %}"></script>
+  <script src="{% static 'vendor/js/bootstrap-input-spinner.min.js' %}"></script>
+  <script src="{% static 'vendor/js/download.min.js' %}"></script>
+  <script src="{% static 'vendor/js/filesize.min.js' %}"></script>
+
+  <!-- Bundles -->
+  {% bundlechunk 'chunk-vendors' 'js' %}
+
+  <!-- Dark/Light theme -->
+  <script src="{% static 'js/theme.js' %}"></script>
+
+  <!-- Sentry -->
+  <script
+    src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js"
+    integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo"
+    crossorigin="anonymous"></script>
   <script type="text/javascript">
     var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
     {% if user.is_authenticated and user.is_pro %}
@@ -215,6 +201,7 @@
       }
     {% endif %}
   </script>
+
   {% block page_js %}{% endblock page_js %}
   {% block body_bottom_ext %}{% endblock body_bottom_ext %}
 </body>

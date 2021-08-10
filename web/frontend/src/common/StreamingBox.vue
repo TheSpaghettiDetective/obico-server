@@ -240,7 +240,7 @@ export default {
           <p>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your computer. The bottleneck can be anywhere but in most cases <Text bold>it's either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
           <p>Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.</p>
           <p>If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as <b>low latency (ping)</b>.</p>
-          <p>Check out <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/choppy-jerky-premium-streaming-troubleshooting-guide-vlaEmejqSi">the step-by-step trouble-shooting guide.</a></p>
+          <p>Check out <a target="_blank" href="https://www.thespaghettidetective.com/docs/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
         `,
         showCloseButton: true,
       })
@@ -256,13 +256,13 @@ export default {
           <p class="lead">1. A constricted video stream on <strong>your Raspberry Pi. The most common reasons are:</p>
           <ul>
             <li>Camera resolution is set too high.</li>
-            <li>Camera framerate is set too high. This is only when you set <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/compatibility-mode-streaming-GaERh2rUjr">the compatibility mode</a> to "always".</li>
+            <li>Camera framerate is set too high. This is only when you set <a target="_blank" href="https://www.thespaghettidetective.com/docs/streaming-compatibility-mode/">the compatibility mode</a> to "always".</li>
             <li>The upload speed of your Raspberry Pi is too low.</li>
           </ul>
           <p class="lead">2. The internet connection of your computer or phone is not fast enough.</p>
           <p class="lead">3. Your webcam is not properly connected to your Raspberry Pi.</p>
           <br>
-          <p>You should leave the compatibility mode to "auto", unless you have <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/premium-streaming-in-the-compatibility-mode-GaERh2rUjr/Steps/300081,434913">a good reason to it to "always".</a></p>
+          <p>You should leave the compatibility mode to "auto", unless you have <a target="_blank" href="https://www.thespaghettidetective.com/docs/streaming-compatibility-mode#when-should-i-always-stream-in-the-compatibility-mode">a good reason to it to "always".</a></p>
           <p>As a rule of thumb, for every 300k-pixel resolution (640x480), you need to have 1.5Mbps upload bandwidth to stream smoothly at 25fps. This means if you set the webcam resolution to 1024x768 (~800k pixels), you need to have 4.5Mbps upload bandwidth. Also remember that the upload bandwidth of your Raspberry Pi may not be the same as your computer, even if they are connected to the same Wi-Fi network. This is because Raspberry Pi's Wi-Fi chip is weaker than the most computers'.</p>
         `,
         showCloseButton: true,

@@ -12,7 +12,7 @@
       <small class="text-muted">
         Not sure? Look at
         <a target="_blank"
-          href="https://help.thespaghettidetective.com/kb/guide/en/help-the-detective-improve-PVq4Iul0df/Steps/298841,298840,298839,298838,298837,298836,298834"
+          href="https://www.thespaghettidetective.com/docs/how-does-credits-work#spaghetti-examples"
         >some examples. <small><i class="fas fa-external-link-alt"></i></small></a>
       </small>
     </div>

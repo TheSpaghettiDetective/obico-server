@@ -180,7 +180,7 @@
                 <span v-else>
                   With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
                   <a
-                    href="https://help.thespaghettidetective.com/kb/guide/en/help-the-detective-improve-PVq4Iul0df/Steps/298841,298840,298839,298838,298837"
+                    href="https://www.thespaghettidetective.com/docs/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
                   >You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
                 </span>
               </small>
@@ -188,7 +188,7 @@
               <small v-else>
                 Every time you give The Detective feedback,
                 <a
-                  href="https://help.thespaghettidetective.com/kb/guide/en/help-the-detective-improve-PVq4Iul0df/"
+                  href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
                 >you help her get better at detecting spaghetti</a>.
               </small>
             </div>

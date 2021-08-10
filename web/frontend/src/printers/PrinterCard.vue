@@ -75,7 +75,7 @@
           <h5 class="text-warning">The Detective Is Not Watching</h5>
           <small
             v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}. <a href="https://help.thespaghettidetective.com/kb/guide/en/why-is-the-detective-not-watching-jUGzXPoRIH/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
+          >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
           <div></div>
         </div>
         <Gauge
@@ -466,7 +466,7 @@ export default {
     },
     onPrinterActionPauseClicked() {
       this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://help.thespaghettidetective.com/kb/guide/en/failure-detection-settings-TYti93JPPk/Steps/296229,296242">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
       }).then((result) => {
         if (result.value) {
           this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)

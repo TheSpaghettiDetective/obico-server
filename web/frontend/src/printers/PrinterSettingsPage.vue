@@ -167,7 +167,7 @@
                 Re-Link OctoPrint
           </a>
           <div class="text-muted mt-1">
-            <small>If your OctoPrint is always showing as "offline", and you have gone through <a href="https://help.thespaghettidetective.com/kb/guide/en/octoprint-is-offline-z7RqhgmnPY/">all the trouble-shooting steps</a>, you can try to re-link OctoPrint as the last resort.</small>
+            <small>If your OctoPrint is always showing as "offline", and you have gone through <a href="https://www.thespaghettidetective.com/docs/octoprint-is-offline/">all the trouble-shooting steps</a>, you can try to re-link OctoPrint as the last resort.</small>
           </div>
         </div>
         <div class="mt-4">

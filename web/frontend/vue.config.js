@@ -52,6 +52,9 @@ let vueConfig = {
     printers: {
       entry: 'src/printers/main.js',
     },
+    printer_settings: {
+      entry: 'src/printers/settings.main.js',
+    },
     octoprint_tunnel: {
       entry: 'src/octoprint_tunnel/TunnelMain.js',
     },

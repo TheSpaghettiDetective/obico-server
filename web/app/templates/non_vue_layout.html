@@ -1,0 +1,7 @@
+{% extends settings.TEMPLATE_LAYOUT %}
+
+{% block navbar %}
+  {% if not app_platform.platform %}
+    {{ block.super }}
+  {% endif %}
+{% endblock navbar %}

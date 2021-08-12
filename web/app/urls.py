@@ -3,7 +3,6 @@ from django.urls import path, re_path
 from .views import web_views
 from .views import tunnel_views
 from .views import mobile_views
-from .views import vue_demo
 
 urlpatterns = [
     path('', web_views.index, name='index'),
@@ -47,8 +46,4 @@ urlpatterns = [
     path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel),
     path('mobile/printers/<int:pk>/share/', web_views.share_printer, {"template_dir": "mobile"}),
     path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
-
-    # vue demo urls
-    path('vue-demo/simple/', vue_demo.SimpleAppView.as_view(), name='vue-demo-simple'),
-    path('vue-demo/multi/', vue_demo.MultiAppView.as_view(), name='vue-demo-multi'),
 ]

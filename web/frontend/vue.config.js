@@ -37,12 +37,6 @@ let vueConfig = {
     main: {
       entry: 'src/main/main.js',
     },
-    simple: {
-      entry: 'src/simple/main.js',
-    },
-    multi: {
-      entry: 'src/multi/main.js',
-    },
     print_shot_feedback: {
       entry: 'src/print_shot_feedback/main.js',
     },

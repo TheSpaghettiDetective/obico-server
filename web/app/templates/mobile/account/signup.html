@@ -33,7 +33,7 @@
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
           role="button"><span><i class="fab fa-google-plus-g"></i> Sign up with Google+</span> </a>
       </div>
-        {% if request.GET.platform == 'ios' %}
+        {% if app_platform.platform == 'ios' %}
         <div class="social-login">
           <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
             role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>
@@ -86,7 +86,7 @@
         <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
         <div class="text-center pt-3 w-100">
           <div class="font-weight-light text-muted">- OR -</div>
-          <a class="btn" href="{% url 'mobile_auth_login' %}?platform={{request.GET.platform}}{% if redirect_field_value %}&next={{redirect_field_value}}{% endif %}">{% trans "SIGN IN" %}</a>
+          <a class="btn" href="{% url 'mobile_auth_login' %}?{% if redirect_field_value %}next={{redirect_field_value}}{% endif %}">{% trans "SIGN IN" %}</a>
         </div>
       </form>
     </div>

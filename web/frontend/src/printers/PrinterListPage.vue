@@ -108,7 +108,7 @@
             href="/ent/printers/archived/"
           >Find them here >>></a>
         </div>
-        <a role="button" class="p-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
+        <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
       </b-collapse>
     </div>
   </div>

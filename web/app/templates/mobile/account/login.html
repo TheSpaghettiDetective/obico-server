@@ -11,6 +11,7 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
+{% with platform_param=request.GET.platform|default:"" %}{% with platform=app_platform.platform|default:platform_param %}
 
 <div class="row justify-content-center logreg">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
@@ -23,7 +24,7 @@
         <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
           role="button"><span><i class="fab fa-google-plus-g"></i> Sign In with Google+</span> </a>
       </div>
-        {% if app_platform.platform == 'ios' %}
+        {% if platform  == 'ios' %}
         <div class="social-login">
           <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
             role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>
@@ -104,11 +105,12 @@
         {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
         <div class="text-center pt-3 w-100">
           <div class="font-weight-light text-muted">- OR -</div>
-          <a class="btn" href="{% url 'mobile_auth_signup' %}?{% if redirect_field_value %}next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
+          <a class="btn" href="{% url 'mobile_auth_signup' %}?platform={{platform}}{% if redirect_field_value %}&next={{redirect_field_value}}{% endif %}">{% trans "SIGN UP" %}</a>
         </div>
         {% endif %}
       </form>
     </div>
   </div>
 </div>
+{% endwith %}{% endwith %}
 {% endblock %}

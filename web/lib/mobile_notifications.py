@@ -141,12 +141,22 @@ def send_to_device(msg, mobile_device):
     if not firebase_app:
         return
 
+    kwargs = dict(
+        data=msg,
+        token=mobile_device.device_token
+    )
+
+    if mobile_device.platform == 'android':
+        kwargs['android'] = AndroidConfig(priority='high')
+    else:
+        kwargs['apns'] = APNSConfig(
+            headers={'apns-push-type': 'background', 'apns-priority': '5'},
+            payload=APNSPayload(
+                aps=Aps(content_available=True, category='post'))
+        )
+
     try:
-        message = Message(
-            data=msg,
-            android=AndroidConfig(priority='high'),
-            apns=APNSConfig(headers={'apns-push-type': 'background', 'apns-priority': '5'}, payload=APNSPayload(aps=Aps(content_available=True, category='post'))),
-            token=mobile_device.device_token)
+        message = Message(**kwargs)
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
         MobileDevice.objects.filter(device_token=mobile_device.device_token).update(deactivated_at=now())

@@ -418,8 +418,9 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
 
-        devices = get_active_devices_for_client_ip(client_ip)
-        return Response([device.asdict() for device in devices])
+        return Response([])
+        # devices = get_active_devices_for_client_ip(client_ip)
+        # return Response([device.asdict() for device in devices])
 
     @report_validationerror
     def create(self, request):

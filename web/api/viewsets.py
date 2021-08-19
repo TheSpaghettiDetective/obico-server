@@ -419,6 +419,10 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         devices = get_active_devices_for_client_ip(client_ip)
+        if (
+            len(devices) > settings.MAX_UNLINKED_PRINTERS_PER_IP
+        ):
+            return Response([])
         return Response([device.asdict() for device in devices])
 
     @report_validationerror

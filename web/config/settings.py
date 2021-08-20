@@ -366,3 +366,6 @@ ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
+
+MAX_UNLINKED_PRINTERS_PER_IP = int(
+    os.environ.get('MAX_UNLINKED_PRINTERS_PER_IP', '1'))

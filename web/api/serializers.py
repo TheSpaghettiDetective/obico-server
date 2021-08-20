@@ -10,6 +10,13 @@ from app.models import (
     SharedResource, PublicTimelapse, calc_normalized_p)
 
 
+def int_with_default(v, default):
+    try:
+        return int(v)
+    except ValueError:
+        return default
+
+
 class UserSerializer(serializers.ModelSerializer):
     is_primary_email_verified = serializers.ReadOnlyField()
     is_dh_unlimited = serializers.ReadOnlyField()
@@ -28,12 +35,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_phone_country_code(self, phone_country_code):
         if phone_country_code:
+            phone_country_code = phone_country_code.strip().replace('+', '')
+
+            code = int_with_default(phone_country_code, None)
             if (
                 settings.TWILIO_COUNTRY_CODES and
-                phone_country_code not in settings.TWILIO_COUNTRY_CODES
+                (code is None or code not in settings.TWILIO_COUNTRY_CODES)
             ):
-                raise serializers.ValidationError(
-                    {'phone_country_code': "Oops, we don't send SMS to this country code"})
+                raise serializers.ValidationError("Oops, we don't send SMS to this country code")
 
             if not phone_country_code.startswith('+'):
                 phone_country_code = '+' + phone_country_code

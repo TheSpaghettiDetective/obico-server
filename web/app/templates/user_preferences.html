@@ -2,10 +2,6 @@
 
 {% load static %}
 
-{% block page_css %}
-<link rel="stylesheet" href="{% static 'vendor/css/bootstrap-select.min.css' %}">
-{% endblock page_css %}
-
 {% load bundle from vue %}
 
 {% block navbar %}
@@ -20,10 +16,6 @@
 {% bundle 'users' %}
 
 {% endblock content%}
-
-{% block page_js %}
-<script src="{% static 'vendor/js/bootstrap-select.min.js' %}"></script>
-{% endblock page_js %}
 
 {% block body_bottom_ext %}
   {% if not app_platform.platform %}

@@ -13,7 +13,7 @@
 
 {% block content %}
 <div id="user-preferences-mount">
-  <user-preferences-page v-bind:config='{telegramBotName: "{{telegram_bot_name}}"}'>
+  <user-preferences-page v-bind:config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ settings.TWILIO_COUNTRY_CODES }} }'>
   </user-preferences-page>
 </div>
 

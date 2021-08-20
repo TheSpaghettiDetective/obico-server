@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from django.conf import settings
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -26,8 +27,17 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def validate_phone_country_code(self, phone_country_code):
-        if phone_country_code and not phone_country_code.startswith('+'):
-            phone_country_code = '+' + phone_country_code
+        if phone_country_code:
+            if (
+                settings.TWILIO_COUNTRY_CODES and
+                phone_country_code not in settings.TWILIO_COUNTRY_CODES
+            ):
+                raise serializers.ValidationError(
+                    {'phone_country_code': "Oops, we don't send SMS to this country code"})
+
+            if not phone_country_code.startswith('+'):
+                phone_country_code = '+' + phone_country_code
+
         return phone_country_code
 
     def validate(self, data):

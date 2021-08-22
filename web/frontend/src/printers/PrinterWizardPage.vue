@@ -213,6 +213,7 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
 import sortBy from 'lodash/sortBy'
+import get from 'lodash/get'
 import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
@@ -256,6 +257,10 @@ export default {
   },
 
   created() {
+    const user = JSON.parse(document.querySelector('#user-json').text)
+    if (get(user, 'subscription.plan_id') !== 'pro-comp-50-dh' || get(user, 'subscription.printers_subscribed') !== 1) { // Only subscribed user can auth-disocver
+      this.autoDiscovering = false
+    }
     if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
       this.autoDiscovering = false
     }

@@ -27,6 +27,7 @@
               :options="dropzoneOptions"
               :useCustomSlot="true"
               @vdropzone-queue-complete="gcodeUploadSuccess"
+              @vdropzone-error="gcodeUploadError"
               ref="gcodesDropzone"
             >
               <div class="dz-message needsclick">
@@ -243,6 +244,12 @@
         this.currentPage = 1
         this.noMoreData = false
         this.fetchGCodes()
+      },
+
+      gcodeUploadError(file, message) {
+        this.$swal({
+          icon: 'error',
+          html: `<p class="text-center">${message}</p>`})
       },
 
       fetchGCodes() {

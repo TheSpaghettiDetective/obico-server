@@ -13,22 +13,25 @@
         :key="gcf.id"
         class="card"
       >
-        <div class="card-body" style="display: flex; justify-content: space-between;">
-          <div style="width: 100%;">
-            <strong class="gcode-filename">
+        <div class="card-body">
+          <div class="mb-2">
+            <strong class="gcode-filenam">
             {{ gcf.filename }}
             </strong>
-            <small class="gcode-info mt-1" style="display: flex; flex-wrap: wrap;">
+          </div>
+          <div class="info-and-actions">
+            <small class="gcode-info">
               <div class="pr-3"><span class="text-muted">Size: </span> {{ gcf.filesize }}</div>
               <div><span class="text-muted">Uploaded: </span> {{ gcf.created_at.fromNow() }}</div>
             </small>
+            <button
+              type="button"
+              class="send-print btn btn-primary"
+              @click="onSendPrintClicked(gcf.id)"
+              :disabled="isSending"
+            ><b-spinner small v-if="isSending" label="Loading..."></b-spinner>Print
+            </button>
           </div>
-          <button
-            type="button" class="send-print btn btn-primary"
-            @click="onSendPrintClicked(gcf.id)"
-            :disabled="isSending"
-          ><b-spinner small v-if="isSending" label="Loading..."></b-spinner>Print
-          </button>
         </div>
       </div>
     </div>
@@ -88,5 +91,17 @@ export default {
 
   .btn
     margin-left: 10px
+    flex: 0 0 auto
+
+.info-and-actions
+  display: flex
+  justify-content: space-between
+
+  .gcode-info
+    flex: 1
+    display: flex
+    flex-direction: column
+
+  .send-print
     flex: 0 0 auto
 </style>

@@ -103,6 +103,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
+                'app.context_processors.additional_settings_export',
                 'app.context_processors.detect_app_platform',
             ],
         },
@@ -312,7 +313,6 @@ OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776
 # settings export
 SETTINGS_EXPORT = [
     'TWILIO_ENABLED',
-    'TWILIO_COUNTRY_CODES',
     'PUSHOVER_APP_TOKEN',
     'TEMPLATE_LAYOUT',
     'ACCOUNT_ALLOW_SIGN_UP',

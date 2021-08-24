@@ -603,6 +603,12 @@ export default {
     phoneCountryCode: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.errorMessages.phone = []
+
+        // Allow clear data
+        if (newValue === '') {
+          this.updateSetting('phone_country_code')
+          return
+        }
         
         const codeNumber = parseInt(newValue.replace(/\s/g, '')) // will parse both '1' / '+1', clear spaces for safety
         if (isNaN(codeNumber)) {
@@ -698,11 +704,14 @@ export default {
         for (const input of combinedInputs.inputs) {
           key = combinedInputs.key
           const value = this.user[input]
-          if (value) {
-            data[input] = value
-          } else {
-            return
-          }
+          data[input] = value
+        }
+
+        // Allow either completely empty or completely filled data
+        const values = Object.values(data)
+        const emptyValues = values.filter(val => !val)
+        if ((emptyValues.length !== values.length) && (emptyValues.length !== 0)) {
+          return
         }
       } else {
         data = {[propName]: propValue}

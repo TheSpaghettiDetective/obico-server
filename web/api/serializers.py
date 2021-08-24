@@ -49,8 +49,23 @@ class UserSerializer(serializers.ModelSerializer):
 
         return phone_country_code
 
+    def validate_pushbullet_access_token(self, pushbullet_access_token):
+        pushbullet_access_token = pushbullet_access_token.strip()
+        if pushbullet_access_token:
+            try:
+                Pushbullet(pushbullet_access_token)
+            except PushbulletError:
+                raise serializers.ValidationError('Invalid pushbullet access token.')
+        else:
+            pushbullet_access_token = None
+
+        return pushbullet_access_token
+
     def validate(self, data):
-        if 'phone_number' in data or 'phone_country_code' in data:
+        if 'phone_number' in data and not data['phone_number']:
+            data['phone_country_code'] = None
+            data['phone_number'] = None
+        elif 'phone_number' in data or 'phone_country_code' in data:
             if 'phone_number' in data and 'phone_country_code' in data:
                 phone_number = data['phone_country_code'] + data['phone_number']
                 try:
@@ -61,13 +76,6 @@ class UserSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError({'phone_number': e})
             else:
                 raise serializers.ValidationError('Both phone_number and phone_country_code need to be present.')
-
-        if 'pushbullet_access_token' in data:
-            pushbullet_access_token = data['pushbullet_access_token']
-            try:
-                Pushbullet(pushbullet_access_token)
-            except PushbulletError:
-                raise serializers.ValidationError({'pushbullet_access_token': 'Invalid pushbullet access token.'})
 
         return data
 

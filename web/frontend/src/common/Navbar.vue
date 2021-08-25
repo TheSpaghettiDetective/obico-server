@@ -1,89 +1,67 @@
 <template>
   <div>
-    <nav
+    <b-navbar
       v-if="!isInMobile"
-      class="navbar navbar-expand-xl bg-dark static-top flex-column"
-      :class="{'navbar-dark': theme === themes.Dark, 'navbar-light': theme === themes.Light}"
-    >
-      <div class="container">
-        <a class="navbar-brand" href="/">
+      toggleable="xl"
+      :class="{
+        'navbar-dark': theme === themes.Dark,
+        'navbar-light': theme === themes.Light
+      }">
+      <b-container>
+        <b-navbar-brand href="/">
           <svg viewBox="0 0 1965 240" width="232" height="28.34">
             <use href="#svg-navbar-brand" />
           </svg>
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" ref="mobileDropdown">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive" ref="mobileDropdownContent">
-          <ul class="navbar-nav">
+        </b-navbar-brand>
 
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('printers')}">
-              <a class="nav-link" href="/printers/">Printer
-              </a>
-            </li>
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('prints')}">
-              <a class="nav-link" href="/prints/">Time-lapse
-              </a>
-            </li>
-            <li v-if="user" class="nav-item" v-bind:class="{'active': viewName.includes('gcodes')}">
-              <a class="nav-link" href="/gcodes/">G-Code
-              </a>
-            </li>
+        <b-navbar-toggle target="navbar-toggle-collapse">
+          <template>
+            <span class="navbar-toggler-icon"></span>
+          </template>
+        </b-navbar-toggle>
 
-            <li v-if="!user" class="nav-item" v-bind:class="{'active': viewName === 'publictimelapse_list'}">
-              <a class="nav-link glowing" href="/publictimelapses/">Spaghetti Gallery</a>
-            </li>
+        <b-collapse id="navbar-toggle-collapse" is-nav v-model="showMainMenu">
+          <b-navbar-nav>
+            <b-nav-item v-if="user" href="/printers/" :class="{'active': viewName.includes('printers')}">Printer</b-nav-item>
+            <b-nav-item v-if="user" href="/prints/" :class="{'active': viewName.includes('prints')}">Time-lapse</b-nav-item>
+            <b-nav-item v-if="user" href="/gcodes/" :class="{'active': viewName.includes('gcodes')}">G-Code</b-nav-item>
+            <b-nav-item v-if="!user" href="/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
+            <b-nav-item v-if="isEnt" href="/ent/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
+            <b-nav-item href="https://www.thespaghettidetective.com/help/">Help</b-nav-item>
+            <b-nav-item href="https://discord.gg/hsMwGpD">Forum</b-nav-item>
+          </b-navbar-nav>
 
-            <li v-if="isEnt" class="nav-item" v-bind:class="{'active': viewName === 'pricing'}">
-              <a class="nav-link" href="/ent/pricing/">Pricing</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="https://www.thespaghettidetective.com/help/">Help</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="https://discord.gg/hsMwGpD">Forum</a>
-            </li>
-          </ul>
-
-          <ul class="navbar-nav ml-auto">
-            <li v-if="!user" class="nav-item">
-              <a class="nav-link" href="/accounts/login/">Sign In</a>
-            </li>
-            <li v-if="!user && allowSignUp" class="nav-item">
-              <a class="nav-link" href="/accounts/signup/">Sign up</a>
-            </li>
-
-            <li v-if="isEnt && user" class="nav-item">
-              <a href="/ent/subscription/#detective-hour-balance" class="nav-link badge-btn">
-                  <svg viewBox="0 0 384 550" width="14.66" height="21">
-                    <use href="#svg-detective-hours" />
-                  </svg>
-                  <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
-                  <span class="sr-only">Detective Hours</span>
-              </a>
-            </li>
-
-            <li v-if="user" class="nav-item dropdown" ref="accountDropdown">
-              <a class="nav-link dropdown-toggle user-menu" data-toggle="dropdown" href="#" :id="user.id" aria-expanded="false">
-                {{user.first_name || user.email}}
-                <span class="caret"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="themes" ref="accountDropdownContent">
-                <a class="dropdown-item" href="/user_preferences/"><i class="fas fa-sliders-h"></i>Preferences</a>
-                <a v-if="isEnt" class="dropdown-item" href="/ent/subscription/"><i class="far fa-user-circle"></i>Account</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt"></i>Log out</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <div v-if="needsEmailVerification" class="alert alert-warning text-center" role="alert">
-      You will not get notified by email on print failure, as your primary email address is not verified. <a href="/accounts/email/">Verify your email address.</a>
-    </div>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item v-if="!user" href="/accounts/login/">Sign In</b-nav-item>
+            <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">Sign Up</b-nav-item>
+            <b-nav-item v-if="isEnt && user" href="/ent/subscription/#detective-hour-balance" link-classes="badge-btn">
+              <svg viewBox="0 0 384 550" width="14.66" height="21">
+                <use href="#svg-detective-hours" />
+              </svg>
+              <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
+              <span class="sr-only">Detective Hours</span>
+            </b-nav-item>
+            <b-nav-item-dropdown v-if="user" ref="accountDropdown" right toggle-class="user-menu" :text="user.first_name || user.email">
+              <b-dropdown-item href="/user_preferences/">
+                <i class="fas fa-sliders-h mr-2"></i>Preferences
+              </b-dropdown-item>
+              <b-dropdown-item v-if="isEnt" href="/ent/subscription/">
+                <i class="far fa-user-circle mr-2"></i>Account
+              </b-dropdown-item>
+              <b-dropdown-divider></b-dropdown-divider>
+              <b-dropdown-item href="/accounts/logout/">
+                <i class="fas fa-sign-out-alt mr-2"></i>Log out
+              </b-dropdown-item>
+            </b-nav-item-dropdown>
+          </b-navbar-nav>
+        </b-collapse>
+      </b-container>
+    </b-navbar>
+    
+    <b-alert :show="needsEmailVerification" variant="warning" class="text-center">
+      You will not get notified by email on print failure, as your primary email address is not verified. 
+      <a href="/accounts/email/">Verify your email address.</a>
+    </b-alert>
   </div>
 </template>
 
@@ -104,6 +82,7 @@ export default {
       isEnt: false,
       isInMobile: false,
       themes: Themes,
+      showMainMenu: false,
     }
   },
 
@@ -147,18 +126,12 @@ export default {
 
   methods: {
     hideDropdowns() {
+      this.showMainMenu = false
+
       // Check account dropdown (preferences and logout)
       const accountDropdown = this.$refs.accountDropdown
-      if (accountDropdown.classList.contains('show')) {
-        accountDropdown.classList.remove('show')
-        this.$refs.accountDropdownContent.classList.remove('show')
-      }
-
-      // Check main menu toggler (on mobiles)
-      const mobileDropdown = this.$refs.mobileDropdown
-      if (mobileDropdown.getAttribute('aria-expanded')) {
-        mobileDropdown.classList.add('collapsed')
-        this.$refs.mobileDropdownContent.classList.remove('show')
+      if (accountDropdown) {
+        accountDropdown.hide()
       }
     }
   }
@@ -166,13 +139,13 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.navbar
+::v-deep .navbar
   padding: 0.5rem 1rem
 
   a.navbar-brand
     margin-top: -3px
 
-    ::v-deep img
+    img
       width: 232px
 
   .nav-item
@@ -180,9 +153,6 @@ export default {
 
   .user-menu
     text-transform: none
-
-  // a.glowing
-  //   text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #9965f4, 0 0 70px #9965f4, 0 0 80px #9965f4, 0 0 100px #9965f4, 0 0 150px #9965f4
 
   .badge-btn
     position: relative
@@ -198,7 +168,6 @@ export default {
       top: 1px
       height: 18px
       border-radius: 4px
-      // background-color: #9965f4
       transition: transform 0.2s
 
       /* Animation */

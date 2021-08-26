@@ -15,7 +15,7 @@
         {{discoveredPrinter.machine_type}}
       </div>
       <div v-if="discoveredPrinter.host_or_ip" class="text-muted small">
-        IP address: {{discoveredPrinter.host_or_ip}}
+        IP address: {{discoveredPrinter.host_or_ip}}<span v-if="discoveredPrinter.port">:{{ discoveredPrinter.port }}</span>
       </div>
       <div v-if="discoveredPrinter.hostname" class="text-muted small">
         Hostname: {{discoveredPrinter.hostname}}
@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="col-sm-12 col-md-2 center px-3">
-      <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', discoveredPrinter.device_id)">Link</button>
+      <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', {...discoveredPrinter})">Link</button>
     </div>
   </div>
 

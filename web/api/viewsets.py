@@ -12,6 +12,7 @@ from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
+from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
@@ -441,10 +442,22 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
+        # TODO remove "contains" check here
+        # when we no longer need backward compatibility
+        if 'device_secret' in self.request.data:
+            device_secret = self.request.data.get('device_secret')
+            if device_secret is None:
+                raise ValidationError({'device_secret': "missing param"})
+        else:
+            device_secret = ''
+
         push_message_for_device(
             client_ip,
             device_id,
-            DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
+            DeviceMessage.from_dict({
+                'device_id': device_id,
+                'type': 'verify_code',
+                'data': {'code': code, 'secret': device_secret}})
         )
 
         return Response({'queued': True})

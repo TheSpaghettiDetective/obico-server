@@ -4,6 +4,10 @@ import time
 
 from rest_framework import serializers
 from typing import Optional, List
+from ipware.utils import (
+    cleanup_ip, is_valid_ip, is_public_ip)
+
+from django.core.validators import URLValidator
 
 from lib.cache import (
     disco_push_raw_device_message,
@@ -17,6 +21,8 @@ LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
+
+host_re = URLValidator.host_re
 
 
 class DeviceInfoSerializer(serializers.Serializer):
@@ -34,10 +40,29 @@ class DeviceInfoSerializer(serializers.Serializer):
         required=True, max_length=253, allow_blank=True)
     printerprofile = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
-    host_or_ip = serializers.CharField(
-        required=False, max_length=253, allow_blank=True)
     machine_type = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
+    host_or_ip = serializers.CharField(
+        required=False, max_length=253, allow_blank=True, default='')
+    port = serializers.IntegerField(
+        required=False, min_value=1, max_value=65535)
+    plugin_version = serializers.CharField(
+        required=False, max_length=253, allow_blank=True, default='')
+
+    def validate_host_or_ip(self, value):
+        if value:
+            ip = cleanup_ip(value)
+            if is_valid_ip(ip):
+                if not is_public_ip(ip):
+                    return ip
+            else:
+                hostname = value.strip()
+                if host_re.match(hostname) and hostname.endswith('.local'):
+                    return hostname
+
+            raise serializers.ValidationError(
+                'Must be private ip address or a .local domain')
+        return value
 
 
 class DeviceMessageSerializer(serializers.Serializer):
@@ -56,8 +81,10 @@ class DeviceInfo:
     octopi_version: str
     rpi_model: str
     printerprofile: str
-    host_or_ip: str
     machine_type: str
+    host_or_ip: str
+    port: Optional[int]
+    plugin_version: Optional[str]
 
     @classmethod
     def from_dict(cls, data) -> 'DeviceInfo':

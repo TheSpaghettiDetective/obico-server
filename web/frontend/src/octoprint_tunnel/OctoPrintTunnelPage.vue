@@ -57,11 +57,8 @@ export default {
   },
 
   mounted() {
-    this.$swal.fire({
+    this.$swal.Prompt.fire({
       html: '<h4 class="text-center p-2"><svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59" style="height: 1.1em;margin-right: 0.75em;"><use href="#svg-octoprint-tunneling" /></svg>OctoPrint Secure Tunnel</h4><div class="p-1">It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.</div><div class="p-1"><a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">Learn more about OctoPrint Tunneling\'s security and page load speed. <i class="fas fa-external-link-alt"></i></a></div>',
-      customClass: {
-        container: 'dark-backdrop',
-      },
     },
     'octoprint-tunnel.warning')
 

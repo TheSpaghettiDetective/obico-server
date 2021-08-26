@@ -26,7 +26,7 @@
           <div class="dz-message needsclick">
             <i class="fas fa-upload fa-2x"></i> <br>
             Drop files here or click to upload.<br>
-            *.mp4 or *.mpg files only. Up to 200MB each.
+            *.mp4 or *.mpg files only. Up to 100MB each.
           </div>
         </vue-dropzone>
       </div>
@@ -70,7 +70,7 @@ import Navbar from '@common/Navbar.vue'
       return {
         dropzoneOptions: {
           withCredentials: true,
-          maxFilesize: 200, // MB
+          maxFilesize: 100, // MB
           timeout: 60 * 60 * 1000, // For large files
           acceptedFiles: 'video/mp4, video/mpeg',
           url: '?',

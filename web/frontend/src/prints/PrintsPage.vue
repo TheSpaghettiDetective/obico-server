@@ -242,7 +242,7 @@ export default {
 
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
-      this.$swal({
+      this.$swal.Prompt.fire({
         title: 'Are you sure?',
         text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
         showCancelButton: true,

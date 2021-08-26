@@ -540,8 +540,7 @@ export default {
     },
     onPrinterActionStartClicked() {
       if (!this.isProAccount) {
-        this.$swal.fire({
-          title: 'Wait!',
+        this.$swal.Reject.fire({
           html: `
               <h5 class="mb-3">You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to start a remote print job. </h5>
               <p>Remote G-Code upload and print start is a Pro feature.</p>
@@ -601,7 +600,7 @@ export default {
             </p>
           </div>`
 
-          this.$swal.fire({
+          this.$swal.Prompt.fire({
             html: html,
             showConfirmButton: false
           })

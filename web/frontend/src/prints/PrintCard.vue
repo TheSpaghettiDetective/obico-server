@@ -398,7 +398,7 @@ export default {
     },
     showVideoArchivedDescription(event) {
       event.preventDefault()
-      this.$swal({
+      this.$swal.Prompt.fire({
         title: 'Time-lapse video deleted',
         html: `
           <p>Time-lapse videos older than 6-months are deleted from TSD server as they are rarely needed and cost significant amount to store in the cloud.</p>

@@ -234,7 +234,7 @@ export default {
       this.slowLinkHiding = false
       this.slowLinkLoss = 0
 
-      this.$swal({
+      this.$swal.Prompt.fire({
         title: 'Video frames dropped',
         html: `
           <p>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your computer. The bottleneck can be anywhere but in most cases <Text bold>it's either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
@@ -249,7 +249,7 @@ export default {
     showMutedStatusDescription(event) {
       event.preventDefault()
 
-      this.$swal({
+      this.$swal.Prompt.fire({
         title: 'Webcam stream buffering',
         html: `
           <p>When you see the messaging about webcam stream is "buffering" occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:</p>

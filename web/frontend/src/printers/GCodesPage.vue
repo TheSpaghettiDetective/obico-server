@@ -33,7 +33,7 @@
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br>
                 Drop files here or click to upload.<br>
-                G-Code files only. Up to 200MB each.
+                G-Code files only. Up to 100MB each.
               </div>
             </vue-dropzone>
           </div>
@@ -155,7 +155,7 @@
       return {
         dropzoneOptions: {
           withCredentials: true,
-          maxFilesize: 200, // MB
+          maxFilesize: 100, // MB
           timeout: 60 * 60 * 1000, // For large files
           acceptedFiles: '.g,.gcode,.gco',
           url: 'upload/',
@@ -247,8 +247,7 @@
       },
 
       gcodeUploadError(file, message) {
-        this.$swal({
-          icon: 'error',
+        this.$swal.Reject.fire({
           html: `<p class="text-center">${message}</p>`})
       },
 

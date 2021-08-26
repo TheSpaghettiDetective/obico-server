@@ -59,6 +59,19 @@ const install = (Vue, options) => {
     timer: 5000,
   })
 
+  const Reject = Vue.swal.mixin({
+    icon: 'error',
+    customClass: {
+      container: 'dark-backdrop',
+    },
+  })
+
+  const Prompt = Vue.swal.mixin({
+    customClass: {
+      container: 'dark-backdrop',
+    },
+  })
+
   const DismissableToast = (swalOpt, dismissKey) => {
 
     if (!getLocalPref(dismissKey, false)) {
@@ -82,6 +95,8 @@ const install = (Vue, options) => {
   Vue.prototype.$swal['Confirm'] = Confirm
   Vue.prototype.$swal['Toast'] = Toast
   Vue.prototype.$swal['DismissableToast'] = DismissableToast
+  Vue.prototype.$swal['Reject'] = Reject
+  Vue.prototype.$swal['Prompt'] = Prompt
 }
 
 export default {install: install}

@@ -59,7 +59,7 @@ export default {
           const { instance, credited_dhs } = response.data
           this.$emit('shotChanged', instance)
           if (credited_dhs > 0) {
-            this.$swal({
+            this.$swal.Prompt.fire({
               title: 'You are awesome!',
               html:
                 '<p>The Detective just got a little smarter because of your feedback!</p><p>You just earned 2 non-expirable Detective Hours - Yay!</p>',

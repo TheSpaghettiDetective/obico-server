@@ -557,9 +557,9 @@ export default {
       } else {
         this.gotSecret = null
         this.chosenDeviceId = discoveredPrinter.device_id
-
+        const port = discoveredPrinter.port || 80
         this.tsdDiscoveryPopup = window.open(
-          `http://${discoveredPrinter.host_or_ip}:${discoveredPrinter.port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
+          `http://${discoveredPrinter.host_or_ip}:${port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
           'tsdDiscoveryPopup',
           'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
         )

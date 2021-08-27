@@ -57,11 +57,11 @@ class DeviceInfoSerializer(serializers.Serializer):
                     return ip
             else:
                 hostname = value.strip()
-                if host_re.match(hostname) and hostname.endswith('.local'):
+                if host_re.match(hostname):
                     return hostname
 
             raise serializers.ValidationError(
-                'Must be private ip address or a .local domain')
+                'Must be private ip address or hostname')
         return value
 
 

@@ -135,7 +135,7 @@
                 <ul>
                   <li>The Raspberry Pi is powered on.</li>
                   <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                  <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+                  <li>The Spaghetti Detective plugin version is 1.7.3 or above.</li>
                 </ul>
               </div>
             </div>
@@ -560,9 +560,18 @@ export default {
         const port = discoveredPrinter.port || 80
         this.tsdDiscoveryPopup = window.open(
           `http://${discoveredPrinter.host_or_ip}:${port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
-          'tsdDiscoveryPopup',
+          '_blank',
           'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
         )
+        if (!this.tsdDiscoveryPopup) {
+          this.chosenDeviceId = null
+          this.$swal.fire({
+            icon: 'warning',
+            title: 'Please disable popup blockers temporarily!',
+            html: 'TheSpaghettiDetective cannot link your printer automatically without opening a popup window. You can enable popups usually in the navbar of your browser.'
+          })
+          return
+        }
 
         setTimeout(() => {
           this.closeDiscoveryPopup()

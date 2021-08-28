@@ -37,6 +37,8 @@ router.register(
     'PrinterDiscoveryViewSet')
 
 urlpatterns = [
+    path('v1/discovery/', viewsets.discovery),
+    path('v1/scan/', viewsets.scan),
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),

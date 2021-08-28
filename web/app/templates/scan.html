@@ -1,0 +1,41 @@
+<html>
+  <body>
+    <h1>Looking for printers ...</h1>
+    <script>
+      var devices = [
+        {% for device in devices %}
+              {'host': '{{ device.host_or_ip}}', 'port': '{{device.port|default:80}}', 'device_id': '{{device.device_id}}'},
+        {% endfor %}
+      ];
+      
+      let c = 0;
+
+      devices.forEach(
+        function(device) {
+          fetch(
+            `http://${device.host}:${device.port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${device.device_id}`,
+            {headers: {'Accept': 'application/json'}}
+          ).then(
+            function(r) {
+              if (!r.ok) {
+                c += 1;
+                if (c >= devices.length) {
+                  window.opener.postMessage({finished: true}, '*');
+                }
+              }
+              return r.json();
+            }
+          ).then(
+            function(data) {
+                window.opener.postMessage({device: device, reply: data}, '*');
+                c += 1;
+                if (c >= devices.length) {
+                  window.opener.postMessage({finished: true}, '*');
+                }
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html.

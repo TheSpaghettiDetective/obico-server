@@ -1,0 +1,40 @@
+<html>
+<body>
+  <h1>Discovery</h1>
+  <button id="scan">Scan</button>
+  <h2>Results</h2>
+  <ul id="results">
+  </ul>
+
+  <script>
+    var popup = undefined;
+    var result = document.getElementById("results");
+    var button = document.getElementById("scan");
+
+    window.addEventListener("message", function(ev) {
+      if (ev && ev.data && ev.data.device && ev.data.reply) {
+        var element = document.createElement("li");
+        var device = ev.data.device;
+        element.innerHTML = `<a href="http://${device.host}:${device.port}">Secret: ${ev.data.reply.device_secret}</a>`;
+        results.appendChild(element);
+      } else if (ev && ev.data && ev.data.finished) {
+        if (popup) {
+          popup.close();
+          popup = undefined;
+        }
+      }
+    });
+
+    button.addEventListener('click', function() {
+      results.innerHTML = '';
+      popup = window.open('/api/v1/scan/', '_blank','toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100');
+      setTimeout(function() {
+        if (popup) {
+          popup.close();
+          popup = undefined;
+        }
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

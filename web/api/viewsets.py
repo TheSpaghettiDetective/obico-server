@@ -11,7 +11,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured
 from random import random, seed
@@ -461,3 +461,20 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         )
 
         return Response({'queued': True})
+
+
+def discovery(request):
+    return render(request, 'discovery.html')
+
+
+def scan(request):
+    client_ip, is_routable = get_client_ip(request)
+
+    # must guard against possible None or blank value as client_ip
+    if not client_ip:
+        raise ImproperlyConfigured("cannot determine client_ip")
+
+    return render(
+        request,
+        'scan.html',
+        context={'devices': get_active_devices_for_client_ip(client_ip)})

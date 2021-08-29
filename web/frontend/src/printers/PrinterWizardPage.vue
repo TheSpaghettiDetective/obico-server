@@ -210,6 +210,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import semverSatisfies from 'semver/functions/satisfies'
 
 import sortBy from 'lodash/sortBy'
 import get from 'lodash/get'
@@ -247,7 +248,7 @@ export default {
           'timeoutId': null
         },
       },
-      discoveryEnabled: true,
+      discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
       discoveryCount: 0,
       discoveredPrinters: [],
       chosenDeviceId: null,
@@ -551,41 +552,50 @@ export default {
     },
 
     autoLinkPrinter(discoveredPrinter) {
-      if (!discoveredPrinter.plugin_version && !this.disallowLegacyLinking) {
-        // TODO remove when backward compatibility is no longer necessary
+      // TODO remove when backward compatibility is no longer necessary
+      if (!this.disallowLegacyLinking) {
         this.legacyAutoLinkPrinter(discoveredPrinter.deviceId)
-      } else {
-        this.gotSecret = null
-        this.chosenDeviceId = discoveredPrinter.device_id
-        const port = discoveredPrinter.port || 80
-        this.tsdDiscoveryPopup = window.open(
-          `http://${discoveredPrinter.host_or_ip}:${port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
-          '_blank',
-          'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
-        )
-        if (!this.tsdDiscoveryPopup) {
-          this.chosenDeviceId = null
-          this.$swal.fire({
-            icon: 'warning',
-            title: 'Please disable popup blockers temporarily!',
-            html: 'TheSpaghettiDetective cannot link your printer automatically without opening a popup window. You can enable popups usually in the navbar of your browser.'
-          })
-          return
-        }
-
-        setTimeout(() => {
-          this.closeDiscoveryPopup()
-
-          if (!this.gotSecret) {
-            this.chosenDeviceId = null
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
-            })
-            this.discoveryEnabled = false
-          }
-        }, 5000)
+        return
       }
+
+      if (!discoveredPrinter.plugin_version || !semverSatisfies(discoveredPrinter.plugin_version, '>=1.8.0')) {
+        this.$swal.Reject.fire({
+          html:
+            '<p class="text-center">Please make sure the "Access Anywhere - The Spaghetti Detective plugin" has been upgraded to <ins>verion 1.8.0 and above</ins>.</p>'
+        })
+        return
+      }
+
+      this.gotSecret = null
+      this.chosenDeviceId = discoveredPrinter.device_id
+      const port = discoveredPrinter.port || 80
+      this.tsdDiscoveryPopup = window.open(
+        `http://${discoveredPrinter.host_or_ip}:${port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
+        '_blank',
+        'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
+      )
+      if (!this.tsdDiscoveryPopup) {
+        this.chosenDeviceId = null
+        this.$swal.fire({
+          icon: 'warning',
+          title: 'Please disable popup blockers temporarily!',
+          html: 'TheSpaghettiDetective cannot link your printer automatically without opening a popup window. You can enable popups usually in the navbar of your browser.'
+        })
+        return
+      }
+
+      setTimeout(() => {
+        this.closeDiscoveryPopup()
+
+        if (!this.gotSecret) {
+          this.chosenDeviceId = null
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
+          })
+          this.discoveryEnabled = false
+        }
+      }, 5000)
     }
   }
 }

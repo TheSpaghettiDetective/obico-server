@@ -413,6 +413,8 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
+        MAX_UNLINKED_PRINTERS_PER_IP = 1
+
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
@@ -420,9 +422,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         devices = get_active_devices_for_client_ip(client_ip)
-        if (
-            len(devices) > settings.MAX_UNLINKED_PRINTERS_PER_IP
-        ):
+        if len(devices) > MAX_UNLINKED_PRINTERS_PER_IP:
             return Response([])
         return Response([device.asdict() for device in devices])
 

@@ -220,7 +220,7 @@ import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
 import DiscoveredPrinter from './DiscoveredPrinter.vue'
 
-const MAX_DISCOVERY_CALLS = 720 // Scaning for up to 1 hour
+const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
 export default {
   components: {

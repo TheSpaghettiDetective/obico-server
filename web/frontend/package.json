@@ -18,6 +18,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.26.0",
     "pako": "^2.0.3",
+    "semver": "^7.3.5",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
     "vue-form-wizard": "^0.8.4",

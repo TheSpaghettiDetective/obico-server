@@ -124,7 +124,7 @@
                   <div class="spinner-border" role="status">
                   <span class="sr-only"></span>
                 </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
-                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" :disallowLegacyLinking="disallowLegacyLinking" @auto-link-printer="autoLinkPrinter" />
               </div>
               <div class="mt-5 mb-3">
                 Can't find the OctoPrint you want to link?

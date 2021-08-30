@@ -49,10 +49,14 @@ export default {
       type: Object,
       required: true
     },
+    disallowLegacyLinking: {
+      type: Boolean,
+      required: true
+    },
   },
   computed: {
     satisfyVersionForAutoLink() {
-      return this.discoveredPrinter.plugin_version && semverSatisfies(this.discoveredPrinter.plugin_version, '>=1.8.0')
+      return !this.disallowLegacyLinking || (this.discoveredPrinter.plugin_version && semverSatisfies(this.discoveredPrinter.plugin_version, '>=1.8.0'))
     },
   }
 }

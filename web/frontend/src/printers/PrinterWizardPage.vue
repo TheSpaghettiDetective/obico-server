@@ -482,7 +482,12 @@ export default {
     },
 
     discoverPrinter() {
+      if (!this.discoveryEnabled || this.verifiedPrinter) {
+        return
+      }
+
       this.callPrinterDiscoveryApi()
+
       setTimeout(() => {
         this.discoverPrinter()
       }, 5000)

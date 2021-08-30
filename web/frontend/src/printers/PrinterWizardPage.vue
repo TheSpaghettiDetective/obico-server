@@ -33,16 +33,16 @@
       <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
         </div>
         <div class="mt-5">
-          <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
+          <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
         </div>
         <div class="mt-4">
-          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
+          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto">Change Printer Settings</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
@@ -218,7 +218,8 @@ import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
-import DiscoveredPrinter from './DiscoveredPrinter.vue'
+import DiscoveredPrinter from './components/DiscoveredPrinter.vue'
+import AutoLinkPopup from './components/AutoLinkPopup.vue'
 
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
@@ -256,14 +257,6 @@ export default {
       tsdDiscoveryPopup: null,
       apiCallIntervalId: null,
     }
-  },
-
-  mounted() {
-    window.addEventListener('message', this.gotWindowMessage)
-  },
-
-  beforeDestroy() {
-    window.removeEventListener('message', this.gotWindowMessage)
   },
 
   created() {
@@ -496,43 +489,6 @@ export default {
       }, 5000)
     },
 
-    closeDiscoveryPopup() {
-      if (this.tsdDiscoveryPopup) {
-        this.tsdDiscoveryPopup.close()
-        this.tsdDiscoveryPopup = null
-      }
-    },
-
-    gotWindowMessage(ev) {
-      const data = {...(ev?.data || {})}
-      if (this.gotSecret || !this.chosenDeviceId || !data.device_secret) {
-        console.log('Ignored message', ev)
-        return
-      }
-
-      this.gotSecret = data
-      this.closeDiscoveryPopup()
-
-      axios.post(urls.printerDiscovery(), {
-        code: this.verificationCode.code,
-        device_id: this.chosenDeviceId,
-        device_secret: data.device_secret,
-      })
-
-      // Declare failure if nothing is linked after 20s
-      setTimeout(() => {
-        if (this.chosenDeviceId && !this.verifiedPrinter) {
-          this.chosenDeviceId = null
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
-          })
-          this.discoveryEnabled = false
-        }
-        this.chosenDeviceId = null
-      }, 20000)
-    },
-
     // TODO remove when backward compatibility is no longer necessary
     legacyAutoLinkPrinter(deviceId) {
       this.chosenDeviceId = deviceId
@@ -561,33 +517,37 @@ export default {
       if (!discoveredPrinter.plugin_version || !semverSatisfies(discoveredPrinter.plugin_version, '>=1.8.0')) {
         this.$swal.Reject.fire({
           html:
-            '<p class="text-center">Please make sure the "Access Anywhere - The Spaghetti Detective plugin" has been upgraded to <ins>verion 1.8.0 and above</ins>.</p>'
+            '<p class="text-center">Please upgrade the plugin to version 1.8.0 or above.</p>'
         })
         return
       }
 
-      this.gotSecret = null
-      this.chosenDeviceId = discoveredPrinter.device_id
-      const port = discoveredPrinter.port || 80
-      this.tsdDiscoveryPopup = window.open(
-        `http://${discoveredPrinter.host_or_ip}:${port}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.chosenDeviceId}`,
-        '_blank',
-        'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
+      this.$swal.openModalWithComponent(
+        AutoLinkPopup,
+        {
+          discoveredPrinter,
+          switchToManualLinking: () => this.discoveryEnabled=false,
+          secretObtained: (chosenDeviceId, secret) => this.secretObtained(chosenDeviceId, secret),
+        },
+        {
+          title: `Link ${discoveredPrinter.host_or_ip}:${discoveredPrinter.port}`,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        }
       )
-      if (!this.tsdDiscoveryPopup) {
-        this.chosenDeviceId = null
-        this.$swal.fire({
-          icon: 'warning',
-          title: 'Please disable popup blockers temporarily!',
-          html: 'TheSpaghettiDetective cannot link your printer automatically without opening a popup window. You can enable popups usually in the navbar of your browser.'
-        })
-        return
-      }
+    },
+    secretObtained(chosenDeviceId, secret) {
+      this.chosenDeviceId = chosenDeviceId
 
+      axios.post(urls.printerDiscovery(), {
+        code: this.verificationCode.code,
+        device_id: this.chosenDeviceId,
+        device_secret: secret,
+      })
+
+      // Declare failure if nothing is linked after 20s
       setTimeout(() => {
-        this.closeDiscoveryPopup()
-
-        if (!this.gotSecret) {
+        if (this.chosenDeviceId && !this.verifiedPrinter) {
           this.chosenDeviceId = null
           this.$swal.Toast.fire({
             icon: 'error',
@@ -595,9 +555,10 @@ export default {
           })
           this.discoveryEnabled = false
         }
-      }, 5000)
-    }
-  }
+        this.chosenDeviceId = null
+      }, 20000)
+    },
+  },
 }
 </script>
 
@@ -747,9 +708,6 @@ li
         width: 5rem
         height: 5rem
         margin-bottom: 0.8rem
-
-  .spinner-grow
-    margin: 12px 12px
 
   li
     margin: initial

@@ -45,7 +45,8 @@ class DeviceInfoSerializer(serializers.Serializer):
     host_or_ip = serializers.CharField(
         required=False, max_length=253, allow_blank=True, default='')
     port = serializers.IntegerField(
-        required=False, min_value=1, max_value=65535)
+        required=False, min_value=1, max_value=65535,
+        allow_null=True, default=None)
     plugin_version = serializers.CharField(
         required=False, max_length=253, allow_blank=True, default='')
 

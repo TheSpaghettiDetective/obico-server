@@ -135,7 +135,7 @@
                 <ul>
                   <li>The Raspberry Pi is powered on.</li>
                   <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                  <li>The Spaghetti Detective plugin version is 1.7.3 or above.</li>
+                  <li>The Spaghetti Detective plugin version is 1.8.0 or above.</li>
                 </ul>
               </div>
             </div>
@@ -210,7 +210,6 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import semverSatisfies from 'semver/functions/satisfies'
 
 import sortBy from 'lodash/sortBy'
 import get from 'lodash/get'
@@ -511,14 +510,6 @@ export default {
       // TODO remove when backward compatibility is no longer necessary
       if (!this.disallowLegacyLinking) {
         this.legacyAutoLinkPrinter(discoveredPrinter.deviceId)
-        return
-      }
-
-      if (!discoveredPrinter.plugin_version || !semverSatisfies(discoveredPrinter.plugin_version, '>=1.8.0')) {
-        this.$swal.Reject.fire({
-          html:
-            '<p class="text-center">Please upgrade the plugin to version 1.8.0 or above.</p>'
-        })
         return
       }
 

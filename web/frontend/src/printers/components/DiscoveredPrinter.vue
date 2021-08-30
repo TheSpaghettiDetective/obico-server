@@ -40,7 +40,7 @@
 </template>
 
 <script>
-// import semverSatisfies from 'semver/functions/satisfies'
+import semverSatisfies from 'semver/functions/satisfies'
 
 export default {
   name: 'DiscoveredPrinter',
@@ -52,8 +52,7 @@ export default {
   },
   computed: {
     satisfyVersionForAutoLink() {
-      // return this.discoveredPrinter.plugin_version && semverSatisfies(this.discoveredPrinter.plugin_version, '>=1.8.0')
-      return false
+      return this.discoveredPrinter.plugin_version && semverSatisfies(this.discoveredPrinter.plugin_version, '>=1.8.0')
     },
   }
 }

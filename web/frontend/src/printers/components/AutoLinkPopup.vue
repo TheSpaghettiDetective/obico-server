@@ -7,7 +7,7 @@
     <div>
     <div class="row my-2">
       <div class="col-sm-6">
-        <button class="btn btn-block btn-primary mt-2" :disabled="linking" @click="autoLinkPrinter">Link Now<i v-if="linking" class="fas fa-spinner fa-spin"></i></button>
+        <button class="btn btn-block btn-primary mt-2" :disabled="linking" @click="autoLinkPrinter"><b-spinner v-if="linking" small></b-spinner>Link Now</button>
       </div>
       <div class="col-sm-6">
         <button class="btn btn-block btn-secondary mt-2" @click="cancel">Cancel</button>

@@ -514,7 +514,7 @@ export default {
     autoLinkPrinter(discoveredPrinter) {
       // TODO remove when backward compatibility is no longer necessary
       if (!this.disallowLegacyLinking) {
-        this.legacyAutoLinkPrinter(discoveredPrinter.deviceId)
+        this.legacyAutoLinkPrinter(discoveredPrinter.device_id)
         return
       }
 

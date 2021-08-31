@@ -85,7 +85,7 @@
           </svg>
         </div>
         <div
-          v-if="showVideo"
+          v-show="showVideo"
           class="webcam_fixed_ratio_inner ontop full"
         >
           <video

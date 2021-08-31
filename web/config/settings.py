@@ -18,6 +18,7 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+VERSION = os.environ.get('VERSION', '')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -312,6 +313,7 @@ OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776
 
 # settings export
 SETTINGS_EXPORT = [
+    'VERSION',
     'TWILIO_ENABLED',
     'PUSHOVER_APP_TOKEN',
     'TEMPLATE_LAYOUT',

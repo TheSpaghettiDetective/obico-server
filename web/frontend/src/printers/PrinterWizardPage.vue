@@ -269,7 +269,6 @@ export default {
     if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
       this.discoveryEnabled = false
     }
-    this.discoverPrinter()
     this.getVerificationCode()
   },
 
@@ -350,6 +349,10 @@ export default {
     nextTab(activeStep) {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
       this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
+
+      if (activeStep == 0 && this.discoveryEnabled && this.discoveryCount == 0) {
+        this.discoverPrinter()
+      }
 
       if (this.onVerificationStep) {
         const copyFunc = this.copyCode

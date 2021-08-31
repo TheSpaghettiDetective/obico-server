@@ -94,7 +94,7 @@
             :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
-            :poster="taggedSrc"
+            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
             autoplay muted playsinline
             @loadstart="onLoadStart()"
             @canplay="onCanPlay()"

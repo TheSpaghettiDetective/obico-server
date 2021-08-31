@@ -180,6 +180,7 @@
   <script src="{% static 'js/theme.js' %}"></script>
 
   <!-- Sentry -->
+  {% block sentry %}
   <script
     src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js"
     integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo"
@@ -195,6 +196,7 @@
       if (Sentry) {
         Sentry.init({
           dsn: '{{ settings.SENTRY_DSN }}',
+          version: '{{ settings.VERSION }}',
           ignoreErrors: [
             'window.webkit.messageHandlers',
             'api.telegram.org',
@@ -207,6 +209,7 @@
       }
     {% endif %}
   </script>
+  {% endblock sentry %}
 
   {% block page_js %}{% endblock page_js %}
   {% block body_bottom_ext %}{% endblock body_bottom_ext %}

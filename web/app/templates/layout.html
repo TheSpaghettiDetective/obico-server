@@ -196,7 +196,7 @@
       if (Sentry) {
         Sentry.init({
           dsn: '{{ settings.SENTRY_DSN }}',
-          version: '{{ settings.VERSION }}',
+          release: '{{ settings.VERSION }}',
           ignoreErrors: [
             'window.webkit.messageHandlers',
             'api.telegram.org',

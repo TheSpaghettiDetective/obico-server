@@ -72,6 +72,7 @@ export default function WebRTCConnection(videoEnabled) {
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers,
+        ipv6: true,
         success: () => {
           janus.attach(
             {

@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import time
+import re
 
 from rest_framework import serializers
 from typing import Optional, List
@@ -22,7 +23,7 @@ LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
 
-host_re = URLValidator.host_re
+host_re = re.compile(URLValidator.host_re)
 
 
 class DeviceInfoSerializer(serializers.Serializer):

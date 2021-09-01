@@ -12,6 +12,7 @@ from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
+from django.shortcuts import render
 from django.core.exceptions import ImproperlyConfigured
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
@@ -412,6 +413,8 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
+        MAX_UNLINKED_PRINTERS_PER_IP = 1
+
         client_ip, is_routable = get_client_ip(request)
 
         # must guard against possible None or blank value as client_ip
@@ -419,9 +422,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
             raise ImproperlyConfigured("cannot determine client_ip")
 
         devices = get_active_devices_for_client_ip(client_ip)
-        if (
-            len(devices) > settings.MAX_UNLINKED_PRINTERS_PER_IP
-        ):
+        if len(devices) > MAX_UNLINKED_PRINTERS_PER_IP:
             return Response([])
         return Response([device.asdict() for device in devices])
 
@@ -441,10 +442,22 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
+        # TODO remove "contains" check here
+        # when we no longer need backward compatibility
+        if 'device_secret' in self.request.data:
+            device_secret = self.request.data.get('device_secret')
+            if device_secret is None:
+                raise ValidationError({'device_secret': "missing param"})
+        else:
+            device_secret = ''
+
         push_message_for_device(
             client_ip,
             device_id,
-            DeviceMessage.from_dict({'device_id': device_id, 'type': 'verify_code', 'data': {'code': code}})
+            DeviceMessage.from_dict({
+                'device_id': device_id,
+                'type': 'verify_code',
+                'data': {'code': code, 'secret': device_secret}})
         )
 
         return Response({'queued': True})

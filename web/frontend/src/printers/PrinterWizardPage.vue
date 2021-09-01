@@ -33,16 +33,16 @@
       <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn btn-lg">Go Check Out Printer Feed!</a>
+          <a href="/printers/" class="btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
         </div>
         <div class="mt-5">
-          <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto btn">Add Phone Number</a>
+          <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
         </div>
         <div class="mt-4">
-          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto btn">Change Printer Settings</a>
+          <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto">Change Printer Settings</a>
         </div>
         <div>
           <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
@@ -104,11 +104,10 @@
             </div>
           </div>
         </tab-content>
-        <tab-content v-if="autoDiscovering" title="Link It!">
-          <loading :active="autoLinking"
-            :can-cancel="true"
-            :on-cancel="cancelAutoLinking"
-            >
+        <tab-content v-if="discoveryEnabled" title="Link It!">
+          <loading :active="chosenDeviceId != null"
+            :can-cancel="false"
+          >
           </loading>
           <div class="discover">
             <div class="discover-body">
@@ -125,18 +124,18 @@
                   <div class="spinner-border" role="status">
                   <span class="sr-only"></span>
                 </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
-                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+                <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" :disallowLegacyLinking="disallowLegacyLinking" @auto-link-printer="autoLinkPrinter" />
               </div>
               <div class="mt-5 mb-3">
                 Can't find the OctoPrint you want to link?
-                Switch to <a class="link" @click="autoDiscovering=false">Manual Setup</a> instead.
+                Switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a> instead.
               </div>
               <div v-if="discoveryCount>=2" class="text-muted">
                 <div>To link your OctoPrint, please make sure:</div>
                 <ul>
                   <li>The Raspberry Pi is powered on.</li>
                   <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                  <li>The Spaghetti Detective plugin version is 1.7 or above.</li>
+                  <li>The Spaghetti Detective plugin version is 1.8.0 or above.</li>
                 </ul>
               </div>
             </div>
@@ -163,7 +162,7 @@
             </div>
           </div>
         </tab-content>
-        <tab-content v-if="!autoDiscovering" title="Enter Code">
+        <tab-content v-if="!discoveryEnabled" title="Enter Code">
           <div class="container">
             <div class="row justify-content-center pb-3">
               <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
@@ -218,9 +217,10 @@ import theme from '../main/main.sass'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
-import DiscoveredPrinter from './DiscoveredPrinter.vue'
+import DiscoveredPrinter from './components/DiscoveredPrinter.vue'
+import AutoLinkPopup from './components/AutoLinkPopup.vue'
 
-const MAX_DISCOVERY_CALLS = 720 // Scaning for up to 1 hour
+const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
 export default {
   components: {
@@ -248,23 +248,27 @@ export default {
           'timeoutId': null
         },
       },
-      autoDiscovering: true,
+      discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
       discoveryCount: 0,
       discoveredPrinters: [],
-      autoLinking: false,
+      chosenDeviceId: null,
+      gotSecret: null,
+      tsdDiscoveryPopup: null,
       apiCallIntervalId: null,
     }
   },
 
   created() {
+    // TODO remove when compatibility is no longer necessary
     const user = JSON.parse(document.querySelector('#user-json').text)
-    if (get(user, 'subscription.plan_id') !== 'pro-comp-50-dh' || get(user, 'subscription.printers_subscribed') !== 1) { // Only subscribed user can auth-disocver
-      this.autoDiscovering = false
-    }
+    this.disallowLegacyLinking = (
+      get(user, 'subscription.plan_id') !== 'pro-comp-50-dh' ||
+      get(user, 'subscription.printers_subscribed') !== 1
+    )
+
     if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
-      this.autoDiscovering = false
+      this.discoveryEnabled = false
     }
-    this.discoverPrinter()
     this.getVerificationCode()
   },
 
@@ -345,6 +349,10 @@ export default {
     nextTab(activeStep) {
       document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
       this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
+
+      if (activeStep == 0 && this.discoveryEnabled && this.discoveryCount == 0) {
+        this.discoverPrinter()
+      }
 
       if (this.onVerificationStep) {
         const copyFunc = this.copyCode
@@ -458,11 +466,11 @@ export default {
     },
 
     callPrinterDiscoveryApi() {
-      if (!this.autoDiscovering) {
+      if (!this.discoveryEnabled) {
         return
       }
       if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
-        this.autoDiscovering = false
+        this.discoveryEnabled = false
         this.$swal.Toast.fire({
           title: 'No OctoPrint discovered on your local network. Switched to manual linking.',
         })
@@ -477,32 +485,79 @@ export default {
     },
 
     discoverPrinter() {
+      if (!this.discoveryEnabled || this.verifiedPrinter) {
+        return
+      }
+
       this.callPrinterDiscoveryApi()
+
       setTimeout(() => {
         this.discoverPrinter()
       }, 5000)
     },
 
-    autoLinkPrinter(deviceId) {
+    // TODO remove when backward compatibility is no longer necessary
+    legacyAutoLinkPrinter(deviceId) {
+      this.chosenDeviceId = deviceId
       axios.post(urls.printerDiscovery(), { code: this.verificationCode.code, device_id: deviceId })
-      this.autoLinking = true
       // Declare failure if nothing is linked after 20s
       setTimeout(() => {
-        if (this.autoLinking && !this.verifiedPrinter) {
+        if (this.chosenDeviceId && !this.verifiedPrinter) {
+          this.chosenDeviceId = null
           this.$swal.Toast.fire({
             icon: 'error',
             title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
           })
-          this.autoDiscovering = false
+          this.discoveryEnabled = false
         }
-        this.autoLinking = false
+        this.chosenDeviceId = null
       }, 20000)
     },
 
-    cancelAutoLinking() {
-      this.autoLinking = false
-    }
-  }
+    autoLinkPrinter(discoveredPrinter) {
+      // TODO remove when backward compatibility is no longer necessary
+      if (!this.disallowLegacyLinking) {
+        this.legacyAutoLinkPrinter(discoveredPrinter.device_id)
+        return
+      }
+
+      this.$swal.openModalWithComponent(
+        AutoLinkPopup,
+        {
+          discoveredPrinter,
+          switchToManualLinking: () => this.discoveryEnabled=false,
+          secretObtained: (chosenDeviceId, secret) => this.secretObtained(chosenDeviceId, secret),
+        },
+        {
+          title: `Link ${discoveredPrinter.host_or_ip}:${discoveredPrinter.port}`,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        }
+      )
+    },
+    secretObtained(chosenDeviceId, secret) {
+      this.chosenDeviceId = chosenDeviceId
+
+      axios.post(urls.printerDiscovery(), {
+        code: this.verificationCode.code,
+        device_id: this.chosenDeviceId,
+        device_secret: secret,
+      })
+
+      // Declare failure if nothing is linked after 20s
+      setTimeout(() => {
+        if (this.chosenDeviceId && !this.verifiedPrinter) {
+          this.chosenDeviceId = null
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
+          })
+          this.discoveryEnabled = false
+        }
+        this.chosenDeviceId = null
+      }, 20000)
+    },
+  },
 }
 </script>
 
@@ -652,9 +707,6 @@ li
         width: 5rem
         height: 5rem
         margin-bottom: 0.8rem
-
-  .spinner-grow
-    margin: 12px 12px
 
   li
     margin: initial

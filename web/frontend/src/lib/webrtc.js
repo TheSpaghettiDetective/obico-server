@@ -13,6 +13,7 @@ export default function WebRTCConnection(videoEnabled) {
     streamId: undefined,
     streaming: undefined,
     videoEnabled: videoEnabled ?? false,
+    bitrateInterval: null,
 
     openForShareToken(shareToken) {
       self.connect(
@@ -72,6 +73,7 @@ export default function WebRTCConnection(videoEnabled) {
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers,
+        ipv6: true,
         success: () => {
           janus.attach(
             {
@@ -92,9 +94,6 @@ export default function WebRTCConnection(videoEnabled) {
                     }
                   }
                 })
-                setInterval(function() {
-                    console.log(pluginHandle.getBitrate())
-                }, 5000)
               },
               error: function (error) {
                 Janus.error('  -- Error attaching plugin... ', error)
@@ -200,9 +199,25 @@ export default function WebRTCConnection(videoEnabled) {
       }
       const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
       self.streaming.send({ 'message': body })
+
+      if (self.bitrateInterval) {
+        clearInterval(self.bitrateInterval)
+        self.bitrateInterval = null
+      }
+
+      self.bitrateInterval = setInterval(function() {
+        if (self.streaming) {
+          console.log(self.streaming.getBitrate())
+        }
+      }, 5000)
     },
     stopStream() {
-    if (!self.channelOpen()) {
+      if (self.bitrateInterval) {
+        clearInterval(self.bitrateInterval)
+        self.bitrateInterval = null
+      }
+
+      if (!self.channelOpen()) {
         return
       }
       const body = { 'request': 'stop' }

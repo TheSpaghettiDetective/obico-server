@@ -25,44 +25,36 @@
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
-    <div v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch">
-      <div class="dropdown">
-        <button
-          class="btn icon-btn"
-          type="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          :aria-label="printer.name + ' Controls'"
-        ><i class="fas fa-ellipsis-v"></i>
-        </button>
 
-        <div class="dropdown-menu dropdown-menu-right">
-          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc(null)">
-            <span class="title" :class="{'active': stickyStreamingSrc === null}">
-              <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
-              Auto
-            </span><br>
-            <span class="description">Show the best quality stream that is available</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc('VIDEO')">
-            <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
-              <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
-              Premium webcam streaming view
-            </span><br>
-            <span class="description">Premium-only feature (25 fps)</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item" @click.prevent="forceStreamingSrc('IMAGE')">
-            <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
-              <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
-              Detective webcam view
-            </span><br>
-            <span class="description">Shows detection boxes if present (0.1 fps)</span>
-          </a>
-        </div>
-      </div>
-    </div>
+    <b-dropdown v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch" right no-caret toggle-class="icon-btn">
+      <template #button-content>
+        <i class="fas fa-ellipsis-v"></i>
+      </template>
+      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc(null)">
+        <span class="title" :class="{'active': stickyStreamingSrc === null}">
+          <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
+          Auto
+        </span><br>
+        <span class="description">Show the best quality stream that is available</span>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('VIDEO')">
+        <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
+          <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
+          Premium webcam streaming view
+        </span><br>
+        <span class="description">Premium-only feature (25 fps)</span>
+      </b-dropdown-item>
+      <div class="dropdown-divider"></div>
+      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
+        <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
+          <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
+          Detective webcam view
+        </span><br>
+        <span class="description">Shows detection boxes if present (0.1 fps)</span>
+      </b-dropdown-item>
+    </b-dropdown>
+
     <div
       :class="webcamRotateClass"
     >
@@ -85,7 +77,7 @@
           </svg>
         </div>
         <div
-          v-if="showVideo"
+          v-show="showVideo"
           class="webcam_fixed_ratio_inner ontop full"
         >
           <video
@@ -94,7 +86,7 @@
             :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
-            :poster="taggedSrc"
+            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
             autoplay muted playsinline
             @loadstart="onLoadStart()"
             @canplay="onCanPlay()"

@@ -214,12 +214,12 @@ a.link {
 }
 
 .icon-btn {
-  background-color: transparent;
+  background: transparent;
   border: none;
   color: rgb(var(--color-text-primary) / .75);
 
-  &:hover, &:active, &:focus {
-    background-color: transparent !important;
+  &:hover, &:active, &:focus, &.active, &.dropdown-toggle {
+    background: transparent !important;
     border: none !important;
     color: rgb(var(--color-text-primary)) !important;
     -webkit-box-shadow: none !important;

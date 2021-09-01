@@ -16,36 +16,24 @@
           (<a :href="'#printer-actions-' + printer.id" :class="statusClass">{{ statusText }}</a>)
           </div>
         </div>
-        <div class="dropdown">
-          <button
-            class="btn icon-btn"
-            type="button"
-            id="dropdownMenuButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            :aria-label="printer.name + ' Controls'"
-          ><i class="fas fa-ellipsis-v"></i>
-          </button>
-
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-
-            <a class="dropdown-item" href="#" @click.prevent="onSharePrinter()">
-              <i class="fas fa-share-alt fa-lg"></i>Share
-            </a>
-            <a class="dropdown-item" :href="octoPrintTunnelUrl()">
-              <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59">
-                <use href="#svg-octoprint-tunneling" />
-              </svg>
-              Tunneling
-            </a>
-            <div class="dropdown-divider"></div>
-            <a
-              class="dropdown-item"
-              :href="settingsUrl()"
-            ><i class="fas fa-wrench fa-lg"></i>Configure
-            </a>
-          </div>
-        </div>
+        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
+            <i class="fas fa-share-alt fa-lg"></i>Share
+          </b-dropdown-item>
+          <b-dropdown-item :href="octoPrintTunnelUrl()">
+            <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59">
+              <use href="#svg-octoprint-tunneling" />
+            </svg>
+            Tunneling
+          </b-dropdown-item>
+          <div class="dropdown-divider"></div>
+          <b-dropdown-item :href="settingsUrl()">
+            <i class="fas fa-wrench fa-lg"></i>Configure
+          </b-dropdown-item>
+        </b-dropdown>
       </div>
       <streaming-box :printer="printer" :webrtc="webrtc" />
       <div

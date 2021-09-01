@@ -56,23 +56,16 @@
             </div>
             <br />
             <div class="control-options">
-              <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label
-                  class="btn"
-                  v-for="option in jogDistanceOptions"
-                  :key="option"
-                  :class="{'active': jogDistance == option}"
-                  @click="jogDistance = option"
-                >
-                  <input
-                    type="radio"
-                    name="jogDistance"
-                    v-model="jogDistance"
-                    :value="option"
-                    autocomplete="off">
-                  {{ option }}mm
-                </label>
-              </div>
+              <b-form-group v-slot="{ ariaDescribedby }">
+                <b-form-radio-group
+                  v-model="jogDistance"
+                  :options="jogDistanceOptions.map(val => { return {text: val + 'mm', value: val} })"
+                  name="jogDistance"
+                  button-variant="default"
+                  :aria-describedby="ariaDescribedby"
+                  buttons
+                ></b-form-radio-group>
+              </b-form-group>
             </div>
           </div>
         </div>

@@ -32,35 +32,26 @@
             </svg>
           </b-form-radio>
         </b-form-radio-group>
-
-        <div class="dropdown">
-          <button
-            class="btn icon-btn"
-            type="button"
-            id="dropdownMenuButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-label="Controls"
-          >
+        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" v-if="this.print.video_url" :href="this.print.video_url" target="_blank">
-              <i class="fas fa-download"></i>Download Original Time-lapse
-            </a>
-            <a
-              class="dropdown-item"
-              v-if="this.print.tagged_video_url"
-              :href="this.print.tagged_video_url" target="_blank"
-            >
-              <i class="fas fa-download"></i>Download Detective Time-lapse
-            </a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item text-danger" @click="deleteVideo">
+          </template>
+          <b-dropdown-item v-if="this.print.video_url" :href="this.print.video_url" target="_blank">
+            <i class="fas fa-download"></i>Download Original Time-lapse
+          </b-dropdown-item>
+          <b-dropdown-item
+            v-if="this.print.tagged_video_url"
+            :href="this.print.tagged_video_url" target="_blank"
+          >
+            <i class="fas fa-download"></i>Download Detective Time-lapse
+          </b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item @click="deleteVideo">
+            <span class="text-danger">
               <i class="fas fa-trash-alt"></i>Delete
-            </a>
-          </div>
-        </div>
+            </span>
+          </b-dropdown-item>
+        </b-dropdown>
       </div>
       <div>
         <div class="position-relative" v-if="print.video_archived_at">

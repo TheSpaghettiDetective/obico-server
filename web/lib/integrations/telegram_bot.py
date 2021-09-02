@@ -2,6 +2,7 @@ from telebot import TeleBot, types
 from django.conf import settings
 from lib import site
 from app.models import Printer
+import time
 
 import logging
 
@@ -57,7 +58,15 @@ def send_notification(printer, notification, photo, buttons=None):
     if buttons:
         keyboard = inline_markup(printer, buttons) if photo else default_markup()
 
-    if photo:
-        bot.send_photo(chat_id, photo, caption=notification, parse_mode='Markdown', reply_markup=keyboard)
-    else:
-        bot.send_message(chat_id, notification, parse_mode='Markdown', reply_markup=keyboard)
+    attempts = 0
+
+    while attempts < 2:
+        try:
+            if photo:
+                bot.send_photo(chat_id, photo, caption=notification, parse_mode='Markdown', reply_markup=keyboard)
+            else:
+                bot.send_message(chat_id, notification, parse_mode='Markdown', reply_markup=keyboard)
+            return
+        except ConnectionError:
+            attempts += 1
+            time.sleep(0.05)

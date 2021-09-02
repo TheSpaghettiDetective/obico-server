@@ -57,7 +57,7 @@ export default {
 
         .then(response => {
           const { instance, credited_dhs } = response.data
-          this.$emit('shotChanged', instance)
+          
           if (credited_dhs > 0) {
             this.$swal.Prompt.fire({
               title: 'You are awesome!',
@@ -69,8 +69,12 @@ export default {
             }).then(result => {
               if (result.isConfirmed) {
                 window.location.href = '/prints/'
+              } else {
+                this.$emit('shotChanged', instance)
               }
             })
+          } else {
+            this.$emit('shotChanged', instance)
           }
         })
     }

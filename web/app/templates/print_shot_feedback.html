@@ -2,9 +2,6 @@
 
 {% load bundle from vue %}
 
-{% block navbar %}
-{% endblock navbar %}
-
 {% block content %}
 <div id="print-shot-feedback-mount">
   <App v-bind:config='{"printId": {{ object.id }}}'>

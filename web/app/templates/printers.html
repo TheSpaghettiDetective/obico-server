@@ -2,9 +2,6 @@
 
 {% load bundle from vue %}
 
-{% block navbar %}
-{% endblock navbar %}
-
 {% block content %}
 <div id="printer-list-mount">
   <printer-list-page :is-pro-account="{% if user.is_authenticated and user.is_pro %}true{% else %}false{% endif %}"></printer-list-page>

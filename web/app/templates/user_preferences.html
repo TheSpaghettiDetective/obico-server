@@ -4,9 +4,6 @@
 
 {% load bundle from vue %}
 
-{% block navbar %}
-{% endblock navbar %}
-
 {% block content %}
 <div id="user-preferences-mount">
   <user-preferences-page v-bind:config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }} }'>

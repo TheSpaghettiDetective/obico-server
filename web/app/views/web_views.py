@@ -41,23 +41,6 @@ class SocialAccountAwareLoginView(LoginView):
     form_class = SocialAccountAwareLoginForm
 
 
-# TODO: To Remove once we have plugin < 1.5 phased out
-@login_required
-def printer_auth_token(request, pk):
-    pk_filter = {}
-
-    if pk != 0:
-        pk_filter = dict(pk=pk)
-    printers = Printer.objects.filter(user=request.user, **pk_filter)
-
-    if printers.count() == 0:
-        messages.error(request, 'You need to add a printer to get its secret token.')
-
-        return redirect(reverse('printers'))
-
-    return render(request, 'printer_auth_token.html', {'printers': printers})
-
-
 @login_required
 def printers(request):
     return render(request, 'printers.html')

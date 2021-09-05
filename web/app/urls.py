@@ -44,6 +44,5 @@ urlpatterns = [
     path('mobile/gcodes/upload/', web_views.upload_gcode_file),
     path('mobile/printers/<pk>/', web_views.edit_printer),
     path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel),
-    path('mobile/printers/<int:pk>/share/', web_views.share_printer, {"template_dir": "mobile"}),
     path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

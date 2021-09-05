@@ -104,21 +104,6 @@ def resume_print(request, pk):
     return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded})
 
 
-@login_required
-def share_printer(request, pk, template_dir=None):
-    printer = get_printer_or_404(pk, request)
-
-    if request.method == "POST":
-        if request.POST.get('shared') == 'on':
-            if not hasattr(printer, 'sharedresource'):
-                SharedResource.objects.create(printer=printer, share_token=hexlify(os.urandom(18)).decode())
-        else:
-            SharedResource.objects.filter(printer=printer).delete()
-            messages.success(request, 'You have disabled printer feed sharing. Previous shareable link has now been revoked.')
-
-    return render(request, get_template_path('share_printer', template_dir), dict(printer=printer, user=request.user))
-
-
 def printer_shared(request, share_token=None):
     printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
 

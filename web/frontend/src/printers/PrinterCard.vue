@@ -391,9 +391,6 @@ export default {
     updatedPrinter(newData) {
       return normalizedPrinter(newData, this.printer)
     },
-    shareUrl() {
-      return `/printers/${this.printer.id}/share/`
-    },
     settingsUrl() {
       return `/printers/${this.printer.id}/`
     },

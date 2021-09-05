@@ -88,8 +88,12 @@
 
           <section class="notifications">
             <h2 class="section-title">Notifications</h2>
-            <router-link v-if="isInMobile">Mobile Push Notifications</router-link>
-            <router-link to="/notification_settings">Other Notifications</router-link>
+            <div v-if="isInMobile">
+              <router-link to="/mobile_push_notifications" class="btn btn-primary mt-4 notif-btn" href="mobile_push_notifications">Mobile Push Notifications</router-link>
+            </div>
+            <div>
+              <router-link to="/notification_settings" class="btn btn-primary mt-4 notif-btn">{{ isInMobile ? 'Other' : 'Configure'}} Notifications</router-link>
+            </div>
           </section>
         </div>
 
@@ -592,10 +596,6 @@ export default {
         this.user.telegram_chat_id = newValue
       }
     },
-    abc: function() {
-      console.log(this?.$route.path)
-      return this?.$route.path
-    }
   },
 
   watch: {
@@ -909,5 +909,8 @@ section:not(:first-child)
 .system-theme-control
   position: relative
   z-index: 3
+
+.notif-btn
+  min-width: 16em
 
 </style>

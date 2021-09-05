@@ -26,6 +26,7 @@
     "vue-moment": "^4.1.0",
     "vue-mugen-scroll": "^0.2.6",
     "vue-pluralize": "^0.0.2",
+    "vue-router": "^3.5.2",
     "vue-slick-carousel": "^1.0.5",
     "vue-slider-component": "^3.2.2",
     "vue-sticky-directive": "^0.0.10",

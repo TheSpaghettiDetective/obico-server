@@ -8452,6 +8452,11 @@ vue-property-decorator@^8.0.0:
   dependencies:
     vue-class-component "^7.1.0"
 
+vue-router@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.5.2.tgz#5f55e3f251970e36c3e8d88a7cd2d67a350ade5c"
+  integrity sha512-807gn82hTnjCYGrnF3eNmIw/dk7/GE4B5h69BlyCK9KHASwSloD1Sjcn06zg9fVG4fYH2DrsNBZkpLtb25WtaQ==
+
 vue-slick-carousel@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/vue-slick-carousel/-/vue-slick-carousel-1.0.5.tgz#af889048b8f67d82fb253e8701385d3174f69fde"

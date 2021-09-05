@@ -455,7 +455,7 @@ import { Themes, theme, selectTheme } from '../main/themes.js'
 import { isMobile } from '@lib/app_platform'
 
 export default {
-  name: 'UserPreferencesPage',
+  name: 'UserPreferencesRoute',
   components: {
     SavingAnimation,
     vueTelegramLogin,
@@ -609,7 +609,7 @@ export default {
           this.updateSetting('phone_country_code')
           return
         }
-        
+
         const codeNumber = parseInt(newValue.replace(/\s/g, '')) // will parse both '1' / '+1', clear spaces for safety
         if (isNaN(codeNumber)) {
           return

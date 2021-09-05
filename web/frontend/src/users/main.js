@@ -11,13 +11,17 @@ Vue.use(VueRouter)
 Vue.use(VueSwal)
 Vue.use(BootstrapVue)
 
-import UserPreferencesPage from './UserPreferencesPage.vue'
+import UserPreferencesRoute from './UserPreferencesRoute.vue'
 
 const router = new VueRouter({
     routes: [
       {
         path: '/',
-        component: UserPreferencesPage,
+        component: UserPreferencesRoute,
+      },
+      {
+        path: '/notification_settings',
+        component: UserPreferencesRoute,
       },
     ]
   })

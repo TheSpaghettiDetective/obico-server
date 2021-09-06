@@ -83,6 +83,7 @@
   import WebRTCConnection from '@lib/webrtc'
   import PullToReveal from '@common/PullToReveal.vue'
   import Navbar from '@common/Navbar.vue'
+  import { isLocalStorageSupported } from '@common/utils'
 
   const AXIS = {
     x: 'x',
@@ -127,7 +128,7 @@
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
 
       // Get jogDistance from localStorage or set default value
-      const storageValue = localStorage.getItem(`mm-per-step-${this.printerId}`)
+      const storageValue = isLocalStorageSupported() ? localStorage.getItem(`mm-per-step-${this.printerId}`) : null
       this.jogDistance = storageValue ? storageValue : this.jogDistance
 
       this.webrtc = WebRTCConnection(this.user.is_pro)
@@ -166,7 +167,9 @@
 
     watch: {
       jogDistance: function(newValue) {
-        localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
+        if (isLocalStorageSupported()) {
+          localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
+        }
       }
     },
   }

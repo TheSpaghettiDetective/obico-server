@@ -1,16 +1,8 @@
-
 // Enum with existing color themes for less errors
 const Themes = {
   Light: 'Light',
   Dark: 'Dark',
   System: 'System',
-}
-
-
-// Default values
-const theme = {
-  value: Themes.Dark,
-  system: false
 }
 
 
@@ -110,6 +102,19 @@ const shadows = [
   },
 ]
 
+
+// Check if localStorage available
+function isLocalStorageSupported() {
+  try {
+    const key = '__random_key_we_are_not_going_to_use__'
+    localStorage.setItem(key, key)
+    localStorage.removeItem(key)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
 // Converts HEX color to RGB
 function HEXtoRGB(color) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
@@ -117,23 +122,28 @@ function HEXtoRGB(color) {
   return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
 }
 
-// Defines theme by value saved in LocalStorage or system settings
-function initTheme() {
-  let themeValue = localStorage.getItem('colorTheme')
-  let themeSystem = themeValue === Themes.System
-  // let themeSystem = themeValue === null || themeValue === Themes.System
+// Default value
+const theme = {
+  value: (isLocalStorageSupported() ? localStorage.getItem('colorTheme') : Themes.Dark) || Themes.Dark,
+}
 
-  if (themeSystem) {
-    if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
-      themeValue = window.matchMedia('(prefers-color-scheme: light)').matches ? Themes.Light : Themes.Dark
+// Get theme value (exclude "System")
+function getTheme() {
+  // Get system settings
+  if (theme.value === Themes.System) {
+    if (window.matchMedia('(prefers-color-scheme)').media !== 'not all' && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return Themes.Light
     } else {
-      themeValue = Themes.Dark
+      return Themes.Dark
     }
   }
+  // Return saved value since it's not "System"
+  return theme.value
+}
 
-  if (themeValue === null) {
-    themeValue = theme.value // Set default value
-  }
+// Defines theme by value saved in LocalStorage or system settings
+function initTheme() {
+  const themeValue = getTheme()
 
   colors.forEach(function(color) {
     const RGB = HEXtoRGB(color.values[themeValue])
@@ -147,14 +157,16 @@ function initTheme() {
   shadows.forEach(function(shadow) {
     document.documentElement.style.setProperty(`--shadow-${shadow.name}`, shadow.values[themeValue])
   })
-
-  theme.value = themeValue
-  theme.system = themeSystem
 }
 
 // Selects theme
 function selectTheme(newTheme) {
-  localStorage.setItem('colorTheme', newTheme)
+  theme.value = newTheme
+
+  if (isLocalStorageSupported()) {
+    localStorage.setItem('colorTheme', theme.value)
+  }
+
   initTheme()
 }
 
@@ -166,5 +178,5 @@ initTheme()
 let navbar = document.getElementById('dynamic-navbar')
 
 if (navbar) {
-  navbar.classList.add('navbar-' + theme.value.toLowerCase())
+  navbar.classList.add('navbar-' + getTheme().toLowerCase())
 }

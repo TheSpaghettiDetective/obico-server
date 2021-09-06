@@ -14,17 +14,17 @@
             <div class="col-sm-9 col-md-10">
               <div class="theme-controls">
                 <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
-                  <svg viewBox="0 0 39.68 39.68" fill="currentColor" class="icon" :class="{'active': themeValue === themes.Dark}">
+                  <svg viewBox="0 0 39.68 39.68" fill="currentColor" class="icon" :class="{'active': themeValue === Themes.Dark}">
                     <use href="#svg-moon-icon" />
                   </svg>
                   <div class="label">
-                    <span class="dark" v-show="themeValue === themes.Dark">DARK</span>
-                    <span class="light" v-show="themeValue === themes.Light">LIGHT</span>
+                    <span class="dark" v-show="themeValue === Themes.Dark">DARK</span>
+                    <span class="light" v-show="themeValue === Themes.Light">LIGHT</span>
                   </div>
-                  <svg viewBox="0 0 42.07 42.07" fill="currentColor" class="icon" :class="{'active': themeValue === themes.Light}">
+                  <svg viewBox="0 0 42.07 42.07" fill="currentColor" class="icon" :class="{'active': themeValue === Themes.Light}">
                     <use href="#svg-sun-icon" />
                   </svg>
-                  <div class="active-indicator" :class="{'right': themeValue === themes.Light}">
+                  <div class="active-indicator" :class="{'right': themeValue === Themes.Light}">
                     <div class="circle"></div>
                   </div>
                 </div>
@@ -451,7 +451,7 @@ import SavingAnimation from '../common/SavingAnimation.vue'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import {vueTelegramLogin} from 'vue-telegram-login'
-import { Themes, theme, selectTheme } from '../main/themes.js'
+import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import { isMobile } from '@lib/app_platform'
 
 export default {
@@ -504,18 +504,23 @@ export default {
       combinedInputs: { // Send changes to API only if all the other values in the array have data
         phone: ['phone_country_code', 'phone_number'],
       },
-      themes: Themes,
-      systemTheme: theme.system,
+      Themes: Themes,
     }
   },
 
   computed: {
-    themeValue: {
-      get: function() {
-        return theme.value
+    themeValue() {
+      return getTheme()
+    },
+    systemTheme: {
+      get() {
+        return theme.value === Themes.System
       },
-      set: function(newValue) {
-        theme.value = newValue
+      set(newValue) {
+        theme.value = Themes.System
+        if (newValue) {
+          selectTheme(this.Themes.System)
+        }
       }
     },
     firstName: {
@@ -585,11 +590,6 @@ export default {
   },
 
   watch: {
-    systemTheme: function(newValue) {
-      if (newValue) {
-        selectTheme(this.themes.System)
-      }
-    },
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('first_name')
@@ -672,7 +672,7 @@ export default {
      * Toggle color theme
      */
     toggleTheme() {
-      let newTheme = this.themeValue === this.themes.Light ? this.themes.Dark : this.themes.Light
+      const newTheme = this.themeValue === Themes.Light ? Themes.Dark : Themes.Light
       this.systemTheme = false
       selectTheme(newTheme)
     },

@@ -14,17 +14,29 @@ Vue.use(BootstrapVue)
 import UserPreferencesRoute from './UserPreferencesRoute.vue'
 
 const router = new VueRouter({
-    routes: [
-      {
-        path: '/',
-        component: UserPreferencesRoute,
-      },
-      {
-        path: '/notification_settings',
-        component: UserPreferencesRoute,
-      },
-    ]
-  })
+  routes: [
+    {
+      path: '/',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/theme',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/profile',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/email',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/notifications',
+      component: UserPreferencesRoute,
+    },
+  ]
+})
 
 new Vue({
   router

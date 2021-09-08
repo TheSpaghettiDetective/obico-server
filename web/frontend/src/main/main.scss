@@ -715,3 +715,27 @@ a.text-warning {
 .modal-content .close {
   color: rgb(var(--color-text-primary));
 }
+
+.nav-tabs .nav-link,
+.nav-tabs .nav-link:hover,
+.nav-pills .nav-link,
+.nav-pills .nav-link:hover {
+  color: rgb(var(--color-text-primary));
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  background-color: rgb(var(--color-background));
+  border-color: rgb(var(--color-divider));
+  color: rgb(var(--color-text-primary));
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+  border-color: rgb(var(--color-divider));
+}
+
+.form-control:focus {
+  background-color: rgb(var(--color-input-background));
+  color: rgb(var(--color-text-primary));
+}

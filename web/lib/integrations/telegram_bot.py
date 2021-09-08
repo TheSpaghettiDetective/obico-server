@@ -46,6 +46,7 @@ def inline_markup(printer, buttons=['more_info']):
 
     return markup
 
+
 def send_notification(printer, notification, photo, buttons=None):
     bot = telegram_bot()
     if not bot:
@@ -63,10 +64,31 @@ def send_notification(printer, notification, photo, buttons=None):
     while attempts < 2:
         try:
             if photo:
-                bot.send_photo(chat_id, photo, caption=notification, parse_mode='Markdown', reply_markup=keyboard)
+                telegram_send(
+                    bot.send_photo,
+                    chat_id,
+                    photo,
+                    caption=notification,
+                    parse_mode='Markdown',
+                    reply_markup=keyboard)
             else:
-                bot.send_message(chat_id, notification, parse_mode='Markdown', reply_markup=keyboard)
+                telegram_send(
+                    bot.send_message,
+                    chat_id,
+                    notification,
+                    parse_mode='Markdown',
+                    reply_markup=keyboard)
             return
+        except ConnectionError:
+            attempts += 1
+            time.sleep(0.05)
+
+
+def telegram_send(bot_method, *args, **kwargs):
+    attempts = 0
+    while attempts < 2:
+        try:
+            return bot_method(*args, **kwargs)
         except ConnectionError:
             attempts += 1
             time.sleep(0.05)

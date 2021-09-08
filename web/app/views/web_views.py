@@ -21,7 +21,7 @@ from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
 from app.forms import PrinterForm, SocialAccountAwareLoginForm
 from lib import channels
-from lib.integrations.telegram_bot import bot_name, telegram_bot
+from lib.integrations.telegram_bot import bot_name, telegram_bot, telegram_send
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 
@@ -115,7 +115,10 @@ def test_telegram(request):
         bot = telegram_bot()
 
         if bot and user.telegram_chat_id:
-            bot.send_message(user.telegram_chat_id, 'Test from TSD', parse_mode='Markdown')  # errors throw
+            # errors throw
+            telegram_send(
+                bot.send_message,
+                user.telegram_chat_id, 'Test from TSD', parse_mode='Markdown')
 
             return JsonResponse(dict(status='Ok'))
 

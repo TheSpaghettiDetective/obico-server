@@ -11,7 +11,7 @@
             <!-- 2-step nav for mobiles -->
             <div class="mobile-settings-wrapper">
               <div v-if="$route.path === '/'" class="mobile-settings-categories">
-                <h1 class="categories-title">Preferences</h1>
+                <h2 class="categories-title section-title">Preferences</h2>
                 <router-link v-if="!isInMobile" to="/theme">
                   <span>Personalization</span>
                   <i class="fas fa-arrow-right"></i>
@@ -479,6 +479,7 @@ export default {
   font-weight: bold
   font-size: 1.5rem
   margin-bottom: 1rem
+  border-bottom: 1px solid rgb(var(--color-text-primary))
 
   // border-bottom-style: solid
   // border-bottom-width: thin

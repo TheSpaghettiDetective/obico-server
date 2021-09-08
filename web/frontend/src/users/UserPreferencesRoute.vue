@@ -44,7 +44,7 @@
             <b-tabs
               :vertical="true"
               class="desktop-settings-wrapper"
-              nav-wrapper-class="settings-nav py-3"
+              nav-wrapper-class="settings-nav"
               active-nav-item-class=""
               content-class="desktop-settings-content"
             >
@@ -432,7 +432,7 @@ export default {
 
     @media (max-width: 768px)
       margin: 0
-  
+
   .desktop-settings-wrapper
     background-color: rgb(var(--color-surface-secondary))
 
@@ -451,7 +451,7 @@ export default {
 
     .mobile-settings-content
       background-color: rgb(var(--color-surface-secondary))
-      
+
       &:not(.is-in-mobile)
         padding: 1.25rem
 
@@ -488,6 +488,10 @@ export default {
   width: 25%
   background-color: rgb(var(--color-surface-primary))
   min-height: 80vh
+  padding: 2rem 0
+
+  a
+    border: initial
 
 ::v-deep .nav-tabs
   border-bottom: none

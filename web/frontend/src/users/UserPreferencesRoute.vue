@@ -30,6 +30,10 @@
                   <span>Push</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
+                <router-link to="/general_notifications">
+                  <span>General</span>
+                  <i class="fas fa-arrow-right"></i>
+                </router-link>
                 <router-link to="/email_notifications">
                   <span>Email</span>
                   <i class="fas fa-arrow-right"></i>
@@ -65,6 +69,7 @@
                 <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
                 <email-preferences v-if="$route.path === '/email'" :user="user"></email-preferences>
                 <!-- Notifications -->
+                <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
                 <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
                 <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
                 <pushbullet-notifications v-if="$route.path === '/pushbullet_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
@@ -92,6 +97,9 @@
                 <email-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-preferences>
               </b-tab>
               <b-tab title="Notifications" disabled title-item-class="mt-2"></b-tab>
+              <b-tab title="General">
+                <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
+              </b-tab>
               <b-tab title="Email">
                 <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
               </b-tab>
@@ -131,16 +139,17 @@ import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 import { isMobile } from '@lib/app_platform'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
-import ThemePreferences from './preferences_modules/ThemePreferences'
-import ProfilePreferences from './preferences_modules/ProfilePreferences'
-import EmailPreferences from './preferences_modules/EmailPreferences'
-import EmailNotifications from './preferences_modules/EmailNotifications'
-import SmsNotifications from './preferences_modules/SmsNotifications'
-import PushbulletNotifications from './preferences_modules/PushbulletNotifications'
-import DiscordNotifications from './preferences_modules/DiscordNotifications'
-import TelegramNotifications from './preferences_modules/TelegramNotifications'
-import PushoverNotifications from './preferences_modules/PushoverNotifications'
-import SlackNotifications from './preferences_modules/SlackNotifications'
+import ThemePreferences from './preferences_components/ThemePreferences'
+import ProfilePreferences from './preferences_components/ProfilePreferences'
+import EmailPreferences from './preferences_components/EmailPreferences'
+import EmailNotifications from './preferences_components/EmailNotifications'
+import SmsNotifications from './preferences_components/SmsNotifications'
+import PushbulletNotifications from './preferences_components/PushbulletNotifications'
+import DiscordNotifications from './preferences_components/DiscordNotifications'
+import TelegramNotifications from './preferences_components/TelegramNotifications'
+import PushoverNotifications from './preferences_components/PushoverNotifications'
+import SlackNotifications from './preferences_components/SlackNotifications'
+import GeneralNotifications from './preferences_components/GeneralNotifications'
 
 export default {
   name: 'UserPreferencesRoute',
@@ -158,6 +167,7 @@ export default {
     TelegramNotifications,
     PushoverNotifications,
     SlackNotifications,
+    GeneralNotifications,
   },
 
   data() {

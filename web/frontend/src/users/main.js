@@ -32,6 +32,10 @@ const router = new VueRouter({
       component: UserPreferencesRoute,
     },
     {
+      path: '/general_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
       path: '/email_notifications',
       component: UserPreferencesRoute,
     },

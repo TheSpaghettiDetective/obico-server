@@ -7,7 +7,7 @@
         'navbar-dark': theme === themes.Dark,
         'navbar-light': theme === themes.Light
       }">
-      <b-container>
+      <b-container class="p-0">
         <b-navbar-brand href="/">
           <svg viewBox="0 0 1965 240" width="232" height="28.34">
             <use href="#svg-navbar-brand" />

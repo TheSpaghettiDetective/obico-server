@@ -725,9 +725,9 @@ a.text-warning {
 
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
-  background-color: rgb(var(--color-background));
+  background-color: rgb(var(--color-primary));
   border-color: rgb(var(--color-divider));
-  color: rgb(var(--color-text-primary));
+  color: rgb(var(--color-on-primary));
 }
 
 .nav-tabs .nav-link:hover,

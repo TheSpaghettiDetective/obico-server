@@ -32,7 +32,31 @@ const router = new VueRouter({
       component: UserPreferencesRoute,
     },
     {
-      path: '/notifications',
+      path: '/email_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/sms_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/pushbullet_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/discord_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/telegram_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/pushover_notifications',
+      component: UserPreferencesRoute,
+    },
+    {
+      path: '/slack_notifications',
       component: UserPreferencesRoute,
     },
   ]

@@ -1,6 +1,6 @@
 <template>
   <section class="notifications">
-    <h2 class="section-title">General Notifications</h2>
+    <h2 class="section-title">Notifications</h2>
     <div class="row">
       <div class="col col-form-label">
         <saving-animation :errors="errorMessages.notify_on_done" :saving="saving.notify_on_done">

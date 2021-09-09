@@ -25,40 +25,39 @@
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
 
-                <h3 class="preferences-category-title">Notifications</h3>
                 <router-link to="/general_notifications">
-                  <span>General</span>
+                  <span>Notifications</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link v-if="isInMobile" to="/mobile_push_notifications" href="mobile_push_notifications">
-                  <span>Push</span>
+                <router-link v-if="isInMobile" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
+                  <span>Push Notification</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link to="/email_notifications">
+                <router-link to="/email_notifications" class="subcategory">
                   <span>Email</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link to="/sms_notifications">
+                <router-link to="/sms_notifications" class="subcategory">
                   <span>SMS</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link to="/pushbullet_notifications">
+                <router-link to="/pushbullet_notifications" class="subcategory">
                   <span>Pushbullet</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link to="/discord_notifications">
+                <router-link to="/discord_notifications" class="subcategory">
                   <span>Discord</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link to="/telegram_notifications">
+                <router-link to="/telegram_notifications" class="subcategory">
                   <span>Telegram</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link v-if="pushOverEnabled" to="/pushover_notifications">
+                <router-link v-if="pushOverEnabled" to="/pushover_notifications" class="subcategory">
                   <span>Pushover</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link v-if="slackEnabled" to="/slack_notifications">
+                <router-link v-if="slackEnabled" to="/slack_notifications" class="subcategory">
                   <span>Slack</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
@@ -96,29 +95,28 @@
               <b-tab title="Email">
                 <email-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-preferences>
               </b-tab>
-              <b-tab title="Notifications" disabled title-item-class="mt-2"></b-tab>
-              <b-tab title="General">
+              <b-tab title="Notifications">
                 <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
               </b-tab>
-              <b-tab title="Email">
+              <b-tab title-item-class="subcategory" title="Email">
                 <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
               </b-tab>
-              <b-tab title="SMS">
+              <b-tab title-item-class="subcategory" title="SMS">
                 <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
               </b-tab>
-              <b-tab title="Pushbullet">
+              <b-tab title-item-class="subcategory" title="Pushbullet">
                 <pushbullet-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
               </b-tab>
-              <b-tab title="Discord">
+              <b-tab title-item-class="subcategory" title="Discord">
                 <discord-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
               </b-tab>
-              <b-tab title="Telegram">
+              <b-tab title-item-class="subcategory" title="Telegram">
                 <telegram-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
               </b-tab>
-              <b-tab v-if="pushOverEnabled" title="Pushover">
+              <b-tab v-if="pushOverEnabled" title-item-class="subcategory" title="Pushover">
                 <pushover-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
               </b-tab>
-              <b-tab v-if="slackEnabled" title="Slack">
+              <b-tab v-if="slackEnabled" title-item-class="subcategory" title="Slack">
                 <slack-notifications></slack-notifications>
               </b-tab>
             </b-tabs>
@@ -554,17 +552,14 @@ export default {
         align-items: center
         padding: .8rem 0
         border-bottom: 1px solid rgb(var(--color-divider))
+        font-size: 1.2em
+
+        &.subcategory
+          font-size: 1em
+          padding-left: 1em
 
         i
           font-size: .8rem
-
-      .preferences-category-title
-        margin: 0
-        font-size: 1rem
-        line-height: 1.5
-        padding: 1.5rem 0 .8rem
-        border-bottom: 1px solid rgb(var(--color-divider))
-        color: rgb(var(--color-text-secondary))
 
 ::v-deep section:not(:first-child) .section-title
   margin-top: 2rem
@@ -580,6 +575,11 @@ export default {
   background-color: rgb(var(--color-surface-primary))
   min-height: 80vh
   padding: 1rem 0
+
+  .subcategory
+    a
+      padding-left: 2rem
+      font-size: 0.9em
 
   a
     border: initial

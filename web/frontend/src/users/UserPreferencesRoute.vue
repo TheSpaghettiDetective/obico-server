@@ -26,12 +26,12 @@
                 </router-link>
 
                 <h3 class="preferences-category-title">Notifications</h3>
-                <router-link v-if="isInMobile" to="/mobile_push_notifications" href="mobile_push_notifications">
-                  <span>Push</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
                 <router-link to="/general_notifications">
                   <span>General</span>
+                  <i class="fas fa-arrow-right"></i>
+                </router-link>
+                <router-link v-if="isInMobile" to="/mobile_push_notifications" href="mobile_push_notifications">
+                  <span>Push</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
                 <router-link to="/email_notifications">

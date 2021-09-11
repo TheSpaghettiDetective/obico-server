@@ -1,141 +1,140 @@
 <template>
-  <div class="row justify-content-center">
-    <pull-to-reveal>
-      <navbar view-name="app.views.web_views.user_preferences"></navbar>
-    </pull-to-reveal>
+  <layout>
+    <template v-slot:content>
+      <div class="row justify-content-center">
+        <b-container class="wrapper" :class="{'is-in-mobile': useMobileLayout}">
+          <b-row>
+            <b-col>
+              <div v-if="user">
+                <!-- 2-step nav for mobiles -->
+                <div v-if="useMobileLayout" class="mobile-settings-wrapper">
+                  <div v-if="$route.path === '/'" class="mobile-settings-categories">
+                    <h2 class="categories-title section-title">Preferences</h2>
+                    <router-link v-if="!inMobileWebView" to="/theme">
+                      <span>Personalization</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/profile">
+                      <span>Profile</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/email">
+                      <span>Email</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
 
-    <b-container class="wrapper" :class="{'is-in-mobile': useMobileLayout}">
-      <b-row>
-        <b-col>
-          <div v-if="user">
-            <!-- 2-step nav for mobiles -->
-            <div v-if="useMobileLayout" class="mobile-settings-wrapper">
-              <div v-if="$route.path === '/'" class="mobile-settings-categories">
-                <h2 class="categories-title section-title">Preferences</h2>
-                <router-link v-if="!inMobileWebView" to="/theme">
-                  <span>Personalization</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/profile">
-                  <span>Profile</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/email">
-                  <span>Email</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-
-                <router-link to="/general_notifications">
-                  <span>Notifications</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link v-if="inMobileWebView" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
-                  <span>Push Notification</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/email_notifications" class="subcategory">
-                  <span>Email</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/sms_notifications" class="subcategory">
-                  <span>SMS</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/pushbullet_notifications" class="subcategory">
-                  <span>Pushbullet</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/discord_notifications" class="subcategory">
-                  <span>Discord</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link to="/telegram_notifications" class="subcategory">
-                  <span>Telegram</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link v-if="pushOverEnabled" to="/pushover_notifications" class="subcategory">
-                  <span>Pushover</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
-                <router-link v-if="slackEnabled" to="/slack_notifications" class="subcategory">
-                  <span>Slack</span>
-                  <i class="fas fa-arrow-right"></i>
-                </router-link>
+                    <router-link to="/general_notifications">
+                      <span>Notifications</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link v-if="inMobileWebView" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
+                      <span>Push Notification</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/email_notifications" class="subcategory">
+                      <span>Email</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/sms_notifications" class="subcategory">
+                      <span>SMS</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/pushbullet_notifications" class="subcategory">
+                      <span>Pushbullet</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/discord_notifications" class="subcategory">
+                      <span>Discord</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link to="/telegram_notifications" class="subcategory">
+                      <span>Telegram</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link v-if="pushOverEnabled" to="/pushover_notifications" class="subcategory">
+                      <span>Pushover</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                    <router-link v-if="slackEnabled" to="/slack_notifications" class="subcategory">
+                      <span>Slack</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                  </div>
+                  <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
+                    <!-- General -->
+                    <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
+                    <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
+                    <email-preferences v-if="$route.path === '/email'" :user="user"></email-preferences>
+                    <!-- Notifications -->
+                    <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
+                    <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
+                    <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
+                    <pushbullet-notifications v-if="$route.path === '/pushbullet_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
+                    <discord-notifications v-if="$route.path === '/discord_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
+                    <telegram-notifications v-if="$route.path === '/telegram_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
+                    <pushover-notifications v-if="$route.path === '/pushover_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
+                    <slack-notifications v-if="$route.path === '/slack_notifications'"></slack-notifications>
+                  </div>
+                </div>
+                <!-- left-side nav for desktops -->
+                <b-tabs
+                  v-else
+                  :vertical="true"
+                  class="desktop-settings-wrapper"
+                  nav-wrapper-class="settings-nav"
+                  active-nav-item-class=""
+                  content-class="desktop-settings-content"
+                >
+                  <b-tab title="Personalization">
+                    <theme-preferences></theme-preferences>
+                  </b-tab>
+                  <b-tab title="Profile">
+                    <profile-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
+                  </b-tab>
+                  <b-tab title="Email">
+                    <email-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-preferences>
+                  </b-tab>
+                  <b-tab title="Notifications">
+                    <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
+                  </b-tab>
+                  <b-tab title-item-class="subcategory" title="Email">
+                    <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
+                  </b-tab>
+                  <b-tab title-item-class="subcategory" title="SMS">
+                    <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
+                  </b-tab>
+                  <b-tab title-item-class="subcategory" title="Pushbullet">
+                    <pushbullet-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
+                  </b-tab>
+                  <b-tab title-item-class="subcategory" title="Discord">
+                    <discord-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
+                  </b-tab>
+                  <b-tab title-item-class="subcategory" title="Telegram">
+                    <telegram-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
+                  </b-tab>
+                  <b-tab v-if="pushOverEnabled" title-item-class="subcategory" title="Pushover">
+                    <pushover-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
+                  </b-tab>
+                  <b-tab v-if="slackEnabled" title-item-class="subcategory" title="Slack">
+                    <slack-notifications></slack-notifications>
+                  </b-tab>
+                </b-tabs>
               </div>
-              <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
-                <!-- General -->
-                <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
-                <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
-                <email-preferences v-if="$route.path === '/email'" :user="user"></email-preferences>
-                <!-- Notifications -->
-                <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
-                <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
-                <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
-                <pushbullet-notifications v-if="$route.path === '/pushbullet_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
-                <discord-notifications v-if="$route.path === '/discord_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
-                <telegram-notifications v-if="$route.path === '/telegram_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
-                <pushover-notifications v-if="$route.path === '/pushover_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
-                <slack-notifications v-if="$route.path === '/slack_notifications'"></slack-notifications>
+              <div v-else class="text-center">
+                <b-spinner class="mt-5" label="Loading..."></b-spinner>
               </div>
-            </div>
-            <!-- left-side nav for desktops -->
-            <b-tabs
-              v-else
-              :vertical="true"
-              class="desktop-settings-wrapper"
-              nav-wrapper-class="settings-nav"
-              active-nav-item-class=""
-              content-class="desktop-settings-content"
-            >
-              <b-tab title="Personalization">
-                <theme-preferences></theme-preferences>
-              </b-tab>
-              <b-tab title="Profile">
-                <profile-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
-              </b-tab>
-              <b-tab title="Email">
-                <email-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-preferences>
-              </b-tab>
-              <b-tab title="Notifications">
-                <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
-              </b-tab>
-              <b-tab title-item-class="subcategory" title="Email">
-                <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
-              </b-tab>
-              <b-tab title-item-class="subcategory" title="SMS">
-                <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
-              </b-tab>
-              <b-tab title-item-class="subcategory" title="Pushbullet">
-                <pushbullet-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
-              </b-tab>
-              <b-tab title-item-class="subcategory" title="Discord">
-                <discord-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
-              </b-tab>
-              <b-tab title-item-class="subcategory" title="Telegram">
-                <telegram-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
-              </b-tab>
-              <b-tab v-if="pushOverEnabled" title-item-class="subcategory" title="Pushover">
-                <pushover-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
-              </b-tab>
-              <b-tab v-if="slackEnabled" title-item-class="subcategory" title="Slack">
-                <slack-notifications></slack-notifications>
-              </b-tab>
-            </b-tabs>
-          </div>
-          <div v-else class="text-center">
-            <b-spinner class="mt-5" label="Loading..."></b-spinner>
-          </div>
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+            </b-col>
+          </b-row>
+        </b-container>
+      </div>
+    </template>
+  </layout>
 </template>
 
 <script>
 import axios from 'axios'
 import urls from '@lib/server_urls'
-import PullToReveal from '@common/PullToReveal.vue'
-import Navbar from '@common/Navbar.vue'
+import Layout from '@common/Layout.vue'
 import { inMobileWebView, settings } from '@lib/page_context'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
@@ -154,8 +153,7 @@ export default {
   name: 'UserPreferencesRoute',
 
   components: {
-    PullToReveal,
-    Navbar,
+    Layout,
     ThemePreferences,
     ProfilePreferences,
     EmailPreferences,
@@ -491,7 +489,7 @@ export default {
 
 .wrapper
   &:not(.is-in-mobile)
-    margin: 2.5rem 0
+    // margin: 2.5rem 0
 
     @media (max-width: 768px)
       margin: 0

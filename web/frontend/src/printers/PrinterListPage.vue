@@ -1,117 +1,121 @@
 <template>
-  <div>
-    <pull-to-reveal
-      :shiftContent="true"
-      :showEdge="true"
-      :enable="printers.length > 0"
-      @hide="closeMenus"
-    >
-      <navbar
-        view-name="printers"
-        ref="navbar"
-      ></navbar>
-      <div v-if="printers.length > 1" class="container">
-        <div class="option-drawer">
-          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-            <div class="panel panel-default">
-              <div
-                id="collapse-one"
-                class="panel-collapse in"
-                role="tabpanel"
-                aria-labelledby="headingOne"
-              >
-                <div class="panel-body p-3">
-                  <div>
-                    <div class="sorting-and-filter" ref="filters">
-                      <Select
-                        id="printer-sorting"
-                        class="my-1 mx-2"
-                        v-model="filters.sort"
-                        :options="sortFilters"
-                        @input="onSortFilterChanged()"
-                      ></Select>
+  <layout view-name="app.views.web_views.user_preferences">
+    <template v-slot:content>
+      <div>
+        <!-- <pull-to-reveal
+          :shiftContent="true"
+          :showEdge="true"
+          :enable="printers.length > 0"
+          @hide="closeMenus"
+        >
+          <navbar
+            view-name="printers"
+            ref="navbar"
+          ></navbar>
+          <div v-if="printers.length > 1" class="container">
+            <div class="option-drawer">
+              <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                  <div
+                    id="collapse-one"
+                    class="panel-collapse in"
+                    role="tabpanel"
+                    aria-labelledby="headingOne"
+                  >
+                    <div class="panel-body p-3">
+                      <div>
+                        <div class="sorting-and-filter" ref="filters">
+                          <Select
+                            id="printer-sorting"
+                            class="my-1 mx-2"
+                            v-model="filters.sort"
+                            :options="sortFilters"
+                            @input="onSortFilterChanged()"
+                          ></Select>
 
-                      <Select
-                        id="printer-filtering"
-                        class="my-1 mx-2"
-                        v-model="filters.state"
-                        :options="stateFilters"
-                        @input="onStateFilterChanged()"
-                      ></Select>
+                          <Select
+                            id="printer-filtering"
+                            class="my-1 mx-2"
+                            v-model="filters.state"
+                            :options="stateFilters"
+                            @input="onStateFilterChanged()"
+                          ></Select>
+                        </div>
+                      </div>
+                      <hr />
+                      <div>
+                        <a
+                          v-for="printer in visiblePrinters"
+                          :key="printer.id"
+                          :href="'#' + printer.id"
+                          role="button"
+                          class="btn btn-outline-primary btn-sm my-1 mx-3 printer-link">
+                          <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                  <hr />
-                  <div>
-                    <a
-                      v-for="printer in visiblePrinters"
-                      :key="printer.id"
-                      :href="'#' + printer.id"
-                      role="button"
-                      class="btn btn-outline-primary btn-sm my-1 mx-3 printer-link">
-                      <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
-                    </a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </pull-to-reveal> -->
+
+        <div v-if="!user.is_pro && printers.length > 0" class="row justify-content-center">
+          <div class="col-sm-12 col-lg-6">
+            <div class="form-container" style="margin: 1em 0 -1em 0; padding: 0.5em 1em;">
+              <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="printers" class="row justify-content-center" style="margin-top: -1.5rem">
+          <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
+          <printer-card
+            v-for="printer in visiblePrinters"
+            :key="printer.id"
+            :printer="printer"
+            :is-pro-account="user.is_pro"
+            @PrinterUpdated="onPrinterUpdated"
+          ></printer-card>
+        </div>
+
+        <div class="row justify-content-center">
+          <div id="new-printer" class="col-sm-12 col-lg-6">
+            <div class="new-printer-container">
+              <a href="/printers/wizard/">
+                <i class="fa fa-plus fa-2x"></i>
+                <div>Link OctoPrint Printer</div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="p-5">
+          <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
+            <div class="warning">
+              <span>{{ hiddenPrinterCount }}</span> printers are
+              hidden by the filtering settings.&nbsp;&nbsp;
+              <a
+                role="button"
+                href="#"
+                @click="onShowAllPrintersClicked()"
+              >Show All Printers</a>
+            </div>
+            <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
+          </b-collapse>
+          <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
+            <div class="warning">
+              Some of your printers have been archived.
+              <a
+                href="/ent/printers/archived/"
+              >Find them here >>></a>
+            </div>
+            <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
+          </b-collapse>
         </div>
       </div>
-    </pull-to-reveal>
-
-    <div v-if="!user.is_pro && printers.length > 0" class="row justify-content-center">
-      <div class="col-sm-12 col-lg-6">
-        <div class="form-container" style="margin: 1em 0 -1em 0; padding: 0.5em 1em;">
-          <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
-        </div>
-      </div>
-    </div>
-
-    <div id="printers" class="row justify-content-center pt-2">
-      <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
-      <printer-card
-        v-for="printer in visiblePrinters"
-        :key="printer.id"
-        :printer="printer"
-        :is-pro-account="user.is_pro"
-        @PrinterUpdated="onPrinterUpdated"
-      ></printer-card>
-    </div>
-
-    <div class="row justify-content-center">
-      <div id="new-printer" class="col-sm-12 col-lg-6">
-        <div class="new-printer-container">
-          <a href="/printers/wizard/">
-            <i class="fa fa-plus fa-2x"></i>
-            <div>Link OctoPrint Printer</div>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="p-5">
-      <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
-        <div class="warning">
-          <span>{{ hiddenPrinterCount }}</span> printers are
-          hidden by the filtering settings.&nbsp;&nbsp;
-          <a
-            role="button"
-            href="#"
-            @click="onShowAllPrintersClicked()"
-          >Show All Printers</a>
-        </div>
-        <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
-      </b-collapse>
-      <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
-        <div class="warning">
-          Some of your printers have been archived.
-          <a
-            href="/ent/printers/archived/"
-          >Find them here >>></a>
-        </div>
-        <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
-      </b-collapse>
-    </div>
-  </div>
+    </template>
+  </layout>
 </template>
 
 <script>
@@ -124,9 +128,10 @@ import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
 import PrinterCard from './PrinterCard.vue'
-import Select from '@common/Select.vue'
-import Navbar from '@common/Navbar.vue'
-import PullToReveal from '@common/PullToReveal.vue'
+// import Select from '@common/Select.vue'
+// import Navbar from '@common/Navbar.vue'
+// import PullToReveal from '@common/PullToReveal.vue'
+import Layout from '@common/Layout.vue'
 import { user } from '@lib/page_context'
 
 const SortOrder = {
@@ -170,9 +175,8 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    Select,
-    Navbar,
-    PullToReveal,
+    // Select,
+    Layout,
   },
   created() {
     this.user = user()

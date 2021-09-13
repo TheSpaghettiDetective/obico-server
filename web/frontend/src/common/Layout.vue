@@ -4,9 +4,6 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <div class="sidebar-header">
-        <svg class="logo" viewBox="0 0 1965 240">
-          <use href="#svg-navbar-brand" />
-        </svg>
         <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
       </div>
 
@@ -20,7 +17,7 @@
         <li>
           <a href="#">
             <i class="fas fa-video"></i>
-            Timelapse
+            Time-Lapse
           </a>
         </li>
         <li>
@@ -51,7 +48,7 @@
 
       <div class="side-nav-footer">
         <ul class="list-unstyled m-0">
-          <li>
+          <!-- <li>
             <a href="#">
               <svg viewBox="0 0 384 550" width="14.66" height="21">
                 <use href="#svg-detective-hours" />
@@ -60,19 +57,19 @@
               <span id="user-credits" class="badge badge-light">20</span>
               <span class="sr-only">Detective Hours</span>
             </a>
-          </li>
+          </li> -->
           <li>
             <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
               <i class="fas fa-user"></i>
-              Dmitry
+              <span>puzyrev.dmitry@gmail.com</span>
             </a>
             <ul class="collapse list-unstyled" id="pageSubmenu">
               <li>
                 <a href="#">Settings</a>
               </li>
-              <li>
+              <!-- <li>
                 <a href="#">Account</a>
-              </li>
+              </li> -->
               <li>
                 <a href="#">Logout</a>
               </li>
@@ -94,7 +91,7 @@
       </nav> -->
 
       <b-navbar class="top-nav">
-        <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0">
+        <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 toggle-menu">
           <i class="fas fa-align-left"></i>
         </b-button>
       </b-navbar>
@@ -103,6 +100,8 @@
         <slot name="content"></slot>
       </div>
     </div>
+
+    <div class="overlay" @click="collapsed = true"></div>
   </div>
 </template>
 
@@ -129,11 +128,12 @@ export default {
 .page-wrapper
   display: flex
   align-items: stretch
-  padding-left: 250px
+  padding-left: 100px
 
   .side-nav
-    min-width: 250px
-    max-width: 250px
+    min-width: 100px
+    max-width: 100px
+    text-align: center
     background: rgb(var(--color-surface-primary))
     position: fixed
     left: 0
@@ -151,93 +151,17 @@ export default {
       align-items: center
       justify-content: center
 
-      .logo
-        width: 100%
-        height: auto
-      
-      .logo-small
-          display: none
-
-    .side-nav-footer
-      margin-top: auto
-
     ul
       li
         a
-          text-align: left
-          padding: 10px
-          font-size: 1.1em
           display: block
           color: rgb(var(--color-text-primary))
-          &:hover, &[aria-expanded="true"]
-            color: rgb(var(--color-on-primary))
-            background: rgb(var(--color-hover) / .075)
-
-          i
-            margin-right: 10px
-          
-        &.active > a
-          color: rgb(var(--color-on-primary))
-          background: rgb(var(--color-primary))
-
-
-      ul a
-        font-size: 0.9em !important
-        padding-left: 40px !important
-    
-    ul.components
-      padding: 20px 0
-
-    ::v-deep .logo-small img
-      width: 1.875rem
-      height: 1.875rem
-
-    .dropdown-toggle
-      position: relative
-      &::after
-        display: block
-        position: absolute
-        top: 50%
-        right: 20px
-        transform: translateY(-50%)
-
-  .top-nav
-    height: 50px
-    background: rgb(var(--color-surface-secondary)) !important
-    position: fixed
-    top: 0
-    left: 0
-    width: 100%
-    margin-left: 250px
-    z-index: 1000
-
-  .content-wrapper
-    width: 100%
-    min-height: 100vh
-
-    .page-content
-      padding: 2rem
-      padding-top: calc(50px + 2rem)
-
-  &.collapsed
-    padding-left: 80px
-
-    .side-nav
-      min-width: 80px
-      max-width: 80px
-      text-align: center
-      
-      .sidebar-header .logo
-        display: none
-
-      .sidebar-header .logo-small
-        display: block
-
-      ul
-        li a
           padding: 10px 5px
           text-align: center
           font-size: 0.85em
+          &:hover, &[aria-expanded="true"]
+            color: rgb(var(--color-on-primary))
+            background: rgb(var(--color-hover) / .075)
 
           &.dropdown-toggle
             padding-bottom: 20px
@@ -248,39 +172,126 @@ export default {
             font-size: 1.4em
             margin-bottom: 5px
 
-        ul a
-          padding: 10px !important
+        &.active > a
+          color: rgb(var(--color-on-primary))
+          background: rgb(var(--color-primary))
 
-        .dropdown-toggle::after
-          top: auto
-          bottom: 10px
-          right: 50%
-          -webkit-transform: translateX(50%)
-          -ms-transform: translateX(50%)
-          transform: translateX(50%)
+
+      ul a
+        font-size: 0.9em !important
+        padding: 10px !important
+
+      .dropdown-toggle::after
+        top: auto
+        bottom: 10px
+        right: 50%
+        -webkit-transform: translateX(50%)
+        -ms-transform: translateX(50%)
+        transform: translateX(50%)
+
+    ul.components
+      padding: 20px 0
+
+    ::v-deep .logo-small img
+      width: 1.875rem
+      height: 1.875rem
+
+    .dropdown-toggle
+      position: relative
+      span
+        display: inline-block
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        width: 100%
+      &::after
+        display: block
+        position: absolute
+        top: 50%
+        right: 20px
+        transform: translateY(-50%)
+
+    .side-nav-footer
+      margin-top: auto
+
+  .top-nav
+    height: 50px
+    background: rgb(var(--color-surface-secondary)) !important
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    margin-left: 100px
+    z-index: 1000
+
+    .toggle-menu
+      display: none
+
+  .content-wrapper
+    width: 100%
+    min-height: 100vh
+
+    .page-content
+      padding: 2rem
+      padding-top: calc(50px + 2rem)
+
+  @media (max-width: 768px)
+    padding-left: 0
+
+    .side-nav
+      transition: all .3s ease-out
 
     .top-nav
-      margin-left: 80px
+      margin-left: 0
+      transform: translateX(100px)
+      transition: all .3s ease-out
 
-.badge-btn
-  position: relative
-  height: 1.8rem
-  margin-right: 1.5em
+      .toggle-menu
+        display: block
 
-  img
-    height: 1.3rem
+    .content-wrapper
+      .page-content
+        padding: 1rem
+        padding-top: calc(50px + 1rem)
 
-  .badge
-    position: absolute
-    left: 22px
-    top: 1px
-    height: 18px
-    border-radius: 4px
-    transition: transform 0.2s
+    .overlay
+      position: fixed
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      z-index: 100
+      background: rgb(0,0,0,.7)
 
-    /* Animation */
-    &:hover
-      transform: scale(1.3)
+    &.collapsed
+      .side-nav
+        transform: translateX(-100px)
+      .top-nav
+        transform: translateX(0)
+      .overlay
+        display: none
+
+
+
+// .badge-btn
+//   position: relative
+//   height: 1.8rem
+//   margin-right: 1.5em
+
+//   img
+//     height: 1.3rem
+
+//   .badge
+//     position: absolute
+//     left: 22px
+//     top: 1px
+//     height: 18px
+//     border-radius: 4px
+//     transition: transform 0.2s
+
+//     /* Animation */
+//     &:hover
+//       transform: scale(1.3)
 
 
 

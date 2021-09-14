@@ -3,7 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 let publicPath = process.env.NODE_ENV === 'production'
-  ? '/static/frontend' : 'http://172.20.10.6:7070/'
+  ? '/static/frontend' : 'http://192.168.0.101:7070/'
   // ? '/static/frontend' : 'http://localhost:7070/'
 
 let outputDir = process.env.NODE_ENV === 'production'

@@ -1,45 +1,51 @@
 <template>
-  <div class="page-wrapper" :class="{'collapsed': collapsed}">
+  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': isInMobile}">
 
     <!-- Sidebar -->
     <nav class="side-nav">
-      <div class="sidebar-header">
+      <a href="/" class="sidebar-header">
         <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
-      </div>
+      </a>
 
       <ul class="list-unstyled m-0">
-        <li class="active">
-          <a href="#">
+        <li v-if="user" :class="{'active': path === '/printers/'}">
+          <a href="/printers/">
             <i class="fas fa-print"></i>
             Printers
           </a>
         </li>
-        <li>
-          <a href="#">
+        <li v-if="user" :class="{'active': path === '/prints/'}">
+          <a href="/prints/">
             <i class="fas fa-video"></i>
             Time-Lapse
           </a>
         </li>
-        <li>
-          <a href="#">
+        <li v-if="user" :class="{'active': path === '/gcodes/'}">
+          <a href="/gcodes/">
             <i class="fas fa-code"></i>
             G-Code
           </a>
         </li>
-        <li>
-          <a href="#">
+        <li v-if="!user" class="glowing" :class="{'active': path === '/publictimelapses/'}">
+          <a href="/publictimelapses/">
+            <i class="fas fa-images"></i>
+            Spaghetti Gallery
+          </a>
+        </li>
+        <li v-if="isEnt" :class="{'active': path === '/ent/pricing/'}">
+          <a href="/ent/pricing/">
             <i class="fas fa-dollar-sign"></i>
             Pricing
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="https://www.thespaghettidetective.com/help/">
             <i class="fas fa-question"></i>
             Help
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="https://discord.gg/hsMwGpD">
             <i class="fas fa-comments"></i>
             Forum
           </a>
@@ -58,45 +64,52 @@
               <span class="sr-only">Detective Hours</span>
             </a>
           </li> -->
-          <li>
-            <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+          <li v-if="user">
+            <a v-b-toggle:userActions class="dropdown-toggle">
               <i class="fas fa-user"></i>
-              <span>puzyrev.dmitry@gmail.com</span>
+              <span>{{ user.first_name || user.email }}</span>
             </a>
-            <ul class="collapse list-unstyled" id="pageSubmenu">
-              <li>
-                <a href="#">Settings</a>
-              </li>
-              <!-- <li>
-                <a href="#">Account</a>
-              </li> -->
-              <li>
-                <a href="#">Logout</a>
-              </li>
-            </ul>
+            <b-collapse id="userActions">
+              <ul class="list-unstyled">
+                <li :class="{'active': path === '/user_preferences/'}">
+                  <a href="/user_preferences/">Settings</a>
+                </li>
+                <li>
+                  <a href="/accounts/logout/">Logout</a>
+                </li>
+              </ul>
+            </b-collapse>
+          </li>
+          <li v-if="!user">
+            <a href="/accounts/login/">
+              Sign In
+            </a>
+          </li>
+          <li v-if="!user && allowSignUp">
+            <a href="/accounts/signup/">
+              Sign Up
+            </a>
           </li>
         </ul>
       </div>
     </nav>
 
-    <div class="content-wrapper">
-      <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-
-          <button @click="collapsed = !collapsed" type="button">
-            <i class="fas fa-align-left"></i>
-          </button>
-
-        </div>
-      </nav> -->
-
+    <div class="content-wrapper" :class="{'with-warning': needsEmailVerification}">
       <b-navbar class="top-nav">
         <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 toggle-menu">
           <i class="fas fa-align-left"></i>
         </b-button>
+
+        <div>
+          <slot name="toolbar"></slot>
+        </div>
       </b-navbar>
 
       <div class="page-content">
+        <b-alert :show="needsEmailVerification" variant="warning" class="text-center mb-3">
+          You will not get notified by email on print failure, as your primary email address is not verified.
+          <a href="/accounts/email/">Verify your email address.</a>
+        </b-alert>
         <slot name="content"></slot>
       </div>
     </div>
@@ -106,8 +119,9 @@
 </template>
 
 <script>
+import moment from 'moment'
 import DarkLightImage from '@common/DarkLightImage.vue'
-// import { Themes, theme } from '../main/themes.js'
+import { isMobile } from '@lib/app_platform'
 
 export default {
   name: 'Layout',
@@ -116,10 +130,52 @@ export default {
     DarkLightImage,
   },
 
+  props: {
+    toolbar: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
   data() {
     return {
       collapsed: true,
+      path: window.location.pathname,
+      user: null,
+      allowSignUp: false,
+      isEnt: false,
+      isInMobile: false,
     }
+  },
+
+  computed: {
+    dhBadgeNum() {
+      if (this.user && this.user.is_dh_unlimited) {
+        return'\u221E'
+      } else {
+        return Math.round(this.user.dh_balance)
+      }
+    },
+    needsEmailVerification() {
+        if (!this.user) {
+          return false
+        }
+
+        // Give user 1 day before bugging them to verify their email addresses
+        const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
+        return this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day
+    }
+  },
+
+  created() {
+    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
+    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
+    this.isEnt = !!IS_ENT
+    this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.isInMobile = isMobile() || this.path.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
+  },
+
+  mounted () {
   },
 }
 </script>
@@ -129,6 +185,9 @@ export default {
   display: flex
   align-items: stretch
   padding-left: 100px
+
+  .overlay
+    display: none
 
   .side-nav
     min-width: 100px
@@ -150,6 +209,7 @@ export default {
       display: flex
       align-items: center
       justify-content: center
+      background: rgb(var(--color-table-accent-1))
 
     ul
       li
@@ -160,10 +220,11 @@ export default {
           text-align: center
           font-size: 0.85em
           &:hover, &[aria-expanded="true"]
-            color: rgb(var(--color-on-primary))
+            color: rgb(var(--color-text-primary))
             background: rgb(var(--color-hover) / .075)
 
           &.dropdown-toggle
+            cursor: pointer
             padding-bottom: 20px
 
           i
@@ -175,6 +236,8 @@ export default {
         &.active > a
           color: rgb(var(--color-on-primary))
           background: rgb(var(--color-primary))
+        &.glowing
+          text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(var(--color-primary)), 0 0 70px rgb(var(--color-primary)), 0 0 80px rgb(var(--color-primary)), 0 0 100px rgb(var(--color-primary)), 0 0 150px rgb(var(--color-primary))
 
 
       ul a
@@ -221,11 +284,13 @@ export default {
     top: 0
     left: 0
     width: 100%
-    margin-left: 100px
-    z-index: 1000
+    padding-left: calc(100px + 1rem)
+    z-index: 999
+    box-shadow: var(--shadow-top-nav)
+    justify-content: space-between
 
     .toggle-menu
-      display: none
+      visibility: hidden
 
   .content-wrapper
     width: 100%
@@ -239,15 +304,15 @@ export default {
     padding-left: 0
 
     .side-nav
-      transition: all .3s ease-out
+      transition: all .2s ease-out
 
     .top-nav
-      margin-left: 0
+      padding-left: 1rem
       transform: translateX(100px)
-      transition: all .3s ease-out
+      transition: all .2s ease-out
 
       .toggle-menu
-        display: block
+        visibility: visible
 
     .content-wrapper
       .page-content
@@ -262,6 +327,7 @@ export default {
       height: 100%
       z-index: 100
       background: rgb(0,0,0,.7)
+      display: block
 
     &.collapsed
       .side-nav
@@ -270,6 +336,19 @@ export default {
         transform: translateX(0)
       .overlay
         display: none
+
+  &.is-in-mobile
+    .side-nav
+      display: none !important
+    .top-nav
+      display: none !important
+    .content-wrapper
+      .page-content
+        padding: 1rem !important
+
+
+
+
 
 
 
@@ -292,52 +371,4 @@ export default {
 //     /* Animation */
 //     &:hover
 //       transform: scale(1.3)
-
-
-
-// @media (max-width: 768px)
-//   .side-nav
-//     min-width: 80px
-//     max-width: 80px
-//     text-align: center
-//     margin-left: -80px !important
-
-//   .dropdown-toggle::after
-//     top: auto
-//     bottom: 10px
-//     right: 50%
-//     -webkit-transform: translateX(50%)
-//     -ms-transform: translateX(50%)
-//     transform: translateX(50%)
-
-//   .side-nav.collapsed
-//     margin-left: 0 !important
-
-//   .side-nav .sidebar-header .logo
-//     display: none
-
-//   .side-nav .sidebar-header .logo-small
-//     display: block
-
-//   .side-nav ul li a
-//     padding: 20px 10px
-
-//   .side-nav ul li a span
-//     font-size: 0.85em
-
-//   .side-nav ul li a i
-//     margin-right: 0
-//     display: block
-
-//   .side-nav ul ul a
-//     padding: 10px !important
-
-//   .side-nav ul li a i
-//     font-size: 1.3em
-
-//   .side-nav
-//     margin-left: 0
-
-//   .side-navCollapse span
-//     display: none
 </style>

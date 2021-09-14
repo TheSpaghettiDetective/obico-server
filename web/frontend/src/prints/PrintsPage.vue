@@ -1,128 +1,128 @@
 <template>
-  <div sticky-container>
-    <pull-to-reveal>
-      <navbar view-name="prints"></navbar>
-    </pull-to-reveal>
+  <layout>
+    <template v-slot:content>
+      <div sticky-container>
+        <div
+          class="menu-bar px-sm-4 d-flex justify-content-between align-items-center"
+          v-sticky
+          sticky-offset="{top: 0, bottom: 30}"
+          sticky-side="both"
+          on-stick="onMenuStick"
+        >
+          <b-form-checkbox
+            v-model="allPrintsSelected"
+            size="lg"
+            class="text-decoration-none"
+          ></b-form-checkbox>
+          <div>
+            <b-dropdown
+              toggle-class="text-decoration-none no-corner no-border no-shadow"
+              :variant="filterBtnVariant"
+              no-caret
+            >
+              <template v-slot:button-content>
+                <i class="fas fa-filter"></i>
+              </template>
+              <b-dropdown-item @click="onFilterClick('none')">
+                <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
+              </b-dropdown-item>
+              <b-dropdown-divider></b-dropdown-divider>
+              <b-dropdown-item @click="onFilterClick('finished')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
+                ></i>Finished
+              </b-dropdown-item>
+              <b-dropdown-item @click="onFilterClick('cancelled')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
+                ></i>Cancelled
+              </b-dropdown-item>
+              <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
+                ></i>Review needed
+              </b-dropdown-item>
+              <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
+                ></i>Focused-review needed
+              </b-dropdown-item>
+            </b-dropdown>
+            <b-dropdown
+              toggle-class="text-decoration-none no-corner no-border no-shadow"
+              variant="outline-secondary"
+              no-caret
+            >
+              <template v-slot:button-content>
+                <i class="fas" :class="sortingBtnClasses"></i>
+              </template>
+              <b-dropdown-item @click="onSortingClick('date_desc')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
+                ></i>Newest to oldest
+              </b-dropdown-item>
+              <b-dropdown-item @click="onSortingClick('date_asc')">
+                <i
+                  class="fas fa-check"
+                  :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
+                ></i>Oldest to newest
+              </b-dropdown-item>
+            </b-dropdown>
 
-    <div
-      class="menu-bar px-sm-4 d-flex justify-content-between align-items-center"
-      v-sticky
-      sticky-offset="{top: 0, bottom: 30}"
-      sticky-side="both"
-      on-stick="onMenuStick"
-    >
-      <b-form-checkbox
-        v-model="allPrintsSelected"
-        size="lg"
-        class="text-decoration-none"
-      ></b-form-checkbox>
-      <div>
-        <b-dropdown
-          toggle-class="text-decoration-none no-corner no-border no-shadow"
-          :variant="filterBtnVariant"
-          no-caret
-        >
-          <template v-slot:button-content>
-            <i class="fas fa-filter"></i>
-          </template>
-          <b-dropdown-item @click="onFilterClick('none')">
-            <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
-          </b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item @click="onFilterClick('finished')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
-            ></i>Finished
-          </b-dropdown-item>
-          <b-dropdown-item @click="onFilterClick('cancelled')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
-            ></i>Cancelled
-          </b-dropdown-item>
-          <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
-            ></i>Review needed
-          </b-dropdown-item>
-          <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
-            ></i>Focused-review needed
-          </b-dropdown-item>
-        </b-dropdown>
-        <b-dropdown
-          toggle-class="text-decoration-none no-corner no-border no-shadow"
-          variant="outline-secondary"
-          no-caret
-        >
-          <template v-slot:button-content>
-            <i class="fas" :class="sortingBtnClasses"></i>
-          </template>
-          <b-dropdown-item @click="onSortingClick('date_desc')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
-            ></i>Newest to oldest
-          </b-dropdown-item>
-          <b-dropdown-item @click="onSortingClick('date_asc')">
-            <i
-              class="fas fa-check"
-              :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
-            ></i>Oldest to newest
-          </b-dropdown-item>
-        </b-dropdown>
+            <button
+              type="button"
+              class="btn mx-2 btn-sm"
+              :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
+              :disabled="!anyPrintsSelected"
+              @click="onDeleteBtnClick"
+            >
+              <i class="fas fa-trash-alt"></i>
+              Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
+            </button>
+            <a role="button" class="btn btn-sm btn-outline-primary upload-icon" href="/prints/upload/">
+              <i class="fas fa-upload fa-lg mx-2"></i>
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <print-card
+            v-for="print of prints"
+            :key="print.id"
+            :print="print"
+            :selected="selectedPrintIds.has(print.id)"
+            @selectedChanged="onSelectedChanged"
+            @printDeleted="onPrintDeleted"
+            @printDataChanged="printDataChanged"
+            @fullscreen="openFullScreen"
+          ></print-card>
+        </div>
 
-        <button
-          type="button"
-          class="btn mx-2 btn-sm"
-          :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
-          :disabled="!anyPrintsSelected"
-          @click="onDeleteBtnClick"
+        <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
+          <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+          <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+        </mugen-scroll>
+
+        <b-modal
+          id="tl-fullscreen-modal"
+          size="full"
+          @hidden="fullScreenClosed"
+          :hideHeader="true"
+          :hideFooter="true"
         >
-          <i class="fas fa-trash-alt"></i>
-          Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
-        </button>
-        <a role="button" class="btn btn-sm btn-outline-primary upload-icon" href="/prints/upload/">
-          <i class="fas fa-upload fa-lg mx-2"></i>
-        </a>
+          <FullScreenPrintCard
+            :print="fullScreenPrint"
+            :videoUrl="fullScreenPrintVideoUrl"
+            :autoplay="true"
+          />
+        </b-modal>
       </div>
-    </div>
-    <div class="row">
-      <print-card
-        v-for="print of prints"
-        :key="print.id"
-        :print="print"
-        :selected="selectedPrintIds.has(print.id)"
-        @selectedChanged="onSelectedChanged"
-        @printDeleted="onPrintDeleted"
-        @printDataChanged="printDataChanged"
-        @fullscreen="openFullScreen"
-      ></print-card>
-    </div>
-
-    <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-      <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
-      <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
-    </mugen-scroll>
-
-    <b-modal
-      id="tl-fullscreen-modal"
-      size="full"
-      @hidden="fullScreenClosed"
-      :hideHeader="true"
-      :hideFooter="true"
-    >
-      <FullScreenPrintCard
-        :print="fullScreenPrint"
-        :videoUrl="fullScreenPrintVideoUrl"
-        :autoplay="true"
-      />
-    </b-modal>
-  </div>
+    </template>
+  </layout>
 </template>
 
 <script>
@@ -135,8 +135,7 @@ import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
-import PullToReveal from '@common/PullToReveal.vue'
-import Navbar from '@common/Navbar.vue'
+import Layout from '@common/Layout.vue'
 
 export default {
   name: 'PrintsPage',
@@ -144,8 +143,7 @@ export default {
     MugenScroll,
     PrintCard,
     FullScreenPrintCard,
-    PullToReveal,
-    Navbar,
+    Layout,
   },
   data: function() {
     return {

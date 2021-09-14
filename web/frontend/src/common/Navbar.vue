@@ -57,9 +57,9 @@
         </b-collapse>
       </b-container>
     </b-navbar>
-    
+
     <b-alert :show="needsEmailVerification" variant="warning" class="text-center">
-      You will not get notified by email on print failure, as your primary email address is not verified. 
+      You will not get notified by email on print failure, as your primary email address is not verified.
       <a href="/accounts/email/">Verify your email address.</a>
     </b-alert>
   </div>

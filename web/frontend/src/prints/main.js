@@ -14,17 +14,10 @@ Vue.use(VueSwal)
 Vue.use(Sticky)
 Vue.use(VueMoment)
 
-import Navbar from '@common/Navbar.vue'
 import PrintsPage from './PrintsPage.vue'
 import PrintPage from './PrintPage.vue'
 import UploadPrintPage from './UploadPrintPage.vue'
 import PublicTimelapsesPage from './PublicTimelapsesPage.vue'
-
-if (document.getElementById('navbar-mount')) {
-  new Vue({
-    components: { Navbar }
-  }).$mount('#navbar-mount')
-}
 
 if (document.getElementById('prints-mount')) {
   new Vue({

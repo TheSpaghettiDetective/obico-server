@@ -1,5 +1,13 @@
 <template>
-  <layout view-name="app.views.web_views.user_preferences">
+  <layout :toolbar="true">
+    <template v-slot:toolbar>
+      <a href="/printers/wizard/" class="btn shadow-none" title="Link OctoPrint Printer">
+        <i class="fas fa-plus"></i>
+      </a>
+      <a href="/ent/printers/archived/" class="btn shadow-none" title="Archived Printers">
+        <i class="fas fa-archive"></i>
+      </a>
+    </template>
     <template v-slot:content>
       <div>
         <!-- <pull-to-reveal
@@ -129,8 +137,6 @@ import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 import PrinterCard from './PrinterCard.vue'
 // import Select from '@common/Select.vue'
-// import Navbar from '@common/Navbar.vue'
-// import PullToReveal from '@common/PullToReveal.vue'
 import Layout from '@common/Layout.vue'
 import { user } from '@lib/page_context'
 

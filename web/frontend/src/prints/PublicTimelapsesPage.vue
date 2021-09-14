@@ -1,67 +1,66 @@
 <template>
-  <div>
-    <pull-to-reveal>
-      <navbar view-name="publictimelapse_list"></navbar>
-    </pull-to-reveal>
+  <layout>
+    <template v-slot:content>
+      <div>
+        <div class="timelapse-gallery">
 
-    <div class="timelapse-gallery">
+          <!-- Header -->
+          <div class="row">
+            <div class="col-sm-12 text-center">
+              <h1>The Spaghetti Gallery</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 hints">
+              The Spaghetti Detective is still in early stage and its algorithm is not perfect yet. It may sometimes give
+              false alarms, or miss print failures.
+              So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better
+              than others at helping the Detective do the job.
+            </div>
+          </div>
 
-      <!-- Header -->
-      <div class="row">
-        <div class="col-sm-12 text-center">
-          <h1>The Spaghetti Gallery</h1>
+          <!-- Timelapses -->
+          <div class="row">
+            <print-card
+              v-for="timelapse of pageTimelapses"
+              :key="timelapse.id"
+              :print="timelapse"
+              :isPublic="true"
+              @fullscreen="openFullScreen"
+            ></print-card>
+          </div>
+
+          <!-- Timelapses loader on scroll down -->
+          <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
+            <div v-if="noMoreData" class="text-center p-2">End of public time-lapse list.</div>
+            <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+          </mugen-scroll>
+
+          <!-- Full-screen timelapse -->
+          <b-modal
+            id="tl-fullscreen-modal"
+            size="full"
+            @hidden="fullScreenClosed"
+            :title="fullScreenPrintTitle"
+            :hideFooter="true"
+          >
+            <full-screen-print-card
+              :print="fullScreenPrint"
+              :videoUrl="fullScreenPrintVideoUrl"
+              :autoplay="true"
+              :is-public="true"
+            />
+          </b-modal>
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-12 hints">
-          The Spaghetti Detective is still in early stage and its algorithm is not perfect yet. It may sometimes give
-          false alarms, or miss print failures.
-          So we compiled this "Spaghetti Gallery" to show you that some camera setups (angle, lighting, etc) are better
-          than others at helping the Detective do the job.
-        </div>
-      </div>
-
-      <!-- Timelapses -->
-      <div class="row">
-        <print-card
-          v-for="timelapse of pageTimelapses"
-          :key="timelapse.id"
-          :print="timelapse"
-          :isPublic="true"
-          @fullscreen="openFullScreen"
-        ></print-card>
-      </div>
-
-      <!-- Timelapses loader on scroll down -->
-      <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-        <div v-if="noMoreData" class="text-center p-2">End of public time-lapse list.</div>
-        <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
-      </mugen-scroll>
-
-      <!-- Full-screen timelapse -->
-      <b-modal
-        id="tl-fullscreen-modal"
-        size="full"
-        @hidden="fullScreenClosed"
-        :title="fullScreenPrintTitle"
-        :hideFooter="true"
-      >
-        <full-screen-print-card
-          :print="fullScreenPrint"
-          :videoUrl="fullScreenPrintVideoUrl"
-          :autoplay="true"
-          :is-public="true"
-        />
-      </b-modal>
-    </div>
-  </div>
+    </template>
+  </layout>
 </template>
 
 <script>
   import axios from 'axios'
   import urls from '../lib/server_urls'
-  import Navbar from '@common/Navbar.vue'
-  import PullToReveal from '@common/PullToReveal.vue'
+  import Layout from '@common/Layout.vue'
   import PrintCard from './PrintCard.vue'
   import FullScreenPrintCard from './FullScreenPrintCard.vue'
   import findIndex from 'lodash/findIndex'
@@ -71,8 +70,7 @@
     name: 'PublicTimelapsesPage',
 
     components: {
-      Navbar,
-      PullToReveal,
+      Layout,
       PrintCard,
       FullScreenPrintCard,
       MugenScroll,

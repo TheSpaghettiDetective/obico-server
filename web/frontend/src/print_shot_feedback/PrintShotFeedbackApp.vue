@@ -1,52 +1,52 @@
 <template>
-  <div class="printshots-container row justify-content-center">
-    <pull-to-reveal>
-      <navbar view-name="app.views.web_views.print_shot_feedback"></navbar>
-    </pull-to-reveal>
-
-    <div class="col-sm-12 col-lg-6">
-      <div class="card">
-        <h5 class="card-header text-center">
-          F
-          <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
-        </h5>
-        <loading :active="print === null" :is-full-page="true"></loading>
-        <div v-if="print !== null">
-          <consent
-            v-if="!print.access_consented_at"
-            :print="this.print"
-            @continue-btn-pressed="this.consentBtnPressed"
-          />
-          <div v-else>
-            <div>
-              <vue-slick-carousel
-                :arrows="true"
-                :dots="true"
-                @afterChange="onNextShot"
-                ref="carousel"
-              >
-                <print-shot-card
-                  v-for="(shot, i) in this.shots"
-                  :key="i"
-                  :shot="shot"
-                  @shotChanged="onShotChanged"
-                ></print-shot-card>
-                <template #customPaging="page">
-                  <div :class="pageClass(page)">&bull;</div>
-                </template>
-              </vue-slick-carousel>
-            </div>
-            <br />
-            <div class="card-body p-3">
-              <a href="/prints/">
-                <i class="fas fa-chevron-left"></i> Time-lapse
-              </a>
+  <layout>
+    <template v-slot:content>
+      <div class="printshots-container row justify-content-center">
+        <div class="col-sm-12 col-lg-6">
+          <div class="card">
+            <h5 class="card-header text-center">
+              F
+              <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+            </h5>
+            <loading :active="print === null" :is-full-page="true"></loading>
+            <div v-if="print !== null">
+              <consent
+                v-if="!print.access_consented_at"
+                :print="print"
+                @continue-btn-pressed="consentBtnPressed"
+              />
+              <div v-else>
+                <div>
+                  <vue-slick-carousel
+                    :arrows="true"
+                    :dots="true"
+                    @afterChange="onNextShot"
+                    ref="carousel"
+                  >
+                    <print-shot-card
+                      v-for="(shot, i) in shots"
+                      :key="i"
+                      :shot="shot"
+                      @shotChanged="onShotChanged"
+                    ></print-shot-card>
+                    <template #customPaging="page">
+                      <div :class="pageClass(page)">&bull;</div>
+                    </template>
+                  </vue-slick-carousel>
+                </div>
+                <br />
+                <div class="card-body p-3">
+                  <a href="/prints/">
+                    <i class="fas fa-chevron-left"></i> Time-lapse
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </layout>
 </template>
 
 <script>
@@ -66,8 +66,7 @@ import Consent from './components/Consent'
 import PrintShotCard from './components/PrintShotCard'
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
-import PullToReveal from '@common/PullToReveal.vue'
-import Navbar from '@common/Navbar.vue'
+import Layout from '@common/Layout.vue'
 
 export default {
   name: 'PrintShotFeedbackApp',
@@ -76,8 +75,7 @@ export default {
     Loading,
     PrintShotCard,
     VueSlickCarousel,
-    PullToReveal,
-    Navbar,
+    Layout,
   },
   props: {
     config: {

@@ -111,7 +111,7 @@
           </loading>
           <div class="discover">
             <div class="discover-body">
-              <div v-if="discoveredPrinters.length === 0" style="text-align: center;">
+              <div v-if="!canStartLinking" style="text-align: center;">
                 <div class="spinner-border big" role="status">
                   <span class="sr-only"></span>
                 </div>
@@ -295,6 +295,9 @@ export default {
       } else {
         return '-'
       }
+    },
+    canStartLinking() {
+      return this.verificationCode?.code && this.discoveredPrinters?.length > 0
     },
   },
   methods: {

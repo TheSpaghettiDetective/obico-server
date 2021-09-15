@@ -4,7 +4,7 @@
       <navbar view-name="app.views.web_views.user_preferences"></navbar>
     </pull-to-reveal>
 
-    <b-container class="wrapper" :class="{'is-in-mobile': isInMobile}">
+    <b-container class="wrapper" :class="{'is-in-mobile': isMobile}">
       <b-row>
         <b-col>
           <div v-if="user">
@@ -12,7 +12,7 @@
             <div class="mobile-settings-wrapper">
               <div v-if="$route.path === '/'" class="mobile-settings-categories">
                 <h2 class="categories-title section-title">Preferences</h2>
-                <router-link v-if="!isInMobile" to="/theme">
+                <router-link v-if="!isMobile" to="/theme">
                   <span>Personalization</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
@@ -29,7 +29,7 @@
                   <span>Notifications</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link v-if="isInMobile" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
+                <router-link v-if="isMobile" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
                   <span>Push Notification</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
@@ -62,7 +62,7 @@
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
               </div>
-              <div v-else class="mobile-settings-content" :class="{'is-in-mobile': isInMobile}">
+              <div v-else class="mobile-settings-content" :class="{'is-in-mobile': isMobile}">
                 <!-- General -->
                 <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
                 <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
@@ -135,7 +135,7 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-import { isMobile } from '@lib/app_platform'
+import { isMobile } from '@lib/page_context'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
@@ -369,14 +369,12 @@ export default {
       this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
     }
 
-    this.isInMobile = isMobile() || window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
     this.fetchUser()
   },
 
   methods: {
-    /**
-     * Get actual user preferences
-     */
+    isMobile: isMobile,
+
     fetchUser() {
       return axios
         .get(urls.user())
@@ -385,11 +383,6 @@ export default {
         })
     },
 
-    /**
-     * Update user settings
-     * @param {String} propName
-     * @param {any} propValue
-     */
     patchUser(propName, propValue) {
       let data = {}
 
@@ -437,12 +430,6 @@ export default {
         })
     },
 
-    /**
-     * Checks if value is associated with others (must be sent simultaneously)
-     * and returns array of input names in the collection
-     * @param {String} propName
-     * @return {Array, Boolean} array with input names or False
-     */
     checkForCombinedValues(propName) {
       for (const [key, inputs] of Object.entries(this.combinedInputs)) {
         if (inputs.includes(propName)) {
@@ -453,12 +440,6 @@ export default {
       return null
     },
 
-    /**
-     * Interlayer for saving status control to be able to set same saving status
-     * for 2 or more different inputs grouped to one block
-     * @param {String} propName
-     * @param {String} status
-     */
     setSavingStatus(propName, status) {
       if (status) {
         delete this.errorMessages[propName]
@@ -466,9 +447,6 @@ export default {
       this.$set(this.saving, propName, status)
     },
 
-    /**
-     * Show error alert if can not save settings
-     */
     errorAlert(text=null) {
       this.$swal({
         icon: 'error',
@@ -476,10 +454,6 @@ export default {
       })
     },
 
-    /**
-     * Update particular settings item
-     * @param {String} settingsItem
-     */
     updateSetting(settingsItem) {
       console.log('updateSetting, ', settingsItem)
       if (settingsItem in this.delayedSubmit) {
@@ -498,7 +472,7 @@ export default {
   },
 
   mounted () {
-    if (this.isInMobile) {
+    if (this.isMobile) {
       document.querySelector('body').style.paddingTop = '0px'
       document.querySelector('body').style.background = 'rgb(var(--color-surface-secondary))'
     }

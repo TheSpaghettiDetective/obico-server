@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar
-      v-if="!isInMobile"
+      v-if="!isMobile"
       toggleable="xl"
       :class="{
         'navbar-dark': theme === themes.Dark,
@@ -67,7 +67,7 @@
 
 <script>
 import moment from 'moment'
-import { isMobile } from '@lib/app_platform'
+import { isMobile } from '@lib/page_context'
 import { Themes, theme } from '../main/themes.js'
 
 export default {
@@ -80,7 +80,6 @@ export default {
       user: null,
       allowSignUp: false,
       isEnt: false,
-      isInMobile: false,
       themes: Themes,
       showMainMenu: false,
     }
@@ -98,7 +97,6 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
-    this.isInMobile = isMobile() || window.location.pathname.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
   },
 
   computed: {
@@ -125,6 +123,8 @@ export default {
   },
 
   methods: {
+    isMobile: isMobile,
+
     hideDropdowns() {
       this.showMainMenu = false
 
@@ -134,7 +134,7 @@ export default {
         accountDropdown.hide()
       }
     }
-  }
+  },
 }
 </script>
 

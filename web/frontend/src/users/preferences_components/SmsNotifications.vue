@@ -27,12 +27,6 @@
               </div>
             </div>
           </saving-animation>
-          <small class="text-muted">
-            <div>Can't find your country code?</div>
-            <div>The Spaghetti Detective Team is currently self-funded. Therefore we can't afford to open to
-              countries with high SMS cost. We will add more countries once we find a cost-effective SMS solution,
-              or secure sufficient funding.</div>
-          </small>
         </div>
         <p v-else class="text-muted">Please configure TWILIO_* items in settings to enable phone alert.</p>
       </div>

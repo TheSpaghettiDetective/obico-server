@@ -84,6 +84,7 @@
   import PullToReveal from '@common/PullToReveal.vue'
   import Navbar from '@common/Navbar.vue'
   import { isLocalStorageSupported } from '@common/utils'
+  import { user } from '@lib/page_context'
 
   const AXIS = {
     x: 'x',
@@ -124,7 +125,7 @@
     },
 
     created() {
-      this.user = JSON.parse(document.querySelector('#user-json').text)
+      this.user = user()
       this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
 
       // Get jogDistance from localStorage or set default value

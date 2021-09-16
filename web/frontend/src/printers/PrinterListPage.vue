@@ -127,6 +127,7 @@ import PrinterCard from './PrinterCard.vue'
 import Select from '@common/Select.vue'
 import Navbar from '@common/Navbar.vue'
 import PullToReveal from '@common/PullToReveal.vue'
+import { user } from '@lib/page_context'
 
 const SortOrder = {
   Asc: 'asc',
@@ -174,7 +175,7 @@ export default {
     PullToReveal,
   },
   created() {
-    this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.user = user()
 
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter

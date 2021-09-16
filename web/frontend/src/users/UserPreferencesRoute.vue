@@ -136,7 +136,7 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-import { inMobileWebView } from '@lib/page_context'
+import { inMobileWebView, settings } from '@lib/page_context'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
@@ -372,12 +372,10 @@ export default {
   },
 
   created() {
-    if (document.querySelector('#settings-json')) {
-      const {TWILIO_ENABLED, SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN} = JSON.parse(document.querySelector('#settings-json').text)
-      this.twilioEnabled = !!TWILIO_ENABLED
-      this.slackEnabled = !!SLACK_CLIENT_ID
-      this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
-    }
+    const {TWILIO_ENABLED, SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN} = settings()
+    this.twilioEnabled = !!TWILIO_ENABLED
+    this.slackEnabled = !!SLACK_CLIENT_ID
+    this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
 
     this.fetchUser()
   },

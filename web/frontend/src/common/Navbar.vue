@@ -67,7 +67,7 @@
 
 <script>
 import moment from 'moment'
-import { inMobileWebView } from '@lib/page_context'
+import { inMobileWebView, user, settings } from '@lib/page_context'
 import { Themes, theme } from '../main/themes.js'
 
 export default {
@@ -93,13 +93,17 @@ export default {
   },
 
   created() {
-    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
+    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = settings()
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
-    this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.user = user()
   },
 
   computed: {
+    inMobileWebView() {
+      return inMobileWebView()
+    },
+
     theme() {
       return theme.value
     },
@@ -123,8 +127,6 @@ export default {
   },
 
   methods: {
-    inMobileWebView: inMobileWebView,
-
     hideDropdowns() {
       this.showMainMenu = false
 

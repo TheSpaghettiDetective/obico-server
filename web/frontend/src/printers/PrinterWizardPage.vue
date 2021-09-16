@@ -219,6 +219,7 @@ import Navbar from '@common/Navbar.vue'
 import SavingAnimation from '../common/SavingAnimation.vue'
 import DiscoveredPrinter from './components/DiscoveredPrinter.vue'
 import AutoLinkPopup from './components/AutoLinkPopup.vue'
+import { user } from '@lib/page_context'
 
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 
@@ -260,10 +261,9 @@ export default {
 
   created() {
     // TODO remove when compatibility is no longer necessary
-    const user = JSON.parse(document.querySelector('#user-json').text)
     this.disallowLegacyLinking = (
-      get(user, 'subscription.plan_id') !== 'pro-comp-50-dh' ||
-      get(user, 'subscription.printers_subscribed') !== 1
+      get(user(), 'subscription.plan_id') !== 'pro-comp-50-dh' ||
+      get(user(), 'subscription.printers_subscribed') !== 1
     )
 
     if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side

@@ -16,6 +16,7 @@ import axios from 'axios'
 import split from 'lodash/split'
 import filesize from 'filesize'
 import urls from '@lib/server_urls'
+import { user, settings } from '@lib/page_context'
 
 export default {
   name: 'OctoPrintTunnelPage',
@@ -51,9 +52,9 @@ export default {
   },
 
   created() {
-    this.isPro = JSON.parse(document.querySelector('#user-json').text).is_pro
+    this.isPro = user().is_pro
     this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
-    this.usageCap = JSON.parse(document.querySelector('#settings-json').text).OCTOPRINT_TUNNEL_CAP
+    this.usageCap = settings().OCTOPRINT_TUNNEL_CAP
   },
 
   mounted() {

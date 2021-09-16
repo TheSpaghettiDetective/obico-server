@@ -121,6 +121,7 @@
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode } from '@lib/normalizers'
   import SearchInput from '@common/SearchInput.vue'
+  import { user } from '@lib/page_context'
 
   const SORTING = {
     NAME: 1,
@@ -232,7 +233,7 @@
     },
 
     created() {
-      this.user = JSON.parse(document.querySelector('#user-json').text)
+      this.user = user()
       this.fetchGCodes()
     },
 

@@ -4,15 +4,15 @@
       <navbar view-name="app.views.web_views.user_preferences"></navbar>
     </pull-to-reveal>
 
-    <b-container class="wrapper" :class="{'is-in-mobile': isMobile}">
+    <b-container class="wrapper" :class="{'is-in-mobile': useMobileLayout}">
       <b-row>
         <b-col>
           <div v-if="user">
             <!-- 2-step nav for mobiles -->
-            <div class="mobile-settings-wrapper">
+            <div v-if="useMobileLayout" class="mobile-settings-wrapper">
               <div v-if="$route.path === '/'" class="mobile-settings-categories">
                 <h2 class="categories-title section-title">Preferences</h2>
-                <router-link v-if="!isMobile" to="/theme">
+                <router-link v-if="!inMobileWebView" to="/theme">
                   <span>Personalization</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
@@ -29,7 +29,7 @@
                   <span>Notifications</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
-                <router-link v-if="isMobile" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
+                <router-link v-if="inMobileWebView" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
                   <span>Push Notification</span>
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
@@ -62,7 +62,7 @@
                   <i class="fas fa-arrow-right"></i>
                 </router-link>
               </div>
-              <div v-else class="mobile-settings-content" :class="{'is-in-mobile': isMobile}">
+              <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
                 <!-- General -->
                 <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
                 <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
@@ -80,6 +80,7 @@
             </div>
             <!-- left-side nav for desktops -->
             <b-tabs
+              v-else
               :vertical="true"
               class="desktop-settings-wrapper"
               nav-wrapper-class="settings-nav"
@@ -135,7 +136,7 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-import { isMobile } from '@lib/page_context'
+import { inMobileWebView } from '@lib/page_context'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
@@ -214,6 +215,15 @@ export default {
   },
 
   computed: {
+    useMobileLayout() {
+      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+      return inMobileWebView() || vw < 768
+    },
+
+    inMobileWebView() {
+      return inMobileWebView()
+    },
+
     themeValue() {
       return getTheme()
     },
@@ -373,8 +383,6 @@ export default {
   },
 
   methods: {
-    isMobile: isMobile,
-
     fetchUser() {
       return axios
         .get(urls.user())
@@ -472,7 +480,7 @@ export default {
   },
 
   mounted () {
-    if (this.isMobile) {
+    if (this.useMobileLayout) {
       document.querySelector('body').style.paddingTop = '0px'
       document.querySelector('body').style.background = 'rgb(var(--color-surface-secondary))'
     }
@@ -493,18 +501,13 @@ export default {
   .desktop-settings-wrapper
     background-color: rgb(var(--color-surface-secondary))
 
-    @media (max-width: 768px)
-      display: none
-
     ::v-deep .desktop-settings-content
       padding: 2rem
       padding-right: 3rem
 
   .mobile-settings-wrapper
+    background-color: rgb(var(--color-surface-secondary))
     padding: 2rem 0
-
-    @media (min-width: 769px)
-      display: none
 
     .mobile-settings-content
       background-color: rgb(var(--color-surface-secondary))

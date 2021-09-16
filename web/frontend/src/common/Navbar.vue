@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar
-      v-if="!isMobile"
+      v-if="!inMobileWebView"
       toggleable="xl"
       :class="{
         'navbar-dark': theme === themes.Dark,
@@ -67,7 +67,7 @@
 
 <script>
 import moment from 'moment'
-import { isMobile } from '@lib/page_context'
+import { inMobileWebView } from '@lib/page_context'
 import { Themes, theme } from '../main/themes.js'
 
 export default {
@@ -123,7 +123,7 @@ export default {
   },
 
   methods: {
-    isMobile: isMobile,
+    inMobileWebView: inMobileWebView,
 
     hideDropdowns() {
       this.showMainMenu = false

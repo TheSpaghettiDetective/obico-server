@@ -532,7 +532,7 @@ export default {
           secretObtained: (chosenDeviceId, secret) => this.secretObtained(chosenDeviceId, secret),
         },
         {
-          title: `Link ${discoveredPrinter.host_or_ip}:${discoveredPrinter.port}`,
+          title: 'Browser Pop-up',
           showConfirmButton: false,
           allowOutsideClick: false,
         }

@@ -1,13 +1,23 @@
 <template>
   <div class="px-2">
+    <div class="title-pic">
+    <img class="pic-item"
+      :src="require('@static/img/webpage-multiple.svg')" />
+    <div class="pic-item">
+      <i class="fas fa-ellipsis-h fa-2x"></i>
+      <i class="fas fa-ellipsis-h fa-2x"></i>
+    </div>
+    <img class="pic-item"
+      :src="require('@static/img/octoprint_logo.png')" />
+    </div>
     <div class="my-4">
-      <p>The Spaghetti Detective needs to make sure you have access to this OctoPrint.</p>
+      <p>The Spaghetti Detective needs to make sure you have access to selected OctoPrint.</p>
       <p>When you press "Link Now" button below, a new browser window will pop up to finish a handshake with this OctoPrint.</p>
     </div>
     <div>
     <div class="row my-2">
       <div class="col-sm-6">
-        <button class="btn btn-block btn-primary mt-2" :disabled="linking" @click="autoLinkPrinter"><b-spinner v-if="linking" small></b-spinner>Link Now</button>
+        <button class="btn btn-block btn-primary mt-2" :disabled="linking" @click="autoLinkPrinter"><b-spinner v-if="linking" small></b-spinner>Link Now&nbsp;<i class="fas fa-external-link-alt"></i></button>
       </div>
       <div class="col-sm-6">
         <button class="btn btn-block btn-secondary mt-2" @click="cancel">Cancel</button>
@@ -138,3 +148,21 @@ export default {
   },
 }
 </script>
+
+<style lang="sass" scoped>
+
+.title-pic
+  display: flex
+  margin: 1.5rem 0
+  justify-content: center
+
+  .pic-item
+    height: 3rem
+    margin: 0 0.5rem
+
+  img
+    filter: grayscale(100%)
+  i
+    color: #888888
+
+</style>

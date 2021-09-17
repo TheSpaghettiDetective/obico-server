@@ -549,7 +549,7 @@ export default {
   width: 25%
   background-color: rgb(var(--color-surface-primary))
   min-height: 80vh
-  padding: 1rem 0
+  padding: 3.5rem 0
 
   .subcategory
     a

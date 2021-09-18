@@ -8,8 +8,6 @@ from typing import Optional, List
 from ipware.utils import (
     cleanup_ip, is_valid_ip, is_public_ip)
 
-from django.core.validators import URLValidator
-
 from lib.cache import (
     disco_push_raw_device_message,
     disco_pop_raw_device_messages,
@@ -22,8 +20,6 @@ LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
 LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
-
-host_re = re.compile(URLValidator.host_re)
 
 
 class DeviceInfoSerializer(serializers.Serializer):
@@ -54,16 +50,9 @@ class DeviceInfoSerializer(serializers.Serializer):
     def validate_host_or_ip(self, value):
         if value:
             ip = cleanup_ip(value)
-            if is_valid_ip(ip):
-                if not is_public_ip(ip):
-                    return ip
-            else:
-                hostname = value.strip()
-                if host_re.match(hostname):
-                    return hostname
-
-            raise serializers.ValidationError(
-                'Must be private ip address or hostname')
+            if is_valid_ip(ip) and not is_public_ip(ip):
+                return ip
+            raise serializers.ValidationError('Must be private ip address')
         return value
 
 

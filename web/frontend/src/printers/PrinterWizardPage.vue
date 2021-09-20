@@ -238,9 +238,7 @@ export default {
     return {
       theme: theme,
       verificationCode: null,
-      // FIXME:
-      // verifiedPrinter: null,
-      verifiedPrinter: {id: '123', name: 'printer test'},
+      verifiedPrinter: null,
       onVerificationStep: false,
       copied: false,
       saving: {},

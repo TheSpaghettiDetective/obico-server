@@ -1,5 +1,8 @@
 <template>
-  <layout>
+  <layout :toolbar="true">
+    <template v-slot:toolbar>
+      <search-input v-model="searchText" class="search-input"></search-input>
+    </template>
     <template v-slot:content>
       <div>
         <div v-if="!user.is_pro" class="row my-3 justify-content-center">
@@ -42,7 +45,7 @@
               <div class="col-sm-12 col-lg-10">
                 <div class="gcodes-wrapper">
                   <div class="control-panel">
-                    <search-input v-model="searchText" class="search-input"></search-input>
+                    <!-- <search-input v-model="searchText" class="search-input"></search-input> -->
                   </div>
 
                   <div class="sorting-panel">
@@ -313,6 +316,9 @@
 <style lang="sass" scoped>
   @use "~main/theme"
 
+  .search-input
+    height: 30px
+
   .gcodes-wrapper
     background-color: rgb(var(--color-surface-secondary))
     padding: 2em
@@ -320,9 +326,6 @@
   .control-panel
     border-bottom: 1px solid rgb(var(--color-divider))
     padding-bottom: 16px
-
-    .search-input
-      height: 35px
 
   .sorting-panel
     display: flex

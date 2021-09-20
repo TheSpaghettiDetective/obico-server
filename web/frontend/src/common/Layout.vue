@@ -94,13 +94,13 @@
       </div>
     </nav>
 
-    <div class="content-wrapper" :class="{'with-warning': needsEmailVerification}">
+    <div class="content-wrapper" :class="{'hide-toolbar': !toolbar}">
       <b-navbar class="top-nav">
         <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 toggle-menu">
           <i class="fas fa-align-left"></i>
         </b-button>
 
-        <div>
+        <div class="toolbar">
           <slot name="toolbar"></slot>
         </div>
       </b-navbar>
@@ -204,12 +204,11 @@ export default {
     overflow-y: scroll
 
     .sidebar-header
-      padding: 0 1rem
       flex: 0 0 50px
       display: flex
       align-items: center
       justify-content: center
-      background: rgb(var(--color-table-accent-1))
+      border-bottom: 1px solid rgb(var(--color-divider))
 
     ul
       li
@@ -256,8 +255,8 @@ export default {
       padding: 20px 0
 
     ::v-deep .logo-small img
-      width: 1.875rem
-      height: 1.875rem
+      width: 30px
+      height: 30px
 
     .dropdown-toggle
       position: relative
@@ -284,7 +283,7 @@ export default {
     top: 0
     left: 0
     width: 100%
-    padding-left: calc(100px + 1rem)
+    padding-left: calc(100px + 15px)
     z-index: 999
     box-shadow: var(--shadow-top-nav)
     justify-content: space-between
@@ -292,13 +291,29 @@ export default {
     .toggle-menu
       visibility: hidden
 
+    .toolbar
+      display: flex
+      align-items: center
+
   .content-wrapper
     width: 100%
-    min-height: 100vh
+    // min-height: calc(100vh - 68px)
 
     .page-content
-      padding: 2rem
-      padding-top: calc(50px + 2rem)
+      padding: 30px
+      padding-top: calc(50px + 30px)
+      display: flex
+      flex-direction: column
+      justify-content: center
+      min-height: calc(100vh - 68px - 50px)
+
+  @media (min-width: 769px)
+    .content-wrapper.hide-toolbar
+      .top-nav
+        display: none
+      .page-content
+        padding-top: 30px
+        min-height: calc(100vh - 68px)
 
   @media (max-width: 768px)
     padding-left: 0
@@ -307,7 +322,7 @@ export default {
       transition: all .2s ease-out
 
     .top-nav
-      padding-left: 1rem
+      padding-left: 15px
       transform: translateX(100px)
       transition: all .2s ease-out
 
@@ -316,8 +331,8 @@ export default {
 
     .content-wrapper
       .page-content
-        padding: 1rem
-        padding-top: calc(50px + 1rem)
+        padding: 15px 0
+        padding-top: calc(50px + 15px)
 
     .overlay
       position: fixed
@@ -344,7 +359,9 @@ export default {
       display: none !important
     .content-wrapper
       .page-content
-        padding: 1rem !important
+        padding: 15px !important
+
+
 
 
 

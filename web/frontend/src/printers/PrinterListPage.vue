@@ -1,6 +1,13 @@
 <template>
   <layout :toolbar="true">
     <template v-slot:toolbar>
+      <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn">
+        <svg viewBox="0 0 384 550">
+          <use href="#svg-detective-hours"></use>
+        </svg>
+        <span id="user-credits" class="badge badge-light">290</span>
+        <span class="sr-only">Detective Hours</span>
+      </a>
       <a href="/printers/wizard/" class="btn shadow-none" title="Link OctoPrint Printer">
         <i class="fas fa-plus"></i>
       </a>
@@ -9,7 +16,7 @@
       </a>
     </template>
     <template v-slot:content>
-      <div>
+      <b-container class="printer-list-page">
         <!-- <pull-to-reveal
           :shiftContent="true"
           :showEdge="true"
@@ -69,59 +76,57 @@
           </div>
         </pull-to-reveal> -->
 
-        <div v-if="!user.is_pro && printers.length > 0" class="row justify-content-center">
-          <div class="col-sm-12 col-lg-6">
-            <div class="form-container" style="margin: 1em 0 -1em 0; padding: 0.5em 1em;">
+        <b-row v-if="!user.is_pro && printers.length > 0" class="consider-upgrade">
+          <b-col>
+            <div class="surface-secondary p-4 text-center">
               <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
             </div>
-          </div>
-        </div>
+          </b-col>
+        </b-row>
 
-        <div id="printers" class="row justify-content-center" style="margin-top: -1.5rem">
-          <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
+        <b-row v-if="loading">
+          <b-col class="text-center">
+            <b-spinner class="my-5" label="Loading..."></b-spinner>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="visiblePrinters.length" class="printer-cards justify-content-center">
           <printer-card
             v-for="printer in visiblePrinters"
             :key="printer.id"
             :printer="printer"
             :is-pro-account="user.is_pro"
             @PrinterUpdated="onPrinterUpdated"
+            class="printer-card-wrapper"
           ></printer-card>
-        </div>
+        </b-row>
 
-        <div class="row justify-content-center">
-          <div id="new-printer" class="col-sm-12 col-lg-6">
-            <div class="new-printer-container">
-              <a href="/printers/wizard/">
-                <i class="fa fa-plus fa-2x"></i>
-                <div>Link OctoPrint Printer</div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="p-5">
-          <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
-            <div class="warning">
-              <span>{{ hiddenPrinterCount }}</span> printers are
-              hidden by the filtering settings.&nbsp;&nbsp;
-              <a
-                role="button"
-                href="#"
-                @click="onShowAllPrintersClicked()"
-              >Show All Printers</a>
-            </div>
-            <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
-          </b-collapse>
-          <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
-            <div class="warning">
-              Some of your printers have been archived.
-              <a
-                href="/ent/printers/archived/"
-              >Find them here >>></a>
-            </div>
-            <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
-          </b-collapse>
-        </div>
-      </div>
+        <b-row v-show="shouldShowFilterWarning || shouldShowArchiveWarning" class="bottom-messages">
+          <b-col>
+            <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
+              <div class="warning">
+                <span>{{ hiddenPrinterCount }}</span> printers are
+                hidden by the filtering settings.&nbsp;&nbsp;
+                <a
+                  role="button"
+                  href="#"
+                  @click="onShowAllPrintersClicked()"
+                >Show All Printers</a>
+              </div>
+              <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
+            </b-collapse>
+            <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
+              <div class="warning">
+                Some of your printers have been archived.
+                <a
+                  href="/ent/printers/archived/"
+                >Find them here >>></a>
+              </div>
+              <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
+            </b-collapse>
+          </b-col>
+        </b-row>
+      </b-container>
     </template>
   </layout>
 </template>
@@ -343,12 +348,27 @@ export default {
 }
 </script>
 
- <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
-<style lang="sass">
+<style lang="sass" scoped>
 @use "~main/theme"
 
-#printer-list-page
-  margin-top: 1.5rem
+.printer-list-page
+  --gap: 30px
+
+  .consider-upgrade
+    margin-bottom: var(--gap)
+
+  .printer-cards
+     margin-top: calc(var(--gap) * -1)
+
+  .printer-card-wrapper
+    margin-top: var(--gap)
+
+  .bottom-messages
+    margin-bottom: -15px
+    margin-top: var(--gap)
+
+  @media (max-width: 768px)
+    --gap: 15px
 
 .warning-collapse
   display: flex
@@ -362,4 +382,22 @@ export default {
   .warning
     flex-grow: 10
     text-align: center
+
+
+.btn.hours-btn
+  position: relative
+  padding-right: 1.625rem
+
+  svg
+    height: 1.125rem
+    width: auto
+
+  .badge
+    position: absolute
+    left: 22px
+    top: 8px
+    border-radius: 4px
+    background-color: rgb(var(--color-primary))
+    height: auto
+    font-size: .625rem
 </style>

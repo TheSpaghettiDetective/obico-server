@@ -148,10 +148,8 @@ import TelegramNotifications from './preferences_components/TelegramNotification
 import PushoverNotifications from './preferences_components/PushoverNotifications'
 import SlackNotifications from './preferences_components/SlackNotifications'
 import GeneralNotifications from './preferences_components/GeneralNotifications'
-
 export default {
   name: 'UserPreferencesRoute',
-
   components: {
     Layout,
     ThemePreferences,
@@ -166,7 +164,6 @@ export default {
     SlackNotifications,
     GeneralNotifications,
   },
-
   data() {
     return {
       user: null,
@@ -211,17 +208,14 @@ export default {
       pushOverEnabled: false,
     }
   },
-
   computed: {
     useMobileLayout() {
       const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
       return inMobileWebView() || vw < 768
     },
-
     inMobileWebView() {
       return inMobileWebView()
     },
-
     themeValue() {
       return getTheme()
     },
@@ -301,7 +295,6 @@ export default {
       }
     },
   },
-
   watch: {
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
@@ -316,18 +309,15 @@ export default {
     phoneCountryCode: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.errorMessages.phone = []
-
         // Allow clear data
         if (newValue === '') {
           this.updateSetting('phone_country_code')
           return
         }
-
         const codeNumber = parseInt(newValue.replace(/\s/g, '')) // will parse both '1' / '+1', clear spaces for safety
         if (isNaN(codeNumber)) {
           return
         }
-
         if (this.config.twilioCountryCodes && (this.config.twilioCountryCodes.length !== 0) && !this.config.twilioCountryCodes.includes(codeNumber)) {
           this.errorMessages.phone = ['Oops, we don\'t send SMS to this country code']
         } else {
@@ -361,23 +351,19 @@ export default {
       }
     }
   },
-
   props: {
     config: {
       default() {return {}},
       type: Object,
     },
   },
-
   created() {
     const {TWILIO_ENABLED, SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN} = settings()
     this.twilioEnabled = !!TWILIO_ENABLED
     this.slackEnabled = !!SLACK_CLIENT_ID
     this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
-
     this.fetchUser()
   },
-
   methods: {
     fetchUser() {
       return axios
@@ -386,10 +372,8 @@ export default {
           this.user = response.data
         })
     },
-
     patchUser(propName, propValue) {
       let data = {}
-
       let key = propName
       const combinedInputs = this.checkForCombinedValues(propName)
       if (combinedInputs) {
@@ -400,7 +384,6 @@ export default {
           const value = this.user[input]
           data[input] = value
         }
-
         // Allow either completely empty or completely filled data
         const values = Object.values(data)
         const emptyValues = values.filter(val => !val)
@@ -410,9 +393,7 @@ export default {
       } else {
         data = {[propName]: propValue}
       }
-
       this.setSavingStatus(key, true)
-
       // Make request to API
       return axios
         .patch(urls.user(), data)
@@ -433,31 +414,26 @@ export default {
           this.setSavingStatus(key, false)
         })
     },
-
     checkForCombinedValues(propName) {
       for (const [key, inputs] of Object.entries(this.combinedInputs)) {
         if (inputs.includes(propName)) {
           return {inputs, key}
         }
       }
-
       return null
     },
-
     setSavingStatus(propName, status) {
       if (status) {
         delete this.errorMessages[propName]
       }
       this.$set(this.saving, propName, status)
     },
-
     errorAlert(text=null) {
       this.$swal({
         icon: 'error',
         html: `<p>${text ? text : 'Can not update your preferences.'}</p><p>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</p>`,
       })
     },
-
     updateSetting(settingsItem) {
       console.log('updateSetting, ', settingsItem)
       if (settingsItem in this.delayedSubmit) {
@@ -470,11 +446,9 @@ export default {
         }, delayInfo['delay'])
         return
       }
-
       this.patchUser(settingsItem, this.user[settingsItem])
     },
   },
-
   mounted () {
     if (this.useMobileLayout) {
       document.querySelector('body').style.paddingTop = '0px'
@@ -486,38 +460,29 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
-
 .wrapper
   &:not(.is-in-mobile)
-    // margin: 2.5rem 0
-
+    margin: 2.5rem 0
     @media (max-width: 768px)
       margin: 0
-
   .desktop-settings-wrapper
     background-color: rgb(var(--color-surface-secondary))
-
     ::v-deep .desktop-settings-content
       padding: 2rem
       padding-right: 3rem
-
   .mobile-settings-wrapper
     background-color: rgb(var(--color-surface-secondary))
     padding: 2rem 0
-
     .mobile-settings-content
       background-color: rgb(var(--color-surface-secondary))
       padding: 1.5rem 2.5rem 1.5rem 1.5rem
-
       &.is-in-mobile
         padding: 0 1.5rem
-
     .mobile-settings-categories
       .categories-title
         font-weight: bold
         font-size: 1.5rem
         margin-bottom: 1rem
-
       a
         color: rgb(var(--text-primary))
         display: flex
@@ -526,37 +491,29 @@ export default {
         padding: .8rem 0
         border-bottom: 1px solid rgb(var(--color-divider))
         font-size: 1.2em
-
         &.subcategory
           font-size: 1em
           padding-left: 1em
-
         i
           font-size: .8rem
-
 ::v-deep section:not(:first-child) .section-title
   margin-top: 2rem
-
 ::v-deep .section-title
   font-weight: bold
   font-size: 1.5rem
   margin-bottom: 1rem
   border-bottom: 1px solid rgb(var(--color-text-primary))
-
 ::v-deep .settings-nav
   width: 25%
   background-color: rgb(var(--color-surface-primary))
   min-height: 80vh
   padding: 3.5rem 0
-
   .subcategory
     a
       padding-left: 2rem
       font-size: 0.9em
-
   a
     border: initial
-
 ::v-deep .nav-tabs
   border-bottom: none
 </style>

@@ -173,7 +173,7 @@ export default function WebRTCConnection(videoEnabled) {
         Janus.debug('Handling SDP as well...')
         Janus.debug(jsep)
         // Offer from the plugin, let's answer
-        self.streaming.createAnswer(
+        self.streaming?.createAnswer(
           {
             jsep: jsep,
             // We want recvonly audio/video and, if negotiated, datachannels
@@ -182,7 +182,7 @@ export default function WebRTCConnection(videoEnabled) {
               Janus.debug('Got SDP!')
               Janus.debug(jsep)
               var body = { 'request': 'start' }
-              self.streaming.send({ 'message': body, 'jsep': jsep })
+              self.streaming?.send({ 'message': body, 'jsep': jsep })
             },
             error: function (error) {
               Janus.error('WebRTC error:', error)
@@ -198,7 +198,7 @@ export default function WebRTCConnection(videoEnabled) {
         return
       }
       const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
-      self.streaming.send({ 'message': body })
+      self.streaming?.send({ 'message': body })
 
       if (self.bitrateInterval) {
         clearInterval(self.bitrateInterval)
@@ -221,13 +221,13 @@ export default function WebRTCConnection(videoEnabled) {
         return
       }
       const body = { 'request': 'stop' }
-      self.streaming.send({ 'message': body })
-      self.streaming.hangup()
+      self.streaming?.send({ 'message': body })
+      self.streaming?.hangup()
     },
 
     sendData(data) {
       if (self.channelOpen()) {
-        self.streaming.data({text: data, success: () => {}})
+        self.streaming?.data({text: data, success: () => {}})
       }
     }
   }

@@ -92,7 +92,12 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       } else if (maybeBin instanceof Blob) {
         const reader = new FileReader()
         reader.addEventListener('loadend', (e) => {
+          if (!e.srcElement) {
+            return
+          }
+
           const arrayBuffer = e.srcElement.result
+
           try {
             const jsonData = pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'})
             parseJsonData(jsonData)

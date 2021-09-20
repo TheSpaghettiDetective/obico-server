@@ -33,7 +33,7 @@
       <br /><br />
       <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
         <div class="mt-4">
-          <a href="/printers/" class="btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
+          <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
         </div>
         <div class="mt-5">
           <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
@@ -238,7 +238,9 @@ export default {
     return {
       theme: theme,
       verificationCode: null,
-      verifiedPrinter: null,
+      // FIXME:
+      // verifiedPrinter: null,
+      verifiedPrinter: {id: '123', name: 'printer test'},
       onVerificationStep: false,
       copied: false,
       saving: {},

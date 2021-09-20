@@ -331,6 +331,11 @@ a.link {
     }
   }
 }
+
+.swal2-container {
+  z-index: 1070 !important;
+}
+
 .swal2-container.swal2-backdrop-show.dark-backdrop {
   background-color: rgba(0,0,0,.6) !important;
 }

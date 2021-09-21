@@ -284,7 +284,7 @@ export default {
     left: 0
     width: 100%
     padding-left: calc(100px + 15px)
-    z-index: 999
+    z-index: 100
     box-shadow: var(--shadow-top-nav)
     justify-content: space-between
 
@@ -323,13 +323,14 @@ export default {
 
     .top-nav
       padding-left: 15px
-      transform: translateX(100px)
-      transition: all .2s ease-out
 
       .toggle-menu
         visibility: visible
 
     .content-wrapper
+      transform: translateX(100px)
+      transition: all .2s ease-out
+
       .page-content
         padding: 15px 0
         padding-top: calc(50px + 15px)
@@ -341,13 +342,13 @@ export default {
       width: 100%
       height: 100%
       z-index: 100
-      background: rgb(0,0,0,.7)
+      background: rgb(0,0,0,.5)
       display: block
 
     &.collapsed
       .side-nav
         transform: translateX(-100px)
-      .top-nav
+      .content-wrapper
         transform: translateX(0)
       .overlay
         display: none

@@ -11,9 +11,6 @@
       <a href="/printers/wizard/" class="btn shadow-none" title="Link OctoPrint Printer">
         <i class="fas fa-plus"></i>
       </a>
-      <a href="/ent/printers/archived/" class="btn shadow-none" title="Archived Printers">
-        <i class="fas fa-archive"></i>
-      </a>
     </template>
     <template v-slot:content>
       <b-container class="printer-list-page">

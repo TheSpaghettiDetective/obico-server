@@ -17,13 +17,13 @@
         <li v-if="user" :class="{'active': path === '/prints/'}">
           <a href="/prints/">
             <i class="fas fa-video"></i>
-            Time-Lapse
+            Time-Lapses
           </a>
         </li>
         <li v-if="user" :class="{'active': path === '/gcodes/'}">
           <a href="/gcodes/">
             <i class="far fa-file-code"></i>
-            G-Code
+            G-Codes
           </a>
         </li>
         <li v-if="!user" class="glowing" :class="{'active': path === '/publictimelapses/'}">

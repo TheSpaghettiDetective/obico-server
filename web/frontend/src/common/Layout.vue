@@ -63,6 +63,9 @@
                 <li :class="{'active': path === '/user_preferences/'}">
                   <a href="/user_preferences/">Settings</a>
                 </li>
+                <li :class="{'active': path === '/ent/subscription/'}">
+                  <a href="/ent/subscription/">Account</a>
+                </li>
                 <li>
                   <a href="/accounts/logout/">Logout</a>
                 </li>

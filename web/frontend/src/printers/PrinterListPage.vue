@@ -22,10 +22,10 @@
     </template>
     <template v-slot:mobileActions>
       <b-dropdown-item href="/ent/subscription/#detective-hour-balance">
-        <i class="fas fa-hourglass-half"></i>Detective Hours
+        <i class="fas fa-hourglass-half"></i>290 Detective Hours
       </b-dropdown-item>
       <b-dropdown-item href="/printers/wizard/">
-        <i class="fas fa-plus"></i>Add Printer
+        <i class="fas fa-plus"></i>Link New Printer
       </b-dropdown-item>
     </template>
     <template v-slot:content>

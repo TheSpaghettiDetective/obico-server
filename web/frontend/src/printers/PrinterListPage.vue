@@ -267,11 +267,16 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
-
+          
+          const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
           const expiredLongerThan15Days = this.user.subscription.expired_at && moment(this.user.subscription.expired_at).isBefore(moment().add(15,'days'))
           if (!this.user.is_pro && expiredLongerThan15Days && this.printers.length > 0 && Math.random() < 0.2) {
             this.$swal.Toast.fire({
               html: '<p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>',
+            })
+          } else if (this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day) {
+            this.$swal.Toast.fire({
+              html: '<div><a href="/accounts/email/">Please verify your email address.</a></div><div>Otherise you will not get notified by email on print failures.</div>',
             })
           }
         })

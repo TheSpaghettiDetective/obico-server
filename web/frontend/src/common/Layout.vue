@@ -204,7 +204,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { inMobileWebView } from '@lib/page_context'
 import DarkLightImage from '@common/DarkLightImage.vue'
 
@@ -277,15 +276,6 @@ export default {
         return Math.round(this.user.dh_balance)
       }
     },
-    needsEmailVerification() {
-        if (!this.user) {
-          return false
-        }
-
-        // Give user 1 day before bugging them to verify their email addresses
-        const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
-        return this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day
-    },
     allSelectedInner: {
       get: function() {
         return this.allSelected
@@ -308,12 +298,6 @@ export default {
     const staticAlert = document.querySelector('.alert:not(.custom-alert)')
     if (staticAlert) {
       staticAlert.style.marginTop = '50px'
-    }
-
-    if (this.needsEmailVerification) {
-      this.$swal.Toast.fire({
-        html: '<div><a href="/accounts/email/">Please verify your email address.</a></div><div>Otherwise you will not get notified by email on print failures.</div>',
-      })
     }
   },
 }

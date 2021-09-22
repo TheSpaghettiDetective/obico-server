@@ -1,9 +1,9 @@
 <template>
   <layout
-    :search="true"
-    @updateSearch="updateSearch"
   >
-
+    <template v-slot:topBarLeft>
+      <search-input @input="updateSearch" class="search-input mr-3"></search-input>
+    </template>
     <template v-slot:content>
       <b-container>
         <b-row v-if="!user.is_pro" class="justify-content-center">
@@ -113,6 +113,7 @@
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode } from '@lib/normalizers'
   import { user } from '@lib/page_context'
+  import SearchInput from '@common/SearchInput.vue'
 
   const SORTING = {
     NAME: 1,
@@ -130,6 +131,7 @@
 
     components: {
       Layout,
+      SearchInput,
       vueDropzone: vue2Dropzone,
       MugenScroll,
     },
@@ -312,6 +314,9 @@
 
   .search-input
     height: 30px
+    input
+      background-color: rgb(var(--color-surface-secondary))
+      border: rgb(var(--color-surface-secondary))
 
   .gcodes-wrapper
     background-color: rgb(var(--color-surface-secondary))

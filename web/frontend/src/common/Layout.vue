@@ -84,7 +84,7 @@
     <div
       class="content-wrapper"
       :class="{
-        'hide-top-nav-on-desktop': !search && !$slots.desktopActions && !sortOptions.length && !filterOptions.length,
+        'hide-top-nav-on-desktop': !$slots.topBarLeft && !$slots.desktopActions && !sortOptions.length && !filterOptions.length,
         'hide-kebab-menu-on-mobile': !$slots.mobileActions && !sortOptions.length && !filterOptions.length,
         'no-sort-and-filter': !sortOptions.length && !filterOptions.length,
       }"
@@ -95,7 +95,7 @@
           <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 toggle-sidebar">
             <i class="fas fa-bars"></i>
           </b-button>
-          <search-input v-if="search" @input="updateSearch" class="search-input mr-3"></search-input>
+          <slot name="topBarLeft"></slot>
           <div v-if="actionsWithSelected.length" class="actions-with-selected-desktop">
             <b-form-group class="m-0">
               <b-form-checkbox
@@ -209,23 +209,15 @@
 import moment from 'moment'
 import { inMobileWebView } from '@lib/page_context'
 import DarkLightImage from '@common/DarkLightImage.vue'
-import SearchInput from '@common/SearchInput.vue'
 
 export default {
   name: 'Layout',
 
   components: {
     DarkLightImage,
-    SearchInput,
   },
 
   props: {
-    // To display search input set this 'true' and listen @updateSearch event from parent
-    search: {
-      type: Boolean,
-      default: false,
-    },
-
     // To enable sorting pass these props and listen @updateSort event from parent
     sortOptions: {
       type: Array,
@@ -317,12 +309,6 @@ export default {
     const staticAlert = document.querySelector('.alert:not(.custom-alert)')
     if (staticAlert) {
       staticAlert.style.marginTop = '50px'
-    }
-  },
-
-  methods: {
-    updateSearch(search) {
-      this.$emit('updateSearch', search)
     }
   },
 }
@@ -448,9 +434,6 @@ export default {
   color: rgb(var(--color-text-primary))
   display: none
 
-.search-input
-  height: 30px
-
 .mobile-actions-slot
   display: none
 
@@ -528,10 +511,6 @@ export default {
 
   .mobile-actions-slot
     display: block
-
-  ::v-deep .search-input input
-    background-color: rgb(var(--color-surface-secondary))
-    border: rgb(var(--color-surface-secondary))
 
   .page-content
     padding: 15px 0

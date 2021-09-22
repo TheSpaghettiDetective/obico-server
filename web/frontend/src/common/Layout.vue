@@ -352,6 +352,8 @@ export default {
         font-size: 0.85em
         &:hover, &[aria-expanded="true"]
           color: rgb(var(--color-text-primary))
+        &:hover
+          background: rgb(var(--color-hover) / .075)
         &.dropdown-toggle
           cursor: pointer
           padding-bottom: 20px

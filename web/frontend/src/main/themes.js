@@ -108,6 +108,13 @@ const shadows = [
       [Themes.Dark]: '0px 3px 30px rgba(0, 0, 0, 0.5)'
     }
   },
+  {
+    name: 'top-nav',
+    values: {
+      [Themes.Light]: '0px 2px 10px rgba(0,0,0,0.1)',
+      [Themes.Dark]: '0px 2px 10px rgba(0,0,0,.3)'
+    }
+  },
 ]
 
 

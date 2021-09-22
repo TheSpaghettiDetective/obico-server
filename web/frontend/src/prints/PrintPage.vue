@@ -1,18 +1,19 @@
 <template>
-  <div class="mt-2 mb-5">
-    <pull-to-reveal>
-      <navbar view-name="app.views.web_views.print"></navbar>
-    </pull-to-reveal>
-
-    <div class="row justify-content-center">
-      <print-card
-        v-if="print"
-        :print="print"
-        @printDeleted="onPrintDeleted"
-        @printDataChanged="printDataChanged"
-      ></print-card>
-    </div>
-  </div>
+  <layout>
+    <template v-slot:content>
+      <b-container>
+        <b-row class="justify-content-center">
+          <print-card
+            v-if="print"
+            :print="print"
+            @printDeleted="onPrintDeleted"
+            @printDataChanged="printDataChanged"
+            class="m-0"
+          ></print-card>
+        </b-row>
+      </b-container>
+    </template>
+  </layout>
 </template>
 
 <script>
@@ -21,16 +22,14 @@ import axios from 'axios'
 import urls from '../lib/server_urls'
 import { normalizedPrint } from '../lib/normalizers'
 import PrintCard from './PrintCard.vue'
-import PullToReveal from '@common/PullToReveal.vue'
-import Navbar from '@common/Navbar.vue'
+import Layout from '@common/Layout.vue'
 
 export default {
   name: 'PrintPage',
 
   components: {
     PrintCard,
-    PullToReveal,
-    Navbar,
+    Layout,
   },
 
   props: {

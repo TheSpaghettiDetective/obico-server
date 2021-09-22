@@ -1,5 +1,5 @@
 <template>
-  <div class="col-sm-12 col-md-6 col-lg-4 pt-3">
+  <div class="col-sm-12 col-md-6 col-lg-4 print-card">
     <div class="card vld-parent">
       <div v-if="isPublic" class="card-header">
         - By {{ print.creator_name }}
@@ -413,6 +413,9 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
+
+.print-card
+  margin-top: var(--gap-between-blocks)
 
 .card-header
   display: flex

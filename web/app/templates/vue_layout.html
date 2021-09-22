@@ -2,3 +2,8 @@
 
 {% block navbar %}
 {% endblock navbar %}
+
+{% block content_wrapper %}
+  {% include 'snippets/messages.html' %}
+  {% block content %}{% endblock content %}
+{% endblock content_wrapper %}

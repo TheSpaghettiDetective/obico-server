@@ -1,26 +1,23 @@
 <template>
-  <div>
-    <pull-to-reveal>
-      <navbar view-name="app.views.web_views.gcodes"></navbar>
-    </pull-to-reveal>
+  <layout
+    :search="true"
+    @updateSearch="updateSearch"
+  >
 
-    <div v-if="!user.is_pro" class="row my-3 justify-content-center">
-      <div class="col-sm-11 col-md-10 col-lg-8">
-        <div class="form-container printer-settings">
-          <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
-          <p>G-Code remote upload and printing is a Pro feature.</p>
-          <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
-          <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
-        </div>
-      </div>
-    </div>
-
-    <div v-else class="row">
-      <div class="col-12">
-
-        <!-- Dropzone -->
-        <div class="row my-3 justify-content-center">
-          <div class="col-sm-12 col-lg-10">
+    <template v-slot:content>
+      <b-container>
+        <b-row v-if="!user.is_pro" class="justify-content-center">
+          <b-col sm="11" md="10" lg="8">
+            <div class="form-container m-0 printer-settings">
+              <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
+              <p>G-Code remote upload and printing is a Pro feature.</p>
+              <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
+              <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row v-else>
+          <b-col>
             <vue-dropzone
               class="upload-box"
               id="dropzone"
@@ -36,15 +33,11 @@
                 G-Code files only. Up to 100MB each.
               </div>
             </vue-dropzone>
-          </div>
-        </div>
 
-        <!-- GCodes list -->
-        <div class="row justify-content-center mb-2">
-          <div class="col-sm-12 col-lg-10">
+            <!-- GCodes list -->
             <div class="gcodes-wrapper">
               <div class="control-panel">
-                <search-input v-model="searchText" class="search-input"></search-input>
+                <!-- <search-input v-model="searchText" class="search-input"></search-input> -->
               </div>
 
               <div class="sorting-panel">
@@ -104,23 +97,21 @@
                 <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
               </mugen-scroll>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          </b-col>
+        </b-row>
+      </b-container>
+    </template>
+  </layout>
 </template>
 
 <script>
-  import Navbar from '@common/Navbar.vue'
-  import PullToReveal from '@common/PullToReveal.vue'
+  import Layout from '@common/Layout.vue'
   import vue2Dropzone from 'vue2-dropzone'
   import 'vue2-dropzone/dist/vue2Dropzone.min.css'
   import urls from '@lib/server_urls'
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode } from '@lib/normalizers'
-  import SearchInput from '@common/SearchInput.vue'
   import { user } from '@lib/page_context'
 
   const SORTING = {
@@ -138,11 +129,9 @@
     name: 'GCodesPage',
 
     components: {
-      Navbar,
-      PullToReveal,
+      Layout,
       vueDropzone: vue2Dropzone,
       MugenScroll,
-      SearchInput,
     },
 
     props: {
@@ -238,6 +227,9 @@
     },
 
     methods: {
+      updateSearch(search) {
+        this.searchText = search
+      },
       gcodeUploadSuccess() {
         this.$refs.gcodesDropzone.removeAllFiles()
 
@@ -315,6 +307,12 @@
 <style lang="sass" scoped>
   @use "~main/theme"
 
+  .upload-box
+    margin-bottom: var(--gap-between-blocks)
+
+  .search-input
+    height: 30px
+
   .gcodes-wrapper
     background-color: rgb(var(--color-surface-secondary))
     padding: 2em
@@ -322,9 +320,6 @@
   .control-panel
     border-bottom: 1px solid rgb(var(--color-divider))
     padding-bottom: 16px
-
-    .search-input
-      height: 35px
 
   .sorting-panel
     display: flex

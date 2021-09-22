@@ -128,6 +128,8 @@
   </nav>
   {% endwith %}
   {% endblock navbar %}
+
+  {% block content_wrapper %}
   <main>
     <div id="content-wrapper" class="container">
       {% include 'snippets/messages.html' %}
@@ -136,6 +138,7 @@
     </div>
     <!-- /.content-wrapper -->
   </main>
+  {% endblock content_wrapper %}
 
   <!-- SVG Sprite -->
   <div id="svg-sprite">

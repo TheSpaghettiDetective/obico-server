@@ -34,7 +34,6 @@
 
 <script>
 import split from 'lodash/split'
-
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
 import PrinterComm from '@lib/printer_comm'
@@ -42,7 +41,6 @@ import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
 import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
-
 export default {
   name: 'SharedPrinterPage',
   components: {
@@ -52,7 +50,6 @@ export default {
   },
   created(){
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
-
     this.printerComm = PrinterComm(
       this.shareToken,
       urls.printerSharedWebSocket(this.shareToken),
@@ -78,10 +75,8 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
-
 #printer-list-page
   margin-top: 1.5rem
-
 .printer-card
   margin-bottom: 1.5rem
 </style>

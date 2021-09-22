@@ -1,77 +1,79 @@
 <template>
-  <div class="container my-5">
-    <pull-to-reveal>
-      <navbar view-name="app.views.web_views.printer_control"></navbar>
-    </pull-to-reveal>
-
-    <div class="row justify-content-center" style="margin: -24px -31px 0px;">
-      <div v-if="printer" class="col-sm-12 col-lg-8 printer-card">
-        <div class="card">
-          <div class="card-header">
-            <div class="title-box">
-              <div class="printer-name">{{ printer.name }}</div>
-            </div>
-          </div>
-          <streaming-box :printer="printer" :webrtc="webrtc" />
-          <div class="card-body" :class="{'overlay': !printer.isIdle()}">
-            <div
-              class="overlay-top text-center"
-              style="left: 0; width: 100%; top: 50%; margin-top: -85px;"
-              v-show="!printer.isIdle()"
-            >
-              <div>Printer controls are disabled</div>
-              <div>because the printer is not idle.</div>
-            </div>
-            <div class="printer-controls">
-              <div class="xy-controls">
-                <button class="btn" type="button" data-axis="y" data-dir="up" @click="control(axis.y, directions.up)">
-                  <i class="fas fa-angle-up fa-lg"></i>
-                </button>
-                <div class="x-controls">
-                  <button class="btn" type="button" data-axis="x" data-dir="down" @click="control(axis.x, directions.down)">
-                    <i class="fas fa-angle-left fa-lg"></i>
-                  </button>
-                  <button class="btn" type="button" data-axis="xy" data-dir="home" @click="control(axis.xy, directions.home)">
-                    <i class="fas fa-home fa-lg"></i>
-                  </button>
-                  <button class="btn" type="button" data-axis="x" data-dir="up" @click="control(axis.x, directions.up)">
-                    <i class="fas fa-angle-right fa-lg"></i>
-                  </button>
+  <layout>
+    <template v-slot:content>
+      <b-container>
+        <b-row class="justify-content-center">
+          <b-col lg="8">
+            <div v-if="printer" class="printer-card m-0">
+              <div class="card">
+                <div class="card-header">
+                  <div class="title-box">
+                    <div class="printer-name">{{ printer.name }}</div>
+                  </div>
                 </div>
-                <button class="btn" type="button" data-axis="y" data-dir="down" @click="control(axis.y, directions.down)">
-                  <i class="fas fa-angle-down fa-lg"></i>
-                </button>
-              </div>
-              <div class="z-controls">
-                <button class="btn" type="button" data-axis="z" data-dir="up" @click="control(axis.z, directions.up)">
-                  <i class="fas fa-angle-up fa-lg"></i>
-                </button>
-                <button class="btn" type="button" data-axis="z" data-dir="home" @click="control(axis.z, directions.home)">
-                  <i class="fas fa-home fa-lg"></i>
-                </button>
-                <button class="btn" type="button" data-axis="z" data-dir="down" @click="control(axis.z, directions.down)">
-                  <i class="fas fa-angle-down fa-lg"></i>
-                </button>
+                <streaming-box :printer="printer" :webrtc="webrtc" />
+                <div class="card-body" :class="{'overlay': !printer.isIdle()}">
+                  <div
+                    class="overlay-top text-center"
+                    style="left: 0; width: 100%; top: 50%; margin-top: -85px;"
+                    v-show="!printer.isIdle()"
+                  >
+                    <div>Printer controls are disabled</div>
+                    <div>because the printer is not idle.</div>
+                  </div>
+                  <div class="printer-controls">
+                    <div class="xy-controls">
+                      <button class="btn" type="button" data-axis="y" data-dir="up" @click="control(axis.y, directions.up)">
+                        <i class="fas fa-angle-up fa-lg"></i>
+                      </button>
+                      <div class="x-controls">
+                        <button class="btn" type="button" data-axis="x" data-dir="down" @click="control(axis.x, directions.down)">
+                          <i class="fas fa-angle-left fa-lg"></i>
+                        </button>
+                        <button class="btn" type="button" data-axis="xy" data-dir="home" @click="control(axis.xy, directions.home)">
+                          <i class="fas fa-home fa-lg"></i>
+                        </button>
+                        <button class="btn" type="button" data-axis="x" data-dir="up" @click="control(axis.x, directions.up)">
+                          <i class="fas fa-angle-right fa-lg"></i>
+                        </button>
+                      </div>
+                      <button class="btn" type="button" data-axis="y" data-dir="down" @click="control(axis.y, directions.down)">
+                        <i class="fas fa-angle-down fa-lg"></i>
+                      </button>
+                    </div>
+                    <div class="z-controls">
+                      <button class="btn" type="button" data-axis="z" data-dir="up" @click="control(axis.z, directions.up)">
+                        <i class="fas fa-angle-up fa-lg"></i>
+                      </button>
+                      <button class="btn" type="button" data-axis="z" data-dir="home" @click="control(axis.z, directions.home)">
+                        <i class="fas fa-home fa-lg"></i>
+                      </button>
+                      <button class="btn" type="button" data-axis="z" data-dir="down" @click="control(axis.z, directions.down)">
+                        <i class="fas fa-angle-down fa-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="control-options">
+                    <b-form-group v-slot="{ ariaDescribedby }">
+                      <b-form-radio-group
+                        v-model="jogDistance"
+                        :options="jogDistanceOptions.map(val => { return {text: val + 'mm', value: val} })"
+                        name="jogDistance"
+                        button-variant="default"
+                        :aria-describedby="ariaDescribedby"
+                        buttons
+                      ></b-form-radio-group>
+                    </b-form-group>
+                  </div>
+                </div>
               </div>
             </div>
-            <br />
-            <div class="control-options">
-              <b-form-group v-slot="{ ariaDescribedby }">
-                <b-form-radio-group
-                  v-model="jogDistance"
-                  :options="jogDistanceOptions.map(val => { return {text: val + 'mm', value: val} })"
-                  name="jogDistance"
-                  button-variant="default"
-                  :aria-describedby="ariaDescribedby"
-                  buttons
-                ></b-form-radio-group>
-              </b-form-group>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          </b-col>
+        </b-row>
+      </b-container>
+    </template>
+  </layout>
 </template>
 
 <script>
@@ -81,8 +83,7 @@
   import StreamingBox from '@common/StreamingBox'
   import PrinterComm from '@lib/printer_comm'
   import WebRTCConnection from '@lib/webrtc'
-  import PullToReveal from '@common/PullToReveal.vue'
-  import Navbar from '@common/Navbar.vue'
+  import Layout from '@common/Layout.vue'
   import { isLocalStorageSupported } from '@common/utils'
   import { user } from '@lib/page_context'
 
@@ -104,8 +105,7 @@
 
     components: {
       StreamingBox,
-      PullToReveal,
-      Navbar,
+      Layout,
     },
 
     data() {

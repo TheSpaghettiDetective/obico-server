@@ -1,12 +1,10 @@
 <template>
   <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': isInMobile}">
-
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
         <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
       </a>
-
       <ul class="list-unstyled m-0">
         <li v-if="user" :class="{'active': path === '/printers/'}">
           <a href="/printers/">
@@ -51,19 +49,8 @@
           </a>
         </li>
       </ul>
-
       <div class="side-nav-footer">
         <ul class="list-unstyled m-0">
-          <!-- <li>
-            <a href="#">
-              <svg viewBox="0 0 384 550" width="14.66" height="21">
-                <use href="#svg-detective-hours" />
-              </svg>
-              <br />
-              <span id="user-credits" class="badge badge-light">20</span>
-              <span class="sr-only">Detective Hours</span>
-            </a>
-          </li> -->
           <li v-if="user">
             <a v-b-toggle:userActions class="dropdown-toggle">
               <i class="fas fa-user"></i>
@@ -93,47 +80,187 @@
         </ul>
       </div>
     </nav>
-
-    <div class="content-wrapper" :class="{'hide-toolbar': !toolbar}">
+    <!-- Main view (with top-bar) -->
+    <div
+      class="content-wrapper"
+      :class="{
+        'hide-top-nav-on-desktop': !search && !$slots.desktopActions && !sortOptions.length && !filterOptions.length,
+        'hide-kebab-menu-on-mobile': !$slots.mobileActions && !sortOptions.length && !filterOptions.length,
+        'no-sort-and-filter': !sortOptions.length && !filterOptions.length,
+      }"
+    >
+      <!-- Top-bar -->
       <b-navbar class="top-nav">
-        <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 toggle-menu">
-          <i class="fas fa-align-left"></i>
-        </b-button>
-
+        <div class="d-flex">
+          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 toggle-sidebar">
+            <i class="fas fa-bars"></i>
+          </b-button>
+          <search-input v-if="search" @input="updateSearch" class="search-input mr-3"></search-input>
+          <div v-if="actionsWithSelected.length" class="actions-with-selected-desktop">
+            <b-form-group class="m-0">
+              <b-form-checkbox
+                v-model="allSelectedInner"
+                size="lg"
+              ></b-form-checkbox>
+            </b-form-group>
+            <div class="select-all-content">
+              <span class="label" @click="allSelectedInner = !allSelectedInner" v-show="!numberOfSelected">Select all</span>
+              <b-dropdown v-show="numberOfSelected" class="" toggle-class="btn btn-sm">
+                <template #button-content>
+                  {{ numberOfSelected }} item{{ numberOfSelected === 1 ? '' : 's' }} selected...
+                </template>
+                <b-dropdown-item v-for="action in actionsWithSelected" :key="action.value">
+                  <div :class="action.wrapperClass" @click="$emit('actionWithSelected', action.value)">
+                    <i v-if="action.iconClass" :class="action.iconClass"></i>Delete
+                  </div>
+                </b-dropdown-item>
+              </b-dropdown>
+            </div>
+          </div>
+        </div>
         <div class="toolbar">
-          <slot name="toolbar"></slot>
+          <div class="desktop-actions-slot">
+            <slot name="desktopActions"></slot>
+          </div>
+          <b-dropdown right no-caret class="kebab-menu" toggle-class="icon-btn">
+            <template #button-content>
+              <i class="fas fa-ellipsis-v"></i>
+            </template>
+            <div class="actions-with-selected-mobile">
+              <template v-if="numberOfSelected">
+                <b-dropdown-item v-for="action in actionsWithSelected" :key="action.value">
+                  <div :class="action.wrapperClass" @click="$emit('actionWithSelected', action.value)">
+                    <i v-if="action.iconClass" :class="action.iconClass"></i>Delete
+                  </div>
+                </b-dropdown-item>
+                <b-dropdown-divider></b-dropdown-divider>
+              </template>
+              <template v-if="actionsWithSelected.length">
+                <b-dropdown-item>
+                  <div class="clickable-area" @click.stop.prevent="allSelectedInner = !allSelectedInner">
+                    <i v-show="!allSelected" class="far fa-square"></i>
+                    <i v-show="allSelected" class="fas fa-check-square text-primary"></i>
+                    Select all
+                  </div>
+                </b-dropdown-item>
+              </template>
+            </div>
+            <div class="mobile-actions-slot" v-show="!sortOpened && !filterOpened">
+              <slot name="mobileActions"></slot>
+            </div>
+            <b-dropdown-divider class="d-md-none" v-if="$slots.mobileActions && (sortOptions.length || filterOptions.length)"></b-dropdown-divider>
+            <template v-if="!sortOpened && !filterOpened">
+              <b-dropdown-item v-if="sortOptions.length">
+                <div class="d-flex justify-content-between clickable-area" @click.stop.prevent="sortOpened = true">
+                  <div><i class="fas fa-sort-amount-up"></i>Sort</div>
+                  <div><i class="fas fa-chevron-right m-0"></i></div>
+                </div>
+              </b-dropdown-item>
+              <b-dropdown-item v-if="filterOptions.length">
+                <div class="d-flex justify-content-between clickable-area" @click.stop.prevent="filterOpened = true">
+                  <div><i class="fas fa-filter"></i>Filter</div>
+                  <div><i class="fas fa-chevron-right m-0"></i></div>
+                </div>
+              </b-dropdown-item>
+            </template>
+            <template v-if="sortOpened">
+              <b-dropdown-item>
+                <div @click.stop.prevent="sortOpened = false" class="clickable-area">
+                  <i class="fas fa-chevron-left"></i>Back
+                </div>
+              </b-dropdown-item>
+              <b-dropdown-item v-for="option in sortOptions" :key="option.value">
+                <div @click="$emit('updateSort', option.value); sortOpened = false" class="clickable-area">
+                  <i class="fas fa-check text-primary" :style="{visibility: activeSort === option.value ? 'visible' : 'hidden'}"></i>
+                  {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+                </div>
+              </b-dropdown-item>
+            </template>
+            <template v-else-if="filterOpened">
+              <b-dropdown-item>
+                <div @click.stop.prevent="filterOpened = false" class="clickable-area">
+                  <i class="fas fa-arrow-left"></i>Back
+                </div>
+              </b-dropdown-item>
+              <b-dropdown-item v-for="option in filterOptions" :key="option.value">
+                <div @click="$emit('updateFilter', option.value); filterOpened = false" class="clickable-area">
+                  <i class="fas fa-check text-primary" :style="{visibility: activeFilter === option.value ? 'visible' : 'hidden'}"></i>
+                  {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+                </div>
+              </b-dropdown-item>
+            </template>
+          </b-dropdown>
         </div>
       </b-navbar>
-
+      <!-- Page content -->
       <div class="page-content">
-        <b-alert :show="needsEmailVerification" variant="warning" class="text-center mb-3">
+        <b-alert :show="needsEmailVerification" variant="warning" class="custom-alert text-center mb-3">
           You will not get notified by email on print failure, as your primary email address is not verified.
           <a href="/accounts/email/">Verify your email address.</a>
         </b-alert>
         <slot name="content"></slot>
       </div>
     </div>
-
-    <div class="overlay" @click="collapsed = true"></div>
+    <div class="content-overlay" @click="collapsed = true"></div>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
+import { inMobileWebView } from '@lib/page_context'
 import DarkLightImage from '@common/DarkLightImage.vue'
-import { isMobile } from '@lib/app_platform'
+import SearchInput from '@common/SearchInput.vue'
 
 export default {
   name: 'Layout',
 
   components: {
     DarkLightImage,
+    SearchInput,
   },
 
   props: {
-    toolbar: {
+    // To display search input set this 'true' and listen @updateSearch event from parent
+    search: {
       type: Boolean,
       default: false,
+    },
+
+    // To enable sorting pass these props and listen @updateSort event from parent
+    sortOptions: {
+      type: Array,
+      default: () => [],
+      // Example: [{value: 'date_asc', title: 'Sort By Date', iconClass{OPTIONAL}: 'fas fa-long-arrow-alt-up'}, ...]
+    },
+    activeSort: {
+      type: String,
+      default: '',
+    },
+
+    // To enable filtering pass these props and listen @updateFilter event from parent
+    filterOptions: {
+      type: Array,
+      default: () => [],
+      // Example: [{value: 'need_print_shot_feedback', title: 'Focused-review needed'}, ...]
+    },
+    activeFilter: {
+      type: String,
+      default: '',
+    },
+
+    // To enable specific actions for selected items pass these props and listen @updateAllSelected and @actionWithSelected events from parent
+    actionsWithSelected: {
+      type: Array,
+      default: () => [],
+      // Example: [{value: 'delete', title: 'Delete', iconClass{OPTIONAL}: 'far fa-trash-alt', wrapperClass{OPTIONAL}: 'text-danger'}, ...]
+    },
+    allSelected: {
+      type: Boolean,
+      default: false,
+    },
+    numberOfSelected: {
+      type: Number,
+      default: 0,
     },
   },
 
@@ -145,6 +272,8 @@ export default {
       allowSignUp: false,
       isEnt: false,
       isInMobile: false,
+      sortOpened: false,
+      filterOpened: false,
     }
   },
 
@@ -164,7 +293,15 @@ export default {
         // Give user 1 day before bugging them to verify their email addresses
         const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
         return this.isEnt && !this.user.is_primary_email_verified && signedUpLongerThan1Day
-    }
+    },
+    allSelectedInner: {
+      get: function() {
+        return this.allSelected
+      },
+      set: function(newValue) {
+        this.$emit('updateAllSelected', newValue)
+      }
+    },
   },
 
   created() {
@@ -172,10 +309,21 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
-    this.isInMobile = isMobile() || this.path.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
+    this.isInMobile = inMobileWebView() || this.path.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
   },
 
-  mounted () {
+  mounted() {
+    // Temporary solution to correctly show alerts inserted by `snippets/messages.html` from Django
+    const staticAlert = document.querySelector('.alert:not(.custom-alert)')
+    if (staticAlert) {
+      staticAlert.style.marginTop = '50px'
+    }
+  },
+
+  methods: {
+    updateSearch(search) {
+      this.$emit('updateSearch', search)
+    }
   },
 }
 </script>
@@ -183,210 +331,209 @@ export default {
 <style lang="sass" scoped>
 .page-wrapper
   display: flex
-  align-items: stretch
   padding-left: 100px
+  &.is-in-mobile
+    .side-nav
+      display: none
+    .toggle-sidebar
+      display: none
 
-  .overlay
-    display: none
+    .content-wrapper.hide-top-nav-on-desktop
+      .top-nav
+        display: none
+      .page-content
+        padding: 15px 0
 
-  .side-nav
-    min-width: 100px
-    max-width: 100px
-    text-align: center
-    background: rgb(var(--color-surface-primary))
-    position: fixed
-    left: 0
-    top: 0
-    height: 100%
+.side-nav
+  min-width: 100px
+  max-width: 100px
+  text-align: center
+  background: rgb(var(--color-surface-primary))
+  position: fixed
+  left: 0
+  top: 0
+  height: 100%
+  display: flex
+  flex-direction: column
+  z-index: 1000
+  overflow-y: scroll
+  transition: all .2s ease-out
+  .sidebar-header
+    flex: 0 0 50px
     display: flex
-    flex-direction: column
-    z-index: 1000
-    overflow-y: scroll
-
-    .sidebar-header
-      flex: 0 0 50px
-      display: flex
-      align-items: center
-      justify-content: center
-      border-bottom: 1px solid rgb(var(--color-divider))
-
-    ul
-      li
-        a
-          display: block
-          color: rgb(var(--color-text-primary))
-          padding: 10px 5px
-          text-align: center
-          font-size: 0.85em
-          &:hover, &[aria-expanded="true"]
-            color: rgb(var(--color-text-primary))
-            background: rgb(var(--color-hover) / .075)
-
-          &.dropdown-toggle
-            cursor: pointer
-            padding-bottom: 20px
-
-          i
-            margin-right: 0
-            display: block
-            font-size: 1.4em
-            margin-bottom: 5px
-
-        &.active > a
-          color: rgb(var(--color-on-primary))
-          background: rgb(var(--color-primary))
-        &.glowing
-          text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(var(--color-primary)), 0 0 70px rgb(var(--color-primary)), 0 0 80px rgb(var(--color-primary)), 0 0 100px rgb(var(--color-primary)), 0 0 150px rgb(var(--color-primary))
-
-
-      ul a
-        font-size: 0.9em !important
-        padding: 10px !important
-
-      .dropdown-toggle::after
-        top: auto
-        bottom: 10px
-        right: 50%
-        -webkit-transform: translateX(50%)
-        -ms-transform: translateX(50%)
-        transform: translateX(50%)
-
-    ul.components
-      padding: 20px 0
-
-    ::v-deep .logo-small img
-      width: 30px
-      height: 30px
-
-    .dropdown-toggle
-      position: relative
-      span
-        display: inline-block
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
-        width: 100%
-      &::after
+    align-items: center
+    justify-content: center
+    border-bottom: 1px solid rgb(var(--color-divider))
+  ul
+    li
+      a
         display: block
-        position: absolute
-        top: 50%
-        right: 20px
-        transform: translateY(-50%)
+        color: rgb(var(--color-text-primary))
+        padding: 10px 5px
+        text-align: center
+        font-size: 0.85em
+        &:hover, &[aria-expanded="true"]
+          color: rgb(var(--color-text-primary))
+          background: rgb(var(--color-hover) / .075)
+        &.dropdown-toggle
+          cursor: pointer
+          padding-bottom: 20px
+        i
+          margin-right: 0
+          display: block
+          font-size: 1.4em
+          margin-bottom: 5px
+      &.active > a
+        color: rgb(var(--color-on-primary))
+        background: rgb(var(--color-primary))
+      &.glowing
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(var(--color-primary)), 0 0 70px rgb(var(--color-primary)), 0 0 80px rgb(var(--color-primary)), 0 0 100px rgb(var(--color-primary)), 0 0 150px rgb(var(--color-primary))
+    ul a
+      font-size: 0.9em !important
+      padding: 10px !important
+    .dropdown-toggle::after
+      top: auto
+      bottom: 10px
+      right: 50%
+      -webkit-transform: translateX(50%)
+      -ms-transform: translateX(50%)
+      transform: translateX(50%)
+  ul.components
+    padding: 20px 0
+  ::v-deep .logo-small img
+    width: 30px
+    height: 30px
+  .dropdown-toggle
+    position: relative
+    span
+      display: inline-block
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      width: 100%
+    &::after
+      display: block
+      position: absolute
+      top: 50%
+      right: 20px
+      transform: translateY(-50%)
+  .side-nav-footer
+    margin-top: auto
 
-    .side-nav-footer
-      margin-top: auto
+.content-wrapper
+  width: 100%
 
-  .top-nav
-    height: 50px
-    background: rgb(var(--color-surface-secondary)) !important
-    position: fixed
-    top: 0
-    left: 0
-    width: 100%
-    padding-left: calc(100px + 15px)
-    z-index: 100
-    box-shadow: var(--shadow-top-nav)
-    justify-content: space-between
+.top-nav
+  height: 50px
+  background: rgb(var(--color-surface-secondary)) !important
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  padding-left: calc(100px + 15px)
+  z-index: 100
+  box-shadow: var(--shadow-top-nav)
+  justify-content: space-between
 
-    .toggle-menu
-      visibility: hidden
+::v-deep .dropdown-menu
+  .dropdown-item
+    .clickable-area
+      margin: -0.25rem -1.5rem
+      padding: 0.25rem 1.5rem
+    i
+      width: 20px
+      margin-right: .5rem
 
-    .toolbar
-      display: flex
-      align-items: center
+.toggle-sidebar
+  color: rgb(var(--color-text-primary))
+  display: none
 
+.search-input
+  height: 30px
+
+.mobile-actions-slot
+  display: none
+
+.actions-with-selected-desktop
+  display: flex
+  align-items: center
+  .label
+    cursor: pointer
+
+.actions-with-selected-mobile
+  display: none
+
+.toolbar
+  display: flex
+  align-items: center
+
+.page-content
+  padding: calc(50px + var(--gap-between-blocks)) calc(var(--gap-between-blocks) - 15px) var(--gap-between-blocks)
+  display: flex
+  flex-direction: column
+  justify-content: center
+  min-height: calc(100vh - 68px)
+
+.content-overlay
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  z-index: 100
+  background: rgb(0,0,0,.5)
+  display: none
+
+@media (min-width: 769px)
   .content-wrapper
-    width: 100%
-    // min-height: calc(100vh - 68px)
-
-    .page-content
-      padding: 30px
-      padding-top: calc(50px + 30px)
-      display: flex
-      flex-direction: column
-      justify-content: center
-      min-height: calc(100vh - 68px - 50px)
-
-  @media (min-width: 769px)
-    .content-wrapper.hide-toolbar
+    &.hide-top-nav-on-desktop
       .top-nav
         display: none
       .page-content
         padding-top: 30px
         min-height: calc(100vh - 68px)
+    &.no-sort-and-filter .kebab-menu
+      display: none
 
-  @media (max-width: 768px)
+@media (max-width: 768px)
+  .page-wrapper
     padding-left: 0
-
-    .side-nav
-      transition: all .2s ease-out
-
-    .top-nav
-      padding-left: 15px
-
-      .toggle-menu
-        visibility: visible
-
-    .content-wrapper
-      transform: translateX(100px)
-      transition: all .2s ease-out
-
-      .page-content
-        padding: 15px 0
-        padding-top: calc(50px + 15px)
-
-    .overlay
-      position: fixed
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      z-index: 100
-      background: rgb(0,0,0,.5)
+    &:not(.collapsed) .content-overlay
       display: block
-
     &.collapsed
       .side-nav
         transform: translateX(-100px)
-      .content-wrapper
-        transform: translateX(0)
-      .overlay
+
+  .content-wrapper
+    align-items: start
+    &.hide-kebab-menu-on-mobile
+      .kebab-menu
         display: none
 
-  &.is-in-mobile
-    .side-nav
-      display: none !important
-    .top-nav
-      display: none !important
-    .content-wrapper
-      .page-content
-        padding: 15px !important
+  .top-nav
+    padding-left: 15px
+    background: rgb(var(--color-surface-primary)) !important
 
+  .toggle-sidebar
+    display: block
 
+  .actions-with-selected-desktop
+    display: none
 
+  .actions-with-selected-mobile
+    display: block
 
+  .desktop-actions-slot
+    display: none
 
+  .mobile-actions-slot
+    display: block
 
+  ::v-deep .search-input input
+    background-color: rgb(var(--color-surface-secondary))
+    border: rgb(var(--color-surface-secondary))
 
-
-
-// .badge-btn
-//   position: relative
-//   height: 1.8rem
-//   margin-right: 1.5em
-
-//   img
-//     height: 1.3rem
-
-//   .badge
-//     position: absolute
-//     left: 22px
-//     top: 1px
-//     height: 18px
-//     border-radius: 4px
-//     transition: transform 0.2s
-
-//     /* Animation */
-//     &:hover
-//       transform: scale(1.3)
+  .page-content
+    padding: 15px 0
+    padding-top: calc(50px + 15px)
 </style>

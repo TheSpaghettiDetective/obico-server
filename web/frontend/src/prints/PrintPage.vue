@@ -1,16 +1,17 @@
 <template>
   <layout>
     <template v-slot:content>
-      <div class="mt-2 mb-5">
-        <div class="row justify-content-center">
+      <b-container>
+        <b-row class="justify-content-center">
           <print-card
             v-if="print"
             :print="print"
             @printDeleted="onPrintDeleted"
             @printDataChanged="printDataChanged"
+            class="m-0"
           ></print-card>
-        </div>
-      </div>
+        </b-row>
+      </b-container>
     </template>
   </layout>
 </template>

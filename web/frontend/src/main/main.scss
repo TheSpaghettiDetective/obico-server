@@ -38,6 +38,14 @@
   --shadow-widget: 0px 3px 30px rgba(0, 0, 0, 1);
 }
 
+:root {
+  --gap-between-blocks: 30px;
+
+  @media (max-width: 768px) {
+    --gap-between-blocks: 15px;
+  }
+}
+
 /*** Global styles */
 body {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -268,6 +276,23 @@ a.link {
       border-bottom-color: rgb(var(--color-danger));
     }
   }
+}
+
+.surface {
+  background: rgb(var(--color-surface-secondary));
+  padding: 2rem 2.5rem;
+
+  @media (max-width: 786px) {
+    padding: 1.5rem;
+
+    &.with-loading-animation {
+      padding-right: 2.5rem;
+    }
+  }
+}
+
+.surface-secondary {
+  background-color: rgb(var(--color-surface-secondary));
 }
 
 .flipH {
@@ -743,8 +768,4 @@ a.text-warning {
 .form-control:focus {
   background-color: rgb(var(--color-input-background));
   color: rgb(var(--color-text-primary));
-}
-
-.surface-secondary {
-  background-color: rgb(var(--color-surface-secondary))
 }

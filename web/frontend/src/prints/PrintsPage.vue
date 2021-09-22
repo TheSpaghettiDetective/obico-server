@@ -1,95 +1,41 @@
 <template>
-  <layout>
-    <template v-slot:content>
-      <div sticky-container>
-        <div
-          class="menu-bar px-sm-4 d-flex justify-content-between align-items-center"
-          v-sticky
-          sticky-offset="{top: 0, bottom: 30}"
-          sticky-side="both"
-          on-stick="onMenuStick"
-        >
-          <b-form-checkbox
-            v-model="allPrintsSelected"
-            size="lg"
-            class="text-decoration-none"
-          ></b-form-checkbox>
-          <div>
-            <b-dropdown
-              toggle-class="text-decoration-none no-corner no-border no-shadow"
-              :variant="filterBtnVariant"
-              no-caret
-            >
-              <template v-slot:button-content>
-                <i class="fas fa-filter"></i>
-              </template>
-              <b-dropdown-item @click="onFilterClick('none')">
-                <i class="fas fa-check" :style="{visibility: filter === 'none' ? 'visible' : 'hidden'}"></i>All
-              </b-dropdown-item>
-              <b-dropdown-divider></b-dropdown-divider>
-              <b-dropdown-item @click="onFilterClick('finished')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: filter === 'finished' ? 'visible' : 'hidden'}"
-                ></i>Finished
-              </b-dropdown-item>
-              <b-dropdown-item @click="onFilterClick('cancelled')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: filter === 'cancelled' ? 'visible' : 'hidden'}"
-                ></i>Cancelled
-              </b-dropdown-item>
-              <b-dropdown-item @click="onFilterClick('need_alert_overwrite')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: filter === 'need_alert_overwrite' ? 'visible' : 'hidden'}"
-                ></i>Review needed
-              </b-dropdown-item>
-              <b-dropdown-item @click="onFilterClick('need_print_shot_feedback')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: filter === 'need_print_shot_feedback' ? 'visible' : 'hidden'}"
-                ></i>Focused-review needed
-              </b-dropdown-item>
-            </b-dropdown>
-            <b-dropdown
-              toggle-class="text-decoration-none no-corner no-border no-shadow"
-              variant="outline-secondary"
-              no-caret
-            >
-              <template v-slot:button-content>
-                <i class="fas" :class="sortingBtnClasses"></i>
-              </template>
-              <b-dropdown-item @click="onSortingClick('date_desc')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: sorting === 'date_desc' ? 'visible' : 'hidden'}"
-                ></i>Newest to oldest
-              </b-dropdown-item>
-              <b-dropdown-item @click="onSortingClick('date_asc')">
-                <i
-                  class="fas fa-check"
-                  :style="{visibility: sorting === 'date_asc' ? 'visible' : 'hidden'}"
-                ></i>Oldest to newest
-              </b-dropdown-item>
-            </b-dropdown>
+  <layout
+    :sortOptions="[
+      {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
+      {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
+    ]"
+    :activeSort="sorting"
+    @updateSort="onSortingClick"
 
-            <button
-              type="button"
-              class="btn mx-2 btn-sm"
-              :class="{'btn-light': !anyPrintsSelected, 'btn-danger': anyPrintsSelected}"
-              :disabled="!anyPrintsSelected"
-              @click="onDeleteBtnClick"
-            >
-              <i class="fas fa-trash-alt"></i>
-              Delete {{ anyPrintsSelected ? ' (' + selectedPrintIds.size + ')' : '' }}
-            </button>
-            <a role="button" class="btn btn-sm btn-outline-primary upload-icon" href="/prints/upload/">
-              <i class="fas fa-upload fa-lg mx-2"></i>
-            </a>
-          </div>
-        </div>
-        <div class="row">
+    :filterOptions="[
+      {value: 'none', title: 'All'},
+      {value: 'finished', title: 'Finished'},
+      {value: 'cancelled', title: 'Cancelled'},
+      {value: 'need_alert_overwrite', title: 'Review needed'},
+      {value: 'need_print_shot_feedback', title: 'Focused-review needed'},
+    ]"
+    :activeFilter="filter"
+    @updateFilter="onFilterClick"
+
+    :actionsWithSelected="[{value: 'delete', title: 'Delete', iconClass: 'far fa-trash-alt', wrapperClass: 'text-danger'}]"
+    :numberOfSelected="selectedPrintIds.size"
+    :allSelected="allPrintsSelected"
+    @updateAllSelected="updateAllSelected"
+    @actionWithSelected="actionWithSelected"
+  >
+    <template v-slot:desktopActions>
+      <a href="https://app.thespaghettidetective.com/prints/upload/" class="btn shadow-none icon-btn" title="Upload Time-Lapse">
+        <i class="fas fa-upload"></i>
+      </a>
+    </template>
+    <template v-slot:mobileActions>
+      <b-dropdown-item href="https://app.thespaghettidetective.com/prints/upload/">
+        <i class="fas fa-upload"></i>Upload Time-Lapse
+      </b-dropdown-item>
+    </template>
+    <template v-slot:content>
+      <b-container>
+        <b-row class="print-cards" v-show="prints.length">
           <print-card
             v-for="print of prints"
             :key="print.id"
@@ -100,7 +46,7 @@
             @printDataChanged="printDataChanged"
             @fullscreen="openFullScreen"
           ></print-card>
-        </div>
+        </b-row>
 
         <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
           <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
@@ -120,7 +66,7 @@
             :autoplay="true"
           />
         </b-modal>
-      </div>
+      </b-container>
     </template>
   </layout>
 </template>
@@ -185,6 +131,17 @@ export default {
   },
 
   methods: {
+    actionWithSelected(action) {
+      if (action === 'delete') {
+        this.onDeleteBtnClick()
+      }
+    },
+    updateAllSelected(newValue) {
+      this.allPrintsSelected = newValue
+      if (!newValue) {
+        this.selectedPrintIds = new Set()
+      }
+    },
     fetchMoreData() {
       if (this.noMoreData) {
         return
@@ -292,6 +249,9 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
+
+.print-cards
+  margin-top: calc(var(--gap-between-blocks) * -1)
 
 .menu-bar
   background-color: rgb(var(--color-surface-secondary))

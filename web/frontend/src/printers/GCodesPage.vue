@@ -1,115 +1,105 @@
 <template>
-  <layout :toolbar="true">
-    <template v-slot:toolbar>
-      <search-input v-model="searchText" class="search-input"></search-input>
-    </template>
+  <layout
+    :search="true"
+    @updateSearch="updateSearch"
+  >
+
     <template v-slot:content>
-      <div>
-        <div v-if="!user.is_pro" class="row my-3 justify-content-center">
-          <div class="col-sm-11 col-md-10 col-lg-8">
-            <div class="form-container printer-settings">
+      <b-container>
+        <b-row v-if="!user.is_pro" class="justify-content-center">
+          <b-col sm="11" md="10" lg="8">
+            <div class="form-container m-0 printer-settings">
               <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to upload G-Code files or start prints remotely. </h5>
               <p>G-Code remote upload and printing is a Pro feature.</p>
               <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
               <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
             </div>
-          </div>
-        </div>
-
-        <div v-else class="row">
-          <div class="col-12">
-
-            <!-- Dropzone -->
-            <div class="row my-3 justify-content-center">
-              <div class="col-sm-12 col-lg-10">
-                <vue-dropzone
-                  class="upload-box"
-                  id="dropzone"
-                  :options="dropzoneOptions"
-                  :useCustomSlot="true"
-                  @vdropzone-queue-complete="gcodeUploadSuccess"
-                  @vdropzone-error="gcodeUploadError"
-                  ref="gcodesDropzone"
-                >
-                  <div class="dz-message needsclick">
-                    <i class="fas fa-upload fa-2x"></i> <br>
-                    Drop files here or click to upload.<br>
-                    G-Code files only. Up to 100MB each.
-                  </div>
-                </vue-dropzone>
+          </b-col>
+        </b-row>
+        <b-row v-else>
+          <b-col>
+            <vue-dropzone
+              class="upload-box"
+              id="dropzone"
+              :options="dropzoneOptions"
+              :useCustomSlot="true"
+              @vdropzone-queue-complete="gcodeUploadSuccess"
+              @vdropzone-error="gcodeUploadError"
+              ref="gcodesDropzone"
+            >
+              <div class="dz-message needsclick">
+                <i class="fas fa-upload fa-2x"></i> <br>
+                Drop files here or click to upload.<br>
+                G-Code files only. Up to 100MB each.
               </div>
-            </div>
+            </vue-dropzone>
 
             <!-- GCodes list -->
-            <div class="row justify-content-center mb-2">
-              <div class="col-sm-12 col-lg-10">
-                <div class="gcodes-wrapper">
-                  <div class="control-panel">
-                    <!-- <search-input v-model="searchText" class="search-input"></search-input> -->
+            <div class="gcodes-wrapper">
+              <div class="control-panel">
+                <!-- <search-input v-model="searchText" class="search-input"></search-input> -->
+              </div>
+
+              <div class="sorting-panel">
+                <div
+                  class="sorting-option"
+                  :class="{'active': activeSorting === sorting.NAME}"
+                  @click="updateSorting(sorting.NAME)"
+                >
+                  <span class="text">File name</span>
+                  <div class="direction">
+                    <i class="fas fa-arrow-down" v-if="activeSorting === sorting.NAME && sortDirection === direction.DESC"></i>
+                    <i class="fas fa-arrow-up" v-else></i>
                   </div>
+                </div>
 
-                  <div class="sorting-panel">
-                    <div
-                      class="sorting-option"
-                      :class="{'active': activeSorting === sorting.NAME}"
-                      @click="updateSorting(sorting.NAME)"
-                    >
-                      <span class="text">File name</span>
-                      <div class="direction">
-                        <i class="fas fa-arrow-down" v-if="activeSorting === sorting.NAME && sortDirection === direction.DESC"></i>
-                        <i class="fas fa-arrow-up" v-else></i>
-                      </div>
-                    </div>
-
-                    <div
-                      class="sorting-option"
-                      :class="{'active': activeSorting === sorting.SIZE}"
-                      @click="updateSorting(sorting.SIZE)"
-                    >
-                      <span class="text">File size</span>
-                      <div class="direction">
-                        <i class="fas fa-arrow-down" v-if="activeSorting === sorting.SIZE && sortDirection === direction.DESC"></i>
-                        <i class="fas fa-arrow-up" v-else></i>
-                      </div>
-                    </div>
-                    <div
-                      class="sorting-option"
-                      :class="{'active': activeSorting === sorting.UPLOADED}"
-                      @click="updateSorting(sorting.UPLOADED)"
-                    >
-                      <span class="text">Uploaded</span>
-                      <div class="direction">
-                        <i class="fas fa-arrow-down" v-if="activeSorting === sorting.UPLOADED && sortDirection === direction.DESC"></i>
-                        <i class="fas fa-arrow-up" v-else></i>
-                      </div>
-                    </div>
+                <div
+                  class="sorting-option"
+                  :class="{'active': activeSorting === sorting.SIZE}"
+                  @click="updateSorting(sorting.SIZE)"
+                >
+                  <span class="text">File size</span>
+                  <div class="direction">
+                    <i class="fas fa-arrow-down" v-if="activeSorting === sorting.SIZE && sortDirection === direction.DESC"></i>
+                    <i class="fas fa-arrow-up" v-else></i>
                   </div>
-
-                  <div class="gcode-items-wrapper">
-                    <div v-for="item in gcodesToShow" :key="item.id" class="item">
-                      <div class="item-info">
-                        <div class="filename">{{ item.filename }}</div>
-                        <div class="filesize">{{ item.filesize }}</div>
-                        <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                      </div>
-                      <div class="remove-button-wrapper">
-                        <div class="remove-button" @click="removeItem(item.id)">
-                          <i class="far fa-trash-alt"></i>
-                        </div>
-                      </div>
-                    </div>
+                </div>
+                <div
+                  class="sorting-option"
+                  :class="{'active': activeSorting === sorting.UPLOADED}"
+                  @click="updateSorting(sorting.UPLOADED)"
+                >
+                  <span class="text">Uploaded</span>
+                  <div class="direction">
+                    <i class="fas fa-arrow-down" v-if="activeSorting === sorting.UPLOADED && sortDirection === direction.DESC"></i>
+                    <i class="fas fa-arrow-up" v-else></i>
                   </div>
-
-                  <mugen-scroll :handler="fetchGCodes" :should-handle="!loading" class="text-center p-4">
-                    <div v-if="noMoreData" class="text-center p-2">End of your G-Codes list.</div>
-                    <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
-                  </mugen-scroll>
                 </div>
               </div>
+
+              <div class="gcode-items-wrapper">
+                <div v-for="item in gcodesToShow" :key="item.id" class="item">
+                  <div class="item-info">
+                    <div class="filename">{{ item.filename }}</div>
+                    <div class="filesize">{{ item.filesize }}</div>
+                    <div class="uploaded">{{ item.created_at.fromNow() }}</div>
+                  </div>
+                  <div class="remove-button-wrapper">
+                    <div class="remove-button" @click="removeItem(item.id)">
+                      <i class="far fa-trash-alt"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <mugen-scroll :handler="fetchGCodes" :should-handle="!loading" class="text-center p-4">
+                <div v-if="noMoreData" class="text-center p-2">End of your G-Codes list.</div>
+                <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+              </mugen-scroll>
             </div>
-          </div>
-        </div>
-      </div>
+          </b-col>
+        </b-row>
+      </b-container>
     </template>
   </layout>
 </template>
@@ -122,7 +112,6 @@
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
   import { normalizedGcode } from '@lib/normalizers'
-  import SearchInput from '@common/SearchInput.vue'
   import { user } from '@lib/page_context'
 
   const SORTING = {
@@ -143,7 +132,6 @@
       Layout,
       vueDropzone: vue2Dropzone,
       MugenScroll,
-      SearchInput,
     },
 
     props: {
@@ -239,6 +227,9 @@
     },
 
     methods: {
+      updateSearch(search) {
+        this.searchText = search
+      },
       gcodeUploadSuccess() {
         this.$refs.gcodesDropzone.removeAllFiles()
 
@@ -315,6 +306,9 @@
 
 <style lang="sass" scoped>
   @use "~main/theme"
+
+  .upload-box
+    margin-bottom: var(--gap-between-blocks)
 
   .search-input
     height: 30px

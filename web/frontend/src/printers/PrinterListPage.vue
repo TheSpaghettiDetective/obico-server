@@ -1,6 +1,14 @@
 <template>
-  <layout :toolbar="true">
-    <template v-slot:toolbar>
+  <layout
+    :sortOptions="sortFilters"
+    :activeSort="filters.sort"
+    @updateSort="updateSort"
+
+    :filterOptions="stateFilters"
+    :activeFilter="filters.state"
+    @updateFilter="updateFilter"
+  >
+    <template v-slot:desktopActions>
       <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn">
         <svg viewBox="0 0 384 550">
           <use href="#svg-detective-hours"></use>
@@ -8,74 +16,23 @@
         <span id="user-credits" class="badge badge-light">290</span>
         <span class="sr-only">Detective Hours</span>
       </a>
-      <a href="/printers/wizard/" class="btn shadow-none" title="Link OctoPrint Printer">
+      <a href="/printers/wizard/" class="btn shadow-none icon-btn" title="Link OctoPrint Printer">
         <i class="fas fa-plus"></i>
       </a>
     </template>
+    <template v-slot:mobileActions>
+      <b-dropdown-item href="/ent/subscription/#detective-hour-balance">
+        <i class="fas fa-hourglass-half"></i>Detective Hours
+      </b-dropdown-item>
+      <b-dropdown-item href="/printers/wizard/">
+        <i class="fas fa-plus"></i>Add Printer
+      </b-dropdown-item>
+    </template>
     <template v-slot:content>
       <b-container class="printer-list-page">
-        <!-- <pull-to-reveal
-          :shiftContent="true"
-          :showEdge="true"
-          :enable="printers.length > 0"
-          @hide="closeMenus"
-        >
-          <navbar
-            view-name="printers"
-            ref="navbar"
-          ></navbar>
-          <div v-if="printers.length > 1" class="container">
-            <div class="option-drawer">
-              <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                <div class="panel panel-default">
-                  <div
-                    id="collapse-one"
-                    class="panel-collapse in"
-                    role="tabpanel"
-                    aria-labelledby="headingOne"
-                  >
-                    <div class="panel-body p-3">
-                      <div>
-                        <div class="sorting-and-filter" ref="filters">
-                          <Select
-                            id="printer-sorting"
-                            class="my-1 mx-2"
-                            v-model="filters.sort"
-                            :options="sortFilters"
-                            @input="onSortFilterChanged()"
-                          ></Select>
-
-                          <Select
-                            id="printer-filtering"
-                            class="my-1 mx-2"
-                            v-model="filters.state"
-                            :options="stateFilters"
-                            @input="onStateFilterChanged()"
-                          ></Select>
-                        </div>
-                      </div>
-                      <hr />
-                      <div>
-                        <a
-                          v-for="printer in visiblePrinters"
-                          :key="printer.id"
-                          :href="'#' + printer.id"
-                          role="button"
-                          class="btn btn-outline-primary btn-sm my-1 mx-3 printer-link">
-                          <i class="fas fa-map-pin"></i>&nbsp;&nbsp;{{ printer.name }}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </pull-to-reveal> -->
-
         <b-row v-if="!user.is_pro && printers.length > 0" class="consider-upgrade">
           <b-col>
-            <div class="surface-secondary p-4 text-center">
+            <div class="surface-secondary p-2 text-center">
               <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
             </div>
           </b-col>
@@ -271,6 +228,20 @@ export default {
     },
   },
   methods: {
+    updateSort(newSort) {
+      this.filters.sort = newSort
+      setLocalPref(
+        LocalPrefNames.SortFilter,
+        this.filters.sort
+      )
+    },
+    updateFilter(newFilter) {
+      this.filters.state = newFilter
+      setLocalPref(
+        LocalPrefNames.StateFilter,
+        this.filters.state
+      )
+    },
     fetchPrinters() {
       this.loading = true
       return axios
@@ -289,23 +260,6 @@ export default {
             }
           })
         })
-    },
-    toggleFiltersPanel() {
-      this.filters.visible = !this.filters.visible
-    },
-    onSortFilterChanged() {
-      setLocalPref(
-        LocalPrefNames.SortFilter,
-        this.filters.sort
-      )
-      this.toggleFiltersPanel()
-    },
-    onStateFilterChanged() {
-      setLocalPref(
-        LocalPrefNames.StateFilter,
-        this.filters.state
-      )
-      this.toggleFiltersPanel()
     },
     onShowAllPrintersClicked(){
       this.filters.state = StateFilter.All
@@ -349,23 +303,18 @@ export default {
 @use "~main/theme"
 
 .printer-list-page
-  --gap: 30px
-
   .consider-upgrade
-    margin-bottom: var(--gap)
+    margin-bottom: var(--gap-between-blocks)
 
   .printer-cards
-     margin-top: calc(var(--gap) * -1)
+     margin-top: calc(var(--gap-between-blocks) * -1)
 
   .printer-card-wrapper
-    margin-top: var(--gap)
+    margin-top: var(--gap-between-blocks)
 
   .bottom-messages
+    margin-top: var(--gap-between-blocks)
     margin-bottom: -15px
-    margin-top: var(--gap)
-
-  @media (max-width: 768px)
-    --gap: 15px
 
 .warning-collapse
   display: flex

@@ -120,7 +120,7 @@ export default {
 
     allPrintsSelected: {
       get: function () {
-        return this.selectedPrintIds.size >= this.prints.length
+        return (this.selectedPrintIds.size >= this.prints.length) && (this.prints.length !== 0)
       },
       set: function (selected) {
         if (selected) {

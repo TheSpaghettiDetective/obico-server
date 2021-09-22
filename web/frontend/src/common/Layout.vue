@@ -196,10 +196,6 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
-        <b-alert :show="needsEmailVerification" variant="warning" class="custom-alert text-center mb-3">
-          You will not get notified by email on print failure, as your primary email address is not verified.
-          <a href="/accounts/email/">Verify your email address.</a>
-        </b-alert>
         <slot name="content"></slot>
       </div>
     </div>
@@ -313,6 +309,12 @@ export default {
     if (staticAlert) {
       staticAlert.style.marginTop = '50px'
     }
+
+    if (this.needsEmailVerification) {
+      this.$swal.Toast.fire({
+        html: '<div><a href="/accounts/email/">Please verify your email address.</a></div><div>Otherwise you will not get notified by email on print failures.</div>',
+      })
+    }
   },
 }
 </script>
@@ -363,7 +365,6 @@ export default {
         font-size: 0.85em
         &:hover, &[aria-expanded="true"]
           color: rgb(var(--color-text-primary))
-          background: rgb(var(--color-hover) / .075)
         &.dropdown-toggle
           cursor: pointer
           padding-bottom: 20px
@@ -419,6 +420,7 @@ export default {
   left: 0
   width: 100%
   padding-left: calc(100px + 15px)
+  padding-right: 32px
   z-index: 100
   box-shadow: var(--shadow-top-nav)
   justify-content: space-between
@@ -496,6 +498,7 @@ export default {
 
   .top-nav
     padding-left: 15px
+    padding-right: 15px
     background: rgb(var(--color-surface-primary)) !important
 
   .toggle-sidebar

@@ -30,20 +30,11 @@
     </template>
     <template v-slot:content>
       <b-container class="printer-list-page">
-        <b-row v-if="!user.is_pro && printers.length > 0" class="consider-upgrade">
-          <b-col>
-            <div class="surface-secondary p-2 text-center">
-              <p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>
-            </div>
-          </b-col>
-        </b-row>
-
         <b-row v-if="loading">
           <b-col class="text-center">
             <b-spinner class="my-5" label="Loading..."></b-spinner>
           </b-col>
         </b-row>
-
         <b-row v-if="visiblePrinters.length" class="printer-cards justify-content-center">
           <printer-card
             v-for="printer in visiblePrinters"
@@ -54,7 +45,16 @@
             class="printer-card-wrapper"
           ></printer-card>
         </b-row>
-
+        <div class="row justify-content-center">
+          <div id="new-printer" class="col-sm-12 col-lg-6">
+            <div class="new-printer-container">
+              <a href="/printers/wizard/">
+                <i class="fa fa-plus fa-2x"></i>
+                <div>Link OctoPrint Printer</div>
+              </a>
+            </div>
+          </div>
+        </div>
         <b-row v-show="shouldShowFilterWarning || shouldShowArchiveWarning" class="bottom-messages">
           <b-col>
             <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
@@ -89,6 +89,7 @@
 import axios from 'axios'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
+import moment from 'moment'
 
 import { getLocalPref, setLocalPref } from '@lib/pref'
 import { normalizedPrinter } from '@lib/normalizers'
@@ -266,6 +267,13 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
+
+          const expiredLongerThan15Days = this.user.subscription.expired_at && moment(this.user.subscription.expired_at).isBefore(moment().add(15,'days'))
+          if (!this.user.is_pro && expiredLongerThan15Days && this.printers.length > 0 && Math.random() < 0.2) {
+            this.$swal.Toast.fire({
+              html: '<p style="margin: 0;">Please consider <a href="/ent/pricing?utm_source=tsd&utm_medium=printers-page">upgrading</a> to support our development efforts! <a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know" target="_new">Why?</a></p>',
+            })
+          }
         })
     },
     onShowAllPrintersClicked(){

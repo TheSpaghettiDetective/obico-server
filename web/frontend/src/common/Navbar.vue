@@ -57,11 +57,6 @@
         </b-collapse>
       </b-container>
     </b-navbar>
-
-    <b-alert :show="needsEmailVerification" variant="warning" class="text-center">
-      You will not get notified by email on print failure, as your primary email address is not verified.
-      <a href="/accounts/email/">Verify your email address.</a>
-    </b-alert>
   </div>
 </template>
 
@@ -97,6 +92,14 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = user()
+  },
+
+  mounted() {
+    if (this.needsEmailVerification) {
+      this.$swal.Toast.fire({
+        html: '<div><a href="/accounts/email/">Please verify your email address.</a></div><div>Otherwise you will not get notified by email on print failures.</div>',
+      })
+    }
   },
 
   computed: {

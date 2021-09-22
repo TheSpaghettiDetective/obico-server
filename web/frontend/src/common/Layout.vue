@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': isInMobile}">
+  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': inMobileWebView}">
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
@@ -8,7 +8,9 @@
       <ul class="list-unstyled m-0">
         <li v-if="user" :class="{'active': path === '/printers/'}">
           <a href="/printers/">
-            <i class="fas fa-print"></i>
+            <svg viewBox="0 0 359 383" width="100%" height="1.4em" fill="currentColor" style="margin-bottom: 5px">
+              <use href="#svg-3d-printer" />
+            </svg>
             Printers
           </a>
         </li>
@@ -20,7 +22,7 @@
         </li>
         <li v-if="user" :class="{'active': path === '/gcodes/'}">
           <a href="/gcodes/">
-            <i class="fas fa-code"></i>
+            <i class="far fa-file-code"></i>
             G-Code
           </a>
         </li>
@@ -105,7 +107,7 @@
             </b-form-group>
             <div class="select-all-content">
               <span class="label" @click="allSelectedInner = !allSelectedInner" v-show="!numberOfSelected">Select all</span>
-              <b-dropdown v-show="numberOfSelected" class="" toggle-class="btn btn-sm">
+              <b-dropdown v-show="numberOfSelected" class="" toggle-class="btn btn-sm actions-with-selected-btn">
                 <template #button-content>
                   {{ numberOfSelected }} item{{ numberOfSelected === 1 ? '' : 's' }} selected...
                 </template>
@@ -263,13 +265,15 @@ export default {
       user: null,
       allowSignUp: false,
       isEnt: false,
-      isInMobile: false,
       sortOpened: false,
       filterOpened: false,
     }
   },
 
   computed: {
+    inMobileWebView() {
+      return inMobileWebView()
+    },
     dhBadgeNum() {
       if (this.user && this.user.is_dh_unlimited) {
         return'\u221E'
@@ -301,7 +305,6 @@ export default {
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = JSON.parse(document.querySelector('#user-json').text)
-    this.isInMobile = inMobileWebView() || this.path.startsWith('/mobile/') || new URLSearchParams(window.location.search).get('inMobile') === 'true'
   },
 
   mounted() {
@@ -370,8 +373,7 @@ export default {
           font-size: 1.4em
           margin-bottom: 5px
       &.active > a
-        color: rgb(var(--color-on-primary))
-        background: rgb(var(--color-primary))
+        background: rgb(var(--color-hover) / 0.075)
       &.glowing
         text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(var(--color-primary)), 0 0 70px rgb(var(--color-primary)), 0 0 80px rgb(var(--color-primary)), 0 0 100px rgb(var(--color-primary)), 0 0 150px rgb(var(--color-primary))
     ul a
@@ -442,6 +444,8 @@ export default {
   align-items: center
   .label
     cursor: pointer
+  ::v-deep .actions-with-selected-btn
+    border-radius: 0
 
 .actions-with-selected-mobile
   display: none
@@ -487,11 +491,8 @@ export default {
       .side-nav
         transform: translateX(-100px)
 
-  .content-wrapper
-    align-items: start
-    &.hide-kebab-menu-on-mobile
-      .kebab-menu
-        display: none
+  .content-wrapper.hide-kebab-menu-on-mobile .kebab-menu
+    display: none
 
   .top-nav
     padding-left: 15px
@@ -500,11 +501,11 @@ export default {
   .toggle-sidebar
     display: block
 
-  .actions-with-selected-desktop
-    display: none
+  // .actions-with-selected-desktop
+  //   display: none
 
-  .actions-with-selected-mobile
-    display: block
+  // .actions-with-selected-mobile
+  //   display: block
 
   .desktop-actions-slot
     display: none
@@ -515,4 +516,5 @@ export default {
   .page-content
     padding: 15px 0
     padding-top: calc(50px + 15px)
+    justify-content: start
 </style>

@@ -17,10 +17,6 @@
                     <span>Profile</span>
                     <i class="fas fa-arrow-right"></i>
                   </router-link>
-                  <router-link to="/email">
-                    <span>Email</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
 
                   <router-link to="/general_notifications">
                     <span>Notifications</span>
@@ -63,7 +59,6 @@
                   <!-- General -->
                   <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
                   <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
-                  <email-preferences v-if="$route.path === '/email'" :user="user"></email-preferences>
                   <!-- Notifications -->
                   <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
                   <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
@@ -137,7 +132,6 @@ import { inMobileWebView, settings } from '@lib/page_context'
 import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
-import EmailPreferences from './preferences_components/EmailPreferences'
 import EmailNotifications from './preferences_components/EmailNotifications'
 import SmsNotifications from './preferences_components/SmsNotifications'
 import PushbulletNotifications from './preferences_components/PushbulletNotifications'
@@ -152,7 +146,6 @@ export default {
     Layout,
     ThemePreferences,
     ProfilePreferences,
-    EmailPreferences,
     EmailNotifications,
     SmsNotifications,
     PushbulletNotifications,

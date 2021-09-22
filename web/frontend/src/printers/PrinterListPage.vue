@@ -9,20 +9,20 @@
     @updateFilter="updateFilter"
   >
     <template v-slot:desktopActions>
-      <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn">
+      <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn" :title="dhBadgeNum + ' Detective Hours'">
         <svg viewBox="0 0 384 550">
           <use href="#svg-detective-hours"></use>
         </svg>
-        <span id="user-credits" class="badge badge-light">290</span>
+        <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
         <span class="sr-only">Detective Hours</span>
       </a>
-      <a href="/printers/wizard/" class="btn shadow-none icon-btn" title="Link OctoPrint Printer">
+      <a href="/printers/wizard/" class="btn shadow-none icon-btn" title="Link New Printer">
         <i class="fas fa-plus"></i>
       </a>
     </template>
     <template v-slot:mobileActions>
       <b-dropdown-item href="/ent/subscription/#detective-hour-balance">
-        <i class="fas fa-hourglass-half"></i>290 Detective Hours
+        <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} Detective Hours
       </b-dropdown-item>
       <b-dropdown-item href="/printers/wizard/">
         <i class="fas fa-plus"></i>Link New Printer
@@ -190,6 +190,13 @@ export default {
     }
   },
   computed: {
+    dhBadgeNum() {
+      if (this.user && this.user.is_dh_unlimited) {
+        return'\u221E'
+      } else {
+        return Math.round(this.user.dh_balance)
+      }
+    },
     visiblePrinters() {
       let printers = this.printers
       switch (this.filters.state) {

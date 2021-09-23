@@ -85,9 +85,6 @@
                 <b-tab title="Profile">
                   <profile-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
                 </b-tab>
-                <b-tab title="Email">
-                  <email-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-preferences>
-                </b-tab>
                 <b-tab title="Notifications">
                   <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
                 </b-tab>

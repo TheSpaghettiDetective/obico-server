@@ -1,8 +1,6 @@
 <template>
   <div>
-    <pull-to-reveal>
-      <navbar view-name="printer_shared"></navbar>
-    </pull-to-reveal>
+    <navbar view-name="printer_shared"></navbar>
 
     <div class="row justify-content-center">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
@@ -39,13 +37,11 @@ import urls from '@lib/server_urls'
 import PrinterComm from '@lib/printer_comm'
 import WebRTCConnection from '@lib/webrtc'
 import StreamingBox from '@common/StreamingBox'
-import PullToReveal from '@common/PullToReveal.vue'
 import Navbar from '@common/Navbar.vue'
 export default {
   name: 'SharedPrinterPage',
   components: {
     StreamingBox,
-    PullToReveal,
     Navbar,
   },
   created(){

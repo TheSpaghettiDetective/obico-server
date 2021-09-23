@@ -1,8 +1,6 @@
 <template>
   <div>
-    <pull-to-reveal>
-      <navbar view-name="publictimelapse_list"></navbar>
-    </pull-to-reveal>
+    <navbar view-name="publictimelapse_list"></navbar>
 
     <div id="content-wrapper" class="container">
       <div class="timelapse-gallery">
@@ -63,7 +61,6 @@
   import axios from 'axios'
   import urls from '../lib/server_urls'
   import Navbar from '@common/Navbar.vue'
-  import PullToReveal from '@common/PullToReveal.vue'
   import PrintCard from './PrintCard.vue'
   import FullScreenPrintCard from './FullScreenPrintCard.vue'
   import findIndex from 'lodash/findIndex'
@@ -74,7 +71,6 @@
 
     components: {
       Navbar,
-      PullToReveal,
       PrintCard,
       FullScreenPrintCard,
       MugenScroll,

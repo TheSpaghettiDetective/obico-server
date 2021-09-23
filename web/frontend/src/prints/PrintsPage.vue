@@ -16,13 +16,30 @@
     ]"
     :activeFilter="filter"
     @updateFilter="onFilterClick"
-
-    :actionsWithSelected="[{value: 'delete', title: 'Delete', iconClass: 'far fa-trash-alt', wrapperClass: 'text-danger'}]"
-    :numberOfSelected="selectedPrintIds.size"
-    :allSelected="allPrintsSelected"
-    @updateAllSelected="updateAllSelected"
-    @actionWithSelected="actionWithSelected"
   >
+    <template v-slot:topBarLeft>
+      <div class="actions-with-selected-desktop">
+        <b-form-group class="m-0">
+          <b-form-checkbox
+            v-model="allPrintsSelected"
+            size="lg"
+          ></b-form-checkbox>
+        </b-form-group>
+        <div>
+          <span class="label" @click="allPrintsSelected = !allPrintsSelected" v-show="!selectedPrintIds.size">Select all</span>
+          <b-dropdown v-show="selectedPrintIds.size" class="" toggle-class="btn btn-sm actions-with-selected-btn">
+            <template #button-content>
+              {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }} selected...
+            </template>
+            <b-dropdown-item>
+              <div class="text-danger" @click="onDeleteBtnClick">
+                <i class="far fa-trash-alt"></i>Delete
+              </div>
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </div>
+    </template>
     <template v-slot:desktopActions>
       <a href="https://app.thespaghettidetective.com/prints/upload/" class="btn shadow-none icon-btn" title="Upload Time-Lapse">
         <i class="fas fa-upload"></i>
@@ -125,23 +142,14 @@ export default {
       set: function (selected) {
         if (selected) {
           this.selectedPrintIds = new Set(map(this.prints, 'id'))
+        } else {
+          this.selectedPrintIds = new Set()
         }
       }
     },
   },
 
   methods: {
-    actionWithSelected(action) {
-      if (action === 'delete') {
-        this.onDeleteBtnClick()
-      }
-    },
-    updateAllSelected(newValue) {
-      this.allPrintsSelected = newValue
-      if (!newValue) {
-        this.selectedPrintIds = new Set()
-      }
-    },
     fetchMoreData() {
       if (this.noMoreData) {
         return
@@ -274,4 +282,13 @@ export default {
   &:hover
     background: none
     opacity: .8
+
+.actions-with-selected-desktop
+  display: flex
+  align-items: center
+  .label
+    cursor: pointer
+  ::v-deep .actions-with-selected-btn
+    border-radius: 0
+
 </style>

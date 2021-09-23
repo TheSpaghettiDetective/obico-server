@@ -101,27 +101,6 @@
             <i class="fas fa-bars"></i>
           </b-button>
           <slot name="topBarLeft"></slot>
-          <div v-if="actionsWithSelected.length" class="actions-with-selected-desktop">
-            <b-form-group class="m-0">
-              <b-form-checkbox
-                v-model="allSelectedInner"
-                size="lg"
-              ></b-form-checkbox>
-            </b-form-group>
-            <div class="select-all-content">
-              <span class="label" @click="allSelectedInner = !allSelectedInner" v-show="!numberOfSelected">Select all</span>
-              <b-dropdown v-show="numberOfSelected" class="" toggle-class="btn btn-sm actions-with-selected-btn">
-                <template #button-content>
-                  {{ numberOfSelected }} item{{ numberOfSelected === 1 ? '' : 's' }} selected...
-                </template>
-                <b-dropdown-item v-for="action in actionsWithSelected" :key="action.value">
-                  <div :class="action.wrapperClass" @click="$emit('actionWithSelected', action.value)">
-                    <i v-if="action.iconClass" :class="action.iconClass"></i>Delete
-                  </div>
-                </b-dropdown-item>
-              </b-dropdown>
-            </div>
-          </div>
         </div>
         <div class="toolbar">
           <div class="desktop-actions-slot">
@@ -131,25 +110,6 @@
             <template #button-content>
               <i class="fas fa-ellipsis-v"></i>
             </template>
-            <div class="actions-with-selected-mobile">
-              <template v-if="numberOfSelected">
-                <b-dropdown-item v-for="action in actionsWithSelected" :key="action.value">
-                  <div :class="action.wrapperClass" @click="$emit('actionWithSelected', action.value)">
-                    <i v-if="action.iconClass" :class="action.iconClass"></i>Delete
-                  </div>
-                </b-dropdown-item>
-                <b-dropdown-divider></b-dropdown-divider>
-              </template>
-              <template v-if="actionsWithSelected.length">
-                <b-dropdown-item>
-                  <div class="clickable-area" @click.stop.prevent="allSelectedInner = !allSelectedInner">
-                    <i v-show="!allSelected" class="far fa-square"></i>
-                    <i v-show="allSelected" class="fas fa-check-square text-primary"></i>
-                    Select all
-                  </div>
-                </b-dropdown-item>
-              </template>
-            </div>
             <div class="mobile-actions-slot" v-show="!sortOpened && !filterOpened">
               <slot name="mobileActions"></slot>
             </div>
@@ -239,21 +199,6 @@ export default {
       type: String,
       default: '',
     },
-
-    // To enable specific actions for selected items pass these props and listen @updateAllSelected and @actionWithSelected events from parent
-    actionsWithSelected: {
-      type: Array,
-      default: () => [],
-      // Example: [{value: 'delete', title: 'Delete', iconClass{OPTIONAL}: 'far fa-trash-alt', wrapperClass{OPTIONAL}: 'text-danger'}, ...]
-    },
-    allSelected: {
-      type: Boolean,
-      default: false,
-    },
-    numberOfSelected: {
-      type: Number,
-      default: 0,
-    },
   },
 
   data() {
@@ -277,14 +222,6 @@ export default {
         return'\u221E'
       } else {
         return Math.round(this.user.dh_balance)
-      }
-    },
-    allSelectedInner: {
-      get: function() {
-        return this.allSelected
-      },
-      set: function(newValue) {
-        this.$emit('updateAllSelected', newValue)
       }
     },
   },
@@ -430,17 +367,6 @@ export default {
 .mobile-actions-slot
   display: none
 
-.actions-with-selected-desktop
-  display: flex
-  align-items: center
-  .label
-    cursor: pointer
-  ::v-deep .actions-with-selected-btn
-    border-radius: 0
-
-.actions-with-selected-mobile
-  display: none
-
 .toolbar
   display: flex
   align-items: center
@@ -492,12 +418,6 @@ export default {
 
   .toggle-sidebar
     display: block
-
-  // .actions-with-selected-desktop
-  //   display: none
-
-  // .actions-with-selected-mobile
-  //   display: block
 
   .desktop-actions-slot
     display: none

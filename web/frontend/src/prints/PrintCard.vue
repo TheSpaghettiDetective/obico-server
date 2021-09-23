@@ -427,7 +427,7 @@ export default {
   height: 1.2rem
 
 .feedback-section
-  background-color: rgb(var(--color-surface-secondary))
+  background-color: rgb(var(--color-surface))
 
 .bounce-enter-active
   animation: bounce-in .5s

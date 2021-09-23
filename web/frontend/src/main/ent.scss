@@ -21,7 +21,7 @@ table.pricing {
     }
 
     .btn-group-toggle {
-        background: rgb(var(--color-surface-secondary));
+        background: rgb(var(--color-surface));
         .btn {
             border: solid thin rgb(var(--color-divider));
 
@@ -37,7 +37,7 @@ table.pricing {
             border-top: solid thin rgb(var(--color-divider));
             border-bottom: solid thin rgb(var(--color-divider));
             border-right: solid thin rgb(var(--color-divider));
-            background: rgb(var(--color-surface-secondary));
+            background: rgb(var(--color-surface));
 
             >div {
                 padding-left: 1rem;
@@ -46,7 +46,7 @@ table.pricing {
 
             .price-header {
                 height: 15rem;
-                background: rgb(var(--color-surface-secondary));
+                background: rgb(var(--color-surface));
                 &.dh-pack-header {
                     height: 12rem;
                 }
@@ -148,7 +148,7 @@ table.pricing {
             border-radius: 0px !important;
         }
     }
-    
+
     label.custom-control-label {
         line-height: 25px;
     }

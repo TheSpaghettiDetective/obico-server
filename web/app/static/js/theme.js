@@ -53,9 +53,8 @@ const Themes = {
   {name: 'on-warning',               values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'}},
   {name: 'on-warning-2',             values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'}},
 
-  {name: 'background',               values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'}},
-  {name: 'surface-primary',          values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#485B71'}},
-  {name: 'surface-secondary',        values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#2D3E4F'}},
+  {name: 'background',               values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#1F2733'}},
+  {name: 'surface',                  values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#2F3D4E'}},
   {name: 'overlay',                  values: {[Themes.Light]: '#f5f5f5', [Themes.Dark]: '#000000'}},
   {name: 'hover',                    values: {[Themes.Light]: '#666666', [Themes.Dark]: '#ffffff'}},
 

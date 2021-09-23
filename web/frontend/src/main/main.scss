@@ -19,8 +19,7 @@
   --color-on-warning: 255 255 255;
   --color-on-warning-2: 0 0 0;
   --color-background: 35 49 65;
-  --color-surface-primary: 72 91 113;
-  --color-surface-secondary: 45 62 79;
+  --color-surface: 47 61 78;
   --color-overlay: 0 0 0;
   --color-hover: 255 255 255;
   --color-divider: 106 123 138;
@@ -119,7 +118,7 @@ footer {
   padding: 25px 0;
   text-align: center;
   color: rgb(var(--color-text-primary));
-  background-color: rgb(var(--color-surface-secondary));
+  background-color: rgb(var(--color-surface));
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -146,7 +145,7 @@ footer {
 
 .navbar {
   padding: 0.5rem 1rem;
-  background: rgb(var(--color-surface-primary)) !important;
+  background: rgb(var(--color-surface)) !important;
 
   a.navbar-brand {
     margin-top: -3px;
@@ -248,7 +247,7 @@ a.link {
 .form-container {
   margin: 3em 0em;
   padding: 2.5em;
-  background: rgb(var(--color-surface-secondary));
+  background: rgb(var(--color-surface));
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1) !important;
   border: none !important;
@@ -279,7 +278,7 @@ a.link {
 }
 
 .surface {
-  background: rgb(var(--color-surface-secondary));
+  background: rgb(var(--color-surface));
   padding: 2rem 2.5rem;
 
   @media (max-width: 786px) {
@@ -292,7 +291,7 @@ a.link {
 }
 
 .surface-secondary {
-  background-color: rgb(var(--color-surface-secondary));
+  background-color: rgb(var(--color-surface));
 }
 
 .flipH {
@@ -322,7 +321,7 @@ a.link {
 }
 
 .swal2-popup {
-  background-color: rgb(var(--color-surface-secondary)) !important;
+  background-color: rgb(var(--color-surface)) !important;
   border-radius: unset !important;
   .swal2-title, .swal2-content, #swal2-content {
     color: rgb(var(--color-text-primary)) !important;
@@ -409,7 +408,7 @@ a.link {
 
 .accordion, #accordion {
   .card {
-      background: rgb(var(--color-surface-secondary));
+      background: rgb(var(--color-surface));
       border-color: rgb(var(--color-divider) / .6);
   }
   .card-header {
@@ -442,7 +441,7 @@ a.link {
 /** Shared styles for printer and print cards */
 
 .card {
-  background-color: rgb(var(--color-surface-primary));
+  background-color: rgb(var(--color-surface));
 
   .gauge-container {
     padding: 0 16px;
@@ -454,7 +453,7 @@ a.link {
       border-bottom: solid thin rgb(var(--color-divider));
     }
 
-    background: rgb(var(--color-surface-secondary));
+    background: rgb(var(--color-surface));
     .row {
       padding: 0.3em 0em 0.1em;
       text-align: center;
@@ -510,7 +509,7 @@ a.link {
 }
 
 .dropdown-menu {
-  background-color: rgb(var(--color-surface-primary));
+  background-color: rgb(var(--color-surface));
 
   .dropdown-item {
     color: rgb(var(--color-text-primary));
@@ -728,18 +727,18 @@ a.text-warning {
 
 .page-item {
   .page-link {
-    background-color: rgb(var(--color-surface-secondary));
+    background-color: rgb(var(--color-surface));
   }
 
   &.disabled .page-link {
-    background-color: rgb(var(--color-surface-secondary));
+    background-color: rgb(var(--color-surface));
     opacity: .6;
   }
 }
 
 
 .modal-content {
-  background-color: rgb(var(--color-surface-secondary));
+  background-color: rgb(var(--color-surface));
 }
 
 .modal-content .close {
@@ -755,14 +754,14 @@ a.text-warning {
 
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
-  background-color: rgb(var(--color-surface-secondary));
   border-color: rgb(var(--color-divider));
   color: rgb(var(--color-text-primary));
+  background: rgb(var(--color-hover) / 0.075);
 }
 
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-link:focus {
-  border-color: rgb(var(--color-divider));
+  background: rgb(var(--color-hover) / 0.075);
 }
 
 .form-control:focus {

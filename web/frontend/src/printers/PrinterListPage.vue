@@ -65,30 +65,34 @@
         </div>
         <b-row v-show="shouldShowFilterWarning || shouldShowArchiveWarning" class="bottom-messages">
           <b-col>
-            <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
+            <div v-if="shouldShowFilterWarning" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
                 <div>{{ hiddenPrinterCount }} {{ 'printer' | pluralize(hiddenPrinterCount) }}
-                hidden by the filter.</div>
-                <a
-                  role="button"
-                  href="#"
-                  class="warning-action"
-                  @click="onShowAllPrintersClicked()"
-                >Show All Printers</a>
-              </div>
-              <a role="button" class="py-2" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
-            </b-collapse>
-            <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
+                  hidden by the filter.</div>
+                  <a
+                    role="button"
+                    href="#"
+                    class="warning-action"
+                    @click="onShowAllPrintersClicked()"
+                  >Show All Printers</a>
+                </div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div v-if="shouldShowArchiveWarning" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
                 <div>{{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }}
-                have been archived.</div>
-                <a
-                  href="/ent/printers/archived/"
-                  class="warning-action btn-primary"
-                >Show Archived Printers</a>
-              </div>
-              <a role="button" class="py-2" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
-            </b-collapse>
+                  have been archived.</div>                
+                  <a
+                    href="/ent/printers/archived/"
+                    class="warning-action"
+                  >Show Archived Printers</a>
+                </div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
           </b-col>
         </b-row>
       </b-container>
@@ -348,19 +352,8 @@ export default {
 
   .bottom-messages
     margin-top: var(--gap-between-blocks)
-    margin-bottom: -15px
-
-.warning-collapse
-  display: flex
-  color: rgb(var(--color-warning))
-  justify-content: space-between
-  align-items: center
-  border: rgb(var(--color-warning)) thin solid
-  padding: 0.25rem 1.5rem
-  margin-bottom: 1rem
 
   .warning
-    flex-grow: 10
     display: flex
     flex-direction: row
     flex-wrap: wrap
@@ -372,7 +365,6 @@ export default {
       font-weight: bolder
       font-size: 1.125em
       margin-left: auto
-      margin-right: 1.5rem
 
 .btn.hours-btn
   position: relative

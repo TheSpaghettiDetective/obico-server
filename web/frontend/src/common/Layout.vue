@@ -242,6 +242,7 @@ export default {
   z-index: 1000
   overflow-y: scroll
   transition: all .2s ease-out
+  border-right: 1px solid rgb(var(--color-divider))
   .sidebar-header
     flex: 0 0 50px
     display: flex
@@ -309,7 +310,7 @@ export default {
 
 .top-nav
   height: 50px
-  background: rgb(var(--color-surface-secondary)) !important
+  background: rgb(var(--color-surface-primary)) !important
   position: fixed
   top: 0
   left: 0

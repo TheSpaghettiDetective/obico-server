@@ -3,12 +3,13 @@ import VueSwal from 'common/VueSwal'
 import { BootstrapVue } from 'bootstrap-vue'
 import setupSentry from '@lib/sentry'
 import { initTheme } from '@main/themes'
+import VuePluralize from 'vue-pluralize'
 
 initTheme()
 setupSentry(Vue)
 Vue.use(BootstrapVue)
 Vue.use(VueSwal)
-
+Vue.use(VuePluralize)
 
 import PrinterListPage from './PrinterListPage.vue'
 import SharedPrinterPage from './SharedPrinterPage.vue'

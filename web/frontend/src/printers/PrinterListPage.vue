@@ -67,24 +67,27 @@
           <b-col>
             <b-collapse :visible="shouldShowFilterWarning" class="warning-collapse">
               <div class="warning">
-                <span>{{ hiddenPrinterCount }}</span> printers are
-                hidden by the filtering settings.&nbsp;&nbsp;
+                <div>{{ hiddenPrinterCount }} {{ 'printer' | pluralize(hiddenPrinterCount) }}
+                hidden by the filter.</div>
                 <a
                   role="button"
                   href="#"
+                  class="warning-action"
                   @click="onShowAllPrintersClicked()"
                 >Show All Printers</a>
               </div>
-              <a role="button" class="p-3" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
+              <a role="button" class="py-2" @click="dontShowFilterWarning = true"><i class="fas fa-times"></i></a>
             </b-collapse>
             <b-collapse v-model="shouldShowArchiveWarning" class="warning-collapse">
               <div class="warning">
-                Some of your printers have been archived.
+                <div>{{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }}
+                have been archived.</div>
                 <a
                   href="/ent/printers/archived/"
-                >Find them here >>></a>
+                  class="warning-action btn-primary"
+                >Show Archived Printers</a>
               </div>
-              <a role="button" class="py-3" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
+              <a role="button" class="py-2" @click="shouldShowArchiveWarning = false"><i class="fas fa-times"></i></a>
             </b-collapse>
           </b-col>
         </b-row>
@@ -195,7 +198,7 @@ export default {
         )
       },
       dontShowFilterWarning: false,
-      shouldShowArchiveWarning: false,
+      archivedPrinterNum: 0,
     }
   },
   computed: {
@@ -242,6 +245,9 @@ export default {
     shouldShowFilterWarning() {
       return this.hiddenPrinterCount > 0 && !this.dontShowFilterWarning
     },
+    shouldShowArchiveWarning() {
+      return this.archivedPrinterNum > 0
+    },
   },
   methods: {
     updateSort(newSort) {
@@ -270,7 +276,7 @@ export default {
           this.loading = false
           response.data.forEach((p) => {
             if (p.archived_at) {
-              this.shouldShowArchiveWarning = true
+              this.archivedPrinterNum += 1
             } else {
               this.insertPrinter(normalizedPrinter(p))
             }
@@ -349,14 +355,24 @@ export default {
   color: rgb(var(--color-warning))
   justify-content: space-between
   align-items: center
-  border: rgb(var(--color-warning)) thin dashed
-  padding: 0rem 1.5rem
+  border: rgb(var(--color-warning)) thin solid
+  padding: 0.25rem 1.5rem
   margin-bottom: 1rem
 
   .warning
     flex-grow: 10
-    text-align: center
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    justify-content: space-between
+    align-items: center
 
+    .warning-action
+      padding: 0.25em 0
+      font-weight: bolder
+      font-size: 1.125em
+      margin-left: auto
+      margin-right: 1.5rem
 
 .btn.hours-btn
   position: relative

@@ -232,7 +232,7 @@ export default {
   min-width: 100px
   max-width: 100px
   text-align: center
-  background: rgb(var(--color-surface))
+  background: rgb(var(--color-surface-primary))
   position: fixed
   left: 0
   top: 0
@@ -242,14 +242,12 @@ export default {
   z-index: 1000
   overflow-y: scroll
   transition: all .2s ease-out
-  border-right: 1px solid rgb(var(--color-divider))
   .sidebar-header
     flex: 0 0 50px
     display: flex
     align-items: center
     justify-content: center
     border-bottom: 1px solid rgb(var(--color-divider))
-    // border-right: 1px solid rgb(var(--color-divider))
   ul
     li
       a
@@ -311,7 +309,7 @@ export default {
 
 .top-nav
   height: 50px
-  background: rgb(var(--color-surface)) !important
+  background: rgb(var(--color-surface-secondary)) !important
   position: fixed
   top: 0
   left: 0
@@ -319,7 +317,7 @@ export default {
   padding-left: calc(100px + 15px)
   padding-right: 32px
   z-index: 100
-  // box-shadow: var(--shadow-top-nav)
+  box-shadow: var(--shadow-top-nav)
   justify-content: space-between
 
 ::v-deep .dropdown-menu
@@ -385,7 +383,7 @@ export default {
   .top-nav
     padding-left: 15px
     padding-right: 15px
-    background: rgb(var(--color-surface)) !important
+    background: rgb(var(--color-surface-primary)) !important
 
   .toggle-sidebar
     display: block

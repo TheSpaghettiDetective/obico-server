@@ -3,7 +3,7 @@
 #logreg-forms{
     margin:10vh auto;
     padding: 0em 1.5em;
-    background-color: rgb(var(--color-surface));
+    background-color: rgb(var(--color-surface-secondary));
     box-shadow: 0 7px 7px rgba(0, 0, 0, 0.12), 0 12px 40px rgba(0,0,0,0.24);
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 
@@ -28,7 +28,7 @@
 
         &[readonly] {
             background-color: rgb(255 255 255 / 0.4);
-            border: 1px solid rgb(var(--color-surface));
+            border: 1px solid rgb(var(--color-surface-secondary));
             color: white;
         }
     }
@@ -72,7 +72,7 @@
 
     button[type="submit"]{ margin: 1.8em 0em 0.1em 0em; }
 
-    .facebook-btn{
+    .facebook-btn{ 
         background-color:#3976EA;
         opacity: .9;
 

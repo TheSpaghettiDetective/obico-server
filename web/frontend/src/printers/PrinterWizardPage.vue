@@ -533,7 +533,7 @@ export default {
   border-radius: 300px
 .wizard-container
   padding: 1em
-  background: rgb(var(--color-surface))
+  background: rgb(var(--color-surface-secondary))
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
@@ -551,7 +551,7 @@ export default {
   margin-right: 12px
   margin-bottom: 8px
 .img-container
-  background: rgb(var(--color-surface) / .6)
+  background: rgb(var(--color-surface-secondary) / .6)
   padding: 1rem
   text-align: center
 img

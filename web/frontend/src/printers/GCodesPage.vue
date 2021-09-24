@@ -315,11 +315,11 @@
   .search-input
     height: 30px
     input
-      background-color: rgb(var(--color-surface))
-      border: rgb(var(--color-surface))
+      background-color: rgb(var(--color-surface-secondary))
+      border: rgb(var(--color-surface-secondary))
 
   .gcodes-wrapper
-    background-color: rgb(var(--color-surface))
+    background-color: rgb(var(--color-surface-secondary))
     padding: 2em
 
   .control-panel

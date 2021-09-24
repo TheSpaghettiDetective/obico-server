@@ -452,12 +452,12 @@ export default {
 @use "~main/theme"
 .desktop-settings-wrapper
   margin: 0
-  background-color: rgb(var(--color-surface))
+  background-color: rgb(var(--color-surface-secondary))
   ::v-deep .desktop-settings-content
     padding: 2rem
     padding-right: 3rem
 .mobile-settings-wrapper
-  background-color: rgb(var(--color-surface))
+  background-color: rgb(var(--color-surface-secondary))
   padding: 1.5rem
   .mobile-settings-content
     padding-right: 1rem
@@ -488,8 +488,7 @@ export default {
   border-bottom: 1px solid rgb(var(--color-text-primary))
 ::v-deep .settings-nav
   width: 25%
-  background-color: rgb(var(--color-surface))
-  border-right: 1px solid rgb(var(--color-divider))
+  background-color: rgb(var(--color-surface-primary))
   min-height: 80vh
   padding: 3.5rem 0
   .subcategory

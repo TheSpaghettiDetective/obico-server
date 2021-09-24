@@ -24,12 +24,12 @@
       </div>
     </template>
     <template v-slot:desktopActions>
-      <a href="https://app.thespaghettidetective.com/prints/upload/" class="btn shadow-none icon-btn" title="Upload Time-Lapse">
+      <a href="/prints/upload/" class="btn shadow-none icon-btn" title="Upload Time-Lapse">
         <i class="fas fa-upload"></i>
       </a>
     </template>
     <template v-slot:mobileActions>
-      <b-dropdown-item href="https://app.thespaghettidetective.com/prints/upload/">
+      <b-dropdown-item href="/prints/upload/">
         <i class="fas fa-upload"></i>Upload Time-Lapse
       </b-dropdown-item>
     </template>

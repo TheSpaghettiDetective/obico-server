@@ -291,6 +291,13 @@ a.link {
   }
 }
 
+.full-on-mobile {
+  margin: 0;
+  @media (max-width: 786px) {
+    margin: -15px;
+  }
+}
+
 .surface-secondary {
   background-color: rgb(var(--color-surface-secondary));
 }

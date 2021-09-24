@@ -4,7 +4,7 @@
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
-            <div v-if="printer" class="surface with-loading-animation">
+            <div v-if="printer" class="surface with-loading-animation full-on-mobile">
               <section class="settings">
                 <h2 class="section-title">Settings</h2>
                 <div class="form-group mb-4 mt-4">

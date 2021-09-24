@@ -4,7 +4,7 @@
       <b-container>
         <b-row>
           <b-col>
-            <div class="wizard-container form-container m-0" :class="{'logo-bg': verifiedPrinter }">
+            <div class="wizard-container form-container full-on-mobile" :class="{'logo-bg': verifiedPrinter }">
               <div v-if="verifiedPrinter" class="text-center py-5">
                 <svg class="success-checkmark" fill="currentColor" viewBox="0 0 446 410">
                   <use href="#svg-success-checkmark" />

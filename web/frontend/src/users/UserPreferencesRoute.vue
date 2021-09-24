@@ -6,7 +6,7 @@
           <b-col>
             <div v-if="user">
               <!-- 2-step nav for mobiles -->
-              <div v-if="useMobileLayout" class="mobile-settings-wrapper">
+              <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/'" class="mobile-settings-categories">
                   <h2 class="categories-title section-title">Preferences</h2>
                   <router-link v-if="!inMobileWebView" to="/theme">

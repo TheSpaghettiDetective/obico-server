@@ -1,22 +1,5 @@
 <template>
-  <layout
-    :sortOptions="[
-      {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
-      {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
-    ]"
-    :activeSort="sorting"
-    @updateSort="onSortingClick"
-
-    :filterOptions="[
-      {value: 'none', title: 'All'},
-      {value: 'finished', title: 'Finished'},
-      {value: 'cancelled', title: 'Cancelled'},
-      {value: 'need_alert_overwrite', title: 'Review needed'},
-      {value: 'need_print_shot_feedback', title: 'Focused-review needed'},
-    ]"
-    :activeFilter="filter"
-    @updateFilter="onFilterClick"
-  >
+  <layout ref="layout">
     <template v-slot:topBarLeft>
       <div class="actions-with-selected-desktop">
         <b-form-group class="m-0">
@@ -48,6 +31,22 @@
     <template v-slot:mobileActions>
       <b-dropdown-item href="/prints/upload/">
         <i class="fas fa-upload"></i>Upload Time-Lapse
+      </b-dropdown-item>
+    </template>
+    <template v-slot:sort>
+      <b-dropdown-item v-for="option in sortOptions" :key="option.value">
+        <div @click="onSortingClick(option.value); $refs.layout.sortOpened = false;" class="clickable-area">
+          <i class="fas fa-check text-primary" :style="{visibility: sorting === option.value ? 'visible' : 'hidden'}"></i>
+          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+        </div>
+      </b-dropdown-item>
+    </template>
+    <template v-slot:filter>
+      <b-dropdown-item v-for="option in filterOptions" :key="option.value">
+        <div @click="onFilterClick(option.value); $refs.layout.filterOpened = false;" class="clickable-area">
+          <i class="fas fa-check text-primary" :style="{visibility: filter === option.value ? 'visible' : 'hidden'}"></i>
+          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+        </div>
       </b-dropdown-item>
     </template>
     <template v-slot:content>
@@ -114,10 +113,21 @@ export default {
       selectedPrintIds: new Set(),
       loading: false,
       noMoreData: false,
+      fullScreenPrint: null,
+      fullScreenPrintVideoUrl: null,
       filter: 'none',
       sorting: 'date_desc',
-      fullScreenPrint: null,
-      fullScreenPrintVideoUrl: null
+      sortOptions: [
+        {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
+        {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
+      ],
+      filterOptions: [
+        {value: 'none', title: 'All'},
+        {value: 'finished', title: 'Finished'},
+        {value: 'cancelled', title: 'Cancelled'},
+        {value: 'need_alert_overwrite', title: 'Review needed'},
+        {value: 'need_print_shot_feedback', title: 'Focused-review needed'},
+      ]
     }
   },
   computed: {

@@ -89,9 +89,9 @@
     <div
       class="content-wrapper"
       :class="{
-        'hide-top-nav-on-desktop': !$slots.topBarLeft && !$slots.desktopActions && !sortOptions.length && !filterOptions.length,
-        'hide-kebab-menu-on-mobile': !$slots.mobileActions && !sortOptions.length && !filterOptions.length,
-        'no-sort-and-filter': !sortOptions.length && !filterOptions.length,
+        'hide-top-nav-on-desktop': !$slots.topBarLeft && !$slots.desktopActions && !$slots.sort && !$slots.filter,
+        'hide-kebab-menu-on-mobile': !$slots.mobileActions && !$slots.sort && !$slots.filter,
+        'no-sort-and-filter': !$slots.sort && !$slots.filter,
       }"
     >
       <!-- Top-bar -->
@@ -106,22 +106,25 @@
           <div class="desktop-actions-slot">
             <slot name="desktopActions"></slot>
           </div>
+
           <b-dropdown right no-caret class="kebab-menu" toggle-class="icon-btn">
             <template #button-content>
               <i class="fas fa-ellipsis-v"></i>
             </template>
+
             <div class="mobile-actions-slot" v-show="!sortOpened && !filterOpened">
               <slot name="mobileActions"></slot>
             </div>
-            <b-dropdown-divider class="d-md-none" v-if="$slots.mobileActions && (sortOptions.length || filterOptions.length)"></b-dropdown-divider>
+            <b-dropdown-divider class="d-md-none" v-if="$slots.mobileActions && ($slots.sort || $slots.filter)"></b-dropdown-divider>
+
             <template v-if="!sortOpened && !filterOpened">
-              <b-dropdown-item v-if="sortOptions.length">
+              <b-dropdown-item v-if="$slots.sort">
                 <div class="d-flex justify-content-between clickable-area" @click.stop.prevent="sortOpened = true">
                   <div><i class="fas fa-sort-amount-up"></i>Sort</div>
                   <div><i class="fas fa-chevron-right m-0"></i></div>
                 </div>
               </b-dropdown-item>
-              <b-dropdown-item v-if="filterOptions.length">
+              <b-dropdown-item v-if="$slots.filter">
                 <div class="d-flex justify-content-between clickable-area" @click.stop.prevent="filterOpened = true">
                   <div><i class="fas fa-filter"></i>Filter</div>
                   <div><i class="fas fa-chevron-right m-0"></i></div>
@@ -134,12 +137,7 @@
                   <i class="fas fa-chevron-left"></i>Back
                 </div>
               </b-dropdown-item>
-              <b-dropdown-item v-for="option in sortOptions" :key="option.value">
-                <div @click="$emit('updateSort', option.value); sortOpened = false" class="clickable-area">
-                  <i class="fas fa-check text-primary" :style="{visibility: activeSort === option.value ? 'visible' : 'hidden'}"></i>
-                  {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-                </div>
-              </b-dropdown-item>
+              <slot name="sort"></slot>
             </template>
             <template v-else-if="filterOpened">
               <b-dropdown-item>
@@ -147,12 +145,7 @@
                   <i class="fas fa-arrow-left"></i>Back
                 </div>
               </b-dropdown-item>
-              <b-dropdown-item v-for="option in filterOptions" :key="option.value">
-                <div @click="$emit('updateFilter', option.value); filterOpened = false" class="clickable-area">
-                  <i class="fas fa-check text-primary" :style="{visibility: activeFilter === option.value ? 'visible' : 'hidden'}"></i>
-                  {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-                </div>
-              </b-dropdown-item>
+              <slot name="filter"></slot>
             </template>
           </b-dropdown>
         </div>
@@ -175,30 +168,6 @@ export default {
 
   components: {
     DarkLightImage,
-  },
-
-  props: {
-    // To enable sorting pass these props and listen @updateSort event from parent
-    sortOptions: {
-      type: Array,
-      default: () => [],
-      // Example: [{value: 'date_asc', title: 'Sort By Date', iconClass{OPTIONAL}: 'fas fa-long-arrow-alt-up'}, ...]
-    },
-    activeSort: {
-      type: String,
-      default: '',
-    },
-
-    // To enable filtering pass these props and listen @updateFilter event from parent
-    filterOptions: {
-      type: Array,
-      default: () => [],
-      // Example: [{value: 'need_print_shot_feedback', title: 'Focused-review needed'}, ...]
-    },
-    activeFilter: {
-      type: String,
-      default: '',
-    },
   },
 
   data() {

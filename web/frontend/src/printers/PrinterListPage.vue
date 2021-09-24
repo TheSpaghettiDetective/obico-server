@@ -1,13 +1,5 @@
 <template>
-  <layout
-    :sortOptions="sortFilters"
-    :activeSort="filters.sort"
-    @updateSort="updateSort"
-
-    :filterOptions="stateFilters"
-    :activeFilter="filters.state"
-    @updateFilter="updateFilter"
-  >
+  <layout ref="layout">
     <template v-slot:desktopActions>
       <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn" :title="dhBadgeNum + ' Detective Hours'">
         <svg viewBox="0 0 384 550">
@@ -26,6 +18,22 @@
       </b-dropdown-item>
       <b-dropdown-item href="/printers/wizard/">
         <i class="fas fa-plus"></i>Link New Printer
+      </b-dropdown-item>
+    </template>
+    <template v-slot:sort>
+      <b-dropdown-item v-for="option in sortFilters" :key="option.value">
+        <div @click="updateSort(option.value); $refs.layout.sortOpened = false;" class="clickable-area">
+          <i class="fas fa-check text-primary" :style="{visibility: filters.sort === option.value ? 'visible' : 'hidden'}"></i>
+          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+        </div>
+      </b-dropdown-item>
+    </template>
+    <template v-slot:filter>
+      <b-dropdown-item v-for="option in stateFilters" :key="option.value">
+        <div @click="updateFilter(option.value); $refs.layout.filterOpened = false;" class="clickable-area">
+          <i class="fas fa-check text-primary" :style="{visibility: filters.state === option.value ? 'visible' : 'hidden'}"></i>
+          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+        </div>
       </b-dropdown-item>
     </template>
     <template v-slot:content>
@@ -267,7 +275,7 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
-          
+
           const signedUpLongerThan1Day = moment(this.user.date_joined).isBefore(moment().subtract(15,'days'))
           const expiredLongerThan15Days = this.user.subscription.expired_at && moment(this.user.subscription.expired_at).isBefore(moment().add(15,'days'))
           if (!this.user.is_pro && expiredLongerThan15Days && this.printers.length > 0 && Math.random() < 0.2) {
@@ -366,4 +374,8 @@ export default {
     background-color: rgb(var(--color-primary))
     height: auto
     font-size: .625rem
+
+::v-deep .dropdown-item .clickable-area
+  margin: -0.25rem -1.5rem
+  padding: 0.25rem 1.5rem
 </style>

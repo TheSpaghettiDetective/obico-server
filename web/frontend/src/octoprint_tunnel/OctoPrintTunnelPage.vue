@@ -6,7 +6,7 @@
       <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent/pricing/">Get Unlimited Tunneling</a></div>
     </div>
     <div>
-      <iframe v-if="printerId" :src="iframeUrl()" class="tunnel-iframe"></iframe>
+      <iframe v-if="printerId" :src="iframeUrl() + '#temp'" class="tunnel-iframe"></iframe>
     </div>
   </div>
 </template>

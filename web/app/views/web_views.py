@@ -19,7 +19,7 @@ from allauth.account.views import LoginView
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
-from app.forms import PrinterForm, SocialAccountAwareLoginForm
+from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot, telegram_send
 from lib.file_storage import save_file_obj

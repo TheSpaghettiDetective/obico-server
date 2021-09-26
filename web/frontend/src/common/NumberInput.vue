@@ -16,7 +16,7 @@
       class="form-control text-center field_required"
       disabled
       aria-describedby="basic-addon1"
-      :value="inputValue + ' mm'"
+      :value="inputValue + ' ' + unit"
       :style="{opacity: disable ? .3 : 1}"
     >
     <div class="input-group-append">
@@ -50,6 +50,10 @@
         type: Boolean,
         default: false
       },
+      unit: {
+        type: String,
+        default: 'mm'
+      }
     },
 
     data() {

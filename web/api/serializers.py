@@ -125,6 +125,7 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'watching_enabled', 'not_watching_reason',
                   'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
                   'lift_z_on_pause', 'detective_sensitivity',
+                  'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
                   'pic', 'status', 'settings', 'current_print',
                   'normalized_p', 'auth_token', 'archived_at',)
 

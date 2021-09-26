@@ -33,16 +33,6 @@ class SocialAccountAwareLoginForm(LoginForm):
             raise err
 
 
-class PrinterForm(ModelForm):
-    class Meta:
-        model = Printer
-        fields = ['name', 'action_on_failure', 'tools_off_on_pause', 'bed_off_on_pause',
-                  'detective_sensitivity', 'retract_on_pause', 'lift_z_on_pause']
-        widgets = {
-            'action_on_failure': CustomRadioSelectWidget(choices=Printer.ACTION_ON_FAILURE),
-        }
-
-
 class RecaptchaSignupForm(SignupForm):
     recaptcha_token = CharField(required=True)
 

@@ -39,10 +39,10 @@ LOGGER = logging.getLogger(__name__)
 def process_print_events(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
 
-    generate_print_poster(_print)
-    select_print_shots_for_feedback(_print)
-    send_print_notification(_print)
-    compile_timelapse.delay(print_id)
+    if will_record_timelapse(_print):
+        select_print_shots_for_feedback(_print)
+        send_print_notification(_print)
+        compile_timelapse.delay(print_id)
 
 
 @shared_task(acks_late=True)
@@ -240,11 +240,25 @@ def clean_up_print_pics(_print):
     delete_dir('p/{}/'.format(pic_dir), settings.PICS_CONTAINER, long_term_storage=False)
 
 
-def generate_print_poster(_print):
+def will_record_timelapse(_print):
     last_pic = last_pic_of_print(_print, 'raw')
 
     if not last_pic: # This print does not have any raw pics
-        return
+        return False
+
+    # Save the unrotated snapshot so that it is still viewable even after the print is done.
+    unrotated_jpg_url = save_print_snapshot(_print.printer,
+                            last_pic,
+                            f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
+                            rotated=False,
+                            to_long_term_storage=False)
+    cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
+
+    min_timelapse_secs = _print.printer.min_timelapse_secs_on_cancel if _print.is_canceled() else _print.printer.min_timelapse_secs_on_finish
+    if (_print.ended_at() - _print.started_at).total_seconds() < min_timelapse_secs:
+        _print.delete()
+        clean_up_print_pics(_print)
+        return False
 
     rotated_jpg_url = save_print_snapshot(_print.printer,
                             last_pic,
@@ -255,15 +269,8 @@ def generate_print_poster(_print):
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
         _print.save(keep_deleted=True)
-
-    # Save the unrotated snapshot so that it is still viewable even after the print is done.
-    unrotated_jpg_url = save_print_snapshot(_print.printer,
-                            last_pic,
-                            f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
-                            rotated=False,
-                            to_long_term_storage=False)
-    cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
-
+    
+    return True
 
 def send_timelapse_detection_done_email(_print):
     if not settings.EMAIL_HOST:

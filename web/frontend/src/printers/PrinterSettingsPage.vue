@@ -69,7 +69,7 @@
                     <div class="form-group mt-4">
                       <div class="form-label text-muted">When print is paused,</div>
                       <saving-animation :errors="errorMessages.tools_off_on_pause" :saving="saving.tools_off_on_pause">
-                        <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
+                        <div class="custom-control custom-checkbox mt-2 checkbox">
                           <input
                             type="checkbox"
                             name="tools_off_on_pause"
@@ -84,7 +84,7 @@
                         </div>
                       </saving-animation>
                       <saving-animation :errors="errorMessages.bed_off_on_pause" :saving="saving.bed_off_on_pause">
-                        <div class="custom-control custom-checkbox form-check-inline mt-2 checkbox">
+                        <div class="custom-control custom-checkbox mt-2 checkbox">
                           <input
                             type="checkbox"
                             name="bed_off_on_pause"
@@ -101,7 +101,7 @@
 
                       <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause" class="mobile-full-width">
                         <div class="form-inline my-1 checkbox-with-input">
-                          <div class="custom-control custom-checkbox form-check-inline">
+                          <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="retract-checkbox" v-model="retractFilamentByEnabled">
                             <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
                           </div>
@@ -109,13 +109,14 @@
                             v-model="retractOnPause"
                             :step=".5"
                             :disable="!retractFilamentByEnabled"
+                            class="wrappable-field"
                           ></number-input>
                         </div>
                       </saving-animation>
 
                       <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause" class="mobile-full-width">
                         <div class="form-inline my-1 checkbox-with-input">
-                          <div class="custom-control custom-checkbox form-check-inline">
+                          <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="lift-z-checkbox" v-model="liftExtruderByEnabled">
                             <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
                           </div>
@@ -123,6 +124,7 @@
                             v-model="liftExtruderBy"
                             :step=".5"
                             :disable="!liftExtruderByEnabled"
+                            class="wrappable-field"
                           ></number-input>
                         </div>
                       </saving-animation>
@@ -156,6 +158,59 @@
                       </div>
                     </div>
                   </div>
+              </section>
+              <section class="mt-5">
+                <h2 class="section-title">Time-lapse</h2>
+                <p v-if="!(timelapseOnFinishEnabled && timelapseOnCancelEnabled)" class="text-warning">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">help The Detective get better while earning Detective Hours for yourself</a>.
+                </p>
+                <div class="form-group mt-4">
+                  <saving-animation :errors="errorMessages.min_timelapse_secs_on_finish" :saving="saving.min_timelapse_secs_on_finish" class="mobile-full-width">
+                    <div class="form-inline my-1 checkbox-with-input">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="timelapseOnFinishEnabled" v-model="timelapseOnFinishEnabled">
+                        <label class="custom-control-label" for="timelapseOnFinishEnabled">Record time-lapse when a print finishes successfully.</label>
+                      </div>
+                    </div>
+                    <div 
+                      v-if="timelapseOnFinishEnabled"
+                      class="form-inline my-1 checkbox-with-input"
+                      >
+                      <div class="custom-control custom-checkbox">
+                        Skip if the print is finished in less than
+                      </div>
+                      <number-input
+                        v-model="minTimelapseMinutesOnFinish"
+                        :step="5"
+                        unit="minutes"
+                        class="wrappable-field"
+                      ></number-input>
+                    </div>
+                  </saving-animation>
+                  <saving-animation :errors="errorMessages.min_timelapse_secs_on_cancel" :saving="saving.min_timelapse_secs_on_cancel" class="mobile-full-width">
+                    <div class="form-inline mt-3 mb-1 checkbox-with-input">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="timelapseOnCancelEnabled" v-model="timelapseOnCancelEnabled">
+                        <label class="custom-control-label" for="timelapseOnCancelEnabled">Record time-lapse when a print is cancelled.</label>
+                      </div>
+                    </div>
+                    <div 
+                      v-if="timelapseOnCancelEnabled"
+                      class="form-inline my-1 checkbox-with-input"
+                      >
+                      <div class="custom-control custom-checkbox">
+                        Skip if the print is cancelled in less than
+                      </div>
+                      <number-input
+                        v-model="minTimelapseMinutesOnCancel"
+                        :step="5"
+                        unit="minutes"
+                        class="wrappable-field"
+                      ></number-input>
+                    </div>
+                  </saving-animation>
+                </div>
               </section>
               <section class="danger mt-5">
                 <h2 class="section-title">Danger Zone</h2>
@@ -238,6 +293,14 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
+        'min_timelapse_secs_on_finish': {
+          'delay': 1000,
+          'timeoutId': null
+        },
+        'min_timelapse_secs_on_cancel': {
+          'delay': 1000,
+          'timeoutId': null
+        },
       }
     }
   },
@@ -253,7 +316,6 @@ export default {
         } else {
           this.printer.retract_on_pause = 0
         }
-        this.updateSetting('retract_on_pause')
       },
     },
     retractOnPause: {
@@ -276,7 +338,6 @@ export default {
         } else {
           this.printer.lift_z_on_pause = 0
         }
-        this.updateSetting('lift_z_on_pause')
       },
     },
     liftExtruderBy: {
@@ -289,7 +350,50 @@ export default {
         }
       }
     },
-
+    timelapseOnFinishEnabled: {
+      get(){
+        return this.printer.min_timelapse_secs_on_finish >= 0
+      },
+      set(newValue){
+        if (newValue) {
+          this.printer.min_timelapse_secs_on_finish = 600
+        } else {
+          this.printer.min_timelapse_secs_on_finish = -1
+        }
+      },
+    },
+    minTimelapseMinutesOnFinish: {
+      get() {
+        return this.printer ? this.printer.min_timelapse_secs_on_finish / 60 : undefined
+      },
+      set(newValue) {
+        if (this.printer) {
+          this.printer.min_timelapse_secs_on_finish = newValue * 60
+        }
+      }
+    },
+    timelapseOnCancelEnabled: {
+      get(){
+        return this.printer.min_timelapse_secs_on_cancel >= 0
+      },
+      set(newValue){
+        if (newValue) {
+          this.printer.min_timelapse_secs_on_cancel = 300
+        } else {
+          this.printer.min_timelapse_secs_on_cancel = -1
+        }
+      },
+    },
+    minTimelapseMinutesOnCancel: {
+      get() {
+        return this.printer ? this.printer.min_timelapse_secs_on_cancel / 60 : undefined
+      },
+      set(newValue) {
+        if (this.printer) {
+          this.printer.min_timelapse_secs_on_cancel = newValue * 60
+        }
+      }
+    },
     printerWizardUrl() {
       return urls.printerWizard(this.printer.id)
     },
@@ -304,6 +408,8 @@ export default {
     },
   },
 
+  // Watch these properties so that updates can be triggered at key-press, instead of losing focus
+  // To watch deep properties in an object: https://stackoverflow.com/questions/42133894/vue-js-how-to-properly-watch-for-nested-data
   watch: {
     printerName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
@@ -318,6 +424,16 @@ export default {
     liftExtruderBy: function(newValue, oldValue) {
       if (oldValue !== undefined) {
         this.changeLiftExtruderBy(newValue)
+      }
+    },
+    minTimelapseMinutesOnFinish: function(newValue, oldValue) {
+      if (oldValue !== undefined) {
+        this.updateSetting('min_timelapse_secs_on_finish')
+      }
+    },
+    minTimelapseMinutesOnCancel: function(newValue, oldValue) {
+      if (oldValue !== undefined) {
+        this.updateSetting('min_timelapse_secs_on_cancel')
       }
     },
   },
@@ -342,10 +458,6 @@ export default {
       sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
       this.updateSensitivityHint() // Initial hits update (hide all except one)
     })
-  },
-
-  mounted() {
-    // this.setSavingStatus('retract_on_pause', true)
   },
 
   methods: {
@@ -530,4 +642,9 @@ section.danger
   .section-title
     color: rgb(var(--color-danger))
     border-color: rgb(var(--color-danger))
+
+.form-inline
+  .wrappable-field
+    padding-left: 1.5rem
+
 </style>

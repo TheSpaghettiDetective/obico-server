@@ -14,7 +14,7 @@ def save_file_obj(dest_path, file_obj, container, content_type):
         copyfileobj(file_obj, dest_file)
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
-    return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
+    return settings.INTERNAL_MEDIA_HOST + uri, uri
 
 def list_dir(dir_path, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dir_path)

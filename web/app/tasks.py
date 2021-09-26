@@ -255,7 +255,7 @@ def will_record_timelapse(_print):
     cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
     min_timelapse_secs = _print.printer.min_timelapse_secs_on_cancel if _print.is_canceled() else _print.printer.min_timelapse_secs_on_finish
-    if (_print.ended_at() - _print.started_at).total_seconds() < min_timelapse_secs:
+    if min_timelapse_secs < 0 or (_print.ended_at() - _print.started_at).total_seconds() < min_timelapse_secs:
         _print.delete()
         clean_up_print_pics(_print)
         return False

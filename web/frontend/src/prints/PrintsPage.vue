@@ -1,5 +1,5 @@
 <template>
-  <layout ref="layout">
+  <layout>
     <template v-slot:topBarLeft>
       <div class="actions-with-selected-desktop">
         <b-form-group class="m-0">
@@ -24,27 +24,27 @@
       </div>
     </template>
     <template v-slot:topBarRight>
-        <div class="toolbar">
-          <a href="/prints/upload/" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload Time-Lapse">
-            <i class="fas fa-upload"></i>
-          </a>
-          <b-dropdown right no-caret toggle-class="icon-btn">
-            <template #button-content>
-              <i class="fas fa-ellipsis-v"></i>
-            </template>
-            <b-dropdown-item href="/prints/upload/" class="d-md-none">
-              <i class="fas fa-upload"></i>Upload Time-Lapse
-            </b-dropdown-item>
-            <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-            
-            <cascaded-dropdown
-              :menuOptions="menuOptions"
-              :menuSelections="menuSelections"
-              @menuSelectionChanged="menuSelectionChanged"
-            >
-            </cascaded-dropdown>
-          </b-dropdown>
-        </div>
+      <div>
+        <a href="/prints/upload/" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload Time-Lapse">
+          <i class="fas fa-upload"></i>
+        </a>
+        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <b-dropdown-item href="/prints/upload/" class="d-md-none">
+            <i class="fas fa-upload"></i>Upload Time-Lapse
+          </b-dropdown-item>
+          <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
+          
+          <cascaded-dropdown
+            :menuOptions="menuOptions"
+            :menuSelections="menuSelections"
+            @menuSelectionChanged="menuSelectionChanged"
+          >
+          </cascaded-dropdown>
+        </b-dropdown>
+      </div>
     </template>
     <template v-slot:content>
       <b-container>

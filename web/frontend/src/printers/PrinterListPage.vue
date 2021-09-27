@@ -1,40 +1,36 @@
 <template>
-  <layout ref="layout">
-    <template v-slot:desktopActions>
-      <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn" :title="dhBadgeNum + ' Detective Hours'">
-        <svg viewBox="0 0 384 550">
-          <use href="#svg-detective-hours"></use>
-        </svg>
-        <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
-        <span class="sr-only">Detective Hours</span>
-      </a>
-      <a href="/printers/wizard/" class="btn shadow-none icon-btn" title="Link New Printer">
-        <i class="fas fa-plus"></i>
-      </a>
-    </template>
-    <template v-slot:mobileActions>
-      <b-dropdown-item href="/ent/subscription/#detective-hour-balance">
-        <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} Detective Hours
-      </b-dropdown-item>
-      <b-dropdown-item href="/printers/wizard/">
-        <i class="fas fa-plus"></i>Link New Printer
-      </b-dropdown-item>
-    </template>
-    <template v-slot:sort>
-      <b-dropdown-item v-for="option in sortFilters" :key="option.value">
-        <div @click="updateSort(option.value); $refs.layout.sortOpened = false;" class="clickable-area">
-          <i class="fas fa-check text-primary" :style="{visibility: filters.sort === option.value ? 'visible' : 'hidden'}"></i>
-          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-        </div>
-      </b-dropdown-item>
-    </template>
-    <template v-slot:filter>
-      <b-dropdown-item v-for="option in stateFilters" :key="option.value">
-        <div @click="updateFilter(option.value); $refs.layout.filterOpened = false;" class="clickable-area">
-          <i class="fas fa-check text-primary" :style="{visibility: filters.state === option.value ? 'visible' : 'hidden'}"></i>
-          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-        </div>
-      </b-dropdown-item>
+  <layout>
+    <template v-slot:topBarRight>
+      <div>
+        <a href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' Detective Hours'">
+          <svg viewBox="0 0 384 550">
+            <use href="#svg-detective-hours"></use>
+          </svg>
+          <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
+          <span class="sr-only">Detective Hours</span>
+        </a>
+        <a href="/printers/wizard/" class="btn shadow-none icon-btn d-none d-md-inline" title="Link New Printer">
+          <i class="fas fa-plus"></i>
+        </a>
+        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <b-dropdown-item href="/ent/subscription/#detective-hour-balance" class="d-md-none">
+            <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} Detective Hours
+          </b-dropdown-item>
+          <b-dropdown-item href="/printers/wizard/" class="d-md-none">
+            <i class="fas fa-plus"></i>Link New Printer
+          </b-dropdown-item>
+          <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
+          <cascaded-dropdown
+            :menuOptions="menuOptions"
+            :menuSelections="menuSelections"
+            @menuSelectionChanged="menuSelectionChanged"
+          >
+          </cascaded-dropdown>
+        </b-dropdown>
+      </div>
     </template>
     <template v-slot:content>
       <b-container class="printer-list-page">
@@ -111,8 +107,8 @@ import { normalizedPrinter } from '@lib/normalizers'
 
 import urls from '@lib/server_urls'
 import PrinterCard from './PrinterCard.vue'
-// import Select from '@common/Select.vue'
 import Layout from '@common/Layout.vue'
+import CascadedDropdown from '@common/CascadedDropdown'
 import { user } from '@lib/page_context'
 
 const SortOrder = {
@@ -156,8 +152,8 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    // Select,
     Layout,
+    CascadedDropdown,
   },
   created() {
     this.user = user()
@@ -165,18 +161,6 @@ export default {
     this.StateFilter = StateFilter
     this.SortFilter = SortFilter
     this.SortOrder = SortOrder
-    this.stateFilters = [
-      {value: StateFilter.All, title: 'All Printers'},
-      {value: StateFilter.OnlineOnly, title: 'Online Printers Only'},
-      {value: StateFilter.ActiveOnly, title: 'Active Printers Only'},
-    ]
-    this.sortFilters = [
-      {value: SortFilter.DateAsc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Asc]},
-      {value: SortFilter.DateDesc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Desc]},
-      {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
-      {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
-    ]
-
     this.fetchPrinters()
   },
   data: function() {
@@ -184,22 +168,40 @@ export default {
       user: null,
       printers: [],
       loading: true,
-      filters: {
-        visible: false,
-        state: lookup(
-          StateFilter,
-          getLocalPref(
-            LocalPrefNames.StateFilter,
-            StateFilter.All),
-          StateFilter.All
-        ),
-        sort: lookup(
-          SortFilter,
-          getLocalPref(
-            LocalPrefNames.SortFilter,
-            SortFilter.DateDesc),
-          SortFilter.DateDesc
-        )
+      menuSelections: {
+        'Sort By': lookup(
+            SortFilter,
+            getLocalPref(
+              LocalPrefNames.SortFilter,
+              SortFilter.DateDesc),
+            SortFilter.DateDesc
+          ),
+        'Filter By': lookup(
+            StateFilter,
+            getLocalPref(
+              LocalPrefNames.StateFilter,
+              StateFilter.All),
+            StateFilter.All
+          ),
+      },
+      menuOptions: {
+        'Sort By': {
+          iconClass: 'fas fa-sort-amount-up',
+          options: [
+            {value: SortFilter.DateAsc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Asc]},
+            {value: SortFilter.DateDesc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Desc]},
+            {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
+            {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
+          ],
+        },
+        'Filter By': {
+          iconClass: 'fas fa-filter',
+          options: [
+            {value: StateFilter.All, title: 'All Printers'},
+            {value: StateFilter.OnlineOnly, title: 'Online Printers Only'},
+            {value: StateFilter.ActiveOnly, title: 'Active Printers Only'},
+          ],
+        }
       },
       dontShowFilterWarning: false,
       archivedPrinterNum: 0,
@@ -215,7 +217,7 @@ export default {
     },
     visiblePrinters() {
       let printers = this.printers
-      switch (this.filters.state) {
+      switch (this.menuSelections['Filter By']) {
       case StateFilter.OnlineOnly:
         printers = printers.filter((p) => !p.isDisconnected())
         break
@@ -226,7 +228,7 @@ export default {
         break
       }
 
-      switch (this.filters.sort) {
+      switch (this.menuSelections['Sort By']) {
       case SortFilter.DateAsc:
         printers = sortBy(printers, (p) => p.createdAt())
         break
@@ -254,20 +256,13 @@ export default {
     },
   },
   methods: {
-    updateSort(newSort) {
-      this.filters.sort = newSort
-      setLocalPref(
-        LocalPrefNames.SortFilter,
-        this.filters.sort
-      )
+    menuSelectionChanged(menu, selectedOption) {
+      const val = selectedOption.value
+      this.$set(this.menuSelections, menu, val)
+      const prefName = menu === 'Sort By' ? LocalPrefNames.SortFilter : LocalPrefNames.StateFilter
+      setLocalPref(prefName, val)
     },
-    updateFilter(newFilter) {
-      this.filters.state = newFilter
-      setLocalPref(
-        LocalPrefNames.StateFilter,
-        this.filters.state
-      )
-    },
+
     fetchPrinters() {
       this.loading = true
       return axios
@@ -300,10 +295,10 @@ export default {
         })
     },
     onShowAllPrintersClicked(){
-      this.filters.state = StateFilter.All
+      this.$set(this.menuSelections, 'Filter By', StateFilter.All)
       setLocalPref(
         LocalPrefNames.StateFilter,
-        this.filters.state
+        StateFilter.All
       )
     },
     insertPrinter(printer) {
@@ -319,20 +314,6 @@ export default {
 
       this.$set(this.printers, index, printer)
     },
-
-    closeMenus() {
-      this.$refs.navbar.hideDropdowns()
-
-      if (this.$refs.filters) {
-        const dropdowns = this.$refs.filters.querySelectorAll('.dropdown')
-        dropdowns.forEach(dropdown => {
-          if (dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show')
-            dropdown.querySelector('.dropdown-menu').classList.remove('show')
-          }
-        })
-      }
-    }
   },
 }
 </script>
@@ -363,7 +344,7 @@ export default {
     .warning-action
       padding: 0.25em 0
       font-weight: bolder
-      font-size: 1.125em
+      font-size: 1.1em
       margin-left: auto
 
 .btn.hours-btn

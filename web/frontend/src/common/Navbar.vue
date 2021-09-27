@@ -34,13 +34,6 @@
           <b-navbar-nav class="ml-auto">
             <b-nav-item v-if="!user" href="/accounts/login/">Sign In</b-nav-item>
             <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">Sign Up</b-nav-item>
-            <b-nav-item v-if="isEnt && user" href="/ent/subscription/#detective-hour-balance" link-classes="badge-btn">
-              <svg viewBox="0 0 384 550" width="14.66" height="21">
-                <use href="#svg-detective-hours" />
-              </svg>
-              <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
-              <span class="sr-only">Detective Hours</span>
-            </b-nav-item>
             <b-nav-item-dropdown v-if="user" ref="accountDropdown" right toggle-class="user-menu" :text="user.first_name || user.email">
               <b-dropdown-item href="/user_preferences/">
                 <i class="fas fa-sliders-h mr-2"></i>Preferences
@@ -100,14 +93,6 @@ export default {
 
     theme() {
       return theme.value
-    },
-
-    dhBadgeNum() {
-      if (this.user && this.user.is_dh_unlimited) {
-        return'\u221E'
-      } else {
-        return Math.round(this.user.dh_balance)
-      }
     },
   },
 

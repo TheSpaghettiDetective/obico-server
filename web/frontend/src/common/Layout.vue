@@ -143,13 +143,6 @@ export default {
     inMobileWebView() {
       return inMobileWebView()
     },
-    dhBadgeNum() {
-      if (this.user && this.user.is_dh_unlimited) {
-        return'\u221E'
-      } else {
-        return Math.round(this.user.dh_balance)
-      }
-    },
   },
 
   created() {

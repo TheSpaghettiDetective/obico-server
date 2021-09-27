@@ -183,7 +183,7 @@ export default {
   display: flex
   flex-direction: column
   z-index: 1000
-  overflow-y: scroll
+  overflow-y: auto
   transition: all .2s ease-out
   border-right: 1px solid rgb(var(--color-divider))
   .sidebar-header

@@ -23,31 +23,28 @@
         </div>
       </div>
     </template>
-    <template v-slot:desktopActions>
-      <a href="/prints/upload/" class="btn shadow-none icon-btn" title="Upload Time-Lapse">
-        <i class="fas fa-upload"></i>
-      </a>
-    </template>
-    <template v-slot:mobileActions>
-      <b-dropdown-item href="/prints/upload/">
-        <i class="fas fa-upload"></i>Upload Time-Lapse
-      </b-dropdown-item>
-    </template>
-    <template v-slot:sort>
-      <b-dropdown-item v-for="option in sortOptions" :key="option.value">
-        <div @click="onSortingClick(option.value); $refs.layout.sortOpened = false;" class="clickable-area">
-          <i class="fas fa-check text-primary" :style="{visibility: sorting === option.value ? 'visible' : 'hidden'}"></i>
-          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
+    <template v-slot:topBarRight>
+        <div class="toolbar">
+          <a href="/prints/upload/" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload Time-Lapse">
+            <i class="fas fa-upload"></i>
+          </a>
+          <b-dropdown right no-caret toggle-class="icon-btn">
+            <template #button-content>
+              <i class="fas fa-ellipsis-v"></i>
+            </template>
+            <b-dropdown-item href="/prints/upload/" class="d-md-none">
+              <i class="fas fa-upload"></i>Upload Time-Lapse
+            </b-dropdown-item>
+            <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
+            
+            <cascaded-dropdown
+              :menuOptions="menuOptions"
+              :menuSelections="menuSelections"
+              @menuSelectionChanged="menuSelectionChanged"
+            >
+            </cascaded-dropdown>
+          </b-dropdown>
         </div>
-      </b-dropdown-item>
-    </template>
-    <template v-slot:filter>
-      <b-dropdown-item v-for="option in filterOptions" :key="option.value">
-        <div @click="onFilterClick(option.value); $refs.layout.filterOpened = false;" class="clickable-area">
-          <i class="fas fa-check text-primary" :style="{visibility: filter === option.value ? 'visible' : 'hidden'}"></i>
-          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-        </div>
-      </b-dropdown-item>
     </template>
     <template v-slot:content>
       <b-container>
@@ -93,11 +90,12 @@ import findIndex from 'lodash/findIndex'
 import MugenScroll from 'vue-mugen-scroll'
 import map from 'lodash/map'
 
-import urls from '../lib/server_urls'
-import { normalizedPrint } from '../lib/normalizers'
+import urls from '@lib/server_urls'
+import { normalizedPrint } from '@lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
 import Layout from '@common/Layout.vue'
+import CascadedDropdown from '@common/CascadedDropdown'
 
 export default {
   name: 'PrintsPage',
@@ -106,6 +104,7 @@ export default {
     PrintCard,
     FullScreenPrintCard,
     Layout,
+    CascadedDropdown,
   },
   data: function() {
     return {
@@ -115,36 +114,32 @@ export default {
       noMoreData: false,
       fullScreenPrint: null,
       fullScreenPrintVideoUrl: null,
-      filter: 'none',
-      sorting: 'date_desc',
-      sortOptions: [
-        {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
-        {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
-      ],
-      filterOptions: [
-        {value: 'none', title: 'All'},
-        {value: 'finished', title: 'Finished'},
-        {value: 'cancelled', title: 'Cancelled'},
-        {value: 'need_alert_overwrite', title: 'Review needed'},
-        {value: 'need_print_shot_feedback', title: 'Focused-review needed'},
-      ]
+      menuSelections: {
+        'Sort By': 'date_desc',
+        'Filter By': 'none',
+      },
+      menuOptions: {
+        'Sort By': {
+          iconClass: 'fas fa-sort-amount-up',
+          options: [
+            {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
+            {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
+          ]
+        },
+        'Filter By': {
+          iconClass: 'fas fa-filter',
+          options: [
+            {value: 'none', title: 'All'},
+            {value: 'finished', title: 'Finished'},
+            {value: 'cancelled', title: 'Cancelled'},
+            {value: 'need_alert_overwrite', title: 'Review needed'},
+            {value: 'need_print_shot_feedback', title: 'Focused-review needed'},
+          ],
+        }
+      },
     }
   },
   computed: {
-    filterBtnVariant() {
-      return this.filter === 'none' ? 'outline-secondary' : 'outline-primary'
-    },
-
-    sortingBtnClasses() {
-      return this.sorting === 'date_asc'
-        ? ' fa-sort-amount-up'
-        : 'fa-sort-amount-down'
-    },
-
-    anyPrintsSelected() {
-      return this.selectedPrintIds.size > 0
-    },
-
     allPrintsSelected: {
       get: function () {
         return (this.selectedPrintIds.size >= this.prints.length) && (this.prints.length !== 0)
@@ -171,8 +166,8 @@ export default {
           params: {
             start: this.prints.length,
             limit: 6,
-            filter: this.filter,
-            sorting: this.sorting
+            filter: this.menuSelections['Filter By'],
+            sorting: this.menuSelections['Sort By'],
           }
         })
         .then(response => {
@@ -199,17 +194,8 @@ export default {
       this.selectedPrintIds = selectedPrintIdsClone
     },
 
-    onMenuStick(data) {
-      console.log(data)
-    },
-
-    onFilterClick(filter) {
-      this.filter = filter
-      this.refetchData()
-    },
-
-    onSortingClick(sorting) {
-      this.sorting = sorting
+    menuSelectionChanged(menu, selectedOption) {
+      this.$set(this.menuSelections, menu, selectedOption.value)
       this.refetchData()
     },
 
@@ -300,5 +286,4 @@ export default {
     cursor: pointer
   ::v-deep .actions-with-selected-btn
     border-radius: 0
-
 </style>

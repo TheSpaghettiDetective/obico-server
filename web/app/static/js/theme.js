@@ -149,7 +149,7 @@ function initTheme() {
     const RGB = HEXtoRGB(color.values[themeValue])
     document.documentElement.style.setProperty(`--color-${color.name}`, `${RGB[0]} ${RGB[1]} ${RGB[2]}`)
 
-    if (color.name === 'surface') {
+    if (color.name === 'surface-primary') {
       let meta = document.querySelector('meta[name="theme-color"')
       meta.content = color.values[themeValue]
     }

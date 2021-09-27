@@ -89,7 +89,7 @@
     <div
       class="content-wrapper"
       :class="{
-        'hide-top-nav': hideTopNav,
+        'hide-top-nav': !$slots.topBarLeft && !$slots.topBarRight
       }"
     >
       <!-- Top-bar -->
@@ -129,13 +129,6 @@ export default {
       user: null,
       allowSignUp: false,
       isEnt: false,
-    }
-  },
-
-  props: {
-    hideTopNav: {
-      type: Boolean,
-      default: false,
     }
   },
 

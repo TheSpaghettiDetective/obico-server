@@ -6,7 +6,7 @@
 
 {% block content %}
 <div id="user-preferences-mount">
-  <router-view v-bind:config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }} }'>
+  <router-view v-bind:config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }}, twilioCountries: {{TWILIO_COUNTRIES}}}'>
   </router-view>
 </div>
 <router-view></router-view>

@@ -80,6 +80,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     phone_country_code = models.CharField(max_length=5, null=True, blank=True)
+    phone_country_short = models.CharField(max_length=5, null=True, blank=True)
     pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
     slack_access_token = models.CharField(max_length=128, null=True, blank=True)

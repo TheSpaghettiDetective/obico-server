@@ -47,7 +47,7 @@
         <li>
           <a href="https://discord.gg/hsMwGpD">
             <i class="fas fa-comments"></i>
-            Forum
+            Community
           </a>
         </li>
       </ul>

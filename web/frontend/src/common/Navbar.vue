@@ -28,7 +28,7 @@
             <b-nav-item v-if="!user" href="/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
             <b-nav-item v-if="isEnt" href="/ent/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
             <b-nav-item href="https://www.thespaghettidetective.com/help/">Help</b-nav-item>
-            <b-nav-item href="https://discord.gg/hsMwGpD">Forum</b-nav-item>
+            <b-nav-item href="https://discord.gg/hsMwGpD">Community</b-nav-item>
           </b-navbar-nav>
 
           <b-navbar-nav class="ml-auto">

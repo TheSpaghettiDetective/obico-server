@@ -1,6 +1,8 @@
 <template>
-  <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'failed-to-save': savingFailedClass, 'small-height': smallHeightClass}">
-    <slot></slot>
+  <div>
+    <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'failed-to-save': savingFailedClass, 'small-height': smallHeightClass}">
+      <slot></slot>
+    </div>
     <small v-if="errors && errors.length > 0" class="text-danger">{{errorMsg}}</small>
   </div>
 </template>

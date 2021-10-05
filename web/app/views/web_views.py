@@ -42,8 +42,8 @@ class SocialAccountAwareLoginView(LoginView):
 
 
 @login_required
-def printers(request):
-    return render(request, 'printers.html')
+def printers(request, template_name='printers.html'):
+    return render(request, template_name)
 
 
 @login_required

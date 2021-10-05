@@ -62,7 +62,7 @@
                   <!-- Notifications -->
                   <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
                   <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
-                  <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" :availableCountryCodes="config.twilioCountryCodes" @updateSetting="updateSetting"></sms-notifications>
+                  <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
                   <pushbullet-notifications v-if="$route.path === '/pushbullet_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
                   <discord-notifications v-if="$route.path === '/discord_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
                   <telegram-notifications v-if="$route.path === '/telegram_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
@@ -92,7 +92,7 @@
                   <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
                 </b-tab>
                 <b-tab title-item-class="subcategory" title="SMS">
-                  <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" :availableCountryCodes="config.twilioCountryCodes" @updateSetting="updateSetting"></sms-notifications>
+                  <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
                 </b-tab>
                 <b-tab title-item-class="subcategory" title="Pushbullet">
                   <pushbullet-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
@@ -291,6 +291,30 @@ export default {
         this.updateSetting('last_name')
       }
     },
+    phoneCountryCode: function (newValue, oldValue) {
+      if (oldValue !== undefined) {
+        this.errorMessages.phone = []
+        // Allow clear data
+        if (newValue === '') {
+          this.updateSetting('phone_country_code')
+          return
+        }
+        const codeNumber = parseInt(newValue.replace(/\s/g, '')) // will parse both '1' / '+1', clear spaces for safety
+        if (isNaN(codeNumber)) {
+          return
+        }
+        if (this.config.twilioCountryCodes && (this.config.twilioCountryCodes.length !== 0) && !this.config.twilioCountryCodes.includes(codeNumber)) {
+          this.errorMessages.phone = ['Oops, we don\'t send SMS to this country code']
+        } else {
+          this.updateSetting('phone_country_code')
+        }
+      }
+    },
+    phoneNumber: function (newValue, oldValue) {
+      if (oldValue !== undefined) {
+        this.updateSetting('phone_number')
+      }
+    },
     pushbulletToken: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('pushbullet_access_token')
@@ -400,8 +424,7 @@ export default {
       })
     },
     updateSetting(settingsItem) {
-      console.log('!!! updateSetting !!!')
-
+      console.log('updateSetting, ', settingsItem)
       if (settingsItem in this.delayedSubmit) {
         const delayInfo = this.delayedSubmit[settingsItem]
         if (delayInfo['timeoutId']) {

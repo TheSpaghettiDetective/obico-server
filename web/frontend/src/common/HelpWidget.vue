@@ -190,7 +190,7 @@ export default {
   display: inline
   position: relative
   text-decoration: underline
-  text-decoration-color: rgb(var(--color-text-help))
+  text-decoration-color: var(--color-text-help)
   .text
     display: inline
     &:hover
@@ -209,7 +209,7 @@ export default {
 
   .question-mark
     display: flex
-    color: rgb(var(--color-text-help))
+    color: var(--color-text-help)
     transition: all .2s ease-out
     height: 1rem
     &:hover
@@ -224,7 +224,7 @@ export default {
     padding-top: $widget-header-height
     z-index: 10
     position: absolute
-    box-shadow: var(--shadow-widget)
+    box-shadow: 0px 3px 30px rgb(0 0 0 / .5)
     border-radius: 12px
     overflow: hidden
     background-color: #fff

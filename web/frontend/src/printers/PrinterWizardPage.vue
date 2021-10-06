@@ -51,7 +51,7 @@
 
               <div v-else>
                 <form-wizard
-                  color="rgb(var(--color-primary))"
+                  color="var(--color-primary)"
                   step-size="sm"
                 >
                   <h3 slot="title">
@@ -533,7 +533,7 @@ export default {
   border-radius: 300px
 .wizard-container
   padding: 1em
-  background: rgb(var(--color-surface-secondary))
+  background: var(--color-surface-secondary)
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
@@ -543,7 +543,7 @@ export default {
     background-position: -250px 100px
     background-size: 500px
 .btn-back
-  color: rgb(var(--color-text-primary))
+  color: var(--color-text-primary)
   min-width: auto
 .header-img
   width: 1em
@@ -551,7 +551,6 @@ export default {
   margin-right: 12px
   margin-bottom: 8px
 .img-container
-  background: rgb(var(--color-surface-secondary) / .6)
   padding: 1rem
   text-align: center
 img
@@ -563,8 +562,8 @@ img
   text-align: center
   width: 21rem
   height: 60px
-  background-color: rgb(var(--color-input-background))
-  color: rgb(var(--color-text-primary))
+  background-color: var(--color-input-background)
+  color: var(--color-text-primary)
   font-size: 2rem
   font-weight: 500
   letter-spacing: 0.5em
@@ -590,7 +589,7 @@ li
 @use "~main/theme"
 // Step label (not active)
 .wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
-  color: rgb(var(--color-text-primary))
+  color: var(--color-text-primary)
 // Adjust numbers in the circles (form steps)
 .wizard-nav.wizard-nav-pills .wizard-icon-circle i
   position: relative

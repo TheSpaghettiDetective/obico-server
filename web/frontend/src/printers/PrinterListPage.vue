@@ -79,7 +79,7 @@
             <div v-if="shouldShowArchiveWarning" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
                 <div>{{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }}
-                  have been archived.</div>                
+                  have been archived.</div>
                   <a
                     href="/ent/printers/archived/"
                     class="warning-action"
@@ -360,7 +360,7 @@ export default {
     left: 22px
     top: 8px
     border-radius: 4px
-    background-color: rgb(var(--color-primary))
+    background-color: var(--color-primary)
     height: auto
     font-size: .625rem
 

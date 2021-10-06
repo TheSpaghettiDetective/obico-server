@@ -175,7 +175,7 @@ export default {
   min-width: 100px
   max-width: 100px
   text-align: center
-  background: rgb(var(--color-surface-primary))
+  background: var(--color-surface-primary)
   position: fixed
   left: 0
   top: 0
@@ -185,25 +185,25 @@ export default {
   z-index: 1000
   overflow-y: auto
   transition: all .2s ease-out
-  border-right: 1px solid rgb(var(--color-divider))
+  border-right: 1px solid var(--color-divider)
   .sidebar-header
     flex: 0 0 50px
     display: flex
     align-items: center
     justify-content: center
-    border-bottom: 1px solid rgb(var(--color-divider))
+    border-bottom: 1px solid var(--color-divider)
   ul
     li
       a
         display: block
-        color: rgb(var(--color-text-primary))
+        color: var(--color-text-primary)
         padding: 10px 5px
         text-align: center
         font-size: 0.85em
         &:hover, &[aria-expanded="true"]
-          color: rgb(var(--color-text-primary))
+          color: var(--color-text-primary)
         &:hover
-          background: rgb(var(--color-hover) / .075)
+          background: var(--color-hover)
         &.dropdown-toggle
           cursor: pointer
           padding-bottom: 20px
@@ -213,9 +213,9 @@ export default {
           font-size: 1.4em
           margin-bottom: 5px
       &.active > a
-        background: rgb(var(--color-hover) / 0.075)
+        background: var(--color-hover)
       &.glowing
-        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(var(--color-primary)), 0 0 70px rgb(var(--color-primary)), 0 0 80px rgb(var(--color-primary)), 0 0 100px rgb(var(--color-primary)), 0 0 150px rgb(var(--color-primary))
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px var(--color-primary), 0 0 70px var(--color-primary), 0 0 80px var(--color-primary), 0 0 100px var(--color-primary), 0 0 150px var(--color-primary)
     ul a
       font-size: 0.9em !important
       padding: 10px !important
@@ -253,7 +253,7 @@ export default {
 
 .top-nav
   height: 50px
-  background: rgb(var(--color-surface-primary)) !important
+  background: var(--color-surface-primary) !important
   position: fixed
   top: 0
   left: 0
@@ -265,7 +265,7 @@ export default {
   justify-content: space-between
 
 .toggle-sidebar
-  color: rgb(var(--color-text-primary))
+  color: var(--color-text-primary)
   display: none
 
 .page-content
@@ -306,7 +306,7 @@ export default {
   .top-nav
     padding-left: 15px
     padding-right: 15px
-    background: rgb(var(--color-surface-primary)) !important
+    background: var(--color-surface-primary) !important
 
   .toggle-sidebar
     display: block

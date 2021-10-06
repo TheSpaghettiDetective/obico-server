@@ -315,21 +315,21 @@
   .search-input
     height: 30px
     input
-      background-color: rgb(var(--color-surface-secondary))
-      border: rgb(var(--color-surface-secondary))
+      background-color: var(--color-surface-secondary)
+      border: var(--color-surface-secondary)
 
   .gcodes-wrapper
-    background-color: rgb(var(--color-surface-secondary))
+    background-color: var(--color-surface-secondary)
     padding: 2em
 
   .control-panel
-    border-bottom: 1px solid rgb(var(--color-divider))
+    border-bottom: 1px solid var(--color-divider)
     padding-bottom: 16px
 
   .sorting-panel
     display: flex
     padding: 1em calc(1em + 30px) 1em 1em
-    border-bottom: 1px solid rgb(var(--color-divider))
+    border-bottom: 1px solid var(--color-divider)
 
     .sorting-option
       flex: 1
@@ -371,7 +371,7 @@
       padding: .6em 1em
 
       &:nth-child(2n)
-        background-color: rgb(var(--color-table-accent-1) / .4)
+        background-color: var(--color-table-accent-1)
 
       .item-info
         display: flex
@@ -393,8 +393,8 @@
         transition: background-color .2s ease-out
 
         &:hover
-          background-color: rgb(var(--color-danger))
-          color: rgb(var(--color-on-primary))
+          background-color: var(--color-danger)
+          color: var(--color-on-primary)
           cursor: pointer
 
       @media (max-width: 768px)

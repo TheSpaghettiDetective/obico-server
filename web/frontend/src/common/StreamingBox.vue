@@ -283,7 +283,7 @@ export default {
 
   .dropdown-item
     .title.active
-      color: rgb(var(--color-primary))
+      color: var(--color-primary)
       i
         margin-right: 2px
 
@@ -303,7 +303,7 @@ export default {
   position: absolute
   height: $height
   z-index: 10
-  background-color: rgb(var(--color-overlay) / .2)
+  background-color: rgb(0 0 0 / .2)
   border-radius: $height
   top: 10px
   left: 10px
@@ -392,7 +392,7 @@ export default {
     font-size: 12px
     line-height: 20px
     text-align: center
-    color: rgb(var(--color-on-warning))
+    color: var(--color-on-warning)
 
 .muted-status-wrapper
   position: absolute
@@ -400,7 +400,7 @@ export default {
   z-index: 10
   bottom: 0
   left: 0
-  background-color: rgb(var(--color-overlay) / .9)
+  background-color: var(--color-overlay)
   text-align: center
   padding: 10px 0
 </style>

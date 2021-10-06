@@ -173,7 +173,7 @@
                         <label class="custom-control-label" for="timelapseOnFinishEnabled">Record time-lapse when a print finishes successfully.</label>
                       </div>
                     </div>
-                    <div 
+                    <div
                       v-if="timelapseOnFinishEnabled"
                       class="form-inline my-1 checkbox-with-input"
                       >
@@ -195,7 +195,7 @@
                         <label class="custom-control-label" for="timelapseOnCancelEnabled">Record time-lapse when a print is cancelled.</label>
                       </div>
                     </div>
-                    <div 
+                    <div
                       v-if="timelapseOnCancelEnabled"
                       class="form-inline my-1 checkbox-with-input"
                       >
@@ -633,15 +633,15 @@ export default {
 
 .section-title
   padding-bottom: 5px
-  border-bottom: 1px solid rgb(var(--color-text-primary))
+  border-bottom: 1px solid var(--color-text-primary)
 
 .form-label
   font-size: 18px
 
 section.danger
   .section-title
-    color: rgb(var(--color-danger))
-    border-color: rgb(var(--color-danger))
+    color: var(--color-danger)
+    border-color: var(--color-danger)
 
 .form-inline
   .wrappable-field

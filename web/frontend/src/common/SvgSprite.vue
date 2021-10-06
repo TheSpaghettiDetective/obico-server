@@ -81,16 +81,16 @@
   clip: rect(0 0 0 0)
 
 #svg-detective-hours
-  fill: rgb(var(--color-text-primary))
+  fill: var(--color-text-primary)
 
 #svg-navbar-brand
-  fill: rgb(var(--color-icon-navbar-brand))
+  fill: var(--color-icon-navbar-brand)
 
 #svg-octoprint-logo
   .tone-1
-    fill: rgb(var(--color-icon-tunneling-1))
+    fill: var(--color-icon-tunneling-1)
   .tone-2
-    fill: rgb(var(--color-icon-tunneling-2))
+    fill: var(--color-icon-tunneling-2)
 
 #svg-video-placeholder
   fill: rgb(255 255 255 / .3)

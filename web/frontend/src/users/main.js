@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import VueSwal from 'common/VueSwal'
 import setupSentry from '@lib/sentry'
 import { BootstrapVue } from 'bootstrap-vue'
-import { initTheme } from '@main/themes'
+import { initTheme } from '@main/colors'
 
 initTheme()
 setupSentry(Vue)

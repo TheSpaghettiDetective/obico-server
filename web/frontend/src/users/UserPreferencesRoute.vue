@@ -126,7 +126,7 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import Layout from '@common/Layout.vue'
 import { inMobileWebView, settings } from '@lib/page_context'
-import { Themes, theme, selectTheme, getTheme } from '../main/themes.js'
+import { Themes, theme, selectTheme, getTheme } from '../main/colors.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
 import EmailNotifications from './preferences_components/EmailNotifications'
@@ -452,12 +452,12 @@ export default {
 @use "~main/theme"
 .desktop-settings-wrapper
   margin: 0
-  background-color: rgb(var(--color-surface-secondary))
+  background-color: var(--color-surface-secondary)
   ::v-deep .desktop-settings-content
     padding: 2rem
     padding-right: 3rem
 .mobile-settings-wrapper
-  background-color: rgb(var(--color-surface-secondary))
+  background-color: var(--color-surface-secondary)
   padding: 1.5rem
   .mobile-settings-content
     padding-right: 1rem
@@ -467,12 +467,12 @@ export default {
       font-size: 1.5rem
       margin-bottom: 1rem
     a
-      color: rgb(var(--text-primary))
+      color: var(--text-primary)
       display: flex
       justify-content: space-between
       align-items: center
       padding: .8rem 0
-      border-bottom: 1px solid rgb(var(--color-divider))
+      border-bottom: 1px solid var(--color-divider)
       font-size: 1.2em
       &.subcategory
         font-size: 1em
@@ -485,10 +485,10 @@ export default {
   font-weight: bold
   font-size: 1.5rem
   margin-bottom: 1rem
-  border-bottom: 1px solid rgb(var(--color-text-primary))
+  border-bottom: 1px solid var(--color-text-primary)
 ::v-deep .settings-nav
   width: 25%
-  background-color: rgb(var(--color-surface-primary))
+  background-color: var(--color-surface-primary)
   min-height: 80vh
   padding: 3.5rem 0
   .subcategory

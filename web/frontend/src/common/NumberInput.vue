@@ -78,21 +78,21 @@
       border-width: 1px
 
     .btn-outline-secondary
-      border-color: rgb(var(--color-divider))
-      background-color: rgb(var(--color-input-background))
+      border-color: var(--color-divider)
+      background-color: var(--color-input-background)
 
       &:hover, &:focus
-        color: rgb(var(--color-text-primary))
-        background-color: rgb(var(--color-input-background))
+        color: var(--color-text-primary)
+        background-color: var(--color-input-background)
         opacity: .8
         outline: none
         box-shadow: none
-    
+
 
     input
-      background-color: rgb(var(--color-input-background))
-      border-top-color: rgb(var(--color-divider))
-      border-bottom-color: rgb(var(--color-divider))
-      color: rgb(var(--color-text-primary))
+      background-color: var(--color-input-background)
+      border-top-color: var(--color-divider)
+      border-bottom-color: var(--color-divider)
+      color: var(--color-text-primary)
       width: 5rem
 </style>

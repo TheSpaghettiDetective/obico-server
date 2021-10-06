@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { Themes, theme, selectTheme, getTheme } from '@main/themes.js'
+import { Themes, theme, selectTheme, getTheme } from '@main/colors.js'
 
 export default {
   name: 'ThemePreferences',
@@ -89,7 +89,7 @@ export default {
 .theme-toggle
   display: inline-flex
   align-items: center
-  background-color: rgb(var(--color-input-background))
+  background-color: var(--color-input-background)
   border-radius: 100px
   position: relative
   margin-right: 26px
@@ -114,7 +114,7 @@ export default {
     flex: 1
     text-align: center
     font-size: 12px
-    color: rgb(var(--color-text-primary))
+    color: var(--color-text-primary)
     padding: 0 8px
 
   .active-indicator

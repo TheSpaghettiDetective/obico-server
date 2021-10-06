@@ -36,7 +36,7 @@
             <i class="fas fa-upload"></i>Upload Time-Lapse
           </b-dropdown-item>
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-          
+
           <cascaded-dropdown
             :menuOptions="menuOptions"
             :menuSelections="menuSelections"
@@ -258,7 +258,7 @@ export default {
   margin-top: calc(var(--gap-between-blocks) * -1)
 
 .menu-bar
-  background-color: rgb(var(--color-surface-secondary))
+  background-color: var(--color-surface-secondary)
   padding: 0.75rem 1.25rem
 
 #tl-fullscreen-modal
@@ -272,8 +272,8 @@ export default {
     height: calc(100vh - 200px)
 
 ::v-deep .btn-outline-secondary
-  color: rgb(var(--color-text-primary))
-  border-color: rgb(var(--color-text-primary))
+  color: var(--color-text-primary)
+  border-color: var(--color-text-primary)
 
   &:hover
     background: none

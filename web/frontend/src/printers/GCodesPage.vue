@@ -371,7 +371,7 @@
       padding: .6em 1em
 
       &:nth-child(2n)
-        background-color: var(--color-table-accent-1)
+        background-color: var(--color-table-accent)
 
       .item-info
         display: flex

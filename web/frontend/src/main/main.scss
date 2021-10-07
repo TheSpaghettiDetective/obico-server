@@ -3,19 +3,19 @@
 
 // Default colors
 :root {
-  --color-primary-variant: rgb(154 106 239);
+  --color-primary-hover: rgb(154 106 239);
   --color-primary: rgb(165 123 238);
   --color-on-primary: rgb(255 255 255);
   --color-secondary: rgb(235 235 235);
   --color-on-secondary: rgb(40 48 58);
   --color-success: rgb(92 184 92);
-  --color-success-variant: rgb(76 174 76);
+  --color-success-hover: rgb(76 174 76);
   --color-on-success: rgb(255 255 255);
   --color-danger: rgb(217 83 79);
-  --color-danger-variant: rgb(194 65 61);
+  --color-danger-hover: rgb(194 65 61);
   --color-on-danger: rgb(255 255 255);
   --color-warning: rgb(240 173 78);
-  --color-warning-variant: rgb(219 154 63);
+  --color-warning-hover: rgb(219 154 63);
   --color-on-warning: rgb(255 255 255);
   --color-on-warning-2: rgb(0 0 0);
   --color-background: rgb(35 49 65);
@@ -29,8 +29,7 @@
   --color-text-help: rgb(76 155 232);
   --color-input-background: rgb(66 86 107);
   --color-input-placeholder: rgb(235 235 235 / 0.5);
-  --color-table-accent-1: rgb(40 56 72);
-  --color-table-accent-2: rgb(31 46 62);
+  --color-table-accent: rgb(40 56 72);
   --color-icon-tunneling-1: rgb(234 234 234);
   --color-icon-tunneling-2: rgb(205 205 205);
   --color-icon-navbar-brand: rgb(255 255 255);
@@ -216,7 +215,7 @@ a.link {
   background-color: transparent;
 
   &:hover {
-      color: var(--color-primary-variant) !important;
+      color: var(--color-primary-hover) !important;
       text-decoration: underline !important;
       cursor: pointer !important;
   }
@@ -388,9 +387,10 @@ a.link {
     width: 100% !important;
   }
   .slider-selection {
-    background: var(--color-primary-variant);
+    background: var(--color-primary);
   }
   .slider-handle {
+    box-shadow: 0 1px 5px 2px rgb(0 0 0 / 20%);
     background: var(--color-primary);
   }
 }
@@ -549,7 +549,7 @@ a {
 
   &:hover {
     text-decoration: none;
-    color: var(--color-primary-variant);
+    color: var(--color-primary-hover);
   }
 }
 
@@ -627,11 +627,7 @@ input, input.form-control {
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-  background-color: var(--color-table-accent-1);
-}
-
-.table-striped tbody tr:nth-of-type(even) {
-  background-color: var(--color-table-accent-2);
+  background-color: var(--color-table-accent);
 }
 
 .swal2-popup .swal2-styled.swal2-cancel {
@@ -654,8 +650,8 @@ input, input.form-control {
   background-color: var(--color-primary);
 
   &:hover {
-    background-color: var(--color-primary-variant);
-    border-color: var(--color-primary-variant);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
   }
 }
 
@@ -665,8 +661,8 @@ input, input.form-control {
   color: var(--color-on-danger);
 
   &:hover {
-    background-color: var(--color-danger-variant);
-    border-color: var(--color-danger-variant);
+    background-color: var(--color-danger-hover);
+    border-color: var(--color-danger-hover);
     color: var(--color-on-danger);
   }
 }
@@ -681,8 +677,8 @@ input, input.form-control {
   color: var(--color-on-success);
 
   &:hover {
-    background-color: var(--color-success-variant);
-    border-color: var(--color-success-variant);
+    background-color: var(--color-success-hover);
+    border-color: var(--color-success-hover);
     color: var(--color-on-success);
   }
 }
@@ -697,7 +693,7 @@ input, input.form-control {
 
 a.text-success {
   &:hover, &:focus {
-    color: var(--color-success-variant) !important;
+    color: var(--color-success-hover) !important;
   }
 }
 
@@ -707,7 +703,7 @@ a.text-success {
 
 a.text-warning {
   &:hover, &:focus {
-    color: var(--color-warning-variant) !important;
+    color: var(--color-warning-hover) !important;
   }
 }
 

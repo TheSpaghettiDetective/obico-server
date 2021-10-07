@@ -8,7 +8,7 @@ const Themes = {
  * Colors for each theme
  */
  const colors = [
-  {name: 'primary-variant',     values: {[Themes.Light]: 'rgb(178 137 248)',        [Themes.Dark]: 'rgb(154 106 239)'}},
+  {name: 'primary-hover',     values: {[Themes.Light]: 'rgb(178 137 248)',        [Themes.Dark]: 'rgb(154 106 239)'}},
   {name: 'primary',             values: {[Themes.Light]: 'rgb(153 101 244)',        [Themes.Dark]: 'rgb(165 123 238)'}},
   {name: 'on-primary',          values: {[Themes.Light]: 'rgb(255 255 255)',        [Themes.Dark]: 'rgb(255 255 255)'}},
 
@@ -16,15 +16,15 @@ const Themes = {
   {name: 'on-secondary',        values: {[Themes.Light]: 'rgb(235 235 235)',        [Themes.Dark]: 'rgb(40 48 58)'}},
 
   {name: 'success',             values: {[Themes.Light]: 'rgb(92 184 92)',          [Themes.Dark]: 'rgb(92 184 92)'}},
-  {name: 'success-variant',     values: {[Themes.Light]: 'rgb(76 174 76)',          [Themes.Dark]: 'rgb(76 174 76)'}},
+  {name: 'success-hover',     values: {[Themes.Light]: 'rgb(76 174 76)',          [Themes.Dark]: 'rgb(76 174 76)'}},
   {name: 'on-success',          values: {[Themes.Light]: 'rgb(255 255 255)',        [Themes.Dark]: 'rgb(255 255 255)'}},
 
   {name: 'danger',              values: {[Themes.Light]: 'rgb(217 83 79)',          [Themes.Dark]: 'rgb(217 83 79)'}},
-  {name: 'danger-variant',      values: {[Themes.Light]: 'rgb(194 65 61)',          [Themes.Dark]: 'rgb(194 65 61)'}},
+  {name: 'danger-hover',      values: {[Themes.Light]: 'rgb(194 65 61)',          [Themes.Dark]: 'rgb(194 65 61)'}},
   {name: 'on-danger',           values: {[Themes.Light]: 'rgb(255 255 255)',        [Themes.Dark]: 'rgb(255 255 255)'}},
 
   {name: 'warning',             values: {[Themes.Light]: 'rgb(240 173 78)',         [Themes.Dark]: 'rgb(240 173 78)'}},
-  {name: 'warning-variant',     values: {[Themes.Light]: 'rgb(219 154 63)',         [Themes.Dark]: 'rgb(219 154 63)'}},
+  {name: 'warning-hover',     values: {[Themes.Light]: 'rgb(219 154 63)',         [Themes.Dark]: 'rgb(219 154 63)'}},
   {name: 'on-warning',          values: {[Themes.Light]: 'rgb(255 255 255)',        [Themes.Dark]: 'rgb(255 255 255)'}},
   {name: 'on-warning-2',        values: {[Themes.Light]: 'rgb(0 0 0)',              [Themes.Dark]: 'rgb(0 0 0)'}},
 
@@ -43,8 +43,7 @@ const Themes = {
   {name: 'input-background',    values: {[Themes.Light]: 'rgb(226 232 237)',        [Themes.Dark]: 'rgb(66 86 107)'}},
   {name: 'input-placeholder',   values: {[Themes.Light]: 'rgb(40 48 58 / .5)',      [Themes.Dark]: 'rgb(235 235 235 / .5)'}},
 
-  {name: 'table-accent-1',      values: {[Themes.Light]: 'rgb(227 227 227)',        [Themes.Dark]: 'rgb(40 56 72)'}},
-  {name: 'table-accent-2',      values: {[Themes.Light]: 'rgb(237 237 237)',        [Themes.Dark]: 'rgb(31 46 62)'}},
+  {name: 'table-accent',        values: {[Themes.Light]: 'rgb(227 227 227)',        [Themes.Dark]: 'rgb(40 56 72)'}},
 
   // Icon colors
   {name: 'icon-tunneling-1',    values: {[Themes.Light]: 'rgb(78 93 108)',          [Themes.Dark]: 'rgb(234 234 234)'}},
@@ -117,7 +116,7 @@ function initTheme() {
   colors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 
-    if (color.name === 'surface-primary') {
+    if (color.name === 'surface-secondary') {
       let meta = document.querySelector('meta[name="theme-color"')
       meta.content = color.values[themeValue]
     }

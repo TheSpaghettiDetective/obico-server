@@ -268,7 +268,7 @@
       padding: 5em 3em;
 
       &:hover {
-        color: var(--color-primary-variant);
+        color: var(--color-primary-hover);
         text-decoration: none;
       }
     }
@@ -467,7 +467,7 @@ form#printer_form {
     padding: 20px 16px;
 
     &:hover {
-      color: var(--color-primary-variant);
+      color: var(--color-primary-hover);
       background: none;
     }
 

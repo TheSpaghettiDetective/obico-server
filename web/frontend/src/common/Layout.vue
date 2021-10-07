@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
+        <dark-light-image path="logo-bat" ext="png" alt="TSD" class="logo-small"></dark-light-image>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="user" :class="{'active': path === '/printers/'}">
@@ -229,8 +229,8 @@ export default {
   ul.components
     padding: 20px 0
   ::v-deep .logo-small img
-    width: 30px
-    height: 30px
+    height: 36px
+    width: auto
   .dropdown-toggle
     position: relative
     span

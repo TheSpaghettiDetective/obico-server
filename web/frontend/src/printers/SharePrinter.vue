@@ -3,7 +3,7 @@
     <h2 class="text-center">Printer Feed Sharing</h2>
     <hr />
     <div v-if="!isProAccount">
-      <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to Pro plan</a> to enable Printer feed. </h5>
+      <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to the Pro plan</a> to enable Printer feed. </h5>
       <p>Printer feed sharing is a Pro feature.</p>
       <p><a
           href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running

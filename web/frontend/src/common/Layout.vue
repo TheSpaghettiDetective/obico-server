@@ -61,9 +61,9 @@
             <b-collapse id="userActions">
               <ul class="list-unstyled">
                 <li :class="{'active': path === '/user_preferences/'}">
-                  <a href="/user_preferences/">Settings</a>
+                  <a href="/user_preferences/">Preferences</a>
                 </li>
-                <li :class="{'active': path === '/ent/subscription/'}">
+                <li v-if="isEnt" :class="{'active': path === '/ent/subscription/'}">
                   <a href="/ent/subscription/">Account</a>
                 </li>
                 <li>

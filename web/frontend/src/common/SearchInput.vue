@@ -46,4 +46,5 @@
       padding: .2em .5em .2em 2em
       width: 100%
       height: 100%
+      font-size: 16px
 </style>

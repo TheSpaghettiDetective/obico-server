@@ -9,10 +9,10 @@
         <b-row v-if="!user.is_pro" class="justify-content-center">
           <b-col sm="11" md="10" lg="8">
             <div class="form-container m-0 printer-settings">
-            <h5 class="mb-5">Wait! You need to <a href="/ent/pricing/">upgrade to the Pro plan</a> to upload G-Code files or start prints remotely. </h5>
+            <h5 class="mb-5">Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to upload G-Code files or start prints remotely. </h5>
               <p>G-Code remote upload and printing is a Pro feature.</p>
               <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
-              <p><a href="/ent/pricing/">Check out Pro pricing >>></a></p>
+              <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
             </div>
           </b-col>
         </b-row>

@@ -32,8 +32,8 @@
             Spaghetti Gallery
           </a>
         </li>
-        <li v-if="isEnt" :class="{'active': path === '/ent/pricing/'}">
-          <a href="/ent/pricing/">
+        <li v-if="isEnt" :class="{'active': path === '/ent_pub/pricing/'}">
+          <a href="/ent_pub/pricing/">
             <i class="fas fa-dollar-sign"></i>
             Pricing
           </a>

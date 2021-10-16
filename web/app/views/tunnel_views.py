@@ -75,7 +75,7 @@ def save_static_etag(func):
 def octoprint_http_tunnel(request, pk):
     get_printer_or_404(pk, request)
     if request.user.tunnel_usage_over_cap():
-        return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><h3 style="color: red;">Your month-to-date usage of OctoPrint Tunneling is over the free limit. Support this project and get unlimited tunneling by <a target="_blank" href="https://app.thespaghettidetective.com/ent/pricing/">upgrading to The Spaghetti Detective Pro plan</a>, or wait for the reset of free limit at the start of the next month.</h3></center></body></html>', status=412)
+        return HttpResponse('<html><body><center><h1>Over Free Limit</h1><hr><h3 style="color: red;">Your month-to-date usage of OctoPrint Tunneling is over the free limit. Support this project and get unlimited tunneling by <a target="_blank" href="https://app.thespaghettidetective.com/ent_pub/pricing/">upgrading to The Spaghetti Detective Pro plan</a>, or wait for the reset of free limit at the start of the next month.</h3></center></body></html>', status=412)
 
     prefix = URL_PREFIX.format(pk=pk)
     method = request.method.lower()

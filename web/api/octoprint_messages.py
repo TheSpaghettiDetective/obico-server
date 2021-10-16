@@ -21,6 +21,8 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
         if 'octoprint_temperatures' in status:
             status['octoprint_data']['temperatures'] = status['octoprint_temperatures']
 
+    if not status.get('octoprint_data'):
+        cache.printer_status_delete(printer.id)
     if status.get('octoprint_data', {}).get('_ts'):   # data format for plugin 1.6.0 and higher
         cache.printer_status_set(printer.id, json.dumps(status.get('octoprint_data', {})), ex=STATUS_TTL_SECONDS)
     else:

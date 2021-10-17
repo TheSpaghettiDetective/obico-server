@@ -25,6 +25,7 @@ urlpatterns = [
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
     path('gcodes/', web_views.gcodes),
     path('gcodes/upload/', web_views.upload_gcode_file,),
+    path('hc/', web_views.health_check,),
 
     re_path(r'^octoprint/(?P<pk>\d+)',
         tunnel_views.octoprint_http_tunnel,

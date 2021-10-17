@@ -26,8 +26,8 @@
             G-Codes
           </a>
         </li>
-        <li v-if="!user" class="glowing" :class="{'active': path === '/publictimelapses/'}">
-          <a href="/publictimelapses/">
+        <li v-if="isEnt && !user" class="glowing" :class="{'active': path === '/ent_pub/publictimelapses/'}">
+          <a href="/ent_pub/publictimelapses/">
             <i class="fas fa-images"></i>
             Spaghetti Gallery
           </a>

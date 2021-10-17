@@ -28,10 +28,6 @@ router.register(
     viewsets.SharedResourceViewSet,
     'SharedResourceViewSet')
 router.register(
-    r'publictimelapse',
-    viewsets.PublicTimelapseViewSet,
-    'PublicTimelapseViewSet')
-router.register(
     r'printer_discovery',
     viewsets.PrinterDiscoveryViewSet,
     'PrinterDiscoveryViewSet')

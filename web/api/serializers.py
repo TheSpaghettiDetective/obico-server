@@ -7,7 +7,7 @@ import phonenumbers
 
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, PublicTimelapse, calc_normalized_p)
+    SharedResource, calc_normalized_p)
 
 
 def int_with_default(v, default):
@@ -170,17 +170,6 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Printer
         fields = ('name', 'pic', 'settings')
-
-
-class PublicTimelapseSerializer(serializers.ModelSerializer):
-    prediction_json_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = PublicTimelapse
-        fields = '__all__'
-
-    def get_prediction_json_url(self, obj: PublicTimelapse) -> str:
-        return obj.p_json_url
 
 
 class VerifyCodeInputSerializer(serializers.Serializer):

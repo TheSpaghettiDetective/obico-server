@@ -465,18 +465,6 @@ def create_printer_prediction(sender, instance, created, **kwargs):
         PrinterPrediction.objects.create(printer=instance)
 
 
-class PublicTimelapse(models.Model):
-    title = models.CharField(max_length=500)
-    priority = models.IntegerField(null=False, default=1000000)
-    video_url = models.CharField(max_length=2000, null=False, blank=False)
-    poster_url = models.CharField(max_length=2000, null=False, blank=False)
-    p_json_url = models.CharField(max_length=2000, null=False, blank=False)
-    creator_name = models.CharField(max_length=500, null=False, blank=False)
-    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class Print(SafeDeleteModel):
 
     class Meta:

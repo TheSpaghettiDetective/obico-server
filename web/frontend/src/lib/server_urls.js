@@ -4,7 +4,6 @@ import map from 'lodash/map'
 export default {
 
   // APIs
-  publicTimelapse: () => '/api/v1/publictimelapse/',
   printShotFeedback: (shotId, printId) => `/api/v1/printshotfeedbacks/${shotId}/?print_id=${printId}`,
   print: printId => `/api/v1/prints/${printId}/`,
   prints: () => '/api/v1/prints/',

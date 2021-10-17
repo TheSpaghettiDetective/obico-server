@@ -18,7 +18,7 @@ from allauth.account.views import LoginView
 
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
-from app.models import (User, Printer, SharedResource, PublicTimelapse, GCodeFile)
+from app.models import (User, Printer, SharedResource, GCodeFile)
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot, telegram_send
@@ -163,10 +163,6 @@ def upload_print(request):
 def print_shot_feedback(request, pk):
     _print = get_print_or_404(pk, request)
     return render(request, 'print_shot_feedback.html', {'object': _print})
-
-
-def publictimelapse_list(request):
-    return render(request, 'publictimelapse_list.html')
 
 
 ### GCode File page ###

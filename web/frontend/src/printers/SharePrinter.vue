@@ -40,9 +40,13 @@
                 ref="sharedLink"
               >
               <div class="input-group-append">
-                <div id="copy-link" class="btn btn-outline-primary" type="button"
-                  data-clipboard-target="#secret-token-input" aria-label="Copy secure link to clipboard"
-                  @click="copyToClipboard" style="border-radius: 0 !important;">
+                <div
+                  id="copy-link"
+                  class="copy-button"
+                  data-clipboard-target="#secret-token-input"
+                  aria-label="Copy secure link to clipboard"
+                  @click="copyToClipboard"
+                >
                   <i class="fas fa-clipboard"></i>
                 </div>
                 <b-tooltip :show.sync="copyStatus" target="copy-link" triggers="click" placement="bottom">{{ copyMessage }}</b-tooltip>
@@ -174,4 +178,19 @@ hr
   border-color: var(--color-divider)
   background-color: var(--color-input-background) !important
 
+.copy-button
+  color: var(--color-primary)
+  border: 2px solid var(--color-primary)
+  background-color: transparent
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  padding: 0 .75rem
+  font-size: 1rem
+  line-height: 1.5
+
+  &:hover
+    background-color: var(--color-primary)
+    color: var(--color-text-primary)
+    cursor: pointer
 </style>

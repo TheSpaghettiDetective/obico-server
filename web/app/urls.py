@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+from django.views.generic.base import RedirectView
 
 from .views import web_views
 from .views import tunnel_views
@@ -25,6 +26,7 @@ urlpatterns = [
     path('gcodes/', web_views.gcodes),
     path('gcodes/upload/', web_views.upload_gcode_file,),
     path('hc/', web_views.health_check,),
+    path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
 
     re_path(r'^octoprint/(?P<pk>\d+)',
         tunnel_views.octoprint_http_tunnel,

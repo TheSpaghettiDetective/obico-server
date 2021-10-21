@@ -1,5 +1,7 @@
 import logging
 import dj_database_url
+import re
+
 """
 Django settings for config project.
 
@@ -79,7 +81,7 @@ if os.environ.get('SOCIAL_LOGIN') == 'True':
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -87,7 +89,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.middleware.octoprint_tunnelv2',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -310,6 +313,7 @@ PUSHOVER_APP_TOKEN = os.environ.get('PUSHOVER_APP_TOKEN')
 SLACK_CLIENT_ID = None
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776'))  # 1TB by default
+OCTOPRINT_TUNNEL_HOST_RE = re.compile(r'^(\d+)\.tunnels\..*')
 
 # settings export
 SETTINGS_EXPORT = [
@@ -370,3 +374,5 @@ ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
 # Event processing
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
+
+WELL_KNOWN_PATH = None

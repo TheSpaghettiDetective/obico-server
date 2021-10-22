@@ -12,7 +12,7 @@ import zlib
 from lib.view_helpers import get_template_path
 from lib import cache
 from lib import channels
-from lib.tunnelv2 import OctoprintTunnelV2Helper
+from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 
 import logging
 logger = logging.getLogger()
@@ -96,14 +96,18 @@ def save_static_etag(func):
 
 @csrf_exempt
 def octoprint_http_tunnel(request):
-    printer = OctoprintTunnelV2Helper.get_printer(request)
-    if printer is None:
+    try:
+        printer = OctoprintTunnelV2Helper.get_printer(request)
+    except TunnelAuthenticationError as exc:
         resp = HttpResponse(
-            'Unauthorized',
+            'unauthorized',
             status=401
         )
-        resp['WWW-Authenticate'] = 'Basic realm="tunnel", charset="UTF-8"'
+        if hasattr(exc, 'realm'):
+            resp['WWW-Authenticate'] =\
+                f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
+
     return _octoprint_http_tunnel(request, printer.pk, printer)
 
 
@@ -173,7 +177,7 @@ def _octoprint_http_tunnel(request, pk, printer):
 
         resp[k] = v
 
-    for cookie in (data['response']['cookies'] or ()):
+    for cookie in (data['response'].get('cookies', ()) or ()):
         resp['Set-Cookie'] = cookie
 
     if data['response'].get('compressed', False):

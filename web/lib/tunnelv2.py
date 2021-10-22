@@ -1,5 +1,6 @@
 from typing import Optional, Union
 
+import logging
 import base64
 import binascii
 
@@ -13,6 +14,13 @@ from app.models import User, Printer, PrinterTunnel
 
 HTTPScope = dict
 ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
+
+
+class TunnelAuthenticationError(Exception):
+
+    def __init__(self, *args, realm='', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.realm = realm
 
 
 class OctoprintTunnelV2Helper(object):
@@ -51,8 +59,6 @@ class OctoprintTunnelV2Helper(object):
         cls, s_or_r: ScopeOrRequest
     ) -> Optional[str]:
         if isinstance(s_or_r, django.http.HttpRequest):
-            import logging
-            logging.error(s_or_r.headers)
             return s_or_r.headers.get('Authorization', '').strip()
 
         try:
@@ -81,13 +87,18 @@ class OctoprintTunnelV2Helper(object):
         port = cls.get_port(s_or_r)
         subdomain_code = cls.get_subdomain_code(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
-        import logging
 
         qs = PrinterTunnel.objects.filter(
             Q(port=port) | Q(subdomain_code=subdomain_code),
         ).select_related('printer', 'printer__user')
 
-        logging.error((port, subdomain_code, auth_header, qs))
+        logging.debug((port, subdomain_code, auth_header, qs))
+
+        realm = (
+            f'tunnel {subdomain_code}'
+            if subdomain_code else
+            f'port {port}'
+        )
 
         try:
             scheme, raw_token = auth_header.split()
@@ -99,13 +110,18 @@ class OctoprintTunnelV2Helper(object):
                 username, password = base64.b64decode(
                     raw_token).decode().split(':')
             except (binascii.Error, ValueError):
-                return None  # FIXME raise http error?
+                raise TunnelAuthenticationError(
+                    'invalid token', realm=realm)
 
             pt = qs.filter(
                 basicauth_username=username,
                 basicauth_password=password,
             ).first()
-            return pt.printer if pt else None
+
+            if pt is None:
+                raise TunnelAuthenticationError(
+                    'invalid credentials', realm=realm)
+            return pt.printer
 
         user = cls._get_user(s_or_r)
         if user is not None:
@@ -113,7 +129,10 @@ class OctoprintTunnelV2Helper(object):
                 pt = qs.filter(
                     printer__user_id=user.id,
                 ).first()
-                return pt.printer if pt else None
+
+                if pt is None:
+                    raise TunnelAuthenticationError('invalid session')
+                return pt.printer
 
         return None
 

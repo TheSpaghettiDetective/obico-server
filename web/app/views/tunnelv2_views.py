@@ -119,7 +119,7 @@ def octoprint_http_tunnel(request, pk):
     path = request.get_full_path()
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_COOKIE',
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',
     ]
 
     # Recreate http headers, because django put headers

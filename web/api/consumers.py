@@ -144,6 +144,11 @@ class OctoPrintConsumer(WebsocketConsumer):
                     data['http.tunnel']['ref'],
                     data['http.tunnel']
                 )
+            elif 'http.tunnelv2' in data:
+                cache.octoprinttunnel_http_response_set(
+                    data['http.tunnelv2']['ref'],
+                    data['http.tunnelv2']
+                )
             elif 'ws.tunnel' in data:
                 channels.send_message_to_octoprinttunnel(
                     channels.octoprinttunnel_group_name(self.current_printer().id),

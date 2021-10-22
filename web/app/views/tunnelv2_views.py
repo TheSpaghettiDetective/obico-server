@@ -142,7 +142,7 @@ def octoprint_http_tunnel(request, pk):
     channels.send_msg_to_printer(
         pk,
         {
-            "http.tunnel": {
+            "http.tunnelv2": {
                 "ref": ref,
                 "method": method,
                 "headers": req_headers,
@@ -171,6 +171,9 @@ def octoprint_http_tunnel(request, pk):
             v = fix_etag(v)
 
         resp[k] = v
+
+    for cookie in (data['response']['cookies'] or ()):
+        resp['Set-Cookie'] = cookie
 
     if data['response'].get('compressed', False):
         content = zlib.decompress(data['response']['content'])

@@ -13,5 +13,5 @@ websocket_urlpatterns = [
     url(
         r'^ws/octoprint/(?P<printer_id>\d+)/',
         consumers.OctoprintTunnelWebConsumer),
-    re_path(r'^sockjs/.*/websocket$', consumers.OctoprintTunnelWebConsumer)
+    re_path(r'^sockjs/.*$', consumers.OctoprintTunnelWebConsumer)
 ]

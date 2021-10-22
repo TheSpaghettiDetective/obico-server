@@ -1,7 +1,9 @@
 from django.conf import settings
-from .views import tunnelv2_views
 
 from whitenoise.middleware import WhiteNoiseMiddleware
+
+from .views import tunnelv2_views
+from lib.tunnelv2 import OctoprintTunnelV2Helper
 
 
 class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
@@ -14,10 +16,8 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
             self.add_files(path, prefix="/.well-known")
 
     def process_request(self, request):
-        m = settings.OCTOPRINT_TUNNEL_HOST_RE.match(request.get_host())
-
-        if m is not None:
-            return
+        if OctoprintTunnelV2Helper.is_tunnel_request(request):
+            return None
 
         return super().process_request(request)
 
@@ -25,10 +25,8 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
 def octoprint_tunnelv2(get_response):
 
     def middleware(request):
-        m = settings.OCTOPRINT_TUNNEL_HOST_RE.match(request.get_host())
-        if m is not None:
-            pk = int(m.groups()[0])
-            return tunnelv2_views.octoprint_http_tunnel(request, pk)
+        if OctoprintTunnelV2Helper.is_tunnel_request(request):
+            return tunnelv2_views.octoprint_http_tunnel(request)
 
         response = get_response(request)
         return response

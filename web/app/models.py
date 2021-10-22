@@ -680,3 +680,16 @@ class PrintHeaterTarget(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class PrinterTunnel(models.Model):
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
+
+    basicauth_username = models.TextField()
+    basicauth_password = models.TextField()
+
+    subdomain_code = models.TextField()
+    port = models.IntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

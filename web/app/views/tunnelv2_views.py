@@ -9,9 +9,10 @@ from django.views.decorators.http import condition
 
 import zlib
 
-from lib.view_helpers import get_printer_or_404, get_template_path
+from lib.view_helpers import get_template_path
 from lib import cache
 from lib import channels
+from lib.tunnelv2 import OctoprintTunnelV2Helper
 
 import logging
 logger = logging.getLogger()
@@ -64,11 +65,6 @@ def fix_etag(etag):
     return f'"{etag}"' if etag and '"' not in etag else etag
 
 
-@login_required
-def tunnel(request, pk, template_dir=None):
-    return render(request, get_template_path('tunnel', template_dir))
-
-
 def fetch_static_etag(request, pk, *args, **kwargs):
     path = request.get_full_path()
 
@@ -91,26 +87,31 @@ def save_static_etag(func):
             if should_cache(path):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
-                    cache.octoprinttunnel_update_etag(pk, path, etag)
+                    cache.octoprinttunnel_update_etag(
+                        pk, path, etag)
 
         return response
     return inner
 
 
 @csrf_exempt
+def octoprint_http_tunnel(request):
+    printer = OctoprintTunnelV2Helper.get_printer(request)
+    if printer is None:
+        resp = HttpResponse(
+            'Unauthorized',
+            status=401
+        )
+        resp['WWW-Authenticate'] = 'Basic realm="tunnel", charset="UTF-8"'
+        return resp
+    return _octoprint_http_tunnel(request, printer.pk, printer)
+
+
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
-def octoprint_http_tunnel(request, pk):
-    if not request.user.is_authenticated:
-        # need a way to redirect to main login
-        return HttpResponse(
-            'unauthenticated',
-            status=401,
-        )
-
-    get_printer_or_404(pk, request)
-
-    if request.user.tunnel_usage_over_cap():
+def _octoprint_http_tunnel(request, pk, printer):
+    user = printer.user
+    if user.tunnel_usage_over_cap():
         return HttpResponse(
             OVER_FREE_LIMIT_HTML,
             status=412)
@@ -137,10 +138,10 @@ def octoprint_http_tunnel(request, pk):
     if 'CONTENT_TYPE' in request.META:
         req_headers['Content-Type'] = request.META['CONTENT_TYPE']
 
-    ref = f'{pk}.{method}.{time.time()}.{path}'
+    ref = f'{printer.id}.{method}.{time.time()}.{path}'
 
     channels.send_msg_to_printer(
-        pk,
+        printer.id,
         {
             "http.tunnelv2": {
                 "ref": ref,
@@ -181,7 +182,7 @@ def octoprint_http_tunnel(request, pk):
         content = data['response']['content']
 
     cache.octoprinttunnel_update_stats(
-        request.user.id,
+        user.id,
         # x1.2 because sent data volume is 20% of received.
         # x2 because all data need to go in and out. 240 bytes header overhead
         (len(content) + 240) * 1.2 * 2

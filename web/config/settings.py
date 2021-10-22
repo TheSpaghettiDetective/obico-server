@@ -313,7 +313,8 @@ PUSHOVER_APP_TOKEN = os.environ.get('PUSHOVER_APP_TOKEN')
 SLACK_CLIENT_ID = None
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776'))  # 1TB by default
-OCTOPRINT_TUNNEL_HOST_RE = re.compile(r'^(\d+)\.tunnels\..*')
+OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
+OCTOPRINT_TUNNEL_PORT_RANGE = (10000, 11000)
 
 # settings export
 SETTINGS_EXPORT = [

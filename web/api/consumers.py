@@ -23,6 +23,7 @@ from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
 from app.models import Print, Printer, ResurrectionError
+from lib.tunnelv2 import OctoprintTunnelV2Helper
 from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
@@ -233,36 +234,38 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     # default 1000 does not trigger retries in octoprint webapp
     OCTO_WS_ERROR_CODE = 3000
 
-    def get_printer_id_from_scope(self):
+    def get_user_and_printer(self):
         if self.scope.get('url_route', {}).get('kwargs', {}).get('printer_id'):
-            return self.scope['url_route']['kwargs']['printer_id']
+            printer_id = self.scope['url_route']['kwargs']['printer_id']
+            return (
+                self.scope['user'],
+                Printer.objects.select_related('user').get(
+                    user=self.scope['user'],
+                    id=printer_id
+                )
+            )
 
-        # comes from a <printer_id>.tunnels.domain.com
-        # extracting printer_id out
-        host = [
-            hpair[1]
-            for hpair in self.scope['headers']
-            if hpair[0] == b'host'
-        ][0]
-        m = settings.OCTOPRINT_TUNNEL_HOST_RE.match(host.decode())
-        return int(m.groups()[0])
+        printer = OctoprintTunnelV2Helper.get_printer(self.scope)
+        printer.user.is_authenticated = True
+        return (
+            printer.user,
+            printer
+        )
 
     @newrelic.agent.background_task()
     def connect(self):
         try:
             # Exception for un-authenticated or un-authorized access
-            self.printer = Printer.objects.select_related('user').get(
-                user=self.current_user(),
-                id=self.get_printer_id_from_scope()
-            )
+            self.user, self.printer = self.get_user_and_printer()
             self.accept()
 
-            if self.scope['path'].startswith(f'/ws/octoprint/{self.printer.id}'):
-                self.path = self.scope['path'][len(f'/ws/octoprint/{self.printer.id}'):]  # FIXME
+            prefix = f'/ws/octoprint/{self.printer.id}'
+            if self.scope['path'].startswith(prefix):
+                self.path = self.scope['path'][len(prefix):]
             else:
                 self.path = self.scope['path']
 
-            self.ref = self.scope['path']
+            self.ref = str(time.time())
 
             async_to_sync(self.channel_layer.group_add)(
                 channels.octoprinttunnel_group_name(self.printer.id),
@@ -279,12 +282,17 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     },
                     'as_binary': True,
                 })
-        except:
+        except Exception:
             LOGGER.exception("Websocket failed to connect")
             self.close()
 
     def disconnect(self, close_code):
-        LOGGER.warn(f'OctoprintTunnelWebConsumer: Closed websocket with code: {close_code}')
+        LOGGER.warn(
+            f'OctoprintTunnelWebConsumer: Closed websocket with code: {close_code}')
+
+        if not self.printer:
+            return
+
         async_to_sync(self.channel_layer.group_discard)(
             channels.octoprinttunnel_group_name(self.printer.id),
             self.channel_name,
@@ -342,15 +350,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 self.send(text_data=payload['data'])
 
             cache.octoprinttunnel_update_stats(
-                self.scope['user'].id,
+                self.printer.user_id,
                 len(payload['data']) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
             )
         except:  # sentry doesn't automatically capture consumer errors
             import traceback; traceback.print_exc()
             sentryClient.captureException()
-
-    def current_user(self):
-        return self.scope['user']
 
 
 class AnomalyTracker:

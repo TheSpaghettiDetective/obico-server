@@ -688,8 +688,8 @@ class PrinterTunnel(models.Model):
     basicauth_username = models.TextField()
     basicauth_password = models.TextField()
 
-    subdomain_code = models.TextField()
-    port = models.IntegerField(null=True, blank=True)
+    subdomain_code = models.TextField()  # FIXME unique
+    port = models.IntegerField(null=True, blank=True)  # FIXME unique
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

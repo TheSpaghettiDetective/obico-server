@@ -124,7 +124,7 @@ def _octoprint_http_tunnel(request, pk, printer):
     path = request.get_full_path()
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_AUTHORIZATION'
     ]
 
     # Recreate http headers, because django put headers
@@ -134,7 +134,6 @@ def _octoprint_http_tunnel(request, pk, printer):
         for (k, v) in request.META.items()
         if (
             k.startswith("HTTP") and
-            not k.startswith('HTTP_X_') and
             k not in IGNORE_HEADERS
         )
     }

@@ -246,10 +246,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             )
 
         printer = OctoprintTunnelV2Helper.get_printer(self.scope)
-        return (
-            printer.user,
-            printer
-        )
+        if printer:
+            return (
+                printer.user,
+                printer
+            )
+        return (None, None)
 
     @newrelic.agent.background_task()
     def connect(self):
@@ -257,6 +259,9 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
         try:
             # Exception for un-authenticated or un-authorized access
             self.user, self.printer = self.get_user_and_printer()
+            if self.printer is None:
+                self.close()
+                return
 
             self.accept()
 

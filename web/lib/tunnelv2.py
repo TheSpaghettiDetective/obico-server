@@ -83,7 +83,7 @@ class OctoprintTunnelV2Helper(object):
         return None
 
     @classmethod
-    def get_printer(cls, s_or_r: ScopeOrRequest) -> Optional[Printer]:
+    def get_printer(cls, s_or_r: ScopeOrRequest) -> Printer:
         port = cls.get_port(s_or_r)
         subdomain_code = cls.get_subdomain_code(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
@@ -134,7 +134,7 @@ class OctoprintTunnelV2Helper(object):
                     raise TunnelAuthenticationError('invalid session')
                 return pt.printer
 
-        return None
+        raise TunnelAuthenticationError('missing credentials', realm=realm)
 
     @classmethod
     def is_tunnel_request(cls, s_or_r: ScopeOrRequest) -> bool:

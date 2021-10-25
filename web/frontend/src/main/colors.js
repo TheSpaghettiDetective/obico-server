@@ -95,7 +95,7 @@ export const theme = Vue.observable({
 })
 
 // Get theme value (exclude "System")
-export function getTheme() {
+export function currentThemeValue() {
   // Get system settings
   if (theme.value === Themes.System) {
     if (window.matchMedia('(prefers-color-scheme)').media !== 'not all' && window.matchMedia('(prefers-color-scheme: light)').matches) {
@@ -110,13 +110,14 @@ export function getTheme() {
 
 // Defines theme by value saved in LocalStorage or system settings
 export function initTheme() {
-  const themeValue = getTheme()
+  const themeValue = currentThemeValue()
 
   colors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 
     if (color.name === 'surface-secondary') {
-      let meta = document.querySelector('meta[name="theme-color"')
+      // Set the <meta name="theme-color"> tag to theme the browser nav bar
+      let meta = document.querySelector('meta[name="theme-color"]')
       meta.content = color.values[themeValue]
     }
   })
@@ -130,7 +131,7 @@ export function initTheme() {
   })
 }
 
-export function selectTheme(newTheme) {
+export function setTheme(newTheme) {
   theme.value = newTheme
   if (isLocalStorageSupported()) {
     localStorage.setItem('colorTheme', theme.value)

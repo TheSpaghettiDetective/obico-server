@@ -9,7 +9,7 @@
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/'" class="mobile-settings-categories">
                   <h2 class="categories-title section-title">Preferences</h2>
-                  <router-link v-if="!inMobileWebView" to="/theme">
+                  <router-link v-if="clientIsThemeable" to="/theme">
                     <span>Personalization</span>
                     <i class="fas fa-arrow-right"></i>
                   </router-link>
@@ -126,7 +126,6 @@ import axios from 'axios'
 import urls from '@lib/server_urls'
 import Layout from '@common/Layout.vue'
 import { inMobileWebView, settings } from '@lib/page_context'
-import { Themes, theme, selectTheme, getTheme } from '../main/colors.js'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
 import EmailNotifications from './preferences_components/EmailNotifications'
@@ -190,7 +189,6 @@ export default {
       combinedInputs: { // Send changes to API only if all the other values in the array have data
         phone: ['phone_country_code', 'phone_number'],
       },
-      Themes: Themes,
       twilioEnabled: false,
       slackEnabled: false,
       pushOverEnabled: false,
@@ -201,19 +199,8 @@ export default {
     inMobileWebView() {
       return inMobileWebView()
     },
-    themeValue() {
-      return getTheme()
-    },
-    systemTheme: {
-      get() {
-        return theme.value === Themes.System
-      },
-      set(newValue) {
-        theme.value = Themes.System
-        if (newValue) {
-          selectTheme(this.Themes.System)
-        }
-      }
+    clientIsThemeable() {
+      return !inMobileWebView() || (new URLSearchParams(window.location.search).get('themeable') === 'true')
     },
     firstName: {
       get: function() {

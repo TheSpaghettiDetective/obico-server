@@ -96,7 +96,7 @@ const theme = {
 }
 
 // Get theme value (exclude "System")
-function getTheme() {
+function currentThemeValue() {
   // Get system settings
   if (theme.value === Themes.System) {
     if (window.matchMedia('(prefers-color-scheme)').media !== 'not all' && window.matchMedia('(prefers-color-scheme: light)').matches) {
@@ -111,13 +111,14 @@ function getTheme() {
 
 // Defines theme by value saved in LocalStorage or system settings
 function initTheme() {
-  const themeValue = getTheme()
+  const themeValue = currentThemeValue()
 
   colors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 
     if (color.name === 'surface-secondary') {
-      let meta = document.querySelector('meta[name="theme-color"')
+      // Set the <meta name="theme-color"> tag to theme the browser nav bar
+      let meta = document.querySelector('meta[name="theme-color"]')
       meta.content = color.values[themeValue]
     }
   })
@@ -131,7 +132,7 @@ function initTheme() {
   })
 }
 
-function selectTheme(newTheme) {
+function setTheme(newTheme) {
   theme.value = newTheme
   if (isLocalStorageSupported()) {
     localStorage.setItem('colorTheme', theme.value)
@@ -147,5 +148,5 @@ initTheme()
 let navbar = document.getElementById('dynamic-navbar')
 
 if (navbar) {
-  navbar.classList.add('navbar-' + getTheme().toLowerCase())
+  navbar.classList.add('navbar-' + currentThemeValue().toLowerCase())
 }

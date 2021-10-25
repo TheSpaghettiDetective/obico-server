@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { Themes, theme, selectTheme, getTheme } from '@main/colors.js'
+import { Themes, theme, setTheme, currentThemeValue } from '@main/colors.js'
 
 export default {
   name: 'ThemePreferences',
@@ -53,7 +53,7 @@ export default {
 
   computed: {
     themeValue() {
-      return getTheme()
+      return currentThemeValue()
     },
     systemTheme: {
       get() {
@@ -62,7 +62,7 @@ export default {
       set(newValue) {
         theme.value = Themes.System
         if (newValue) {
-          selectTheme(this.Themes.System)
+          this.selectTheme(this.Themes.System)
         }
       }
     },
@@ -75,7 +75,13 @@ export default {
     toggleTheme() {
       const newTheme = this.themeValue === Themes.Light ? Themes.Dark : Themes.Light
       this.systemTheme = false
-      selectTheme(newTheme)
+      this.selectTheme(newTheme)
+    },
+    selectTheme(newTheme) {
+      setTheme(newTheme)
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({theme: newTheme}))
+      }
     },
   }
 }

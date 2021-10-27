@@ -84,13 +84,21 @@ class OctoprintTunnelV2Helper(object):
 
     @classmethod
     def get_printertunnel(cls, s_or_r: ScopeOrRequest) -> Printer:
-        port = cls.get_port(s_or_r)
         subdomain_code = cls.get_subdomain_code(s_or_r)
+        port = cls.get_port(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
 
+        qs_kwargs = {
+            'printer__user__is_active': True,
+        }
+
+        if subdomain_code:
+            qs_kwargs['subdomain_code'] = subdomain_code
+        elif port:
+            qs_kwargs['port'] = port
+
         qs = PrinterTunnel.objects.filter(
-            Q(port=port) | Q(subdomain_code=subdomain_code),
-            printer__user__is_active=True,
+            **qs_kwargs
         ).select_related('printer', 'printer__user')
 
         logging.debug((port, subdomain_code, auth_header, qs))

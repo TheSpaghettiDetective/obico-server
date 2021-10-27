@@ -18,9 +18,9 @@ ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
 
 class TunnelAuthenticationError(Exception):
 
-    def __init__(self, *args, realm='', **kwargs):
+    def __init__(self, *args, realm: str = '', **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.realm = realm
+        self.realm: str = realm
 
 
 class OctoprintTunnelV2Helper(object):
@@ -83,13 +83,14 @@ class OctoprintTunnelV2Helper(object):
         return None
 
     @classmethod
-    def get_printer(cls, s_or_r: ScopeOrRequest) -> Printer:
+    def get_printertunnel(cls, s_or_r: ScopeOrRequest) -> Printer:
         port = cls.get_port(s_or_r)
         subdomain_code = cls.get_subdomain_code(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
 
         qs = PrinterTunnel.objects.filter(
             Q(port=port) | Q(subdomain_code=subdomain_code),
+            printer__user__is_active=True,
         ).select_related('printer', 'printer__user')
 
         logging.debug((port, subdomain_code, auth_header, qs))
@@ -121,7 +122,7 @@ class OctoprintTunnelV2Helper(object):
             if pt is None:
                 raise TunnelAuthenticationError(
                     'invalid credentials', realm=realm)
-            return pt.printer
+            return pt
 
         user = cls._get_user(s_or_r)
         if user is not None:
@@ -132,7 +133,7 @@ class OctoprintTunnelV2Helper(object):
 
                 if pt is None:
                     raise TunnelAuthenticationError('invalid session')
-                return pt.printer
+                return pt
 
         raise TunnelAuthenticationError('missing credentials', realm=realm)
 

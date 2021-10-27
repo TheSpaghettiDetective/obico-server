@@ -1,15 +1,12 @@
 import time
 import functools
 import re
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 
 import zlib
 
-from lib.view_helpers import get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
@@ -65,11 +62,12 @@ def fix_etag(etag):
     return f'"{etag}"' if etag and '"' not in etag else etag
 
 
-def fetch_static_etag(request, pk, *args, **kwargs):
+def fetch_static_etag(request, printertunnel, *args, **kwargs):
     path = request.get_full_path()
 
     if should_cache(path):
-        cached_etag = cache.octoprinttunnel_get_etag(pk, path)
+        cached_etag = cache.octoprinttunnel_get_etag(
+            f'printertunnel_{printertunnel.pk}', path)
         if cached_etag:
             return cached_etag
 
@@ -78,8 +76,8 @@ def fetch_static_etag(request, pk, *args, **kwargs):
 
 def save_static_etag(func):
     @functools.wraps(func)
-    def inner(request, pk, *args, **kwargs):
-        response = func(request, pk, *args, **kwargs)
+    def inner(request, printertunnel, *args, **kwargs):
+        response = func(request, printertunnel, *args, **kwargs)
 
         if response.status_code in (200, 304):
             path = request.get_full_path()
@@ -88,7 +86,10 @@ def save_static_etag(func):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
-                        pk, path, etag)
+                        f'printertunnel_{printertunnel.pk}',
+                        path,
+                        etag
+                    )
 
         return response
     return inner
@@ -97,7 +98,7 @@ def save_static_etag(func):
 @csrf_exempt
 def octoprint_http_tunnel(request):
     try:
-        printer = OctoprintTunnelV2Helper.get_printer(request)
+        pt = OctoprintTunnelV2Helper.get_printertunnel(request)
     except TunnelAuthenticationError as exc:
         resp = HttpResponse(
             'unauthorized',
@@ -108,13 +109,13 @@ def octoprint_http_tunnel(request):
                 f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
 
-    return _octoprint_http_tunnel(request, printer.pk, printer)
+    return _octoprint_http_tunnel(request, pt)
 
 
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
-def _octoprint_http_tunnel(request, pk, printer):
-    user = printer.user
+def _octoprint_http_tunnel(request, printertunnel):
+    user = printertunnel.printer.user
     if user.tunnel_usage_over_cap():
         return HttpResponse(
             OVER_FREE_LIMIT_HTML,
@@ -130,10 +131,10 @@ def _octoprint_http_tunnel(request, pk, printer):
     # Recreate http headers, because django put headers
     # in request.META as "HTTP_XXX_XXX". Is there a better way?
     req_headers = {
-        k[5:].replace("_", " ").title().replace(" ", "-"): v
+        k[5:].replace('_', ' ').title().replace(' ', '-'): v
         for (k, v) in request.META.items()
         if (
-            k.startswith("HTTP") and
+            k.startswith('HTTP') and
             k not in IGNORE_HEADERS
         )
     }
@@ -141,17 +142,17 @@ def _octoprint_http_tunnel(request, pk, printer):
     if 'CONTENT_TYPE' in request.META:
         req_headers['Content-Type'] = request.META['CONTENT_TYPE']
 
-    ref = f'{printer.id}.{method}.{time.time()}.{path}'
+    ref = f'{printertunnel.id}.{method}.{time.time()}.{path}'
 
     channels.send_msg_to_printer(
-        printer.id,
+        printertunnel.printer.id,
         {
-            "http.tunnelv2": {
-                "ref": ref,
-                "method": method,
-                "headers": req_headers,
-                "path": path,
-                "data": request.body
+            'http.tunnelv2': {
+                'ref': ref,
+                'method': method,
+                'headers': req_headers,
+                'path': path,
+                'data': request.body
             },
             'as_binary': True,
         })
@@ -164,7 +165,7 @@ def _octoprint_http_tunnel(request, pk, printer):
 
     content_type = data['response']['headers'].get('Content-Type') or None
     resp = HttpResponse(
-        status=data["response"]["status"],
+        status=data['response']['status'],
         content_type=content_type,
     )
     for k, v in data['response']['headers'].items():

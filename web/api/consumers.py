@@ -245,11 +245,11 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 )
             )
 
-        printer = OctoprintTunnelV2Helper.get_printer(self.scope)
-        if printer:
+        pt = OctoprintTunnelV2Helper.get_printertunnel(self.scope)
+        if pt:
             return (
-                printer.user,
-                printer
+                pt.printer.user,
+                pt.printer
             )
         return (None, None)
 

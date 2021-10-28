@@ -1,15 +1,19 @@
 import time
 import functools
 import re
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 import zlib
 
+from lib.view_helpers import get_printer_or_404
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
+from app.models import PrinterTunnel
 
 import logging
 logger = logging.getLogger()
@@ -95,16 +99,37 @@ def save_static_etag(func):
     return inner
 
 
+@login_required
+def redirect_to_tunnel_url(request, pk):
+    printer = get_printer_or_404(pk, request)
+    pt = PrinterTunnel.get_or_create_for_internal_use(printer)
+    url = pt.get_redirect_url(request)
+    return HttpResponseRedirect(url)
+
+
 @csrf_exempt
+@xframe_options_exempt
 def octoprint_http_tunnel(request):
+    if request.path == '/_tsd_/':
+        transferkey = request.GET['transferkey']
+        session_key = cache.printertunnel_transferkey_get(transferkey)
+        assert session_key
+        logger.error((session_key, request.session.session_key))
+        if session_key != request.session.session_key:
+            request.session.__session_key = session_key
+            delattr(request.session, '_session_cache')
+            request.session._get_session()
+        resp = HttpResponseRedirect(request.build_absolute_uri('/'))
+        return resp
+
     try:
         pt = OctoprintTunnelV2Helper.get_printertunnel(request)
     except TunnelAuthenticationError as exc:
         resp = HttpResponse(
-            'unauthorized',
+            exc.message,
             status=401
         )
-        if hasattr(exc, 'realm'):
+        if exc.realm:
             resp['WWW-Authenticate'] =\
                 f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
@@ -168,11 +193,13 @@ def _octoprint_http_tunnel(request, printertunnel):
         status=data['response']['status'],
         content_type=content_type,
     )
+
+    to_ignore = ('content-length', 'content-encoding', 'x-frame-options')
     for k, v in data['response']['headers'].items():
-        if k in ['Content-Length', 'Content-Encoding']:
+        if k.lower() in to_ignore:
             continue
 
-        if k == 'Etag':
+        if k.lower() == 'etag':
             v = fix_etag(v)
 
         resp[k] = v

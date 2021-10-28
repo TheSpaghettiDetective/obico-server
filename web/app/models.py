@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 import json
+from secrets import token_hex
 from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
@@ -14,6 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
@@ -685,11 +687,87 @@ class PrintHeaterTarget(models.Model):
 class PrinterTunnel(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
 
-    basicauth_username = models.TextField()
-    basicauth_password = models.TextField()
+    basicauth_username = models.TextField(blank=True, default='')
+    basicauth_password = models.TextField(blank=True, default='')
 
-    subdomain_code = models.TextField()  # FIXME unique
-    port = models.IntegerField(null=True, blank=True)  # FIXME unique
+    subdomain_code = models.TextField(unique=True)
+    port = models.IntegerField(null=True, blank=True)
+
+    internal = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_or_create_for_internal_use(cls, printer) -> 'PrinterTunnel':
+        pt = PrinterTunnel.objects.filter(
+            printer=printer,
+            internal=True
+        ).first()
+
+        if pt is not None:
+            return pt
+
+        return cls.create(printer, internal=True)
+
+    @classmethod
+    def create(
+        cls, printer: Printer, internal: bool
+    ) -> 'PrinterTunnel':
+        n = 30
+        while n > 0:
+            n -= 1
+            try:
+                instance = PrinterTunnel(
+                    printer=printer,
+                    basicauth_username='' if internal else token_hex(32),
+                    basicauth_password='' if internal else token_hex(32),
+                    subdomain_code=token_hex(8),
+                    internal=internal,
+                )
+
+                if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+                    instance.port = PrinterTunnel.get_a_free_port()
+
+                instance.save()
+                return instance
+            except IntegrityError:
+                if n > 0:
+                    continue
+                raise
+
+    @classmethod
+    def get_a_free_port(cls):
+        occupied = set(PrinterTunnel.objects.filter(
+            port__isnull=False
+        ).values_list('port', flat=True))
+        possible = set(
+            range(
+                settings.OCTOPRINT_TUNNEL_PORT_RANGE[0],
+                settings.OCTOPRINT_TUNNEL_PORT_RANGE[1]
+            )
+        )
+        free = possible - occupied
+        return free.pop()
+
+    def get_url(self, request):
+        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+            host = request.get_host().split(':')[0]
+            url = f'{request.scheme}://{host}:{self.port}'
+        else:
+            domain = settings.OCTOPRINT_TUNNEL_DOMAIN_FMT.format(
+                subdomain_code=self.subdomain_code,
+                site=get_current_site(request),
+            )
+            url = f'{request.scheme}://{domain}'
+        return url
+
+    def get_redirect_url(self, request):
+        url = self.get_url(request)
+        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+            transferkey = token_hex(10)
+            cache.printertunnel_transferkey_set(
+                transferkey, request.session.session_key
+            )
+            return f'{url}/_tsd_/?transferkey={transferkey}'
+        return url

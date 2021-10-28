@@ -298,3 +298,14 @@ def disco_pop_raw_device_messages(
             tordset_key, min='-inf', max=cur_time - expiration_secs)
         conn.zpopmin(tordset_key, message_count)
         return [raw_msg for (raw_msg, _) in conn.execute()[1]]
+
+
+def printertunnel_transferkey_set(transferkey, session_key):
+    key = f'printertunnel_transferkey:{transferkey}'
+    # expires in 10 seconds
+    REDIS.set(key, session_key, ex=10)
+
+
+def printertunnel_transferkey_get(transferkey):
+    key = f'printertunnel_transferkey:{transferkey}'
+    return REDIS.get(key)

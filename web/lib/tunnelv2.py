@@ -8,9 +8,7 @@ import binascii
 import django.http
 
 from django.conf import settings
-from django.db.models import Q
-
-from app.models import User, Printer, PrinterTunnel
+from app.models import User, PrinterTunnel
 
 HTTPScope = dict
 ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
@@ -18,8 +16,9 @@ ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
 
 class TunnelAuthenticationError(Exception):
 
-    def __init__(self, *args, realm: str = '', **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, message: str, realm: Optional[str], **kwargs) -> None:
+        super().__init__(message, **kwargs)
+        self.message: str = message
         self.realm: str = realm
 
 
@@ -84,15 +83,19 @@ class OctoprintTunnelV2Helper(object):
     @classmethod
     def _get_user(cls, s_or_r: ScopeOrRequest) -> Optional[User]:
         if isinstance(s_or_r, django.http.HttpRequest):
-            return s_or_r.user
+            if s_or_r.user.is_authenticated:
+                return s_or_r.user
 
-        if 'user' in s_or_r and isinstance(s_or_r['user'], User):
-            return s_or_r['user']
+        if 'user' in s_or_r:
+            if s_or_r['user'].is_authenticated:
+                return s_or_r['user']
 
         return None
 
     @classmethod
-    def get_printertunnel(cls, s_or_r: ScopeOrRequest) -> Printer:
+    def get_printertunnel(
+        cls, s_or_r: ScopeOrRequest
+    ) -> PrinterTunnel:
         subdomain_code = cls.get_subdomain_code(s_or_r)
         port = cls.get_port(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
@@ -110,12 +113,12 @@ class OctoprintTunnelV2Helper(object):
             **qs_kwargs
         ).select_related('printer', 'printer__user')
 
-        logging.debug((port, subdomain_code, auth_header, qs))
+        logging.debug(('get_printertunnel', port, subdomain_code, auth_header))
 
         realm = (
             f'tunnel {subdomain_code}'
             if subdomain_code else
-            f'port {port}'
+            f'tunnel {port}'
         )
 
         try:
@@ -134,6 +137,7 @@ class OctoprintTunnelV2Helper(object):
             pt = qs.filter(
                 basicauth_username=username,
                 basicauth_password=password,
+                internal=False,
             ).first()
 
             if pt is None:
@@ -146,12 +150,18 @@ class OctoprintTunnelV2Helper(object):
             if user.is_authenticated:
                 pt = qs.filter(
                     printer__user_id=user.id,
+                    internal=True,
                 ).first()
 
-                if pt is None:
-                    raise TunnelAuthenticationError('invalid session')
-                return pt
+                if pt is not None:
+                    return pt
 
+                # req is not using basic auth, no 401 error
+                raise django.http.Http404
+
+        # no basic auth, no session - force basic auth
+        # TODO: when we have proper integrations we might
+        # be able to convert this to a 404
         raise TunnelAuthenticationError('missing credentials', realm=realm)
 
     @classmethod

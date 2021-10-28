@@ -28,8 +28,9 @@ urlpatterns = [
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
 
-    re_path(r'^octoprint/(?P<pk>\d+)',
-        tunnel_views.octoprint_http_tunnel,
+    re_path(
+        r'^octoprint/(?P<pk>\d+)',
+        web_views.octoprint_http_tunnel,
         name='octoprint_http_tunnel'),
     path('tunnel/<int:pk>/', tunnel_views.tunnel),
 

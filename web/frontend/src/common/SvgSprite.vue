@@ -84,7 +84,7 @@
   fill: var(--color-text-primary)
 
 #svg-navbar-brand
-  fill: var(--color-icon-navbar-brand)
+  fill: var(--color-text-primary)
 
 #svg-octoprint-logo
   .tone-1

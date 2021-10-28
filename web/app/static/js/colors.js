@@ -48,7 +48,6 @@ const Themes = {
   // Icon colors
   {name: 'icon-tunneling-1',    values: {[Themes.Light]: 'rgb(78 93 108)',          [Themes.Dark]: 'rgb(234 234 234)'}},
   {name: 'icon-tunneling-2',    values: {[Themes.Light]: 'rgb(29 41 53)',           [Themes.Dark]: 'rgb(205 205 205)'}},
-  {name: 'icon-navbar-brand',   values: {[Themes.Light]: 'rgb(123,137,147)',        [Themes.Dark]: 'rgb(255 255 255)'}},
 ]
 
 const urls = [

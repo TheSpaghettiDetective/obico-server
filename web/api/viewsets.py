@@ -308,7 +308,10 @@ class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
-        return Response({'total': cache.octoprinttunnel_get_stats(self.request.user.id)})
+        return Response({
+            'total': cache.octoprinttunnel_get_stats(self.request.user.id),
+            'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+            })
 
 
 class MobileDeviceViewSet(viewsets.ModelViewSet):

@@ -17,6 +17,7 @@ import split from 'lodash/split'
 import filesize from 'filesize'
 import urls from '@lib/server_urls'
 import { user } from '@lib/page_context'
+import { isLocalStorageSupported } from '@common/utils'
 
 export default {
   name: 'OctoPrintTunnelPage',
@@ -57,10 +58,37 @@ export default {
   },
 
   mounted() {
-    this.$swal.Prompt.fire({
-      html: '<h4 class="text-center p-2"><svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59" style="height: 1.1em;margin-right: 0.75em;"><use href="#svg-octoprint-tunneling" /></svg>OctoPrint Secure Tunnel</h4><div class="p-1">It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.</div><div class="p-1"><a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">Learn more about OctoPrint Tunneling\'s security and page load speed. <i class="fas fa-external-link-alt"></i></a></div>',
-    },
-    'octoprint-tunnel.warning')
+    const skipWarning = isLocalStorageSupported() ? localStorage.getItem('skip-tunneling-warning') : null
+    if (skipWarning !== 'yes') {
+      this.$swal.Prompt.fire({
+        html: `
+          <h4 class="text-center p-2">
+            <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59" style="height: 1.1em;margin-right: 0.75em;">
+              <use href="#svg-octoprint-tunneling" />
+            </svg>
+            OctoPrint Secure Tunnel
+          </h4>
+          <div class="p-1">
+            It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.
+          </div>
+          <div class="p-1">
+            <a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">
+            Learn more about OctoPrint Tunneling's security and page load speed.
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+        `,
+        input: 'checkbox',
+        inputPlaceholder: 'Don\'t show again',
+      },
+      'octoprint-tunnel.warning').then((result) => {
+        if (result.isConfirmed) {
+          if (result.value && isLocalStorageSupported()) {
+            localStorage.setItem('skip-tunneling-warning', 'yes')
+          }
+        }
+      })
+    }
 
     const self = this
     const fetchUsage = () => {
@@ -109,4 +137,7 @@ export default {
 @media (pointer:none), (pointer:coarse)
   .swal2-popup
     transform: scale(1.5)
+  .floating-panel
+    transform: scale(2)
+    transform-origin: right bottom
 </style>

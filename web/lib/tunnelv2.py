@@ -59,18 +59,27 @@ class OctoprintTunnelV2Helper(object):
         cls, s_or_r: ScopeOrRequest
     ) -> Optional[str]:
         if isinstance(s_or_r, django.http.HttpRequest):
-            return s_or_r.headers.get('Authorization', '').strip()
+            v = s_or_r.headers.get('Authorization', '').strip()
+        else:
+            try:
+                v = [
+                    hpair[1]
+                    for hpair in s_or_r['headers']
+                    if hpair[0] == b'authorization'
+                ][0].decode()
+            except IndexError:
+                v = ''
 
-        try:
-            authorization = [
-                hpair[1]
-                for hpair in s_or_r['headers']
-                if hpair[0] == b'authorization'
-            ][0]
-        except IndexError:
-            return ''
+        for authorization in v.split(','):
+            try:
+                token_name, token_key = authorization.split()
+            except ValueError:
+                continue
 
-        return authorization.decode()
+            if token_name.lower() == 'basic':
+                return authorization
+
+        return ''
 
     @classmethod
     def _get_user(cls, s_or_r: ScopeOrRequest) -> Optional[User]:

@@ -160,6 +160,7 @@ export default {
   display: flex
   padding-left: 100px
   &.is-in-mobile
+    padding-left: 0
     .side-nav
       display: none
     .toggle-sidebar
@@ -272,7 +273,6 @@ export default {
   padding: calc(50px + var(--gap-between-blocks)) calc(var(--gap-between-blocks) - 15px) var(--gap-between-blocks)
   display: flex
   flex-direction: column
-  justify-content: center
   min-height: calc(100vh - 68px)
 
 .content-overlay

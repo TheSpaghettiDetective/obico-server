@@ -1,10 +1,10 @@
 <template>
   <layout>
     <template v-slot:content>
-      <b-container fluid="xl" :class="{'is-in-mobile': useMobileLayout}">
-        <b-row>
-          <b-col>
-            <div v-if="user">
+      <b-container fluid="xl" :class="{'is-in-mobile': useMobileLayout}" class="flex-full-size">
+        <b-row class="flex-full-size">
+          <b-col class="flex-full-size">
+            <div v-if="user" class="flex-full-size">
               <!-- 2-step nav for mobiles -->
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/'" class="mobile-settings-categories">
@@ -437,6 +437,10 @@ export default {
 
 <style lang="sass" scoped>
 @use "~main/theme"
+.flex-full-size
+  display: flex
+  flex-direction: column
+  flex: 1
 .desktop-settings-wrapper
   margin: 0
   background-color: var(--color-surface-secondary)
@@ -444,6 +448,7 @@ export default {
     padding: 2rem
     padding-right: 3rem
 .mobile-settings-wrapper
+  flex: 1
   background-color: var(--color-surface-secondary)
   padding: 1.5rem
   .mobile-settings-content

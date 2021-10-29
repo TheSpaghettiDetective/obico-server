@@ -127,6 +127,10 @@ footer {
     margin: 0;
     font-size: 12px;
   }
+
+  @media (max-width: 768px) {
+    background-color: var(--color-background);
+  }
 }
 
 .text-subscript {

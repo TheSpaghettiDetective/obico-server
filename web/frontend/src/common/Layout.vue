@@ -322,12 +322,24 @@ export default {
 
 ::v-deep .dropdown-menu
   .dropdown-item
+    padding: 0.25rem 0.75rem
     .clickable-area
-      margin: -0.25rem -1.5rem
-      padding: 0.25rem 1.5rem
+      margin: -0.25rem -0.75rem
+      padding: 0.25rem 0.75rem
     i
       width: 20px
       margin-right: .5rem
 
+::v-deep .active-filter-notice
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: 0.5rem 1rem
+  background-color: var(--color-surface-secondary)
+  margin: calc(-1 * var(--gap-between-blocks)) calc(-1 * var(--gap-between-blocks) - 15px) var(--gap-between-blocks)
 
+  @media (max-width: 768px)
+    font-size: .875rem
+    margin-left: 0
+    margin-right: 0
 </style>

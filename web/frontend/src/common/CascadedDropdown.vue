@@ -3,7 +3,16 @@
     <template v-if="menuExpanded === null">
       <b-dropdown-item v-for="(menu, name) in menuOptions" :key="name">
         <div class="d-flex justify-content-between clickable-area" @click.stop.prevent="menuExpanded = name">
-          <div><i :class="menu.iconClass"></i>{{name}}</div>
+          <div>
+            <i :class="menu.iconClass"></i>
+            <span v-if="activeItems[name]">
+              {{ activeItems[name].title }}
+              <i v-if="activeItems[name].iconClass" :class="activeItems[name].iconClass"></i>
+            </span>
+            <span v-else>
+              {{name}}
+            </span>
+          </div>
           <div><i class="fas fa-chevron-right m-0"></i></div>
         </div>
       </b-dropdown-item>
@@ -41,7 +50,17 @@ export default {
       this.$emit('menuSelectionChanged', this.menuExpanded, option)
       this.menuExpanded = null
     },
-  }
+  },
+
+  computed: {
+    activeItems() {
+      let items = {}
+      for (const key of Object.keys(this.menuSelections)) {
+        items[key] = this.menuOptions[key].options.filter(option => option.value === this.menuSelections[key])[0]
+      }
+      return items
+    }
+  },
 }
 </script>
 

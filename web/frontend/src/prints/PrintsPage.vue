@@ -47,6 +47,10 @@
       </div>
     </template>
     <template v-slot:content>
+      <div v-if="shouldShowFilterWarning" class="active-filter-notice">
+        <i class="far fa-eye mr-2"></i>
+        {{ activeFiltering }}
+      </div>
       <b-container>
         <b-row class="print-cards" v-show="prints.length">
           <print-card
@@ -96,6 +100,12 @@ import PrintCard from './PrintCard.vue'
 import FullScreenPrintCard from './FullScreenPrintCard.vue'
 import Layout from '@common/Layout.vue'
 import CascadedDropdown from '@common/CascadedDropdown'
+import { isLocalStorageSupported } from '@common/utils'
+
+const LocalPrefNames = {
+  filtering: 'prints-filtering',
+  sorting: 'prints-sorting',
+}
 
 export default {
   name: 'PrintsPage',
@@ -152,6 +162,35 @@ export default {
         }
       }
     },
+    shouldShowFilterWarning() {
+      return this.menuSelections['Filter By'] !== 'none'
+    },
+    activeFiltering() {
+      const found = this.menuOptions['Filter By'].options.filter(option => option.value === this.menuSelections['Filter By'])
+      return found.length ? found[0].title : null
+    }
+  },
+
+  created() {
+    if (isLocalStorageSupported()) {
+      let changed = false
+
+      const savedSorting = localStorage.getItem(LocalPrefNames.sorting)
+      if (savedSorting && savedSorting !== this.menuSelections['Sort By']) {
+        this.menuSelections['Sort By'] = savedSorting
+        changed = true
+      }
+
+      const savedFiltering = localStorage.getItem(LocalPrefNames.filtering)
+      if (savedFiltering && savedFiltering !== this.menuSelections['Filter By']) {
+        this.menuSelections['Filter By'] = savedFiltering
+        changed = true
+      }
+
+      if (changed) {
+        this.refetchData()
+      }
+    }
   },
 
   methods: {
@@ -197,6 +236,10 @@ export default {
     menuSelectionChanged(menu, selectedOption) {
       this.$set(this.menuSelections, menu, selectedOption.value)
       this.refetchData()
+      if (isLocalStorageSupported()) {
+        const prefName = menu === 'Sort By' ? LocalPrefNames.sorting : LocalPrefNames.filtering
+        localStorage.setItem(prefName, selectedOption.value)
+      }
     },
 
     onDeleteBtnClick() {

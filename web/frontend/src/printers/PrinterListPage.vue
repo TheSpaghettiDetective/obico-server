@@ -33,6 +33,10 @@
       </div>
     </template>
     <template v-slot:content>
+      <div v-if="shouldShowFilterWarning" class="active-filter-notice">
+        <i class="far fa-eye mr-2"></i>
+        {{ activeFiltering }}
+      </div>
       <b-container class="printer-list-page">
         <b-row v-if="loading">
           <b-col class="text-center">
@@ -59,24 +63,9 @@
             </div>
           </div>
         </div>
-        <b-row v-show="shouldShowFilterWarning || shouldShowArchiveWarning" class="bottom-messages">
+        <b-row v-show="shouldShowArchiveWarning" class="bottom-messages">
           <b-col>
-            <div v-if="shouldShowFilterWarning" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
-              <div class="warning">
-                <div>{{ hiddenPrinterCount }} {{ 'printer' | pluralize(hiddenPrinterCount) }}
-                  hidden by the filter.</div>
-                  <a
-                    role="button"
-                    href="#"
-                    class="warning-action"
-                    @click="onShowAllPrintersClicked()"
-                  >Show All Printers</a>
-                </div>
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div v-if="shouldShowArchiveWarning" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+            <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
                 <div>{{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }}
                   have been archived.</div>
@@ -251,11 +240,15 @@ export default {
       return this.printers.length - this.visiblePrinters.length
     },
     shouldShowFilterWarning() {
-      return this.hiddenPrinterCount > 0 && !this.dontShowFilterWarning
+      return this.menuSelections['Filter By'] !== StateFilter.All
     },
     shouldShowArchiveWarning() {
       return this.archivedPrinterNum > 0
     },
+    activeFiltering() {
+      const found = this.menuOptions['Filter By'].options.filter(option => option.value === this.menuSelections['Filter By'])
+      return found.length ? found[0].title : null
+    }
   },
   methods: {
     menuSelectionChanged(menu, selectedOption) {

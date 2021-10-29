@@ -33,9 +33,12 @@
       </div>
     </template>
     <template v-slot:content>
-      <div v-if="shouldShowFilterWarning" class="active-filter-notice">
-        <i class="far fa-eye mr-2"></i>
-        {{ activeFiltering }}
+      <div v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
+        <div class="filter">
+          <i class="fas fa-filter mr-2"></i>
+          {{ activeFiltering }}
+        </div>
+        <a>SHOW ALL</a>
       </div>
       <b-container class="printer-list-page">
         <b-row v-if="loading">
@@ -100,41 +103,14 @@ import Layout from '@common/Layout.vue'
 import CascadedDropdown from '@common/CascadedDropdown'
 import { user } from '@lib/page_context'
 
-const SortOrder = {
-  Asc: 'asc',
-  Desc: 'desc'
-}
-
-const StateFilter = {
-  All: 'all',
-  OnlineOnly: 'online',
-  ActiveOnly: 'active',
-}
-
-const SortFilter = {
-  DateAsc: 'by-date-asc',
-  DateDesc: 'by-date-desc',
-  NameAsc: 'by-name-asc',
-  NameDesc: 'by-name-desc',
-}
-
 const SortIconClass = {
-  [SortOrder.Asc]: 'fas fa-long-arrow-alt-up',
-  [SortOrder.Desc]: 'fas fa-long-arrow-alt-down'
+  asc: 'fas fa-long-arrow-alt-up',
+  desc: 'fas fa-long-arrow-alt-down'
 }
 
 const LocalPrefNames = {
   StateFilter: 'printer-filtering',
   SortFilter: 'printer-sorting',
-}
-
-let lookup = (obj, value, def)=> {
-  const ret = Object.entries(obj).find(pair => (pair[1] == value))
-  if (ret) {
-    return ret[1]
-  } else {
-    return def
-  }
 }
 
 export default {
@@ -148,9 +124,6 @@ export default {
     const {IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
     this.isEnt = !!IS_ENT
     this.user = user()
-    this.StateFilter = StateFilter
-    this.SortFilter = SortFilter
-    this.SortOrder = SortOrder
     this.fetchPrinters()
   },
   data: function() {
@@ -160,37 +133,29 @@ export default {
       loading: true,
       isEnt: false,
       menuSelections: {
-        'Sort By': lookup(
-            SortFilter,
-            getLocalPref(
+        'Sort By': getLocalPref(
               LocalPrefNames.SortFilter,
-              SortFilter.DateDesc),
-            SortFilter.DateDesc
-          ),
-        'Filter By': lookup(
-            StateFilter,
-            getLocalPref(
+              'by-date-desc'),
+        'Filter By': getLocalPref(
               LocalPrefNames.StateFilter,
-              StateFilter.All),
-            StateFilter.All
-          ),
+              'all'),
       },
       menuOptions: {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            {value: SortFilter.DateAsc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Asc]},
-            {value: SortFilter.DateDesc, title: 'Sort By Date', iconClass: SortIconClass[SortOrder.Desc]},
-            {value: SortFilter.NameAsc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Asc]},
-            {value: SortFilter.NameDesc, title: 'Sort By Name', iconClass: SortIconClass[SortOrder.Desc]},
+            {value: 'by-date-asc', title: 'Sort By Date', iconClass: SortIconClass['asc']},
+            {value: 'by-date-desc', title: 'Sort By Date', iconClass: SortIconClass['desc']},
+            {value: 'by-name-asc', title: 'Sort By Name', iconClass: SortIconClass['asc']},
+            {value: 'by-name-desc', title: 'Sort By Name', iconClass: SortIconClass['desc']},
           ],
         },
         'Filter By': {
           iconClass: 'fas fa-filter',
           options: [
-            {value: StateFilter.All, title: 'All Printers'},
-            {value: StateFilter.OnlineOnly, title: 'Online Printers Only'},
-            {value: StateFilter.ActiveOnly, title: 'Active Printers Only'},
+            {value: 'all', title: 'All Printers'},
+            {value: 'online', title: 'Online Printers'},
+            {value: 'active', title: 'Active Printers'},
           ],
         }
       },
@@ -209,27 +174,27 @@ export default {
     visiblePrinters() {
       let printers = this.printers
       switch (this.menuSelections['Filter By']) {
-      case StateFilter.OnlineOnly:
+      case 'online':
         printers = printers.filter((p) => !p.isDisconnected())
         break
-      case StateFilter.ActiveOnly:
+      case 'active':
         printers = printers.filter((p) => p.isPrinting())
         break
-      case StateFilter.All:
+      case 'all':
         break
       }
 
       switch (this.menuSelections['Sort By']) {
-      case SortFilter.DateAsc:
+      case 'by-date-asc':
         printers = sortBy(printers, (p) => p.createdAt())
         break
-      case SortFilter.DateDesc:
+      case 'by-date-desc':
         printers = reverse(sortBy(printers, (p) => p.createdAt()))
         break
-      case SortFilter.NameAsc:
+      case 'by-name-asc':
         printers = sortBy(printers, (p) => p.name)
         break
-      case SortFilter.NameDesc:
+      case 'by-name-desc':
         printers = reverse(sortBy(printers, (p) => p.name))
         break
       }
@@ -240,7 +205,7 @@ export default {
       return this.printers.length - this.visiblePrinters.length
     },
     shouldShowFilterWarning() {
-      return this.menuSelections['Filter By'] !== StateFilter.All
+      return this.menuSelections['Filter By'] !== 'all'
     },
     shouldShowArchiveWarning() {
       return this.archivedPrinterNum > 0
@@ -289,11 +254,11 @@ export default {
           }
         })
     },
-    onShowAllPrintersClicked(){
-      this.$set(this.menuSelections, 'Filter By', StateFilter.All)
+    onShowAllClicked(){
+      this.$set(this.menuSelections, 'Filter By', 'all')
       setLocalPref(
         LocalPrefNames.StateFilter,
-        StateFilter.All
+        'all'
       )
     },
     insertPrinter(printer) {

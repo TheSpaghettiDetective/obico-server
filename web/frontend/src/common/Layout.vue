@@ -285,6 +285,10 @@ export default {
   background: rgb(0,0,0,.5)
   display: none
 
+::v-deep .search-input input
+  background-color: var(--color-surface-secondary)
+  border-color: var(--color-surface-secondary)
+
 @media (min-width: 769px)
   .content-wrapper
     &.hide-top-nav

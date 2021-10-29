@@ -25,6 +25,11 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   })
 
   self.onPassThruReceived = function(msg) {
+    if ('printer_id' in msg && self.printerId != msg.printer_id) {
+      console.error('printer_id mismatch', self.printerId, msg)
+      return
+    }
+
     const refId = msg.ref
     if (refId && self.passthruQueue.get(refId)) {
       const callback = self.passthruQueue.get(refId)
@@ -43,6 +48,12 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
           console.log(e.data)
           throw(error)
       }
+
+      if ('printer_id' in msg && self.printerId != msg.printer_id) {
+        console.error('printer_id mismatch', self.printerId, msg)
+        return
+      }
+
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
       } else {
@@ -115,7 +126,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   self.passThruToPrinter = function(msg, callback) {
     if (self.canSend()) {
       var refId = Math.random().toString()
-      assign(msg, {ref: refId})
+      assign(msg, {ref: refId, printer_id: self.printerId})
       if (callback) {
         self.passthruQueue.set(refId, callback)
         setTimeout(function() {

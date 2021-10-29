@@ -22,9 +22,13 @@ def octoprinttunnel_group_name(printer_id):
 
 
 def send_msg_to_printer(printer_id, msg_dict):
+    if 'printer_id' not in msg_dict:
+        msg_dict['printer_id'] = printer_id
+
     msg_dict.update({
         'type': 'printer.message',  # mapped to -> printer_message in consumer
     })
+
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         octo_group_name(printer_id),
@@ -32,6 +36,9 @@ def send_msg_to_printer(printer_id, msg_dict):
     )
 
 def send_message_to_web(printer_id, msg_dict):
+    if 'printer_id' not in msg_dict:
+        msg_dict['printer_id'] = printer_id
+
     msg_dict.update({'type': 'web.message'})    # mapped to -> web_message in consumer
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
@@ -49,6 +56,9 @@ def send_status_to_web(printer_id):
     )
 
 def send_janus_to_web(printer_id, msg):
+    if 'printer_id' not in msg:
+        msg['printer_id'] = printer_id
+
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         janus_web_group_name(printer_id),

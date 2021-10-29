@@ -137,6 +137,9 @@ class OctoPrintConsumer(WebsocketConsumer):
             else:
                 data = bson.loads(bytes_data)
 
+            if data.get('printer_id') and data['printer_id'] != self.current_printer().id:
+                raise Exception('printer_id mismatch')
+
             if 'janus' in data:
                 channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
             elif 'http.tunnel' in data:

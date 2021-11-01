@@ -263,8 +263,8 @@ import 'bootstrap-slider/dist/css/bootstrap-slider.css'
 
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
-import SavingAnimation from '../common/SavingAnimation.vue'
-import NumberInput from '../common/NumberInput.vue'
+import SavingAnimation from '@common/SavingAnimation.vue'
+import NumberInput from '@common/NumberInput.vue'
 import Layout from '@common/Layout.vue'
 
 export default {
@@ -617,8 +617,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .card
   overflow: visible !important
 

@@ -290,8 +290,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .print-cards
   margin-top: calc(var(--gap-between-blocks) * -1)
 

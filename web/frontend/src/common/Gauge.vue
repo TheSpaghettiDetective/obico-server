@@ -10,7 +10,7 @@
 
 <script>
 import RadialGauge from 'vue2-canvas-gauges/src/RadialGauge'
-import { Themes, theme } from '../main/colors.js'
+import { Themes, theme } from '@main/colors.js'
 
 export default {
   name: 'Gauge',
@@ -126,8 +126,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 #title
   position: absolute
   left: 0px

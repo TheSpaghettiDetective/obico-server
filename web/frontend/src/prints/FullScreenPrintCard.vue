@@ -12,7 +12,7 @@
     <div v-if="isPublic" :style="{opacity: normalizedP > 0.4 ? 1 : 0}" class="bg-warning alert-banner text-center">
       <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
     </div>
-    
+
     <gauge
       :normalizedP="normalizedP"
     />
@@ -22,8 +22,8 @@
 <script>
 import axios from 'axios'
 import {getNormalizedP} from '@lib/normalizers'
-import VideoBox from '../common/VideoBox'
-import Gauge from '../common/Gauge'
+import VideoBox from '@common/VideoBox'
+import Gauge from '@common/Gauge'
 
 export default {
   name: 'FullScreenPrintCard',

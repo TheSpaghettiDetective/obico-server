@@ -215,9 +215,9 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import sortBy from 'lodash/sortBy'
 import get from 'lodash/get'
-import theme from '../main/main.sass'
+import theme from '@main/main.sass'
 import Layout from '@common/Layout.vue'
-import SavingAnimation from '../common/SavingAnimation.vue'
+import SavingAnimation from '@common/SavingAnimation.vue'
 import DiscoveredPrinter from './components/DiscoveredPrinter.vue'
 import AutoLinkPopup from './components/AutoLinkPopup.vue'
 import { user } from '@lib/page_context'
@@ -527,8 +527,8 @@ export default {
   },
 }
 </script>
+
 <style lang="sass" scoped>
-@use "~main/theme"
 .wizard-btn
   border-radius: 300px
 .wizard-container
@@ -583,10 +583,11 @@ li
     position: relative
     z-index: 9
 </style>
+
 <style lang="sass">
 // Unscoped styles to style plugin elements
 // TODO merge 2 style blocks
-@use "~main/theme"
+
 // Step label (not active)
 .wizard-container .vue-form-wizard .wizard-nav-pills > li:not(.active) > a > span
   color: var(--color-text-primary)

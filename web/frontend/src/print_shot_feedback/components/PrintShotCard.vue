@@ -22,7 +22,7 @@
 <script>
 import axios from 'axios'
 
-import urls from '../../lib/server_urls'
+import urls from '@lib/server_urls'
 import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
 
 export default {
@@ -57,7 +57,7 @@ export default {
 
         .then(response => {
           const { instance, credited_dhs } = response.data
-          
+
           if (credited_dhs > 0) {
             this.$swal.Prompt.fire({
               title: 'You are awesome!',

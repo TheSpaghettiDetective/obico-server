@@ -40,8 +40,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 // bootstrap-select has this default
 $tsd-dropdown-with: 220px
 

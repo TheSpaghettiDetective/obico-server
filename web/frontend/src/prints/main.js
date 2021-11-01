@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import VueSwal from 'common/VueSwal'
+import VueSwal from '@common/VueSwal'
 import { BootstrapVue } from 'bootstrap-vue'
 import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
-import 'common/filters'
+import '@common/filters'
 import setupSentry from '@lib/sentry'
 import { initTheme } from '@main/colors'
 

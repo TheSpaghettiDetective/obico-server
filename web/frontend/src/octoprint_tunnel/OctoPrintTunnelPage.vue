@@ -112,8 +112,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .tunnel-iframe
     width: 100%
     height: 100vh

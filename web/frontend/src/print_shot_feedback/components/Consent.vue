@@ -68,8 +68,8 @@
 <script>
 import moment from 'moment'
 
-import VideoBox from 'common/VideoBox'
-import DetectiveWorking from 'common/DetectiveWorking'
+import VideoBox from '@common/VideoBox'
+import DetectiveWorking from '@common/DetectiveWorking'
 
 export default {
   name: 'Consent',
@@ -100,8 +100,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .consent-section
   background: var(--color-surface-secondary)
 

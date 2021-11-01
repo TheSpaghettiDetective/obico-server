@@ -71,8 +71,6 @@
 </script>
 
 <style lang="sass" scoped>
-  @use "~main/theme"
-
   .input-group.input-wrapper
     .control-button
       border-width: 1px

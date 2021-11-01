@@ -197,10 +197,10 @@ import filter from 'lodash/filter'
 // import get from 'lodash/get'
 
 import {getNormalizedP} from '@lib/normalizers'
-import urls from '../lib/server_urls'
-import VideoBox from '../common/VideoBox'
-import Gauge from '../common/Gauge'
-import DetectiveWorking from 'common/DetectiveWorking'
+import urls from '@lib/server_urls'
+import VideoBox from '@common/VideoBox'
+import Gauge from '@common/Gauge'
+import DetectiveWorking from '@common/DetectiveWorking'
 import printerStockImgSrc from '@static/img/3d_printer.png'
 import DarkLightImage from '@common/DarkLightImage.vue'
 
@@ -412,8 +412,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .print-card
   margin-top: var(--gap-between-blocks)
 

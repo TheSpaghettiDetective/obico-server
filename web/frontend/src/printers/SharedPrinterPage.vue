@@ -70,7 +70,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
 #printer-list-page
   margin-top: 1.5rem
 .printer-card

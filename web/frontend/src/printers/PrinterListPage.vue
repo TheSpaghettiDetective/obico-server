@@ -279,8 +279,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .printer-list-page
   .consider-upgrade
     margin-bottom: var(--gap-between-blocks)

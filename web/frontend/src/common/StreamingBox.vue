@@ -265,8 +265,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .loading-icon
   position: absolute
   width: 3rem

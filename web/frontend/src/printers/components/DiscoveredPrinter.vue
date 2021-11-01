@@ -63,8 +63,6 @@ export default {
 </script>
 
 <style lang="sass">
-@use "~main/theme"
-
 .discovered-printers
   display: flex
   flex-direction: columns

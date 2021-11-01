@@ -19,8 +19,8 @@
 <script>
 import axios from 'axios'
 
-import urls from '../lib/server_urls'
-import { normalizedPrint } from '../lib/normalizers'
+import urls from '@lib/server_urls'
+import { normalizedPrint } from '@lib/normalizers'
 import PrintCard from './PrintCard.vue'
 import Layout from '@common/Layout.vue'
 

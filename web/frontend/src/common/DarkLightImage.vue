@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { Themes, theme } from '../main/colors.js'
+import { Themes, theme } from '@main/colors.js'
 
 export default {
   name: 'DarkLightImage',

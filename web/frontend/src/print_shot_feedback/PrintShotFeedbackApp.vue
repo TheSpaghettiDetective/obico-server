@@ -66,8 +66,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 import Consent from './components/Consent'
 import PrintShotCard from './components/PrintShotCard'
-import urls from '../lib/server_urls'
-import { normalizedPrint } from '../lib/normalizers'
+import urls from '@lib/server_urls'
+import { normalizedPrint } from '@lib/normalizers'
 import Layout from '@common/Layout.vue'
 
 export default {
@@ -138,8 +138,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .prev-btn
   display: inline
   position: absolute

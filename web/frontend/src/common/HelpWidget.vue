@@ -184,8 +184,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .help-wrapper
   display: inline
   position: relative

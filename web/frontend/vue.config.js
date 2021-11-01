@@ -22,12 +22,10 @@ let vueConfig = {
     devtool: 'source-map',
     resolve: {
       alias: {
-        main: path.join(__dirname, 'src/main'),
-        common: path.join(__dirname, 'src/common'),
-        lib: path.join(__dirname, 'src/lib'),
         '@common': path.join(__dirname, 'src/common'),
         '@lib': path.join(__dirname, 'src/lib'),
         '@main': path.join(__dirname, 'src/main'),
+        '@prints': path.join(__dirname, 'src/prints'),
         '@static': path.join(__dirname, '../app/static'),
       }
     },

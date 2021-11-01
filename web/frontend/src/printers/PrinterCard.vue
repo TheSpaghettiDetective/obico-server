@@ -740,8 +740,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 .menu-icon
   width: 20px
   margin-right: 12px

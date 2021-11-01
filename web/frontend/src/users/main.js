@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueSwal from 'common/VueSwal'
+import VueSwal from '@common/VueSwal'
 import setupSentry from '@lib/sentry'
 import { BootstrapVue } from 'bootstrap-vue'
 import { initTheme } from '@main/colors'

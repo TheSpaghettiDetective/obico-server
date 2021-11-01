@@ -307,108 +307,106 @@
 </script>
 
 <style lang="sass" scoped>
-  @use "~main/theme"
+.upload-box
+  margin-bottom: var(--gap-between-blocks)
 
-  .upload-box
-    margin-bottom: var(--gap-between-blocks)
-
-  .search-input
-    height: 30px
-    input
-      background-color: var(--color-surface-secondary)
-      border: var(--color-surface-secondary)
-
-  .gcodes-wrapper
+.search-input
+  height: 30px
+  input
     background-color: var(--color-surface-secondary)
-    padding: 2em
+    border: var(--color-surface-secondary)
 
-  .control-panel
-    border-bottom: 1px solid var(--color-divider)
-    padding-bottom: 16px
+.gcodes-wrapper
+  background-color: var(--color-surface-secondary)
+  padding: 2em
 
-  .sorting-panel
+.control-panel
+  border-bottom: 1px solid var(--color-divider)
+  padding-bottom: 16px
+
+.sorting-panel
+  display: flex
+  padding: 1em calc(1em + 30px) 1em 1em
+  border-bottom: 1px solid var(--color-divider)
+
+  .sorting-option
+    flex: 1
     display: flex
-    padding: 1em calc(1em + 30px) 1em 1em
-    border-bottom: 1px solid var(--color-divider)
+    justify-content: space-between
+    margin-left: 30px
+    align-items: center
+    font-size: .9rem
+
+    &:hover
+      cursor: pointer
+
+    &:first-child
+      margin-left: 0
+
+    .direction
+      font-size: .8rem
+      opacity: .3
+
+  .sorting-option.active .direction
+    opacity: 1
+
+  @media (max-width: 768px)
+    &
+      flex-direction: column
+      padding: 1em 0
 
     .sorting-option
-      flex: 1
+      margin-left: 0
+      margin-bottom: 4px
+
+    .remove-button-placeholder
+      display: none
+
+.gcode-items-wrapper
+  .item
+    display: flex
+    align-items: center
+    padding: .6em 1em
+
+    &:nth-child(2n)
+      background-color: var(--color-table-accent)
+
+    .item-info
       display: flex
-      justify-content: space-between
-      margin-left: 30px
-      align-items: center
-      font-size: .9rem
+      width: 100%
+
+      div
+        flex: 1
+        margin-left: 30px
+
+        &:first-child
+          margin-left: 0
+
+    .remove-button
+      width: 30px
+      height: 30px
+      text-align: center
+      line-height: 30px
+      border-radius: 50%
+      transition: background-color .2s ease-out
 
       &:hover
+        background-color: var(--color-danger)
+        color: var(--color-on-primary)
         cursor: pointer
-
-      &:first-child
-        margin-left: 0
-
-      .direction
-        font-size: .8rem
-        opacity: .3
-
-    .sorting-option.active .direction
-      opacity: 1
 
     @media (max-width: 768px)
       &
-        flex-direction: column
-        padding: 1em 0
-
-      .sorting-option
-        margin-left: 0
-        margin-bottom: 4px
-
-      .remove-button-placeholder
-        display: none
-
-  .gcode-items-wrapper
-    .item
-      display: flex
-      align-items: center
-      padding: .6em 1em
+        padding: .6em 0
 
       &:nth-child(2n)
-        background-color: var(--color-table-accent)
+        margin: 0 -.6em
+        padding: .6em
 
       .item-info
-        display: flex
-        width: 100%
+        flex-direction: column
+        align-items: flex-start
 
         div
-          flex: 1
-          margin-left: 30px
-
-          &:first-child
-            margin-left: 0
-
-      .remove-button
-        width: 30px
-        height: 30px
-        text-align: center
-        line-height: 30px
-        border-radius: 50%
-        transition: background-color .2s ease-out
-
-        &:hover
-          background-color: var(--color-danger)
-          color: var(--color-on-primary)
-          cursor: pointer
-
-      @media (max-width: 768px)
-        &
-          padding: .6em 0
-
-        &:nth-child(2n)
-          margin: 0 -.6em
-          padding: .6em
-
-        .item-info
-          flex-direction: column
-          align-items: flex-start
-
-          div
-            margin-left: 0
+          margin-left: 0
 </style>

@@ -55,7 +55,7 @@
 
 <script>
 import { inMobileWebView, user, settings } from '@lib/page_context'
-import { Themes, theme } from '../main/colors.js'
+import { Themes, theme } from '@main/colors.js'
 
 export default {
   name: 'Navbar',

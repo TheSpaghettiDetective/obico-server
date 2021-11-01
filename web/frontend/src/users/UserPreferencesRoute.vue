@@ -436,7 +436,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
 .flex-full-size
   display: flex
   flex-direction: column

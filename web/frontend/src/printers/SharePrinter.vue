@@ -167,8 +167,6 @@
 </script>
 
 <style lang="sass" scoped>
-@use "~main/theme"
-
 hr
   background-color: var(--color-divider)
 

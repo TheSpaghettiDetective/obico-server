@@ -336,11 +336,11 @@ export default {
   justify-content: space-between
   padding: 0.5rem 1rem
   background-color: var(--color-surface-secondary)
-  margin: calc(-1 * var(--gap-between-blocks)) calc(-1 * var(--gap-between-blocks) - 15px) var(--gap-between-blocks)
+  margin: calc(-1 * var(--gap-between-blocks)) -15px var(--gap-between-blocks)
 
   .filter
     color: var(--color-primary)
-    
+
   @media (max-width: 768px)
     font-size: .875rem
     margin-left: 0

@@ -141,6 +141,7 @@ class OctoPrintConsumer(WebsocketConsumer):
                 data = bson.loads(bytes_data)
 
             if data.get('printer_id') and data['printer_id'] != self.current_printer().id:
+                self.close()
                 raise Exception('printer_id mismatch')
 
             if 'janus' in data:

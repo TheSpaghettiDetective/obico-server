@@ -26,8 +26,12 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   self.onPassThruReceived = function(msg) {
     if ('printer_id' in msg && self.printerId != msg.printer_id) {
-      console.error('printer_id mismatch', self.printerId, msg)
-      return
+
+      self.closeWebSocket()
+      if (self.webrtc) {
+        self.webrtc.stopStream()
+      }
+      throw new Error('printer_id mismatch', self.printerId, msg)
     }
 
     const refId = msg.ref
@@ -50,8 +54,11 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       }
 
       if ('printer_id' in msg && self.printerId != msg.printer_id) {
-        console.error('printer_id mismatch', self.printerId, msg)
-        return
+        self.closeWebSocket()
+        if (self.webrtc) {
+          self.webrtc.stopStream()
+        }
+        throw new Error('printer_id mismatch', self.printerId, msg)
       }
 
       if ('passthru' in msg) {

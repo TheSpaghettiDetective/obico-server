@@ -45,7 +45,7 @@ export default {
     Navbar,
   },
   created(){
-    this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
+    this.shareToken = parseInt(split(window.location.pathname, '/').slice(-2, -1).pop())
     this.printerComm = PrinterComm(
       this.shareToken,
       urls.printerSharedWebSocket(this.shareToken),

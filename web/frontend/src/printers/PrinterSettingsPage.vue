@@ -439,7 +439,7 @@ export default {
   },
 
   created() {
-    this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
+    this.printerId = parseInt(split(window.location.pathname, '/').slice(-2, -1).pop())
     this.fetchPrinter().then(() => {
       // Instantiate sensitivity slider
       const sensitivitySlider = new Slider('#id_sensitivity', {

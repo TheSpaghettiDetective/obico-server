@@ -126,7 +126,7 @@
 
     created() {
       this.user = user()
-      this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
+      this.printerId = parseInt(split(window.location.pathname, '/').slice(-3, -2).pop())
 
       // Get jogDistance from localStorage or set default value
       const storageValue = isLocalStorageSupported() ? localStorage.getItem(`mm-per-step-${this.printerId}`) : null

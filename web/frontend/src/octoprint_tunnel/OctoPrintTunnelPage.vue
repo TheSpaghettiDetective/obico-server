@@ -54,7 +54,7 @@ export default {
 
   created() {
     this.isPro = user().is_pro
-    this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
+    this.printerId = parseInt(split(window.location.pathname, '/').slice(-2, -1).pop())
   },
 
   mounted() {

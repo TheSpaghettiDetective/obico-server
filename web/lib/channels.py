@@ -56,9 +56,6 @@ def send_status_to_web(printer_id):
     )
 
 def send_janus_to_web(printer_id, msg):
-    if 'printer_id' not in msg:
-        msg['printer_id'] = printer_id
-
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         janus_web_group_name(printer_id),
@@ -86,7 +83,7 @@ def send_message_to_octoprinttunnel(group_name, data):
 def broadcast_ws_connection_change(sender, room, **kwargs):
     (group, printer_id) = room.channel_name.split('.')  # room.channel_name is actually the room name (= group name)
     if group == 'p_web':
-        send_msg_to_printer(printer_id, {'remote_status': {'viewing': room.get_anonymous_count() > 0}})
+        send_msg_to_printer(int(printer_id), {'remote_status': {'viewing': room.get_anonymous_count() > 0}})
     if group == 'p_octo':
         if num_ws_connections(octo_group_name(printer_id)) <= 0:
             cache.printer_status_delete(printer_id)

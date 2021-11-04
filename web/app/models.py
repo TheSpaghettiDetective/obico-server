@@ -761,13 +761,3 @@ class PrinterTunnel(models.Model):
             )
             url = f'{request.scheme}://{domain}'
         return url
-
-    def get_redirect_url(self, request):
-        url = self.get_url(request)
-        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-            transferkey = token_hex(10)
-            cache.printertunnel_transferkey_set(
-                transferkey, request.session.session_key
-            )
-            return f'{url}/_tsd_/?transferkey={transferkey}'
-        return url

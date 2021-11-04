@@ -103,25 +103,13 @@ def save_static_etag(func):
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
     pt = PrinterTunnel.get_or_create_for_internal_use(printer)
-    url = pt.get_redirect_url(request)
+    url = pt.get_url(request)
     return HttpResponseRedirect(url)
 
 
 @csrf_exempt
 @xframe_options_exempt
 def octoprint_http_tunnel(request):
-    if request.path == '/_tsd_/':
-        transferkey = request.GET['transferkey']
-        session_key = cache.printertunnel_transferkey_get(transferkey)
-        assert session_key
-        logger.error((session_key, request.session.session_key))
-        if session_key != request.session.session_key:
-            request.session.__session_key = session_key
-            delattr(request.session, '_session_cache')
-            request.session._get_session()
-        resp = HttpResponseRedirect(request.build_absolute_uri('/'))
-        return resp
-
     try:
         pt = OctoprintTunnelV2Helper.get_printertunnel(request)
     except TunnelAuthenticationError as exc:

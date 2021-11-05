@@ -143,17 +143,14 @@ def send_to_device(msg, mobile_device):
 
     kwargs = dict(
         data=msg,
-        token=mobile_device.device_token
-    )
-
-    if mobile_device.platform == 'android':
-        kwargs['android'] = AndroidConfig(priority='high')
-    else:
-        kwargs['apns'] = APNSConfig(
+        android=AndroidConfig(priority='high'),
+        apns=APNSConfig(
             headers={'apns-push-type': 'background', 'apns-priority': '5'},
             payload=APNSPayload(
                 aps=Aps(content_available=True, category='post'))
-        )
+        ),
+        token=mobile_device.device_token
+    )
 
     try:
         message = Message(**kwargs)

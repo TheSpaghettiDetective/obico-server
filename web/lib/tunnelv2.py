@@ -143,6 +143,10 @@ class OctoprintTunnelV2Helper(object):
             if pt is None:
                 raise TunnelAuthenticationError(
                     'invalid credentials', realm=realm)
+            if isinstance(s_or_r, django.http.HttpRequest):
+                setattr(s_or_r, 'auth_header', auth_header)
+            else:
+                s_or_r['auth_header'] = auth_header
             return pt
 
         user = cls._get_user(s_or_r)

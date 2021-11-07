@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.conf import settings
 
 import zlib
 
@@ -19,6 +20,12 @@ import logging
 logger = logging.getLogger()
 
 PLUGIN_STATIC_RE = re.compile(r'/plugin/[\w_-]+/static/')
+DJANGO_COOKIE_RE = re.compile(
+    fr'^{settings.CSRF_COOKIE_NAME}=|'
+    fr'^{settings.SESSION_COOKIE_NAME}=|'
+    fr'^{settings.LANGUAGE_COOKIE_NAME}='
+)
+
 
 OVER_FREE_LIMIT_HTML = """
 <html>
@@ -138,11 +145,10 @@ def _octoprint_http_tunnel(request, printertunnel):
     path = request.get_full_path()
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_AUTHORIZATION'
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_AUTHORIZATION',
+        'HTTP_COOKIE',
     ]
 
-    # Recreate http headers, because django put headers
-    # in request.META as "HTTP_XXX_XXX". Is there a better way?
     req_headers = {
         k[5:].replace('_', ' ').title().replace(' ', '-'): v
         for (k, v) in request.META.items()
@@ -154,6 +160,28 @@ def _octoprint_http_tunnel(request, printertunnel):
 
     if 'CONTENT_TYPE' in request.META:
         req_headers['Content-Type'] = request.META['CONTENT_TYPE']
+
+    if 'HTTP_COOKIE' in request.META:
+        stripped_cookies = '; '.join(
+            [
+                cookie.strip()
+                for cookie in request.META['HTTP_COOKIE'].split(';')
+                if DJANGO_COOKIE_RE.match(cookie.strip()) is None
+            ]
+        )
+        if stripped_cookies:
+            req_headers['Cookie'] = stripped_cookies
+
+    if hasattr(request, 'auth_header'):
+        stripped_auth_heaader = ', '.join(
+            [
+                h
+                for h in request.META['HTTP_AUTHORIZATION'].split(',')
+                if h != request.auth_header
+            ]
+        )
+        if stripped_auth_heaader:
+            req_headers['Authorization'] = stripped_auth_heaader
 
     ref = f'{printertunnel.id}.{method}.{time.time()}.{path}'
 

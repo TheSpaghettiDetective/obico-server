@@ -1,23 +1,26 @@
 import time
 import functools
 import re
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
+from django.shortcuts import render
 
 import zlib
 
-from lib.view_helpers import get_printer_or_404
+from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from app.models import PrinterTunnel
 
+
 import logging
 logger = logging.getLogger()
+
 
 PLUGIN_STATIC_RE = re.compile(r'/plugin/[\w_-]+/static/')
 DJANGO_COOKIE_RE = re.compile(
@@ -71,6 +74,11 @@ def should_cache(path):
 
 def fix_etag(etag):
     return f'"{etag}"' if etag and '"' not in etag else etag
+
+
+@login_required
+def tunnel(request, pk, template_dir=None):
+    return render(request, get_template_path('tunnel', template_dir))
 
 
 def fetch_static_etag(request, printertunnel, *args, **kwargs):
@@ -205,8 +213,10 @@ def _octoprint_http_tunnel(request, printertunnel):
             status=504)
 
     content_type = data['response']['headers'].get('Content-Type') or None
+    status_code = data['response']['status']
+
     resp = HttpResponse(
-        status=data['response']['status'],
+        status=status_code,
         content_type=content_type,
     )
 

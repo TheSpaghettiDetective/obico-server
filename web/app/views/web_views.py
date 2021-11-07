@@ -26,9 +26,6 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 
-from . import tunnel_views
-from . import tunnelv2_views
-
 
 def index(request):
     if request.user.is_authenticated:
@@ -100,13 +97,6 @@ def printer_shared(request, share_token=None):
 @login_required
 def printer_control(request, pk):
     return render(request, 'printer_control.html')
-
-
-@login_required
-def octoprint_http_tunnel(request, pk):
-    if settings.USE_OCTOPRINT_TUNNEL_V2:
-        return tunnelv2_views.redirect_to_tunnel_url(request, pk)
-    return tunnel_views.octoprint_http_tunnel(request, pk)
 
 
 # User preferences

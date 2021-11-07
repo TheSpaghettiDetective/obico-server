@@ -2,8 +2,9 @@ from django.urls import path, re_path
 from django.views.generic.base import RedirectView
 
 from .views import web_views
-from .views import tunnel_views
+from .views import tunnelv2_views
 from .views import mobile_views
+
 
 urlpatterns = [
     path('', web_views.index, name='index'),
@@ -30,9 +31,9 @@ urlpatterns = [
 
     re_path(
         r'^octoprint/(?P<pk>\d+)',
-        web_views.octoprint_http_tunnel,
+        tunnelv2_views.redirect_to_tunnel_url,
         name='octoprint_http_tunnel'),
-    path('tunnel/<int:pk>/', tunnel_views.tunnel),
+    path('tunnel/<int:pk>/', tunnelv2_views.tunnel),
 
     # Shown only in mobile apps
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
@@ -45,6 +46,6 @@ urlpatterns = [
     path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
     path('mobile/gcodes/upload/', web_views.upload_gcode_file),
     path('mobile/printers/<pk>/', web_views.edit_printer),
-    path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel),
+    path('mobile/tunnel/<int:pk>/', tunnelv2_views.tunnel),
     path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

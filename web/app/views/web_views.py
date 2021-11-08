@@ -26,6 +26,7 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 
+
 def index(request):
     if request.user.is_authenticated:
         if hasattr(settings, 'ACCOUNT_SIGNUP_REDIRECT_URL') and \

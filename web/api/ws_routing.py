@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, re_path
 
 from . import consumers
 
@@ -13,4 +13,5 @@ websocket_urlpatterns = [
     url(
         r'^ws/octoprint/(?P<printer_id>\d+)/',
         consumers.OctoprintTunnelWebConsumer),
+    re_path(r'^sockjs/.*$', consumers.OctoprintTunnelWebConsumer)
 ]

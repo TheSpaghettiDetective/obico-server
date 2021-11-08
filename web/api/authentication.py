@@ -33,11 +33,13 @@ class PrinterWSAuthMiddleWare:
         headers = dict(scope['headers'])
         try:
             if b'authorization' in headers:
-                token_name, token_key = headers[b'authorization'].decode().split()
-                if token_name == 'bearer':
-                    printer = Printer.objects.select_related('user').get(auth_token=token_key)
-                    printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
-                    scope['user'] = printer
+                for v in headers[b'authorization'].split(b','):
+                    token_name, token_key = v.decode().split()
+                    if token_name == 'bearer':
+                        printer = Printer.objects.select_related('user').get(auth_token=token_key)
+                        printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
+                        scope['user'] = printer
+                        break
             elif scope['path'].startswith('/ws/share_token/'):
                 printer = SharedResource.objects.select_related('printer').get(share_token=scope['path'].split(
                     '/')[-2]).printer  # scope['path'].split('/')[-2] is the share_token in uri

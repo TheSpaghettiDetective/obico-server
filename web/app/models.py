@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 import json
+from secrets import token_hex
 from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
@@ -14,6 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
@@ -680,3 +682,88 @@ class PrintHeaterTarget(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class OctoPrintTunnel(models.Model):
+    # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
+    INTERNAL_APP = 'TSD'
+
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    app = models.TextField(null=False, blank=False)
+
+    basicauth_username = models.TextField(blank=True, null=True)
+    basicauth_password = models.TextField(blank=True, null=True)
+
+    # when tunnel is accessed by subdomain.
+    subdomain_code = models.TextField(unique=True, blank=True, null=True)
+
+    # when tunnel is accessed by port. 
+    port = models.IntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_or_create_for_internal_use(cls, printer) -> 'OctoPrintTunnel':
+        pt = OctoPrintTunnel.objects.filter(
+            printer=printer,
+            app=cls.INTERNAL_APP,
+        ).first()
+
+        if pt is not None:
+            return pt
+
+        return cls.create(printer, app=cls.INTERNAL_APP)
+
+    @classmethod
+    def create(
+        cls, printer: Printer, app: str
+    ) -> 'OctoPrintTunnel':
+        internal = app == cls.INTERNAL_APP
+        n = 30
+        while n > 0:
+            n -= 1
+            try:
+                instance = OctoPrintTunnel(
+                    printer=printer,
+                    basicauth_username=None if internal else token_hex(32),
+                    basicauth_password=None if internal else token_hex(32),
+                    app=app,
+                )
+
+                if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+                    instance.port = OctoPrintTunnel.get_a_free_port()
+                else:
+                    instance.subdomain_code=token_hex(8)
+
+                instance.save()
+                return instance
+            except IntegrityError:
+                if n > 0:
+                    continue
+                raise
+
+    @classmethod
+    def get_a_free_port(cls):
+        occupied = set(OctoPrintTunnel.objects.filter(
+            port__isnull=False
+        ).values_list('port', flat=True))
+        possible = set(
+            range(
+                settings.OCTOPRINT_TUNNEL_PORT_RANGE[0],
+                settings.OCTOPRINT_TUNNEL_PORT_RANGE[1]
+            )
+        )
+        free = possible - occupied
+        return free.pop()
+
+    def get_url(self, request):
+        if self.subdomain_code:
+            return '{request.scheme}://{subdomain_code}.tunnels.{site.domain}'.format(
+                request=request,
+                subdomain_code=self.subdomain_code,
+                site=get_current_site(request),
+            )
+
+        host = request.get_host().split(':')[0]
+        return f'{request.scheme}://{host}:{self.port}'

@@ -685,17 +685,19 @@ class PrintHeaterTarget(models.Model):
 
 
 class OctoPrintTunnel(models.Model):
+    # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
     INTERNAL_APP = 'TSD'
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     app = models.TextField(null=False, blank=False)
 
+    basicauth_username = models.TextField(blank=True, null=True)
+    basicauth_password = models.TextField(blank=True, null=True)
+
     # when tunnel is accessed by subdomain.
     subdomain_code = models.TextField(unique=True, blank=True, null=True)
 
     # when tunnel is accessed by port. 
-    basicauth_username = models.TextField(blank=True, null=True)
-    basicauth_password = models.TextField(blank=True, null=True)
     port = models.IntegerField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -711,7 +713,7 @@ class OctoPrintTunnel(models.Model):
         if pt is not None:
             return pt
 
-        return cls.create(printer, internal=True)
+        return cls.create(printer, app=cls.INTERNAL_APP)
 
     @classmethod
     def create(
@@ -724,14 +726,15 @@ class OctoPrintTunnel(models.Model):
             try:
                 instance = OctoPrintTunnel(
                     printer=printer,
-                    basicauth_username='' if internal else token_hex(32),
-                    basicauth_password='' if internal else token_hex(32),
-                    subdomain_code=token_hex(8),
+                    basicauth_username=None if internal else token_hex(32),
+                    basicauth_password=None if internal else token_hex(32),
                     app=app,
                 )
 
                 if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
                     instance.port = OctoPrintTunnel.get_a_free_port()
+                else:
+                    instance.subdomain_code=token_hex(8)
 
                 instance.save()
                 return instance

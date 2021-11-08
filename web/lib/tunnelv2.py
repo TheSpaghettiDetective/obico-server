@@ -8,7 +8,7 @@ import binascii
 import django.http
 
 from django.conf import settings
-from app.models import User, PrinterTunnel
+from app.models import User, OctoPrintTunnel
 
 HTTPScope = dict
 ScopeOrRequest = Union[HTTPScope, django.http.HttpRequest]
@@ -93,9 +93,9 @@ class OctoprintTunnelV2Helper(object):
         return None
 
     @classmethod
-    def get_printertunnel(
+    def get_octoprinttunnel(
         cls, s_or_r: ScopeOrRequest
-    ) -> PrinterTunnel:
+    ) -> OctoPrintTunnel:
         subdomain_code = cls.get_subdomain_code(s_or_r)
         port = cls.get_port(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
@@ -109,11 +109,11 @@ class OctoprintTunnelV2Helper(object):
         elif port:
             qs_kwargs['port'] = port
 
-        qs = PrinterTunnel.objects.filter(
+        qs = OctoPrintTunnel.objects.filter(
             **qs_kwargs
         ).select_related('printer', 'printer__user')
 
-        logging.debug(('get_printertunnel', port, subdomain_code, auth_header))
+        logging.debug(('get_octoprinttunnel', port, subdomain_code, auth_header))
 
         realm = (
             f'tunnel {subdomain_code}'
@@ -137,7 +137,6 @@ class OctoprintTunnelV2Helper(object):
             pt = qs.filter(
                 basicauth_username=username,
                 basicauth_password=password,
-                internal=False,
             ).first()
 
             if pt is None:
@@ -154,7 +153,7 @@ class OctoprintTunnelV2Helper(object):
             if user.is_authenticated:
                 pt = qs.filter(
                     printer__user_id=user.id,
-                    internal=True,
+                    app=OctoPrintTunnel.INTERNAL_APP,
                 ).first()
 
                 if pt is not None:

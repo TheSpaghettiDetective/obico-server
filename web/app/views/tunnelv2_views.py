@@ -15,7 +15,7 @@ from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
-from app.models import PrinterTunnel
+from app.models import OctoPrintTunnel
 
 
 import logging
@@ -81,12 +81,12 @@ def tunnel(request, pk, template_dir=None):
     return render(request, get_template_path('tunnel', template_dir))
 
 
-def fetch_static_etag(request, printertunnel, *args, **kwargs):
+def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
     path = request.get_full_path()
 
     if should_cache(path):
         cached_etag = cache.octoprinttunnel_get_etag(
-            f'printertunnel_{printertunnel.pk}', path)
+            f'octoprinttunnel_{octoprinttunnel.pk}', path)
         if cached_etag:
             return cached_etag
 
@@ -95,8 +95,8 @@ def fetch_static_etag(request, printertunnel, *args, **kwargs):
 
 def save_static_etag(func):
     @functools.wraps(func)
-    def inner(request, printertunnel, *args, **kwargs):
-        response = func(request, printertunnel, *args, **kwargs)
+    def inner(request, octoprinttunnel, *args, **kwargs):
+        response = func(request, octoprinttunnel, *args, **kwargs)
 
         if response.status_code in (200, 304):
             path = request.get_full_path()
@@ -105,7 +105,7 @@ def save_static_etag(func):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
-                        f'printertunnel_{printertunnel.pk}',
+                        f'octoprinttunnel_{octoprinttunnel.pk}',
                         path,
                         etag
                     )
@@ -117,7 +117,7 @@ def save_static_etag(func):
 @login_required
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
-    pt = PrinterTunnel.get_or_create_for_internal_use(printer)
+    pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
     url = pt.get_url(request)
     return HttpResponseRedirect(url)
 
@@ -126,7 +126,7 @@ def redirect_to_tunnel_url(request, pk):
 @xframe_options_exempt
 def octoprint_http_tunnel(request):
     try:
-        pt = OctoprintTunnelV2Helper.get_printertunnel(request)
+        pt = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
     except TunnelAuthenticationError as exc:
         resp = HttpResponse(
             exc.message,
@@ -142,8 +142,8 @@ def octoprint_http_tunnel(request):
 
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
-def _octoprint_http_tunnel(request, printertunnel):
-    user = printertunnel.printer.user
+def _octoprint_http_tunnel(request, octoprinttunnel):
+    user = octoprinttunnel.printer.user
     if user.tunnel_usage_over_cap():
         return HttpResponse(
             OVER_FREE_LIMIT_HTML,
@@ -191,10 +191,10 @@ def _octoprint_http_tunnel(request, printertunnel):
         if stripped_auth_heaader:
             req_headers['Authorization'] = stripped_auth_heaader
 
-    ref = f'{printertunnel.id}.{method}.{time.time()}.{path}'
+    ref = f'{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
     channels.send_msg_to_printer(
-        printertunnel.printer.id,
+        octoprinttunnel.printer.id,
         {
             'http.tunnelv2': {
                 'ref': ref,

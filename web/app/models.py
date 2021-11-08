@@ -684,25 +684,28 @@ class PrintHeaterTarget(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class PrinterTunnel(models.Model):
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
+class OctoPrintTunnel(models.Model):
+    INTERNAL_APP = 'TSD'
 
-    basicauth_username = models.TextField(blank=True, default='')
-    basicauth_password = models.TextField(blank=True, default='')
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    app = models.TextField(null=False, blank=False)
 
-    subdomain_code = models.TextField(unique=True)
+    # when tunnel is accessed by subdomain.
+    subdomain_code = models.TextField(unique=True, blank=True, null=True)
+
+    # when tunnel is accessed by port. 
+    basicauth_username = models.TextField(blank=True, null=True)
+    basicauth_password = models.TextField(blank=True, null=True)
     port = models.IntegerField(null=True, blank=True)
-
-    internal = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
-    def get_or_create_for_internal_use(cls, printer) -> 'PrinterTunnel':
-        pt = PrinterTunnel.objects.filter(
+    def get_or_create_for_internal_use(cls, printer) -> 'OctoPrintTunnel':
+        pt = OctoPrintTunnel.objects.filter(
             printer=printer,
-            internal=True
+            app=cls.INTERNAL_APP,
         ).first()
 
         if pt is not None:
@@ -712,22 +715,23 @@ class PrinterTunnel(models.Model):
 
     @classmethod
     def create(
-        cls, printer: Printer, internal: bool
-    ) -> 'PrinterTunnel':
+        cls, printer: Printer, app: str
+    ) -> 'OctoPrintTunnel':
+        internal = app == cls.INTERNAL_APP
         n = 30
         while n > 0:
             n -= 1
             try:
-                instance = PrinterTunnel(
+                instance = OctoPrintTunnel(
                     printer=printer,
                     basicauth_username='' if internal else token_hex(32),
                     basicauth_password='' if internal else token_hex(32),
                     subdomain_code=token_hex(8),
-                    internal=internal,
+                    app=app,
                 )
 
                 if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-                    instance.port = PrinterTunnel.get_a_free_port()
+                    instance.port = OctoPrintTunnel.get_a_free_port()
 
                 instance.save()
                 return instance
@@ -738,7 +742,7 @@ class PrinterTunnel(models.Model):
 
     @classmethod
     def get_a_free_port(cls):
-        occupied = set(PrinterTunnel.objects.filter(
+        occupied = set(OctoPrintTunnel.objects.filter(
             port__isnull=False
         ).values_list('port', flat=True))
         possible = set(
@@ -751,13 +755,12 @@ class PrinterTunnel(models.Model):
         return free.pop()
 
     def get_url(self, request):
-        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-            host = request.get_host().split(':')[0]
-            url = f'{request.scheme}://{host}:{self.port}'
-        else:
-            domain = settings.OCTOPRINT_TUNNEL_DOMAIN_FMT.format(
+        if self.subdomain_code:
+            return '{request.scheme}://{subdomain_code}.tunnels.{site.domain}'.format(
+                request=request,
                 subdomain_code=self.subdomain_code,
                 site=get_current_site(request),
             )
-            url = f'{request.scheme}://{domain}'
-        return url
+
+        host = request.get_host().split(':')[0]
+        return f'{request.scheme}://{host}:{self.port}'

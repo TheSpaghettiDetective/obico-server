@@ -748,12 +748,7 @@ class OctoPrintTunnel(models.Model):
         occupied = set(OctoPrintTunnel.objects.filter(
             port__isnull=False
         ).values_list('port', flat=True))
-        possible = set(
-            range(
-                settings.OCTOPRINT_TUNNEL_PORT_RANGE[0],
-                settings.OCTOPRINT_TUNNEL_PORT_RANGE[1]
-            )
-        )
+        possible = set(settings.OCTOPRINT_TUNNEL_PORT_RANGE)
         free = possible - occupied
         return free.pop()
 

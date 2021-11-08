@@ -169,11 +169,6 @@ class OctoprintTunnelV2Helper(object):
 
     @classmethod
     def is_tunnel_request(cls, s_or_r: ScopeOrRequest) -> bool:
-        port = cls.get_port(s_or_r)
-        return (
-            cls.get_subdomain_code(s_or_r) or
-            (
-                port >= settings.OCTOPRINT_TUNNEL_PORT_RANGE[0] and
-                port < settings.OCTOPRINT_TUNNEL_PORT_RANGE[1]
-            )
-        )
+        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+            return cls.get_port(s_or_r) in settings.OCTOPRINT_TUNNEL_PORT_RANGE
+        return cls.get_subdomain_code(s_or_r)

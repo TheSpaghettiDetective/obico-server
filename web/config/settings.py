@@ -314,10 +314,10 @@ SLACK_CLIENT_ID = None
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776'))  # 1TB by default
 OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
-if os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE'):
-    OCTOPRINT_TUNNEL_PORT_RANGE = tuple(
-        map(int, os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[:2])
-    )
+OCTOPRINT_TUNNEL_PORT_RANGE = range(
+        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[0]),
+        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1]),
+    ) if os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE') else None
 
 # settings export
 SETTINGS_EXPORT = [

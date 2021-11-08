@@ -26,7 +26,7 @@ x-web-defaults: &web-defaults
     ML_API_HOST: 'http://ml_api:3333'
     ACCOUNT_ALLOW_SIGN_UP: 'False'  # -> set to 'True' if you want to open sign up form
     WEBPACK_LOADER_ENABLED:
-    OCTOPRINT_TUNNEL_PORT_RANGE: "${OCTOPRINT_TUNNEL_PORT_RANGE-10000-10100}"
+    OCTOPRINT_TUNNEL_PORT_RANGE: "10000-10100"
 
     #### Optional env vars below this line ###
     #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
@@ -55,7 +55,7 @@ services:
     hostname: web
     ports:
       - "3334:3334"
-      - "${OCTOPRINT_TUNNEL_PORT_RANGE-10000-10100}:3334"
+      - "10000:3334"
     depends_on:
       - ml_api
     command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"

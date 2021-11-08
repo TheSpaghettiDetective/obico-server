@@ -1,6 +1,8 @@
 import time
 import functools
 import re
+import packaging.version
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
@@ -68,6 +70,13 @@ TIMED_OUT_HTML = """
 """
 
 
+MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
+
+
+def is_plugin_version_supported(version: str) -> bool:
+    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION
+
+
 def should_cache(path):
     return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path)
 
@@ -78,7 +87,19 @@ def fix_etag(etag):
 
 @login_required
 def tunnel(request, pk, template_dir=None):
-    return render(request, get_template_path('tunnel', template_dir))
+    get_printer_or_404(pk, request)
+    return render(
+        request,
+        get_template_path('tunnel', template_dir),
+    )
+
+
+@login_required
+def redirect_to_tunnel_url(request, pk):
+    printer = get_printer_or_404(pk, request)
+    pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
+    url = pt.get_url(request)
+    return HttpResponseRedirect(url)
 
 
 def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
@@ -112,14 +133,6 @@ def save_static_etag(func):
 
         return response
     return inner
-
-
-@login_required
-def redirect_to_tunnel_url(request, pk):
-    printer = get_printer_or_404(pk, request)
-    pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
-    url = pt.get_url(request)
-    return HttpResponseRedirect(url)
 
 
 @csrf_exempt

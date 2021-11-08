@@ -49,6 +49,10 @@ def settings_dict(octoprint_settings):
     settings = dict(('webcam_' + k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
     settings.update(dict(temp_profiles=json.dumps(octoprint_settings.get('temperature', {}).get('profiles', []))))
     settings.update(dict(printer_metadata=json.dumps(octoprint_settings.get('printer_metadata', {}))))
+    settings.update(
+        tsd_plugin_version=octoprint_settings.get('tsd_plugin_version', ''),
+        octoprint_version=octoprint_settings.get('octoprint_version', ''),
+    )
     return settings
 
 

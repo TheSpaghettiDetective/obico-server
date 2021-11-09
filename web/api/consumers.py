@@ -32,6 +32,13 @@ TOUCH_MIN_SECS = 30
 
 
 def close_on_error(msg):
+    """
+    Method for auth&auth checking.
+        - All consumers need to have `connect` method decorated by this method
+        - When `connect` method needs to throw an exception when the authenticated subject is not authorized to access the requested resource
+
+    """
+
     def outer(f):
         @functools.wraps(f)
         def inner(self, *args, **kwargs):
@@ -50,6 +57,12 @@ def close_on_error(msg):
 class WebConsumer(JsonWebsocketConsumer):
 
     def get_printer(self):
+        """
+        2 ways to authenticate:
+            1. `printer.auth_token` as part of the request parameters.
+            2. Django session cookie so that `self.scope['user']` is set
+        """
+
         if 'token' in self.scope['url_route']['kwargs']:
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],

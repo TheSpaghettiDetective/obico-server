@@ -167,7 +167,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     IGNORE_HEADERS = [
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_AUTHORIZATION',
-        'HTTP_COOKIE',
+        'HTTP_COOKIE', 'HTTP_ACCEPT_ENCODING',
     ]
 
     req_headers = {
@@ -175,7 +175,8 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         for (k, v) in request.META.items()
         if (
             k.startswith('HTTP') and
-            k not in IGNORE_HEADERS
+            k not in IGNORE_HEADERS and
+            not k.startswith('HTTP_X_FORWARDED')
         )
     }
 

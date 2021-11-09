@@ -32,6 +32,9 @@ SECRET_KEY = os.environ.get(
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
 
+if os.environ.get('SITE_DOMAIN'):
+    SESSION_COOKIE_DOMAIN = os.environ.get('SITE_DOMAIN')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
 

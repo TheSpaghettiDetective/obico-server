@@ -3,6 +3,7 @@ import bson
 import time
 import json
 import datetime
+import functools
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -17,48 +18,95 @@ from channels_presence.models import Room
 from channels_presence.models import Presence
 from django.db.models import F
 
-
 from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
-from app.models import Print, Printer, ResurrectionError
+from app.models import Print, Printer, ResurrectionError, SharedResource
 from lib.tunnelv2 import OctoprintTunnelV2Helper
 from .serializers import *
+from .serializers import PublicPrinterSerializer, PrinterSerializer
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
 
+
+def close_on_error(msg):
+    """
+    Method for auth&auth checking.
+        - All consumers need to have `connect` method decorated by this method
+        - When `connect` method needs to throw an exception when the authenticated subject is not authorized to access the requested resource
+
+    """
+
+    def outer(f):
+        @functools.wraps(f)
+        def inner(self, *args, **kwargs):
+            try:
+                return f(self, *args, **kwargs)
+            except Exception:
+                import traceback
+                traceback.print_exc()
+                LOGGER.exception(msg)
+                self.close()
+                return
+        return inner
+    return outer
+
+
 class WebConsumer(JsonWebsocketConsumer):
-    @newrelic.agent.background_task()
-    def connect(self):
-        try:
-            if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
-                self.printer = self.current_user()
-            else:
-                # Throw exception in case of un-authenticated or un-authorized access
-                self.printer = Printer.objects.get(user=self.current_user(), id=self.scope['url_route']['kwargs']['printer_id'])
 
-            self.accept()
+    def get_printer(self):
+        """
+        2 ways to authenticate:
+            1. `printer.auth_token` as part of the request parameters.
+            2. Django session cookie so that `self.scope['user']` is set
+        """
 
-            async_to_sync(self.channel_layer.group_add)(
-                channels.web_group_name(self.printer.id),
-                self.channel_name
+        if 'token' in self.scope['url_route']['kwargs']:
+            return Printer.objects.get(
+                auth_token=self.scope['url_route']['kwargs']['token'],
             )
-            self.last_touch = time.time()
-            Room.objects.add(channels.web_group_name(self.printer.id), self.channel_name)
-            self.printer_status(None)   # Send printer status to web frontend as soon as it connects
-        except:
-            LOGGER.exception("Websocket failed to connect")
-            self.close()
 
-    def disconnect(self, close_code):
-        LOGGER.warn("WebConsumer: Closed websocket with code: {}".format(close_code))
-        async_to_sync(self.channel_layer.group_discard)(
+        return Printer.objects.get(
+            user=self.scope['user'],
+            id=self.scope['url_route']['kwargs']['printer_id']
+        )
+
+    @newrelic.agent.background_task()
+    @close_on_error('failed to connect')
+    def connect(self):
+        self.printer = None
+        self.printer = self.get_printer()
+
+        self.accept()
+
+        async_to_sync(self.channel_layer.group_add)(
             channels.web_group_name(self.printer.id),
             self.channel_name
         )
-        Room.objects.remove(channels.web_group_name(self.printer.id), self.channel_name)
+        self.last_touch = time.time()
+
+        Room.objects.add(
+            channels.web_group_name(self.printer.id),
+            self.channel_name
+        )
+
+        # Send printer status to web frontend as soon as it connects
+        self.printer_status(None)
+
+    def disconnect(self, close_code):
+        LOGGER.warn(
+            "WebConsumer: Closed websocket with code: {}".format(close_code))
+        if self.printer:
+            async_to_sync(self.channel_layer.group_discard)(
+                channels.web_group_name(self.printer.id),
+                self.channel_name
+            )
+            Room.objects.remove(
+                channels.web_group_name(self.printer.id),
+                self.channel_name
+            )
 
     @newrelic.agent.background_task()
     def receive_json(self, data, **kwargs):
@@ -70,61 +118,108 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.send_msg_to_printer(self.printer.id, data)
 
     @newrelic.agent.background_task()
+    @close_on_error('failed to send')
     def printer_status(self, data):
-        try:
-            if self.scope['path'].startswith('/ws/share_token/'):
-                serializer = PublicPrinterSerializer(Printer.with_archived.get(id=self.printer.id))
-            else:
-                serializer = PrinterSerializer(Printer.with_archived.get(id=self.printer.id))
-            self.send_json(serializer.data)
-        except Printer.DoesNotExist:
-            sentryClient.captureException()
-            self.close()
-        except Exception:
-            sentryClient.captureException()
+        serializer = PrinterSerializer(
+            Printer.with_archived.get(id=self.printer.id))
+        self.send_json(serializer.data)
 
     @newrelic.agent.background_task()
     def web_message(self, msg):
         self.send_json(msg)
 
-    def current_user(self):
-        return self.scope['user']
+
+class SharedWebConsumer(WebConsumer):
+
+    def get_printer(self):
+        return SharedResource.objects.select_related('printer').get(
+            share_token=self.scope['url_route']['kwargs']['share_token']
+        ).printer
+
+    @newrelic.agent.background_task()
+    def receive_json(self, data, **kwargs):
+        # we don't expect frontend sending anything important,
+        # this conn is only for status updates from server
+        if time.time() - self.last_touch > TOUCH_MIN_SECS:
+            self.last_touch = time.time()
+            Presence.objects.touch(self.channel_name)
+
+    @newrelic.agent.background_task()
+    @close_on_error('failed to send')
+    def printer_status(self, data):
+        serializer = PublicPrinterSerializer(
+            Printer.with_archived.get(id=self.printer.id)
+        )
+        self.send_json(serializer.data)
+
+    @newrelic.agent.background_task()
+    def web_message(self, msg):
+        # frontend (should be) interested only in printer_status messages
+        pass
 
 
 class OctoPrintConsumer(WebsocketConsumer):
+
+    def get_printer(self):
+        headers = dict(self.scope['headers'])
+        if b'authorization' in headers:
+            for v in headers[b'authorization'].split(b','):
+                token_name, token_key = v.decode().split()
+                if token_name == 'bearer':
+                    return Printer.objects.select_related('user').get(
+                        auth_token=token_key
+                    )
+
+        raise Exception('missing auth header')
+
     @newrelic.agent.background_task()
+    @close_on_error('failed to connect')
     def connect(self):
         self.anomaly_tracker = AnomalyTracker(now())
+        self.printer = None
 
-        if self.current_printer().is_authenticated:
-            self.accept()
-            async_to_sync(self.channel_layer.group_add)(
-                channels.octo_group_name(self.current_printer().id),
-                self.channel_name
-            )
-            self.last_touch = time.time()
-            Room.objects.add(channels.octo_group_name(self.current_printer().id), self.channel_name)
-            # Send remote status to OctoPrint as soon as it connects
-            self.printer_message({'remote_status':{
-                'viewing': channels.num_ws_connections(channels.web_group_name(self.current_printer().id)) > 0,
-                'should_watch': self.current_printer().should_watch(),
-            }})
-        else:
-            self.close()
+        self.printer = self.get_printer()
 
-    def disconnect(self, close_code):
-        LOGGER.warn("OctoPrintConsumer: Closed websocket with code: {}".format(close_code))
-        async_to_sync(self.channel_layer.group_discard)(
-            channels.octo_group_name(self.current_printer().id),
+        self.accept()
+
+        async_to_sync(self.channel_layer.group_add)(
+            channels.octo_group_name(self.printer.id),
             self.channel_name
         )
-        Room.objects.remove(channels.octo_group_name(self.current_printer().id), self.channel_name)
 
-        # disconnect all octoprint tunnels
-        channels.send_message_to_octoprinttunnel(
-            channels.octoprinttunnel_group_name(self.current_printer().id),
-            {'type': 'octoprint_close', 'ref': 'ALL'},
+        self.last_touch = time.time()
+
+        Room.objects.add(
+            channels.octo_group_name(self.printer.id),
+            self.channel_name
         )
+
+        # Send remote status to OctoPrint as soon as it connects
+        self.printer_message({'remote_status': {
+            'viewing': channels.num_ws_connections(
+                channels.web_group_name(self.printer.id)) > 0,
+            'should_watch': self.printer.should_watch(),
+        }})
+
+    def disconnect(self, close_code):
+        LOGGER.warn(
+            "OctoPrintConsumer: Closed websocket with code: {}".format(close_code))
+        if self.printer:
+            async_to_sync(self.channel_layer.group_discard)(
+                channels.octo_group_name(self.printer.id),
+                self.channel_name
+            )
+
+            Room.objects.remove(
+                channels.octo_group_name(self.printer.id),
+                self.channel_name
+            )
+
+            # disconnect all octoprint tunnels
+            channels.send_message_to_octoprinttunnel(
+                channels.octoprinttunnel_group_name(self.printer.id),
+                {'type': 'octoprint_close', 'ref': 'ALL'},
+            )
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None, **kwargs):
@@ -139,7 +234,8 @@ class OctoPrintConsumer(WebsocketConsumer):
                 data = bson.loads(bytes_data)
 
             if 'janus' in data:
-                channels.send_janus_to_web(self.current_printer().id, data.get('janus'))
+                channels.send_janus_to_web(
+                    self.printer.id, data.get('janus'))
             elif 'http.tunnel' in data:
                 cache.octoprinttunnel_http_response_set(
                     data['http.tunnel']['ref'],
@@ -152,15 +248,15 @@ class OctoPrintConsumer(WebsocketConsumer):
                 )
             elif 'ws.tunnel' in data:
                 channels.send_message_to_octoprinttunnel(
-                    channels.octoprinttunnel_group_name(self.current_printer().id),
+                    channels.octoprinttunnel_group_name(self.printer.id),
                     data['ws.tunnel'],
                 )
             elif 'passthru' in data:
-                channels.send_message_to_web(self.current_printer().id, data)
+                channels.send_message_to_web(self.printer.id, data)
             else:
                 printer = Printer.with_archived.annotate(
                     ext_id=F('current_print__ext_id')
-                ).get(id=self.current_printer().id)
+                ).get(id=self.printer.id)
 
                 ex: Optional[Exception] = None
                 data['_now'] = now()
@@ -171,10 +267,12 @@ class OctoPrintConsumer(WebsocketConsumer):
                     self.anomaly_tracker.track(printer, data, ex)
 
         except ObjectDoesNotExist:
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             self.close()
         except Exception:  # sentry doesn't automatically capture consumer errors
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             sentryClient.captureException()
 
     @newrelic.agent.background_task()
@@ -187,38 +285,44 @@ class OctoPrintConsumer(WebsocketConsumer):
                 self.send(text_data=json.dumps(data))
         except:  # sentry doesn't automatically capture consumer errors
             LOGGER.error(data)
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             sentryClient.captureException()
-
-    def current_printer(self):
-        return self.scope['user']
 
 
 class JanusWebConsumer(WebsocketConsumer):
-    @newrelic.agent.background_task()
-    def connect(self):
-        try:
-            if self.scope['path'].startswith('/ws/share_token/') or self.scope['path'].startswith('/ws/token/'):
-                self.printer = self.scope['user']
-            else:
-                # Exception for un-authenticated or un-authorized access
-                self.printer = Printer.objects.get(user=self.scope['user'], id=self.scope['url_route']['kwargs']['printer_id'])
 
-            async_to_sync(self.channel_layer.group_add)(
-                channels.janus_web_group_name(self.printer.id),
-                self.channel_name
+    def get_printer(self):
+        if 'token' in self.scope['url_route']['kwargs']:
+            return Printer.objects.get(
+                auth_token=self.scope['url_route']['kwargs']['token'],
             )
-            self.accept('janus-protocol')
-        except:
-            LOGGER.exception("Websocket failed to connect")
-            self.close()
 
-    def disconnect(self, close_code):
-        LOGGER.warn("JanusWebConsumer: Closed websocket with code: {}".format(close_code))
-        async_to_sync(self.channel_layer.group_discard)(
+        return Printer.objects.get(
+            user=self.scope['user'],
+            id=self.scope['url_route']['kwargs']['printer_id']
+        )
+
+    @newrelic.agent.background_task()
+    @close_on_error('failed to connect')
+    def connect(self):
+        self.printer = None
+        self.printer = self.get_printer()
+
+        async_to_sync(self.channel_layer.group_add)(
             channels.janus_web_group_name(self.printer.id),
             self.channel_name
         )
+
+        self.accept('janus-protocol')
+
+    def disconnect(self, close_code):
+        LOGGER.warn("JanusWebConsumer: Closed with code: {}".format(close_code))
+        if self.printer:
+            async_to_sync(self.channel_layer.group_discard)(
+                channels.janus_web_group_name(self.printer.id),
+                self.channel_name
+            )
 
     @newrelic.agent.background_task()
     def receive(self, text_data=None, bytes_data=None):
@@ -227,6 +331,14 @@ class JanusWebConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))
+
+
+class JanusSharedWebConsumer(JanusWebConsumer):
+
+    def get_printer(self):
+        return SharedResource.objects.select_related('printer').get(
+            share_token=self.scope['url_route']['kwargs']['share_token']
+        ).printer
 
 
 class OctoprintTunnelWebConsumer(WebsocketConsumer):
@@ -334,7 +446,8 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     'as_binary': True
                 })
         except:  # sentry doesn't automatically capture consumer errors
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             sentryClient.captureException()
 
     @newrelic.agent.background_task()
@@ -357,10 +470,12 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
             cache.octoprinttunnel_update_stats(
                 self.printer.user_id,
-                len(payload['data']) * 1.2 * 2  # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
+                # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
+                len(payload['data']) * 1.2 * 2
             )
         except:  # sentry doesn't automatically capture consumer errors
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             sentryClient.captureException()
 
 
@@ -426,7 +541,8 @@ class AnomalyTracker:
                 seen.add(ext_id)
 
         data['printer.ext_id'] = printer.ext_id
-        data['print.current'] = model_to_dict(printer.current_print) if printer.current_print else None
+        data['print.current'] = model_to_dict(
+            printer.current_print) if printer.current_print else None
 
         from raven import Client
         c = Client(

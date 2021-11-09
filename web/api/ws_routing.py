@@ -8,8 +8,10 @@ websocket_urlpatterns = [
     url(r'^ws/janus/(?P<printer_id>[^/]+)/$', consumers.JanusWebConsumer),
     url(r'^ws/token/web/(?P<token>[^/]+)/$', consumers.WebConsumer),
     url(r'^ws/token/janus/(?P<token>[^/]+)/$', consumers.JanusWebConsumer),
-    url(r'^ws/share_token/web/(?P<share_token>[^/]+)/$', consumers.WebConsumer),
-    url(r'^ws/share_token/janus/(?P<share_token>[^/]+)/$', consumers.JanusWebConsumer),
+    url(r'^ws/share_token/web/(?P<share_token>[^/]+)/$',
+        consumers.SharedWebConsumer),
+    url(r'^ws/share_token/janus/(?P<share_token>[^/]+)/$',
+        consumers.JanusSharedWebConsumer),
     url(
         r'^ws/octoprint/(?P<printer_id>\d+)/',
         consumers.OctoprintTunnelWebConsumer),

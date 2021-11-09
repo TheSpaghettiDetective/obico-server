@@ -4,9 +4,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from channels.auth import AuthMiddlewareStack
 
-from django.db import close_old_connections
-
-from app.models import Printer, SharedResource
+from app.models import Printer
 
 
 class PrinterAuthentication(TokenAuthentication):
@@ -19,43 +17,7 @@ class PrinterAuthentication(TokenAuthentication):
         return printer.user, printer
 
 
-class PrinterWSAuthMiddleWare:
-    """
-    Token authorization middleware for Django Channels 2
-    """
-
-    def __init__(self, inner):
-        self.inner = inner
-
-    def __call__(self, scope):
-        close_old_connections()
-
-        headers = dict(scope['headers'])
-        try:
-            if b'authorization' in headers:
-                for v in headers[b'authorization'].split(b','):
-                    token_name, token_key = v.decode().split()
-                    if token_name == 'bearer':
-                        printer = Printer.objects.select_related('user').get(auth_token=token_key)
-                        printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
-                        scope['user'] = printer
-                        break
-            elif scope['path'].startswith('/ws/share_token/'):
-                printer = SharedResource.objects.select_related('printer').get(share_token=scope['path'].split(
-                    '/')[-2]).printer  # scope['path'].split('/')[-2] is the share_token in uri
-                printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
-                scope['user'] = printer
-            elif scope['path'].startswith('/ws/token/'):
-                printer = Printer.objects.get(auth_token=scope['path'].split(
-                    '/')[-2])  # scope['path'].split('/')[-2] is the auth_token in uri
-                printer.is_authenticated = True   # To make Printer duck-quack as authenticated User in Django Channels
-                scope['user'] = printer
-        except ObjectDoesNotExist:
-            pass
-        return self.inner(scope)
-
-
-def TokenAuthMiddlewareStack(inner): return PrinterWSAuthMiddleWare(AuthMiddlewareStack(inner))
+def TokenAuthMiddlewareStack(inner): return AuthMiddlewareStack(inner)
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

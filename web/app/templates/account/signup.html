@@ -13,7 +13,6 @@
 <div class="row justify-content-center logreg">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
     <div id="logreg-forms">
-
       <h1 class="text-center">{% trans "Sign Up" %}</h1>
       <div style="margin-bottom: 1rem; padding-left: 24px;">
         <div class="custom-control custom-checkbox form-check-inline">
@@ -83,7 +82,7 @@
         <div class="text-center pt-3 w-100">
           <div class="font-weight-light text-muted">- OR -</div>
           <a class="btn"
-          href="{% url 'account_login' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN IN" %}
+          href="{% url 'account_login' %}{% if redirect_field_value %}?next={{redirect_field_value|urlencode}}{% endif %}">{% trans "SIGN IN" %}
         </div>
       </form>
     </div>

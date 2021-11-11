@@ -1,0 +1,44 @@
+{% extends "non_vue_layout.html" %}
+
+{% block navbar %}{% endblock navbar %}
+
+{% block content %}
+
+<div class="row">
+  <h2>You are about to authorize {{ app_name }} to use the OctoPrint tunnel.</h2>
+
+  <div class="text-warning">
+    Once authorized, {{ app_name }} will be able to talk to OctoPrint via the tunnel provided by The Spaghetti Detective.
+    This means you can use {{ app_name }} to control your printer anywhere, even if you are connected to the same local network as your OctoPrint.
+  </div>
+  {% if user.is_authenticated %}
+    {% if printers %}
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="app_name" value="{{app_name}}" />
+        {% if printers|length > 1 %}
+          <label for="printer_id">Select a printer you want to authorize:</label>
+          <select name="printer_id" id="printer_id">
+          {% for printer in printers %}
+          <option value={{printer.id}}>{{printer.name}}</option>
+          {{ priner.name }}
+          {% endfor %}
+          </select>
+        {% else %}
+        <input type="hidden" name="printer_id" value="{{printers.0.id}}" />
+          {{ printers.0.name }}
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-block">Authorize</button>
+      </form>
+    {% else %}
+      You don't have any printer in your The Spaghetti Detective account. <a class href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">Set one up in 56 seconds, for free.</a>
+    {% endif %}
+  {% else %}
+  <div>
+    Please&nbsp;<a class="link" href="{% url 'account_login' %}?hide_navbar=true&next={% url 'new_octoprinttunnel' %}?{{ request.GET.urlencode }}">sign in to your The Spaghetti Detective account</a>&nbsp; to continue, or &nbsp;<a class="link" href="{% url 'account_signup' %}?hide_navbar=true&next={% url 'new_octoprinttunnel' %}?{{ request.GET.urlencode }}">sign up for an free account</a>&nbsp; if you don't have one.
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock content %}

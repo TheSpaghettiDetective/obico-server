@@ -6,7 +6,7 @@ import binascii
 
 # from asgiref.typing import HTTPScope
 import django.http
-
+from django.contrib.auth.hashers import check_password
 from django.conf import settings
 from app.models import User, OctoPrintTunnel
 
@@ -136,10 +136,12 @@ class OctoprintTunnelV2Helper(object):
 
             pt = qs.filter(
                 basicauth_username=username,
-                basicauth_password=password,
             ).first()
 
-            if pt is None:
+            if (
+                pt is None or
+                not check_password(password, pt.basicauth_password)
+            ):
                 raise TunnelAuthenticationError(
                     'invalid credentials', realm=realm)
             if isinstance(s_or_r, django.http.HttpRequest):

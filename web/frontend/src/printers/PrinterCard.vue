@@ -395,7 +395,7 @@ export default {
       return `/printers/${this.printer.id}/`
     },
     octoPrintTunnelUrl() {
-      return `/tunnel/${this.printer.id}/`
+      return `/tunnels/${this.printer.id}/`
     },
     onSettingsToggleClicked() {
       this.section_toggles.settings = !this.section_toggles.settings

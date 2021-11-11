@@ -2,18 +2,17 @@ import time
 import functools
 import re
 import packaging.version
-
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
-from django.shortcuts import render
-
+from django.core.exceptions import PermissionDenied
 import zlib
 
-from lib.view_helpers import get_printer_or_404, get_template_path
+from lib.view_helpers import get_printer_or_404, get_template_path, get_printers
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
@@ -72,18 +71,29 @@ TIMED_OUT_HTML = """
 
 MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
 
+def new_octoprinttunnel(request):
+    if request.method == 'POST':
+        printer = get_printer_or_404(request.POST['printer_id'], request)
+        app_name = request.POST['app']
+        if app_name == OctoPrintTunnel.INTERNAL_APP:
+            raise PermissionDenied
 
-def is_plugin_version_supported(version: str) -> bool:
-    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION
+        tunnel = OctoPrintTunnel.create(printer, app_name)
+        tunnel_endporint = tunnel.get_url(request)
+        return redirect(reverse('new_octoprinttunnel_succeeded') + '?tunnel_endporint=' + tunnel_endporint)
 
+    if request.user.is_authenticated:
+        printers = get_printers(request)
+        printer_id = request.GET.get('printer_id', None)
+        if printer_id:
+            printers = printers.filter(pk__in=[int(printer_id)])
+        return render(request, 'new_octoprinttunnel.html', {'printers': printers})
+    else:
+        return render(request, 'new_octoprinttunnel.html') 
 
-def should_cache(path):
-    return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path)
-
-
-def fix_etag(etag):
-    return f'"{etag}"' if etag and '"' not in etag else etag
-
+@login_required
+def new_octoprinttunnel_succeeded(request):
+    return render(request, 'new_octoprinttunnel_succeeded.html') 
 
 @login_required
 def tunnel(request, pk, template_dir=None):
@@ -100,6 +110,38 @@ def redirect_to_tunnel_url(request, pk):
     pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
     url = pt.get_url(request)
     return HttpResponseRedirect(url)
+
+
+@csrf_exempt
+@xframe_options_exempt
+def octoprint_http_tunnel(request):
+    try:
+        pt = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
+    except TunnelAuthenticationError as exc:
+        resp = HttpResponse(
+            exc.message,
+            status=401
+        )
+        if exc.realm:
+            resp['WWW-Authenticate'] =\
+                f'Basic realm="{exc.realm}", charset="UTF-8"'
+        return resp
+
+    return _octoprint_http_tunnel(request, pt)
+
+
+## Helpers
+
+def is_plugin_version_supported(version: str) -> bool:
+    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION
+
+
+def should_cache(path):
+    return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path)
+
+
+def fix_etag(etag):
+    return f'"{etag}"' if etag and '"' not in etag else etag
 
 
 def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
@@ -134,23 +176,6 @@ def save_static_etag(func):
         return response
     return inner
 
-
-@csrf_exempt
-@xframe_options_exempt
-def octoprint_http_tunnel(request):
-    try:
-        pt = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
-    except TunnelAuthenticationError as exc:
-        resp = HttpResponse(
-            exc.message,
-            status=401
-        )
-        if exc.realm:
-            resp['WWW-Authenticate'] =\
-                f'Basic realm="{exc.realm}", charset="UTF-8"'
-        return resp
-
-    return _octoprint_http_tunnel(request, pt)
 
 
 @save_static_etag

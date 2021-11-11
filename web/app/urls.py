@@ -5,6 +5,7 @@ from .views import web_views
 from .views import mobile_views
 
 from .views import tunnel_views
+from .views import tunnelv2_views
 
 urlpatterns = [
     path('', web_views.index, name='index'),
@@ -37,6 +38,9 @@ urlpatterns = [
 
     # tunnel v1/v2 page with iframe
     path('tunnel/<int:pk>/', tunnel_views.tunnel),
+    path('tunnels/<int:pk>/', tunnel_views.tunnel),
+    path('tunnels/new/', tunnelv2_views.new_octoprinttunnel, name='new_octoprinttunnel'),
+    path('tunnels/succeeded/', tunnelv2_views.new_octoprinttunnel_succeeded, name='new_octoprinttunnel_succeeded'),
 
     # Shown only in mobile apps
     path('mobile/auth/login/', mobile_views.MobileLoginView.as_view(), name='mobile_auth_login'),
@@ -49,6 +53,5 @@ urlpatterns = [
     path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
     path('mobile/gcodes/upload/', web_views.upload_gcode_file),
     path('mobile/printers/<pk>/', web_views.edit_printer),
-    path('mobile/tunnel/<int:pk>/', tunnel_views.tunnel),
     path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

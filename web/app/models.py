@@ -754,11 +754,14 @@ class OctoPrintTunnel(models.Model):
 
     def get_url(self, request):
         if self.subdomain_code:
-            return '{request.scheme}://{subdomain_code}.tunnels.{site.domain}'.format(
-                request=request,
+            host = '{subdomain_code}.tunnels.{site.domain}'.format(
                 subdomain_code=self.subdomain_code,
                 site=get_current_site(request),
             )
+        else:
+            host = f'{request.get_host().split(":")[0]}:{self.port}'
 
-        host = request.get_host().split(':')[0]
-        return f'{request.scheme}://{host}:{self.port}'
+        if self.basicauth_username and self.basicauth_password:
+            return f'{request.scheme}://{self.basicauth_username}:{self.basicauth_password}@{host}'
+        else:
+            return f'{request.scheme}://{host}'

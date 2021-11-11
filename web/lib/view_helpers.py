@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from app.models import *
@@ -25,6 +26,8 @@ def get_paginator(objs, request, num_per_page):
     return page_obj
 
 def get_print_or_404(pk, request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
     return get_object_or_404(Print, pk=pk, user=request.user)
 
 def get_template_path(template_name, template_dir):

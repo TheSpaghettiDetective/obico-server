@@ -697,7 +697,7 @@ class OctoPrintTunnel(models.Model):
     # when tunnel is accessed by subdomain.
     subdomain_code = models.TextField(unique=True, blank=True, null=True)
 
-    # when tunnel is accessed by port. 
+    # when tunnel is accessed by port.
     port = models.IntegerField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -734,7 +734,7 @@ class OctoPrintTunnel(models.Model):
                 if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
                     instance.port = OctoPrintTunnel.get_a_free_port()
                 else:
-                    instance.subdomain_code=token_hex(8)
+                    instance.subdomain_code = token_hex(8)
 
                 instance.save()
                 return instance

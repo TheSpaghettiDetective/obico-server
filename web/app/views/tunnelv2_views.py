@@ -71,6 +71,7 @@ TIMED_OUT_HTML = """
 
 MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
 
+
 def new_octoprinttunnel(request):
     if request.method == 'POST':
         printer = get_printer_or_404(request.POST['printer_id'], request)
@@ -89,11 +90,13 @@ def new_octoprinttunnel(request):
             printers = printers.filter(pk__in=[int(printer_id)])
         return render(request, 'new_octoprinttunnel.html', {'printers': printers})
     else:
-        return render(request, 'new_octoprinttunnel.html') 
+        return render(request, 'new_octoprinttunnel.html')
+
 
 @login_required
 def new_octoprinttunnel_succeeded(request):
-    return render(request, 'new_octoprinttunnel_succeeded.html') 
+    return render(request, 'new_octoprinttunnel_succeeded.html')
+
 
 @login_required
 def tunnel(request, pk, template_dir=None):
@@ -130,7 +133,7 @@ def octoprint_http_tunnel(request):
     return _octoprint_http_tunnel(request, pt)
 
 
-## Helpers
+# Helpers
 
 def is_plugin_version_supported(version: str) -> bool:
     return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION
@@ -175,7 +178,6 @@ def save_static_etag(func):
 
         return response
     return inner
-
 
 
 @save_static_etag

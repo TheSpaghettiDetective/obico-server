@@ -20,6 +20,7 @@ from safedelete.models import SafeDeleteModel
 from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
+from django.contrib.auth.hashers import make_password
 
 from config.celery import celery_app
 from lib import cache, channels
@@ -723,19 +724,35 @@ class OctoPrintTunnel(models.Model):
         n = 30
         while n > 0:
             n -= 1
-            try:
+            if internal:
                 instance = OctoPrintTunnel(
                     printer=printer,
-                    basicauth_username=None if internal else token_hex(32),
-                    basicauth_password=None if internal else token_hex(32),
+                    basicauth_username=None,
+                    basicauth_password=None,
+                    app=app,
+                )
+            else:
+                plain_basicauth_password = token_hex(32)
+                basicauth_password = make_password(plain_basicauth_password)
+                instance = OctoPrintTunnel(
+                    printer=printer,
+                    basicauth_username=token_hex(32),
+                    basicauth_password=basicauth_password,
                     app=app,
                 )
 
-                if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-                    instance.port = OctoPrintTunnel.get_a_free_port()
-                else:
-                    instance.subdomain_code = token_hex(8)
+                setattr(
+                    instance,
+                    'plain_basicauth_password',
+                    plain_basicauth_password
+                )
 
+            if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+                instance.port = OctoPrintTunnel.get_a_free_port()
+            else:
+                instance.subdomain_code = token_hex(8)
+
+            try:
                 instance.save()
                 return instance
             except IntegrityError:
@@ -752,7 +769,7 @@ class OctoPrintTunnel(models.Model):
         free = possible - occupied
         return free.pop()
 
-    def get_url(self, request):
+    def get_host(self, request):
         if self.subdomain_code:
             host = '{subdomain_code}.tunnels.{site.domain}'.format(
                 subdomain_code=self.subdomain_code,
@@ -760,8 +777,11 @@ class OctoPrintTunnel(models.Model):
             )
         else:
             host = f'{request.get_host().split(":")[0]}:{self.port}'
+        return host
 
-        if self.basicauth_username and self.basicauth_password:
-            return f'{request.scheme}://{self.basicauth_username}:{self.basicauth_password}@{host}'
-        else:
-            return f'{request.scheme}://{host}'
+    def get_basicauth_url(self, request, plain_basicauth_password):
+        assert self.basicauth_username and self.basicauth_password
+        return f'{request.scheme}://{self.basicauth_username}:{plain_basicauth_password}@{self.get_host(request)}'
+
+    def get_url(self, request):
+        return f'{request.scheme}://{self.get_host(request)}'

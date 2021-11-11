@@ -85,7 +85,7 @@ def create_new_octoprinttunnel(request):
         raise PermissionDenied
 
     tunnel = OctoPrintTunnel.create(printer, app_name)
-    tunnel_endpoint = tunnel.get_url(request)
+    tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)
     return redirect(reverse('new_octoprinttunnel_succeeded') + '?tunnel_endpoint=' + tunnel_endpoint)
 
 

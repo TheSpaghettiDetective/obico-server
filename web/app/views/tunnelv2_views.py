@@ -123,7 +123,7 @@ def tunnel(request, pk, template_dir=None):
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
     pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
-    url = pt.get_url(request)
+    url = pt.get_internal_tunnel_url(request)
     return HttpResponseRedirect(url)
 
 

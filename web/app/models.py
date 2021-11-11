@@ -783,5 +783,5 @@ class OctoPrintTunnel(models.Model):
         assert self.basicauth_username and self.basicauth_password
         return f'{request.scheme}://{self.basicauth_username}:{plain_basicauth_password}@{self.get_host(request)}'
 
-    def get_url(self, request):
+    def get_internal_tunnel_url(self, request):
         return f'{request.scheme}://{self.get_host(request)}'

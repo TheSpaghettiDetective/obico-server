@@ -1,10 +1,8 @@
 {% extends "non_vue_layout.html" %}
 
-{% block navbar %} {% endblock navbar %}
+{% block navbar %}{% endblock navbar %}
 
 {% block content %}
-
-{% with app_name=request.GET.app|default:"Unknown App" %}
 
 <div class="row">
   <h2>You are about to authorize {{ app_name }} to use the OctoPrint tunnel.</h2>
@@ -17,7 +15,7 @@
     {% if printers %}
       <form method="POST">
         {% csrf_token %}
-        <input type="hidden" name="app" value="{{app_name}}" />
+        <input type="hidden" name="app_name" value="{{app_name}}" />
         {% if printers|length > 1 %}
           <label for="printer_id">Select a printer you want to authorize:</label>
           <select name="printer_id" id="printer_id">
@@ -43,5 +41,4 @@
 
 </div>
 
-{% endwith %}
 {% endblock content %}

@@ -102,6 +102,7 @@ class OctoprintTunnelV2Helper(object):
 
         qs_kwargs = {
             'printer__user__is_active': True,
+            'printer__archived_at__isnull': True,
         }
 
         if subdomain_code:

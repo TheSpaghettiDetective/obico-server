@@ -436,14 +436,9 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         if device_id is None:
             raise ValidationError({'device_id': "missing param"})
 
-        # TODO remove "contains" check here
-        # when we no longer need backward compatibility
-        if 'device_secret' in self.request.data:
-            device_secret = self.request.data.get('device_secret')
-            if device_secret is None:
-                raise ValidationError({'device_secret': "missing param"})
-        else:
-            device_secret = ''
+        device_secret = self.request.data.get('device_secret')
+        if device_secret is None:
+            raise ValidationError({'device_secret': "missing param"})
 
         push_message_for_device(
             client_ip,

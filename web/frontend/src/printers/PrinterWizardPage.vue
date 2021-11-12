@@ -123,7 +123,7 @@
                             <div class="spinner-border" role="status">
                             <span class="sr-only"></span>
                           </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
-                          <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" :disallowLegacyLinking="disallowLegacyLinking" @auto-link-printer="autoLinkPrinter" />
+                          <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
                         </div>
                         <div class="mt-5 mb-3">
                           Can't find the OctoPrint you want to link?
@@ -214,13 +214,11 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import sortBy from 'lodash/sortBy'
-import get from 'lodash/get'
 import theme from '@main/main.sass'
 import Layout from '@common/Layout.vue'
 import SavingAnimation from '@common/SavingAnimation.vue'
 import DiscoveredPrinter from './components/DiscoveredPrinter.vue'
 import AutoLinkPopup from './components/AutoLinkPopup.vue'
-import { user } from '@lib/page_context'
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
 export default {
   components: {
@@ -257,11 +255,6 @@ export default {
     }
   },
   created() {
-    // TODO remove when compatibility is no longer necessary
-    this.disallowLegacyLinking = (
-      get(user(), 'subscription.plan_id') !== 'pro-comp-50-dh' ||
-      get(user(), 'subscription.printers_subscribed') !== 1
-    )
     if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
       this.discoveryEnabled = false
     }
@@ -467,29 +460,7 @@ export default {
         this.discoverPrinter()
       }, 5000)
     },
-    // TODO remove when backward compatibility is no longer necessary
-    legacyAutoLinkPrinter(deviceId) {
-      this.chosenDeviceId = deviceId
-      axios.post(urls.printerDiscovery(), { code: this.verificationCode.code, device_id: deviceId })
-      // Declare failure if nothing is linked after 20s
-      setTimeout(() => {
-        if (this.chosenDeviceId && !this.verifiedPrinter) {
-          this.chosenDeviceId = null
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: 'Something went wrong. Switched to using 6-digit code to link OctoPrint.',
-          })
-          this.discoveryEnabled = false
-        }
-        this.chosenDeviceId = null
-      }, 20000)
-    },
     autoLinkPrinter(discoveredPrinter) {
-      // TODO remove when backward compatibility is no longer necessary
-      if (!this.disallowLegacyLinking) {
-        this.legacyAutoLinkPrinter(discoveredPrinter.device_id)
-        return
-      }
       this.$swal.openModalWithComponent(
         AutoLinkPopup,
         {

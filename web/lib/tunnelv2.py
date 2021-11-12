@@ -164,10 +164,18 @@ class OctoprintTunnelV2Helper(object):
                 # req is not using basic auth, no 401 error
                 raise django.http.Http404
 
-        # no basic auth, no session - force basic auth
-        # TODO: when we have proper integrations we might
-        # be able to convert this to a 404
-        raise TunnelAuthenticationError('missing credentials', realm=realm)
+        # do we have a subdomain/port matching tunnel at all?
+        pt = qs.first()
+        if pt is None:
+            raise django.http.Http404
+
+        # when sudomain/port matches a non-internal tunnel,
+        # we have to return necessary basicauth header with realm
+        if pt.basicauth_username and pt.basicauth_password:
+            raise TunnelAuthenticationError('missing credentials', realm=realm)
+
+        # in internal case session is required
+        raise TunnelAuthenticationError('missing session', realm=None)
 
     @classmethod
     def is_tunnel_request(cls, s_or_r: ScopeOrRequest) -> bool:

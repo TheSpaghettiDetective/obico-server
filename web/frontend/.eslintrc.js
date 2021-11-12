@@ -23,6 +23,7 @@ module.exports = {
   rules: {
     'quotes': ['error', 'single'],
     'semi': ['error', 'never'],
-    'no-multi-spaces': ['error']
+    'no-multi-spaces': ['error'],
+    'indent': ['warn', 2],
   }
 }

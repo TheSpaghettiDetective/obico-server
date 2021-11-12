@@ -685,6 +685,13 @@ class PrintHeaterTarget(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class OctoPrintTunnelManager(models.Manager):
+    def get_queryset(self):
+        return super(OctoPrintTunnelManager, self).get_queryset().filter(
+            printer__user__is_active=True,
+            printer__archived_at__isnull=True)
+
+
 class OctoPrintTunnel(models.Model):
     # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
     INTERNAL_APP = 'TSD'
@@ -703,6 +710,8 @@ class OctoPrintTunnel(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = OctoPrintTunnelManager()
 
     @classmethod
     def get_or_create_for_internal_use(cls, printer) -> 'OctoPrintTunnel':

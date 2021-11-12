@@ -100,15 +100,10 @@ class OctoprintTunnelV2Helper(object):
         port = cls.get_port(s_or_r)
         auth_header = cls.get_authorization_header(s_or_r)
 
-        qs_kwargs = {
-            'printer__user__is_active': True,
-            'printer__archived_at__isnull': True,
-        }
-
         if subdomain_code:
-            qs_kwargs['subdomain_code'] = subdomain_code
-        elif port:
-            qs_kwargs['port'] = port
+            qs_kwargs = {'subdomain_code':  subdomain_code}
+        else:   # Port should be present when subdomain_code is missing
+            qs_kwargs = {'port': port}
 
         qs = OctoPrintTunnel.objects.filter(
             **qs_kwargs

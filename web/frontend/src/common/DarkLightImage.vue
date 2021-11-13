@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { Themes, theme } from '@main/colors.js'
+import { Themes, currentThemeValue } from '@main/colors.js'
 
 export default {
   name: 'DarkLightImage',
@@ -44,7 +44,7 @@ export default {
 
   computed: {
     theme() {
-      return theme.value
+      return currentThemeValue()
     },
   },
 }

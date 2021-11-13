@@ -55,7 +55,7 @@
 
 <script>
 import { inMobileWebView, user, settings } from '@lib/page_context'
-import { Themes, theme } from '@main/colors.js'
+import { Themes, currentThemeValue } from '@main/colors.js'
 
 export default {
   name: 'Navbar',
@@ -92,7 +92,7 @@ export default {
     },
 
     theme() {
-      return theme.value
+      return currentThemeValue()
     },
   },
 
@@ -119,6 +119,9 @@ export default {
 
     img
       width: 232px
+
+  .navbar-toggler
+    color: var(--color-text-primary)
 
   .nav-item
     text-transform: uppercase

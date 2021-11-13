@@ -17,6 +17,13 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 from django.contrib.messages import constants as messages
 
+
+def get_bool(key, default):
+    if key in os.environ:
+        return os.environ[key].strip('\'"').lower() == 'true'
+    return default
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -36,7 +43,7 @@ if os.environ.get('SITE_DOMAIN'):
     SESSION_COOKIE_DOMAIN = os.environ.get('SITE_DOMAIN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'True'
+DEBUG = get_bool('DEBUG', False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -78,7 +85,7 @@ INSTALLED_APPS = [
     'webpack_loader',
 ]
 
-if os.environ.get('SOCIAL_LOGIN') == 'True':
+if get_bool('SOCIAL_LOGIN', False):
     INSTALLED_APPS += [
         'allauth.socialaccount.providers.facebook',
         'allauth.socialaccount.providers.google',
@@ -205,8 +212,8 @@ STATICFILES_DIRS = [
 ]
 
 SITE_ID = 1
-SITE_USES_HTTPS = os.environ.get('SITE_USES_HTTPS') == 'True'
-SITE_IS_PUBLIC = os.environ.get('SITE_IS_PUBLIC', 'False') == 'True'
+SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
+SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
 # DRF settings:
 
@@ -241,7 +248,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if SITE_USES_HTTPS else 'http'
 LOGIN_REDIRECT_URL = '/'
-ACCOUNT_ALLOW_SIGN_UP = os.environ.get('ACCOUNT_ALLOW_SIGN_UP') == 'True'
+ACCOUNT_ALLOW_SIGN_UP = get_bool('ACCOUNT_ALLOW_SIGN_UP', False)
 
 AUTH_USER_MODEL = 'app.User'
 SOCIALACCOUNT_ADAPTER = 'app.accounts.SocialAccountAdapter'
@@ -285,13 +292,13 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
+EMAIL_USE_TLS = get_bool('EMAIL_USE_TLS', False)
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 # webpack bundle stats
 
-WEBPACK_LOADER_ENABLED = os.environ.get('WEBPACK_LOADER_ENABLED') == 'True'
+WEBPACK_LOADER_ENABLED = get_bool('WEBPACK_LOADER_ENABLED', False)
 WEBPACK_STATS_PATH = os.path.join(
     BASE_DIR, 'frontend/webpack-stats.json')
 WEBPACK_LOADER = {
@@ -321,8 +328,8 @@ SLACK_CLIENT_ID = None
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776'))  # 1TB by default
 OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
 OCTOPRINT_TUNNEL_PORT_RANGE = range(
-        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[0]),
-        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1]),
+        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[0].strip('"\'')),
+        int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1].strip('"\'')),
     ) if os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE') else None
 
 # settings export

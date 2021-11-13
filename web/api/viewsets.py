@@ -310,7 +310,7 @@ class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
     serializer_class = OctoPrintTunnelSerializer
 
     def get_queryset(self):
-        return OctoPrintTunnel.objects.filter(user=self.request.user)
+        return OctoPrintTunnel.objects.filter(printer__user=self.request.user)
 
     def create(self, request):
         printer = get_printer_or_404(request.data.pop('printer_id'), request)

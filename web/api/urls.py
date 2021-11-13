@@ -31,6 +31,7 @@ router.register(
     r'printer_discovery',
     viewsets.PrinterDiscoveryViewSet,
     'PrinterDiscoveryViewSet')
+router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 
 urlpatterns = [
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0

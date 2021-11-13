@@ -24,10 +24,10 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, calc_normalized_p)
+    SharedResource, OctoPrintTunnel, calc_normalized_p)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer)
 from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
@@ -302,6 +302,25 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         resp = super(PrintShotFeedbackViewSet, self).update(request, *args, **kwargs)
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
+
+
+class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = OctoPrintTunnelSerializer
+
+    def get_queryset(self):
+        return OctoPrintTunnel.objects.filter(user=self.request.user)
+
+    def create(self, request):
+        printer = get_printer_or_404(request.data.pop('printer_id'), request)
+        app_name = request.data.pop('app_name')
+        if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
+            raise PermissionDenied
+
+        tunnel = OctoPrintTunnel.create(printer, app_name)
+        tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)
+        return Response({'tunnel_endpoint': tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)})
 
 
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,

@@ -7,7 +7,7 @@ import phonenumbers
 
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, calc_normalized_p)
+    SharedResource, OctoPrintTunnel, calc_normalized_p)
 
 
 def int_with_default(v, default):
@@ -160,6 +160,13 @@ class SharedResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SharedResource
         fields = ('id', 'printer_id', 'share_token',)
+
+
+class OctoPrintTunnelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OctoPrintTunnel
+        fields = '__all__'
 
 
 # For public APIs

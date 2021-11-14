@@ -2,66 +2,59 @@
   <b-container>
     <b-row class="justify-content-center">
       <b-col lg="8" class="mt-3">
-        <b-container fluid>
-          <b-row>
-            <b-col class="text-center">
-              <svg viewBox="0 0 1965 240" width="232" height="28.34">
-                <use href="#svg-navbar-brand" />
-              </svg>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <h4 class="text-center my-4">OctoPrint Tunnel Access Authorization</h4>
-              <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel*.</p>
-              <p class="text-muted small">* <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+        <div>
+          <div class="text-center">
+            <svg viewBox="0 0 1965 240" width="232" height="28.34">
+              <use href="#svg-navbar-brand" />
+            </svg>
+          </div>
+          <div>
+            <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
+            <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
+            <p class="text-muted small"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
-              <b-alert v-if="user && !user.is_pro" variant="warning" class="my-3" show>
-                <div class="lead">Note:</div>
-                <div>
-                  Since you are on the free account, yor tunnel usage will be capped at 50MB per month. The quota is reset on the 1st day of each month. You can <a href="http://app.thespaghettidetective.com/ent/pricing/">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
-                </div>
-              </b-alert>
+            <b-alert v-if="user && !user.is_pro" variant="warning" dismissible class="my-3" show>
+              <div>
+                <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+              </div>
+            </b-alert>
 
-              <div v-if="user" class="mt-5">
-                <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
-                <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
-                <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
-                <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
-                  <option :value="null" selected disabled>Please select a printer</option>
-                  <option
-                    v-for="printer in printersToShow"
-                    :key="printer.id"
-                    :value="printer.id"
-                  >
-                    {{ printer.name }}
-                  </option>
-                </select>
-                <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
-                  <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
-                  <button class="btn btn-outline-secondary ml-2" style="flex: 1">Cancel</button>
-                </div>
-                <a href="#">Manage authorized apps</a>
+            <div v-if="user" class="mt-5">
+              <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
+              <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
+              <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
+              <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
+                <option :value="null" selected disabled>Please select a printer</option>
+                <option
+                  v-for="printer in printersToShow"
+                  :key="printer.id"
+                  :value="printer.id"
+                >
+                  {{ printer.name }}
+                </option>
+              </select>
+              <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
+                <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
+                <button class="btn btn-outline-secondary ml-2" style="flex: 1">Cancel</button>
               </div>
-              <div v-else>
-                <div>
-                  Please&nbsp;<a class="link" :href="loginUrl">sign in to your The Spaghetti Detective account</a>&nbsp; to continue, or &nbsp;<a class="link" :href="signupUrl">sign up for an free account</a>&nbsp; if you don't have one.
-                </div>
+              <a href="#">Manage authorized apps</a>
+            </div>
+            <div v-else>
+              <div>
+                Please&nbsp;<a class="link" :href="loginUrl">sign in to your The Spaghetti Detective account</a>&nbsp; to continue, or &nbsp;<a class="link" :href="signupUrl">sign up for an free account</a>&nbsp; if you don't have one.
               </div>
-            </b-col>
-          </b-row>
-          <b-row class="mt-4">
-            <b-col>
-              <p class="text-muted small mb-1">
-                Security notes:
-              </p>
-              <ul class="text-muted small pl-4">
-                <li>The app can only access the tunnel, not your account info such as your email address.</li>
-                <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
-              </ul>
-            </b-col>
-          </b-row>
-        </b-container>
+            </div>
+          </div>
+          <div class="mt-4">
+            <p class="text-muted small mb-1">
+              Security notes:
+            </p>
+            <ul class="text-muted small pl-4">
+              <li>The app can only access the tunnel, not your The Spaghetti Detective account info such as your email address.</li>
+              <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
+            </ul>
+          </div>
+        </div>
       </b-col>
     </b-row>
   </b-container>
@@ -135,8 +128,10 @@ export default {
             window.location.replace(`/tunnels/succeeded/?tunnel_endpoint=${tunnelEndpoint}`)
           })
           .catch(error => {
-            alert(error.message)
-            console.log(error)
+            this.$swal.Reject.fire({
+              title: 'Oops',
+              text: error.message,
+            })
           })
       }
     }
@@ -144,8 +139,8 @@ export default {
 }
 </script>
 
-<style lang="sass">
-body
-  padding-bottom: 0
+<style lang="sass" scoped>
+  body
+    padding-bottom: 0
 </style>
 

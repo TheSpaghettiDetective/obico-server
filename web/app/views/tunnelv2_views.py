@@ -76,33 +76,8 @@ def sanitize_app_name(app_name: str) -> str:
     return app_name.strip()[:64]
 
 
-@login_required
-def create_new_octoprinttunnel(request):
-    printer = get_printer_or_404(request.POST['printer_id'], request)
-    app_name = sanitize_app_name(request.POST['app_name'])
-
-    if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
-        raise PermissionDenied
-
-    tunnel = OctoPrintTunnel.create(printer, app_name)
-    tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)
-    return redirect(reverse('new_octoprinttunnel_succeeded') + '?tunnel_endpoint=' + tunnel_endpoint)
-
-
 def new_octoprinttunnel(request):
-    if request.method == 'POST':
-        return create_new_octoprinttunnel(request)
-
-    app_name = sanitize_app_name(request.GET.get('app_name', 'Unknown App'))
-
-    if request.user.is_authenticated:
-        printers = get_printers(request)
-        printer_id = request.GET.get('printer_id', None)
-        if printer_id:
-            printers = printers.filter(pk__in=[int(printer_id)])
-        return render(request, 'new_octoprinttunnel.html', {'app_name': app_name, 'printers': printers})
-    else:
-        return render(request, 'new_octoprinttunnel.html', {'app_name': app_name})
+    return render(request, 'new_octoprinttunnel.html')
 
 
 @login_required

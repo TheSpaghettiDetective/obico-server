@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from random import random, seed
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination

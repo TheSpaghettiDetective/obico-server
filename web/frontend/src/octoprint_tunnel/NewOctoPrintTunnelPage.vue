@@ -12,17 +12,23 @@
           </b-row>
           <b-row>
             <b-col>
-              <h4 class="text-center mt-5 mb-3">OctoPrint Tunnel Access Authorization</h4>
-              <p class="font-weight-bold">{{ appName }} is requesting to access the tunnel so that it can connect to your OctoPrint from anywhere.</p>
-              <p>OctoPrint Tunnel is a secure way provided by The Spaghetti Detective to securely access your OctoPrint even if you are not on the same local network as your OctoPrint is.</p>
+              <h4 class="text-center my-4">OctoPrint Tunnel Access Authorization</h4>
+              <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel*.</p>
+              <p class="text-muted small">* <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
-              <b-alert v-if="user && !user.is_pro" variant="warning" class="mb-3" show>Since you are on the free account, yor tunnel usage will be capped at 50MB per month. The quota is reset on the 1st day of each month. You can upgrade to the Pro plan to enjoy unlimited tunnel usage.</b-alert>
+              <b-alert v-if="user && !user.is_pro" variant="warning" class="my-3" show>
+                <div class="lead">Note:</div>
+                <div>
+                  Since you are on the free account, yor tunnel usage will be capped at 50MB per month. The quota is reset on the 1st day of each month. You can <a href="http://app.thespaghettidetective.com/ent/pricing/">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                </div>
+              </b-alert>
 
-              <div v-if="user">
-                <p class="font-weight-bold">Make sure you trust {{ appName }} before you authorize this request.</p>
+              <div v-if="user" class="mt-5">
+                <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
                 <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
                 <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
                 <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
+                  <option :value="null" selected disabled>Please select a printer</option>
                   <option
                     v-for="printer in printersToShow"
                     :key="printer.id"
@@ -31,9 +37,9 @@
                     {{ printer.name }}
                   </option>
                 </select>
-                <div v-if="printersToShow.length" class="d-flex mt-3 mb-3">
-                  <button class="btn btn-primary" style="flex: 1" @click="authorize">Authorize</button>
-                  <button class="btn btn-secondary ml-2" style="flex: 1">Cancel</button>
+                <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
+                  <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
+                  <button class="btn btn-outline-secondary ml-2" style="flex: 1">Cancel</button>
                 </div>
                 <a href="#">Manage authorized apps</a>
               </div>
@@ -73,13 +79,6 @@ export default {
   components: {
   },
 
-  props: {
-    appName: {
-      type: String,
-      required: true,
-    },
-  },
-
   data() {
     return {
       user: null,
@@ -93,8 +92,6 @@ export default {
     this.user = user()
     this.fetchPrinters()
     this.printerId = new URLSearchParams(window.location.search).get('printer_id')
-
-    console.log(window.location)
   },
 
   computed: {
@@ -102,11 +99,14 @@ export default {
       return this.printerId ? this.printers.filter((printer) => printer.id == this.printerId) : this.printers
     },
     loginUrl() {
-      return `/accounts/login/?hide_navbar=true&next=${window.location.pathname}${window.location.search}`
+      return `/accounts/login/?hide_navbar=true&next=${encodeURIComponent(window.location.pathname+window.location.search)}`
     },
     signupUrl() {
-      return `/accounts/signup/?hide_navbar=true&next=${window.location.pathname}${window.location.search}`
+      return `/accounts/signup/?hide_navbar=true&next=${encodeURIComponent(window.location.pathname+window.location.search)}`
     },
+    appName() {
+      return new URLSearchParams(window.location.search).get('app') || 'Unknown App'
+    }
   },
 
   methods: {
@@ -117,6 +117,9 @@ export default {
           response.data.forEach((p) => {
             this.printers.push(normalizedPrinter(p))
           })
+          if (this.printersToShow.length == 1) {
+            this.printerToAuthorize = this.printersToShow[0].id
+          }
         })
     },
 

@@ -82,7 +82,7 @@
         <div class="text-center pt-3 w-100">
           <div class="font-weight-light text-muted">- OR -</div>
           <a class="btn"
-          href="{% url 'account_login' %}{% if redirect_field_value %}?next={{redirect_field_value|urlencode}}{% endif %}">{% trans "SIGN IN" %}
+          href="{% url 'account_login' %}?{{request.GET.urlencode}}">{% trans "SIGN IN" %}
         </div>
       </form>
     </div>

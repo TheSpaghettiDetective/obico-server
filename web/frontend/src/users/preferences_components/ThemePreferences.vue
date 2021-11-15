@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
+      <div v-if="showSystemTheme" class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
           <div class="custom-control custom-checkbox form-check-inline system-theme-control">
             <input
               type="checkbox"
@@ -41,6 +41,7 @@
 
 <script>
 import { Themes, theme, setTheme, currentThemeValue } from '@main/colors.js'
+import { mobilePlatform } from '@lib/page_context'
 
 export default {
   name: 'ThemePreferences',
@@ -54,6 +55,9 @@ export default {
   computed: {
     themeValue() {
       return currentThemeValue()
+    },
+    showSystemTheme() {
+      return mobilePlatform() !== 'android'
     },
     systemTheme: {
       get() {

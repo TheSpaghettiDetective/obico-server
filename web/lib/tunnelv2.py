@@ -8,6 +8,7 @@ import binascii
 import django.http
 from django.contrib.auth.hashers import check_password
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from app.models import User, OctoPrintTunnel
 
 HTTPScope = dict
@@ -93,28 +94,28 @@ class OctoprintTunnelV2Helper(object):
         return None
 
     @classmethod
-    def get_octoprinttunnel(
-        cls, s_or_r: ScopeOrRequest
+    def _get_internal_octoprint_tunnel(
+        cls, s_or_r: ScopeOrRequest, pt: OctoPrintTunnel
     ) -> OctoPrintTunnel:
-        subdomain_code = cls.get_subdomain_code(s_or_r)
-        port = cls.get_port(s_or_r)
+        user = cls._get_user(s_or_r)
+        if user is not None and user.is_authenticated:
+            if pt.printer.user_id == user.id:
+                return pt
+
+            raise PermissionDenied
+
+        raise TunnelAuthenticationError('missing session', realm=None)
+
+    @classmethod
+    def _get_app_octoprint_tunnel(
+        cls, s_or_r: ScopeOrRequest, pt: OctoPrintTunnel
+    ) -> OctoPrintTunnel:
         auth_header = cls.get_authorization_header(s_or_r)
 
-        if subdomain_code:
-            qs_kwargs = {'subdomain_code':  subdomain_code}
-        else:   # Port should be present when subdomain_code is missing
-            qs_kwargs = {'port': port}
-
-        qs = OctoPrintTunnel.objects.filter(
-            **qs_kwargs
-        ).select_related('printer', 'printer__user')
-
-        logging.debug(('get_octoprinttunnel', port, subdomain_code, auth_header))
-
         realm = (
-            f'tunnel {subdomain_code}'
-            if subdomain_code else
-            f'tunnel {port}'
+            f'tunnel {pt.subdomain_code}'
+            if pt.subdomain_code else
+            f'tunnel {pt.port}'
         )
 
         try:
@@ -130,48 +131,49 @@ class OctoprintTunnelV2Helper(object):
                 raise TunnelAuthenticationError(
                     'invalid token', realm=realm)
 
-            pt = qs.filter(
-                basicauth_username=username,
-            ).first()
-
             if (
-                pt is None or
-                not check_password(password, pt.basicauth_password)
+                pt.basicauth_username == username and
+                check_password(password, pt.basicauth_password)
             ):
-                raise TunnelAuthenticationError(
-                    'invalid credentials', realm=realm)
-            if isinstance(s_or_r, django.http.HttpRequest):
-                setattr(s_or_r, 'auth_header', auth_header)
-            else:
-                s_or_r['auth_header'] = auth_header
-            return pt
+                if isinstance(s_or_r, django.http.HttpRequest):
+                    setattr(s_or_r, 'auth_header', auth_header)
+                else:
+                    s_or_r['auth_header'] = auth_header
+                return pt
 
-        user = cls._get_user(s_or_r)
-        if user is not None:
-            if user.is_authenticated:
-                pt = qs.filter(
-                    printer__user_id=user.id,
-                    app=OctoPrintTunnel.INTERNAL_APP,
-                ).first()
+            raise TunnelAuthenticationError(
+                'invalid credentials', realm=realm)
 
-                if pt is not None:
-                    return pt
+        raise TunnelAuthenticationError('missing credentials', realm=realm)
 
-                # req is not using basic auth, no 401 error
-                raise django.http.Http404
+    @classmethod
+    def get_octoprinttunnel(
+        cls, s_or_r: ScopeOrRequest
+    ) -> OctoPrintTunnel:
+        subdomain_code = cls.get_subdomain_code(s_or_r)
+        port = cls.get_port(s_or_r)
+        auth_header = cls.get_authorization_header(s_or_r)
+        logging.debug(
+            ('get_octoprinttunnel', port, subdomain_code, auth_header)
+        )
+
+        if subdomain_code:
+            qs_kwargs = {'subdomain_code':  subdomain_code}
+        else:   # Port should be present when subdomain_code is missing
+            qs_kwargs = {'port': port}
+
+        qs = OctoPrintTunnel.objects.filter(
+            **qs_kwargs
+        ).select_related('printer', 'printer__user')
 
         # do we have a subdomain/port matching tunnel at all?
         pt = qs.first()
         if pt is None:
             raise django.http.Http404
 
-        # when sudomain/port matches a non-internal tunnel,
-        # we have to return necessary basicauth header with realm
-        if pt.basicauth_username and pt.basicauth_password:
-            raise TunnelAuthenticationError('missing credentials', realm=realm)
-
-        # in internal case session is required
-        raise TunnelAuthenticationError('missing session', realm=None)
+        if pt.basicauth_username:
+            return cls._get_app_octoprint_tunnel(s_or_r, pt)
+        return cls._get_internal_octoprint_tunnel(s_or_r, pt)
 
     @classmethod
     def is_tunnel_request(cls, s_or_r: ScopeOrRequest) -> bool:

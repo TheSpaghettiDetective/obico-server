@@ -99,7 +99,7 @@ class OctoprintTunnelV2Helper(object):
     ) -> OctoPrintTunnel:
         user = cls._get_user(s_or_r)
         if user is not None and user.is_authenticated:
-            if tunnel.printer.user_id != user.id:
+            if tunnel.printer.user_id == user.id:
                 return
 
             raise PermissionDenied

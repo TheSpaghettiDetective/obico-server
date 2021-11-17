@@ -92,7 +92,7 @@
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
               <p>Securely tunnel to your OctoPrint from anywhere.</p>
-              <p>Free plan is subject to 50MB/month data cap.</p>
+              <p>Free plan is subject to 50MB/month data cap. Data usage is reset on the 1st day of each month.</p>
               <p>
                 Learn more about
                 <strong>

@@ -1,16 +1,16 @@
 
 export const mobilePlatform = () => {
-    return JSON.parse(document.querySelector('#app-platform-json').text)['platform']
+  return JSON.parse(document.querySelector('#app-platform-json').text)['platform']
 }
 
 export const inMobileWebView = () => {
-    return mobilePlatform() !== ''
+  return mobilePlatform() !== ''
 }
 
 export const user = () => {
-    return JSON.parse(document.querySelector('#user-json').text)
+  return JSON.parse(document.querySelector('#user-json').text)
 }
 
 export const settings = () => {
-    return JSON.parse(document.querySelector('#settings-json').text)
+  return JSON.parse(document.querySelector('#settings-json').text)
 }

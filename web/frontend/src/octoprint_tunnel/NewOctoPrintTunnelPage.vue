@@ -35,9 +35,9 @@
               </select>
               <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
                 <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
-                <button class="btn btn-outline-secondary ml-2" style="flex: 1">Cancel</button>
+                <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
               </div>
-              <a href="#">Manage authorized apps</a>
+              
             </div>
             <div v-else>
               <div>

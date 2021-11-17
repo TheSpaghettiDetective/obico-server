@@ -99,7 +99,7 @@ export default {
     },
     appName() {
       return new URLSearchParams(window.location.search).get('app') || 'Unknown App'
-    }
+    },
   },
 
   methods: {
@@ -125,7 +125,8 @@ export default {
           })
           .then(response => {
             const tunnelEndpoint = response.data.tunnel_endpoint
-            window.location.replace(`/tunnels/succeeded/?tunnel_endpoint=${tunnelEndpoint}`)
+            const redirectUrl = new URLSearchParams(window.location.search).get('success_redirect_url') || '/tunnels/succeeded/'
+            window.location.replace(`${redirectUrl}?tunnel_endpoint=${tunnelEndpoint}`)
           })
           .catch(error => {
             this.$swal.Reject.fire({

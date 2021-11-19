@@ -52,7 +52,7 @@ class OctoPrintPicView(APIView):
         printer = request.auth
         printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
-        pic = request.FILES['pic']
+        pic = ltrim_100bytes_when_broken(request.FILES['pic'])
         pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
 
@@ -168,13 +168,36 @@ def pause_if_needed(printer):
         send_failure_alert(printer, is_warning=False, print_paused=False)
 
 
+def ltrim_100bytes_when_broken(pic):
+    # possible bug in gst
+    # there can be a 100 bytes extra trash
+    # at the head
+
+    pic.file.seek(0)
+    head = pic.file.read(103)
+
+    pic.file.seek(0)
+    output = pic.file
+
+    if head[100:103] == b'\xff\xd8\xff':
+        pic.file.seek(100)
+        output = io.BytesIO(pic.file.read())
+
+    output.seek(0)
+    return InMemoryUploadedFile(
+        output,
+        u"pic",
+        'pic',
+        pic.content_type,
+        len(output.getbuffer()),
+        None)
+
+
 def cap_image_size(pic):
     im = Image.open(pic.file)
-    if max(im.size) <= 1296:
-        pic.file.seek(0)
-        return pic
+    if max(im.size) > 1296:
+        im.thumbnail((1280, 960), Image.ANTIALIAS)
 
-    im.thumbnail((1280, 960), Image.ANTIALIAS)
     output = io.BytesIO()
     im.save(output, format='JPEG')
     output.seek(0)

@@ -11,11 +11,11 @@
           <div>
             <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
             <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
-            <p class="text-muted small"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+            <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
             <b-alert v-if="user && !user.is_pro" variant="warning" dismissible class="my-3" show>
               <div>
-                <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
               </div>
             </b-alert>
 
@@ -40,8 +40,12 @@
               
             </div>
             <div v-else>
-              <div>
-                Please&nbsp;<a class="link" :href="loginUrl">sign in to your The Spaghetti Detective account</a>&nbsp; to continue, or &nbsp;<a class="link" :href="signupUrl">sign up for an free account</a>&nbsp; if you don't have one.
+              <div class="my-5">
+                <a class="btn btn-primary btn-block" :href="loginUrl">Sign In </a>
+                <div class="text-center pt-3 w-100">
+                  <div class="font-weight-light text-muted">- OR -</div>
+                  <a class="btn" :href="signupUrl">SIGN UP</a>
+                </div>
               </div>
             </div>
           </div>

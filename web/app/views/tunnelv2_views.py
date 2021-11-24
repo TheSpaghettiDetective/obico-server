@@ -265,6 +265,8 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         ):
             cookie += '; Secure'
 
+        resp['Set-Cookie'] = cookie
+
     if data['response'].get('compressed', False):
         content = zlib.decompress(data['response']['content'])
     else:

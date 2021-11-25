@@ -143,11 +143,11 @@ class PrinterViewSet(
 
 
 class PrintViewSet(
-    # FIXME arbitrary update is not allowed, right?
-    # no create, no update
+    # no create
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)

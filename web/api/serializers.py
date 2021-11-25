@@ -143,6 +143,11 @@ class GCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
+        read_only_fields = ('user', )
+
+    def save(self):
+        user = self.context['request'].user
+        return super().save(user=user)
 
 
 class MobileDeviceSerializer(serializers.ModelSerializer):

@@ -248,7 +248,13 @@ class PrintViewSet(viewsets.ModelViewSet):
         )
 
 
-class GCodeFileViewSet(viewsets.ModelViewSet):
+class GCodeFileViewSet(
+    # no create, no update
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = GCodeFileSerializer

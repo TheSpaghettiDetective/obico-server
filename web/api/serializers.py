@@ -173,10 +173,16 @@ class SharedResourceSerializer(serializers.ModelSerializer):
 
 
 class OctoPrintTunnelSerializer(serializers.ModelSerializer):
+    printer_id = serializers.IntegerField(required=True, write_only=True)
+    app_name = serializers.CharField(max_length=64, required=True, write_only=True)
 
     class Meta:
         model = OctoPrintTunnel
         fields = '__all__'
+        read_only_fields = (
+            'app', 'basicauth_username', 'basicauth_password',
+            'subdomain_code', 'port', 'printer'
+        )
 
 
 # For public APIs

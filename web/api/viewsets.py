@@ -334,14 +334,19 @@ class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
         return OctoPrintTunnel.objects.filter(printer__user=self.request.user)
 
     def create(self, request):
-        printer = get_printer_or_404(request.data.pop('printer_id'), request)
-        app_name = request.data.pop('app_name')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        printer = get_printer_or_404(validated_data['printer_id'], request)
+        app_name = validated_data['app_name']
+
         if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
             raise PermissionDenied
 
         tunnel = OctoPrintTunnel.create(printer, app_name)
         tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)
-        return Response({'tunnel_endpoint': tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)})
+        return Response({'tunnel_endpoint': tunnel_endpoint}, status=status.HTTP_201_CREATED)
 
 
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,

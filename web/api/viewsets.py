@@ -65,7 +65,15 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class PrinterViewSet(viewsets.ModelViewSet):
+class PrinterViewSet(
+    # FIXME arbitrary update IS allowed, right?
+    # no create, no destroy
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrinterSerializer

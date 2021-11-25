@@ -142,7 +142,14 @@ class PrinterViewSet(
         return Response(dict(succeeded=succeeded, printer=serializer.data))
 
 
-class PrintViewSet(viewsets.ModelViewSet):
+class PrintViewSet(
+    # FIXME arbitrary update is not allowed, right?
+    # no create, no update
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrintSerializer

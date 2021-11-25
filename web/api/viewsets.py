@@ -351,6 +351,8 @@ class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
 
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def list(self, request, *args, **kwargs):
         return Response({

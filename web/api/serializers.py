@@ -129,6 +129,10 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'pic', 'status', 'settings', 'current_print',
                   'normalized_p', 'auth_token', 'archived_at',)
 
+        read_only_fields = (
+            'auth_token', 'archived_at',
+        )
+
     def get_normalized_p(self, obj: Printer) -> float:
         return calc_normalized_p(obj.detective_sensitivity,
                                  obj.printerprediction)
@@ -139,6 +143,11 @@ class GCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
+        read_only_fields = ('user', )
+
+    def save(self):
+        user = self.context['request'].user
+        return super().save(user=user)
 
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
@@ -146,6 +155,7 @@ class MobileDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobileDevice
         fields = '__all__'
+        read_only_fields = ('user', 'deactivated_at')
 
 
 class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
@@ -163,10 +173,16 @@ class SharedResourceSerializer(serializers.ModelSerializer):
 
 
 class OctoPrintTunnelSerializer(serializers.ModelSerializer):
+    printer_id = serializers.IntegerField(required=True, write_only=True)
+    app_name = serializers.CharField(max_length=64, required=True, write_only=True)
 
     class Meta:
         model = OctoPrintTunnel
         fields = '__all__'
+        read_only_fields = (
+            'app', 'basicauth_username', 'basicauth_password',
+            'subdomain_code', 'port', 'printer'
+        )
 
 
 # For public APIs

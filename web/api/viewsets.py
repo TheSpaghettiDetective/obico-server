@@ -65,7 +65,15 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class PrinterViewSet(viewsets.ModelViewSet):
+class PrinterViewSet(
+    # FIXME arbitrary update IS allowed, right?
+    # no create, no destroy
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrinterSerializer
@@ -134,7 +142,14 @@ class PrinterViewSet(viewsets.ModelViewSet):
         return Response(dict(succeeded=succeeded, printer=serializer.data))
 
 
-class PrintViewSet(viewsets.ModelViewSet):
+class PrintViewSet(
+    # FIXME arbitrary update is not allowed, right?
+    # no create, no update
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrintSerializer
@@ -240,7 +255,13 @@ class PrintViewSet(viewsets.ModelViewSet):
         )
 
 
-class GCodeFileViewSet(viewsets.ModelViewSet):
+class GCodeFileViewSet(
+    # no create, no update
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = GCodeFileSerializer
@@ -313,18 +334,25 @@ class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
         return OctoPrintTunnel.objects.filter(printer__user=self.request.user)
 
     def create(self, request):
-        printer = get_printer_or_404(request.data.pop('printer_id'), request)
-        app_name = request.data.pop('app_name')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        printer = get_printer_or_404(validated_data['printer_id'], request)
+        app_name = validated_data['app_name']
+
         if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
             raise PermissionDenied
 
         tunnel = OctoPrintTunnel.create(printer, app_name)
         tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)
-        return Response({'tunnel_endpoint': tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)})
+        return Response({'tunnel_endpoint': tunnel_endpoint}, status=status.HTTP_201_CREATED)
 
 
 class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def list(self, request, *args, **kwargs):
         return Response({
@@ -333,25 +361,37 @@ class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
             })
 
 
-class MobileDeviceViewSet(viewsets.ModelViewSet):
+class MobileDeviceViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = MobileDeviceSerializer
 
+    def get_queryset(self):
+        return MobileDevice.objects.filter(user=self.request.user)
+
     def create(self, request):
-        device_token = request.data.pop('device_token')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         device, _ = MobileDevice.with_inactive.get_or_create(
             user=request.user,
-            device_token=device_token,
-            defaults=request.data
+            device_token=serializer.validated_data['device_token'],
+            defaults=serializer.validated_data,
         )
+
         if device.deactivated_at or device.app_version != request.data['app_version']:
             device.deactivated_at = None
-            for attr, value in request.data.items():
+            for attr, value in serializer.validated_data.items():
                 setattr(device, attr, value)
             device.save()
 
-        return Response(self.serializer_class(device, many=False).data)
+        return Response(
+            self.serializer_class(device, many=False).data,
+            status=status.HTTP_201_CREATED)
 
 
 class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,

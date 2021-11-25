@@ -155,6 +155,7 @@ class MobileDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MobileDevice
         fields = '__all__'
+        read_only_fields = ('user', 'deactivated_at')
 
 
 class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):

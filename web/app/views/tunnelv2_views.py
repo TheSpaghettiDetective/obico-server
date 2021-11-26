@@ -110,7 +110,7 @@ def redirect_to_tunnel_url(request, pk):
 @xframe_options_exempt
 def octoprint_http_tunnel(request):
     try:
-        pt = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
+        octoprinttunnel = OctoprintTunnelV2Helper.get_octoprinttunnel(request)
     except TunnelAuthenticationError as exc:
         resp = HttpResponse(
             exc.message,
@@ -121,32 +121,29 @@ def octoprint_http_tunnel(request):
                 f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
 
-    if request.path.lower() == '/__tsd__/tunnelusage/':
-        return tunnel_usage_view(request)
+    if request.path.lower().startswith('/_tsd_/'): # "Special path" starting with "/_tsd_/" is dedicated to tunnel APIs
+        return tunnel_api(request, octoprinttunnel)
 
-    if request.path.lower() == '/__tsd__/webcam/0/':
-        return tunnel_webcam_view(request)
-
-    return _octoprint_http_tunnel(request, pt)
+    return _octoprint_http_tunnel(request, octoprinttunnel)
 
 
-def tunnel_usage_view(request):
-    return HttpResponse(
-        json.dumps({
-            'total': cache.octoprinttunnel_get_stats(
-                octoprinttunnel.printer.user.id),
-            'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
-        }),
-        content_type='application/json'
-    )
+def tunnel_api(request, octoprinttunnel):
+    if request.path.lower() == '/_tsd_/tunnelusage/':
+        return HttpResponse(
+            json.dumps({
+                'total': cache.octoprinttunnel_get_stats(
+                    octoprinttunnel.printer.user.id),
+                'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+            }),
+            content_type='application/json'
+        )
 
-
-def tunnel_webcam_view(request):
-    pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get('img_url', None)
-    return HttpResponse(
-        json.dumps({'snapshot': pic}),
-        content_type='application/json',
-    )
+    if request.path.lower() == '/_tsd_/webcam/0/':
+        pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get('img_url', None)
+        return HttpResponse(
+            json.dumps({'snapshot': pic}),
+            content_type='application/json',
+        )
 
 
 # Helpers

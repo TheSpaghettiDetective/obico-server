@@ -53,22 +53,6 @@ OVER_FREE_LIMIT_HTML = """
 </html>
 """
 
-TIMED_OUT_HTML = """
-<html>
-    <body>
-        <center>
-            <h1>Timed Out</h1>
-            <hr>
-            <h3 style="color: red;">
-                Either your OctoPrint is offline,
-                or The Spaghetti Detective plugin version is
-                lower than 1.4.0.
-            </h3>
-        </center>
-    </body>
-</html>
-"""
-
 NOT_CONNECTED_HTML = """
 <html>
     <body>
@@ -85,15 +69,9 @@ NOT_CONNECTED_HTML = """
 </html>
 """
 
-NOT_CONNECTED_CODE = 482
-TIMED_OUT_CODE = 483
-OVER_FREE_LIMIT_CODE = 481
-
-RESPONSES = {
-    NOT_CONNECTED_CODE: ('octoprint is not connected', NOT_CONNECTED_HTML),
-    TIMED_OUT_CODE: ('connection to octoprint timed out', TIMED_OUT_HTML),
-    OVER_FREE_LIMIT_CODE: ('over free limit', OVER_FREE_LIMIT_HTML),
-}
+NOT_CONNECTED_STATUS_CODE = 482
+TIMED_OUT_STATUS_CODE = 483
+OVER_FREE_LIMIT_STATUS_CODE = 481
 
 MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
 
@@ -143,7 +121,32 @@ def octoprint_http_tunnel(request):
                 f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
 
+    if request.path.lower() == '/__tsd__/tunnelusage/':
+        return tunnel_usage_view(request)
+
+    if request.path.lower() == '/__tsd__/webcam/0/':
+        return tunnel_webcam_view(request)
+
     return _octoprint_http_tunnel(request, pt)
+
+
+def tunnel_usage_view(request):
+    return HttpResponse(
+        json.dumps({
+            'total': cache.octoprinttunnel_get_stats(
+                octoprinttunnel.printer.user.id),
+            'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+        }),
+        content_type='application/json'
+    )
+
+
+def tunnel_webcam_view(request):
+    pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get('img_url', None)
+    return HttpResponse(
+        json.dumps({'snapshot': pic}),
+        content_type='application/json',
+    )
 
 
 # Helpers
@@ -193,50 +196,15 @@ def save_static_etag(func):
     return inner
 
 
-def get_response(code, request, octoprinttunnel):
-    r = RESPONSES[code]
-    if octoprinttunnel.basicauth_username:
-        resp = HttpResponse(
-            r[0],
-            content_type='text/plain',
-        )
-    else:
-        resp = HttpResponse(
-            r[1],
-            content_type='text/html'
-        )
-    # cannot be directly set, django raises ValueError if code is gt than 599.
-    resp.status_code = code
-    return resp
-
-
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
-    if request.path.lower() == '/__tsd__/tunnelusage/':
-        return HttpResponse(
-            json.dumps({
-                'total': cache.octoprinttunnel_get_stats(
-                    octoprinttunnel.printer.user.id),
-                'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
-            }),
-            content_type='application/json'
-        )
-
-    if request.path.lower() == '/__tsd__/webcam/0/':
-        pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get(
-            'img_url', None)
-        return HttpResponse(
-            json.dumps({'snapshot': pic}),
-            content_type='application/json',
-        )
-
     user = octoprinttunnel.printer.user
     if user.tunnel_usage_over_cap():
-        return get_response(OVER_FREE_LIMIT_CODE, request, octoprinttunnel)
+        return HttpResponse(OVER_FREE_LIMIT_HTML, status=OVER_FREE_LIMIT_STATUS_CODE)
 
-    if not octoprinttunnel.is_octoprint_connected():
-        return get_response(NOT_CONNECTED_CODE, request, octoprinttunnel)
+    if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
+        return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()
     path = request.get_full_path()
@@ -298,7 +266,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
-        return get_response(TIMED_OUT_CODE, request, octoprinttunnel)
+        return HttpResponse(NOT_CONNECTED_HTML, status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None
     status_code = data['response']['status']

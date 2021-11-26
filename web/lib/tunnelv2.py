@@ -174,7 +174,6 @@ class OctoprintTunnelV2Helper(object):
             cls._validate_tunnel_basic_auth(s_or_r, tunnel)
         else:
             cls._validate_tunnel_session(s_or_r, tunnel)
-        
         return tunnel
 
     @classmethod

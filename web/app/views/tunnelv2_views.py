@@ -68,6 +68,31 @@ TIMED_OUT_HTML = """
 </html>
 """
 
+NOT_CONNECTED_HTML = """
+<html>
+    <body>
+        <center>
+            <h1>Not Connected</h1>
+            <hr>
+            <h3 style="color: red;">
+                Either your OctoPrint is offline,
+                or The Spaghetti Detective plugin version is
+                lower than 1.4.0.
+            </h3>
+        </center>
+    </body>
+</html>
+"""
+
+NOT_CONNECTED_CODE = 482
+TIMED_OUT_CODE = 483
+OVER_FREE_LIMIT_CODE = 412
+
+RESPONSES = {
+    NOT_CONNECTED_CODE: ('octoprint is not connected', NOT_CONNECTED_HTML),
+    TIMED_OUT_CODE: ('connection to octoprint timed out', TIMED_OUT_HTML),
+    OVER_FREE_LIMIT_CODE: ('over free limit', OVER_FREE_LIMIT_HTML),
+}
 
 MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
 
@@ -167,14 +192,32 @@ def save_static_etag(func):
     return inner
 
 
+def get_response(code, request, octoprinttunnel):
+    r = RESPONSES[code]
+    if octoprinttunnel.basicauth_username:
+        resp = HttpResponse(
+            r[0],
+            content_type='text/plain',
+        )
+    else:
+        resp = HttpResponse(
+            r[1],
+            content_type='text/html'
+        )
+    # cannot be directly set, django raises ValueError if code is gt than 599.
+    resp.status_code = code
+    return resp
+
+
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
     if user.tunnel_usage_over_cap():
-        return HttpResponse(
-            OVER_FREE_LIMIT_HTML,
-            status=412)
+        return get_response(OVER_FREE_LIMIT_CODE, request, octoprinttunnel)
+
+    if not octoprinttunnel.is_octoprint_connected():
+        return get_response(NOT_CONNECTED_CODE, request, octoprinttunnel)
 
     method = request.method.lower()
     path = request.get_full_path()
@@ -236,9 +279,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
-        return HttpResponse(
-            TIMED_OUT_HTML,
-            status=504)
+        return get_response(TIMED_OUT_CODE, request, octoprinttunnel)
 
     content_type = data['response']['headers'].get('Content-Type') or None
     status_code = data['response']['status']

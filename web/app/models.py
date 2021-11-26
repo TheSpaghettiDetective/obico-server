@@ -794,3 +794,8 @@ class OctoPrintTunnel(models.Model):
 
     def get_internal_tunnel_url(self, request):
         return f'{request.scheme}://{self.get_host(request)}'
+
+    def is_octoprint_connected(self):
+        return channels.num_ws_connections(
+            channels.octo_group_name(self.printer.id)
+        ) > 0

@@ -3,6 +3,7 @@ import functools
 import re
 import json
 import packaging.version
+from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -129,11 +130,14 @@ def octoprint_http_tunnel(request):
 
 def tunnel_api(request, octoprinttunnel):
     if request.path.lower() == '/_tsd_/tunnelusage/':
+        start_of_next_month = (datetime.now().replace(day=1) + timedelta(days=32)).replace(day=1)
+
         return HttpResponse(
             json.dumps({
                 'total': cache.octoprinttunnel_get_stats(
                     octoprinttunnel.printer.user.id),
                 'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+                'reset_in_seconds': (start_of_next_month - datetime.now()).total_seconds(),
             }),
             content_type='application/json'
         )

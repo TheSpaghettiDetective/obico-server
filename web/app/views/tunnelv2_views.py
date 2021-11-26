@@ -1,6 +1,7 @@
 import time
 import functools
 import re
+import json
 import packaging.version
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -170,6 +171,24 @@ def save_static_etag(func):
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
+    if request.path.lower() == '/__tsd__/tunnelusage/':
+        return HttpResponse(
+            json.dumps({
+                'total': cache.octoprinttunnel_get_stats(
+                    octoprinttunnel.printer.user.id),
+                'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+            }),
+            content_type='application/json'
+        )
+
+    if request.path.lower() == '/__tsd__/webcam/0/':
+        pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get(
+            'img_url', None)
+        return HttpResponse(
+            json.dumps({'snapshot': pic}),
+            content_type='application/json',
+        )
+
     user = octoprinttunnel.printer.user
     if user.tunnel_usage_over_cap():
         return HttpResponse(

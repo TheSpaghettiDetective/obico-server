@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!isPro && usageFetched" class="floating-panel text-center pb-2">
-      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">?</a>)</div>
+      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">?</a>)</div>
       <div :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</div>
       <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
     </div>

@@ -134,9 +134,8 @@ def tunnel_api(request, octoprinttunnel):
 
         return HttpResponse(
             json.dumps({
-                'total': cache.octoprinttunnel_get_stats(
-                    octoprinttunnel.printer.user.id),
-                'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+                'total': cache.octoprinttunnel_get_stats(octoprinttunnel.printer.user.id),
+                'monthly_cap': -1 if octoprinttunnel.printer.user.is_pro else settings.OCTOPRINT_TUNNEL_CAP,
                 'reset_in_seconds': (start_of_next_month - datetime.now()).total_seconds(),
             }),
             content_type='application/json'

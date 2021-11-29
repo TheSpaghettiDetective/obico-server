@@ -5,7 +5,7 @@ import json
 import packaging.version
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 from django.contrib.auth.decorators import login_required
@@ -149,8 +149,10 @@ def tunnel_api(request, octoprinttunnel):
             content_type='application/json',
         )
 
+    raise Http404
 
 # Helpers
+
 
 def is_plugin_version_supported(version: str) -> bool:
     return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION

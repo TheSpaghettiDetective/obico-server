@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row class="justify-content-center">
-      <b-col lg="8" class="mt-3">
+      <b-col v-if="user" lg="8" class="mt-3">
         <div>
           <div class="text-center">
             <svg viewBox="0 0 1965 240" width="232" height="28.34">
@@ -20,31 +20,26 @@
             </b-alert>
 
             <div v-if="user" class="mt-5">
-              <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
-              <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
-              <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
-              <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
-                <option :value="null" selected disabled>Please select a printer</option>
-                <option
-                  v-for="printer in printersToShow"
-                  :key="printer.id"
-                  :value="printer.id"
-                >
-                  {{ printer.name }}
-                </option>
-              </select>
-              <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
-                <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
-                <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
+              <div v-if="printersToShow.length === 0">
+                <p class="lead">Your OctoPrint is not linked to your The Spaghetti Detective account yet.</p>
               </div>
-              
-            </div>
-            <div v-else>
-              <div class="my-5">
-                <a class="btn btn-primary btn-block" :href="loginUrl">Sign In </a>
-                <div class="text-center pt-3 w-100">
-                  <div class="font-weight-light text-muted">- OR -</div>
-                  <a class="btn" :href="signupUrl">SIGN UP</a>
+              <div v-else>
+                <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
+                <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
+                <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
+                <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
+                  <option :value="null" selected disabled>Please select a printer</option>
+                  <option
+                    v-for="printer in printersToShow"
+                    :key="printer.id"
+                    :value="printer.id"
+                  >
+                    {{ printer.name }}
+                  </option>
+                </select>
+                <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
+                  <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
+                  <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
                 </div>
               </div>
             </div>
@@ -58,6 +53,38 @@
               <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
             </ul>
           </div>
+        </div>
+      </b-col>
+      <b-col v-else class="mt-5">
+        <div>
+          <b-container>
+            <b-row>
+              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                <svg viewBox="0 0 1965 240" class="logo-img">
+                  <use href="#svg-navbar-brand" />
+                </svg>
+              </div>
+            </b-row>
+            <b-row>
+              <h5 class="mx-auto">FOR</h5>
+            </b-row>
+            <b-row>
+              <h1 class="mx-auto">{{appName}}</h1>
+            </b-row>
+            <b-row class="justify-content-center">
+              <p class="text-muted mt-5">OctoPrint Tunnel by The Spaghetti Detective provides <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">free and secure remote access for your OctoPrint</a>.</p>
+              <p class="text-muted">With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+            </b-row>
+            <b-row>
+              <div class="my-5 w-100">
+                <a class="btn btn-primary btn-block" :href="loginUrl">SIGN IN </a>
+                <div class="text-center pt-3 w-100">
+                  <div class="font-weight-light text-muted">- OR -</div>
+                  <a class="btn" :href="signupUrl">SIGN UP</a>
+                </div>
+              </div>
+            </b-row>
+          </b-container>
         </div>
       </b-col>
     </b-row>

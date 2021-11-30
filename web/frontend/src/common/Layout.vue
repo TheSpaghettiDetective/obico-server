@@ -74,12 +74,12 @@
           </li>
           <li v-if="!user">
             <a href="/accounts/login/">
-              Sign In
+              SIGN IN
             </a>
           </li>
           <li v-if="!user && allowSignUp">
             <a href="/accounts/signup/">
-              Sign Up
+              SIGN UP
             </a>
           </li>
         </ul>

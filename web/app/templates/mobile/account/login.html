@@ -7,7 +7,7 @@
 {% block navbar %}
 {% endblock navbar %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block head_title %}{% trans "SIGN IN" %}{% endblock %}
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
@@ -15,7 +15,7 @@
 <div class="row justify-content-center logreg">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
     <div id="logreg-forms" class="pb-5 my-2">
-      <h2 class="text-center py-2">{% trans "Sign In" %}</h2>
+      <h2 class="text-center py-2">{% trans "SIGN IN" %}</h2>
       {% if socialaccount_providers %}
       <div class="social-login">
         <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
@@ -66,7 +66,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign In" %}</button>
+        <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN IN" %}</button>
         <div class="pt-2">
           <div class="row">
             <div class="col">

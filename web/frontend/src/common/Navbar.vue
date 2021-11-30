@@ -32,8 +32,8 @@
           </b-navbar-nav>
 
           <b-navbar-nav class="ml-auto">
-            <b-nav-item v-if="!user" href="/accounts/login/">Sign In</b-nav-item>
-            <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">Sign Up</b-nav-item>
+            <b-nav-item v-if="!user" href="/accounts/login/">SIGN IN</b-nav-item>
+            <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">SIGN UP</b-nav-item>
             <b-nav-item-dropdown v-if="user" ref="accountDropdown" right toggle-class="user-menu" :text="user.first_name || user.email">
               <b-dropdown-item href="/user_preferences/">
                 <i class="fas fa-sliders-h mr-2"></i>Preferences

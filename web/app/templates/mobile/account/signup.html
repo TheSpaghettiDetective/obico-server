@@ -8,7 +8,7 @@
 {% block navbar %}
 {% endblock navbar %}
 
-{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+{% block head_title %}{% trans "SIGN UP" %}{% endblock %}
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
@@ -16,7 +16,7 @@
 <div class="row justify-content-center logreg">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
     <div id="logreg-forms" class="my-2">
-      <h2 class="text-center py-2">{% trans "Sign Up" %}</h2>
+      <h2 class="text-center py-2">{% trans "SIGN UP" %}</h2>
       <div style="margin-bottom: 1rem; padding-left: 12px;">
         <div class="custom-control custom-checkbox form-check-inline">
           <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
@@ -83,7 +83,7 @@
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <button type="submit" class="btn btn-primary btn-block">{% trans "Sign Up" %}</button>
+        <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN UP" %}</button>
         <div class="text-center pt-3 w-100">
           <div class="font-weight-light text-muted">- OR -</div>
           <a class="btn" href="{% url 'mobile_auth_login' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN IN" %}</a>

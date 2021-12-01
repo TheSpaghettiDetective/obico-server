@@ -31,20 +31,25 @@
                 </div>
                 <br /><br />
                 <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-                  <div class="mt-4">
-                    <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
+                  <div v-if="redirectToTunnelCreation" class="mt-4">
+                    <a :href="redirectToTunnelCreation" class="btn btn-primary btn-block mx-auto btn-lg">Authorize App Access</a>
                   </div>
-                  <div class="mt-5">
-                    <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
-                  </div>
-                  <div>
-                    <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
-                  </div>
-                  <div class="mt-4">
-                    <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto">Change Printer Settings</a>
-                  </div>
-                  <div>
-                    <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
+                  <div v-else>
+                    <div class="mt-4">
+                      <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
+                    </div>
+                    <div class="mt-5">
+                      <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
+                    </div>
+                    <div>
+                      <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
+                    </div>
+                    <div class="mt-4">
+                      <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto">Change Printer Settings</a>
+                    </div>
+                    <div>
+                      <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -287,6 +292,9 @@ export default {
     canStartLinking() {
       return this.verificationCode?.code && this.discoveredPrinters?.length > 0
     },
+    redirectToTunnelCreation() {
+      return new URLSearchParams(window.location.search).get('redirectToTunnelCreation')
+    }
   },
   methods: {
     setSavingStatus(propName, status) {

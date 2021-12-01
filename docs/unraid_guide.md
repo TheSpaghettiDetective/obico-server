@@ -49,7 +49,7 @@ Navigate to port 3334/admin on your server.  For the following steps we will use
 
 Go to Sites, click *example.com*, and change the Domain Name to your server IP address at port 3334, ex. `192.168.1.10:3334`.  Save the changes and exit out of the admin site. 
 
-Go to the non-admin site of the containter by navigating to `tower.local:3334` and log in with the same credentials of `root@example.com`/`supersecret`.  Add a printer and install TSD on the Ocotprint instance, setting the Server Address in Octoprint to your server address:port like `http://192.168.1.10:3334`, then copy/paste the secret token in the correct location. 
+Go to the non-admin site of the containter by navigating to `tower.local:3334` and log in with the same credentials of `root@example.com`/`supersecret`.  Add a printer and install TSD on the Ocotprint instance, setting the Server Address in OctoPrint to your server address:port like `http://192.168.1.10:3334`, then copy/paste the secret token in the correct location. 
 
 To get email notifications working, go back to the Unraid terminal and navigate to the TSD installation directory with `cd /mnt/user/appdata/TheSpaghettiDetective`.  Open the docker-compose.yml file with `nano docker-compose.yml`.  You will need an [app-specific password](https://lmgtfy.app/?q=gmail+app+specific+password) for your email if you use 2-factor authentication. 
 

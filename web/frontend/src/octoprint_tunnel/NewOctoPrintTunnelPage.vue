@@ -2,7 +2,47 @@
   <b-container>
     <b-row class="justify-content-center">
       <b-col v-if="user" lg="8" class="mt-3">
-        <div>
+        <div v-if="printersToShow.length === 0" class="wizard-container full-on-mobile">
+          <b-container>
+            <b-row>
+              <h1 class="mx-auto">Welcome To</h1>
+            </b-row>
+            <b-row>
+              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                <svg viewBox="0 0 1965 240" class="logo-img">
+                  <use href="#svg-navbar-brand" />
+                </svg>
+              </div>
+            </b-row>
+            <b-row>
+              <b-col>
+                <hr />
+              </b-col>
+            </b-row>
+            <b-row v-if="isEnt && trialDaysLeft > 0">
+              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
+              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left in Your <a class="link" target="_blank" href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
+              <div class="mt-3 col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your OctoPrint</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 Print Hours Watched by The Detective</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>
+              </div>
+            </b-row>
+            <b-row>
+              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+                <p class="lead mt-5">OctoPrint has not been linked to your The Spaghetti Detective account.</p>
+                <div>
+                  <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg">Link OctoPrint Now</a>
+                </div>
+                <div>
+                  <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
+                </div>
+              </div>
+            </b-row>
+          </b-container>
+        </div>
+        <div v-else>
           <div class="text-center">
             <svg viewBox="0 0 1965 240" width="232" height="28.34">
               <use href="#svg-navbar-brand" />
@@ -19,28 +59,23 @@
               </div>
             </b-alert>
 
-            <div v-if="user" class="mt-5">
-              <div v-if="printersToShow.length === 0">
-                <p class="lead">Your OctoPrint is not linked to your The Spaghetti Detective account yet.</p>
-              </div>
-              <div v-else>
-                <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
-                <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
-                <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
-                <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
-                  <option :value="null" selected disabled>Please select a printer</option>
-                  <option
-                    v-for="printer in printersToShow"
-                    :key="printer.id"
-                    :value="printer.id"
-                  >
-                    {{ printer.name }}
-                  </option>
-                </select>
-                <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
-                  <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
-                  <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
-                </div>
+            <div class="mt-5">
+              <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
+              <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
+              <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
+              <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
+                <option :value="null" selected disabled>Please select a printer</option>
+                <option
+                  v-for="printer in printersToShow"
+                  :key="printer.id"
+                  :value="printer.id"
+                >
+                  {{ printer.name }}
+                </option>
+              </select>
+              <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
+                <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
+                <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
               </div>
             </div>
           </div>
@@ -72,8 +107,8 @@
               <h1 class="mx-auto">{{appName}}</h1>
             </b-row>
             <b-row class="justify-content-center">
-              <p class="text-muted mt-5">OctoPrint Tunnel by The Spaghetti Detective provides <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">free and secure remote access for your OctoPrint</a>.</p>
-              <p class="text-muted">With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+              <p class="text-muted mt-5">The Spaghetti Detective provides <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
+              <p class="text-muted">With The Spaghetti Detective, you can now use {{appName}} to control and monitor your printer from anywhere.</p>
             </b-row>
             <b-row>
               <div class="my-5 w-100">
@@ -93,9 +128,10 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 import urls from '@lib/server_urls'
 import { normalizedPrinter } from '@lib/normalizers'
-import { user } from '@lib/page_context'
+import { user, settings} from '@lib/page_context'
 
 export default {
   name: 'NewOctoPrintTunnelPage',
@@ -114,8 +150,12 @@ export default {
 
   created() {
     this.user = user()
-    this.fetchPrinters()
+    const {IS_ENT} = settings()
+    this.isEnt = !!IS_ENT
     this.printerId = new URLSearchParams(window.location.search).get('printer_id')
+    if (this.user) {
+      this.fetchPrinters()
+    }
   },
 
   computed: {
@@ -128,9 +168,18 @@ export default {
     signupUrl() {
       return `/accounts/signup/?hide_navbar=true&next=${encodeURIComponent(window.location.pathname+window.location.search)}`
     },
+    wizardUrl() {
+      return `/printers/wizard/?redirectToTunnelCreation=${encodeURIComponent(window.location.pathname+window.location.search)}`
+    },
     appName() {
       return new URLSearchParams(window.location.search).get('app') || 'Unknown App'
     },
+    trialDaysLeft() {
+      if (this.user?.subscription?.plan_id !== 'pro-trial') {
+        return -1
+      }
+      return moment(this.user.subscription.expired_at).diff(moment(), 'days')
+    }
   },
 
   methods: {
@@ -172,7 +221,16 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  body
-    padding-bottom: 0
+body
+  padding-bottom: 0
+
+.wizard-container
+  padding: 1.5rem 0.6rem 3rem
+
+.feature-check
+  color: var(--color-primary)
+
+.feature-text
+  margin-left: 0.5em
 </style>
 

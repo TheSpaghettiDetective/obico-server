@@ -179,7 +179,7 @@ class SharedResourceSerializer(serializers.ModelSerializer):
 
 class OctoPrintTunnelSerializer(serializers.ModelSerializer):
     printer_id = serializers.IntegerField(required=True, write_only=True)
-    printer = PrinterSerializer(many=False)
+    printer = PrinterSerializer(many=False, required=False)
     app_name = serializers.CharField(max_length=64, required=True, write_only=True)
 
     class Meta:

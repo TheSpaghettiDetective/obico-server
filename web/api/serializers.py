@@ -140,8 +140,7 @@ class PrinterSerializer(serializers.ModelSerializer):
         )
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj.detective_sensitivity,
-                                 obj.printerprediction)
+        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
 
 
 class GCodeFileSerializer(serializers.ModelSerializer):
@@ -180,6 +179,7 @@ class SharedResourceSerializer(serializers.ModelSerializer):
 
 class OctoPrintTunnelSerializer(serializers.ModelSerializer):
     printer_id = serializers.IntegerField(required=True, write_only=True)
+    printer = PrinterSerializer(many=False)
     app_name = serializers.CharField(max_length=64, required=True, write_only=True)
 
     class Meta:

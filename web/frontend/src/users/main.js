@@ -63,6 +63,10 @@ const router = new VueRouter({
       path: '/slack_notifications',
       component: UserPreferencesRoute,
     },
+    {
+      path: '/authorized_apps',
+      component: UserPreferencesRoute,
+    },
   ]
 })
 

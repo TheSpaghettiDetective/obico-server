@@ -80,7 +80,7 @@
               </select>
               <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
                 <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
-                <button class="btn btn-outline-secondary ml-2" style="flex: 1" href="#">Manage Apps</button>
+                <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/#/authorized_apps">Manage Apps</a>
               </div>
             </div>
           </div>
@@ -204,7 +204,7 @@ export default {
     authorize() {
       if (this.printersToShow.length) {
         axios
-          .post('/api/v1/tunnels/', {
+          .post(urls.tunnels(), {
             app_name: this.appName,
             printer_id: this.printerToAuthorize || this.printersToShow[0].id,
           })

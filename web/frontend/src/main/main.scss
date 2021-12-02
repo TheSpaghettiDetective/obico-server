@@ -776,3 +776,40 @@ a.text-warning {
   background-color: var(--color-input-background);
   color: var(--color-text-primary);
 }
+
+
+// Table
+.tsd-table {
+  &.top-border {
+    border-top: 1px solid var(--color-divider);
+  }
+  .table-head {
+    border-bottom: 1px solid var(--color-divider);
+    font-weight: bold;
+  }
+  .table-row {
+    display: flex;
+    padding: 1em;
+    & > * {
+      flex: 1;
+    }
+  }
+  @mixin break($breakpoint, $px) {
+    &.break-#{$breakpoint} {
+      .table-row {
+        @media (max-width: $px) {
+          flex-direction: column;
+        }
+      }
+    }
+  }
+  @include break(xs, 576px);
+  @include break(sm, 768px);
+  @include break(md, 992px);
+  @include break(lg, 1200px);
+  .table-body {
+    .table-row:nth-child(2n) {
+      background-color: var(--color-table-accent);
+    }
+  }
+}

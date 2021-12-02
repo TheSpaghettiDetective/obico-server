@@ -54,6 +54,11 @@
                     <span>Slack</span>
                     <i class="fas fa-arrow-right"></i>
                   </router-link>
+
+                  <router-link to="/authorized_apps">
+                    <span>Authorized Apps</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </router-link>
                 </div>
                 <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
                   <!-- General -->
@@ -68,6 +73,7 @@
                   <telegram-notifications v-if="$route.path === '/telegram_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
                   <pushover-notifications v-if="$route.path === '/pushover_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
                   <slack-notifications v-if="$route.path === '/slack_notifications'"></slack-notifications>
+                  <authorized-apps v-if="$route.path === '/authorized_apps'"></authorized-apps>
                 </div>
               </div>
               <!-- left-side nav for desktops -->
@@ -109,6 +115,9 @@
                 <b-tab v-if="slackEnabled" title-item-class="subcategory" title="Slack">
                   <slack-notifications></slack-notifications>
                 </b-tab>
+                <b-tab title="Authorized Apps">
+                  <authorized-apps></authorized-apps>
+                </b-tab>
               </b-tabs>
             </div>
             <div v-else class="text-center">
@@ -128,6 +137,7 @@ import Layout from '@common/Layout.vue'
 import { inMobileWebView, settings } from '@lib/page_context'
 import ThemePreferences from './preferences_components/ThemePreferences'
 import ProfilePreferences from './preferences_components/ProfilePreferences'
+import AuthorizedApps from './preferences_components/AuthorizedApps'
 import EmailNotifications from './preferences_components/EmailNotifications'
 import SmsNotifications from './preferences_components/SmsNotifications'
 import PushbulletNotifications from './preferences_components/PushbulletNotifications'
@@ -142,6 +152,7 @@ export default {
     Layout,
     ThemePreferences,
     ProfilePreferences,
+    AuthorizedApps,
     EmailNotifications,
     SmsNotifications,
     PushbulletNotifications,

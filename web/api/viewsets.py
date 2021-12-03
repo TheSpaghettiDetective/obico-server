@@ -325,7 +325,13 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
 
 
-class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
+class OctoPrintTunnelViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = OctoPrintTunnelSerializer

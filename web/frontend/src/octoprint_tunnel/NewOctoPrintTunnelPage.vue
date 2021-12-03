@@ -206,7 +206,7 @@ export default {
         axios
           .post(urls.tunnels(), {
             app_name: this.appName,
-            printer_id: this.printerToAuthorize || this.printersToShow[0].id,
+            target_printer_id: this.printerToAuthorize || this.printersToShow[0].id,
           })
           .then(response => {
             const tunnelEndpoint = response.data.tunnel_endpoint

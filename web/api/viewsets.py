@@ -325,7 +325,13 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
         return Response({'instance': resp.data, 'credited_dhs': 2 if should_credit else 0})
 
 
-class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
+class OctoPrintTunnelViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = OctoPrintTunnelSerializer
@@ -338,7 +344,7 @@ class OctoPrintTunnelViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        printer = get_printer_or_404(validated_data['printer_id'], request)
+        printer = get_printer_or_404(validated_data['target_printer_id'], request)
         app_name = validated_data['app_name']
 
         if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:

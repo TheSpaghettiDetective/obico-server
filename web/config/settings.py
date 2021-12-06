@@ -38,6 +38,7 @@ SECRET_KEY = os.environ.get(
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_NAME = 'tsd_sessionid'
 
 if os.environ.get('SITE_DOMAIN'):
     SESSION_COOKIE_DOMAIN = os.environ.get('SITE_DOMAIN')
@@ -96,6 +97,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'app.middleware.rename_session_cookie',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

@@ -149,3 +149,10 @@ let navbar = document.getElementById('dynamic-navbar')
 if (navbar) {
   navbar.classList.add('navbar-' + currentThemeValue().toLowerCase())
 }
+
+// manually control logo
+let logo = document.getElementById('dynamic-logo')
+
+if (logo && currentThemeValue() === Themes.Light) {
+  logo.src = '/static/img/logo-christmas/logo-christmas_light.png'
+}

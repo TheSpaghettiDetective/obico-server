@@ -302,12 +302,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     else:
         content = data['response']['content']
 
-    cache.octoprinttunnel_update_stats(
-        user.id,
-        # x1.2 because sent data volume is 20% of received.
-        # x2 because all data need to go in and out. 240 bytes header overhead
-        (len(content) + 240) * 1.2 * 2
-    )
+    cache.octoprinttunnel_update_stats(user.id, len(content))
 
     resp.write(content)
     return resp

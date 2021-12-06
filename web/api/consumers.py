@@ -529,11 +529,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             else:
                 self.send(text_data=payload['data'])
 
-            cache.octoprinttunnel_update_stats(
-                self.printer.user_id,
-                # x1.2 because sent data volume is 20% of received. x2 because all data need to go in and out
-                len(payload['data']) * 1.2 * 2
-            )
+            cache.octoprinttunnel_update_stats(self.printer.user_id, len(payload['data']))
         except:  # sentry doesn't automatically capture consumer errors
             import traceback
             traceback.print_exc()

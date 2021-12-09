@@ -168,7 +168,7 @@ class OctoprintTunnelV2Helper(object):
         # do we have a subdomain/port matching tunnel at all?
         tunnel = qs.first()
         if tunnel is None:
-            raise django.http.Http404
+            raise TunnelAuthenticationError('invalid credentials', realm=None)
 
         if tunnel.basicauth_username:
             cls._validate_tunnel_basic_auth(s_or_r, tunnel)

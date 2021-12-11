@@ -1807,11 +1807,6 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-bootstrap-slider@^11.0.2:
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/bootstrap-slider/-/bootstrap-slider-11.0.2.tgz#4b167c165f322339cc66f0c7166b5a39e289e251"
-  integrity sha512-CdwS+Z6X79OkLes9RfDgPB9UIY/+81wTkm6ktdSB6hdyiRbjJLFQIjZdnEr55tDyXZfgC7U6yeSXkNN9ZdGqjA==
-
 bootstrap-vue@^2.15.0:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/bootstrap-vue/-/bootstrap-vue-2.15.0.tgz#0dfc12c054496c0f10efed510da1def41697cf3c"
@@ -8469,10 +8464,10 @@ vue-slick-carousel@^1.0.5:
     resize-observer-polyfill "1.5.1"
     vue "^2.6.10"
 
-vue-slider-component@^3.2.2:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/vue-slider-component/-/vue-slider-component-3.2.4.tgz#7a5a99d909ce85d877d915c34b7036f45a4169bd"
-  integrity sha512-x8rfBl3tL+UTZ1HCe7XU9vBxvbWLOP9tPCE77Dp5D9WB3d0mE5nsbPibj1GKEflex9c0Gez7ZNoJYyGpb9yEww==
+vue-slider-component@^3.2.15:
+  version "3.2.15"
+  resolved "https://registry.yarnpkg.com/vue-slider-component/-/vue-slider-component-3.2.15.tgz#fd40564c1d15a90a1290cb691990c0bc745b3aa9"
+  integrity sha512-FpmMsQ6MQFn22B6boDcEjRmuawdaHwjHRVZiuv5w37jijHra6+HogjSrh3mb42jE+PUIFFagXi36oFEzpDbadg==
   dependencies:
     core-js "^3.6.5"
     vue-property-decorator "^8.0.0"

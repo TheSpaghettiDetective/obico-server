@@ -135,25 +135,23 @@
                       <div class="form-label text-muted">How sensitive do you want the Detective to be on this printer?</div>
                       <saving-animation :errors="errorMessages.detective_sensitivity" :saving="saving.detective_sensitivity">
                         <div class="my-2 sensitivity-slider">
-                          <input
-                            id="id_sensitivity"
-                            name="detective_sensitivity"
-                            data-slider-id='sensitivity-slider'
-                            type="text"
-                            data-slider-min="0.8"
-                            data-slider-max="1.2"
-                            data-slider-step="0.05"
-                            :data-slider-value="printer.detective_sensitivity"
+                          <vue-slider
+                            v-model="detectiveSensitivity"
+                            :lazy="true"
+                            :min="0.8"
+                            :max="1.2"
+                            :interval="0.05"
+                            :tooltipFormatter="sensitivityTooltipFormatter"
                           />
                         </div>
                       </saving-animation>
-                      <div class="hint-low">
+                      <div v-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Low'">
                         Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
                       </div>
-                      <div class="hint-medium">
+                      <div v-else-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Medium'">
                         Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
                       </div>
-                      <div class="hint-high">
+                      <div v-else>
                         High - Hit me with all the false alarms. I want to catch as many failures as possible.
                       </div>
                     </div>
@@ -258,8 +256,7 @@
 <script>
 import axios from 'axios'
 import split from 'lodash/split'
-import Slider from 'bootstrap-slider'
-import 'bootstrap-slider/dist/css/bootstrap-slider.css'
+import VueSlider from 'vue-slider-component'
 
 import { normalizedPrinter } from '@lib/normalizers'
 import urls from '@lib/server_urls'
@@ -272,6 +269,7 @@ export default {
     SavingAnimation,
     NumberInput,
     Layout,
+    VueSlider,
   },
 
   data() {
@@ -397,7 +395,6 @@ export default {
     printerWizardUrl() {
       return urls.printerWizard(this.printer.id)
     },
-
     printerName: {
       get: function() {
         return this.printer ? this.printer.name : undefined
@@ -405,6 +402,15 @@ export default {
       set: function(newValue) {
         this.printer.name = newValue
       }
+    },
+    detectiveSensitivity: {
+      get() {
+        return this.printer.detective_sensitivity
+      },
+      set(newValue) {
+        this.printer.detective_sensitivity = newValue
+        this.updateSetting('detective_sensitivity')
+      },
     },
   },
 
@@ -440,24 +446,7 @@ export default {
 
   created() {
     this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
-    this.fetchPrinter().then(() => {
-      // Instantiate sensitivity slider
-      const sensitivitySlider = new Slider('#id_sensitivity', {
-        formatter: function(value) {
-          if (value < 0.95) {
-            return 'Low'
-          }
-          if (value > 1.05) {
-            return 'High'
-          }
-          return 'Medium'
-        }
-      })
-
-      sensitivitySlider.on('slideStop', this.saveSensitivity) // Emit new value to parent component
-      sensitivitySlider.on('change', this.updateSensitivityHint) // Update hint depending of selected value
-      this.updateSensitivityHint() // Initial hits update (hide all except one)
-    })
+    this.fetchPrinter()
   },
 
   methods: {
@@ -535,34 +524,14 @@ export default {
       this.patchPrinter(settingsItem, this.printer[settingsItem])
     },
 
-    /**
-     * Callback for sensitivity slider
-     * @param {String} newValue
-     */
-    saveSensitivity(newValue) {
-      this.printer.detective_sensitivity = newValue
-      this.updateSetting('detective_sensitivity')
-    },
-
-    /**
-     * Update hint under sensitivity slider
-     */
-    updateSensitivityHint: function() {
-      // Hide all hints
-      const hints = document.querySelectorAll('.sensitivity div[class^=hint]');
-      [].forEach.call(hints, function(hint) {
-        hint.style.display = 'none'
-      })
-
-      // Show target hint depending of selected value
-      var value = parseFloat(document.querySelector('#id_sensitivity').value)
+    sensitivityTooltipFormatter: function(value) {
       if (value < 0.95) {
-        document.querySelector('.sensitivity .hint-low').style.display = 'block'
-      } else if (value > 1.05) {
-        document.querySelector('.sensitivity .hint-high').style.display = 'block'
-      } else {
-        document.querySelector('.sensitivity .hint-medium').style.display = 'block'
+        return 'Low'
       }
+      if (value > 1.05) {
+        return 'High'
+      }
+      return 'Medium'
     },
 
     /**
@@ -617,6 +586,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@import 'vue-slider-component/lib/theme/default.scss'
+
 .card
   overflow: visible !important
 

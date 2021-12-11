@@ -148,13 +148,23 @@ export default {
 
   mounted() {
     // Temporary solution to correctly show alerts inserted by `snippets/messages.html` from Django
-    const staticAlert = document.querySelector('.alert:not(.custom-alert)')
-    if (staticAlert) {
-      staticAlert.style.marginTop = '50px'
+    const staticAlert = document.querySelector('.message-snippet')
+    if (staticAlert && this.inMobileWebView) {
+      staticAlert.classList.add('is-in-mobile')
     }
   },
 }
 </script>
+
+<style lang="sass">
+.message-snippet
+  margin-top: 50px
+  margin-left: 100px
+  @media (max-width: 768px)
+    margin-left: 0
+  &.is-in-mobile
+    margin-left: 0
+</style>
 
 <style lang="sass" scoped>
 .page-wrapper

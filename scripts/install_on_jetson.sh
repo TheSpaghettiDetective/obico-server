@@ -1,6 +1,10 @@
 #!/bin/bash -e
 
-sudo apt update && sudo apt install -y python python-pip curl libffi-dev python-openssl libssl-dev zlib1g-dev gcc g++ make
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt update && sudo apt install -y nvidia-docker2 python python-pip curl libffi-dev python-openssl libssl-dev zlib1g-dev gcc g++ make
+sudo systemctl restart docker
 sudo python -m pip install --upgrade pip setuptools wheel
 sudo python -m pip install docker-compose
 

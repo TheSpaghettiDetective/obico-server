@@ -54,9 +54,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',
-    'channels',
-    "channels_presence",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,6 +63,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'django.contrib.humanize',
+    'channels',
+    "channels_presence",
+    'whitenoise.runserver_nostatic',
     'hijack',
     'compat',
     'simple_history',

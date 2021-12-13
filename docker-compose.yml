@@ -58,7 +58,7 @@ services:
       - "${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}:3334"
     depends_on:
       - ml_api
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --noreload 0.0.0.0:3334"
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver --nostatic --noreload 0.0.0.0:3334"
 
   tasks:
     <<: *web-defaults

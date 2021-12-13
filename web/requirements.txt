@@ -1,5 +1,5 @@
 ipdb
-django==2.2.24
+django==2.2.25
 gunicorn==19.9.0
 whitenoise[brotli]==5.3.0
 dj-database-url==0.5.0

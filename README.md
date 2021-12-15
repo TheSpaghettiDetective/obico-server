@@ -130,6 +130,27 @@ Then, navigate to octoprint to setup the plugin side of things:
 
 1. Give you printer a fancy name and enjoy The Spaghetti Detective!
 
+# Configure The Spaghetti Detective mobile app to use your own server
+
+Download the app for [iOS](https://apps.apple.com/us/app/the-spaghetti-detective/id1540646623?ign-itsct=apps_box&ign-itscg=30200) or [Android](https://play.google.com/store/apps/details?id=com.thespaghettidetective.android)
+
+1. Sign in with an existing TSD cloud account
+
+1. Open the sidebar menu
+
+1. Navigate to "About" -> "Developer Options" -> "Server Settings"
+
+1. Enter your private server URL exactly as it is in the Octoprint plugin, including the port and `http://`
+
+1. Restart the app and login with your private server credentials!
+
+# Access timelapses stored on your server
+
+Although you can simply download the timelapses from either the web interface or the mobile app, it may be important to know exactly where the timelapses are stored on your local machine.
+
+Path to timelapses:
+
+`[TSD Directory]/web/static_build/media/tsd-timelapses/private/`
 
 # Advanced server configuration
 

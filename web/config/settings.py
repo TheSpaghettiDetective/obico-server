@@ -95,6 +95,7 @@ if get_bool('SOCIAL_LOGIN', False):
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'app.middleware.rename_session_cookie',

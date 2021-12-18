@@ -35,6 +35,27 @@ def octoprint_tunnelv2(get_response):
     return middleware
 
 
+def fix_tunnelv2_apple_cache(get_response):
+    # necessary to make caching in ios webviews and safari work
+
+    def middleware(request):
+        resp = get_response(request)
+
+        if (
+            getattr(resp, '_from_tunnelv2', False) and
+            '/static/' in request.get_full_path()
+        ):
+            for k in list(resp.cookies.keys()):
+                del resp.cookies[k]
+
+            if resp.has_header('Vary'):
+                del resp['Vary']
+
+        return resp
+
+    return middleware
+
+
 def rename_session_cookie(get_response):
 
     if settings.SESSION_COOKIE_NAME == 'sessionid':
@@ -63,6 +84,7 @@ def rename_session_cookie(get_response):
                 domain=settings.SESSION_COOKIE_DOMAIN,
                 samesite=settings.SESSION_COOKIE_SAMESITE,
             )
+
         return response
 
     return middleware

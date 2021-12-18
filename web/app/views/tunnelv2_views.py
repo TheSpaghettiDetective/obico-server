@@ -125,7 +125,9 @@ def octoprint_http_tunnel(request):
     if request.path.lower().startswith('/_tsd_/'): # "Special path" starting with "/_tsd_/" is dedicated to tunnel APIs
         return tunnel_api(request, octoprinttunnel)
 
-    return _octoprint_http_tunnel(request, octoprinttunnel)
+    resp = _octoprint_http_tunnel(request, octoprinttunnel)
+    setattr(resp, '_from_tunnelv2', True)
+    return resp
 
 
 def tunnel_api(request, octoprinttunnel):
@@ -158,7 +160,7 @@ def is_plugin_version_supported(version: str) -> bool:
 
 
 def should_cache(path):
-    return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path)
+    return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path) is not None
 
 
 def fix_etag(etag):
@@ -170,7 +172,7 @@ def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
 
     if should_cache(path):
         cached_etag = cache.octoprinttunnel_get_etag(
-            f'octoprinttunnel_{octoprinttunnel.pk}', path)
+            f'v2.octoprinttunnel_{octoprinttunnel.pk}', path)
         if cached_etag:
             return cached_etag
 
@@ -189,7 +191,7 @@ def save_static_etag(func):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
-                        f'octoprinttunnel_{octoprinttunnel.pk}',
+                        f'v2.octoprinttunnel_{octoprinttunnel.pk}',
                         path,
                         etag
                     )
@@ -251,7 +253,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if stripped_auth_heaader:
             req_headers['Authorization'] = stripped_auth_heaader
 
-    ref = f'{octoprinttunnel.id}.{method}.{time.time()}.{path}'
+    ref = f'v2.{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
     channels.send_msg_to_printer(
         octoprinttunnel.printer.id,

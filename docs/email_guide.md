@@ -1,8 +1,8 @@
-# Email server setup trouble-shooting guide
+# Email server setup troubleshooting guide
 
 It isn't uncommon that you can't send emails despite the fact that you have configured your account name and password correctly in `docker-compose.yml`. This is because of increasingly stringent security measurements Gmail and other email providers put in place to fight spam emails. 
 
-Typically for email accounts with 2FA(2 Factor Authentication) you will have to create an App password for devices that do not support 2FA, this will be necessary to do for TSD to correctly send emails. You could disable 2FA but this is not recommended for an account that is important to you, so if you really don't want to create an App password (it's quick) another option is to create an account used solely for email relay and to leave 2FA turned off. 
+Typically for email accounts with 2FA(2 Factor Authentication) you will have to create an App password for devices that do not support 2FA, this will be necessary to do for TSD to correctly send emails. You could disable 2FA but this is not recommended for an account that is important to you, so if you really don't want to create an App password (it's quick) another option is to create an account used solely for email relay and to leave 2FA turned off for said account. 
 
 ## Step-by-step email server configuration and trouble-shooting guide
 
@@ -41,8 +41,8 @@ For Outlook accounts you can verify your SMTP settings needed under your email a
 
 ![Send test email](img/send_test_email.png)
 
-## Troubleshooting with the Test Email
-!!Please note to correctly re-build your Docker container when making changes to the `docker-compose.yml` file othwerwise your changes may not take effect!!
+## Troubleshooting with the test email
+!!Please note to correctly re-build your Docker container when making changes during troubleshooting to the `docker-compose.yml` file othwerwise your changes may not take effect!!
 
 1. If you get a Server Error (500) it is likely that something is wrong with the configuration such as incorrect credentials, port, etc. Check the logs on your web container to see what may have been rejected.
 

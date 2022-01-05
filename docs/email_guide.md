@@ -42,7 +42,7 @@ For Outlook accounts you can verify your SMTP settings needed under your email a
 ![Send test email](img/send_test_email.png)
 
 ## Troubleshooting with the test email
-!!Please note to correctly re-build your Docker container when making changes during troubleshooting to the `docker-compose.yml` file othwerwise your changes may not take effect!!
+!!Please note to correctly re-build your Docker container when making changes during troubleshooting to the `docker-compose.yml` file otherwise your changes may not take effect!! (Deleting the container in Docker and then using docker-compose up -d seems to be fastest on W10)
 
 1. If you get a Server Error (500) it is likely that something is wrong with the configuration such as incorrect credentials, port, etc. Check the logs on your web container to see what may have been rejected.
 

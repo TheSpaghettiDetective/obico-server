@@ -10,15 +10,14 @@ TSD private server can only run on Jetson Nano 4GB model. The 2GB model doesn't 
 
 ### Software requirements
 
+**Important:** Before you flash new software on your sd card, you will have to fully format it first, so make sure you have backed up anything important on an external device.
+
 The following software is required before you start installing the server:
 
-- [JetPack SDK](https://developer.nvidia.com/embedded/jetpack). If you already flashed a software on you sd card, you will have to replace it with this one. Slow download of the software from Nvidia is normal. **Important:** Before you flash the new software on your sd card, you will have to fully format it first, so make sure you have backed up anything important on an external device.
-  - [Flashing Software](https://www.balena.io/etcher/)
-  - [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
-
-*Note: the last JetPack SDK version this has been tested on is jp45.*
-
-*If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133*
+- [JetPack 4.5 SDK](https://developer.nvidia.com/jetpack-sdk-45-archive). If you already flashed a different OS on your sd card, you will have to replace it with this one. Slow download of the software from NVIDIA is normal. 
+  - **Important:** The last JetPack SDK version this has been tested on is jp45. Newer versions may not work correctly (see [bug](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)). If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133
+- [Flashing Software](https://www.balena.io/etcher/)
+- [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
 
 ### Email delivery
 

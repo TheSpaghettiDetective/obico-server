@@ -14,7 +14,7 @@
                 lower than 1.8.4.
             </h3>
             <h3 style="color: red;">
-              Please upgrade before 2022/FEB/01!
+              Please upgrade to the latest plugin version before February 1st, 2022!
             </h3>
           <button class="button" v-on:click="v1WarningClicked">Got it!</button>
         </center>

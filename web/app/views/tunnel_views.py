@@ -35,7 +35,7 @@ def fix_etag(etag):
 
 @login_required
 def tunnel(request, pk, template_dir=None):
-    return render(request, get_template_path('tunnel', template_dir))
+    return render(request, get_template_path('tunnel', template_dir), {"v1": True})
 
 
 def fetch_static_etag(request, pk, *args, **kwargs):

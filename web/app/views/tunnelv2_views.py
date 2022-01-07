@@ -93,9 +93,14 @@ def new_octoprinttunnel_succeeded(request):
 @login_required
 def tunnel(request, pk, template_dir=None):
     get_printer_or_404(pk, request)
+    version = (
+        cache.printer_settings_get(pk) or {}
+    ).get('tsd_plugin_version', '')
+    is_v1 = version and not is_plugin_version_supported(version)
     return render(
         request,
         get_template_path('tunnel', template_dir),
+        {"v1": is_v1},
     )
 
 

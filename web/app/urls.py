@@ -37,8 +37,9 @@ urlpatterns = [
         name='octoprint_http_tunnel'),
 
     # tunnel v1/v2 page with iframe
-    path('tunnel/<int:pk>/', tunnel_views.tunnel),
-    path('tunnels/<int:pk>/', tunnel_views.tunnel),
+    path('tunnel/<int:pk>/', tunnelv2_views.tunnel),
+    path('tunnels/<int:pk>/', tunnelv2_views.tunnel),
+
     path('tunnels/new/', tunnelv2_views.new_octoprinttunnel, name='new_octoprinttunnel'),
     path('tunnels/succeeded/', tunnelv2_views.new_octoprinttunnel_succeeded, name='new_octoprinttunnel_succeeded'),
 

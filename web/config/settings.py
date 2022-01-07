@@ -213,6 +213,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'frontend/builds'),
 ]
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip',
+    'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
+    'flv', 'woff', 'woff2', 'map'  # added map
+)
 
 SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)

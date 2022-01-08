@@ -3,8 +3,7 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-
-        <dark-light-image path="logo-square-christmas" ext="png" alt="TSD" class="logo-small"></dark-light-image>
+        <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="user" :class="{'active': path === '/printers/'}">

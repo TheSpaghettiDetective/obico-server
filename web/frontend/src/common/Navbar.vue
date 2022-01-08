@@ -9,10 +9,9 @@
       }">
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <!-- <svg viewBox="0 0 1965 240" width="232" height="28.34">
+          <svg viewBox="0 0 1965 240" width="232" height="28.34">
             <use href="#svg-navbar-brand" />
-          </svg> -->
-          <dark-light-image path="logo-christmas" ext="png" alt="TSD"></dark-light-image>
+          </svg>
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">
@@ -57,14 +56,11 @@
 <script>
 import { inMobileWebView, user, settings } from '@lib/page_context'
 import { Themes, currentThemeValue } from '@main/colors.js'
-import DarkLightImage from '@common/DarkLightImage.vue'
 
 export default {
   name: 'Navbar',
 
-  components: {
-    DarkLightImage,
-  },
+  components: {},
 
   data() {
     return {

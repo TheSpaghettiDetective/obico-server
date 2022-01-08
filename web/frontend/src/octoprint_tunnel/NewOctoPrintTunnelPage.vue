@@ -79,7 +79,15 @@
                 </option>
               </select>
               <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
-                <button class="btn btn-primary" style="flex: 1" @click="authorize" :disabled="!printerToAuthorize">Authorize</button>
+                <button
+                  class="btn btn-primary"
+                  style="flex: 1"
+                  @click="authorize"
+                  :disabled="!printerToAuthorize || performingAuthRequest"
+                >
+                  <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
+                  <span v-else>Authorize</span>
+                </button>
                 <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/#/authorized_apps">Manage Apps</a>
               </div>
             </div>
@@ -150,6 +158,7 @@ export default {
       printers: [],
       printerId: null,
       printerToAuthorize: null,
+      performingAuthRequest: false,
     }
   },
 
@@ -203,6 +212,7 @@ export default {
 
     authorize() {
       if (this.printersToShow.length) {
+        this.performingAuthRequest = true
         axios
           .post(urls.tunnels(), {
             app_name: this.appName,
@@ -214,6 +224,7 @@ export default {
             window.location.replace(`${redirectUrl}?tunnel_endpoint=${tunnelEndpoint}`)
           })
           .catch(error => {
+            this.performingAuthRequest = false
             this.$swal.Reject.fire({
               title: 'Oops',
               text: error.message,

@@ -685,28 +685,28 @@ class PrintHeaterTarget(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class OctoPrintTunnelManager(models.Manager):
+class OctoPrintTunnelManager(SafeDeleteManager):
     def get_queryset(self):
         return super(OctoPrintTunnelManager, self).get_queryset().filter(
             printer__user__is_active=True,
             printer__archived_at__isnull=True)
 
 
-class OctoPrintTunnel(models.Model):
+class OctoPrintTunnel(SafeDeleteModel):
     # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
     INTERNAL_APP = 'TSD'
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
-    app = models.TextField(null=False, blank=False)
+    app = models.TextField(null=False, blank=False, db_index=True)
 
     basicauth_username = models.TextField(blank=True, null=True)
     basicauth_password = models.TextField(blank=True, null=True)
 
     # when tunnel is accessed by subdomain.
-    subdomain_code = models.TextField(unique=True, blank=True, null=True)
+    subdomain_code = models.TextField(unique=True, blank=True, null=True, db_index=True)
 
     # when tunnel is accessed by port.
-    port = models.IntegerField(null=True, blank=True)
+    port = models.IntegerField(null=True, blank=True, db_index=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -729,6 +729,9 @@ class OctoPrintTunnel(models.Model):
     def create(
         cls, printer: Printer, app: str
     ) -> 'OctoPrintTunnel':
+        # Some users will create multiple tunnels for the same 3rd-party apps for various reasons. Delete existing once so that it won't be confusing for them.
+        cls.objects.filter(printer=printer, app=app).delete()
+
         internal = app == cls.INTERNAL_APP
         if internal:
             instance = OctoPrintTunnel(

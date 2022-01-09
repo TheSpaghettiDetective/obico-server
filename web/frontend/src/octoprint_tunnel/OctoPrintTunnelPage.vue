@@ -113,6 +113,11 @@ export default {
           }
         }
       })
+
+      // Scale up popup on mobiles, otherwise it's too small (because of disabled meta viewport tag)
+      if (window.matchMedia('(pointer:none), (pointer:coarse)')) {
+        document.querySelector('.swal2-popup').classList.add('x150')
+      }
     }
 
     const self = this
@@ -164,7 +169,7 @@ export default {
 
 <style lang="sass">
 @media (pointer:none), (pointer:coarse)
-  .swal2-popup
+  .swal2-popup.x150
     transform: scale(1.5)
   .floating-panel
     transform: scale(2)

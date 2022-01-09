@@ -730,44 +730,36 @@ class OctoPrintTunnel(models.Model):
         cls, printer: Printer, app: str
     ) -> 'OctoPrintTunnel':
         internal = app == cls.INTERNAL_APP
-        n = 30
-        while n > 0:
-            n -= 1
-            if internal:
-                instance = OctoPrintTunnel(
-                    printer=printer,
-                    basicauth_username=None,
-                    basicauth_password=None,
-                    app=app,
-                )
-            else:
-                plain_basicauth_password = token_hex(32)
-                basicauth_password = make_password(plain_basicauth_password)
-                instance = OctoPrintTunnel(
-                    printer=printer,
-                    basicauth_username=token_hex(32),
-                    basicauth_password=basicauth_password,
-                    app=app,
-                )
+        if internal:
+            instance = OctoPrintTunnel(
+                printer=printer,
+                basicauth_username=None,
+                basicauth_password=None,
+                app=app,
+            )
+        else:
+            plain_basicauth_password = token_hex(32)
+            basicauth_password = make_password(plain_basicauth_password)
+            instance = OctoPrintTunnel(
+                printer=printer,
+                basicauth_username=token_hex(32),
+                basicauth_password=basicauth_password,
+                app=app,
+            )
 
-                setattr(
-                    instance,
-                    'plain_basicauth_password',
-                    plain_basicauth_password
-                )
+            setattr(
+                instance,
+                'plain_basicauth_password',
+                plain_basicauth_password
+            )
 
-            if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-                instance.port = OctoPrintTunnel.get_a_free_port()
-            else:
-                instance.subdomain_code = token_hex(8)
+        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
+            instance.port = OctoPrintTunnel.get_a_free_port()
+        else:
+            instance.subdomain_code = token_hex(8)
 
-            try:
-                instance.save()
-                return instance
-            except IntegrityError:
-                if n > 0:
-                    continue
-                raise
+        instance.save()
+        return instance
 
     @classmethod
     def get_a_free_port(cls):

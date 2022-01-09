@@ -275,6 +275,11 @@ export default {
   box-shadow: var(--shadow-top-nav)
   justify-content: space-between
 
+.is-in-mobile .top-nav
+  padding-left: 15px
+  padding-right: 15px
+  background: var(--color-surface-primary) !important
+
 .toggle-sidebar
   color: var(--color-text-primary)
   display: none

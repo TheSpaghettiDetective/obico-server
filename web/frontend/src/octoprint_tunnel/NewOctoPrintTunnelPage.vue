@@ -48,58 +48,65 @@
               <use href="#svg-navbar-brand" />
             </svg>
           </div>
-          <div>
-            <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
-            <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
-            <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
-            <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
-              <div>
-                <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
-              </div>
-            </b-alert>
-            <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
-              <div>
-                <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
-              </div>
-            </b-alert>
+          <div v-if="authorized" class="authorization-successful">
+            <h4 class="title">Authorization Successful!</h4>
+            <p>You can close this page</p>
+          </div>
+          <div v-else>
+            <div>
+              <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
+              <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
+              <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
-            <div class="mt-5">
-              <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
-              <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
-              <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
-              <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
-                <option :value="null" selected disabled>Please select a printer</option>
-                <option
-                  v-for="printer in printersToShow"
-                  :key="printer.id"
-                  :value="printer.id"
-                >
-                  {{ printer.name }}
-                </option>
-              </select>
-              <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
-                <button
-                  class="btn btn-primary"
-                  style="flex: 1"
-                  @click="authorize"
-                  :disabled="!printerToAuthorize || performingAuthRequest"
-                >
-                  <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
-                  <span v-else>Authorize</span>
-                </button>
-                <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/#/authorized_apps">Manage Apps</a>
+              <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
+                <div>
+                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                </div>
+              </b-alert>
+              <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
+                <div>
+                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
+                </div>
+              </b-alert>
+
+              <div class="mt-5">
+                <p class="lead">Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure you trust it):
+                <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
+                <h5 v-else-if="printersToShow.length === 1" class="font-weight-bold">{{ printersToShow[0].name }}</h5>
+                <select v-else-if="printersToShow.length > 1" v-model="printerToAuthorize" class="custom-select">
+                  <option :value="null" selected disabled>Please select a printer</option>
+                  <option
+                    v-for="printer in printersToShow"
+                    :key="printer.id"
+                    :value="printer.id"
+                  >
+                    {{ printer.name }}
+                  </option>
+                </select>
+                <div v-if="printersToShow.length" class="d-flex mt-4 mb-3">
+                  <button
+                    class="btn btn-primary"
+                    style="flex: 1"
+                    @click="authorize"
+                    :disabled="!printerToAuthorize || performingAuthRequest"
+                  >
+                    <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
+                    <span v-else>Authorize</span>
+                  </button>
+                  <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/#/authorized_apps">Manage Apps</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="mt-4">
-            <p class="text-muted small mb-1">
-              Security notes:
-            </p>
-            <ul class="text-muted small pl-4">
-              <li>The app can only access the tunnel, not your The Spaghetti Detective account info such as your email address.</li>
-              <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
-            </ul>
+            <div class="mt-4">
+              <p class="text-muted small mb-1">
+                Security notes:
+              </p>
+              <ul class="text-muted small pl-4">
+                <li>The app can only access the tunnel, not your The Spaghetti Detective account info such as your email address.</li>
+                <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </b-col>
@@ -159,6 +166,7 @@ export default {
       printerId: null,
       printerToAuthorize: null,
       performingAuthRequest: false,
+      authorized: false,
     }
   },
 
@@ -219,6 +227,7 @@ export default {
             target_printer_id: this.printerToAuthorize || this.printersToShow[0].id,
           })
           .then(response => {
+            this.authorized = true
             const tunnelEndpoint = response.data.tunnel_endpoint
             const redirectUrl = new URLSearchParams(window.location.search).get('success_redirect_url') || '/tunnels/succeeded/'
             window.location.replace(`${redirectUrl}?tunnel_endpoint=${tunnelEndpoint}`)
@@ -248,5 +257,9 @@ body
 
 .feature-text
   margin-left: 0.5em
+
+.authorization-successful
+  padding-top: 6rem
+  text-align: center
 </style>
 

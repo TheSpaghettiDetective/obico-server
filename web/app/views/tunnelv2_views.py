@@ -4,17 +4,16 @@ import re
 import json
 import packaging.version
 from datetime import datetime, timedelta
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
 import zlib
 
-from lib.view_helpers import get_printer_or_404, get_template_path, get_printers
+from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
@@ -127,7 +126,8 @@ def octoprint_http_tunnel(request):
                 f'Basic realm="{exc.realm}", charset="UTF-8"'
         return resp
 
-    if request.path.lower().startswith('/_tsd_/'): # "Special path" starting with "/_tsd_/" is dedicated to tunnel APIs
+    # "Special path" starting with "/_tsd_/" is dedicated to tunnel APIs
+    if request.path.lower().startswith('/_tsd_/'):
         return tunnel_api(request, octoprinttunnel)
 
     resp = _octoprint_http_tunnel(request, octoprinttunnel)
@@ -137,7 +137,9 @@ def octoprint_http_tunnel(request):
 
 def tunnel_api(request, octoprinttunnel):
     if request.path.lower() == '/_tsd_/tunnelusage/':
-        start_of_next_month = (datetime.now().replace(day=1) + timedelta(days=32)).replace(day=1)
+        start_of_next_month = (
+            datetime.now().replace(day=1) + timedelta(days=32)
+        ).replace(day=1)
 
         return HttpResponse(
             json.dumps({
@@ -149,7 +151,9 @@ def tunnel_api(request, octoprinttunnel):
         )
 
     if request.path.lower() == '/_tsd_/webcam/0/':
-        pic = (cache.printer_pic_get(octoprinttunnel.printer.id) or {}).get('img_url', None)
+        pic = (
+            cache.printer_pic_get(octoprinttunnel.printer.id) or {}
+        ).get('img_url', None)
         return HttpResponse(
             json.dumps({'snapshot': pic}),
             content_type='application/json',
@@ -212,6 +216,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     if user.tunnel_usage_over_cap():
         return HttpResponse(OVER_FREE_LIMIT_HTML, status=OVER_FREE_LIMIT_STATUS_CODE)
 
+    # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
         return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
 
@@ -219,8 +224,10 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     path = request.get_full_path()
 
     IGNORE_HEADERS = [
-        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER', 'HTTP_AUTHORIZATION',
-        'HTTP_COOKIE', 'HTTP_ACCEPT_ENCODING',
+        'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',  # better not to tell
+        'HTTP_AUTHORIZATION',  # handled explicitely
+        'HTTP_COOKIE',  # handled explicitely
+        'HTTP_ACCEPT_ENCODING',  # should be handled by TSD server
     ]
 
     req_headers = {
@@ -229,7 +236,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if (
             k.startswith('HTTP') and
             k not in IGNORE_HEADERS and
-            not k.startswith('HTTP_X_FORWARDED')
+            not k.startswith('HTTP_X_FORWARDED')  # meant for TSD server
         )
     }
 
@@ -237,6 +244,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         req_headers['Content-Type'] = request.META['CONTENT_TYPE']
 
     if 'HTTP_COOKIE' in request.META:
+        # let's not forward cookies of TSD server
         stripped_cookies = '; '.join(
             [
                 cookie.strip()
@@ -248,6 +256,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
             req_headers['Cookie'] = stripped_cookies
 
     if hasattr(request, 'auth_header'):
+        # let's not forward basic auth header of external tunnel
         stripped_auth_heaader = ', '.join(
             [
                 h
@@ -275,6 +284,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
+        # request timed out
         return HttpResponse(NOT_CONNECTED_HTML, status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None
@@ -285,16 +295,25 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         content_type=content_type,
     )
 
-    to_ignore = ('content-length', 'content-encoding', 'x-frame-options')
+    to_ignore = (
+        'content-length',  # set by django
+        'content-encoding',  # if its set, it is probably incorrect/unapplicable
+        'x-frame-options',  # response must load in TSD's iframe
+    )
     for k, v in data['response']['headers'].items():
         if k.lower() in to_ignore:
             continue
 
         if k.lower() == 'etag':
+            # pre 1.6.? octoprint has invalid etag format for some responses
             v = fix_etag(v)
 
         resp[k] = v
 
+    # plugin connects over http to octoprint,
+    # but TSD needs cookies working over https.
+    # without this, cookies set in response might not be used
+    # in some browsers (FF gives wwarning)
     for cookie in (data['response'].get('cookies', ()) or ()):
         if (
             request.is_secure() and

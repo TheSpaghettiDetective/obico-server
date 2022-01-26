@@ -104,6 +104,7 @@ class User(AbstractUser):
     pushover_user_token = models.CharField(max_length=45, null=True, blank=True)
     print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
+    tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -135,8 +136,14 @@ class User(AbstractUser):
         except errors.InvalidKeyError:
             return False
 
+    def tunnel_cap(self):
+        return -1 if self.is_pro else settings.OCTOPRINT_TUNNEL_CAP * self.tunnel_cap_multiplier
+
     def tunnel_usage_over_cap(self):
-        return not self.is_pro and cache.octoprinttunnel_get_stats(self.id) > settings.OCTOPRINT_TUNNEL_CAP * 1.1  # Cap x 1.1 to give some grace period to users
+        if self.tunnel_cap() < 0:
+            return false
+        else:
+            return cache.octoprinttunnel_get_stats(self.id) > self.tunnel_cap() * 1.1 # Cap x 1.1 to give some grace period to users
 
 # We use a signal as opposed to a form field because users may sign up using social buttons
 

@@ -364,7 +364,7 @@ class OctoPrintTunnelUsageViewSet(mixins.ListModelMixin,
     def list(self, request, *args, **kwargs):
         return Response({
             'total': cache.octoprinttunnel_get_stats(self.request.user.id),
-            'monthly_cap': settings.OCTOPRINT_TUNNEL_CAP,
+            'monthly_cap': self.request.user.tunnel_cap(),
             })
 
 

@@ -40,10 +40,8 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'tsd_sessionid'
 
-SITE_DOMAIN = os.environ.get('SITE_DOMAIN')
-SITE_NAME = os.environ.get('SITE_NAME', 'The Spaghetti Detective')
-if SITE_DOMAIN:
-    SESSION_COOKIE_DOMAIN = SITE_DOMAIN
+if os.environ.get('SITE_DOMAIN'):
+    SESSION_COOKIE_DOMAIN = os.environ.get('SITE_DOMAIN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool('DEBUG', False)

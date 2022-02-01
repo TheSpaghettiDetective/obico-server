@@ -53,7 +53,9 @@ OVER_FREE_LIMIT_HTML = """
 </html>
 """
 
-NOT_CONNECTED_HTML = """
+MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
+
+NOT_CONNECTED_HTML = f"""
 <html>
     <body>
         <center>
@@ -62,7 +64,7 @@ NOT_CONNECTED_HTML = """
             <h3 style="color: red;">
                 Either your OctoPrint is offline,
                 or The Spaghetti Detective plugin version is
-                lower than 1.4.0.
+                lower than {MIN_SUPPORTED_VERSION.public}.
             </h3>
         </center>
     </body>
@@ -72,8 +74,6 @@ NOT_CONNECTED_HTML = """
 NOT_CONNECTED_STATUS_CODE = 482
 TIMED_OUT_STATUS_CODE = 483
 OVER_FREE_LIMIT_STATUS_CODE = 481
-
-MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
 
 
 def sanitize_app_name(app_name: str) -> str:
@@ -92,17 +92,13 @@ def new_octoprinttunnel_succeeded(request):
 @login_required
 def tunnel(request, pk, template_dir=None):
     get_printer_or_404(pk, request)
-    version = (
-        cache.printer_settings_get(pk) or {}
-    ).get('tsd_plugin_version', '')
-    is_v1 = version and not is_plugin_version_supported(version)
     return render(
         request,
         get_template_path('tunnel', template_dir),
-        {"v1": is_v1},
     )
 
 
+@csrf_exempt
 @login_required
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
@@ -218,6 +214,13 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
+        return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
+
+    version = (
+        cache.printer_settings_get(octoprinttunnel.printer.pk) or {}
+    ).get('tsd_plugin_version', '')
+    is_v1 = version and not is_plugin_version_supported(version)
+    if is_v1:
         return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()

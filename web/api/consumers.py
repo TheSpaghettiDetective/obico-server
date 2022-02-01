@@ -236,11 +236,6 @@ class OctoPrintConsumer(WebsocketConsumer):
             if 'janus' in data:
                 channels.send_janus_to_web(
                     self.printer.id, data.get('janus'))
-            elif 'http.tunnel' in data:
-                cache.octoprinttunnel_http_response_set(
-                    data['http.tunnel']['ref'],
-                    data['http.tunnel']
-                )
             elif 'http.tunnelv2' in data:
                 cache.octoprinttunnel_http_response_set(
                     data['http.tunnelv2']['ref'],
@@ -408,16 +403,6 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
     OCTO_WS_ERROR_CODE = 3000
 
     def get_user_and_printer(self):
-        if self.scope.get('url_route', {}).get('kwargs', {}).get('printer_id'):
-            printer_id = self.scope['url_route']['kwargs']['printer_id']
-            return (
-                self.scope['user'],
-                Printer.objects.select_related('user').get(
-                    user=self.scope['user'],
-                    id=printer_id
-                )
-            )
-
         pt = OctoprintTunnelV2Helper.get_octoprinttunnel(self.scope)
         if pt:
             return (
@@ -438,11 +423,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
             self.accept()
 
-            prefix = f'/ws/octoprint/{self.printer.id}'
-            if self.scope['path'].startswith(prefix):
-                self.path = self.scope['path'][len(prefix):]
-            else:
-                self.path = self.scope['path']
+            self.path = self.scope['path']
 
             self.ref = str(time.time())
 

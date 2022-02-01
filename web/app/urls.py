@@ -4,7 +4,6 @@ from django.views.generic.base import RedirectView
 from .views import web_views
 from .views import mobile_views
 
-from .views import tunnel_views
 from .views import tunnelv2_views
 
 urlpatterns = [
@@ -30,16 +29,15 @@ urlpatterns = [
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
 
-    # tunnel v1 http endpoint
+    # tunnel v2 redirect and page with iframe
     re_path(
         r'^octoprint/(?P<pk>\d+)',
-        web_views.octoprint_http_tunnel,
+        tunnelv2_views.redirect_to_tunnel_url,
         name='octoprint_http_tunnel'),
-
-    # tunnel v1/v2 page with iframe
     path('tunnel/<int:pk>/', tunnelv2_views.tunnel),
     path('tunnels/<int:pk>/', tunnelv2_views.tunnel),
 
+    # tunnel integration urls
     path('tunnels/new/', tunnelv2_views.new_octoprinttunnel, name='new_octoprinttunnel'),
     path('tunnels/succeeded/', tunnelv2_views.new_octoprinttunnel_succeeded, name='new_octoprinttunnel_succeeded'),
 

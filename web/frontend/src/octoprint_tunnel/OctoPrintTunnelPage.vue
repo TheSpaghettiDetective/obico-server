@@ -5,21 +5,7 @@
       <div :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</div>
       <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
     </div>
-    <div v-if="showV1Warning">
-        <center>
-            <h1>Plugin Version No Longer Supported</h1>
-            <hr>
-            <h3>
-                The Spaghetti Detective plugin version is
-                lower than 1.8.4.
-            </h3>
-            <h3 style="color: red;">
-              Please upgrade to the latest plugin version before February 1st, 2022!
-            </h3>
-          <button class="button" v-on:click="v1WarningClicked">Got it!</button>
-        </center>
-    </div>
-    <div v-if="!showV1Warning">
+    <div>
       <iframe v-if="printerId" :src="iframeUrl() + '#temp'" class="tunnel-iframe"></iframe>
     </div>
   </div>
@@ -39,14 +25,9 @@ export default {
   components: {},
 
   props: {
-    isV1: {
-      type: Boolean,
-      required: true
-    },
   },
   data: function() {
     return {
-      gotV1Warning: false,
       bytesMTD: null,
       usageCap: null,
       usageFetched: false,
@@ -56,9 +37,6 @@ export default {
   },
 
   computed: {
-    showV1Warning() {
-      return this.isV1 && !this.gotV1Warning
-    },
     usageClass() {
       return {
         'text-success': this.bytesMTD < this.usageCap * 0.8,
@@ -139,9 +117,6 @@ export default {
   methods: {
     iframeUrl() {
       return `/octoprint/${this.printerId}/`
-    },
-    v1WarningClicked() {
-      this.gotV1Warning = true
     },
   }
 }

@@ -27,9 +27,6 @@ from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
 
-from . import tunnel_views
-from . import tunnelv2_views
-
 
 def index(request):
     if request.user.is_authenticated:
@@ -213,18 +210,3 @@ def health_check(request):
     User.objects.all()[:1]
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
-
-
-@csrf_exempt
-@login_required
-def octoprint_http_tunnel(request, pk):
-    # We need to catch the moment when tunnel page loads,
-    # and redirect to v2 url if plugin version is compatible.
-    if request.path == tunnel_views.URL_PREFIX.format(pk=pk) + '/':
-        get_printer_or_404(pk, request)
-        version = (
-            cache.printer_settings_get(pk) or {}
-        ).get('tsd_plugin_version', '')
-        if tunnelv2_views.is_plugin_version_supported(version):
-            return tunnelv2_views.redirect_to_tunnel_url(request, pk)
-    return tunnel_views.octoprint_http_tunnel(request, pk)

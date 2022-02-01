@@ -12,8 +12,5 @@ websocket_urlpatterns = [
         consumers.SharedWebConsumer),
     url(r'^ws/share_token/janus/(?P<share_token>[^/]+)/$',
         consumers.JanusSharedWebConsumer),
-    url(
-        r'^ws/octoprint/(?P<printer_id>\d+)/',
-        consumers.OctoprintTunnelWebConsumer),
     re_path(r'^sockjs/.*$', consumers.OctoprintTunnelWebConsumer)
 ]

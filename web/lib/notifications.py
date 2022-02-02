@@ -15,7 +15,7 @@ import backoff
 
 from lib.file_storage import save_file_obj
 from lib.utils import save_print_snapshot, last_pic_of_print
-from app.models import Printer, Print
+from app.models import Printer, Print, PrintEvent
 from lib.integrations.telegram_bot import send_notification as send_telegram_notification
 from lib.integrations.discord import send_discord_notification
 from lib.integrations.pushover import pushover_notification, PushoverException, PushoverPriority
@@ -307,55 +307,78 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
         LOGGER.error(e)
 
 
-def send_print_notification(_print, extra_ctx={}):
-    if _print.is_canceled():
-        if not _print.printer.user.notify_on_canceled:
+def send_print_notification(_print, extra_ctx={}, event_type=None):
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+        if not _print.printer.user.notify_on_filament_change_req:
             return
     else:
-        if not _print.printer.user.notify_on_done:
-            return
+        if _print.is_canceled():
+            if not _print.printer.user.notify_on_canceled:
+                return
+        else:
+            if not _print.printer.user.notify_on_done:
+                return
 
     # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
 
     try:
         if _print.printer.user.print_notification_by_email:
-            send_print_notification_email(_print, extra_ctx)
+            send_print_notification_email(_print, extra_ctx=extra_ctx, event_type=event_type)
     except:
         sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_pushbullet:
-            send_print_notification_pushbullet(_print)
+            send_print_notification_pushbullet(_print, event_type=event_type)
     except:
         sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_pushover:
-            send_print_notification_pushover(_print)
+            send_print_notification_pushover(_print, event_type=event_type)
     except:
         sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_telegram:
-            send_print_notification_telegram(_print)
+            send_print_notification_telegram(_print, event_type=event_type)
     except:
         sentryClient.captureException()
 
     try:
         if _print.printer.user.print_notification_by_discord:
-            send_print_notification_discord(_print)
+            send_print_notification_discord(_print, event_type=event_type)
     except:
         capture_exception()
 
     try:
         if _print.printer.user.is_pro:
-            send_print_notification_slack(_print)
+            send_print_notification_slack(_print, event_type=event_type)
     except:
         sentryClient.captureException()
 
 
-def send_print_notification_email(_print, extra_ctx={}):
-    subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
+def get_notification_body(_print, event_type=None):
+    if event_type and event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+        return (
+            f"Your print job *{_print.filename}* "
+            f"requires filament change or user interaction "
+            f"on printer {_print.printer.name}."
+        )
+    return (
+        f"Your print job *{_print.filename}* "
+        f"{'has been canceled' if _print.is_canceled() else 'is done'} "
+        f"on printer {_print.printer.name}."
+    )
+
+def send_print_notification_email(_print, extra_ctx={}, event_type=None):
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+        subject = f'_{print.filename} requires filament change or user interaction.'
+        template_path = 'email/filament_change_req_notification.html',
+    else:
+        subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
+        template_path = 'email/print_notification.html',
+
     ctx = {
         'print': _print,
         'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
@@ -367,13 +390,13 @@ def send_print_notification_email(_print, extra_ctx={}):
         user=_print.printer.user,
         subject=subject,
         mailing_list='print_notification',
-        template_path='email/print_notification.html',
+        template_path=template_path,
         ctx=ctx,
         img_url=_print.poster_url,
     )
 
 
-def send_print_notification_telegram(_print):
+def send_print_notification_telegram(_print, event_type=None):
     if not _print.printer.user.telegram_chat_id:
         return
 
@@ -382,17 +405,15 @@ def send_print_notification_telegram(_print):
     except:
         photo = None
 
-    notification_text = f"""Hi {_print.printer.user.first_name or ''},
-
-Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
-"""
+    body = get_notification_body(_print, event_type=event_type)
+    notification_text = f"Hi {_print.printer.user.first_name or ''},\n\n{body}"
     try:
         send_telegram_notification(_print.printer, notification_text, photo)
     except requests.ConnectionError as e:
         LOGGER.error(e)
 
 
-def send_print_notification_pushbullet(_print):
+def send_print_notification_pushbullet(_print, event_type=None):
     if not _print.printer.user.has_valid_pushbullet_token():
         return
 
@@ -400,7 +421,7 @@ def send_print_notification_pushbullet(_print):
 
     title = 'The Spaghetti Detective - Print job notification'
     link = site.build_full_url('/')
-    body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
+    body = get_notification_body(_print, event_type=event_type)
     file_url = None
     try:
         file_url = _print.poster_url
@@ -418,7 +439,7 @@ def send_print_notification_pushbullet(_print):
         LOGGER.error(e)
 
 
-def send_print_notification_pushover(_print):
+def send_print_notification_pushover(_print, event_type=None):
     printer = _print.printer
     if not printer.user.pushover_user_token:
         return
@@ -429,7 +450,7 @@ def send_print_notification_pushover(_print):
         photo = None
 
     title = 'The Spaghetti Detective - Print job notification'
-    body = f"Your print job {_print.filename} {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}."
+    body = get_notification_body(_print, event_type=event_type)
 
     try:
         pushover_notification(printer.user.pushover_user_token, body, title, photo)
@@ -437,7 +458,7 @@ def send_print_notification_pushover(_print):
         LOGGER.error(e)
 
 
-def send_print_notification_slack(_print):
+def send_print_notification_slack(_print, event_type=None):
     if not _print.printer.user.slack_access_token:
         return
 
@@ -450,6 +471,10 @@ def send_print_notification_slack(_print):
     req.raise_for_status()
     slack_channel_ids = [c['id'] for c in req.json()['channels'] if c['is_member']]
 
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQUIRED:
+        status = 'Requires filament change or user interaction'
+    else:
+        status = 'Canceled' if _print.is_canceled() else 'Finished'
     for slack_channel_id in slack_channel_ids:
         msg = {
             "channel": slack_channel_id,
@@ -458,7 +483,7 @@ def send_print_notification_slack(_print):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Spaghetti Detective - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {'Canceled' if _print.is_canceled() else 'Finished'}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
+                        "text": f"*The Spaghetti Detective - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {status}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
                     }
                 }
             ]
@@ -479,16 +504,18 @@ def send_print_notification_slack(_print):
         )
         req.raise_for_status()
 
-def send_print_notification_discord(_print):
+def send_print_notification_discord(_print, event_type=None):
     if not _print.printer.user.discord_webhook:
         return
 
-    color = 0xcf142b if _print.is_canceled() else 0x33a532
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+        color = 0xffd246
+    else:
+        color = 0xcf142b if _print.is_canceled() else 0x33a532
 
-    text = f"""Hi {_print.printer.user.first_name or ''},
+    body = get_notification_body(_print, event_type=event_type)
 
-Your print job *{_print.filename}* {'has been canceled' if _print.is_canceled() else 'is done'} on printer {_print.printer.name}.
-"""
+    text = f"Hi {_print.printer.user.first_name or ''},\n\n{body}"
 
     try:
         send_discord_notification(_print.printer, text, color, _print.printer.user.discord_webhook, _print.poster_url)

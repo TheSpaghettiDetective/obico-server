@@ -24,6 +24,7 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
+from .models import Print, PrintEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_print_snapshot, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -35,9 +36,14 @@ from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
 
+
 @shared_task
-def process_print_events(print_id):
+def process_print_events(print_id, event_id=None, event_type=None):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
+
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+        send_print_notification(_print, event_type=event_type)
+        return
 
     if will_record_timelapse(_print):
         select_print_shots_for_feedback(_print)

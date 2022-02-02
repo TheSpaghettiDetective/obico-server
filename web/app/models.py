@@ -564,8 +564,12 @@ class PrintEvent(models.Model):
             alert_muted=(print.alert_muted_at is not None)
         )
 
-        if event_type in PrintEvent.ENDED:
-            celery_app.send_task(settings.PRINT_EVENT_HANDLER, args=[print.id])
+        if event_type in (PrintEvent.ENDED, PrintEvent.FILAMENT_CHANGE_REQ):
+            celery_app.send_task(
+                settings.PRINT_EVENT_HANDLER,
+                args=(print.id, ),
+                kwargs={'event_id': event.id, 'event_type': event_type}
+            )
 
 
 class SharedResource(models.Model):

@@ -39,6 +39,24 @@
     </div>
     <div class="row">
       <div class="col col-form-label">
+        <saving-animation :errors="errorMessages.notify_on_filament_change_req" :saving="saving.notify_on_filament_change_req">
+          <div class="custom-control custom-checkbox form-check-inline">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="id_notify_on_filament_change_req"
+              v-model="user.notify_on_filament_change_req"
+              @change="$emit('updateSetting', 'notify_on_filament_change_req')"
+            >
+            <label class="custom-control-label" for="id_notify_on_filament_change_req">
+              Notify me when filament runs out or needs a change <small>(plugin version 1.8.11 or higher)</small>
+            </label>
+          </div>
+        </saving-animation>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col col-form-label">
         <saving-animation :errors="errorMessages.account_notification_by_email" :saving="saving.account_notification_by_email">
           <div class="custom-control custom-checkbox form-check-inline">
             <input

@@ -9,7 +9,7 @@ from .utils import save_print_snapshot, shortform_duration, shortform_localtime
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
-PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted']
+PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted', 'FilamentChangeReq']
 PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 
 firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None

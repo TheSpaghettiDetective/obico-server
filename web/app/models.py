@@ -92,6 +92,7 @@ class User(AbstractUser):
     unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)
     notify_on_done = models.BooleanField(null=False, blank=False, default=True)
     notify_on_canceled = models.BooleanField(null=False, blank=False, default=False)
+    notify_on_filament_change_req = models.BooleanField(null=False, blank=False, default=False)
     print_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
     account_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
     alert_by_email = models.BooleanField(null=False, blank=False, default=True)
@@ -533,6 +534,7 @@ class PrintEvent(models.Model):
     RESUMED = 'RESUMED'
     ALERT_MUTED = 'ALERT_MUTED'
     ALERT_UNMUTED = 'ALERT_UNMUTED'
+    FILAMENT_CHANGE_REQ = 'FILAMENT_CHANGE_REQ'
 
     EVENT_TYPE = (
         (STARTED, STARTED),
@@ -541,6 +543,7 @@ class PrintEvent(models.Model):
         (RESUMED, RESUMED),
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
+        (FILAMENT_CHANGE_REQ, FILAMENT_CHANGE_REQ),
     )
 
     STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)

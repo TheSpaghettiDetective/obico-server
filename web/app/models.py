@@ -141,7 +141,7 @@ class User(AbstractUser):
 
     def tunnel_usage_over_cap(self):
         if self.tunnel_cap() < 0:
-            return false
+            return False
         else:
             return cache.octoprinttunnel_get_stats(self.id) > self.tunnel_cap() * 1.1 # Cap x 1.1 to give some grace period to users
 

@@ -374,10 +374,10 @@ def get_notification_body(_print, event_type=None):
 def send_print_notification_email(_print, extra_ctx={}, event_type=None):
     if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
         subject = f'{_print.filename} requires filament change or user interaction.'
-        template_path = 'email/filament_change_req_notification.html',
+        template_path = 'email/filament_change_req_notification.html'
     else:
         subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
-        template_path = 'email/print_notification.html',
+        template_path = 'email/print_notification.html'
 
     ctx = {
         'print': _print,

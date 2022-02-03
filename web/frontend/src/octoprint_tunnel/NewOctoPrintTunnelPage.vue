@@ -59,6 +59,13 @@
               <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
               <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
+              <div v-if="isPolymerSpecial">
+                <b-alert variant="success" dismissible class="my-3" show>
+                  <div>
+                    Special offer for Polymer users: <b>life-time 100MB free monthly cap</b>. Offer ends March 5th 2022.
+                  </div>
+                </b-alert>
+              </div>
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
                   <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
@@ -201,6 +208,12 @@ export default {
         return -1
       }
       return moment(this.user.subscription.expired_at).diff(moment(), 'days') + 1
+    },
+    isPolymerSpecial() {
+      if (this.user?.is_pro && this.trialDaysLeft < 0) {
+        return false
+      }
+      return this.appName == 'Polymer' && moment('20220305', 'YYYYMMDD').isAfter(moment())
     }
   },
 

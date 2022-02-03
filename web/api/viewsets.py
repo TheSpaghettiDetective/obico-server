@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 import os
 import time
+import datetime
 from binascii import hexlify
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
@@ -350,6 +351,10 @@ class OctoPrintTunnelViewSet(
 
         if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
             raise PermissionDenied
+
+        if app_name == 'Polymer' and datetime.date(2022, 3, 6) > datetime.date.today():
+            request.user.tunnel_cap_multiplier = 2
+            request.user.save()
 
         tunnel = OctoPrintTunnel.create(printer, app_name)
         tunnel_endpoint = tunnel.get_basicauth_url(request, tunnel.plain_basicauth_password)

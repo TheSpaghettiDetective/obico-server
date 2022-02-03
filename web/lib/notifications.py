@@ -78,7 +78,7 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     try:
         send_failure_alert_discord(printer, rotated_jpg_url, is_warning, print_paused)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
 
 def send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused):
@@ -349,7 +349,7 @@ def send_print_notification(_print, extra_ctx={}, event_type=None):
         if _print.printer.user.print_notification_by_discord:
             send_print_notification_discord(_print, event_type=event_type)
     except:
-        capture_exception()
+        sentryClient.captureException()
 
     try:
         if _print.printer.user.is_pro:

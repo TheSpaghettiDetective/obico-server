@@ -372,19 +372,20 @@ def get_notification_body(_print, event_type=None):
     )
 
 def send_print_notification_email(_print, extra_ctx={}, event_type=None):
+    ctx = {
+        'print': _print,
+        'timelapse_link': site.build_full_url(f'/prints/{_print.id}/'),
+        'user_pref_url': site.build_full_url('/user_preferences/'),
+    }
+
     if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
         subject = f'{_print.filename} requires filament change or user interaction.'
         template_path = 'email/filament_change_req_notification.html'
     else:
         subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
         template_path = 'email/print_notification.html'
+        ctx['print_time'] = str(_print.ended_at() - _print.started_at).split('.')[0],
 
-    ctx = {
-        'print': _print,
-        'print_time': str(_print.ended_at() - _print.started_at).split('.')[0],
-        'timelapse_link': site.build_full_url(f'/prints/{_print.id}/'),
-        'user_pref_url': site.build_full_url('/user_preferences/'),
-    }
     ctx.update(extra_ctx)
     send_email(
         user=_print.printer.user,

@@ -472,7 +472,7 @@ def send_print_notification_slack(_print, event_type=None):
     req.raise_for_status()
     slack_channel_ids = [c['id'] for c in req.json()['channels'] if c['is_member']]
 
-    if event_type == PrintEvent.FILAMENT_CHANGE_REQUIRED:
+    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
         status = 'Requires filament change or user interaction'
     else:
         status = 'Canceled' if _print.is_canceled() else 'Finished'

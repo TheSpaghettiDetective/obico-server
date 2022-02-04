@@ -59,10 +59,10 @@
               <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
               <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
-              <div v-if="isPolymerSpecial">
+              <div v-if="isSpecial">
                 <b-alert variant="success" dismissible class="my-3" show>
                   <div>
-                    Special offer for Polymer users: <b>life-time 100MB free monthly cap</b>. Offer ends March 5th 2022.
+                    Special offer for {{appName}} users: <b>life-time 100MB free monthly cap</b>. Offer ends March 5th 2022.
                   </div>
                 </b-alert>
               </div>
@@ -209,12 +209,12 @@ export default {
       }
       return moment(this.user.subscription.expired_at).diff(moment(), 'days') + 1
     },
-    isPolymerSpecial() {
+    isSpecial() {
       if (this.user?.is_pro && this.trialDaysLeft < 0) {
         return false
       }
-      return this.appName == 'Polymer' && moment('20220305', 'YYYYMMDD').isAfter(moment())
-    }
+      return ['Polymer', 'OctoPod'].includes(this.appName) && moment('20220305', 'YYYYMMDD').isAfter(moment())
+    },
   },
 
   methods: {

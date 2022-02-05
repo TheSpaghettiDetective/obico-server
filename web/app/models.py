@@ -87,6 +87,7 @@ class User(AbstractUser):
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
     slack_access_token = models.CharField(max_length=128, null=True, blank=True)
     consented_at = models.DateTimeField(null=True, blank=True)
+    last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
     dh_balance = models.FloatField(null=False, default=0)
     unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)

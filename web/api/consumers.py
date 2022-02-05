@@ -201,6 +201,9 @@ class OctoPrintConsumer(WebsocketConsumer):
             'should_watch': self.printer.should_watch(),
         }})
 
+        self.printer.user.last_active_at = timezone.now()
+        self.printer.user.save()
+
     def disconnect(self, close_code):
         LOGGER.warn(
             "OctoPrintConsumer: Closed websocket with code: {}".format(close_code))

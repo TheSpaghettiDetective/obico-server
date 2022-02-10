@@ -1,5 +1,5 @@
 ipdb
-django==2.2.24
+django==2.2.27
 gunicorn==19.9.0
 whitenoise[brotli]==5.3.0
 dj-database-url==0.5.0
@@ -24,7 +24,7 @@ phonenumbers==8.10.5
 twilio==6.24.1
 celery[redis]==4.4.7
 django-safedelete==0.5.1
-Pillow==8.3.0
+Pillow==9.0.1
 django-hijack==2.1.10
 git+https://github.com/TheSpaghettiDetective/daphne@tsd_stable-2.5.0
 asgiref==3.2.10

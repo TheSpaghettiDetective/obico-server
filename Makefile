@@ -1,9 +1,9 @@
-.PHONY: build-web-base-1.6 build-images build-static frontdev-up vue-live vue-static shell dbshell
+.PHONY: build-web-base-1.8 build-images build-static frontdev-up vue-live vue-static shell dbshell
 
 BASENAME = $(shell basename $(shell pwd) | tr '[:upper:]' '[:lower:]')
 
-build-web-base-1.7:
-	docker build -t thespaghettidetective/web:base-1.7 -f web/Dockerfile.base web
+build-web-base-1.8:
+	docker build -t thespaghettidetective/web:base-1.8 -f web/Dockerfile.base web
 
 build-images:
 	DOCKERFILE_VERSION=.dev docker-compose build --build-arg home=/home/user --build-arg user=user --build-arg group=user --build-arg uid=$(shell id -u) --build-arg gid=$(shell id -g)

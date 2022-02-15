@@ -542,7 +542,8 @@ class PrintEvent(models.Model):
     RESUMED = 'RESUMED'
     ALERT_MUTED = 'ALERT_MUTED'
     ALERT_UNMUTED = 'ALERT_UNMUTED'
-    FILAMENT_CHANGE_REQ = 'FILAMENT_CHANGE_REQ'
+    FILAMENT_CHANGE_REQ = 'FILAMENT_CHANGE_REQ'  # TODO to drop
+    USER_INTERACTION_REQUIRED = 'USER_INTERACTION_REQ'
 
     EVENT_TYPE = (
         (STARTED, STARTED),
@@ -552,6 +553,7 @@ class PrintEvent(models.Model):
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
         (FILAMENT_CHANGE_REQ, FILAMENT_CHANGE_REQ),
+        (USER_INTERACTION_REQUIRED, USER_INTERACTION_REQUIRED),
     )
 
     STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
@@ -572,7 +574,7 @@ class PrintEvent(models.Model):
             alert_muted=(print.alert_muted_at is not None)
         )
 
-        if event_type in (PrintEvent.ENDED, PrintEvent.FILAMENT_CHANGE_REQ):
+        if event_type in (PrintEvent.ENDED, PrintEvent.USER_INTERACTION_REQUIRED):
             celery_app.send_task(
                 settings.PRINT_EVENT_HANDLER,
                 args=(print.id, ),

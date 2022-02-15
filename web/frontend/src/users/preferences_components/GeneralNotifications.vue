@@ -40,7 +40,7 @@
     <div class="row">
       <div class="col col-form-label">
         <saving-animation :errors="errorMessages.notify_on_filament_change_req" :saving="saving.notify_on_filament_change_req">
-          <div class="custom-control custom-checkbox form-check-inline">
+          <div class="custom-control custom-checkbox form-check-inline" style="display: inline-flex; gap: 6px;">
             <input
               type="checkbox"
               class="custom-control-input"
@@ -51,7 +51,7 @@
             <label class="custom-control-label" for="id_notify_on_filament_change_req">
               Notify me when filament runs out or needs a change
             </label>
-            <help-widget id="filament-change-on-notification-preferences"></help-widget>
+            <help-widget class="mt-1" id="filament-change-on-notification-preferences"></help-widget>
           </div>
         </saving-animation>
       </div>

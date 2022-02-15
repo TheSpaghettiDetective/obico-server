@@ -41,7 +41,7 @@ LOGGER = logging.getLogger(__name__)
 def process_print_events(print_id, event_id=None, event_type=None):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
 
-    if event_type == PrintEvent.FILAMENT_CHANGE_REQ:
+    if event_type in PrintEvent.USER_INTERACTION_REQUIRED:
         send_print_notification(_print, event_type=event_type)
         return
 

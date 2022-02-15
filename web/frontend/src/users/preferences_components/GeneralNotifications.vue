@@ -49,8 +49,9 @@
               @change="$emit('updateSetting', 'notify_on_filament_change_req')"
             >
             <label class="custom-control-label" for="id_notify_on_filament_change_req">
-              Notify me when filament runs out or needs a change <small>(plugin version 1.8.11 or higher)</small>
+              Notify me when filament runs out or needs a change
             </label>
+            <help-widget id="filament-change-on-notification-preferences"></help-widget>
           </div>
         </saving-animation>
       </div>
@@ -78,12 +79,14 @@
 
 <script>
 import SavingAnimation from '@common/SavingAnimation.vue'
+import HelpWidget from '@common/HelpWidget.vue'
 
 export default {
   name: 'GeneralNotifications',
 
   components: {
     SavingAnimation,
+    HelpWidget,
   },
 
   props: {

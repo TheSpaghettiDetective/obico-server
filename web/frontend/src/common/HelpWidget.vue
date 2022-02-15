@@ -111,6 +111,33 @@
                 </strong>
               </p>
             </template>
+
+            <!-- user-interaction-required-in-notifications -->
+            <template v-if="id === 'filament-change-on-notification-preferences'">
+              <small><i>Requires plugin version 1.8.11 or higher.</i></small>
+              <h3>Filament Runout Notifications</h3>
+              <p>
+                Host_action_commands must be enabled in your firmware to make it possible for your filament runout
+                sensor to communicate with OctoPrint and The Spaghetti Detective. If you enable action commands in
+                your firmware, then the filament runout sensor can work properly and The Spaghetti Detective can notify
+                you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable
+                to communicate with the printer to know that a filament runout was detected.
+              </p>
+
+              <p>To enable support, you need to do the following:</p>
+              <ul>
+                <li>
+                  Marlin: Uncomment #define HOST_ACTION_COMMANDS in Configuration_adv.h and recompile. See here for more
+                  information on host_action_commands.
+                </li>
+              </ul>
+
+              <h3>Color Change Notifications</h3>
+              <p>
+                Notifications on color change will work with any printer that has M600 enabled in its firmware. You do not
+                need host_action_commands enabled to get notified when a color change is needed.
+              </p>
+            </template>
           </div>
         </div>
       </transition>

@@ -9,7 +9,7 @@ from .utils import save_print_snapshot, shortform_duration, shortform_localtime
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
-PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted', 'UserInteractionRequired']
+PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted', 'FilamentChange']
 PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 
 firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None
@@ -42,7 +42,7 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
 
 def send_print_event(_print, event_type, rotated_jpg_url):
     title = event_type.replace('Print', '')
-    if event_type == 'UserInteractionRequired':
+    if event_type == 'FilamentChange':
         title = '🟠 Filament change or user interaction required'
 
     for mobile_device in MobileDevice.objects.filter(user_id=_print.user_id):

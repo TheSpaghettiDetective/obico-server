@@ -308,7 +308,7 @@ _The Spaghetti Detective_ spotted some suspicious activity on your printer *{pri
 
 
 def send_print_notification(_print, extra_ctx={}, event_type=None):
-    if event_type == PrintEvent.USER_INTERACTION_REQUIRED:
+    if event_type == PrintEvent.FILAMENT_CHANGE:
         if not _print.printer.user.notify_on_filament_change_req:
             return
     else:
@@ -359,7 +359,7 @@ def send_print_notification(_print, extra_ctx={}, event_type=None):
 
 
 def get_notification_body(_print, event_type=None):
-    if event_type and event_type == PrintEvent.USER_INTERACTION_REQUIRED:
+    if event_type and event_type == PrintEvent.FILAMENT_CHANGE:
         return (
             f"Your print job *{_print.filename}* "
             f"requires filament change or user interaction "
@@ -378,7 +378,7 @@ def send_print_notification_email(_print, extra_ctx={}, event_type=None):
         'user_pref_url': site.build_full_url('/user_preferences/'),
     }
 
-    if event_type == PrintEvent.USER_INTERACTION_REQUIRED:
+    if event_type == PrintEvent.FILAMENT_CHANGE:
         subject = f'{_print.filename} requires filament change or user interaction.'
         template_path = 'email/filament_change_req_notification.html'
     else:
@@ -472,7 +472,7 @@ def send_print_notification_slack(_print, event_type=None):
     req.raise_for_status()
     slack_channel_ids = [c['id'] for c in req.json()['channels'] if c['is_member']]
 
-    if event_type == PrintEvent.USER_INTERACTION_REQUIRED:
+    if event_type == PrintEvent.FILAMENT_CHANGE:
         status = 'Requires filament change or user interaction'
     else:
         status = 'Canceled' if _print.is_canceled() else 'Finished'
@@ -509,7 +509,7 @@ def send_print_notification_discord(_print, event_type=None):
     if not _print.printer.user.discord_webhook:
         return
 
-    if event_type == PrintEvent.USER_INTERACTION_REQUIRED:
+    if event_type == PrintEvent.FILAMENT_CHANGE:
         color = 0xffd246
     else:
         color = 0xcf142b if _print.is_canceled() else 0x33a532

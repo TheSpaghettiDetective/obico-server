@@ -84,5 +84,5 @@ def process_octoprint_status_with_ts(op_status, printer):
         printer.current_print.paused_at = None
         printer.current_print.save()
         PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
-    elif op_event.get('event_type') == 'UserInteractionRequired':
-        PrintEvent.create(printer.current_print, PrintEvent.USER_INTERACTION_REQUIRED)
+    elif op_event.get('event_type') == 'FilamentChange':
+        PrintEvent.create(printer.current_print, PrintEvent.FILAMENT_CHANGE)

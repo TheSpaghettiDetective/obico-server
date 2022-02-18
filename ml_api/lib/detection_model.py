@@ -265,7 +265,7 @@ def load_net(config_path, weight_path, meta_path):
 
 
 if __name__ == "__main__":
-    net_main_1, meta_main_1 = load_net("../model/model.cfg", "../model/model.weights", "../model/model.meta")
+    net_main_1, meta_main_1 = load_net("model/model.cfg", "model/model.weights", "model/model.meta")
 
     import cv2
     custom_image_bgr = cv2.imread(sys.argv[1])  # use: detect(,,imagePath,)

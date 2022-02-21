@@ -3,6 +3,8 @@
 
 ## Using a reverse proxy
 
+> :warning: **Security Warning**: The guide below only cover the basic steps to set up a reverse proxy for The Spaghetti Detective server. The setup required to properly secure your reverse proxy is too complicated to be covered here. Please do your own research to gather the necessary info before you proceed.
+
 You can set up a reverse proxy in front of The Spaghetti Detective server.
 
 Two configuration items need to be set differently if you are using a reverse proxy.

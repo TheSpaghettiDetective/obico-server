@@ -71,10 +71,16 @@ def process_octoprint_status_with_ts(op_status, printer):
     # This has to happen before event saving, as `current_print` may change after event saving.
     mobile_notifications.send_if_needed(printer.current_print, op_event, op_data)
 
-    if op_event.get('event_type') in ('PrintCancelled', 'PrintFailed'):
+    if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()
-    elif op_event.get('event_type') in ('PrintFailed', 'PrintDone'):
+    elif op_event.get('event_type') == 'PrintFailed':
+        # setting cancelled_at here, original commit:
+        # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/commit/86d1a18d34a9d895e9d9284d5048e45afa1e56a1
+        printer.current_print.cancelled_at = timezone.now()
+        printer.current_print.save()
+        printer.unset_current_print()
+    elif op_event.get('event_type') == 'PrintDone':
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused_at = timezone.now()

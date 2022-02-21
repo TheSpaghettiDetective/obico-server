@@ -124,6 +124,12 @@ export default {
     this.isEnt = !!IS_ENT
     this.user = user()
     this.fetchPrinters()
+
+    // Repro swal bug
+    // this.$swal.Toast.fire({
+    //   icon: 'error',
+    //   title: 'Failed to connect!',
+    // })
   },
   data: function() {
     return {

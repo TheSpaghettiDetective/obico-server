@@ -37,35 +37,35 @@ export const normalizedPrinter = (newData, oldData) => {
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
     alertUnacknowledged: function() {
-        return get(this, 'current_print.alerted_at')
+      return get(this, 'current_print.alerted_at')
                 && moment(
-                    get(this, 'current_print.alerted_at')
+                  get(this, 'current_print.alerted_at')
                 ).isAfter(
-                    moment(get(this, 'current_print.alert_acknowledged_at') || 0)
+                  moment(get(this, 'current_print.alert_acknowledged_at') || 0)
                 )
     },
   }
   if (oldData){
     if (get(oldData, 'status._ts', -1) > get(newData, 'status._ts', get(oldData, 'status._ts', 0))) {
-        delete newData.status
+      delete newData.status
     }
     return {
-        ...oldData,
-        ...newData,
-        ...printerMixin,
+      ...oldData,
+      ...newData,
+      ...printerMixin,
     }
   } else {
-      return {
-          ...newData,
-          ...printerMixin,
-      }
+    return {
+      ...newData,
+      ...printerMixin,
+    }
   }
 }
 
 
 export const getNormalizedP = (predictions, currentPosition, isPublic) => {
-      const num = Math.round(predictions.length * currentPosition)
-      const propName = isPublic ? 'p' : 'fields.normalized_p'
-      return get(predictions[num], `${propName}`, 0)
+  const num = Math.round(predictions.length * currentPosition)
+  const propName = isPublic ? 'p' : 'fields.normalized_p'
+  return get(predictions[num], `${propName}`, 0)
 }
 

@@ -44,7 +44,7 @@ const getComponentName = (vm) => {
     const unifiedFile = vm.$options.__file.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/')
     const filename = basename(unifiedFile, '.vue')
     return filename.replace(COMPONENT_NAME_REGEXP, (_, c) =>
-        c ? c.toUpperCase() : '',
+      c ? c.toUpperCase() : '',
     )
   }
 
@@ -73,26 +73,26 @@ const setup = (Vue) => {
 
   Vue.config.errorHandler = (error, vm, info) => {
     if (window.Sentry) {
-        const metadata = {}
+      const metadata = {}
 
-        let obj = vm
-        if (vm._original) {
-          obj = vm._original
+      let obj = vm
+      if (vm._original) {
+        obj = vm._original
+      }
+
+      if (obj) {
+
+        try {
+          metadata.componentName = getComponentName(obj)
+          build(metadata, JSON.parse(JSON.stringify(obj.$options.propsData)), 'props', 0, 2, 10)
+        } catch (_oO) {
+          console.log('Unable to extract metadata from Vue component.')
         }
+      }
 
-        if (obj) {
-
-          try {
-            metadata.componentName = getComponentName(obj)
-            build(metadata, JSON.parse(JSON.stringify(obj.$options.propsData)), 'props', 0, 2, 10)
-          } catch (_oO) {
-            console.log('Unable to extract metadata from Vue component.')
-          }
-        }
-
-        if (info) {
-          metadata.lifecycleHook = info
-        }
+      if (info) {
+        metadata.lifecycleHook = info
+      }
 
       // Capture exception in the next event loop, to make sure that all breadcrumbs are recorded in time.
       setTimeout(() => {

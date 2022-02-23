@@ -23,10 +23,6 @@ let vueConfig = {
     resolve: {
       alias: {
         '@src': path.join(__dirname, 'src'),
-        '@common': path.join(__dirname, 'src/common'),
-        '@lib': path.join(__dirname, 'src/lib'),
-        '@main': path.join(__dirname, 'src/main'),
-        '@prints': path.join(__dirname, 'src/prints'),
         '@static': path.join(__dirname, '../app/static'),
       }
     },
@@ -36,10 +32,8 @@ let vueConfig = {
     root: {
       entry: 'src/main.js',
     },
-
-    // css
-    main: {
-      entry: 'src/main/main.js',
+    styles: {
+      entry: 'src/styles/index.js',
     },
   },
 

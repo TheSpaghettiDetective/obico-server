@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueSwal from '@common/VueSwal'
+import VueSwal from '@src/lib/VueSwal'
 import { BootstrapVue } from 'bootstrap-vue'
 import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
-import '@common/filters'
-import setupSentry from '@lib/sentry'
-import { initTheme } from '@main/colors'
+import '@src/lib/filters'
+import setupSentry from '@src/lib/sentry'
+import { initTheme } from '@src/styles/colors'
 import VuePluralize from 'vue-pluralize'
 
 export default (router, components) => {

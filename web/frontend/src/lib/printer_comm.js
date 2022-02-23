@@ -38,10 +38,10 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     self.ws.onmessage = function (e) {
       let msg = {}
       try {
-          msg = JSON.parse(e.data)
+        msg = JSON.parse(e.data)
       } catch (error) {
-          console.log(e.data)
-          throw(error)
+        console.log(e.data)
+        throw(error)
       }
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
@@ -155,7 +155,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   self.closeWebSocket = function() {
     if (self.ws) {
-        self.ws.close()
+      self.ws.close()
     }
   }
 
@@ -164,7 +164,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   self.heartbeat = function() {
     if (!self.canSend()) {
-        return
+      return
     }
     self.ws.send(JSON.stringify({}))
     setTimeout( function () { self.heartbeat() }, 30*1000)

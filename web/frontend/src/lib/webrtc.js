@@ -1,7 +1,7 @@
 import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 
-import Janus from '@lib/janus'
+import Janus from '@src/lib/janus'
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
@@ -30,24 +30,24 @@ export default function WebRTCConnection(videoEnabled) {
     },
 
     connect(wsUri, token) {
-        Janus.init({
-            debug: 'all',
-            callback: () => {
-                self.initialized = true
-                if (!Janus.isWebrtcSupported()) {
-                    return
-                }
-                self.connectJanusWebSocket(wsUri, token)
-            }
-          })
+      Janus.init({
+        debug: 'all',
+        callback: () => {
+          self.initialized = true
+          if (!Janus.isWebrtcSupported()) {
+            return
+          }
+          self.connectJanusWebSocket(wsUri, token)
+        }
+      })
 
-          ifvisible.on('blur', () => {
-            self.stopStream()
-          })
+      ifvisible.on('blur', () => {
+        self.stopStream()
+      })
 
-          ifvisible.on('focus', () => {
-            self.startStream()
-          })
+      ifvisible.on('focus', () => {
+        self.startStream()
+      })
     },
 
     connectJanusWebSocket(wsUri, token) {
@@ -106,34 +106,34 @@ export default function WebRTCConnection(videoEnabled) {
                 Janus.debug(' ::: Got a remote stream :::')
                 Janus.debug(stream)
                 if ('onRemoteStream' in self.callbacks) {
-                    self.callbacks.onRemoteStream(stream)
+                  self.callbacks.onRemoteStream(stream)
                 }
               },
               ontrackmuted: function() {
                 if ('onTrackMuted' in self.callbacks) {
-                    self.callbacks.onTrackMuted()
+                  self.callbacks.onTrackMuted()
                 }
               },
               ontrackunmuted: function() {
                 if ('onTrackUnmuted' in self.callbacks) {
-                    self.callbacks.onTrackUnmuted()
+                  self.callbacks.onTrackUnmuted()
                 }
               },
               slowLink: function(uplink, lost) {
                 if ('onSlowLink' in self.callbacks) {
-                    self.callbacks.onSlowLink(lost)
+                  self.callbacks.onSlowLink(lost)
                 }
               },
               ondataopen: function() {
               },
               ondata: function(rawData) {
                 if ('onData' in self.callbacks) {
-                    self.callbacks.onData(rawData)
+                  self.callbacks.onData(rawData)
                 }
               },
               oncleanup: function() {
                 if ('onCleanup' in self.callbacks) {
-                    self.callbacks.onCleanup()
+                  self.callbacks.onCleanup()
                 }
               }
             })

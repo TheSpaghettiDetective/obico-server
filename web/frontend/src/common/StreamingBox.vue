@@ -14,7 +14,7 @@
       <div
         class="text"
         ref="slowLinkText"
-        v-bind:class="{
+        :class="{
           'show-and-hide': !slowLinkShowing && !slowLinkHiding,
           'showing': slowLinkShowing && !slowLinkHiding,
           'hiding': !slowLinkShowing && slowLinkHiding}"

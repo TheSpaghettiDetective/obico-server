@@ -1,12 +1,5 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="printer-wizard-mount">
   <printer-wizard-page></printer-wizard-page>
-</div>
-
-{% bundle 'printers' %}
-
 {% endblock content%}

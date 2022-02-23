@@ -2,17 +2,8 @@
 
 {% block meta_viewport %}{% endblock meta_viewport %}
 
-{% load bundle from vue %}
-
 {% block content %}
-
-<div id="octoprint-tunnel-mount">
-  <octo-print-tunnel-page>
-  </octo-print-tunnel-page>
-</div>
-
-{% bundle 'octoprint_tunnel' %}
-
+  <octo-print-tunnel-page></octo-print-tunnel-page>
 {% endblock content%}
 
 {% block footer %}{% endblock footer %}

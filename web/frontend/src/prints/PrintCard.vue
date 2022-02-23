@@ -84,7 +84,7 @@
                 </div>
                 <div class="col-8">{{ print.filename }}</div>
               </div>
-              <div class="row" v-b-tooltip.hover v-bind:title="this.humanizedPrintedOrUploadedTime(longFormat=true)">
+              <div class="row" v-b-tooltip.hover :title="this.humanizedPrintedOrUploadedTime(longFormat=true)">
                 <div class="text-muted col-4">
                   {{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}
                   <span class="float-right">:</span>

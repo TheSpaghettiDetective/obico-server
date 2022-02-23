@@ -1,13 +1,5 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="print-mount">
-  <print-page v-bind:config='{"printId": {{ print.id }}}'>
-  </print-page>
-</div>
-
-{% bundle 'prints' %}
-
+  <print-page :config='{"printId": {{ print.id }}}'></print-page>
 {% endblock content%}

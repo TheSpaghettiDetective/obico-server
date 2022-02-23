@@ -55,7 +55,10 @@
 </head>
 
 <body>
+  {% block top_page_js %}{% endblock top_page_js %}
+
   {% block body_top_ext %}{% endblock body_top_ext %}
+  {% include "snippets/svg_sprite.html" %}
   {% block navbar %}
   {% with view_name=request.resolver_match.view_name %}
   <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynamic-navbar">
@@ -129,18 +132,10 @@
     <div id="content-wrapper" class="container">
       {% include 'snippets/messages.html' %}
       {% block content %}{% endblock content %}
-
     </div>
     <!-- /.content-wrapper -->
   </main>
   {% endblock content_wrapper %}
-
-  <!-- SVG Sprite -->
-  <div id="svg-sprite">
-    <svg-sprite></svg-sprite>
-  </div>
-
-  {% bundle 'common' %}
 
   {% block footer %}
     {% if not app_platform.platform %}

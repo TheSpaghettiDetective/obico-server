@@ -1,12 +1,5 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="gcodes-page-mount">
   <g-codes-page csrf="{{ csrf_token }}"></g-control-page>
-</div>
-
-{% bundle 'printers' %}
-
 {% endblock content %}

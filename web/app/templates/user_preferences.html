@@ -2,17 +2,11 @@
 
 {% load static %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="user-preferences-mount">
-  <router-view v-bind:config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }} }'>
+  <router-view
+    :config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }} }'
+  >
   </router-view>
-</div>
-<router-view></router-view>
-
-{% bundle 'users' %}
-
 {% endblock content%}
 
 {% block body_bottom_ext %}

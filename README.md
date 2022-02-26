@@ -159,11 +159,13 @@ Feeling adventurous? [Go advanced](docs/advanced_config.md).
 # Operating and maintaining The Spaghetti Detective server
 
 ## Upgrade server
-
+```
     cd TheSpaghettiDetective
-    git checkout release && git pull
-    sudo docker-compose up --build -d
-
+    git checkout release 
+    git pull
+    docker-compose up --build -d
+```
+*Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
 ## Backup database
 
 Just make a copy of `TheSpaghettiDetective/web/db.sqlite`

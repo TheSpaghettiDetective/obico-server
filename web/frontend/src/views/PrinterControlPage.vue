@@ -162,7 +162,17 @@ export default {
       }
 
       const payload = {func: func, target: '_printer', args: args}
-      this.printerComm.passThruToPrinter(payload)
+      this.printerComm.passThruToPrinter(
+        payload,
+        (err, ret) => {
+          if (err || ret.error) {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: err ? err : ret.error,
+            })
+          }
+        }
+      )
     },
   },
 

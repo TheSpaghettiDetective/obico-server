@@ -1,12 +1,5 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="shared-printer-mount">
   <shared-printer-page></shared-printer-page>
-</div>
-
-{% bundle 'printers' %}
-
 {% endblock content%}

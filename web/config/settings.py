@@ -344,6 +344,8 @@ OCTOPRINT_TUNNEL_PORT_RANGE = range(
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1].strip('"\'')),
     ) if os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE') else None
 
+VUE_APP_EXTENSION = ""
+
 # settings export
 SETTINGS_EXPORT = [
     'VERSION',
@@ -354,6 +356,7 @@ SETTINGS_EXPORT = [
     'SLACK_CLIENT_ID',
     'RECAPTCHA_SITE_KEY',
     'SENTRY_DSN',
+    'VUE_APP_EXTENSION',
 ]
 
 # Celery

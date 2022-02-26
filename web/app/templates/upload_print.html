@@ -1,12 +1,5 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
-
 {% block content %}
-<div id="upload-print-mount">
   <upload-print-page csrf="{{ csrf_token }}"></upload-print-page>
-</div>
-
-{% bundle 'prints' %}
-
 {% endblock content %}

@@ -22,39 +22,18 @@ let vueConfig = {
     devtool: 'source-map',
     resolve: {
       alias: {
-        '@common': path.join(__dirname, 'src/common'),
-        '@lib': path.join(__dirname, 'src/lib'),
-        '@main': path.join(__dirname, 'src/main'),
-        '@prints': path.join(__dirname, 'src/prints'),
+        '@src': path.join(__dirname, 'src'),
         '@static': path.join(__dirname, '../app/static'),
       }
     },
   },
 
   pages: {
-    main: {
-      entry: 'src/main/main.js',
+    root: {
+      entry: 'src/main.js',
     },
-    print_shot_feedback: {
-      entry: 'src/print_shot_feedback/main.js',
-    },
-    prints: {
-      entry: 'src/prints/main.js',
-    },
-    printers: {
-      entry: 'src/printers/main.js',
-    },
-    printer_settings: {
-      entry: 'src/printers/settings.main.js',
-    },
-    octoprint_tunnel: {
-      entry: 'src/octoprint_tunnel/TunnelMain.js',
-    },
-    users: {
-      entry: 'src/users/main.js',
-    },
-    common: {
-      entry: 'src/common/main.js',
+    styles: {
+      entry: 'src/styles/index.js',
     },
   },
 

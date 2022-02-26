@@ -1,16 +1,9 @@
 {% extends "vue_layout.html" %}
 
-{% load bundle from vue %}
 {% load to_json from frontend %}
 
 {% block content %}
-
-<div id="new-octoprint-tunnel-mount">
   <new-octo-print-tunnel-page />
-</div>
-
-{% bundle 'octoprint_tunnel' %}
-
 {% endblock content %}
 
 {% block footer %}{% endblock footer %}

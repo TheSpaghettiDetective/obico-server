@@ -1,9 +1,18 @@
 {% extends settings.TEMPLATE_LAYOUT %}
+{% load bundle from vue %}
 
 {% block navbar %}
 {% endblock navbar %}
 
 {% block content_wrapper %}
   {% include 'snippets/messages.html' %}
-  {% block content %}{% endblock content %}
+
+  <div id="vue_app">
+    {% block content %}{% endblock content %}
+    {% if settings.VUE_APP_EXTENSION %}
+      {% include settings.VUE_APP_EXTENSION %}
+    {% endif %}
+  </div>
+
+  {% bundle 'root' %}
 {% endblock content_wrapper %}

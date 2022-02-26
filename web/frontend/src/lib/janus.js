@@ -255,27 +255,27 @@ Janus.init = function(options) {
     } else if(Array.isArray(options.debug)) {
       for(var d of options.debug) {
         switch(d) {
-          case 'trace':
-            Janus.trace = console.trace.bind(console)
-            break
-          case 'debug':
-            Janus.debug = console.debug.bind(console)
-            break
-          case 'vdebug':
-            Janus.vdebug = console.debug.bind(console)
-            break
-          case 'log':
-            Janus.log = console.log.bind(console)
-            break
-          case 'warn':
-            Janus.warn = console.warn.bind(console)
-            break
-          case 'error':
-            Janus.error = console.error.bind(console)
-            break
-          default:
-            console.error('Unknown debugging option \'' + d + '\' (supported: \'trace\', \'debug\', \'vdebug\', \'log\', warn\', \'error\')')
-            break
+        case 'trace':
+          Janus.trace = console.trace.bind(console)
+          break
+        case 'debug':
+          Janus.debug = console.debug.bind(console)
+          break
+        case 'vdebug':
+          Janus.vdebug = console.debug.bind(console)
+          break
+        case 'log':
+          Janus.log = console.log.bind(console)
+          break
+        case 'warn':
+          Janus.warn = console.warn.bind(console)
+          break
+        case 'error':
+          Janus.error = console.error.bind(console)
+          break
+        default:
+          console.error('Unknown debugging option \'' + d + '\' (supported: \'trace\', \'debug\', \'vdebug\', \'log\', warn\', \'error\')')
+          break
         }
       }
     }
@@ -295,18 +295,18 @@ Janus.init = function(options) {
       if (config == null) config = { audio: true, video: true }
       if(Janus.isGetUserMediaAvailable()) {
         navigator.mediaDevices.getUserMedia(config)
-        .then(function(stream) {
-          navigator.mediaDevices.enumerateDevices().then(function(devices) {
-            Janus.debug(devices)
-            callback(devices)
-            // Get rid of the now useless stream
-            Janus.stopAllTracks(stream)
+          .then(function(stream) {
+            navigator.mediaDevices.enumerateDevices().then(function(devices) {
+              Janus.debug(devices)
+              callback(devices)
+              // Get rid of the now useless stream
+              Janus.stopAllTracks(stream)
+            })
           })
-        })
-        .catch(function(err) {
-          Janus.error(err)
-          callback([])
-        })
+          .catch(function(err) {
+            Janus.error(err)
+            callback([])
+          })
       } else {
         Janus.warn('navigator.mediaDevices unavailable')
         callback([])
@@ -608,7 +608,7 @@ function Janus(gatewayCallbacks) {
     }
 
     if (json.session_id && json.session_id !== sessionId) {
-       return
+      return
     }
 
     if(json['janus'] === 'keepalive') {
@@ -2405,10 +2405,10 @@ function Janus(gatewayCallbacks) {
                 pluginHandle.consentDialog(false)
                 if(isAudioSendEnabled(media) && !media.keepAudio) {
                   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                  .then(function (audioStream) {
-                    stream.addTrack(audioStream.getAudioTracks()[0])
-                    streamsDone(handleId, jsep, media, callbacks, stream)
-                  })
+                    .then(function (audioStream) {
+                      stream.addTrack(audioStream.getAudioTracks()[0])
+                      streamsDone(handleId, jsep, media, callbacks, stream)
+                    })
                 } else {
                   streamsDone(handleId, jsep, media, callbacks, stream)
                 }
@@ -2435,10 +2435,10 @@ function Janus(gatewayCallbacks) {
               .then(function(stream) {
                 if(useAudio) {
                   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                  .then(function (audioStream) {
-                    stream.addTrack(audioStream.getAudioTracks()[0])
-                    gsmCallback(null, stream)
-                  })
+                    .then(function (audioStream) {
+                      stream.addTrack(audioStream.getAudioTracks()[0])
+                      gsmCallback(null, stream)
+                    })
                 } else {
                   gsmCallback(null, stream)
                 }
@@ -2538,11 +2538,11 @@ function Janus(gatewayCallbacks) {
         // Check whether all media sources are actually available or not
         navigator.mediaDevices.enumerateDevices().then(function(devices) {
           var audioExist = devices.some(function(device) {
-            return device.kind === 'audioinput'
-          }),
-          videoExist = isScreenSendEnabled(media) || devices.some(function(device) {
-            return device.kind === 'videoinput'
-          })
+              return device.kind === 'audioinput'
+            }),
+            videoExist = isScreenSendEnabled(media) || devices.some(function(device) {
+              return device.kind === 'videoinput'
+            })
 
           // Check whether a missing device is really a problem
           var audioSend = isAudioSendEnabled(media)
@@ -2588,10 +2588,10 @@ function Janus(gatewayCallbacks) {
               })
           }
         })
-        .catch(function(error) {
-          pluginHandle.consentDialog(false)
-          callbacks.error(error)
-        })
+          .catch(function(error) {
+            pluginHandle.consentDialog(false)
+            callbacks.error(error)
+          })
       }
     } else {
       // No need to do a getUserMedia, create offer/answer right away

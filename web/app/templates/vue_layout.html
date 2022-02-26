@@ -4,15 +4,10 @@
 {% block navbar %}
 {% endblock navbar %}
 
-{% block content_wrapper %}
-  {% include 'snippets/messages.html' %}
-
-  <div id="vue_app">
-    {% block content %}{% endblock content %}
-    {% if settings.VUE_APP_EXTENSION %}
-      {% include settings.VUE_APP_EXTENSION %}
-    {% endif %}
+{% block content %}
+  <div id="app">
+    {{ block.super }}
+    {% block vue_content %}{% endblock vue_content %}
   </div>
-
   {% bundle 'root' %}
-{% endblock content_wrapper %}
+{% endblock content %}

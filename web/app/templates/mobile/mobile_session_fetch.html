@@ -4,11 +4,12 @@
 {% endblock navbar %}
 
 {% block content %}
+<div class="container">
+  <div id="view" style="display: none;">{{session_key}}</div>
 
-<div id="view" style="display: none;">{{session_key}}</div>
-
-<div class="text-center m-5">
-  <p>Logging in...</p>
-  <i class="fa fa-spinner fa-spin"></i>
+  <div class="text-center m-5">
+    <p>Logging in...</p>
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
 </div>
 {% endblock %}

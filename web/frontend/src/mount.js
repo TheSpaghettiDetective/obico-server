@@ -19,10 +19,10 @@ export default (router, components) => {
   Vue.use(VueMoment)
   Vue.use(VuePluralize)
 
-  if (document.getElementById('vue_app')) {
+  if (document.getElementById('app')) {
     new Vue({
       router,
       components,
-    }).$mount('#vue_app')
+    }).$mount('#app')
   }
 }

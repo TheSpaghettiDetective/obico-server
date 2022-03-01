@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'api',
+    'notifications',
 
     'webpack_loader',
 ]

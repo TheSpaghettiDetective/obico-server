@@ -6,6 +6,8 @@ import logging
 
 from app.models import Printer, Print, HeaterTracker, PrintHeaterTarget
 from lib.mobile_notifications import send_heater_event
+from notifications.tasks import queue_send_printer_notifications_task
+from notifications.events import HeaterCooledDown, HeaterTargetReached
 from django.utils.timezone import now
 from django.db import IntegrityError
 
@@ -179,6 +181,19 @@ def update_heater_trackers(printer: Printer,
                 heater_name=event.state.name,
                 # 0.0 for pleasing mypy, actual cannot be None here
                 actual_temperature=event.state.actual or 0.0)
+
+            queue_send_printer_notifications_task(
+                printer=printer,
+                event_name=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
+                event_data={
+                    'name': event.state.name,
+                    'actual': event.state.actual,
+                    'target': event.state.target,
+                    'offset': event.state.offset,
+                },
+                print_id=printer.current_print_id,
+                poster_url=printer.current_print.poster_url if printer.current_print_id else '',  # type: ignore
+            )
 
             if event.type == HeaterEventType.TARGET_REACHED:
                 # Trying to save the moment when target first

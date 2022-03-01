@@ -4,10 +4,15 @@ from django.conf import settings
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
+import json
 
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p)
+    SharedResource, OctoPrintTunnel, calc_normalized_p,
+    NotificationSetting,
+)
+
+import notifications.handlers
 
 
 def int_with_default(v, default):
@@ -207,3 +212,53 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 
 class VerifyCodeInputSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=64, required=True)
+
+
+class NotificationSettingSerializer(serializers.ModelSerializer):
+    config = serializers.DictField(required=False)
+
+    class Meta:
+        model = NotificationSetting
+        fields = (
+            'id', 'user', 'created_at', 'updated_at',
+            'name', 'config', 'enabled',
+            'notify_on_failure_alert',
+            'notify_on_account_events',
+            'notify_on_print_done',
+            'notify_on_print_cancelled',
+            'notify_on_filament_change',
+            'notify_on_other_events',
+            'notify_on_heater_status',
+        )
+
+        read_only_fields = (
+            'id', 'user', 'created_at', 'updated_at',
+        )
+
+    def validate_name(self, name):
+        name = name.strip()
+        plugin = notifications.handlers.notification_plugins_by_name(name)
+        if not plugin:
+            raise Exception(f'Notification Plugin "{name}" is not loaded')
+
+        return name
+
+    def validate(self, data):
+        if 'config' in data:
+            name = data['name']
+            plugin = notifications.handlers.notification_plugins_by_name(name)
+            if not plugin:
+                raise Exception(f'Notification Plugin "{name}" is not loaded')
+
+            try:
+                data['config'] = plugin.instance.validate_config(data['config'])
+            except serializers.ValidationError as e:
+                raise serializers.ValidationError({'config': e.detail})
+        return data
+
+    def save(self):
+        user = self.context['request'].user
+        config = self.validated_data.pop('config', None)
+        if config:
+            self.validated_data['config_json'] = json.dumps(config)
+        return super().save(user=user)

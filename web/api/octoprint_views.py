@@ -29,7 +29,8 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
-from lib.notifications import send_failure_alert
+from lib.notifications import send_failure_alert as send_failure_alert_v1
+import notifications.handlers
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
@@ -41,6 +42,17 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
+
+
+def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -> None:
+    send_failure_alert_v1(printer, is_warning=True, print_paused=False)
+    notifications.handlers.send_failure_alerts(
+        printer=printer,
+        is_warning=True,
+        print_paused=False,
+        print_=printer.current_print,
+        poster_url=printer.current_print.poster_url,
+    )
 
 
 class OctoPrintPicView(APIView):

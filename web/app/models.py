@@ -255,7 +255,7 @@ class Printer(SafeDeleteModel):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
                 if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
-                    self.unset_current_print()
+                    self.unset_current_print(gone=True)
                 else:
                     LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
 
@@ -274,17 +274,19 @@ class Printer(SafeDeleteModel):
 
                 return
             LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
-            self.unset_current_print()
+            self.unset_current_print(gone=True)
             self.set_current_print(filename, current_print_ts)
         else:
             self.set_current_print(filename, current_print_ts)
 
-    def unset_current_print(self):
+    def unset_current_print(self, gone=False, failed=False, canceled=False):
         print = self.current_print
         self.current_print = None
         self.save()
 
         self.printerprediction.reset_for_new_print()
+
+        assert print
 
         if print.cancelled_at is None:
             print.finished_at = timezone.now()
@@ -292,6 +294,29 @@ class Printer(SafeDeleteModel):
 
         PrintEvent.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
+
+        event_name = 'PrintDone'
+        event_data = {}  # TODO original event data somehow
+        if canceled:
+            event_name = 'PrintCancelled'
+        elif failed:
+            event_name = 'PrintFailed'
+        elif gone:
+            # FIXME
+            # Print not properly ended before next start, or got -1 as print id.
+            # Previously we received a PrintDone
+            event_name = 'PrintDone'
+            event_data["gone"] = True
+
+        # TODO circular import problem
+        from notifications.tasks import queue_send_printer_notifications_task
+        queue_send_printer_notifications_task(
+            printer=self,
+            event_name=event_name,
+            event_data=event_data,
+            print_=print,
+            poster_url=print.poster_url or '',
+        )
 
     def set_current_print(self, filename, current_print_ts):
         if not current_print_ts or current_print_ts == -1:
@@ -318,7 +343,18 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
         PrintEvent.create(cur_print, PrintEvent.STARTED)
+
         self.send_should_watch_status()
+
+        # TODO circular import problem
+        from notifications.tasks import queue_send_printer_notifications_task
+        queue_send_printer_notifications_task(
+            printer=self,
+            event_name='PrintStarted',
+            event_data={},  # TODO original event data somehow
+            print_=cur_print,
+            poster_url=cur_print.poster_url or '',
+        )
 
     ## return: succeeded? ##
     def resume_print(self, mute_alert=False, initiator=None):
@@ -808,3 +844,36 @@ class OctoPrintTunnel(SafeDeleteModel):
         return channels.num_ws_connections(
             channels.octo_group_name(self.printer.id)
         ) > 0
+
+
+class NotificationSetting(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    name = models.TextField()
+    config_json = models.TextField(default='', blank=True)
+
+    enabled = models.BooleanField(default=True)
+
+    notify_on_failure_alert = models.BooleanField(blank=True, default=True)
+    notify_on_account_events = models.BooleanField(blank=True, default=False)
+
+    notify_on_print_done = models.BooleanField(blank=True, default=False)
+    notify_on_print_cancelled = models.BooleanField(blank=True, default=False)
+    notify_on_filament_change = models.BooleanField(blank=True, default=False)
+    notify_on_other_events = models.BooleanField(blank=True, default=False)
+
+    notify_on_heater_status = models.BooleanField(blank=True, default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def config(self):
+        return json.loads(self.config_json)
+
+    @config.setter  # type: ignore
+    def set_config(self, data):
+        self.config_json = json.dumps(data)
+
+    class Meta:
+        unique_together = ('user', 'name')

@@ -165,10 +165,10 @@ export default {
       this.printerComm.passThruToPrinter(
         payload,
         (err, ret) => {
-          if (err || ret.error) {
+          if (ret?.error) {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: err ? err : ret.error,
+              title: ret.error,
             })
           }
         }

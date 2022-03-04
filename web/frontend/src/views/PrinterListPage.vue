@@ -2,7 +2,7 @@
   <layout>
     <template v-slot:topBarRight>
       <div>
-        <a v-if="isEnt" href="/ent/subscription/#detective-hour-balance" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' Detective Hours'">
+        <a v-if="isEnt" href="/user_preferences/dh/" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' Detective Hours'">
           <svg viewBox="0 0 384 550">
             <use href="#svg-detective-hours"></use>
           </svg>
@@ -16,7 +16,7 @@
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item v-if="isEnt" href="/ent/subscription/#detective-hour-balance" class="d-md-none">
+          <b-dropdown-item v-if="isEnt" href="/user_preferences/dh/" class="d-md-none">
             <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} Detective Hours
           </b-dropdown-item>
           <b-dropdown-item href="/printers/wizard/" class="d-md-none">

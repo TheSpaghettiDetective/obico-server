@@ -2,9 +2,18 @@
 
 {% load static %}
 
+{% load to_json from frontend %}
+{% load model_to_dict from frontend %}
+
 {% block vue_content %}
   <router-view
-    :config='{telegramBotName: "{{telegram_bot_name}}", twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }} }'
+    :config='{
+      telegramBotName: "{{telegram_bot_name}}",
+      twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }},
+
+      csrftoken: "{{ csrf_token }}",
+    }'
+
   >
   </router-view>
 {% endblock vue_content %}

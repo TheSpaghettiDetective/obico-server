@@ -14,3 +14,7 @@ export const user = () => {
 export const settings = () => {
   return JSON.parse(document.querySelector('#settings-json').text)
 }
+
+export const onlyNotifications = () => {
+  return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
+}

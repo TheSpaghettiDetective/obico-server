@@ -6,9 +6,15 @@
         <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
       </a>
       <ul class="list-unstyled m-0">
+        <li v-if="isEnt && !user.is_pro" :class="{'active': path === '/ent_pub/pricing/'}">
+          <a href="/ent_pub/pricing/" class="primary">
+            <i class="fas fa-star"></i>
+            Upgrade
+          </a>
+        </li>
         <li v-if="user" :class="{'active': path === '/printers/'}">
           <a href="/printers/">
-            <svg viewBox="0 0 359 383" width="100%" height="1.4em" fill="currentColor" style="margin-bottom: 5px">
+            <svg viewBox="0 0 128 128" width="100%" height="1.4em" fill="none" style="margin-bottom: 5px">
               <use href="#svg-3d-printer" />
             </svg>
             Printers
@@ -22,64 +28,33 @@
         </li>
         <li v-if="user" :class="{'active': path === '/gcodes/'}">
           <a href="/gcodes/">
-            <i class="far fa-file-code"></i>
+            <i class="fas fa-file-code"></i>
             G-Codes
           </a>
         </li>
-        <li v-if="isEnt && !user" class="glowing" :class="{'active': path === '/ent_pub/publictimelapses/'}">
-          <a href="/ent_pub/publictimelapses/">
-            <i class="fas fa-images"></i>
-            Spaghetti Gallery
-          </a>
-        </li>
-        <li v-if="isEnt" :class="{'active': path === '/ent_pub/pricing/'}">
-          <a href="/ent_pub/pricing/">
-            <i class="fas fa-dollar-sign"></i>
-            Pricing
-          </a>
-        </li>
         <li>
-          <a href="https://www.thespaghettidetective.com/help/">
-            <i class="fas fa-question"></i>
-            Help
+          <a v-b-toggle:helpMenu class="dropdown-toggle">
+            <i class="fas fa-question-circle"></i>
+            Docs & Help
           </a>
-        </li>
-        <li>
-          <a href="https://discord.gg/hsMwGpD">
-            <i class="fas fa-comments"></i>
-            Community
-          </a>
+          <b-collapse id="helpMenu">
+            <ul class="list-unstyled">
+               <li>
+                <a href="https://www.thespaghettidetective.com/help/" target="_blank">Docs</a>
+              </li>
+              <li>
+                <a href="https://discord.gg/hsMwGpD" target="_blank">Community</a>
+              </li>
+            </ul>
+          </b-collapse>
         </li>
       </ul>
       <div class="side-nav-footer">
         <ul class="list-unstyled m-0">
-          <li v-if="user">
-            <a v-b-toggle:userActions class="dropdown-toggle">
+          <li v-if="user" :class="{'active': path === '/user_preferences/'}">
+            <a href="/user_preferences/">
               <i class="fas fa-user"></i>
               <span>{{ user.first_name || user.email }}</span>
-            </a>
-            <b-collapse id="userActions">
-              <ul class="list-unstyled">
-                <li :class="{'active': path === '/user_preferences/'}">
-                  <a href="/user_preferences/">Preferences</a>
-                </li>
-                <li v-if="isEnt" :class="{'active': path === '/ent/subscription/'}">
-                  <a href="/ent/subscription/">Account</a>
-                </li>
-                <li>
-                  <a href="/accounts/logout/">Logout</a>
-                </li>
-              </ul>
-            </b-collapse>
-          </li>
-          <li v-if="!user">
-            <a href="/accounts/login/">
-              SIGN IN
-            </a>
-          </li>
-          <li v-if="!user && allowSignUp">
-            <a href="/accounts/signup/">
-              SIGN UP
             </a>
           </li>
         </ul>
@@ -215,6 +190,8 @@ export default {
           color: var(--color-text-primary)
         &:hover
           background: var(--color-hover)
+        &.primary
+          color: var(--color-primary)
         &.dropdown-toggle
           cursor: pointer
           padding-bottom: 20px

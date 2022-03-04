@@ -38,7 +38,7 @@
               <b-dropdown-item href="/user_preferences/">
                 <i class="fas fa-sliders-h mr-2"></i>Preferences
               </b-dropdown-item>
-              <b-dropdown-item v-if="isEnt" href="/ent/subscription/">
+              <b-dropdown-item v-if="isEnt" href="/user_preferences/subscription">
                 <i class="far fa-user-circle mr-2"></i>Account
               </b-dropdown-item>
               <b-dropdown-divider></b-dropdown-divider>

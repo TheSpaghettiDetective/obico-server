@@ -601,7 +601,7 @@ export default {
     margin-bottom: .4em
 
 .section-title
-  padding-bottom: 5px
+  padding-bottom: 10px
   border-bottom: 1px solid var(--color-text-primary)
 
 .form-label

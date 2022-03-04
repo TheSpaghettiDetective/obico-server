@@ -5,78 +5,39 @@
         <b-row class="flex-full-size">
           <b-col class="flex-full-size">
             <div v-if="user" class="flex-full-size">
-              <!-- 2-step nav for mobiles -->
+              <!-- Mobile (web / app) -->
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
-                <div v-if="$route.path === '/'" class="mobile-settings-categories">
-                  <h2 class="categories-title section-title">Preferences</h2>
-                  <router-link v-if="clientIsThemeable" to="/theme">
-                    <span>Personalization</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/profile">
-                    <span>Profile</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
+                <div v-if="$route.path === '/user_preferences/'" class="mobile-settings-categories">
+                  <h2 v-show="!onlyNotifications()" class="categories-title section-title">Account</h2>
+                  <template v-for="(value, name) in sections">
+                    <router-link v-if="!value.isHidden" :key="name" :to="value.route" :class="value.isSubcategory ? 'subcategory' : ''">
+                      <span>
+                        <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']" style="font-size: 1.125rem"></i>
+                        <span>{{ value.title }}</span>
+                      </span>
+                      <i class="fas fa-arrow-right"></i>
+                    </router-link>
+                  </template>
 
-                  <router-link to="/general_notifications">
-                    <span>Notifications</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link v-if="inMobileWebView" to="/mobile_push_notifications" href="mobile_push_notifications" class="subcategory">
-                    <span>Push Notification</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/email_notifications" class="subcategory">
-                    <span>Email</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/sms_notifications" class="subcategory">
-                    <span>SMS</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/pushbullet_notifications" class="subcategory">
-                    <span>Pushbullet</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/discord_notifications" class="subcategory">
-                    <span>Discord</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link to="/telegram_notifications" class="subcategory">
-                    <span>Telegram</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link v-if="pushOverEnabled" to="/pushover_notifications" class="subcategory">
-                    <span>Pushover</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-                  <router-link v-if="slackEnabled" to="/slack_notifications" class="subcategory">
-                    <span>Slack</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
-
-                  <router-link to="/authorized_apps">
-                    <span>Authorized Apps</span>
-                    <i class="fas fa-arrow-right"></i>
-                  </router-link>
+                  <a href="#" @click.prevent="logout">
+                    <span>
+                      <i :class="['fas fa-sign-out-alt', 'mr-2']" style="font-size: 1.125rem"></i>
+                      Logout
+                    </span>
+                  </a>
                 </div>
                 <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
-                  <!-- General -->
-                  <theme-preferences v-if="$route.path === '/theme'"></theme-preferences>
-                  <profile-preferences v-if="$route.path === '/profile'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
-                  <!-- Notifications -->
-                  <general-notifications v-if="$route.path === '/general_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
-                  <email-notifications v-if="$route.path === '/email_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
-                  <sms-notifications v-if="$route.path === '/sms_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
-                  <pushbullet-notifications v-if="$route.path === '/pushbullet_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
-                  <discord-notifications v-if="$route.path === '/discord_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
-                  <telegram-notifications v-if="$route.path === '/telegram_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
-                  <pushover-notifications v-if="$route.path === '/pushover_notifications'" :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
-                  <slack-notifications v-if="$route.path === '/slack_notifications'"></slack-notifications>
-                  <authorized-apps v-if="$route.path === '/authorized_apps'"></authorized-apps>
+                  <component
+                    :is="currentRouteComponent"
+                    :user="user"
+                    :errorMessages="errorMessages"
+                    :saving="saving"
+                    :config="config"
+                    @updateSetting="updateSetting"
+                  ></component>
                 </div>
               </div>
-              <!-- left-side nav for desktops -->
+              <!-- Desktop -->
               <b-tabs
                 v-else
                 :vertical="true"
@@ -85,39 +46,35 @@
                 active-nav-item-class=""
                 content-class="desktop-settings-content"
               >
-                <b-tab title="Personalization">
-                  <theme-preferences></theme-preferences>
-                </b-tab>
-                <b-tab title="Profile">
-                  <profile-preferences :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></profile-preferences>
-                </b-tab>
-                <b-tab title="Notifications">
-                  <general-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></general-notifications>
-                </b-tab>
-                <b-tab title-item-class="subcategory" title="Email">
-                  <email-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></email-notifications>
-                </b-tab>
-                <b-tab title-item-class="subcategory" title="SMS">
-                  <sms-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :twilioEnabled="twilioEnabled" @updateSetting="updateSetting"></sms-notifications>
-                </b-tab>
-                <b-tab title-item-class="subcategory" title="Pushbullet">
-                  <pushbullet-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushbullet-notifications>
-                </b-tab>
-                <b-tab title-item-class="subcategory" title="Discord">
-                  <discord-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></discord-notifications>
-                </b-tab>
-                <b-tab title-item-class="subcategory" title="Telegram">
-                  <telegram-notifications :user="user" :errorMessages="errorMessages" :saving="saving" :config="config" @updateSetting="updateSetting" :errorAlert="errorAlert"></telegram-notifications>
-                </b-tab>
-                <b-tab v-if="pushOverEnabled" title-item-class="subcategory" title="Pushover">
-                  <pushover-notifications :user="user" :errorMessages="errorMessages" :saving="saving" @updateSetting="updateSetting"></pushover-notifications>
-                </b-tab>
-                <b-tab v-if="slackEnabled" title-item-class="subcategory" title="Slack">
-                  <slack-notifications></slack-notifications>
-                </b-tab>
-                <b-tab title="Authorized Apps">
-                  <authorized-apps></authorized-apps>
-                </b-tab>
+                <template v-for="(value, name) in sections">
+                  <b-tab
+                    v-if="!value.isHidden"
+                    :key="name"
+                    :title-item-class="value.isSubcategory ? 'subcategory' : ''"
+                    :active="$route.path === value.route"
+                  >
+                    <template #title>
+                      <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']"></i>
+                      {{ value.title }}
+                    </template>
+                    <component
+                      :is="name"
+                      :user="user"
+                      :errorMessages="errorMessages"
+                      :saving="saving"
+                      :config="config"
+                      @updateSetting="updateSetting"
+                    ></component>
+                  </b-tab>
+                </template>
+                <template #tabs-end>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#" @click.prevent="logout">
+                      <i :class="['fas fa-sign-out-alt', 'mr-2']"></i>
+                      Logout
+                    </a>
+                  </li>
+                </template>
               </b-tabs>
             </div>
             <div v-else class="text-center">
@@ -134,36 +91,31 @@
 import axios from 'axios'
 import urls from '@src/lib/server_urls'
 import Layout from '@src/components/Layout.vue'
-import { inMobileWebView, settings } from '@src/lib/page_context'
-import ThemePreferences from '@src/components/user-preferences/ThemePreferences'
-import ProfilePreferences from '@src/components/user-preferences/ProfilePreferences'
-import AuthorizedApps from '@src/components/user-preferences/AuthorizedApps'
-import EmailNotifications from '@src/components/user-preferences/EmailNotifications'
-import SmsNotifications from '@src/components/user-preferences/SmsNotifications'
-import PushbulletNotifications from '@src/components/user-preferences/PushbulletNotifications'
-import DiscordNotifications from '@src/components/user-preferences/DiscordNotifications'
-import TelegramNotifications from '@src/components/user-preferences/TelegramNotifications'
-import PushoverNotifications from '@src/components/user-preferences/PushoverNotifications'
-import SlackNotifications from '@src/components/user-preferences/SlackNotifications'
-import GeneralNotifications from '@src/components/user-preferences/GeneralNotifications'
+import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
+import sections from '@config/user-preferences/sections'
+import routes from '@config/user-preferences/routes'
+
 export default {
-  name: 'UserPreferencesRoute',
+  name: 'UserPreferencesPage',
+
+  props: {
+    config: {
+      default() {return {}},
+      type: Object,
+    },
+  },
+
   components: {
     Layout,
-    ThemePreferences,
-    ProfilePreferences,
-    AuthorizedApps,
-    EmailNotifications,
-    SmsNotifications,
-    PushbulletNotifications,
-    DiscordNotifications,
-    TelegramNotifications,
-    PushoverNotifications,
-    SlackNotifications,
-    GeneralNotifications,
+    ...Object.keys(sections).reduce((obj, name) => {
+      return Object.assign(obj, { [name]: sections[name].importComponent })
+    }, {}),
   },
+
   data() {
     return {
+      sections,
+      onlyNotifications,
       user: null,
       saving: {},
       errorMessages: {},
@@ -200,13 +152,19 @@ export default {
       combinedInputs: { // Send changes to API only if all the other values in the array have data
         phone: ['phone_country_code', 'phone_number'],
       },
-      twilioEnabled: false,
-      slackEnabled: false,
-      pushOverEnabled: false,
       useMobileLayout: false,
     }
   },
+
   computed: {
+    currentRouteComponent() {
+      for (const [component, route] of Object.entries(routes)) {
+        if (this.$route.path === route) {
+          return component
+        }
+      }
+      return null
+    },
     inMobileWebView() {
       return inMobileWebView()
     },
@@ -278,6 +236,7 @@ export default {
       }
     },
   },
+
   watch: {
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
@@ -334,23 +293,27 @@ export default {
       }
     }
   },
-  props: {
-    config: {
-      default() {return {}},
-      type: Object,
-    },
-  },
+
   created() {
-    const {TWILIO_ENABLED, SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN} = settings()
-    this.twilioEnabled = !!TWILIO_ENABLED
-    this.slackEnabled = !!SLACK_CLIENT_ID
-    this.pushOverEnabled = !!PUSHOVER_APP_TOKEN
     this.fetchUser()
   },
+
   methods: {
+    logout() {
+      this.$swal.Confirm.fire({
+        title: 'Confirmation',
+        html: '<p class="text-center">You a going to logout from your account</p>',
+        confirmButtonText: 'Logout',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if(result.isConfirmed) {
+          window.location.replace('/accounts/logout/')
+        }
+      })
+    },
     checkMobileLayout() {
       const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-      this.useMobileLayout = inMobileWebView() || vw < 768
+      this.useMobileLayout = inMobileWebView() || vw < 1140
     },
     fetchUser() {
       return axios
@@ -447,6 +410,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+$container-border-radius: 16px
+
 .flex-full-size
   display: flex
   flex-direction: column
@@ -454,6 +419,7 @@ export default {
 .desktop-settings-wrapper
   margin: 0
   background-color: var(--color-surface-secondary)
+  border-radius: $container-border-radius
   ::v-deep .desktop-settings-content
     padding: 2rem
     padding-right: 3rem
@@ -486,17 +452,21 @@ export default {
 ::v-deep .section-title
   font-weight: bold
   font-size: 1.5rem
-  margin-bottom: 1rem
+  padding-bottom: .25rem
   border-bottom: 1px solid var(--color-text-primary)
+  margin-bottom: 1.5rem
 ::v-deep .settings-nav
   width: 25%
   background-color: var(--color-surface-primary)
   min-height: 80vh
-  padding: 3.5rem 0
+  padding: 1.5rem 1rem
+  border-radius: $container-border-radius 0 0 $container-border-radius
   .subcategory
     a
       padding-left: 2rem
       font-size: 0.9em
+  .active
+    border-radius: 6px
   a
     border: initial
 ::v-deep .nav-tabs

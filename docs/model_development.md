@@ -47,10 +47,7 @@ You can use the usual `docker-compose up` command to launch the whole ensemble i
 For rapid development, it's faster to launch `ml_api` on its own, mounting the local directory and exposing the web port:
 
 ```
-docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash
-
-# Run this command when the container starts, and re-run it whenever you make a code change
-gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
+docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash -ic "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 ```
 
 When you see `Loaded - names_list: model/names, classes = 1` in the logs, the model server should be ready. 
@@ -88,6 +85,18 @@ You should see a result that looks like:
     ]
   ]
 }
+```
+
+## Unit Tests
+
+We use pytest to test `ml_api` at the web service level. Test `*.png` images can be added at `ml_api/tests/failure` and `ml_api/tests/nofailure` to verify the model correctly reports spaghetti when there's spaghetti, and doesn't issue false positives when there isn't. 
+
+**IMPORTANT:** this only tests the model's ability to detect spaghetti, **NOT** whether TSD will pause the print. The actual failure threshold is configured by the user and adjusted dynamically based on a sequence of images (see [web/lib/prediction.py](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/blob/master/web/lib/prediction.py#L21)).
+
+To test the model server, run the following (omit the `--volume` argument if you wish to test the built container and not mount local changes):
+
+```
+docker-compose run --volume=$(pwd)/ml_api:/app ml_api /bin/bash -ic "python -m pytest"
 ```
 
 ## Rebuilding darknet shared objects

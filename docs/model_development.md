@@ -8,7 +8,7 @@ The following instructions will assist you in making changes to the ML model or 
 
 Model data, libraries, and scripts are located int `ml_api/`.
 
-The TSD model uses a convolutional neural network adapted from [YOLOv4](https://arxiv.org/abs/2004.10934), which is a machine learning model designed for the task of object detection and localization in images. 
+The TSD model uses a convolutional neural network adapted from [YOLOv2](https://pjreddie.com/darknet/yolov2/), which is a machine learning model designed for the task of object detection and localization in images.
 
 The model is run using https://github.com/AlexeyAB/darknet. **This is a fork of the [original Darknet framework](https://pjreddie.com/darknet/) with substantial changes made to how the model is loaded and evaluated**, and running on the "old" darknet will cause weird failures as a result.
 

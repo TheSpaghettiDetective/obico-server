@@ -202,7 +202,7 @@ class OctoPrintConsumer(WebsocketConsumer):
         }})
 
         self.printer.user.last_active_at = timezone.now()
-        self.printer.user.save()
+        self.printer.user.save(update_fields=('last_active_at'))
 
     def disconnect(self, close_code):
         LOGGER.warn(

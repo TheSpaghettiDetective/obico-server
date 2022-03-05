@@ -19,7 +19,7 @@
                     </router-link>
                   </template>
 
-                  <a href="#" @click.prevent="logout">
+                  <a v-if="!onlyNotifications()" href="#" @click.prevent="logout">
                     <span>
                       <i :class="['fas fa-sign-out-alt', 'mr-2']" style="font-size: 1.125rem"></i>
                       Logout
@@ -361,6 +361,14 @@ export default {
           }
         })
         .then(() => {
+          if (window.ReactNativeWebView) {
+            if (key === 'first_name') {
+              window.ReactNativeWebView.postMessage(JSON.stringify({firstName: this.firstName}))
+            } else if (key === 'last_name') {
+              window.ReactNativeWebView.postMessage(JSON.stringify({lastName: this.lastName}))
+            }
+          }
+
           this.setSavingStatus(key, false)
         })
     },

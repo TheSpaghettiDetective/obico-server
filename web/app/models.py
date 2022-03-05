@@ -334,7 +334,7 @@ class Printer(SafeDeleteModel):
         return True
 
     ## return: succeeded? ##
-    def pause_print(self):
+    def pause_print(self, initiator=None):
         if self.current_print is None:
             return False
 
@@ -348,7 +348,7 @@ class Printer(SafeDeleteModel):
 
         if self.bed_off_on_pause:
             args['bed_off'] = True
-        self.send_octoprint_command('pause', args=args)
+        self.send_octoprint_command('pause', args=args, initiator=initiator)
 
         return True
 
@@ -387,8 +387,8 @@ class Printer(SafeDeleteModel):
 
     # messages to printer
 
-    def send_octoprint_command(self, command, args={}):
-        channels.send_msg_to_printer(self.id, {'commands': [{'cmd': command, 'args': args}]})
+    def send_octoprint_command(self, command, args={}, initiator=None):
+        channels.send_msg_to_printer(self.id, {'commands': [{'cmd': command, 'args': args, 'initiator': initiator or 'unknown'}]})
 
     def send_should_watch_status(self, refresh=True):
         if refresh:

@@ -160,7 +160,7 @@ def pause_if_needed(printer):
     last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
 
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
-        printer.pause_print()
+        printer.pause_print(initiator='system')
         printer.set_alert()
         send_failure_alert(printer, is_warning=False, print_paused=True)
     elif not last_alerted > last_acknowledged:

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.timezone import now
 
 from app.models import *
 
@@ -32,3 +33,7 @@ def get_print_or_404(pk, request):
 
 def get_template_path(template_name, template_dir):
     return f"{template_dir + '/' if template_dir else ''}{template_name}.html"
+
+def touch_user_last_active(user):
+    user.last_active_at = now()
+    user.save(update_fields=['last_active_at',])

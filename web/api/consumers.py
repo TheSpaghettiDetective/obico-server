@@ -24,6 +24,7 @@ from .octoprint_messages import process_octoprint_status
 from app.models import *
 from app.models import Print, Printer, ResurrectionError, SharedResource
 from lib.tunnelv2 import OctoprintTunnelV2Helper
+from lib.view_helpers import touch_user_last_active
 from .serializers import *
 from .serializers import PublicPrinterSerializer, PrinterSerializer
 
@@ -94,6 +95,8 @@ class WebConsumer(JsonWebsocketConsumer):
 
         # Send printer status to web frontend as soon as it connects
         self.printer_status(None)
+
+        touch_user_last_active(self.printer.user)
 
     def disconnect(self, close_code):
         LOGGER.warn(
@@ -201,8 +204,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             'should_watch': self.printer.should_watch(),
         }})
 
-        self.printer.user.last_active_at = timezone.now()
-        self.printer.user.save(update_fields=('last_active_at'))
+        touch_user_last_active(self.printer.user)
 
     def disconnect(self, close_code):
         LOGGER.warn(

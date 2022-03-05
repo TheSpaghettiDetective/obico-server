@@ -38,18 +38,20 @@ LOGGER = logging.getLogger(__name__)
 
 
 @shared_task
-def process_print_events(print_id, event_id=None, event_type=None):
+def process_print_end_event(print_id, event_id=None, event_type=None):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
-
-    if event_type in PrintEvent.FILAMENT_CHANGE:
-        send_print_notification(_print, event_type=event_type)
-        return
 
     if will_record_timelapse(_print):
         select_print_shots_for_feedback(_print)
         send_print_notification(_print)
         compile_timelapse.delay(print_id)
 
+
+@shared_task
+def process_filament_change_event(print_id, event_id=None, event_type=None):
+    _print = Print.objects.select_related('printer__user').get(id=print_id)
+    send_print_notification(_print, event_type=event_type)
+    
 
 @shared_task(acks_late=True)
 def compile_timelapse(print_id):

@@ -574,7 +574,7 @@ class PrintEvent(models.Model):
 
         if event_type in (PrintEvent.ENDED, PrintEvent.FILAMENT_CHANGE):
             celery_app.send_task(
-                settings.PRINT_EVENT_HANDLER,
+                settings.PRINT_EVENT_HANDLERS[event_type],
                 args=(print.id, ),
                 kwargs={'event_id': event.id, 'event_type': event_type}
             )

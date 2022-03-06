@@ -5,11 +5,6 @@
       <div>OctoPrint Error</div><div>{{ printer.status.state.text }}</div>
     </div>
   </div>
-  <div class="row my-2" v-if="printer.inUserInteractionRequired()">
-    <div class="col-12 bg-warning text-center">
-      <div>Filament change or user interaction required</div>
-    </div>
-  </div>
   <div class="row my-2" v-if="printer.inTransientState()">
     <div class="col-12 text-center my-3">
       <b-spinner label="Processing..."></b-spinner>

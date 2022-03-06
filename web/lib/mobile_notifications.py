@@ -43,7 +43,7 @@ def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
 def send_print_event(_print, event_type, rotated_jpg_url):
     title = event_type.replace('Print', '')
     if event_type == 'FilamentChange':
-        title = '🟠 Filament change or user interaction required'
+        title = '🟠 Filament'
 
     for mobile_device in MobileDevice.objects.filter(user_id=_print.user_id):
         data = dict(

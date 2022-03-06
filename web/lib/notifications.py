@@ -362,7 +362,7 @@ def get_notification_body(_print, event_type=None):
     if event_type and event_type == PrintEvent.FILAMENT_CHANGE:
         return (
             f"Your print job *{_print.filename}* "
-            f"requires filament change or user interaction "
+            f"requires filament change "
             f"on printer {_print.printer.name}."
         )
     return (
@@ -379,7 +379,7 @@ def send_print_notification_email(_print, extra_ctx={}, event_type=None):
     }
 
     if event_type == PrintEvent.FILAMENT_CHANGE:
-        subject = f'{_print.filename} requires filament change or user interaction.'
+        subject = f'{_print.filename} requires filament change.'
         template_path = 'email/filament_change_req_notification.html'
     else:
         subject = f'{_print.filename} is canceled.' if _print.is_canceled() else f'🙌 {_print.filename} is ready.'
@@ -473,7 +473,7 @@ def send_print_notification_slack(_print, event_type=None):
     slack_channel_ids = [c['id'] for c in req.json()['channels'] if c['is_member']]
 
     if event_type == PrintEvent.FILAMENT_CHANGE:
-        status = 'Requires filament change or user interaction'
+        status = 'requires filament change'
     else:
         status = 'Canceled' if _print.is_canceled() else 'Finished'
     for slack_channel_id in slack_channel_ids:

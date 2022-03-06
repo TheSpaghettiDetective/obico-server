@@ -112,7 +112,7 @@
               </p>
             </template>
 
-            <!-- user-interaction-required-in-notifications -->
+            <!-- filament-change-on-notification-preferences -->
             <template v-if="id === 'filament-change-on-notification-preferences'">
               <i>
                 <ul>Required versions:

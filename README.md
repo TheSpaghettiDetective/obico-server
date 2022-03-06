@@ -41,7 +41,7 @@ should also work but we haven't tried them.
 1. Get the code:
 
 ```
-git clone -b release git@github.com:TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:

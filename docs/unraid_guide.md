@@ -31,7 +31,7 @@ TSD can now be installed on your unRAID server the same way as the normal Linux 
 
 ```Bash
 cd /mnt/user/appdata/
-git clone -b release git@github.com:TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
 # from the README
 cd TheSpaghettiDetective && docker-compose up -d
 ```

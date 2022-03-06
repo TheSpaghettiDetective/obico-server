@@ -114,7 +114,12 @@
 
             <!-- user-interaction-required-in-notifications -->
             <template v-if="id === 'filament-change-on-notification-preferences'">
-              <small><i>Requires plugin version 1.8.11 or higher.</i></small>
+              <i>
+                <ul>Required versions:
+                  <li>OctoPrint 1.7.0 or higher</li>
+                  <li>The Spaghetti Detective plugin 1.8.11 or higher</li>
+                </ul>
+              </i>
               <h3>Filament Runout Notifications</h3>
               <p>
                 Host_action_commands must be enabled in your firmware to make it possible for your filament runout

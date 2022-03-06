@@ -268,7 +268,7 @@ class AlertTestCase(TestCase):
 EVENT_CALLS = [call('app.tasks.process_print_end_event', args=ANY)]
 
 
-@override_settings(PRINT_EVENT_HANDLERS={PrintEvent.ENDED: 'app.tasks.process_print_end_event', PrintEvent.FILAMENT_CHANGE: 'app.tasks.process_filament_change_event'})
+@override_settings(PRINT_EVENT_HANDLERS = {'ENDED': 'app.tasks.process_print_end_event', 'FILAMENT_CHANGE': 'app.tasks.process_filament_change_event'})
 @patch('app.models.celery_app')
 class PrintTestCase(TestCase):
 

@@ -576,7 +576,6 @@ class PrintEvent(models.Model):
             celery_app.send_task(
                 settings.PRINT_EVENT_HANDLERS[event_type],
                 args=(print.id, ),
-                kwargs={'event_id': event.id, 'event_type': event_type}
             )
 
 

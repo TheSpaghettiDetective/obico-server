@@ -40,7 +40,7 @@ This will install TSD to your unRAID server! To update TSD, open up the terminal
 
 ```Bash
 cd /mnt/user/appdata/TheSpaghettiDetective # or where you install TSD to
-git pull origin master
+git pull 
 docker-compose up -d --force-recreate --build
 ```
 

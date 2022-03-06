@@ -9,26 +9,19 @@
   </router-view>
 {% endblock vue_content %}
 
-{% block body_bottom_ext %}
-  {% if not app_platform.platform %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+{% if app_platform.platform %}
+  {# These blocks shouldn't display in the mobile app #}
 
-{% block useful_libs %}
-  {% if not app_platform.platform %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+  {% block body_bottom_ext %}
+  {% endblock %}
 
-{% block header_ext %}
-  {% if not app_platform.platform %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+  {% block useful_libs %}
+  {% endblock %}
 
-{% block bootstrap_js %}
-  {% if not app_platform.platform %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+  {% block header_ext %}
+  {% endblock %}
+
+  {% block bootstrap_js %}
+  {% endblock %}
+
+{% endif %}

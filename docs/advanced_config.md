@@ -36,7 +36,6 @@ For webcam feed to work, remember to activate Websockets support. Otherwise ther
 
 ![image](https://user-images.githubusercontent.com/15056650/157341400-b08b0ab8-8d3c-49b5-a2fd-132d2f602431.png)
 
-
 Please note that this is not a general guide. Your situation/configuration may be different.
 
 * This configuration does a redirect from port 80 to 443.

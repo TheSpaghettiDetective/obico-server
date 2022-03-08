@@ -91,21 +91,21 @@ class PrinterViewSet(
     @action(detail=True, methods=['get'])
     def cancel_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
-        succeeded = printer.cancel_print()
+        succeeded = printer.cancel_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 
     @action(detail=True, methods=['get'])
     def pause_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
-        succeeded = printer.pause_print()
+        succeeded = printer.pause_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 
     @action(detail=True, methods=['get'])
     def resume_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
-        succeeded = printer.resume_print()
+        succeeded = printer.resume_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 

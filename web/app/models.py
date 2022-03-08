@@ -321,7 +321,7 @@ class Printer(SafeDeleteModel):
         self.send_should_watch_status()
 
     ## return: succeeded? ##
-    def resume_print(self, mute_alert=False):
+    def resume_print(self, mute_alert=False, initiator=None):
         if self.current_print is None:  # when a link on an old email is clicked
             return False
 
@@ -329,7 +329,7 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         self.acknowledge_alert(Print.NOT_FAILED)
-        self.send_octoprint_command('resume')
+        self.send_octoprint_command('resume', initiator=initiator)
 
         return True
 
@@ -353,12 +353,12 @@ class Printer(SafeDeleteModel):
         return True
 
     ## return: succeeded? ##
-    def cancel_print(self):
+    def cancel_print(self, initiator=None):
         if self.current_print is None:  # when a link on an old email is clicked
             return False
 
         self.acknowledge_alert(Print.FAILED)
-        self.send_octoprint_command('cancel')
+        self.send_octoprint_command('cancel', initiator=initiator)
 
         return True
 

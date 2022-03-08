@@ -72,7 +72,7 @@ def cancel_print(request, pk):
     if _print.id != _print.printer.current_print_id:
         succeeded = False
     else:
-        succeeded = _print.printer.cancel_print()
+        succeeded = _print.printer.cancel_print(initiator='web')
 
     return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'cancel', 'succeeded': succeeded})
 
@@ -84,7 +84,7 @@ def resume_print(request, pk):
     if _print.id != _print.printer.current_print_id:
         succeeded = False
     else:
-        succeeded = _print.printer.resume_print(mute_alert=request.GET.get('mute_alert', False))
+        succeeded = _print.printer.resume_print(mute_alert=request.GET.get('mute_alert', False), initiator='web')
 
     return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded})
 

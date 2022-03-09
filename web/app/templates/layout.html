@@ -55,6 +55,7 @@
 </head>
 
 <body>
+  {% csrf_token %}
   {% block top_page_js %}{% endblock top_page_js %}
 
   {% block body_top_ext %}{% endblock body_top_ext %}

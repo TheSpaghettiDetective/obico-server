@@ -1,6 +1,6 @@
 <template>
   <section class="personalization">
-    <h2 class="section-title">Personalization</h2>
+    <h2 class="section-title">Color Scheme</h2>
     <div class="form-group row mt-3">
       <label class="col-md-2 col-sm-3 col-form-label">Theme</label>
       <div class="col-sm-9 col-md-10">

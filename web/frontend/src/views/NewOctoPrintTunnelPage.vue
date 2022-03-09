@@ -101,7 +101,7 @@
                     <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
                     <span v-else>Authorize</span>
                   </button>
-                  <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/#/authorized_apps">Manage Apps</a>
+                  <a class="btn btn-outline-secondary ml-2" style="flex: 1" href="/user_preferences/authorized_apps">Manage Apps</a>
                 </div>
               </div>
             </div>

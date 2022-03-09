@@ -115,7 +115,7 @@ button, .btn {
 }
 
 footer {
-  padding: 25px 0;
+  padding: 23px 0;
   text-align: center;
   color: var(--color-text-primary);
   background-color: var(--color-surface-secondary);
@@ -635,6 +635,7 @@ input, input.form-control {
 
 .swal2-popup .swal2-styled.swal2-cancel {
   background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
 }
 
 .btn-outline-primary {

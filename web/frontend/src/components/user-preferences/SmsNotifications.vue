@@ -55,6 +55,7 @@
 
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
+import { settings } from '@src/lib/page_context'
 
 export default {
   name: 'SmsNotifications',
@@ -76,10 +77,17 @@ export default {
       type: Object,
       required: true,
     },
-    twilioEnabled: {
-      type: Boolean,
-      default: false,
-    },
+  },
+
+  data() {
+    return {
+      twilioEnabled: false,
+    }
+  },
+
+  created() {
+    const {TWILIO_ENABLED} = settings()
+    this.twilioEnabled = !!TWILIO_ENABLED
   },
 }
 </script>

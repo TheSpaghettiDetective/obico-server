@@ -1,4 +1,5 @@
 import VueRouter from 'vue-router'
+import routes from '@config/user-preferences/routes'
 
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
 import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'
@@ -16,59 +17,16 @@ import GCodesPage from '@src/views/GCodesPage.vue'
 // User preferences
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 const router = new VueRouter({
+  mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/user_preferences',
       component: UserPreferencesPage,
     },
-    {
-      path: '/theme',
+    ...Object.values(routes).map(route => ({
+      path: route,
       component: UserPreferencesPage,
-    },
-    {
-      path: '/profile',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/email',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/general_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/email_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/sms_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/pushbullet_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/discord_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/telegram_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/pushover_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/slack_notifications',
-      component: UserPreferencesPage,
-    },
-    {
-      path: '/authorized_apps',
-      component: UserPreferencesPage,
-    },
+    })),
   ]
 })
 

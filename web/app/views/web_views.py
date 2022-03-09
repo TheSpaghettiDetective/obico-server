@@ -104,7 +104,7 @@ def printer_control(request, pk):
 
 
 @login_required
-def user_preferences(request, template_dir=None):
+def user_preferences(request, route=None, template_dir=None):
     params = dict(telegram_bot_name=bot_name) if bot_name else dict()
 
     return render(request, get_template_path('user_preferences', template_dir), params)

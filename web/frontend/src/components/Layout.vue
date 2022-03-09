@@ -9,7 +9,7 @@
         <li v-if="isEnt && !user.is_pro" :class="{'active': path === '/ent_pub/pricing/'}">
           <a href="/ent_pub/pricing/" class="primary">
             <i class="fas fa-star"></i>
-            Upgrade
+            Upgrade to Pro
           </a>
         </li>
         <li v-if="user" :class="{'active': path === '/printers/'}">
@@ -32,25 +32,30 @@
             G-Codes
           </a>
         </li>
-        <li>
-          <a v-b-toggle:helpMenu class="dropdown-toggle">
-            <i class="fas fa-question-circle"></i>
-            Docs & Help
-          </a>
-          <b-collapse id="helpMenu">
-            <ul class="list-unstyled">
-               <li>
-                <a href="https://www.thespaghettidetective.com/help/" target="_blank">Docs</a>
-              </li>
-              <li>
-                <a href="https://discord.gg/hsMwGpD" target="_blank">Community</a>
-              </li>
-            </ul>
-          </b-collapse>
-        </li>
       </ul>
       <div class="side-nav-footer">
         <ul class="list-unstyled m-0">
+          <li v-if="isEnt" :class="{'active': path === '/ent_pub/pricing/'}">
+            <a href="/ent_pub/pricing/">
+              <i class="fas fa-dollar-sign"></i>
+              Pricing
+            </a>
+          </li>
+          <li>
+            <a href="https://www.thespaghettidetective.com/help/" target="_blank">
+              <i class="fas fa-question"></i>
+              Help
+            </a>
+          </li>
+          <li>
+            <a href="https://discord.gg/hsMwGpD" target="_blank">
+              <i class="fas fa-comments"></i>
+              Community
+            </a>
+          </li>
+          <li>
+            <hr class="my-0 mx-2">
+          </li>
           <li v-if="user" :class="{'active': path === '/user_preferences/'}">
             <a href="/user_preferences/">
               <i class="fas fa-user"></i>

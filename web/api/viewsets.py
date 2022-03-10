@@ -352,7 +352,7 @@ class OctoPrintTunnelViewSet(
         if not app_name or app_name == OctoPrintTunnel.INTERNAL_APP:
             raise PermissionDenied
 
-        if app_name in ['Polymer', 'OctoPod'] and datetime.date(2022, 3, 6) > datetime.date.today():
+        if app_name == 'Polymer' and datetime.date(2022, 3, 6) > datetime.date.today():
             request.user.tunnel_cap_multiplier = 2
             request.user.save()
 

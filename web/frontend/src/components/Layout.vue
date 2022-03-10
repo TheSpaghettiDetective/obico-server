@@ -59,7 +59,7 @@
           <li v-if="user" :class="{'active': path === '/user_preferences/'}">
             <a href="/user_preferences/">
               <i class="fas fa-user"></i>
-              <span>{{ user.first_name || user.email }}</span>
+              <span class="trim-text">{{ user.first_name || user.email }}</span>
             </a>
           </li>
         </ul>
@@ -226,12 +226,6 @@ export default {
     height: 30px
   .dropdown-toggle
     position: relative
-    span
-      display: inline-block
-      white-space: nowrap
-      overflow: hidden
-      text-overflow: ellipsis
-      width: 100%
     &::after
       display: block
       position: absolute
@@ -240,6 +234,12 @@ export default {
       transform: translateY(-50%)
   .side-nav-footer
     margin-top: auto
+  .trim-text
+    white-space: nowrap
+    text-overflow: ellipsis
+    display: inline-block
+    overflow: hidden
+    width: 100%
 
 .content-wrapper
   width: 100%

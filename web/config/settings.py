@@ -401,6 +401,6 @@ ROLLING_MEAN_SHORT_MULTIPLE = float(
 ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 
 # Event processing
-PRINT_EVENT_HANDLERS = {'ENDED': 'app.tasks.process_print_end_event', 'FILAMENT_CHANGE': 'app.tasks.process_filament_change_event'}
+PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 
 WELL_KNOWN_PATH = None

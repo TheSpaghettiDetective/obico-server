@@ -38,6 +38,15 @@ LOGGER = logging.getLogger(__name__)
 
 
 @shared_task
+def process_print_events(event_id):
+    print_event = PrintEvent.objects.get(id=event_id)
+
+    if print_event.event_type == PrintEvent.FILAMENT_CHANGE:
+        process_filament_change_event(print_event.print_id)
+    elif print_event.event_type == PrintEvent.ENDED:
+        process_print_end_event(print_event.print_id)
+
+
 def process_print_end_event(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
 
@@ -47,7 +56,6 @@ def process_print_end_event(print_id):
         compile_timelapse.delay(print_id)
 
 
-@shared_task
 def process_filament_change_event(print_id):
     _print = Print.objects.select_related('printer__user').get(id=print_id)
     send_print_notification(_print, event_type=PrintEvent.FILAMENT_CHANGE)

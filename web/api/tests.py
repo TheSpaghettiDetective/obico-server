@@ -265,10 +265,10 @@ class AlertTestCase(TestCase):
         self.assertIsNone(self.printer.current_print.paused_at)
 
 
-EVENT_CALLS = [call('app.tasks.process_print_end_event', args=ANY)]
+EVENT_CALLS = [call('app.tasks.process_print_events', args=ANY)]
 
 
-@override_settings(PRINT_EVENT_HANDLERS = {'ENDED': 'app.tasks.process_print_end_event', 'FILAMENT_CHANGE': 'app.tasks.process_filament_change_event'})
+@override_settings(PRINT_EVENT_HANDLER='app.tasks.process_print_events')
 @patch('app.models.celery_app')
 class PrintTestCase(TestCase):
 

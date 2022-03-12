@@ -32,6 +32,10 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 
 ### NGINX
 
+For webcam feed to work, remember to activate Websockets support. Otherwise there will no webfeed when accessing through proxy.
+
+![NginxProxyManagerSettings](docs/img/nginxsettings.png)
+
 Please note that this is not a general guide. Your situation/configuration may be different.
 
 * This configuration does a redirect from port 80 to 443.

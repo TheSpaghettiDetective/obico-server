@@ -6,7 +6,7 @@ const { SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN } = settings()
 
 export default {
   ThemePreferences: {
-    title: 'Color Scheme',
+    title: 'Appearance',
     faIcon: 'fas fa-magic',
     importComponent: () => import('@src/components/user-preferences/ThemePreferences'),
     route: routes.ThemePreferences,

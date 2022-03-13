@@ -161,14 +161,14 @@ Feeling adventurous? [Go advanced](docs/advanced_config.md).
 ## Upgrade server
 ```
     cd TheSpaghettiDetective
-    git checkout release 
+    git checkout release
     git pull
     docker-compose up --build -d
 ```
 *Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
 ## Backup database
 
-Just make a copy of `TheSpaghettiDetective/web/db.sqlite`
+Just make a copy of `TheSpaghettiDetective/web/db.sqlite3`
 
 # How to train your own Machine Learning model (TBD)
 

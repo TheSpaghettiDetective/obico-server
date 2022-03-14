@@ -45,6 +45,7 @@
                 nav-wrapper-class="settings-nav"
                 active-nav-item-class=""
                 content-class="desktop-settings-content"
+                @activate-tab="updateRoute"
               >
                 <template v-for="(value, name) in sections">
                   <b-tab
@@ -157,6 +158,9 @@ export default {
   },
 
   computed: {
+    visibleSections() {
+      return Object.values(sections).filter(item => !item.isHidden)
+    },
     currentRouteComponent() {
       for (const [component, route] of Object.entries(routes)) {
         if (this.$route.path === route) {
@@ -299,6 +303,10 @@ export default {
   },
 
   methods: {
+    updateRoute(newTabIndex) {
+      const section = Object.values(this.visibleSections)[newTabIndex]
+      this.$router.replace({ path: section.route })
+    },
     logout() {
       this.$swal.Confirm.fire({
         title: 'Confirmation',

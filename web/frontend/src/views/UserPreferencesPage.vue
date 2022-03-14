@@ -93,8 +93,8 @@ import axios from 'axios'
 import urls from '@src/lib/server_urls'
 import Layout from '@src/components/Layout.vue'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
-import sections from '@src/config/user-preferences/sections'
-import routes from '@src/config/user-preferences/routes'
+import sections from '@config/user-preferences/sections'
+import routes from '@config/user-preferences/routes'
 
 export default {
   name: 'UserPreferencesPage',

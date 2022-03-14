@@ -1,5 +1,5 @@
 import VueRouter from 'vue-router'
-import routes from '@src/config/user-preferences/routes'
+import routes from '@config/user-preferences/routes'
 
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
 import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'

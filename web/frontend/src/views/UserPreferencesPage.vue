@@ -460,7 +460,7 @@ $container-border-radius: 16px
       font-size: 1.2em
       &.subcategory
         font-size: 1em
-        padding-left: 1em
+        padding-left: 1.625em
       i
         font-size: .8rem
 ::v-deep section:not(:first-child) .section-title
@@ -479,7 +479,7 @@ $container-border-radius: 16px
   border-radius: $container-border-radius 0 0 $container-border-radius
   .subcategory
     a
-      padding-left: 2rem
+      padding-left: 3.125em
       font-size: 0.9em
   .active
     border-radius: 6px

@@ -1,4 +1,4 @@
-import routes from '@config/user-preferences/routes'
+import routes from '@src/config/user-preferences/routes'
 import { settings } from '@src/lib/page_context'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 

@@ -23,7 +23,6 @@ let vueConfig = {
     resolve: {
       alias: {
         '@src': path.join(__dirname, 'src'),
-        '@config': path.join(__dirname, 'src/config'),
         '@static': path.join(__dirname, '../app/static'),
       }
     },

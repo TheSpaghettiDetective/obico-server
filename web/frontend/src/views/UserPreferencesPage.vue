@@ -90,7 +90,7 @@
 
 <script>
 import axios from 'axios'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import Layout from '@src/components/Layout.vue'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 import sections from '@config/user-preferences/sections'

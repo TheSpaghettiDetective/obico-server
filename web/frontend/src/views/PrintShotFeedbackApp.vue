@@ -66,7 +66,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 import Consent from '@src/components/print-shot-feedback/Consent'
 import PrintShotCard from '@src/components/print-shot-feedback/PrintShotCard'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
 import Layout from '@src/components/Layout.vue'
 

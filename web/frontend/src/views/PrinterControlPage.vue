@@ -78,7 +78,7 @@
 
 <script>
 import split from 'lodash/split'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer_comm'

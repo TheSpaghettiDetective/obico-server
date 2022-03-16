@@ -231,7 +231,7 @@ import moment from 'moment'
 import filter from 'lodash/filter'
 import axios from 'axios'
 
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrinter, normalizedGcode } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'

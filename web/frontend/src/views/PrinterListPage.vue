@@ -96,7 +96,7 @@ import reverse from 'lodash/reverse'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedPrinter } from '@src/lib/normalizers'
 
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'

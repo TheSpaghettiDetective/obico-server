@@ -97,7 +97,7 @@ import findIndex from 'lodash/findIndex'
 import MugenScroll from 'vue-mugen-scroll'
 import map from 'lodash/map'
 
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import PrintCard from '@src/components/prints/PrintCard.vue'

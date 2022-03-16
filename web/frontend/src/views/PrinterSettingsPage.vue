@@ -259,7 +259,7 @@ import split from 'lodash/split'
 import VueSlider from 'vue-slider-component'
 
 import { normalizedPrinter } from '@src/lib/normalizers'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NumberInput from '@src/components/NumberInput.vue'
 import Layout from '@src/components/Layout.vue'

@@ -19,7 +19,7 @@
 <script>
 import axios from 'axios'
 
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
 import PrintCard from '@src/components/prints/PrintCard.vue'
 import Layout from '@src/components/Layout.vue'

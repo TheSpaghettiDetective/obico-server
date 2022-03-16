@@ -212,7 +212,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.

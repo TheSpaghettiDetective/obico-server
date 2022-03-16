@@ -108,7 +108,7 @@
 import Layout from '@src/components/Layout.vue'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import axios from 'axios'
 import MugenScroll from 'vue-mugen-scroll'
 import { normalizedGcode } from '@src/lib/normalizers'

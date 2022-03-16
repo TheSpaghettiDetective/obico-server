@@ -197,7 +197,7 @@ import filter from 'lodash/filter'
 // import get from 'lodash/get'
 
 import {getNormalizedP} from '@src/lib/normalizers'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
 import Gauge from '@src/components/Gauge'
 import DetectiveWorking from '@src/components/DetectiveWorking'

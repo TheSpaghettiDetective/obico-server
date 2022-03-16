@@ -77,7 +77,7 @@
 
 <script>
 import axios from 'axios'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 
 export default {
   props: {

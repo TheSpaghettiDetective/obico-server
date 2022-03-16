@@ -22,7 +22,7 @@
 <script>
 import axios from 'axios'
 
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
 
 export default {

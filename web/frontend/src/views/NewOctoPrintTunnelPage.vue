@@ -149,7 +149,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { user, settings} from '@src/lib/page_context'
 

@@ -15,7 +15,7 @@
 import axios from 'axios'
 import split from 'lodash/split'
 import filesize from 'filesize'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import { user } from '@src/lib/page_context'
 import { isLocalStorageSupported } from '@src/lib/utils'
 

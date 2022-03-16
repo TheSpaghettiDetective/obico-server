@@ -33,7 +33,7 @@
 <script>
 import split from 'lodash/split'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import urls from '@src/lib/server_urls'
+import urls from '@config/server-urls'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import StreamingBox from '@src/components/StreamingBox'

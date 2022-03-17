@@ -2,7 +2,7 @@
   <div class="card bg-dark text-white">
     <img
       class="card-img"
-      :src="require('../../../app/static/img/detective-working.gif')"
+      :src="require('@static/img/detective-working.gif')"
       alt="The Detective is still working"
     />
     <div class="card-img-overlay" style="background-color: rgba(0,0,0,0.6);">

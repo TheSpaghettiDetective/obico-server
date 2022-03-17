@@ -1,1 +1,1 @@
-web/frontend/.eslintrc.js
+frontend/.eslintrc.js

@@ -33,4 +33,4 @@ dbshell:
 	docker-compose run --rm web python manage.py dbshell
 
 lint:
-	cd web/frontend && yarn eslint --ext vue --ext js --fix src
+	cd frontend && yarn eslint --ext vue --ext js --fix src

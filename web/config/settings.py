@@ -211,8 +211,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend/static'),
-    os.path.join(BASE_DIR, 'frontend/builds'),
+    os.path.join(BASE_DIR, '../frontend/static'),
+    os.path.join(BASE_DIR, '../frontend/builds'),
 ]
 # WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
@@ -313,7 +313,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 WEBPACK_LOADER_ENABLED = get_bool('WEBPACK_LOADER_ENABLED', False)
 WEBPACK_STATS_PATH = os.path.join(
-    BASE_DIR, 'frontend/webpack-stats.json')
+    BASE_DIR, '../frontend/webpack-stats.json')
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,

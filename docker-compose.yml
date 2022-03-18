@@ -7,7 +7,7 @@ x-web-defaults: &web-defaults
     dockerfile: "Dockerfile${DOCKERFILE_VERSION-}"
   volumes:
     - ./web:/app
-    - ./frontend:/app/frontend
+    - ./frontend:/frontend
   depends_on:
     - redis
   environment:

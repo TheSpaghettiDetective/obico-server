@@ -5,10 +5,10 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-git checkout release && git rebase master
+git checkout release && git merge master
 
-cd web/frontend && yarn && yarn build && cd ../..
+cd frontend && yarn && yarn build && cd ../..
 
-git add web/frontend/builds && git commit -m "Check in built bundles"
+git add frontend/builds && git commit -m "Check in built bundles"
 
 git push && git checkout master

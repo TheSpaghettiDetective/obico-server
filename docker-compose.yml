@@ -7,6 +7,7 @@ x-web-defaults: &web-defaults
     dockerfile: "Dockerfile${DOCKERFILE_VERSION-}"
   volumes:
     - ./web:/app
+    - ./frontend:/frontend
   depends_on:
     - redis
   environment:
@@ -58,7 +59,7 @@ services:
       - "${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}:3334"
     depends_on:
       - ml_api
-    command: sh -c "python manage.py collectstatic -v 2 --noinput && python manage.py migrate && python manage.py runserver --nostatic --noreload 0.0.0.0:3334"
+    command: sh -c 'python manage.py migrate && if test "${WEBPACK_LOADER_ENABLED}" != "True"; then python manage.py collectstatic -v 2 --noinput; fi  && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
 
   tasks:
     <<: *web-defaults

@@ -81,11 +81,11 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-    phone_country_code = models.CharField(max_length=5, null=True, blank=True)
-    pushbullet_access_token = models.CharField(max_length=45, null=True, blank=True)
+    phone_number = models.CharField(max_length=256, null=True, blank=True)
+    phone_country_code = models.CharField(max_length=256, null=True, blank=True)
+    pushbullet_access_token = models.CharField(max_length=256, null=True, blank=True)
     telegram_chat_id = models.BigIntegerField(null=True, blank=True)
-    slack_access_token = models.CharField(max_length=128, null=True, blank=True)
+    slack_access_token = models.CharField(max_length=256, null=True, blank=True)
     consented_at = models.DateTimeField(null=True, blank=True)
     last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
@@ -102,7 +102,7 @@ class User(AbstractUser):
     alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
     discord_webhook = models.CharField(max_length=256, null=True, blank=True)
     print_notification_by_discord = models.BooleanField(null=False, blank=False, default=True)
-    pushover_user_token = models.CharField(max_length=45, null=True, blank=True)
+    pushover_user_token = models.CharField(max_length=256, null=True, blank=True)
     print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
@@ -172,12 +172,12 @@ class Printer(SafeDeleteModel):
         (PAUSE, 'Pause the printer and notify me'),
     )
 
-    name = models.CharField(max_length=200, null=False)
-    auth_token = models.CharField(max_length=28, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=256, null=False)
+    auth_token = models.CharField(max_length=256, unique=True, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     current_print = models.OneToOneField('Print', on_delete=models.SET_NULL, null=True, blank=True, related_name='not_used')
     action_on_failure = models.CharField(
-        max_length=10,
+        max_length=256,
         choices=ACTION_ON_FAILURE,
         default=PAUSE,
     )
@@ -413,7 +413,7 @@ class PrinterCommand(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     command = models.CharField(max_length=2000, null=False, blank=False)
     status = models.CharField(
-        max_length=10,
+        max_length=256,
         choices=COMMAND_STATUSES,
         default=PENDING,
     )
@@ -509,7 +509,7 @@ class Print(SafeDeleteModel):
     poster_url = models.CharField(max_length=2000, null=True)
     prediction_json_url = models.CharField(max_length=2000, db_index=True, null=True)
     alert_overwrite = models.CharField(
-        max_length=20,
+        max_length=256,
         choices=ALERT_OVERWRITE,
         null=True
     )
@@ -558,7 +558,7 @@ class PrintEvent(models.Model):
 
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
-        max_length=20,
+        max_length=256,
         choices=EVENT_TYPE,
         null=True
     )
@@ -581,7 +581,7 @@ class PrintEvent(models.Model):
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
-    share_token = models.CharField(max_length=40, unique=True, null=False, blank=False)
+    share_token = models.CharField(max_length=256, unique=True, null=False, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -613,7 +613,7 @@ class PrintShotFeedback(models.Model):
 
     image_url = models.CharField(max_length=2000, null=False, blank=False)
 
-    answer = models.CharField(max_length=16, choices=ANSWER_CHOICES, blank=True, null=True, db_index=True)
+    answer = models.CharField(max_length=256, choices=ANSWER_CHOICES, blank=True, null=True, db_index=True)
     answered_at = models.DateTimeField(null=True, blank=True, db_index=True)
     persisted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
@@ -637,11 +637,11 @@ class MobileDevice(models.Model):
         unique_together = [['user', 'device_token']]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    platform = models.CharField(max_length=16, null=False, blank=False)
-    app_version = models.CharField(max_length=16, null=False, blank=False)
+    platform = models.CharField(max_length=256, null=False, blank=False)
+    app_version = models.CharField(max_length=256, null=False, blank=False)
     device_token = models.CharField(max_length=256, null=False, blank=False)
     deactivated_at = models.DateTimeField(null=True, blank=True, db_index=True)
-    preferred_timezone = models.CharField(max_length=32, null=True, blank=False)
+    preferred_timezone = models.CharField(max_length=256, null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -662,7 +662,7 @@ def two_hours_later():
 class OneTimeVerificationCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     printer = models.ForeignKey(Printer, on_delete=models.SET_NULL, blank=True, null=True)
-    code = models.CharField(max_length=16, null=False, blank=False, db_index=True)
+    code = models.CharField(max_length=256, null=False, blank=False, db_index=True)
     expired_at = models.DateTimeField(null=False, blank=False, default=two_hours_later, db_index=True)
     verified_at = models.DateTimeField(null=True, blank=True)
 
@@ -678,7 +678,7 @@ class HeaterTracker(models.Model):
         unique_together = ('printer', 'name')
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE)
-    name = models.CharField(max_length=16, blank=False)
+    name = models.CharField(max_length=256, blank=False)
     target = models.FloatField()
     reached = models.BooleanField()
 
@@ -691,7 +691,7 @@ class PrintHeaterTarget(models.Model):
         unique_together = ('print', 'name')
 
     print = models.ForeignKey(Print, on_delete=models.CASCADE)
-    name = models.CharField(max_length=16, blank=False)
+    name = models.CharField(max_length=256, blank=False)
     target = models.FloatField()
     offset = models.FloatField()
 

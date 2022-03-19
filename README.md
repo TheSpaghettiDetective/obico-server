@@ -57,6 +57,7 @@ git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetect
 # Basic server configuration
 
 This is the bare minimum configuration required for the server to be functional.
+
 ## Obtain server's IP address
 
 The Spaghetti Detective server needs to have an IP address that is accessible by OctoPrint. It can be an private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and The Spaghetti Detective server.
@@ -71,6 +72,8 @@ sake, this document assumes the server port is 3334.
 ## Login as Django admin
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`.
+
+*Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 
 2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 

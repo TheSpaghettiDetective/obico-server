@@ -1,0 +1,137 @@
+@import 'theme';
+
+#logreg-forms{
+    margin:10vh auto;
+    padding: 0em 1.5em;
+    background-color: var(--color-surface-secondary);
+    box-shadow: 0 7px 7px rgba(0, 0, 0, 0.12), 0 12px 40px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+    h1 {
+        padding: 24px;
+    }
+
+    form {
+        width: 100%;
+        padding: 1em 0em 3.5em 0em;
+        margin: auto;
+    }
+    .form-control {
+        position: relative;
+        box-sizing: border-box;
+        height: auto;
+        padding: 10px;
+        font-size: 16px;
+
+        background-color: var(--color-input-background);
+        color: var(--color-text-primary);
+
+        &[readonly] {
+            background-color: rgb(255 255 255 / .4);
+            border: 1px solid var(--color-surface-secondary);
+            color: white;
+        }
+    }
+    .form-control:focus {
+        z-index: 2;
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+    .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .form-signin input[type="password"] {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .social-login{
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .social-btn{
+        font-weight: 100;
+        width: 49%;
+        color:white;
+        font-size: 0.9rem;
+    }
+
+    a{
+        color:var(--color-text-primary)
+    }
+
+    #logreg-form .lines{
+        width:200px;
+        border:1px solid red;
+    }
+
+
+    button[type="submit"]{ margin: 1.8em 0em 0.1em 0em; }
+
+    .facebook-btn{
+        background-color:#3976EA;
+
+        &:hover {
+          background-color:#2b66d3;
+        }
+    }
+
+    .google-btn{
+        background-color: #DB4A39;
+
+        &:hover {
+          background-color: #ce3c2c;
+        }
+    }
+
+    .form-signup .social-btn{ width:210px; }
+
+    .form-signup input { margin-bottom: 2px;}
+
+    .form-signup .social-login{
+        width:210px !important;
+        margin: 0 auto;
+    }
+
+    .submit{
+        background: -webkit-linear-gradient(0deg,  #2dfbff 0%, #3c96ff 100%);
+        border-radius: 25px;
+        color: #fff;
+    }
+}
+  /* Mobile */
+
+  @media screen and (max-width:500px){
+      #logreg-forms{
+        padding: 0em 0.75em;
+
+       .social-login{
+          margin:0 auto;
+          margin-bottom: 10px;
+          flex-direction: column;
+      }
+      .social-btn{
+          font-size: 1.3rem;
+          font-weight: 100;
+          width: 100%;
+          color:white;
+      }
+      .social-btn:nth-child(1){
+          margin-bottom: 5px;
+      }
+      .social-btn span{
+          display: none;
+      }
+       .facebook-btn:after{
+          content:'Facebook';
+      }
+
+       .google-btn:after{
+          content:'Google';
+      }
+    }
+  }

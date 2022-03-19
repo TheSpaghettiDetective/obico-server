@@ -28,3 +28,7 @@ web/frontend/builds/frontend/css/*.css     binary
 web/frontend/builds/frontend/css/*.css.map binary
 web/frontend/builds/frontend/js/*.js       binary
 web/frontend/builds/frontend/js/*.js.map   binary
+frontend/builds/frontend/css/*.css     binary
+frontend/builds/frontend/css/*.css.map binary
+frontend/builds/frontend/js/*.js       binary
+frontend/builds/frontend/js/*.js.map   binary

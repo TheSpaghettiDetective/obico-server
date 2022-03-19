@@ -242,6 +242,12 @@ export default {
   },
 
   watch: {
+    // FIXME: come up with better solution to make android webview handle updateNavigationState
+    currentRouteComponent() {
+      if (this.useMobileLayout) {
+        this.$router.go()
+      }
+    },
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('first_name')

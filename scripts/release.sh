@@ -5,7 +5,7 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-git checkout release && git rebase master
+git checkout release && git merge master
 
 cd frontend && yarn && yarn build && cd ../..
 

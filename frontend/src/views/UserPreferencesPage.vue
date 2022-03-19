@@ -95,6 +95,7 @@ import Layout from '@src/components/Layout.vue'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
+import { mobilePlatform } from '@src/lib/page_context'
 
 export default {
   name: 'UserPreferencesPage',
@@ -244,7 +245,7 @@ export default {
   watch: {
     // FIXME: come up with better solution to make android webview handle updateNavigationState
     currentRouteComponent() {
-      if (this.useMobileLayout) {
+      if (mobilePlatform() === 'android') {
         this.$router.go()
       }
     },

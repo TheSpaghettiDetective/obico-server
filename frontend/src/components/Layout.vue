@@ -58,8 +58,8 @@
           </li>
           <li v-if="user" :class="{'active': path === '/user_preferences/'}">
             <a href="/user_preferences/">
-              <i class="fas fa-user"></i>
-              <span class="trim-text">{{ user.first_name || user.email }}</span>
+              <i class="fas fa-cog"></i>
+              <span class="trim-text">Preferences</span>
             </a>
           </li>
         </ul>

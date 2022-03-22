@@ -12,8 +12,8 @@ x-web-defaults:
     - redis
   environment:
     EMAIL_HOST: "smtp.gmail.com"
-    EMAIL_HOST_USER: "jreed1701@gmail.com"
-    EMAIL_HOST_PASSWORD: "ftjlldwnngtelrxi"
+    EMAIL_HOST_USER: "something@gmail.com"
+    EMAIL_HOST_PASSWORD: "abc123"
     EMAIL_PORT: 587
     EMAIL_USE_TLS: 'True'
     DEFAULT_FROM_EMAIL: 'tsd@local'

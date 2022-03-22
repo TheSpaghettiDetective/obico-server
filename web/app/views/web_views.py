@@ -1,6 +1,7 @@
 import os
 from binascii import hexlify
 import re
+import json
 
 from django.shortcuts import render, redirect
 from django.views import View
@@ -188,6 +189,19 @@ def upload_gcode_file(request):
         _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
         gcode_file.url = ext_url
         gcode_file.save()
+
+        return JsonResponse(dict(status='Ok'))
+    else:
+        return render(request, 'upload_print.html')
+
+@login_required
+def remove_gcode_file(request):
+    if request.method == 'POST':
+        
+        body_unicode = request.body.decode('utf-8')
+        body_data = json.loads(body_unicode)
+
+        print(body_data)
 
         return JsonResponse(dict(status='Ok'))
     else:

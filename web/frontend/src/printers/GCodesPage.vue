@@ -96,6 +96,8 @@
                 <div v-if="noMoreData" class="text-center p-2">End of your G-Codes list.</div>
                 <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
               </mugen-scroll>
+
+              <button type="button" class="btn btn-block" @click="removeItem(1234)"> TEST </button>
             </div>
           </b-col>
         </b-row>
@@ -109,11 +111,15 @@
   import vue2Dropzone from 'vue2-dropzone'
   import 'vue2-dropzone/dist/vue2Dropzone.min.css'
   import urls from '@lib/server_urls'
+  import PrinterComm from '@lib/printer_comm'
+  import WebRTCConnection from '@lib/webrtc'
   import axios from 'axios'
   import MugenScroll from 'vue-mugen-scroll'
-  import { normalizedGcode } from '@lib/normalizers'
+  import { normalizedPrinter, normalizedGcode } from '@lib/normalizers'
   import { user } from '@lib/page_context'
   import SearchInput from '@common/SearchInput.vue'
+  import filter from 'lodash/filter'
+  import get from 'lodash/get'
 
   const SORTING = {
     NAME: 1,
@@ -137,6 +143,14 @@
     },
 
     props: {
+      printer: {
+        type: Object,
+        required: true
+      },
+      isProAccount: {
+        type: Boolean,
+        required: true
+      },
       csrf: {
         type: String,
         requeired: true,
@@ -162,6 +176,7 @@
         currentPage: 1,
         loading: false,
         noMoreData: false,
+        webrtc: WebRTCConnection(this.isProAccount),
       }
     },
 
@@ -226,9 +241,39 @@
     created() {
       this.user = user()
       this.fetchGCodes()
+
+      console.log('CREATED STARTED')
+
+      console.log(this.printer)
+
+      this.printerComm = PrinterComm(
+        this.printer.id,
+        urls.printerWebSocket(this.printer.id),
+        (data) => {
+          this.$emit('PrinterUpdated', this.updatedPrinter(data))
+        },
+        (printerStatus) => {
+          this.$emit('PrinterUpdated', this.updatedPrinter(
+              {status: printerStatus.octoprint_data}))
+        }
+      )
+
+      console.log('GOT HERE!')
+
+      console.log('*************************')
+      console.log(this.printerComm)
+      console.log('*************************')
+
+      this.printerComm.connect()
+
+      this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+      this.printerComm.setWebRTC(this.webrtc)
     },
 
     methods: {
+      updatedPrinter(newData) {
+        return normalizedPrinter(newData, this.printer)
+      },
       updateSearch(search) {
         this.searchText = search
       },
@@ -280,14 +325,31 @@
         }
       },
 
+      getGcodeFiles(){
+        axios
+          .get(
+            urls.gcodes(1, 1000),
+          ).then((response) => {
+            let gcodeFiles = [...response.data.results.map(gcode => normalizedGcode(gcode))]
+            return gcodeFiles
+          })
+      },
+
       removeItem(id) {
+
+        //let file_info = axios.get(urls.gcode(id))
+
+        let gcodeFiles = this.getGcodeFiles()
+
         axios
           .delete(urls.gcode(id), )
           .then(() => {
             for (let i = 0; i < this.gcodes.length; i++) {
+
               const deleted = this.gcodes[i]
 
               if (deleted.id === id) {
+
                 this.gcodes.splice(i, 1)
 
                 // Toast for user
@@ -298,6 +360,49 @@
                   // icon: 'success',
                   html: toastHtml,
                 })
+
+                console.log(this.printerComm)
+
+                /*
+                axios
+                  .post(
+                    '/gcodes/remove', 
+                    {'file_name': deleted.filename,
+                     'file_url': file_info.file_url,
+                     'gcode_id': id}, 
+                    {
+                    headers: {
+                      'X-CSRFToken': this.csrf,
+                      'content-type': 'text/json'
+                    }
+                  })
+                */
+
+                this.printerComm.passThruToPrinter(
+                  { func: 'delete_file',
+                    target: 'file_deleter',
+                    args: filter(gcodeFiles, { id: deleted.id })
+                  },
+                  (err, ret) => {
+                    if (err || ret.error) {
+                      this.$swal.Toast.fire({
+                        icon: 'error',
+                        title: err ? err : ret.error,
+                      })
+                      return
+                    }
+
+                    let checkPrinterStatus = () => {
+                      if (get(this.printer, 'status.state.text') == 'Operational') {
+                        setTimeout(checkPrinterStatus, 1000)
+                      } else {
+                        this.$swal.close()
+                      }
+                    }
+                    checkPrinterStatus()
+                  }
+                )
+
               }
             }
           })

@@ -113,6 +113,9 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   }
 
   self.passThruToPrinter = function(msg, callback) {
+    console.log('**************************************************')
+    console.log(msg)
+    console.log('**************************************************')
     if (self.canSend()) {
       var refId = Math.random().toString()
       assign(msg, {ref: refId})

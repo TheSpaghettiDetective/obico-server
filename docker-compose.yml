@@ -1,6 +1,7 @@
 version: '2.4'
 
-x-web-defaults: &web-defaults
+x-web-defaults:
+  &web-defaults
   restart: unless-stopped
   build:
     context: web
@@ -10,13 +11,13 @@ x-web-defaults: &web-defaults
   depends_on:
     - redis
   environment:
-    EMAIL_HOST:     # -> such as 'smtp.gmail.com'
-    EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
-    EMAIL_HOST_PASSWORD:    # -> your email account password
-    EMAIL_PORT: 587  # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
-    EMAIL_USE_TLS: 'True' # Change it to 'False' if your email provider doesn't use TLS, which is uncommon
-    DEFAULT_FROM_EMAIL: 'changeme@example.com'
-    DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
+    EMAIL_HOST: "smtp.gmail.com"
+    EMAIL_HOST_USER: "something@gmail.com"
+    EMAIL_HOST_PASSWORD: "abc123"
+    EMAIL_PORT: 587
+    EMAIL_USE_TLS: 'True'
+    DEFAULT_FROM_EMAIL: 'tsd@local'
+    DEBUG: 'False' # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
     SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
     SITE_IS_PUBLIC: 'False' # set it to 'True' if the site configured in django admin is accessible from the internet
     SOCIAL_LOGIN: 'False'
@@ -24,10 +25,9 @@ x-web-defaults: &web-defaults
     DATABASE_URL: 'sqlite:////app/db.sqlite3'
     INTERNAL_MEDIA_HOST: 'http://web:3334'
     ML_API_HOST: 'http://ml_api:3333'
-    ACCOUNT_ALLOW_SIGN_UP: 'False'  # -> set to 'True' if you want to open sign up form
+    ACCOUNT_ALLOW_SIGN_UP: 'False' # -> set to 'True' if you want to open sign up form
     WEBPACK_LOADER_ENABLED:
     OCTOPRINT_TUNNEL_PORT_RANGE: '${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}'
-
     #### Optional env vars below this line ###
     #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
     #TWILIO_AUTH_TOKEN:
@@ -44,21 +44,21 @@ services:
     build:
       context: ml_api
     environment:
-        DEBUG: 'True'
-        FLASK_APP: 'server.py'
-        #ML_API_TOKEN:
-        #HAS_GPU: 'False'
+      DEBUG: 'True'
+      FLASK_APP: 'server.py'
+      #ML_API_TOKEN:
+      #HAS_GPU: 'False'
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:
     <<: *web-defaults
     hostname: web
     ports:
-      - "3334:3334"
+      - "3000:3334"
       - "${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}:3334"
     depends_on:
       - ml_api
-    command: sh -c "python manage.py collectstatic -v 2 --noinput && python manage.py migrate && python manage.py runserver --nostatic --noreload 0.0.0.0:3334"
+    command: sh -c "python manage.py collectstatic -v 2 --noinput && python manage.py migrate && python manage.py runserver --nostatic 0.0.0.0:3334"
 
   tasks:
     <<: *web-defaults
@@ -68,3 +68,19 @@ services:
   redis:
     restart: unless-stopped
     image: redis:5.0-alpine
+
+  # octoprint:
+  #   image: octoprint/octoprint
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8080:80
+  #   volumes:
+  #     - octoprint:/octoprint
+
+volumes:
+  octoprint:
+
+networks: 
+  default: 
+    external: 
+      name: tsd_overlay

@@ -26,6 +26,7 @@ urlpatterns = [
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
     path('gcodes/', web_views.gcodes),
     path('gcodes/upload/', web_views.upload_gcode_file,),
+    path('gcodes/remove/', web_views.remove_gcode_file,),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
 

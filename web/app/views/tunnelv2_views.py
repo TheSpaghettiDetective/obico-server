@@ -324,6 +324,9 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         ):
             cookie += '; Secure'
 
+        if 'Expires=' not in cookie and 'Max-Age=' not in cookie:
+            cookie += '; Max-Age=7776000'  # 3 months
+
         resp['Set-Cookie'] = cookie
 
     if data['response'].get('compressed', False):

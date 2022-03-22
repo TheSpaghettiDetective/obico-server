@@ -1,1 +1,0 @@
-frontend/.eslintrc.js

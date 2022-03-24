@@ -28,7 +28,7 @@ The following software is required before you start installing the server:
 
 - Docker and Docker-compose. But you don't have to understand how Docker or Docker-compose works.
     - Install Docker ([Windows](https://docs.docker.com/docker-for-windows/install/), [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/), [Fedora](https://docs.docker.com/engine/install/fedora/), [CentOS](https://docs.docker.com/engine/install/centos/), [Mac](https://docs.docker.com/docker-for-mac/install/)). **Important:** If your server has an old Docker version, please follow the instructions in these links to upgrade to the latest version, otherwise you may run into all kinds of weird problems.
-    - [Install Docker-compose](https://docs.docker.com/compose/install/). You need Docker-compose 2.0 or higher version.
+    - [Install Docker-compose](https://docs.docker.com/compose/install/). You need Docker-compose V2 or higher version.
 - git ([how to install](https://git-scm.com/downloads)).
 
 ### Email delivery

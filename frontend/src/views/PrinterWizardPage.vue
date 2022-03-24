@@ -39,7 +39,7 @@
                       <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
                     </div>
                     <div class="mt-5">
-                      <a href="/user_preferences/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
+                      <a href="/user_preferences/sms_notifications/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
                     </div>
                     <div>
                       <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>

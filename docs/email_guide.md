@@ -19,12 +19,12 @@ For Outlook accounts you can verify your SMTP settings needed under your email a
       EMAIL_USE_TLS: 'True' # -> Still set to True even for Outlook with STARTTLS
       DEFAULT_FROM_EMAIL: 'changeme@example.com'  # -> For Outlook set this to match EMAIL_HOST_USER: field, otherwise it is recommended not to change (Seems to work for Gmail without issue)
       ```
-##GMail
+## GMail
 Without using 2FA you will need to make sure that you enable: Less secure app access from Gmail -> Manage My Account -> Security.
 
 With 2FA enabled, create an App password in: Gmail -> Manage My Account -> Security -> Signing Into Google -> App Passwords. Then use this as your value for `EMAIL_HOST_PASSWORD`.
 
-##Outlook
+## Outlook
 Without using 2FA you can just use your normal login credentials.
 
 With 2FA enabled, you can create an App password under: My Microsoft Account -> Security -> Security Dashboard -> Advanced Security Options -> App Passwords.

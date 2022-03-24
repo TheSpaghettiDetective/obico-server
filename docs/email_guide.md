@@ -32,7 +32,7 @@ Without using 2FA you can just use your normal login credentials.
 
 With 2FA enabled, you can create an App password under: My Microsoft Account -> Security -> Security Dashboard -> Advanced Security Options -> App Passwords.
 
-Once you have your settings correct it is now time to put them to the test!
+Once you have your settings correct in your `docker-compose.yml` file, it is now time to put them to the test!
  
 ## Test if your email server configuration works
 

@@ -45,7 +45,7 @@ With 2FA enabled, you can create an App password under: My Microsoft Account -> 
 ![Send test email](img/send_test_email.png)
 
 ## Troubleshooting with the test email
-!!Please note to correctly re-build your Docker container with the command ```docker-compose up --build -d``` (use sudo in front for Linux) when making changes during troubleshooting to the `docker-compose.yml` file otherwise your changes may not take effect!!
+!! Please note to correctly re-build your Docker container with the command ```docker-compose up --build -d``` (use sudo in front for Linux) when making changes during troubleshooting to the `docker-compose.yml` file otherwise your changes may not take effect !!
 
 1. If you get a Server Error (500) it is likely that something is wrong with the configuration such as incorrect credentials, port, etc. Check the logs on your web container to see what may have been rejected.
 

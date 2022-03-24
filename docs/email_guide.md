@@ -10,7 +10,7 @@ Typically for email accounts with 2FA (2 Factor Authentication) you will have to
 
 2. Change the lines to the correct values of your email provider, make sure to surround your information in single quotes except for the EMAIL_PORT, which will NOT work when used with quotes.
 NOTE: If using an Outlook account the: `DEFAULT_FROM_EMAIL:` needs to be changed to match the email it is being sent from: `EMAIL_HOST_USER:`
-For Outlook accounts you can verify your SMTP settings needed under your email account in Settings -> Sync. There are several for Outlook.
+For Outlook there are a few different SMTP settings, you can verify which are needed for your email under your: Account -> Settings -> Sync.
       ```
       EMAIL_HOST: 'smtp.gmail.com'    # -> such as smtp.gmail.com
       EMAIL_HOST_USER: 'user'  # -> such as your email address for a Gmail account

@@ -14,14 +14,14 @@ NOTE: If using an Outlook account the: `DEFAULT_FROM_EMAIL:` needs to be set to 
 
 For Outlook there are a few different SMTP settings, you can verify which are needed for your email under your: Account -> Settings -> Sync.
 
-      ```
+      
       EMAIL_HOST: 'smtp.gmail.com'    # -> such as smtp.gmail.com
       EMAIL_HOST_USER: 'user@example.com'  # -> such as your email address for a Gmail account
       EMAIL_HOST_PASSWORD: 'fakepassword'  # -> your email account password, or your app password
       EMAIL_PORT: 587   # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
       EMAIL_USE_TLS: 'True' # -> Still set to True even for Outlook with STARTTLS
       DEFAULT_FROM_EMAIL: 'changeme@example.com'  # -> For Outlook set this to match EMAIL_HOST_USER: field, otherwise it is recommended not to change (Seems to work for Gmail without issue)
-      ```
+      
 ### Gmail
 Without using 2FA you will need to make sure that you enable: Less secure app access from Gmail -> Manage My Account -> Security.
 

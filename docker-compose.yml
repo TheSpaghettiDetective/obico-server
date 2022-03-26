@@ -37,6 +37,8 @@ x-web-defaults: &web-defaults
     #SENTRY_DSN:
     #TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
     #PUSHOVER_APP_TOKEN: https://pushover.net/api#registration for how to register an app api token
+    #SLACK_CLIENT_ID:
+    #SLACK_CLIENT_SECRET:
 
 services:
   ml_api:

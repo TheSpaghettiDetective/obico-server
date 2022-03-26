@@ -14,6 +14,7 @@ from django.http import Http404
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
+import requests
 
 from allauth.account.views import LoginView
 
@@ -210,3 +211,23 @@ def health_check(request):
     User.objects.all()[:1]
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
+
+
+# Slack setup callback
+@login_required
+def slack_oauth_callback(request):
+    code = request.GET['code']
+    r = requests.get(
+        url='https://slack.com/api/oauth.v2.access',
+        params={
+            'code': code,
+            'client_id': settings.SLACK_CLIENT_ID,
+            'client_secret': settings.SLACK_CLIENT_SECRET
+        })
+    r.raise_for_status()
+
+    user = request.user
+    user.slack_access_token = r.json().get('access_token')
+    user.save()
+
+    return redirect('/user_preferences/slack_notifications/')

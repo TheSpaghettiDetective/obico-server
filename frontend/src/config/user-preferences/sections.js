@@ -2,7 +2,7 @@ import routes from '@config/user-preferences/routes'
 import { settings } from '@src/lib/page_context'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 
-const { SLACK_CLIENT_ID, PUSHOVER_APP_TOKEN } = settings()
+const { PUSHOVER_APP_TOKEN } = settings()
 
 export default {
   ThemePreferences: {
@@ -83,6 +83,5 @@ export default {
     isSubcategory: true,
     importComponent: () => import('@src/components/user-preferences/SlackNotifications'),
     route: routes.SlackNotifications,
-    isHidden: !SLACK_CLIENT_ID,
   },
 }

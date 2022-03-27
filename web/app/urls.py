@@ -18,6 +18,7 @@ urlpatterns = [
     path('user_preferences/', web_views.user_preferences),
     path('user_preferences/<route>/', web_views.user_preferences),
     path('test_telegram', web_views.test_telegram),
+    path('test_slack', web_views.test_slack),
     path('unsubscribe_email/', web_views.unsubscribe_email),
     path('prints/<int:pk>/cancel/', web_views.cancel_print),
     path('prints/<int:pk>/resume/', web_views.resume_print),

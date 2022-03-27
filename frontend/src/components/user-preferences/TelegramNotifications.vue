@@ -107,6 +107,7 @@ export default {
           this.$emit('errorAlert', 'Telegram test failed.')
           // this.errorAlert('Telegram test failed.')
           console.log(err)
+          event.target.classList.remove('disabled')
         })
     }
   },

@@ -22,17 +22,24 @@
       <br /><br />
       <p>Q: How do I remove The Spaghetti Detective Slack App from the entire workspace?</p>
       <p>A: Please follow the instructions in <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">this Slack help doc</a>.</p>
+      <br />
+      <h2>Test Notifications</h2>
+      <br />
+      <div class="btn btn-sm btn-primary float-left" @click="onSlackTest($event)">Test Slack Notification</div>
+      <br />
+      <br />
     </div>
     <div v-else>
       <p class="lead">Click the button below to add The Spaghetti Detective Slack App into your workspace:</p>
-      <a :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read`">
-        <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
+      <a :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read&redirect_uri=${redirectUri}`">
+        <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
       </a>
     </div>
   </section>
 </template>
 
 <script>
+import axios from '@src/lib/axios-csrf'
 import { settings } from '@src/lib/page_context'
 const { SLACK_CLIENT_ID } = settings()
 
@@ -49,6 +56,32 @@ export default {
   data() {
     return {
       slackClientId: SLACK_CLIENT_ID,
+    }
+  },
+
+  computed: {
+    redirectUri() {
+      const defaultRedirectHost = 'app.thespaghettidetective.com'
+      const url = window.location
+      let host = [defaultRedirectHost, 'app-stg.thespaghettidetective.com'].includes(url.host) ? url.host : defaultRedirectHost
+      return `https://${host}/slack_oauth_callback/`
+    }
+  },
+
+  methods: {
+    onSlackTest(event) {
+      event.target.classList.add('disabled')
+
+      return axios
+        .post('/test_slack')
+        .then(() => {
+          event.target.classList.add('btn-success')
+        })
+        .catch(err => {
+          this.$emit('errorAlert', 'Slack test failed.')
+          console.log(err)
+          event.target.classList.remove('disabled')
+        })
     }
   },
 }

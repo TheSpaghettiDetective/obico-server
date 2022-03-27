@@ -127,6 +127,45 @@ def test_telegram(request):
 
     return JsonResponse(dict(status='API error'), status=400)
 
+@csrf_exempt
+@login_required
+def test_slack(request):
+    if request.method == 'POST':
+        user = request.user
+        if user.slack_access_token:
+            req = requests.get(
+            url='https://slack.com/api/conversations.list',
+            params={
+                'token': user.slack_access_token,
+                'types': 'public_channel,private_channel'
+            })
+        req.raise_for_status()
+        slack_channel_ids = [c['id'] for c in req.json().get('channels') or [] if c['is_member']]
+        for slack_channel_id in slack_channel_ids:
+            msg = {
+                "channel": slack_channel_id,
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "Test from TSD"
+                        }
+                    }
+                ]
+            }
+
+            req = requests.post(
+                url='https://slack.com/api/chat.postMessage',
+                headers={'Authorization': f'Bearer {user.slack_access_token}'},
+                json=msg
+            )
+            req.raise_for_status()
+
+            return JsonResponse(dict(status='Ok'))
+
+    return JsonResponse(dict(status='API error'), status=400)
+
 
 def unsubscribe_email(request):
     unsub_token = request.GET['unsub_token']

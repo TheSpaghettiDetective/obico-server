@@ -34,6 +34,7 @@
                     :saving="saving"
                     :config="config"
                     @updateSetting="updateSetting"
+                    @errorAlert="errorAlert"
                   ></component>
                 </div>
               </div>
@@ -65,6 +66,7 @@
                       :saving="saving"
                       :config="config"
                       @updateSetting="updateSetting"
+                      @errorAlert="errorAlert"
                     ></component>
                   </b-tab>
                 </template>

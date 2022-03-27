@@ -1,5 +1,5 @@
 <template>
-  <section class="slack">
+  <section>
     <h2 class="section-title">Email</h2>
     <div class="row">
       <div class="col col-form-label">

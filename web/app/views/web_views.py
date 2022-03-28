@@ -266,7 +266,10 @@ def slack_oauth_callback(request):
     r.raise_for_status()
 
     user = request.user
-    user.slack_access_token = r.json().get('access_token')
+    response = r.json()
+    print("[slack oauth response]: ", response)
+    user.slack_access_token = response.get('access_token')
     user.save()
+    print("[user's slack access token]: ", user.slack_access_token)
 
     return redirect('/user_preferences/slack_notifications/')

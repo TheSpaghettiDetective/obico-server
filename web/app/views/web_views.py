@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 import requests
+from pprint import pprint
 
 from allauth.account.views import LoginView
 
@@ -256,6 +257,7 @@ def health_check(request):
 @login_required
 def slack_oauth_callback(request):
     code = request.GET['code']
+
     r = requests.get(
         url='https://slack.com/api/oauth.v2.access',
         params={
@@ -265,11 +267,21 @@ def slack_oauth_callback(request):
         })
     r.raise_for_status()
 
+    pprint("[code]: " + code)
+    pprint("[client_id]: " + settings.SLACK_CLIENT_ID)
+    pprint("[client_secret]: " + settings.SLACK_CLIENT_SECRET)
+    pprint(r)
+
     user = request.user
     response = r.json()
-    print("[slack oauth response]: ", response)
+
+    pprint("[response]")
+    pprint(response)
+
     user.slack_access_token = response.get('access_token')
     user.save()
-    print("[user's slack access token]: ", user.slack_access_token)
+
+    pprint("[user.slack_access_token]")
+    pprint(user.slack_access_token)
 
     return redirect('/user_preferences/slack_notifications/')

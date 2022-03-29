@@ -7,7 +7,7 @@ import {guideSidebar} from '../../../sidebars'
 const GroupedGuides = [
   {
     groupTitle: 'Getting Started',
-    Svg: require('../../../static/img/guides/home/getting-started.svg').default,
+    Svg: require('../../../static/img/user_guides/home/getting-started.svg').default,
     links: [
       {
         title: 'Set up The Spaghetti Detective in 56 seconds',
@@ -17,42 +17,42 @@ const GroupedGuides = [
   },
   {
     groupTitle: 'Failure Detection',
-    Svg: require('../../../static/img/guides/home/failure-detection.svg').default,
+    Svg: require('../../../static/img/user_guides/home/failure-detection.svg').default,
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Failure Detection',
   },
   {
     groupTitle: 'Use The App',
-    Svg: require('../../../static/img/guides/home/use-the-app.svg').default,
+    Svg: require('../../../static/img/user_guides/home/use-the-app.svg').default,
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Use The App',
   },
   {
     groupTitle: 'Webcam Streaming',
-    Svg: require('../../../static/img/guides/home/webcam-streaming.svg').default,
+    Svg: require('../../../static/img/user_guides/home/webcam-streaming.svg').default,
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Webcam Streaming',
   },
   {
     groupTitle: 'Account & Subscription',
-    Svg: require('../../../static/img/guides/home/account.svg').default,
+    Svg: require('../../../static/img/user_guides/home/account.svg').default,
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Account & Subscription',
   },
   {
     groupTitle: 'Troubleshooting Guides',
-    Svg: require('../../../static/img/guides/home/troubleshooting.svg').default,
+    Svg: require('../../../static/img/user_guides/home/troubleshooting.svg').default,
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Troubleshooting Guides',
   },
   {
     groupTitle: 'Get Help',
-    Svg: require('../../../static/img/guides/home/get-help.svg').default,
+    Svg: require('../../../static/img/user_guides/home/get-help.svg').default,
     links: [
       {
         title: 'Get help from a human',

@@ -38,7 +38,7 @@ const LinksList = [
 ];
 
 function GuideLink({title, route}) {
-  const Icon = require('../../../static/img/guide-icon.svg').default;
+  const Icon = require('../../../static/img/guides/home/guide-icon.svg').default;
 
   return (
     <div className={clsx('col col--6')}>
@@ -51,7 +51,7 @@ function GuideLink({title, route}) {
 }
 
 export default function FeaturedGuides() {
-  const Icon = require('../../../static/img/get-started.svg').default;
+  const Icon = require('../../../static/img/guides/home/get-started.svg').default;
   return (
     <section className={styles.wrapper}>
        <div className="container">

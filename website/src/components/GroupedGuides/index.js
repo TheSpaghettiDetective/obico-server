@@ -1,0 +1,130 @@
+import React from 'react';
+import clsx from 'clsx';
+import styles from './index.module.css';
+import {guideSidebar} from '../../../sidebars'
+
+
+const GroupedGuides = [
+  {
+    groupTitle: 'Getting Started',
+    Svg: require('../../../static/img/guide-groups-icons/getting-started.svg').default,
+    links: [
+      {
+        title: 'Set up The Spaghetti Detective in 56 seconds',
+        route: '/docs/octoprint-plugin-setup',
+      },
+    ]
+  },
+  {
+    groupTitle: 'Failure Detection',
+    Svg: require('../../../static/img/guide-groups-icons/failure-detection.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Failure Detection',
+  },
+  {
+    groupTitle: 'Use The App',
+    Svg: require('../../../static/img/guide-groups-icons/use-the-app.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Use The App',
+  },
+  {
+    groupTitle: 'Webcam Streaming',
+    Svg: require('../../../static/img/guide-groups-icons/webcam-streaming.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Webcam Streaming',
+  },
+  {
+    groupTitle: 'Account & Subscription',
+    Svg: require('../../../static/img/guide-groups-icons/account.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Account & Subscription',
+  },
+  {
+    groupTitle: 'Troubleshooting Guides',
+    Svg: require('../../../static/img/guide-groups-icons/troubleshooting.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Troubleshooting Guides',
+  },
+  {
+    groupTitle: 'Get Help',
+    Svg: require('../../../static/img/guide-groups-icons/get-help.svg').default,
+    links: [
+      {
+        title: 'Get help from a human',
+        route: '/docs/contact-us-for-support',
+      },
+    ]
+  },
+]
+
+GroupedGuides.forEach(group => {
+  if (!group.links.length && group.loadFromSidebar && group.labelInSidebar) {
+    let documents = guideSidebar.filter((category) => {
+      if (typeof category !== 'object' || category === null) {
+        return false;
+      }
+      
+      return category.label === group.labelInSidebar
+    })
+
+    if (documents.length) {
+      documents = documents[0].items
+    } else {
+      return
+    }
+
+    documents.forEach(docPath => {
+      addDocToGroup(group, docPath)
+    })
+  }
+});
+
+function addDocToGroup(group, docPath) {
+  if (typeof docPath === 'string') {
+    const docContents = require(`../../../docs/${docPath}.md`)
+    const docTitle = docContents.metadata.title
+    group.links.push({
+      title: docTitle,
+      route: `/docs/${docPath}`,
+    })
+  } else if (docPath.type === 'category') {
+    docPath.items.forEach(subDocPath => {
+      addDocToGroup(group, subDocPath)
+    })
+  }
+}
+
+function GuideLink({title, route}) {
+  return <a href={route} className={clsx('guide-link', styles.guideLink)}>{title}</a>;
+}
+
+function GuideGroup({Svg, groupTitle, index}) {
+  return (
+    <div className={styles.guideGroup}>
+      <div className={styles.groupInfo}>
+        <Svg className={styles.groupIcon} alt={groupTitle} />
+        <h3 className={styles.groupTitle}>{groupTitle}</h3>
+      </div>
+      <div className={styles.groupLinks}>
+        {GroupedGuides[index].links.map((props, idx) => (
+          <GuideLink key={idx} {...props} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ThematicGuides() {
+  return (
+    <section className={styles.wrapper}>
+      {GroupedGuides.map((props, idx) => (
+        <GuideGroup key={idx} {...props} index={idx} />
+      ))}
+    </section>
+  );
+}

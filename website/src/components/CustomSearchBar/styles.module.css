@@ -1,0 +1,57 @@
+.searchBox {
+  margin: 1.5rem auto 0;
+  height: 3rem;
+  padding: 0 1rem 0 3rem;
+  background-color: #fff;
+  border-radius: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ifm-color-gray-600);
+  transition: all ease-out .2s;
+  position: relative;
+  max-width: 26rem;
+}
+
+html[data-theme='dark'] .searchBox {
+  background-color: var(--ifm-color-gray-900);
+}
+
+.searchBox:hover {
+  cursor: pointer;
+  color: var(--docsearch-text-color);
+}
+
+.searchIcon {
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
+  margin-right: .5rem;
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.searchPlaceholder {
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+.desktopPlaceholder {
+  display: block;
+}
+
+.mobilePlaceholder {
+  display: none;
+}
+
+@media (max-width: 996px) {
+  .mobilePlaceholder {
+    display: block;
+    text-align: left;
+  }
+  .desktopPlaceholder {
+    display: none;
+  }
+}

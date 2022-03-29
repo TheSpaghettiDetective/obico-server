@@ -1,0 +1,88 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+.wrapper {
+  max-width: 1000px;
+  margin: 4rem auto;
+}
+
+@media (max-width: 996px) {
+  .wrapper {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+
+.guideGroup {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--ifm-color-gray-300);
+  padding: 4rem 0;
+}
+
+html[data-theme=dark] .guideGroup {
+  border-color: var(--ifm-color-gray-800);
+}
+
+.guideGroup:last-child {
+  border-bottom: none;
+}
+
+.groupInfo {
+  flex: 0 0 20rem;
+  text-align: center;
+  margin-right: 1rem;
+}
+
+.groupTitle {
+  font-weight: 500;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+
+.groupLinks {
+  flex: 1;
+}
+
+@media (max-width: 996px) {
+  .guideGroup {
+    flex-direction: column;
+    padding: 3rem 1rem;
+  }
+
+  .groupInfo {
+    width: 100%;
+    flex: 1;
+    margin-right: 0;
+    margin-bottom: 1.75rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+  }
+
+  .groupIcon {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 1rem;
+  }
+
+  .groupTitle {
+    margin-top: 0;
+  }
+
+  .groupLinks {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+
+.guideLink {
+  display: block;
+  margin-bottom: .75rem;
+}
+
+.guideLink:last-child {
+  margin-bottom: 0;
+}

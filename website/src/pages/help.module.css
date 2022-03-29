@@ -1,0 +1,54 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 966px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchBox {
+  margin-top: 1.5rem;
+  height: 3rem;
+  padding: 0 3rem;
+  background-color: #fff;
+  border-radius: 500px;
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-theme='dark'] .searchBox {
+  background-color: var(--ifm-color-gray-900);
+}
+
+.searchBox:hover {
+  cursor: text;
+}
+
+.searchIcon {
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
+  margin-right: .5rem;
+}
+
+.searchPlaceholder {
+  font-size: 1.25rem;
+  color: var(--ifm-color-gray-600);
+}

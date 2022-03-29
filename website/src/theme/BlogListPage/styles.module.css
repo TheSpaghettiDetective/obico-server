@@ -1,0 +1,5 @@
+@media (max-width: 996px) {
+  .sidebar {
+    order: 1;
+  }
+}

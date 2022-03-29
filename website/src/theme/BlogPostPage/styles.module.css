@@ -1,0 +1,19 @@
+.blogPost {
+  background-color: var(--ifm-color-gray-0);
+  padding: 2rem !important;
+}
+
+@media (max-width: 996px) {
+  .blogPost {
+    padding: 1rem !important;
+  }
+  
+}
+
+html[data-theme=dark] .blogPost {
+  background-color: var(--ifm-color-gray-900);
+}
+
+.discussion {
+  margin-top: 5rem;
+}

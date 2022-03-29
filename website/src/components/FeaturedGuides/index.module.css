@@ -1,0 +1,40 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+.wrapper {
+  background: var(--ifm-color-gray-100);
+  max-width: 1000px;
+  margin: 4rem auto;
+  padding: 3rem;
+}
+
+html[data-theme=dark] .wrapper {
+  background: var(--ifm-color-gray-900);
+}
+
+@media (max-width: 996px) {
+  .wrapper {
+    margin: 0;
+    padding: 2rem 0;
+  }
+}
+
+
+.title {
+  font-size: 2.125rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+
+.guideLink {
+  display: flex;
+  margin-bottom: .75rem;
+}
+
+
+.linkIcon {
+  margin-top: .3rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  margin-right: .5rem;
+}

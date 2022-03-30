@@ -239,8 +239,8 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
 
     req = requests.get(
         url='https://slack.com/api/conversations.list',
+        headers={'Authorization': f'Bearer {printer.user.slack_access_token}'},
         params={
-            'token': printer.user.slack_access_token,
             'types': 'public_channel,private_channel'
         })
     req.raise_for_status()
@@ -465,8 +465,8 @@ def send_print_notification_slack(_print, event_type=None):
 
     req = requests.get(
         url='https://slack.com/api/conversations.list',
+        headers={'Authorization': f'Bearer {_print.user.slack_access_token}'},
         params={
-            'token': _print.user.slack_access_token,
             'types': 'public_channel,private_channel'
         })
     req.raise_for_status()

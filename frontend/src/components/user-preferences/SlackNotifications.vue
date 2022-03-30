@@ -70,11 +70,10 @@ export default {
 
   computed: {
     redirectUri() {
-      // const defaultRedirectHost = 'app.thespaghettidetective.com'
-      // const url = window.location
-      // let host = [defaultRedirectHost, 'app-stg.thespaghettidetective.com'].includes(url.host) ? url.host : defaultRedirectHost
-      // return `https://${host}/slack_oauth_callback/`
-      return 'https://app.thespaghettidetective.com/slack_oauth_callback/'
+      const defaultRedirectHost = 'app.thespaghettidetective.com'
+      const url = window.location
+      let host = [defaultRedirectHost, 'app-stg.thespaghettidetective.com'].includes(url.host) ? url.host : defaultRedirectHost
+      return `https://${host}/slack_oauth_callback/`
     }
   },
 

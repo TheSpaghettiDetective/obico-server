@@ -70,7 +70,7 @@ export default {
 
   computed: {
     redirectUri() {
-      return `https://${window.location.origin}/slack_oauth_callback/`
+      return `${window.location.origin}/slack_oauth_callback`
     }
   },
 

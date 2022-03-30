@@ -11,7 +11,7 @@ const GroupedGuides = [
     links: [
       {
         title: 'Set up The Spaghetti Detective in 56 seconds',
-        route: '/docs/octoprint-plugin-setup',
+        route: '/docs/user_guides/octoprint-plugin-setup',
       },
     ]
   },
@@ -56,7 +56,7 @@ const GroupedGuides = [
     links: [
       {
         title: 'Get help from a human',
-        route: '/docs/contact-us-for-support',
+        route: '/docs/user_guides/contact-us-for-support',
       },
     ]
   },

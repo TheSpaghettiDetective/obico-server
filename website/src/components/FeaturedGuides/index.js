@@ -5,35 +5,35 @@ import styles from './index.module.css';
 const LinksList = [
   {
     title: 'Why is The Detective "not watching"?',
-    route: '/docs/detective-not-watching/',
+    route: '/docs/user_guides/detective-not-watching/',
   },
   {
     title: 'Why is OctoPrint showing as "offline"?',
-    route: '/docs/octoprint-is-offline/',
+    route: '/docs/user_guides/octoprint-is-offline/',
   },
   {
     title: 'What is Detective Hour and how does it work?',
-    route: '/docs/how-does-detective-hour-work/',
+    route: '/docs/user_guides/how-does-detective-hour-work/',
   },
   {
     title: 'Troubleshoot Choppy/Jerky Premium Streaming',
-    route: '/docs/webcam-feed-is-laggy/',
+    route: '/docs/user_guides/webcam-feed-is-laggy/',
   },
   {
     title: 'Set up your own TSD private server',
-    route: '/docs/open-source/',
+    route: '/docs/user_guides/open-source/',
   },
   {
     title: 'The Pro plan vs the Free plan',
-    route: '/docs/upgrade-to-pro/',
+    route: '/docs/user_guides/upgrade-to-pro/',
   },
   {
     title: 'I want to help The Detective get better at her job. How can I do it?',
-    route: '/docs/how-does-credits-work/',
+    route: '/docs/user_guides/how-does-credits-work/',
   },
   {
     title: 'Two modes in the Premium Streaming',
-    route: '/docs/streaming-compatibility-mode/',
+    route: '/docs/user_guides/streaming-compatibility-mode/',
   },
 ];
 
@@ -62,7 +62,7 @@ export default function FeaturedGuides() {
         </div>
         <div className="row">
           <div className={clsx('col col--6')}>
-            <a href='/docs/octoprint-plugin-setup' className={clsx('guide-link', styles.guideLink)}>
+            <a href='/docs/user_guides/octoprint-plugin-setup' className={clsx('guide-link', styles.guideLink)}>
               <Icon className={styles.linkIcon} alt='Getting Started with The Spaghetti Detective' />
               <div>Getting Started with The Spaghetti Detective</div>
             </a>

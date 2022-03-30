@@ -15,20 +15,23 @@
         <br /><br />
         <p>2. There is no 2. You are all set. It's this simple. :)</p>
         <br /><br />
-        <h2>Questions?</h2>
-        <br />
-        <p>Q: How do I remove The Spaghetti Detective Slack App from a slack channel so that it won't send notifications to that channel?</p>
-        <p>A: </p>
-        <img class="mw-100" :src="require('@static/img/slack_setup2.png')" />
-        <br /><br />
-        <p>Q: How do I remove The Spaghetti Detective Slack App from the entire workspace?</p>
-        <p>A: Please follow the instructions in <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">this Slack help doc</a>.</p>
-        <br />
-        <h2>Test Notifications</h2>
+         <h2>Test Notifications</h2>
         <br />
         <div class="btn btn-sm btn-primary float-left" @click="onSlackTest($event)">Test Slack Notification</div>
         <br />
         <br />
+        <br />
+        <br />
+        <h2>Questions?</h2>
+        <br />
+        <p>Q: How do I remove The Spaghetti Detective Slack App from a slack channel so that it won't send notifications to that channel?</p>
+        <p>A: </p>
+        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup2.png')" />
+        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup3.png')" />
+        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup4.png')" />
+        <br /><br />
+        <p>Q: How do I remove The Spaghetti Detective Slack App from the entire workspace?</p>
+        <p>A: Please follow the instructions in <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">this Slack help doc</a>.</p>
       </div>
       <div v-else>
         <p class="lead">Click the button below to add The Spaghetti Detective Slack App into your workspace:</p>

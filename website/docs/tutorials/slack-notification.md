@@ -35,9 +35,27 @@ In order to send messages to Slack using its APIs, you will need to create a Sla
 
 ![](/img/tutorials/slack-app-distribution.jpg)
 
-## 2. Create plulgin in Obico
-
 1. Go back to [https://api.slack.com/apps](https://api.slack.com/apps) and select the app you just created for Obico.
 1. Select **Basic Information** from the menu list on the left.
 1. Find the **Client ID** and **Client Secret** on that page. You will need it to configure the Obico server.
+
+## 2. Create plulgin in Obico
+
+### 2.1 Backend plugin files
+
+1. Create a sub-folder named `myslack` in `web/plugins`
+2. Put xx and xx in `web/plugins/myslack`.
+
+### 2.2 Frontend plugin files
+
+1. Create a sub-folder named `myslack` in `frontend/plugins/`
+2. Put xx and xx in `frontend/plugins/myslack`.
+
+### 2.3 Configure environment variables
+
+1. Create a `docker-compose.override.yaml` file
+2. Add xxx in the file
+
+
+## 3. Restart the server
 

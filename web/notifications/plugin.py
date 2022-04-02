@@ -3,6 +3,7 @@ import dataclasses
 import requests  # type: ignore
 import enum
 from rest_framework.serializers import ValidationError as ValidationError  # noqa: F401
+from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
 
 from app.models import Print, Printer, User
 from lib import site as site  # noqa: F401
@@ -40,6 +41,7 @@ def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> G
             resp = requests.get(poster_url, timeout=timeout)
             resp.raise_for_status()
         except Exception:
+            sentryClient.captureException()
             continue
 
         content = resp.content

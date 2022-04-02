@@ -28,7 +28,6 @@ def queue_send_printer_notifications_task(
         enabled=True,
         name__in=notification_plugin_names(),
         **{feature.name: True},
-
     ).exists()
 
     if should_fire:

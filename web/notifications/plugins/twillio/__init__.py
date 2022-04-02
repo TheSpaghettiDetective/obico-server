@@ -55,7 +55,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             to_number=to_number,
         )
 
-    def validate_phone_country_code(self, phone_country_code):
+    def validate_phone_country_code(self, phone_country_code: str) -> str:
         if phone_country_code:
             phone_country_code = phone_country_code.strip().replace('+', '')
 
@@ -71,7 +71,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         return phone_country_code
 
-    def validate_config(self, data):
+    def validate_config(self, data: Dict) -> Dict:
         if 'phone_country_code' in data:
             data['phone_country_code'] = self.validate_phone_country_code(data['phone_country_code'])
 

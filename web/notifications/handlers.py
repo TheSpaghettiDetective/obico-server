@@ -6,6 +6,7 @@ import importlib
 import importlib.util
 import logging
 from collections import OrderedDict
+from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
 
 from django.conf import settings
 
@@ -59,6 +60,7 @@ def _load_plugins(root: Optional[str] = None) -> Dict[str, PluginDesc]:
             loaded[name] = _load_plugin(name, path)
         except Exception:
             logging.exception('ops')
+            sentryClient.captureException()
 
     return loaded
 
@@ -135,6 +137,7 @@ def send_failure_alerts(
         except Exception:
             if fail_silently:
                 LOGGER.exception('send_failure_alert plugin error')
+                sentryClient.captureException()
             else:
                 raise
 
@@ -236,6 +239,7 @@ def send_printer_notifications(
         except Exception:
             if fail_silently:
                 LOGGER.exception('send_printer_notification plugin error')
+                sentryClient.captureException()
             else:
                 raise
 

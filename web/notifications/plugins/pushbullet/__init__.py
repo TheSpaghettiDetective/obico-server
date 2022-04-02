@@ -101,7 +101,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict):
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         access_token = self.get_access_token_from_config(config)
         link = site.build_full_url('/')
         self.call_pushbullet(

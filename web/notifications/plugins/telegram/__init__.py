@@ -86,7 +86,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict):
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         chat_id = self.get_chat_id_from_config(config)
         self.call_telegram(
             chat_id=chat_id,

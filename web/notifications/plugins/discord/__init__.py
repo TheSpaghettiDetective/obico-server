@@ -108,7 +108,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
         return self.INFO_COLOR
 
-    def send_test_notification(self, config: Dict):
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         self.call_webhook(
             title='Test Notification',
             text='It works!',

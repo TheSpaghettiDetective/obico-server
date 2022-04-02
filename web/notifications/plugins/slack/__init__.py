@@ -107,7 +107,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             image_url=context.print.poster_url,
         )
 
-    def send_test_notification(self, config: Dict) -> None:
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         access_token = self.get_access_token_from_config(config)
         self.call_slack(
             access_token=access_token,

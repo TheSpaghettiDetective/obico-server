@@ -48,7 +48,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         return self.send_sms(body=text, to_number=to_number)
 
-    def send_test_notification(self, config: Dict):
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         to_number = self.get_number_from_config(config)
         self.send_sms(
             body='TSD Test Notification - It works!',

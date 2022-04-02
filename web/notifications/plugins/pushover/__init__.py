@@ -146,7 +146,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict) -> None:
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         user_key = self.get_user_key_from_config(config)
         self.call_pushover(
             token=settings.PUSHOVER_APP_TOKEN or '',

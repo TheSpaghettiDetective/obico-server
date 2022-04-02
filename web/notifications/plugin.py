@@ -131,7 +131,7 @@ class BaseNotificationPlugin(object):
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
         raise NotImplementedError
 
-    def send_test_notification(self, config: Dict) -> None:
+    def send_test_notification(self, config: Dict, **kwargs) -> None:
         raise NotImplementedError
 
     def supported_features(self) -> Set[Feature]:

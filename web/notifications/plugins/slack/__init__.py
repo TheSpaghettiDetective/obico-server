@@ -54,9 +54,9 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
         req = requests.get(
             url='https://slack.com/api/conversations.list',
             params={
-                'token': access_token,
                 'types': 'public_channel,private_channel'
             },
+            headers={'Authorization': f'Bearer {access_token}'},
             timeout=timeout,
         )
         req.raise_for_status()

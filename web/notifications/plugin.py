@@ -111,6 +111,14 @@ class PrinterNotificationContext(NotificationContext):
     event_data: Dict
 
 
+@dataclasses.dataclass(frozen=True)
+class AccountNotificationContext:
+    config: Dict
+    user: UserContext
+    event_name: str
+    event_data: Dict
+
+
 class Feature(enum.Enum):
     notify_on_failure_alert = 'notify_on_failure_alert'
     notify_on_account_events = 'notify_on_account_events'
@@ -133,13 +141,15 @@ class BaseNotificationPlugin(object):
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
         raise NotImplementedError
 
+    def send_account_notification(self, context: AccountNotificationContext, **kwargs) -> None:
+        raise NotImplementedError
+
     def send_test_notification(self, config: Dict, **kwargs) -> None:
         raise NotImplementedError
 
     def supported_features(self) -> Set[Feature]:
         return {
             Feature.notify_on_failure_alert,
-            Feature.notify_on_account_events,
             Feature.notify_on_print_done,
             Feature.notify_on_print_cancelled,
             Feature.notify_on_filament_change,

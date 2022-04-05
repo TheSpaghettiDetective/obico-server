@@ -13,6 +13,7 @@ from django.conf import settings
 from .plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext, FailureNotificationContext,
+    AccountNotificationContext,
     UserContext, PrintContext, PrinterContext,
     Feature,
 )
@@ -278,6 +279,18 @@ def send_printer_notification(
         return
 
     plugin.instance.send_printer_notification(context=context)
+
+
+def send_account_notification(
+    nsetting: NotificationSetting,
+    context: AccountNotificationContext,
+) -> None:
+    global __PLUGINS
+    if __PLUGINS is None:
+        __PLUGINS = _load_plugins()
+
+    plugin = __PLUGINS[nsetting.name]
+    plugin.instance.send_account_notification(context=context)
 
 
 def send_test_notification(nsetting: NotificationSetting) -> None:

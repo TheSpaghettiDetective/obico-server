@@ -286,7 +286,8 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
 
-        assert print
+        if not print:
+            return
 
         if print.cancelled_at is None:
             print.finished_at = timezone.now()

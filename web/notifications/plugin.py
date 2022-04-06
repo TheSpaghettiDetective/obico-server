@@ -1,4 +1,5 @@
 from typing import Dict, Optional, Generator, Set
+import datetime
 import dataclasses
 import requests  # type: ignore
 import enum
@@ -15,6 +16,7 @@ class PrinterContext:
     id: int
     name: str
     pause_on_failure: bool
+    watching_enabled: bool
 
     @classmethod
     def from_printer(cls, printer: Printer) -> 'PrinterContext':
@@ -22,6 +24,7 @@ class PrinterContext:
             id=printer.id,
             name=printer.name,
             pause_on_failure=printer.action_on_failure == printer.PAUSE,
+            watching_enabled=printer.watching_enabled,
         )
 
 
@@ -51,16 +54,28 @@ def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> G
 class PrintContext:
     id: int
     filename: str
+
     poster_url: str
     _poster_url_fetcher: Generator[Optional[bytes], Optional[float], None]
 
+    started_at: Optional[datetime.datetime]
+    ended_at: Optional[datetime.datetime]
+    alerted_at: Optional[datetime.datetime]
+
+    alert_overwrite: str
+
     @classmethod
     def from_print(cls, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> 'PrintContext':
+        alert_overwrite: str = _print.alert_overwrite or ''  # type: ignore
         ctx = PrintContext(
             id=_print.id if _print else 0,
             filename=_print.filename if _print else '',
             poster_url=poster_url or '',
-            _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout)
+            _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout),
+            started_at=_print.started_at if _print else None,
+            alerted_at=_print.alerted_at if _print else None,
+            ended_at=(_print.finished_at or _print.cancelled_at or None) if _print else None,
+            alert_overwrite=alert_overwrite,
         )
 
         ctx._poster_url_fetcher.send(None)
@@ -80,6 +95,9 @@ class UserContext:
     first_name: str
     last_name: str
 
+    dh_balance: float
+    is_pro: bool
+
     @classmethod
     def from_user(cls, user: User) -> 'UserContext':
         return UserContext(
@@ -87,6 +105,8 @@ class UserContext:
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
+            dh_balance=user.dh_balance,
+            is_pro=user.is_pro,
         )
 
 
@@ -146,6 +166,12 @@ class BaseNotificationPlugin(object):
 
     def send_test_notification(self, config: Dict, **kwargs) -> None:
         raise NotImplementedError
+
+    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
+        return {}
+
+    def build_print_notifications_extra_context(self, **kwargs) -> Dict:
+        return {}
 
     def supported_features(self) -> Set[Feature]:
         return {

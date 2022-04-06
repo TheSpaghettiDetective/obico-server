@@ -130,6 +130,9 @@ class Handler(object):
         for nsetting in nsettings:
             try:
                 assert nsetting.user_id == printer.user_id
+                plugin = self.notification_plugin_by_name(nsetting.name)
+                if not plugin:
+                    continue
 
                 context = FailureNotificationContext(
                     config=nsetting.config,
@@ -141,7 +144,13 @@ class Handler(object):
                     print_paused=print_paused,
                 )
 
-                self.send_failure_alert(nsetting=nsetting, context=context)
+                extra_context = plugin.instance.build_failure_alert_extra_context(
+                    user=printer.user,
+                    print_=print_,
+                    printer=printer,
+                )
+
+                self.send_failure_alert(nsetting=nsetting, context=context, **extra_context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -232,6 +241,9 @@ class Handler(object):
         for nsetting in nsettings:
             try:
                 assert nsetting.user_id == printer.user_id
+                plugin = self.notification_plugin_by_name(nsetting.name)
+                if not plugin:
+                    continue
 
                 context = PrinterNotificationContext(
                     config=nsetting.config,
@@ -243,7 +255,13 @@ class Handler(object):
                     event_data=event_data,
                 )
 
-                self.send_printer_notification(nsetting, context)
+                extra_context = plugin.instance.build_print_notifications_extra_context(
+                    user=printer.user,
+                    print_=print_,
+                    printer=printer,
+                )
+
+                self.send_printer_notification(nsetting=nsetting, context=context, **extra_context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -257,6 +275,7 @@ class Handler(object):
         self,
         nsetting: NotificationSetting,
         context: FailureNotificationContext,
+        **extra_context,
     ) -> None:
         global _PLUGINS
         if _PLUGINS is None:
@@ -266,12 +285,13 @@ class Handler(object):
             return
 
         plugin = _PLUGINS[nsetting.name]
-        plugin.instance.send_failure_alert(context=context)
+        plugin.instance.send_failure_alert(context=context, **extra_context)
 
     def send_printer_notification(
         self,
         nsetting: NotificationSetting,
         context: PrinterNotificationContext,
+        **extra_context,
     ) -> None:
         global _PLUGINS
         if _PLUGINS is None:
@@ -283,11 +303,11 @@ class Handler(object):
             plugin.instance,
             nsetting,
             context.event_name,
-            context.event_data
+            context.event_data,
         ):
             return
 
-        plugin.instance.send_printer_notification(context=context)
+        plugin.instance.send_printer_notification(context=context, **extra_context)
 
     def send_account_notification(
         self,

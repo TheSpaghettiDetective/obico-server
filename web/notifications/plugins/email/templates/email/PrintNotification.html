@@ -1,0 +1,181 @@
+{% extends 'email/Layout.html' %}
+
+{% block email_content %}
+
+<p>Hi {{ context.user.first_name|default:"" }},</p>
+
+<p>
+{% block subject %}
+  Your print job is done.
+{% endblock %}
+</p>
+
+  {% if context.poster_url %}
+<table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
+  <tr>
+    <td><img style="width: 100%;" alt="Print Snapshot" src="{{ context.poster_url }}" /></td>
+  </tr>
+</table>
+{% endif %}
+
+{% if context.print.alerted_at or context.printer.watching_enabled and context.user.dh_balance > 0 %}
+<table style="padding: 18px 0px 18px 0px;" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="padding: 0px 0px 9px 0px;width:100%;">
+      {% if context.print.alerted_at %}
+      <div style="color: #d9534f;">The Detective found possible spaghetti for this print.</div>
+      {% else %}
+      <div style="color: #5cb85c">The Detective found nothing fishy for this print.</div>
+      {% endif %}
+    </td>
+  </tr>
+  {% if timelapse_link %}
+  <tr>
+    <td>
+
+      {% if focused_feedback_eligible %}
+
+      {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
+      👉 You told her it was a false alarm. Help her improve by <a href="{{ timelapse_link }}">giving her the Focused
+        Feedback</a> in the next 30 days and earn 2 Detective Hours for yourself.
+      {% else %}
+      👉 Help her improve by <a href="{{ timelapse_link }}">giving her the Focused Feedback</a> in the next 30 days and earn
+      2 Detective Hours for yourself.
+      {% endif %}
+      <div><a
+          href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Learn
+          more about the Focused
+          Feedback.</a>
+      </div>
+
+      {% else %}
+
+      {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
+      👉 You told her it was a false alarm. Thank you for helping her improve! You can <a href="{{ timelapse_link }}">
+        change your response</a>.
+      {% else %}
+      👉 Help her get better by <a href="{{ timelapse_link }}">telling her if she got it right</a>.
+      {% endif %}
+
+      {% endif %}
+
+    </td>
+  </tr>
+  {% endif %}
+</table>
+{% endif %}
+
+<table role="module" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+  <tbody>
+    <tr>
+      <td style="padding:0px 0px 0px 0px" role="module-content" height="100%" valign="top" bgcolor="">
+        <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="1px"
+          style="line-height:1px;font-size:1px">
+          <tbody>
+            <tr>
+              <td style="padding:0px 0px 1px 0px" bgcolor="#e7e7ea"></td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="padding: 18px 0px 18px 0px;width:100%;">
+      <div><b>File name:</b> {{ context.print.filename }}</div>
+      <div><b>Printer:</b> {{ context.printer.name }}</div>
+      {% if print_time %}
+      <div><b>Print time:</b> {{ print_time }} {% if dh_consumed and not unlimited_dh %} ({{ dh_consumed }} watched by
+        The Detective){% endif %}</div>
+      {% endif %}
+      {% if not unlimited_dh %} <div><b>DH balance (<a
+            href="#https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/">?</a>):</b>
+        {{ context.user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
+    </td>
+  </tr>
+</table>
+
+{% if dh_consumed and context.user.dh_balance < 10 and context.user.dh_balance >= 0 %}
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="padding: 0px 0px 18px 0px;width:100%;">
+      👉 You are running low on Detective Hours. <a
+        href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get
+        more</a> if you want The Detective to keep watching your prints.
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+{% if dh_consumed and context.user.dh_balance < 0 %}
+<table role="module" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+  <tbody>
+    <tr>
+      <td style="padding:0px 0px 0px 0px" role="module-content" height="100%" valign="top" bgcolor="">
+        <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="1px"
+          style="line-height:1px;font-size:1px">
+          <tbody>
+            <tr>
+              <td style="padding:0px 0px 1px 0px" bgcolor="#e7e7ea"></td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="padding: 18px 0px 18px 0px;width:100%;">
+      <p style="font-size:16px;text-align:center;"><strong>You print a lot, which is awesome!👍👍👍</strong></p>
+
+      <p>That also means you have kept The Detective pretty busy and now your Detective Hours (<a
+          href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/">what
+          is it?</a>) have run out.
+        The Detective is no longer watching your prints, and you won't get alerted even if your prints start to fail.
+      </p>
+
+      <p>Everything else remains the same. You can still start, pause, or cancel your prints. Your webcam feed will
+        stream as usual too.</p>
+
+      <p>There are several ways to get more Detective Hours:</p>
+      <ul>
+        <li><a
+            href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Earn
+            Detective Hours by helping The Detective get better at her job.</a></li>
+        <li><a
+            href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Buy
+            Pre-paid Detective Hour Pack.</a></li>
+        {% if user.is_pro %}
+        <li><a
+            href="https://app.thespaghettidetective.com/user_preferences/subscription/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Change
+            your plan to include a Subscribe&Save Pack that fits your printing needs.</a></li>
+        {% else %}
+        <li><a
+            href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Upgrade
+            to the Pro plan.</a> You get 50, instead of 10, free Detective Hours a month with the Pro plan. Also you can
+          add Subscribe&Save Detective Hour Pack to your Pro plan at rates much lower than Pre-paid Packs.</li>
+        {% endif %}
+      </ul>
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+{% if unsub_url %}
+<table style="padding: 48px 0px 0px 0px;">
+  <tr>
+    <td align="left" valign="top" style="margin:0 auto; font-family: 'Roboto', Helvetica, sans-serif;
+      font-size:14px; font-weight:400; color:#888796; line-height:18px;">
+      No longer want to receive print notifications by email? <a href="{{ unsub_url }}">Unsubscribe</a> or <a
+        href="{{ user_pref_url }}">change notification preferences.</a>
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+{% endblock %}

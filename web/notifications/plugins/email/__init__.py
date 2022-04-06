@@ -1,0 +1,221 @@
+from typing import Dict, Optional, List
+import smtplib
+import logging
+import backoff  # type: ignore
+
+from django.conf import settings
+from django.template.base import Template
+from django.template.loader import get_template
+from django.core.mail import EmailMessage
+
+from allauth.account.admin import EmailAddress  # type: ignore
+
+from notifications.plugin import (
+    BaseNotificationPlugin,
+    site,
+    FailureNotificationContext,
+    PrinterNotificationContext,
+    events,
+)
+
+LOGGER = logging.getLogger(__name__)
+
+
+class EmailNotificationPlugin(BaseNotificationPlugin):
+
+    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
+        return {
+            "unsub_token": kwargs['user'].unsub_token,
+        }
+
+    def build_print_notifications_extra_context(self, **kwargs) -> Dict:
+        return {
+            "unsub_token": kwargs['user'].unsub_token,
+        }
+
+    def get_printer_notification_subject(self, context: PrinterNotificationContext, **kwargs) -> str:
+        event_name = context.event_name
+        event_data = context.event_data
+
+        if event_name == events.PrintStarted:
+            text = f"{context.print.filename} started"
+        elif event_name == events.PrintFailed:
+            text = f"{context.print.filename} failed"
+        elif event_name == events.PrintDone:
+            text = f"🙌 {context.print.filename} is ready"
+        elif event_name == events.PrintCancelled:
+            text = f"{context.print.filename} is canceled"
+        elif event_name == events.PrintPaused:
+            text = f"{context.print.filename} is paused"
+        elif event_name == events.PrintResumed:
+            text = f"{context.print.filename} is resumed"
+        elif event_name == events.FilamentChange:
+            text = f"{context.print.filename} requires filament change"
+        elif event_name == events.HeaterCooledDown:
+            text = (
+                f"Heater {self.b(event_data['name'])} "
+                f"has cooled down to {self.b(str(event_data['actual']) + '℃')}"
+            )
+        elif event_name == events.HeaterTargetReached:
+            text = (
+                f"Heater {self.b(event_data['name'])} "
+                f"has reached target temperature {self.b(str(event_data['actual']) + '℃')} "
+            )
+        else:
+            return ''
+
+        return text
+
+    def get_template(self, name: str) -> Optional[Template]:
+        return get_template(name)
+
+    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+        if not settings.EMAIL_HOST:
+            LOGGER.warn("Email settings are missing. Ignored send requests")
+            return
+
+        template_name = 'email/FailureAlert.html'
+        tpl = self.get_template(template_name)
+        assert tpl
+
+        mailing_list: str = 'alert'
+        unsub_url = site.build_full_url(
+            f'/unsubscribe_email/?unsub_token={kwargs["unsub_token"]}&list={mailing_list}'
+        )
+        headers = {
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
+        }
+        ctx = {
+            'printer': context.printer,
+            'print_paused': context.print_paused,
+            'is_warning': context.is_warning,
+            'view_link': site.build_full_url('/printers/'),
+            'cancel_link': site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
+            'resume_link': site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
+            'unsub_url': unsub_url,
+        }
+
+        ctx.update(kwargs['extra_ctx'] if 'extra_ctx' in kwargs else {})
+
+        attachments = []
+        if context.print.poster_url:
+            # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
+            try:
+                if not context.site_is_public:
+                    poster_url_content = context.print.get_poster_url_content()
+                    if poster_url_content:
+                        attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
+            except Exception:
+                LOGGER.exception('error while fetching image content for email')
+                pass
+
+            ctx['poster_url'] = None if attachments else context.print.poster_url
+
+        message = tpl.render(ctx)
+        subject = 'Your print {} on {} {}.'.format(
+            context.print.filename,
+            context.printer.name,
+            'smells fishy' if context.is_warning else 'is probably failing')
+
+        self._send_emails(
+            user_id=context.user.id,
+            subject=subject,
+            message=message,
+            headers=headers,
+            attachments=attachments,
+        )
+
+    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+        if not settings.EMAIL_HOST:
+            LOGGER.warn("Email settings are missing. Ignored send requests")
+            return
+
+        template_name = f'email/{context.event_name}.html'
+        tpl = self.get_template(template_name)
+        if not tpl:
+            return
+
+        subject = self.get_printer_notification_subject(context, **kwargs)
+
+        mailing_list: str = 'print_notification'
+        unsub_url = site.build_full_url(
+            f'/unsubscribe_email/?unsub_token={kwargs["unsub_token"]}&list={mailing_list}'
+        )
+        headers = {
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
+        }
+
+        ctx = {
+            'print': context.print,
+            'timelapse_link': site.build_full_url(f'/prints/{context.print.id}/'),
+            'user_pref_url': site.build_full_url('/user_preferences/'),
+            'unsub_url': unsub_url,
+        }
+
+        if context.print.ended_at and context.print.started_at:
+            ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
+
+        ctx.update(kwargs.get('extra_ctx', {}))
+
+        attachments = []
+        if context.print.poster_url:
+            # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
+            try:
+                if not context.site_is_public:
+                    poster_url_content = context.print.get_poster_url_content()
+                    if poster_url_content:
+                        attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
+            except Exception:
+                LOGGER.exception('error while fetching image content for email')
+                pass
+
+            ctx['poster_url'] = None if attachments else context.print.poster_url
+
+        message = tpl.render(ctx)
+        self._send_emails(
+            user_id=context.user.id,
+            subject=subject,
+            message=message,
+            headers=headers,
+            attachments=attachments,
+        )
+
+    def _send_emails(self, user_id: int, subject: str, message: str, headers: Dict, verified_only: bool = True, attachments: Optional[List] = None):
+        if not settings.EMAIL_HOST:
+            LOGGER.warn("Email settings are missing. Ignored send requests")
+            return
+
+        # By default email verification should be required for notifications but
+        # maybe users will want to disable it on private servers
+        if settings.ACCOUNT_EMAIL_VERIFICATION != 'none' and verified_only:
+            emails = EmailAddress.objects.filter(user_id=user_id, verified=True)
+        else:
+            emails = EmailAddress.objects.filter(user_id=user_id)
+
+        for email in emails:
+            self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers)
+
+    @backoff.on_exception(
+        backoff.expo,
+        (smtplib.SMTPServerDisconnected, smtplib.SMTPSenderRefused, smtplib.SMTPResponseException, ),
+        max_tries=3
+    )
+    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List]):
+        if not settings.EMAIL_HOST:
+            LOGGER.warn("Email settings are missing. Ignored send requests")
+            return
+
+        msg = EmailMessage(
+            subject,
+            message,
+            to=(email,),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            attachments=attachments or [],
+            headers=headers,
+        )
+        msg.content_subtype = 'html'
+        msg.send()
+
+
+def __load_plugin__():
+    return EmailNotificationPlugin()

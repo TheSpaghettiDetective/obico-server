@@ -407,3 +407,7 @@ ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 
 WELL_KNOWN_PATH = None
+
+NOTIFICATION_PLUGIN_DIRS = [
+    os.path.join(BASE_DIR, 'notifications/plugins'),
+]

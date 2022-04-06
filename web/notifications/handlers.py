@@ -44,9 +44,7 @@ def _load_plugin(name: str, path: str) -> PluginDesc:
     return PluginDesc(name=name, path=path, module=module, instance=instance)
 
 
-def _load_plugins(root: Optional[str] = None) -> Dict[str, PluginDesc]:
-    root = root if root else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins')
-    loaded = OrderedDict()
+def _load_plugins(root: str, loaded: Dict[str, PluginDesc]) -> None:
     candidates = [
         name for name in os.listdir(root)
         if (
@@ -55,21 +53,31 @@ def _load_plugins(root: Optional[str] = None) -> Dict[str, PluginDesc]:
             name[0] not in ('.', '_')
         )
     ]
+
     for name in candidates:
+        if name in loaded:
+            LOGGER.warning(f'skipped loading plugin "{name}", already loaded from {loaded["name"].path}')
+            continue
+
         path = os.path.join(os.path.join(root, name), '__init__.py')
         try:
             loaded[name] = _load_plugin(name, path)
         except Exception:
-            logging.exception('ops')
+            logging.exception(f'error loading plugin "{name}" from {path}')
             sentryClient.captureException()
 
+
+def _load_all_plugins() -> Dict[str, PluginDesc]:
+    loaded: Dict[str, PluginDesc] = OrderedDict()
+    for plugin_dir in settings.NOTIFICATION_PLUGIN_DIRS:
+        _load_plugins(plugin_dir, loaded)
     return loaded
 
 
 def notification_plugin_names() -> List[str]:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     return list(__PLUGINS.keys())
 
@@ -77,7 +85,7 @@ def notification_plugin_names() -> List[str]:
 def notification_plugin_by_name(name) -> Optional[PluginDesc]:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     return __PLUGINS.get(name, None)
 
@@ -85,7 +93,7 @@ def notification_plugin_by_name(name) -> Optional[PluginDesc]:
 def notification_plugins() -> List[PluginDesc]:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     return list(__PLUGINS.values())
 
@@ -253,7 +261,7 @@ def send_failure_alert(
 ) -> None:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     if not nsetting.notify_on_failure_alert:
         return
@@ -268,7 +276,7 @@ def send_printer_notification(
 ) -> None:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     plugin = __PLUGINS[nsetting.name]
 
@@ -289,7 +297,7 @@ def send_account_notification(
 ) -> None:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     plugin = __PLUGINS[nsetting.name]
     plugin.instance.send_account_notification(context=context)
@@ -298,7 +306,7 @@ def send_account_notification(
 def send_test_notification(nsetting: NotificationSetting) -> None:
     global __PLUGINS
     if __PLUGINS is None:
-        __PLUGINS = _load_plugins()
+        __PLUGINS = _load_all_plugins()
 
     plugin = __PLUGINS[nsetting.name]
     plugin.instance.send_test_notification(config=nsetting.config)

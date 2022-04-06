@@ -52,8 +52,16 @@ def send_printer_notifications(
     plugin_names: Tuple[str, ...] = (),
     **kwargs
 ) -> None:
-    printer = Printer.objects.select_related('user').get(id=printer_id)  # FIXME any additional filter? User.is_active?
-    print_ = Print.objects.get(id=print_id) if print_id else None
+    if print_id:
+        # FIXME any additional filter? User.is_active?
+        print_ = Print.objects.select_related('printer', 'printer__user').get(
+            id=print_id, printer_id=printer_id)
+        printer = print_.printer
+    else:
+        print_ = None
+        # FIXME any additional filter? User.is_active?
+        printer = Printer.objects.select_related('user').get(id=printer_id)
+
     handlers.send_printer_notifications(
         event_name=event_name,
         event_data=event_data,

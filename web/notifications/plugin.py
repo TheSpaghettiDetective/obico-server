@@ -55,10 +55,10 @@ class PrintContext:
     _poster_url_fetcher: Generator[Optional[bytes], Optional[float], None]
 
     @classmethod
-    def from_print(cls, print: Optional[Print], poster_url: str, timeout: float = 5.0) -> 'PrintContext':
+    def from_print(cls, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> 'PrintContext':
         ctx = PrintContext(
-            id=print.id if print else 0,
-            filename=print.filename if print else '',
+            id=_print.id if _print else 0,
+            filename=_print.filename if _print else '',
             poster_url=poster_url or '',
             _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout)
         )

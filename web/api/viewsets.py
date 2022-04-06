@@ -525,7 +525,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         return Response({'queued': True})
 
 
-class NotificationPreferencesViewSet(
+class NotificationSettingsViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,

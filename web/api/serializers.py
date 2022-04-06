@@ -237,7 +237,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
     def validate_name(self, name):
         name = name.strip()
-        plugin = notifications.handlers.notification_plugins_by_name(name)
+        plugin = notifications.handlers.notification_plugin_by_name(name)
         if not plugin:
             raise Exception(f'Notification Plugin "{name}" is not loaded')
 
@@ -246,7 +246,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if 'config' in data:
             name = data['name']
-            plugin = notifications.handlers.notification_plugins_by_name(name)
+            plugin = notifications.handlers.notification_plugin_by_name(name)
             if not plugin:
                 raise Exception(f'Notification Plugin "{name}" is not loaded')
 

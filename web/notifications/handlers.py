@@ -74,7 +74,7 @@ def notification_plugin_names() -> List[str]:
     return list(__PLUGINS.keys())
 
 
-def notification_plugins_by_name(name) -> Optional[PluginDesc]:
+def notification_plugin_by_name(name) -> Optional[PluginDesc]:
     global __PLUGINS
     if __PLUGINS is None:
         __PLUGINS = _load_plugins()
@@ -122,6 +122,7 @@ def send_failure_alerts(
     for nsetting in nsettings:
         try:
             assert nsetting.user_id == printer.user_id
+
             context = FailureNotificationContext(
                 config=nsetting.config,
                 user=user_ctx,
@@ -224,6 +225,7 @@ def send_printer_notifications(
     for nsetting in nsettings:
         try:
             assert nsetting.user_id == printer.user_id
+
             context = PrinterNotificationContext(
                 config=nsetting.config,
                 user=user_ctx,

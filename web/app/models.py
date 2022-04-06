@@ -310,8 +310,8 @@ class Printer(SafeDeleteModel):
             event_data["gone"] = True
 
         # TODO circular import problem
-        from notifications.tasks import queue_send_printer_notifications_task
-        queue_send_printer_notifications_task(
+        from notifications.handlers import handler
+        handler.queue_send_printer_notifications_task(
             printer=self,
             event_name=event_name,
             event_data=event_data,
@@ -348,8 +348,8 @@ class Printer(SafeDeleteModel):
         self.send_should_watch_status()
 
         # TODO circular import problem
-        from notifications.tasks import queue_send_printer_notifications_task
-        queue_send_printer_notifications_task(
+        from notifications.handlers import handler
+        handler.queue_send_printer_notifications_task(
             printer=self,
             event_name='PrintStarted',
             event_data={},  # TODO original event data somehow

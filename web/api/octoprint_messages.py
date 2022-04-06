@@ -9,7 +9,7 @@ from lib import mobile_notifications
 from app.models import PrintEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
-from notifications.tasks import queue_send_printer_notifications_task
+from notifications.handlers import handler
 
 STATUS_TTL_SECONDS = 240
 
@@ -51,7 +51,7 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
         if event_name not in ('PrintStarted', 'PrintFailed', 'PrintDone', 'PrintCancelled'):
             # events above are handled when PrintEvent is created
 
-            queue_send_printer_notifications_task(
+            handler.queue_send_printer_notifications_task(
                 printer=printer,
                 event_name=event_name,
                 event_data=event_data,

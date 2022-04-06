@@ -41,7 +41,7 @@ from .printer_discovery import (
     DeviceMessage,
 )
 
-import notifications.handlers
+from notifications.handlers import handler
 
 LOGGER = logging.getLogger(__file__)
 
@@ -538,13 +538,13 @@ class NotificationSettingsViewSet(
     serializer_class = NotificationSettingSerializer
 
     def get_queryset(self):
-        loaded = (plugin.name for plugin in notifications.handlers.notification_plugins())
+        loaded = (plugin.name for plugin in handler.notification_plugins())
         return NotificationSetting.objects.filter(user=self.request.user, name__in=loaded)
 
     @action(detail=False, methods=['get', ])
     def available_plugins(self, request):
         loaded = {}
-        for plugin in notifications.handlers.notification_plugins():
+        for plugin in handler.notification_plugins():
             try:
                 loaded[plugin.name] = {
                     "features": [
@@ -561,7 +561,7 @@ class NotificationSettingsViewSet(
     def send_test_notification(self, request, pk):
         obj = self.get_object()
         try:
-            notifications.handlers.send_test_notification(obj)
+            handler.send_test_notification(obj)
         except Exception as e:
             LOGGER.exception("cannot test notification plugin")
             return Response({"status": "error", "detail": str(e)}, status=418)

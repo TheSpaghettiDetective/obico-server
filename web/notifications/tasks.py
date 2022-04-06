@@ -1,45 +1,14 @@
 from typing import Dict, Optional, Tuple
 import logging
 
-from app.models import Printer, Print, NotificationSetting
+from app.models import Printer, Print
 
 from celery import shared_task  # type: ignore
 
-from . import handlers
-from .handlers import feature_for_event, notification_plugin_names
+from .handlers import handler
 
 
 LOGGER = logging.getLogger(__name__)
-
-
-def queue_send_printer_notifications_task(
-    event_name: str,
-    event_data: dict,
-    printer: Printer,
-    print_: Optional[Print],
-    poster_url: str = '',
-) -> None:
-    feature = feature_for_event(event_name, event_data)
-    if not feature:
-        return
-
-    should_fire = NotificationSetting.objects.filter(
-        user_id=printer.user_id,
-        enabled=True,
-        name__in=notification_plugin_names(),
-        **{feature.name: True},
-    ).exists()
-
-    if should_fire:
-        send_printer_notifications.apply_async(
-            kwargs={
-                'printer_id': printer.id,
-                'event_name': event_name,
-                'event_data': event_data,
-                'print_id': print_.id if print_ else None,
-                'poster_url': poster_url,
-            }
-        )
 
 
 @shared_task
@@ -62,7 +31,7 @@ def send_printer_notifications(
         # FIXME any additional filter? User.is_active?
         printer = Printer.objects.select_related('user').get(id=printer_id)
 
-    handlers.send_printer_notifications(
+    handler.send_printer_notifications(
         event_name=event_name,
         event_data=event_data,
         printer=printer,

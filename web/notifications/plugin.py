@@ -72,7 +72,6 @@ class PrinterNotificationContext(NotificationContext):
 
 class Feature(enum.Enum):
     notify_on_failure_alert = 'notify_on_failure_alert'
-    notify_on_account_events = 'notify_on_account_events'
     notify_on_print_done = 'notify_on_print_done'
     notify_on_print_cancelled = 'notify_on_print_cancelled'
     notify_on_filament_change = 'notify_on_filament_change'

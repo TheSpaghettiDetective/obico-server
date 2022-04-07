@@ -223,7 +223,6 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             'id', 'user', 'created_at', 'updated_at',
             'name', 'config', 'enabled',
             'notify_on_failure_alert',
-            'notify_on_account_events',
             'notify_on_print_done',
             'notify_on_print_cancelled',
             'notify_on_filament_change',

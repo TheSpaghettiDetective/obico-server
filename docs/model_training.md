@@ -1,4 +1,6 @@
-# Model Training Guide
+# Model Training Guide (DRAFT)
+
+# This guide is not yet ready to be published
 
 ## Overview
 

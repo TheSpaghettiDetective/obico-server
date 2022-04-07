@@ -1,10 +1,11 @@
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, Optional, Tuple, List, Generator
 from types import ModuleType
 import dataclasses
 import os
 import importlib
 import importlib.util
 import logging
+import requests  # type: ignore
 from collections import OrderedDict
 from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
 
@@ -13,11 +14,10 @@ from django.conf import settings
 from .plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext, FailureAlertContext,
-    AccountNotificationContext,
     UserContext, PrintContext, PrinterContext,
     Feature,
 )
-from app.models import Print, Printer, NotificationSetting
+from app.models import Print, Printer, NotificationSetting, User
 
 from . import events
 
@@ -74,28 +74,81 @@ def _load_all_plugins() -> Dict[str, PluginDesc]:
     return loaded
 
 
+def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> Generator[Optional[bytes], Optional[float], None]:
+    # generator, receives timeout and then retreives file content from cache or network
+    content: Optional[bytes] = None
+    while True:
+        timeout = (yield content) or timeout
+
+        if not poster_url:
+            continue
+
+        if content is not None:
+            continue
+
+        try:
+            resp = requests.get(poster_url, timeout=timeout)
+            resp.raise_for_status()
+        except Exception:
+            sentryClient.captureException()
+            continue
+
+        content = resp.content
+
+
 class Handler(object):
 
-    def notification_plugin_names(self) -> List[str]:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
+    def __int__(self) -> None:
+        self._PLUGINS: Optional[Dict[str, PluginDesc]] = None
 
-        return list(_PLUGINS.keys())
+    def notification_plugin_names(self) -> List[str]:
+        if self._PLUGINS is None:
+            self._PLUGINS = _load_all_plugins()
+        return list(self._PLUGINS.keys())
 
     def notification_plugin_by_name(self, name) -> Optional[PluginDesc]:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
-
-        return _PLUGINS.get(name, None)
+        if self._PLUGINS is None:
+            self._PLUGINS = _load_all_plugins()
+        return self._PLUGINS.get(name, None)
 
     def notification_plugins(self) -> List[PluginDesc]:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
+        if self._PLUGINS is None:
+            self._PLUGINS = _load_all_plugins()
+        return list(self._PLUGINS.values())
 
-        return list(_PLUGINS.values())
+    def get_printer_context(self, printer: Printer) -> PrinterContext:
+        return PrinterContext(
+            id=printer.id,
+            name=printer.name,
+            pause_on_failure=printer.action_on_failure == printer.PAUSE,
+            watching_enabled=printer.watching_enabled,
+        )
+
+    def get_print_context(self, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> PrintContext:
+        alert_overwrite: str = _print.alert_overwrite or ''  # type: ignore
+        ctx = PrintContext(
+            id=_print.id if _print else 0,
+            filename=_print.filename if _print else '',
+            poster_url=poster_url or '',
+            _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout),
+            started_at=_print.started_at if _print else None,
+            alerted_at=_print.alerted_at if _print else None,
+            ended_at=(_print.finished_at or _print.cancelled_at or None) if _print else None,
+            alert_overwrite=alert_overwrite,
+        )
+
+        ctx._poster_url_fetcher.send(None)
+        return ctx
+
+    def get_user_context(self, user: User) -> UserContext:
+        return UserContext(
+            id=user.id,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            dh_balance=user.dh_balance,
+            is_pro=user.is_pro,
+        )
 
     def send_failure_alerts(
         self,
@@ -124,9 +177,9 @@ class Handler(object):
             LOGGER.debug("no matching NotificationSetting objects, ignoring failure alert")
             return
 
-        user_ctx = UserContext.from_user(printer.user)
-        printer_ctx = PrinterContext.from_printer(printer)
-        print_ctx = PrintContext.from_print(print_, poster_url=poster_url)
+        user_ctx = self.get_user_context(printer.user)
+        printer_ctx = self.get_printer_context(printer)
+        print_ctx = self.get_print_context(print_, poster_url=poster_url)
 
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
@@ -152,7 +205,7 @@ class Handler(object):
                     printer=printer,
                 )
 
-                self.send_failure_alert(nsetting=nsetting, context=context, **extra_context)
+                self._send_failure_alert(nsetting=nsetting, context=context, **extra_context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -247,9 +300,9 @@ class Handler(object):
             LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
             return
 
-        user_ctx = UserContext.from_user(printer.user)
-        printer_ctx = PrinterContext.from_printer(printer)
-        print_ctx = PrintContext.from_print(print_, poster_url=poster_url)
+        user_ctx = self.get_user_context(printer.user)
+        printer_ctx = self.get_printer_context(printer)
+        print_ctx = self.get_print_context(print_, poster_url=poster_url)
 
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding event {"event_name"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
@@ -275,7 +328,7 @@ class Handler(object):
                     printer=printer,
                 )
 
-                self.send_printer_notification(nsetting=nsetting, context=context, **extra_context)
+                self._send_printer_notification(nsetting=nsetting, context=context, **extra_context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -285,33 +338,30 @@ class Handler(object):
                 else:
                     raise
 
-    def send_failure_alert(
+    def _send_failure_alert(
         self,
         nsetting: NotificationSetting,
         context: FailureAlertContext,
         **extra_context,
     ) -> None:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
-
         if not nsetting.notify_on_failure_alert:
             return
 
-        plugin = _PLUGINS[nsetting.name]
+        plugin = self.notification_plugin_by_name(nsetting.name)
+        if not plugin:
+            return
+
         plugin.instance.send_failure_alert(context=context, **extra_context)
 
-    def send_printer_notification(
+    def _send_printer_notification(
         self,
         nsetting: NotificationSetting,
         context: PrinterNotificationContext,
         **extra_context,
     ) -> None:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
-
-        plugin = _PLUGINS[nsetting.name]
+        plugin = self.notification_plugin_by_name(nsetting.name)
+        if not plugin:
+            return
 
         if not self.should_plugin_handle_printer_event(
             plugin.instance,
@@ -323,24 +373,10 @@ class Handler(object):
 
         plugin.instance.send_printer_notification(context=context, **extra_context)
 
-    def send_account_notification(
-        self,
-        nsetting: NotificationSetting,
-        context: AccountNotificationContext,
-    ) -> None:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
-
-        plugin = _PLUGINS[nsetting.name]
-        plugin.instance.send_account_notification(context=context)
-
     def send_test_notification(self, nsetting: NotificationSetting) -> None:
-        global _PLUGINS
-        if _PLUGINS is None:
-            _PLUGINS = _load_all_plugins()
+        plugin = self.notification_plugin_by_name(nsetting.name)
+        assert plugin, "plugin module is not loaded"
 
-        plugin = _PLUGINS[nsetting.name]
         plugin.instance.send_test_notification(config=nsetting.config)
 
     def queue_send_printer_notifications_task(

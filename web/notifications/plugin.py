@@ -1,12 +1,10 @@
 from typing import Dict, Optional, Generator, Set
 import datetime
 import dataclasses
-import requests  # type: ignore
 import enum
 from rest_framework.serializers import ValidationError as ValidationError  # noqa: F401
-from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
+from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore  # noqa
 
-from app.models import Print, Printer, User
 from lib import site as site  # noqa: F401
 from . import events
 
@@ -17,37 +15,6 @@ class PrinterContext:
     name: str
     pause_on_failure: bool
     watching_enabled: bool
-
-    @classmethod
-    def from_printer(cls, printer: Printer) -> 'PrinterContext':
-        return PrinterContext(
-            id=printer.id,
-            name=printer.name,
-            pause_on_failure=printer.action_on_failure == printer.PAUSE,
-            watching_enabled=printer.watching_enabled,
-        )
-
-
-def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> Generator[Optional[bytes], Optional[float], None]:
-    # generator, receives timeout and then retreives file content from cache or network
-    content: Optional[bytes] = None
-    while True:
-        timeout = (yield content) or timeout
-
-        if not poster_url:
-            continue
-
-        if content is not None:
-            continue
-
-        try:
-            resp = requests.get(poster_url, timeout=timeout)
-            resp.raise_for_status()
-        except Exception:
-            sentryClient.captureException()
-            continue
-
-        content = resp.content
 
 
 @dataclasses.dataclass(frozen=True)
@@ -63,23 +30,6 @@ class PrintContext:
     alerted_at: Optional[datetime.datetime]
 
     alert_overwrite: str
-
-    @classmethod
-    def from_print(cls, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> 'PrintContext':
-        alert_overwrite: str = _print.alert_overwrite or ''  # type: ignore
-        ctx = PrintContext(
-            id=_print.id if _print else 0,
-            filename=_print.filename if _print else '',
-            poster_url=poster_url or '',
-            _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout),
-            started_at=_print.started_at if _print else None,
-            alerted_at=_print.alerted_at if _print else None,
-            ended_at=(_print.finished_at or _print.cancelled_at or None) if _print else None,
-            alert_overwrite=alert_overwrite,
-        )
-
-        ctx._poster_url_fetcher.send(None)
-        return ctx
 
     def get_poster_url_content(self, timeout: float = 5.0) -> Optional[bytes]:
         # We need to avoid refetching same image many times.
@@ -97,17 +47,6 @@ class UserContext:
 
     dh_balance: float
     is_pro: bool
-
-    @classmethod
-    def from_user(cls, user: User) -> 'UserContext':
-        return UserContext(
-            id=user.id,
-            email=user.email,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            dh_balance=user.dh_balance,
-            is_pro=user.is_pro,
-        )
 
 
 @dataclasses.dataclass(frozen=True)

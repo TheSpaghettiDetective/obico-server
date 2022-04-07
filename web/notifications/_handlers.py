@@ -177,7 +177,7 @@ class Handler(object):
             # return Feature.notify_on_print_progress # TODO
             return None
 
-        if events.is_supported(event_name):
+        if event_name in events.OTHER_PRINT_EVENTS:
             return Feature.notify_on_other_events
 
         return None

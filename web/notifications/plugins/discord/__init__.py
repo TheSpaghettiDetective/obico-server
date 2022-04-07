@@ -7,7 +7,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     ValidationError,
     site,
-    FailureNotificationContext, PrinterNotificationContext,
+    FailureAlertContext, PrinterNotificationContext,
     events,
 )
 
@@ -52,7 +52,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         webhook.add_embed(embed)
         webhook.execute()
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         if 'webhook_url' not in context.config:
             return
 

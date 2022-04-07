@@ -4,7 +4,7 @@ import requests  # type: ignore
 
 from notifications.plugin import (
     BaseNotificationPlugin,
-    FailureNotificationContext,
+    FailureAlertContext,
     PrinterNotificationContext,
     ValidationError,
     site,
@@ -32,7 +32,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
     def b(self, s: str) -> str:
         return f"*{s}*"
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return

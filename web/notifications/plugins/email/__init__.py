@@ -13,7 +13,7 @@ from allauth.account.admin import EmailAddress  # type: ignore
 from notifications.plugin import (
     BaseNotificationPlugin,
     site,
-    FailureNotificationContext,
+    FailureAlertContext,
     PrinterNotificationContext,
     events,
 )
@@ -28,7 +28,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             "unsub_token": kwargs['user'].unsub_token,
         }
 
-    def build_print_notifications_extra_context(self, **kwargs) -> Dict:
+    def build_print_notification_extra_context(self, **kwargs) -> Dict:
         return {
             "unsub_token": kwargs['user'].unsub_token,
         }
@@ -69,7 +69,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
     def get_template(self, name: str) -> Optional[Template]:
         return get_template(name)
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return

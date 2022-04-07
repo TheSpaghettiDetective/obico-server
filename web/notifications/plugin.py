@@ -120,21 +120,13 @@ class NotificationContext:
 
 
 @dataclasses.dataclass(frozen=True)
-class FailureNotificationContext(NotificationContext):
+class FailureAlertContext(NotificationContext):
     is_warning: bool
     print_paused: bool
 
 
 @dataclasses.dataclass(frozen=True)
 class PrinterNotificationContext(NotificationContext):
-    event_name: str
-    event_data: Dict
-
-
-@dataclasses.dataclass(frozen=True)
-class AccountNotificationContext:
-    config: Dict
-    user: UserContext
     event_name: str
     event_data: Dict
 
@@ -155,13 +147,10 @@ class BaseNotificationPlugin(object):
     def validate_config(self, data: Dict) -> Dict:
         return data
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         raise NotImplementedError
 
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
-        raise NotImplementedError
-
-    def send_account_notification(self, context: AccountNotificationContext, **kwargs) -> None:
         raise NotImplementedError
 
     def send_test_notification(self, config: Dict, **kwargs) -> None:
@@ -170,7 +159,7 @@ class BaseNotificationPlugin(object):
     def build_failure_alert_extra_context(self, **kwargs) -> Dict:
         return {}
 
-    def build_print_notifications_extra_context(self, **kwargs) -> Dict:
+    def build_print_notification_extra_context(self, **kwargs) -> Dict:
         return {}
 
     def supported_features(self) -> Set[Feature]:
@@ -196,13 +185,13 @@ class BaseNotificationPlugin(object):
 
     def get_failure_alert_title(
         self,
-        context: FailureNotificationContext,
+        context: FailureAlertContext,
         link: Optional[str] = None,
         **kwargs
     ) -> str:
         return 'The Spaghetti Detective - Failure alert!'
 
-    def get_failure_alert_text(self, context: FailureNotificationContext, link: Optional[str] = None, **kwargs) -> str:
+    def get_failure_alert_text(self, context: FailureAlertContext, link: Optional[str] = None, **kwargs) -> str:
         pausing_msg = ''
         if context.print_paused:
             pausing_msg = 'Printer is paused.'

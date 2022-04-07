@@ -8,7 +8,7 @@ from django.conf import settings
 
 from notifications.plugin import (
     BaseNotificationPlugin,
-    FailureNotificationContext,
+    FailureAlertContext,
     PrinterNotificationContext,
     ValidationError,
     site,
@@ -100,7 +100,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         req = requests.post(API_URL, data=payload, files=files, timeout=timeout)
         req.raise_for_status()
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         if not settings.PUSHOVER_APP_TOKEN:
             return
 

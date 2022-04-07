@@ -12,7 +12,7 @@ from django.conf import settings
 
 from .plugin import (
     BaseNotificationPlugin,
-    PrinterNotificationContext, FailureNotificationContext,
+    PrinterNotificationContext, FailureAlertContext,
     AccountNotificationContext,
     UserContext, PrintContext, PrinterContext,
     Feature,
@@ -136,7 +136,7 @@ class Handler(object):
                 if not plugin:
                     continue
 
-                context = FailureNotificationContext(
+                context = FailureAlertContext(
                     config=nsetting.config,
                     user=user_ctx,
                     printer=printer_ctx,
@@ -269,7 +269,7 @@ class Handler(object):
                     event_data=event_data,
                 )
 
-                extra_context = plugin.instance.build_print_notifications_extra_context(
+                extra_context = plugin.instance.build_print_notification_extra_context(
                     user=printer.user,
                     print_=print_,
                     printer=printer,
@@ -288,7 +288,7 @@ class Handler(object):
     def send_failure_alert(
         self,
         nsetting: NotificationSetting,
-        context: FailureNotificationContext,
+        context: FailureAlertContext,
         **extra_context,
     ) -> None:
         global _PLUGINS

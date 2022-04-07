@@ -8,7 +8,7 @@ from django.conf import settings
 from notifications.plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext,
-    FailureNotificationContext,
+    FailureAlertContext,
     ValidationError,
     site,
 )
@@ -38,7 +38,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return config['chat_id']
         return ''
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         if not chat_id:
             return
@@ -146,7 +146,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         )
         return markup
 
-    def inline_buttons(self, context: FailureNotificationContext, buttons=['more_info']):
+    def inline_buttons(self, context: FailureAlertContext, buttons=['more_info']):
         print_id = context.print.id
         links = {
             'cancel': {

@@ -5,7 +5,7 @@ from twilio.rest import Client  # type: ignore
 from django.conf import settings
 from notifications.plugin import (
     BaseNotificationPlugin,
-    FailureNotificationContext,
+    FailureAlertContext,
     ValidationError,
     Feature,
 )
@@ -36,7 +36,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         if not settings.TWILIO_ENABLED:
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return

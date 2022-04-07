@@ -5,7 +5,7 @@ from pushbullet import Pushbullet, PushbulletError, PushError  # type: ignore
 
 from notifications.plugin import (
     BaseNotificationPlugin,
-    FailureNotificationContext,
+    FailureAlertContext,
     PrinterNotificationContext,
     ValidationError,
     site,
@@ -56,7 +56,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
         else:
             pb.push_link(title, link, body)
 
-    def send_failure_alert(self, context: FailureNotificationContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return

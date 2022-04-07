@@ -76,7 +76,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         template_name = 'email/FailureAlert.html'
         tpl = self.get_template(template_name)
-        assert tpl
+        assert tpl, f'Cannot send failure alert email, template "{template_name}" is missing'
 
         mailing_list: str = 'alert'
         unsub_url = site.build_full_url(
@@ -107,7 +107,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
                         attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
             except Exception:
                 LOGGER.exception('error while fetching image content for email')
-                pass
 
             ctx['poster_url'] = None if attachments else context.print.poster_url
 
@@ -133,6 +132,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         template_name = f'email/{context.event_name}.html'
         tpl = self.get_template(template_name)
         if not tpl:
+            LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.event_name}"')
             return
 
         subject = self.get_printer_notification_subject(context, **kwargs)
@@ -167,7 +167,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
                         attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
             except Exception:
                 LOGGER.exception('error while fetching image content for email')
-                pass
 
             ctx['poster_url'] = None if attachments else context.print.poster_url
 
@@ -180,7 +179,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             attachments=attachments,
         )
 
-    def _send_emails(self, user_id: int, subject: str, message: str, headers: Dict, verified_only: bool = True, attachments: Optional[List] = None):
+    def _send_emails(self, user_id: int, subject: str, message: str, headers: Dict, verified_only: bool = True, attachments: Optional[List] = None) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
@@ -200,7 +199,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         (smtplib.SMTPServerDisconnected, smtplib.SMTPSenderRefused, smtplib.SMTPResponseException, ),
         max_tries=3
     )
-    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List]):
+    def _send_email(self, email: str, subject: str, message: str, headers: Dict, attachments: Optional[List]) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return

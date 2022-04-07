@@ -121,6 +121,7 @@ class Handler(object):
         ))
 
         if not nsettings:
+            LOGGER.debug("no matching NotificationSetting objects, ignoring failure alert")
             return
 
         user_ctx = UserContext.from_user(printer.user)
@@ -128,6 +129,7 @@ class Handler(object):
         print_ctx = PrintContext.from_print(print_, poster_url=poster_url)
 
         for nsetting in nsettings:
+            LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
                 assert nsetting.user_id == printer.user_id
                 plugin = self.notification_plugin_by_name(nsetting.name)
@@ -189,20 +191,30 @@ class Handler(object):
         event_name: str,
         event_data: Dict,
     ) -> bool:
+        if not nsetting.enabled:
+            LOGGER.debug(f'notifications are disabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
+            return False
+
         feature = self.feature_for_event(event_name, event_data)
 
         # is event is expected at all?
         if not feature:
+            LOGGER.debug(f'{event_name} is not expected, ignoring event')
             return False
 
         supported = plugin.supported_features()
 
         # does plugin support feature/event?
         if feature not in supported:
+            LOGGER.debug(f'{feature.name} is not supported by plugin "{nsetting.name}", ignoring event')
             return False
 
         # is feature enabled in user's configuration?
-        return getattr(nsetting, feature.name, False) and nsetting.enabled
+        if getattr(nsetting, feature.name, False):
+            return True
+
+        LOGGER.debug(f'{feature.name} is not enabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
+        return False
 
     def send_printer_notifications(
         self,
@@ -232,6 +244,7 @@ class Handler(object):
         ))
 
         if not nsettings:
+            LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
             return
 
         user_ctx = UserContext.from_user(printer.user)
@@ -239,6 +252,7 @@ class Handler(object):
         print_ctx = PrintContext.from_print(print_, poster_url=poster_url)
 
         for nsetting in nsettings:
+            LOGGER.debug(f'forwarding event {"event_name"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
                 assert nsetting.user_id == printer.user_id
                 plugin = self.notification_plugin_by_name(nsetting.name)
@@ -359,3 +373,6 @@ class Handler(object):
                     'poster_url': poster_url,
                 }
             )
+            return
+
+        LOGGER.debug('no matching NotificationSetting objects, ignoring event')

@@ -98,7 +98,7 @@ def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> G
 
 class Handler(object):
 
-    def __int__(self) -> None:
+    def __init__(self) -> None:
         self._PLUGINS: Optional[Dict[str, PluginDesc]] = None
 
     def notification_plugin_names(self) -> List[str]:

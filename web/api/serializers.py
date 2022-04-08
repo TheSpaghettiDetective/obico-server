@@ -253,6 +253,8 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
                 data['config'] = plugin.instance.validate_config(data['config'])
             except serializers.ValidationError as e:
                 raise serializers.ValidationError({'config': e.detail})
+
+            assert len(json.dumps(data['config'])) > 10000, "Too large config for notification plugin"
         return data
 
     def save(self):

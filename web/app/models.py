@@ -280,20 +280,20 @@ class Printer(SafeDeleteModel):
             self.set_current_print(filename, current_print_ts)
 
     def unset_current_print(self, gone=False, failed=False, canceled=False):
-        print = self.current_print
+        prev_print = self.current_print
         self.current_print = None
         self.save()
 
         self.printerprediction.reset_for_new_print()
 
-        if not print:
+        if not prev_print:
             return
 
-        if print.cancelled_at is None:
-            print.finished_at = timezone.now()
-            print.save()
+        if prev_print.cancelled_at is None:
+            prev_print.finished_at = timezone.now()
+            prev_print.save()
 
-        PrintEvent.create(print, PrintEvent.ENDED)
+        PrintEvent.create(prev_print, PrintEvent.ENDED)
         self.send_should_watch_status()
 
         event_name = 'PrintDone'
@@ -305,7 +305,8 @@ class Printer(SafeDeleteModel):
         elif gone:
             # FIXME
             # Print not properly ended before next start, or got -1 as print id.
-            # Previously we received a PrintDone
+            # In notifications v1 a PrintDone was emitted for gone prints,
+            # following that behaviour.
             event_name = 'PrintDone'
             event_data["gone"] = True
 
@@ -315,8 +316,8 @@ class Printer(SafeDeleteModel):
             printer=self,
             event_name=event_name,
             event_data=event_data,
-            print_=print,
-            poster_url=print.poster_url or '',
+            print_=prev_print,
+            poster_url=prev_print.poster_url or '',
         )
 
     def set_current_print(self, filename, current_print_ts):
@@ -602,18 +603,14 @@ class PrintEvent(models.Model):
     alert_muted = models.BooleanField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def create(print, event_type):
+    @classmethod
+    def create(cls, print, event_type):
         event = PrintEvent.objects.create(
             print=print,
             event_type=event_type,
             alert_muted=(print.alert_muted_at is not None)
         )
-
-        if event_type in (PrintEvent.ENDED, PrintEvent.FILAMENT_CHANGE):
-            celery_app.send_task(
-                settings.PRINT_EVENT_HANDLER,
-                args=(event.id, ),
-            )
+        return event
 
 
 class SharedResource(models.Model):

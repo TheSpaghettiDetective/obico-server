@@ -71,7 +71,6 @@ class UserViewSet(viewsets.GenericViewSet):
         else:
             serializer = self.serializer_class(user, many=False)
 
-
         return Response(serializer.data)
 
 

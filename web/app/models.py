@@ -868,8 +868,8 @@ class NotificationSetting(models.Model):
     def config(self):
         return json.loads(self.config_json)
 
-    @config.setter  # type: ignore
-    def set_config(self, data):
+    @config.setter
+    def config(self, data):
         self.config_json = json.dumps(data)
 
     class Meta:

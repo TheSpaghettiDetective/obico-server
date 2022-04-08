@@ -11,7 +11,6 @@ from lib.heater_trackers import process_heater_temps
 
 STATUS_TTL_SECONDS = 240
 
-
 def process_octoprint_status(printer: Printer, status: Dict) -> None:
     octoprint_settings = status.get('octoprint_settings')
     if octoprint_settings:

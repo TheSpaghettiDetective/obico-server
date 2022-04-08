@@ -9,8 +9,6 @@ from lib import mobile_notifications
 from app.models import PrintEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
-from notifications.handlers import handler
-
 STATUS_TTL_SECONDS = 240
 
 
@@ -42,23 +40,6 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
         process_octoprint_status_with_ts(status, printer)
 
     channels.send_status_to_web(printer.id)
-
-    op_event = status.get('octoprint_event', {})
-    if op_event:
-        event_name = op_event.get('event_type', '')
-        event_data = op_event.get('data') or {}
-
-        if event_name not in ('PrintStarted', 'PrintFailed', 'PrintDone', 'PrintCancelled'):
-            # events above are handled when PrintEvent is created
-
-            poster_url: str = printer.current_print.poster_url if printer.current_print_id else ''  # type: ignore
-            handler.queue_send_printer_notifications_task(
-                printer=printer,
-                event_name=event_name,
-                event_data=event_data,
-                print_=printer.current_print if printer.current_print_id else None,
-                poster_url=poster_url,
-            )
 
     temps = status.get('octoprint_data', {}).get('temperatures', None)
     if temps:
@@ -97,13 +78,9 @@ def process_octoprint_status_with_ts(op_status, printer):
     elif op_event.get('event_type') == 'PrintFailed':
         # setting cancelled_at here, original commit:
         # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/commit/86d1a18d34a9d895e9d9284d5048e45afa1e56a1
-        is_canceled = printer.current_print.cancelled_at is not None
         printer.current_print.cancelled_at = timezone.now()
         printer.current_print.save()
-        if is_canceled:
-            printer.unset_current_print(canceled=True)
-        else:
-            printer.unset_current_print(failed=True)
+        printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintDone':
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
@@ -114,3 +91,5 @@ def process_octoprint_status_with_ts(op_status, printer):
         printer.current_print.paused_at = None
         printer.current_print.save()
         PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
+    elif op_event.get('event_type') == 'FilamentChange':
+        PrintEvent.create(printer.current_print, PrintEvent.FILAMENT_CHANGE)

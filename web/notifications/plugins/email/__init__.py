@@ -139,7 +139,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         mailing_list: str = 'print_notification'
         unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={kwargs["unsub_token"]}&list={mailing_list}'
+            f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
         )
         headers = {
             'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'

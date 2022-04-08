@@ -18,6 +18,7 @@ from .plugin import (
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
+from lib import mobile_notifications
 
 from . import events
 
@@ -161,6 +162,11 @@ class Handler(object):
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
+        try:
+            mobile_notifications.send_failure_alert(printer, poster_url, is_warning, print_paused)
+        except Exception:
+            sentryClient.captureException()
+
         if plugin_names:
             names = list(set(self.notification_plugin_names()) & set(plugin_names))
         else:

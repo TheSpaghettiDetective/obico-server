@@ -24,14 +24,14 @@ LOGGER = logging.getLogger(__name__)
 class EmailNotificationPlugin(BaseNotificationPlugin):
 
     def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        return {
-            "unsub_token": kwargs['user'].unsub_token,
-        }
+        extra_context = super().build_print_notification_extra_context(**kwargs)
+        extra_context["unsub_token"] = kwargs['user'].unsub_token
+        return extra_context
 
     def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        return {
-            "unsub_token": kwargs['user'].unsub_token,
-        }
+        extra_context = super().build_print_notification_extra_context(**kwargs)
+        extra_context["unsub_token"] = kwargs['user'].unsub_token
+        return extra_context
 
     def get_printer_notification_subject(self, context: PrinterNotificationContext, **kwargs) -> str:
         event_name = context.event_name
@@ -80,22 +80,22 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         mailing_list: str = 'alert'
         unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={kwargs["unsub_token"]}&list={mailing_list}'
+            f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
         )
         headers = {
             'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
         }
-        ctx = {
-            'printer': context.printer,
-            'print_paused': context.print_paused,
-            'is_warning': context.is_warning,
-            'view_link': site.build_full_url('/printers/'),
-            'cancel_link': site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
-            'resume_link': site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
-            'unsub_url': unsub_url,
-        }
 
-        ctx.update(kwargs['extra_ctx'] if 'extra_ctx' in kwargs else {})
+        ctx = context.extra_context
+        ctx.update(
+            printer=context.printer,
+            print_paused=context.print_paused,
+            is_warning=context.is_warning,
+            view_link=site.build_full_url('/printers/'),
+            cancel_link=site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
+            resume_link=site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
+            unsub_url=unsub_url,
+        )
 
         attachments = []
         if context.print.poster_url:
@@ -145,12 +145,13 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
         }
 
-        ctx = {
-            'print': context.print,
-            'timelapse_link': site.build_full_url(f'/prints/{context.print.id}/'),
-            'user_pref_url': site.build_full_url('/user_preferences/'),
-            'unsub_url': unsub_url,
-        }
+        ctx = context.extra_context
+        ctx.update(
+            print=context.print,
+            timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
+            user_pref_url=site.build_full_url('/user_preferences/'),
+            unsub_url=unsub_url,
+        )
 
         if context.print.ended_at and context.print.started_at:
             ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]

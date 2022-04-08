@@ -7,7 +7,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     ValidationError,
     site,
-    FailureAlertContext, PrinterNotificationContext,
+    FailureAlertContext, PrinterNotificationContext, TestMessageContext,
     events,
 )
 
@@ -108,12 +108,12 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
         return self.INFO_COLOR
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
         self.call_webhook(
             title='Test Notification',
             text='It works!',
             color=self.OK_COLOR,
-            webhook_url=config.get('webhook_url', ''),
+            webhook_url=context.config.get('webhook_url', ''),
             image_url='',
         )
 

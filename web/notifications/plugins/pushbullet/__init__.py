@@ -7,6 +7,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
+    TestMessageContext,
     ValidationError,
     site,
 )
@@ -101,8 +102,8 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
-        access_token = self.get_access_token_from_config(config)
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+        access_token = self.get_access_token_from_config(context.config)
         link = site.build_full_url('/')
         self.call_pushbullet(
             access_token=access_token,

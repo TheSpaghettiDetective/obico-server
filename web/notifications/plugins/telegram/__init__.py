@@ -9,6 +9,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext,
     FailureAlertContext,
+    TestMessageContext,
     ValidationError,
     site,
 )
@@ -86,8 +87,8 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
-        chat_id = self.get_chat_id_from_config(config)
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+        chat_id = self.get_chat_id_from_config(context.config)
         self.call_telegram(
             chat_id=chat_id,
             message='It works!',

@@ -10,6 +10,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
+    TestMessageContext,
     ValidationError,
     site,
 )
@@ -146,8 +147,8 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
-        user_key = self.get_user_key_from_config(config)
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+        user_key = self.get_user_key_from_config(context.config)
         self.call_pushover(
             token=settings.PUSHOVER_APP_TOKEN or '',
             user_key=user_key,

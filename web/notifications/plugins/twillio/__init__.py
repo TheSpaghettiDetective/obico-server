@@ -6,6 +6,7 @@ from django.conf import settings
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
+    TestMessageContext,
     ValidationError,
     Feature,
 )
@@ -48,8 +49,8 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         return self.send_sms(body=text, to_number=to_number)
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
-        to_number = self.get_number_from_config(config)
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+        to_number = self.get_number_from_config(context.config)
         self.send_sms(
             body='TSD Test Notification - It works!',
             to_number=to_number,

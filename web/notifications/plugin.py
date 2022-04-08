@@ -56,6 +56,7 @@ class NotificationContext:
     printer: PrinterContext
     print: PrintContext
     site_is_public: bool
+    extra_context: Dict
 
 
 @dataclasses.dataclass(frozen=True)
@@ -68,6 +69,14 @@ class FailureAlertContext(NotificationContext):
 class PrinterNotificationContext(NotificationContext):
     event_name: str
     event_data: Dict
+
+
+@dataclasses.dataclass(frozen=True)
+class TestMessageContext:
+    config: Dict
+    user: UserContext
+    site_is_public: bool
+    extra_context: Dict
 
 
 class Feature(enum.Enum):
@@ -91,14 +100,14 @@ class BaseNotificationPlugin(object):
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
         raise NotImplementedError
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
         raise NotImplementedError
 
     def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        return {}
+        return kwargs.get('extra_context') or {}
 
     def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        return {}
+        return kwargs.get('extra_context') or {}
 
     def supported_features(self) -> Set[Feature]:
         return {

@@ -14,7 +14,7 @@ from django.conf import settings
 from .plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext, FailureAlertContext,
-    UserContext, PrintContext, PrinterContext,
+    UserContext, PrintContext, PrinterContext, TestMessageContext,
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
@@ -157,6 +157,7 @@ class Handler(object):
         printer: Printer,
         print_: Print,
         poster_url: str,
+        extra_context: Optional[Dict] = None,
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
@@ -189,6 +190,13 @@ class Handler(object):
                 if not plugin:
                     continue
 
+                extra_context = plugin.instance.build_failure_alert_extra_context(
+                    user=printer.user,
+                    print_=print_,
+                    printer=printer,
+                    extra_context=extra_context or {},
+                )
+
                 context = FailureAlertContext(
                     config=nsetting.config,
                     user=user_ctx,
@@ -197,15 +205,10 @@ class Handler(object):
                     site_is_public=settings.SITE_IS_PUBLIC,
                     is_warning=is_warning,
                     print_paused=print_paused,
+                    extra_context=extra_context,
                 )
 
-                extra_context = plugin.instance.build_failure_alert_extra_context(
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                )
-
-                self._send_failure_alert(nsetting=nsetting, context=context, **extra_context)
+                self._send_failure_alert(nsetting=nsetting, context=context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -276,6 +279,7 @@ class Handler(object):
         printer: Printer,
         print_: Optional[Print],
         poster_url: str,
+        extra_context: Optional[Dict] = None,
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
@@ -312,6 +316,13 @@ class Handler(object):
                 if not plugin:
                     continue
 
+                extra_context = plugin.instance.build_print_notification_extra_context(
+                    user=printer.user,
+                    print_=print_,
+                    printer=printer,
+                    extra_context=extra_context or {},
+                )
+
                 context = PrinterNotificationContext(
                     config=nsetting.config,
                     user=user_ctx,
@@ -320,15 +331,10 @@ class Handler(object):
                     site_is_public=settings.SITE_IS_PUBLIC,
                     event_name=event_name,
                     event_data=event_data,
+                    extra_context=extra_context,
                 )
 
-                extra_context = plugin.instance.build_print_notification_extra_context(
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                )
-
-                self._send_printer_notification(nsetting=nsetting, context=context, **extra_context)
+                self._send_printer_notification(nsetting=nsetting, context=context)
             except NotImplementedError:
                 pass
             except Exception:
@@ -342,7 +348,6 @@ class Handler(object):
         self,
         nsetting: NotificationSetting,
         context: FailureAlertContext,
-        **extra_context,
     ) -> None:
         if not nsetting.notify_on_failure_alert:
             return
@@ -351,13 +356,12 @@ class Handler(object):
         if not plugin:
             return
 
-        plugin.instance.send_failure_alert(context=context, **extra_context)
+        plugin.instance.send_failure_alert(context=context)
 
     def _send_printer_notification(
         self,
         nsetting: NotificationSetting,
         context: PrinterNotificationContext,
-        **extra_context,
     ) -> None:
         plugin = self.notification_plugin_by_name(nsetting.name)
         if not plugin:
@@ -371,13 +375,20 @@ class Handler(object):
         ):
             return
 
-        plugin.instance.send_printer_notification(context=context, **extra_context)
+        plugin.instance.send_printer_notification(context=context)
 
-    def send_test_notification(self, nsetting: NotificationSetting) -> None:
+    def send_test_message(self, nsetting: NotificationSetting, extra_context: Optional[Dict] = None) -> None:
         plugin = self.notification_plugin_by_name(nsetting.name)
         assert plugin, "plugin module is not loaded"
 
-        plugin.instance.send_test_notification(config=nsetting.config)
+        context = TestMessageContext(
+            config=nsetting.config,
+            user=self.get_user_context(nsetting.user),
+            site_is_public=settings.SITE_IS_PUBLIC,
+            extra_context=extra_context or {},
+        )
+
+        plugin.instance.send_test_message(context=context)
 
     def queue_send_printer_notifications_task(
         self,
@@ -386,6 +397,7 @@ class Handler(object):
         printer: Printer,
         print_: Optional[Print],
         poster_url: str = '',
+        extra_context: Optional[Dict] = None,
     ) -> None:
         feature = self.feature_for_event(event_name, event_data)
         if not feature:
@@ -399,16 +411,10 @@ class Handler(object):
         ).exists()
 
         if should_fire:
-            from . import tasks
-            tasks.send_printer_notifications.apply_async(
-                kwargs={
-                    'printer_id': printer.id,
-                    'event_name': event_name,
-                    'event_data': event_data,
-                    'print_id': print_.id if print_ else None,
-                    'poster_url': poster_url,
-                }
-            )
             return
 
         LOGGER.debug('no matching NotificationSetting objects, ignoring event')
+
+    def _queue_send_printer_notifications_task(self, *args, **kwargs) -> None:
+        from . import tasks
+        tasks.send_printer_notifications.apply_async(args=args, kwargs=kwargs)

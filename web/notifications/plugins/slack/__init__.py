@@ -6,6 +6,7 @@ from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
+    TestMessageContext,
     ValidationError,
     site,
 )
@@ -107,8 +108,8 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             image_url=context.print.poster_url,
         )
 
-    def send_test_notification(self, config: Dict, **kwargs) -> None:
-        access_token = self.get_access_token_from_config(config)
+    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+        access_token = self.get_access_token_from_config(context.config)
         self.call_slack(
             access_token=access_token,
             text='TSD Test Notification - It works!',

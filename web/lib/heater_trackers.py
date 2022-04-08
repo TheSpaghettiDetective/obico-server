@@ -5,7 +5,7 @@ from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
 from app.models import Printer, HeaterTracker, PrintHeaterTarget
-from lib.mobile_notifications import send_heater_event
+from lib.mobile_notifications import send_heater_event as send_mobile_push_heater_event
 from notifications.events import HeaterCooledDown, HeaterTargetReached
 from notifications.handlers import handler
 from django.utils.timezone import now
@@ -177,7 +177,7 @@ def update_heater_trackers(printer: Printer,
                 tracker.save()
 
         if event is not None:
-            send_heater_event(
+            send_mobile_push_heater_event(
                 printer,
                 event=event.type_as_str(),
                 heater_name=event.state.name,

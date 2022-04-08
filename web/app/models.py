@@ -291,6 +291,7 @@ class Printer(SafeDeleteModel):
             print.save()
         
         PrintEvent.create(print, PrintEvent.ENDED)
+        self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
         if not current_print_ts or current_print_ts == -1:
@@ -317,7 +318,6 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
         PrintEvent.create(cur_print, PrintEvent.STARTED)
-
         self.send_should_watch_status()
 
     ## return: succeeded? ##

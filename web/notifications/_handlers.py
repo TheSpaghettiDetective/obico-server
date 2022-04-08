@@ -411,10 +411,20 @@ class Handler(object):
         ).exists()
 
         if should_fire:
+            self._queue_send_printer_notifications_task(
+                kwargs={
+                    'printer_id': printer.id,
+                    'event_name': event_name,
+                    'event_data': event_data,
+                    'print_id': print_.id if print_ else None,
+                    'poster_url': poster_url,
+                    'extra_context': extra_context,
+                }
+            )
             return
 
         LOGGER.debug('no matching NotificationSetting objects, ignoring event')
 
-    def _queue_send_printer_notifications_task(self, *args, **kwargs) -> None:
+    def _queue_send_printer_notifications_task(self, kwargs: Dict) -> None:
         from . import tasks
-        tasks.send_printer_notifications.apply_async(args=args, kwargs=kwargs)
+        tasks.send_printer_notifications.apply_async(kwargs=kwargs)

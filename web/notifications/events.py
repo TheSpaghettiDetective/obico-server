@@ -17,3 +17,4 @@ HeaterCooledDown = PrinterEvent('HeaterCooledDown')
 HeaterTargetReached = PrinterEvent('HeaterTargetReached')
 
 OTHER_PRINT_EVENTS = [PrintStarted, PrintPaused, PrintResumed]
+PRINT_END_EVENTS = [PrintFailed, PrintDone, PrintCancelled]

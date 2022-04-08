@@ -538,6 +538,7 @@ class NotificationSettingsViewSet(
     serializer_class = NotificationSettingSerializer
 
     def get_queryset(self):
+        assert self.request.user.is_anonymous is False
         loaded = (plugin.name for plugin in handler.notification_plugins())
         return NotificationSetting.objects.filter(user=self.request.user, name__in=loaded)
 
@@ -558,11 +559,11 @@ class NotificationSettingsViewSet(
         return Response({"plugins": loaded})
 
     @action(detail=True, methods=['post', ])
-    def send_test_notification(self, request, pk):
+    def send_test_message(self, request, pk):
         obj = self.get_object()
         try:
-            handler.send_test_notification(obj)
+            handler.send_test_message(obj)
         except Exception as e:
-            LOGGER.exception("cannot test notification plugin")
+            LOGGER.exception("cannot test message")
             return Response({"status": "error", "detail": str(e)}, status=418)
         return Response({"status": "sent"})

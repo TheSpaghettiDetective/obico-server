@@ -30,6 +30,9 @@ When passed an image URL, the server:
 
 The `ml_api` container is made up of a base docker image that provides ML dependencies and an additional image that actually installs our model. 
 
+If you're running a Jetson Nano, add `"default-runtime": "nvidia"` to your `/etc/docker/daemon.json`, then run `sudo service docker restart` to update the change. This configures your Jetson to use the "nvidia" docker runtime during build time, which [exposes more include files](https://forums.developer.nvidia.com/t/nvidia-l4t-base-missing-cublas-v2-h/174582/4) needed for building the base image.
+
+
 To build the base image locally (replacing `_aarch64` with your architecture of choice as per `uname -a`):
 
 ```

@@ -42,6 +42,7 @@ from .printer_discovery import (
 )
 
 from notifications.handlers import handler
+from notifications.sync import sync_plugins_of_user
 
 LOGGER = logging.getLogger(__file__)
 
@@ -66,8 +67,10 @@ class UserViewSet(viewsets.GenericViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 user.refresh_from_db()
+                sync_plugins_of_user(user)
         else:
             serializer = self.serializer_class(user, many=False)
+
 
         return Response(serializer.data)
 

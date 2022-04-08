@@ -1,4 +1,11 @@
-FROM nvidia/cuda:9.0-runtime-ubuntu16.04
+FROM nvidia/cuda:11.0-devel
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential git ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/AlexeyAB/darknet.git && cd darknet && sed -i "s/LIBSO=0/LIBSO=1/g" Makefile && sed -i "s/GPU=0/GPU=1/g" Makefile && make
+
+FROM nvidia/cuda:11.0-runtime
+COPY --from=0 /darknet /darknet
+
 WORKDIR /app
 EXPOSE 3333
 RUN apt update && \

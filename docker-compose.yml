@@ -44,13 +44,16 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
+    runtime: nvidia
+    ports: 
+      - "3333:3333"
     build:
       context: ml_api
     environment:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
+        #LOGLEVEL: 'DEBUG'
         #ML_API_TOKEN:
-        #HAS_GPU: 'False'
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:

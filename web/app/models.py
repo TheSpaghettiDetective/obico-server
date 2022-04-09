@@ -25,6 +25,7 @@ from django.contrib.auth.hashers import make_password
 from config.celery import celery_app
 from lib import cache, channels
 from lib.utils import dict_or_none
+from notifications import events
 
 LOGGER = logging.getLogger(__name__)
 
@@ -554,8 +555,6 @@ class PrintEvent(models.Model):
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
     )
 
-    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
-
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=256,
@@ -569,7 +568,7 @@ class PrintEvent(models.Model):
         event = PrintEvent.objects.create(
             print=print_,
             event_type=event_type,
-            alert_muted=(print.alert_muted_at is not None)
+            alert_muted=(print_.alert_muted_at is not None)
         )
 
         if event_type in (PrintEvent.ENDED):
@@ -577,7 +576,7 @@ class PrintEvent(models.Model):
                 settings.PRINT_EVENT_HANDLER,
                 args=(event.id, ),
             )
-        elif event_type in (PrintEvent.FilamentChange) + events.OTHER_PRINT_EVENTS:
+        elif event_type in (events.FilamentChange,) + events.OTHER_PRINT_EVENTS:
             # TODO circular import problem
             from notifications.handlers import handler
             handler.queue_send_printer_notifications_task(

@@ -336,7 +336,6 @@ TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER')
 TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 TWILIO_ENABLED = TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER
 
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 PUSHOVER_APP_TOKEN = os.environ.get('PUSHOVER_APP_TOKEN')
 
 SLACK_CLIENT_ID = os.environ.get('SLACK_CLIENT_ID')

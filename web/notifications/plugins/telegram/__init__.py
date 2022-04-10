@@ -1,5 +1,6 @@
 from typing import Dict, Optional, List
 import logging
+import os
 import time
 from telebot import TeleBot, types  # type: ignore
 
@@ -178,8 +179,8 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
 
     def get_telegram_bot(self):
         bot = None
-        if settings.TELEGRAM_BOT_TOKEN:
-            bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
+        if os.environ.get('TELEGRAM_BOT_TOKEN'):
+            bot = TeleBot(os.environ.get('TELEGRAM_BOT_TOKEN'))
         return bot
 
 

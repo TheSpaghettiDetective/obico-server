@@ -2,6 +2,7 @@ from typing import Dict, Optional, Any
 import logging
 import requests  # type: ignore
 import io
+import os
 from enum import IntEnum
 
 from django.conf import settings
@@ -102,7 +103,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         req.raise_for_status()
 
     def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
-        if not settings.PUSHOVER_APP_TOKEN:
+        if not os.environ.get('PUSHOVER_APP_TOKEN'):
             return
 
         user_key = self.get_user_key_from_config(context.config)
@@ -117,7 +118,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
 
         file_content = context.print.get_poster_url_content() if not context.site_is_public else None
         self.call_pushover(
-            token=settings.PUSHOVER_APP_TOKEN,
+            token=os.environ.get('PUSHOVER_APP_TOKEN'),
             user_key=user_key,
             priority=PushoverPriority.HIGH,
             title=title,
@@ -126,7 +127,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
-        if not settings.PUSHOVER_APP_TOKEN:
+        if not os.environ.get('PUSHOVER_APP_TOKEN'):
             return
 
         user_key = self.get_user_key_from_config(context.config)
@@ -140,7 +141,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
 
         file_content = context.print.get_poster_url_content()
         self.call_pushover(
-            token=settings.PUSHOVER_APP_TOKEN,
+            token=os.environ.get('PUSHOVER_APP_TOKEN'),
             user_key=user_key,
             title=title,
             message=text,
@@ -150,7 +151,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
     def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
         user_key = self.get_user_key_from_config(context.config)
         self.call_pushover(
-            token=settings.PUSHOVER_APP_TOKEN or '',
+            token=os.environ.get('PUSHOVER_APP_TOKEN') or '',
             user_key=user_key,
             title='Test Notification',
             message='It works!',

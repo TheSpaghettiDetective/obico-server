@@ -40,6 +40,7 @@ from .printer_discovery import (
     get_active_devices_for_client_ip,
     DeviceMessage,
 )
+from notifications.handlers import handler
 
 LOGGER = logging.getLogger(__file__)
 

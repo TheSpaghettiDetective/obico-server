@@ -31,7 +31,8 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.image import overlay_detections
 from lib import cache
 from lib import site
-from lib.notifications import send_print_notification
+from notifications.handlers import handler
+from notifications import notification_types
 from api.octoprint_views import IMG_URL_TTL_SECONDS
 
 LOGGER = logging.getLogger(__name__)
@@ -39,17 +40,24 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(event_id):
-    print_event = PrintEvent.objects.get(id=event_id)
+    print_event = PrintEvent.objects.select_related('print').get(id=event_id)
     if print_event.event_type == PrintEvent.ENDED:
-        process_print_end_event(print_event.print_id)
+        process_print_end_event(print_event)
 
 
-def process_print_end_event(print_id):
-    _print = Print.objects.select_related('printer__user').get(id=print_id)
+def process_print_end_event(print_event):
+    _print = Print.objects.select_related('printer__user').get(id=print_event.print_id)
 
     if will_record_timelapse(_print):
         select_print_shots_for_feedback(_print)
-        send_print_notification(_print)
+        handler.queue_send_printer_notifications_task(
+            printer=_print.printer,
+            notification_type=notification_types.from_print_event(print_event),
+            notification_data={},
+            print_=_print,
+            poster_url=_print.poster_url or '',
+        )
+
         compile_timelapse.delay(print_id)
 
 

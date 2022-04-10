@@ -33,4 +33,18 @@ class Migration(migrations.Migration):
                 'unique_together': {('user', 'name')},
             },
         ),
+        migrations.RunSQL(
+            sql="""
+                insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
+                select 'email', id, '', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', now(), now() from app_user;
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        ),
+        migrations.RunSQL(
+            sql="""
+                insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
+                select 'discord', id, ' {"webhook_url": "' || discord_webhook || '"}', 't', 't', notify_on_done and print_notification_by_discord, notify_on_canceled and print_notification_by_discord, notify_on_filament_change_req and print_notification_by_discord, 'f', 'f', now(), now() from app_user where discord_webhook is not null;
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        ),
     ]

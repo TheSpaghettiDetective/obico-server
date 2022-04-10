@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
                 ('config_json', models.TextField(blank=True, default='')),
                 ('enabled', models.BooleanField(default=True)),
                 ('notify_on_failure_alert', models.BooleanField(blank=True, default=True)),
-                ('notify_on_account_events', models.BooleanField(blank=True, default=False)),
                 ('notify_on_print_done', models.BooleanField(blank=True, default=False)),
                 ('notify_on_print_cancelled', models.BooleanField(blank=True, default=False)),
                 ('notify_on_filament_change', models.BooleanField(blank=True, default=False)),

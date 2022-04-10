@@ -826,7 +826,7 @@ class NotificationSetting(models.Model):
 
     @property
     def config(self):
-        return json.loads(self.config_json)
+        return json.loads(self.config_json) if self.config_json else None
 
     @config.setter
     def config(self, data):

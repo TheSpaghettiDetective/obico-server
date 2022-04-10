@@ -43,6 +43,8 @@ def process_print_events(event_id):
     print_event = PrintEvent.objects.select_related('print').get(id=event_id)
     if print_event.event_type == PrintEvent.ENDED:
         process_print_end_event(print_event)
+    else:
+        send_notification_for_print_event(print_event.print, print_event)
 
 
 def process_print_end_event(print_event):
@@ -50,15 +52,25 @@ def process_print_end_event(print_event):
 
     if will_record_timelapse(_print):
         select_print_shots_for_feedback(_print)
+        send_notification_for_print_event(_print, print_event)
+        compile_timelapse.delay(print_id)
+
+
+def send_notification_for_print_event(_print, print_event, extra_context):
+    notification_type = notification_types.from_print_event(print_event)
+    if notification_type in [
+        notification_types.FilamentChange,
+        notification_types.PrintDone,
+        notification_types.PrintCancelled,
+        ] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
         handler.queue_send_printer_notifications_task(
             printer=_print.printer,
-            notification_type=notification_types.from_print_event(print_event),
+            notification_type=notification_type,
             notification_data={},
             print_=_print,
             poster_url=_print.poster_url or '',
+            extra_context=extra_context,
         )
-
-        compile_timelapse.delay(print_id)
 
 
 @shared_task(acks_late=True)

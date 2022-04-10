@@ -569,27 +569,10 @@ class PrintEvent(models.Model):
             event_type=event_type,
             alert_muted=(print_.alert_muted_at is not None)
         )
-
-        if event_type in (PrintEvent.ENDED):
-            celery_app.send_task(
-                settings.PRINT_EVENT_HANDLER,
-                args=(event.id, ),
-            )
-        else:
-            # TODO circular import problem
-            from notifications.handlers import handler
-            from notifications import notification_types
-
-            notification_type = notification_types.from_print_event(event)
-            if notification_type in [notification_types.FilamentChange,] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
-                handler.queue_send_printer_notifications_task(
-                    printer=print_.printer,
-                    notification_type=notification_type,
-                    notification_data={},
-                    print_=print_,
-                    poster_url=print_.poster_url or '',
-                )
-
+        celery_app.send_task(
+            settings.PRINT_EVENT_HANDLER,
+            args=(event.id, ),
+        )
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)

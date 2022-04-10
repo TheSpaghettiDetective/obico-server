@@ -240,7 +240,7 @@ class Handler(object):
             # return Feature.notify_on_print_progress # TODO
             return None
 
-        if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.keys()):
+        if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
             return Feature.notify_on_other_print_events
 
         return None
@@ -256,7 +256,6 @@ class Handler(object):
             LOGGER.debug(f'notifications are disabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
             return False
 
-        import ipdb; ipdb.set_trace()
         feature = self.feature_for_notification_type(notification_type, notification_data)
 
         # is event is expected at all?

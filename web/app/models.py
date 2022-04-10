@@ -581,7 +581,7 @@ class PrintEvent(models.Model):
             from notifications import notification_types
 
             notification_type = notification_types.from_print_event(event)
-            if notification_type in [notification_types.FilamentChange,] + list(notification_types.OTHER_PRINT_EVENT_MAP.keys()):
+            if notification_type in [notification_types.FilamentChange,] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
                 handler.queue_send_printer_notifications_task(
                     printer=print_.printer,
                     notification_type=notification_type,

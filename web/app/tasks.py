@@ -56,7 +56,7 @@ def process_print_end_event(print_event):
         compile_timelapse.delay(print_id)
 
 
-def send_notification_for_print_event(_print, print_event, extra_context):
+def send_notification_for_print_event(_print, print_event, extra_context=None):
     notification_type = notification_types.from_print_event(print_event)
     if notification_type in [
         notification_types.FilamentChange,

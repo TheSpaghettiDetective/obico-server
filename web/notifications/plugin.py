@@ -6,7 +6,7 @@ from rest_framework.serializers import ValidationError as ValidationError  # noq
 from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore  # noqa
 
 from lib import site as site  # noqa: F401
-from . import events
+from . import notification_types
 
 
 @dataclasses.dataclass(frozen=True)
@@ -67,8 +67,8 @@ class FailureAlertContext(NotificationContext):
 
 @dataclasses.dataclass(frozen=True)
 class PrinterNotificationContext(NotificationContext):
-    event_name: str
-    event_data: Dict
+    notification_type: str
+    notification_data: Dict
 
 
 @dataclasses.dataclass(frozen=True)
@@ -84,7 +84,7 @@ class Feature(enum.Enum):
     notify_on_print_done = 'notify_on_print_done'
     notify_on_print_cancelled = 'notify_on_print_cancelled'
     notify_on_filament_change = 'notify_on_filament_change'
-    notify_on_other_events = 'notify_on_other_events'
+    notify_on_other_print_events = 'notify_on_other_print_events'
     notify_on_heater_status = 'notify_on_heater_status'
     notify_on_print_progress = 'notify_on_print_progress'
 
@@ -115,7 +115,7 @@ class BaseNotificationPlugin(object):
             Feature.notify_on_print_done,
             Feature.notify_on_print_cancelled,
             Feature.notify_on_filament_change,
-            Feature.notify_on_other_events,
+            Feature.notify_on_other_print_events,
         }
 
     def i(self, s: str) -> str:
@@ -161,32 +161,32 @@ class BaseNotificationPlugin(object):
 
     def get_printer_notification_text(self, context: PrinterNotificationContext) -> str:
         text = f"Your print job {self.b(context.print.filename)} "
-        event_name = context.event_name
-        event_data = context.event_data
+        notification_type = context.notification_type
+        notification_data = context.notification_data
 
-        if event_name == events.PrintStarted:
+        if notification_type == notification_types.PrintStarted:
             text += "has started "
-        elif event_name == events.PrintFailed:
+        elif notification_type == notification_types.PrintFailed:
             text += "failed "
-        elif event_name == events.PrintDone:
+        elif notification_type == notification_types.PrintDone:
             text += "is ready "
-        elif event_name == events.PrintCancelled:
+        elif notification_type == notification_types.PrintCancelled:
             text += "is canceled "
-        elif event_name == events.PrintPaused:
+        elif notification_type == notification_types.PrintPaused:
             text += "is paused "
-        elif event_name == events.PrintResumed:
+        elif notification_type == notification_types.PrintResumed:
             text += "is resumed "
-        elif event_name == events.FilamentChange:
+        elif notification_type == notification_types.FilamentChange:
             text += "requires filament change "
-        elif event_name == events.HeaterCooledDown:
+        elif notification_type == notification_types.HeaterCooledDown:
             text = (
-                f"Heater {self.b(event_data['name'])} "
-                f"has cooled down to {self.b(str(event_data['actual']) + '℃')}"
+                f"Heater {self.b(notification_data['name'])} "
+                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')}"
             )
-        elif event_name == events.HeaterTargetReached:
+        elif notification_type == notification_types.HeaterTargetReached:
             text = (
-                f"Heater {self.b(event_data['name'])} "
-                f"has reached target temperature {self.b(str(event_data['actual']) + '℃')} "
+                f"Heater {self.b(notification_data['name'])} "
+                f"has reached target temperature {self.b(str(notification_data['actual']) + '℃')} "
             )
         else:
             return ''

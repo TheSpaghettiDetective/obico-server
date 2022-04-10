@@ -25,7 +25,6 @@ from django.contrib.auth.hashers import make_password
 from config.celery import celery_app
 from lib import cache, channels
 from lib.utils import dict_or_none
-from notifications import events
 
 LOGGER = logging.getLogger(__name__)
 
@@ -576,16 +575,20 @@ class PrintEvent(models.Model):
                 settings.PRINT_EVENT_HANDLER,
                 args=(event.id, ),
             )
-        elif event_type in (events.FilamentChange,) + events.OTHER_PRINT_EVENTS:
+        else:
             # TODO circular import problem
             from notifications.handlers import handler
-            handler.queue_send_printer_notifications_task(
-                printer=print_.printer,
-                event_name=self.event_type,
-                event_data={},
-                print_=print_,
-                poster_url=print_.poster_url or '',
-            )
+            from notifications import notification_types
+
+            notification_type = notification_types.from_print_event(event)
+            if notification_type in [notification_types.FilamentChange,] + list(notification_types.OTHER_PRINT_EVENT_MAP.keys()):
+                handler.queue_send_printer_notifications_task(
+                    printer=print_.printer,
+                    notification_type=notification_type,
+                    notification_data={},
+                    print_=print_,
+                    poster_url=print_.poster_url or '',
+                )
 
 
 class SharedResource(models.Model):
@@ -807,7 +810,6 @@ class OctoPrintTunnel(SafeDeleteModel):
         return host
 
     def get_basicauth_url(self, request, plain_basicauth_password):
-        assert self.basicauth_username and self.basicauth_password
         return f'{request.scheme}://{self.basicauth_username}:{plain_basicauth_password}@{self.get_host(request)}'
 
     def get_internal_tunnel_url(self, request):
@@ -832,7 +834,7 @@ class NotificationSetting(models.Model):
     notify_on_print_done = models.BooleanField(blank=True, default=False)
     notify_on_print_cancelled = models.BooleanField(blank=True, default=False)
     notify_on_filament_change = models.BooleanField(blank=True, default=False)
-    notify_on_other_events = models.BooleanField(blank=True, default=False)
+    notify_on_other_print_events = models.BooleanField(blank=True, default=False)
 
     notify_on_heater_status = models.BooleanField(blank=True, default=False)
 

@@ -226,7 +226,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             'notify_on_print_done',
             'notify_on_print_cancelled',
             'notify_on_filament_change',
-            'notify_on_other_events',
+            'notify_on_other_print_events',
             'notify_on_heater_status',
         )
 
@@ -254,7 +254,6 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             except serializers.ValidationError as e:
                 raise serializers.ValidationError({'config': e.detail})
 
-            assert len(json.dumps(data['config'])) > 10000, "Too large config for notification plugin"
         return data
 
     def save(self):

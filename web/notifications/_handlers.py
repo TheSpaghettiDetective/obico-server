@@ -20,7 +20,7 @@ from .plugin import (
 from app.models import Print, Printer, NotificationSetting, User
 from lib import mobile_notifications
 
-from . import events
+from . import notification_types
 
 
 LOGGER = logging.getLogger(__file__)
@@ -191,7 +191,6 @@ class Handler(object):
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
-                assert nsetting.user_id == printer.user_id
                 plugin = self.notification_plugin_by_name(nsetting.name)
                 if not plugin:
                     continue
@@ -224,44 +223,45 @@ class Handler(object):
                 else:
                     raise
 
-    def feature_for_event(self, event_name: str, event_data: Dict) -> Optional[Feature]:
-        if event_name in (events.PrintFailed, events.PrintDone):
+    def feature_for_notification_type(self, notification_type: str, notification_data: Dict) -> Optional[Feature]:
+        if notification_type in (notification_types.PrintFailed, notification_types.PrintDone):
             return Feature.notify_on_print_done
 
-        if event_name == events.PrintCancelled:
+        if notification_type == notification_types.PrintCancelled:
             return Feature.notify_on_print_cancelled
 
-        if event_name == events.FilamentChange:
+        if notification_type == notification_types.FilamentChange:
             return Feature.notify_on_filament_change
 
-        if event_name in (events.HeaterCooledDown, events.HeaterTargetReached):
+        if notification_type in (notification_types.HeaterCooledDown, notification_types.HeaterTargetReached):
             return Feature.notify_on_heater_status
 
-        if event_name == events.PrintProgress:
+        if notification_type == notification_types.PrintProgress:
             # return Feature.notify_on_print_progress # TODO
             return None
 
-        if event_name in events.OTHER_PRINT_EVENTS:
-            return Feature.notify_on_other_events
+        if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.keys()):
+            return Feature.notify_on_other_print_events
 
         return None
 
-    def should_plugin_handle_printer_event(
+    def should_plugin_handle_notification_type(
         self,
         plugin: BaseNotificationPlugin,
         nsetting: NotificationSetting,
-        event_name: str,
-        event_data: Dict,
+        notification_type: str,
+        notification_data: Dict,
     ) -> bool:
         if not nsetting.enabled:
             LOGGER.debug(f'notifications are disabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
             return False
 
-        feature = self.feature_for_event(event_name, event_data)
+        import ipdb; ipdb.set_trace()
+        feature = self.feature_for_notification_type(notification_type, notification_data)
 
         # is event is expected at all?
         if not feature:
-            LOGGER.debug(f'{event_name} is not expected, ignoring event')
+            LOGGER.debug(f'{notification_type} is not expected, ignoring event')
             return False
 
         supported = plugin.supported_features()
@@ -280,8 +280,8 @@ class Handler(object):
 
     def send_printer_notifications(
         self,
-        event_name: str,
-        event_data: dict,
+        notification_type: str,
+        notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
         poster_url: str,
@@ -289,7 +289,7 @@ class Handler(object):
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
-        feature = self.feature_for_event(event_name, event_data)
+        feature = self.feature_for_notification_type(notification_type, notification_data)
         if not feature:
             return
 
@@ -315,9 +315,8 @@ class Handler(object):
         print_ctx = self.get_print_context(print_, poster_url=poster_url)
 
         for nsetting in nsettings:
-            LOGGER.debug(f'forwarding event {"event_name"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
+            LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
-                assert nsetting.user_id == printer.user_id
                 plugin = self.notification_plugin_by_name(nsetting.name)
                 if not plugin:
                     continue
@@ -335,8 +334,8 @@ class Handler(object):
                     printer=printer_ctx,
                     print=print_ctx,
                     site_is_public=settings.SITE_IS_PUBLIC,
-                    event_name=event_name,
-                    event_data=event_data,
+                    notification_type=notification_type,
+                    notification_data=notification_data,
                     extra_context=extra_context,
                 )
 
@@ -373,11 +372,11 @@ class Handler(object):
         if not plugin:
             return
 
-        if not self.should_plugin_handle_printer_event(
+        if not self.should_plugin_handle_notification_type(
             plugin.instance,
             nsetting,
-            context.event_name,
-            context.event_data,
+            context.notification_type,
+            context.notification_data,
         ):
             return
 
@@ -385,7 +384,6 @@ class Handler(object):
 
     def send_test_message(self, nsetting: NotificationSetting, extra_context: Optional[Dict] = None) -> None:
         plugin = self.notification_plugin_by_name(nsetting.name)
-        assert plugin, "plugin module is not loaded"
 
         context = TestMessageContext(
             config=nsetting.config,
@@ -398,14 +396,14 @@ class Handler(object):
 
     def queue_send_printer_notifications_task(
         self,
-        event_name: str,
-        event_data: dict,
+        notification_type: str,
+        notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
         poster_url: str = '',
         extra_context: Optional[Dict] = None,
     ) -> None:
-        feature = self.feature_for_event(event_name, event_data)
+        feature = self.feature_for_notification_type(notification_type, notification_data)
         if not feature:
             return
 
@@ -420,8 +418,8 @@ class Handler(object):
             self._queue_send_printer_notifications_task(
                 kwargs={
                     'printer_id': printer.id,
-                    'event_name': event_name,
-                    'event_data': event_data,
+                    'notification_type': notification_type,
+                    'notification_data': notification_data,
                     'print_id': print_.id if print_ else None,
                     'poster_url': poster_url,
                     'extra_context': extra_context,
@@ -433,4 +431,5 @@ class Handler(object):
 
     def _queue_send_printer_notifications_task(self, kwargs: Dict) -> None:
         from . import tasks
+        print(kwargs)
         tasks.send_printer_notifications.apply_async(kwargs=kwargs)

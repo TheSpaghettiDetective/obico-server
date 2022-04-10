@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('notify_on_print_done', models.BooleanField(blank=True, default=False)),
                 ('notify_on_print_cancelled', models.BooleanField(blank=True, default=False)),
                 ('notify_on_filament_change', models.BooleanField(blank=True, default=False)),
-                ('notify_on_other_events', models.BooleanField(blank=True, default=False)),
+                ('notify_on_other_print_events', models.BooleanField(blank=True, default=False)),
                 ('notify_on_heater_status', models.BooleanField(blank=True, default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),

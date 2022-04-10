@@ -8,7 +8,7 @@ from notifications.plugin import (
     ValidationError,
     site,
     FailureAlertContext, PrinterNotificationContext, TestMessageContext,
-    events,
+    notification_types,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -81,7 +81,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         if 'webhook_url' not in context.config:
             return
 
-        color = self.event_to_color(event_name=context.event_name)
+        color = self.notification_type_to_color(notification_type=context.notification_type)
         text = self.get_printer_notification_text(context=context)
         if not text:
             return
@@ -96,14 +96,14 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             image_url=context.print.poster_url
         )
 
-    def event_to_color(self, event_name: str) -> int:
-        if event_name in (events.PrintFailed, ):
+    def notification_type_to_color(self, notification_type: str) -> int:
+        if notification_type in (notification_types.PrintFailed, ):
             return self.FAILURE_COLOR
 
-        if event_name in (events.FilamentChange, ):
+        if notification_type in (notification_types.FilamentChange, ):
             return self.HAZZARD_COLOR
 
-        if event_name in (events.PrintDone, ):
+        if notification_type in (notification_types.PrintDone, ):
             return self.OK_COLOR
 
         return self.INFO_COLOR

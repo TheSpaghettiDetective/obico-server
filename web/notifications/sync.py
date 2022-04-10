@@ -17,7 +17,7 @@ def sync_plugin_of_user(
     obj.notify_on_print_done = kwargs.get('notify_on_print_done', user.notify_on_done if enabled else True)
     obj.notify_on_print_cancelled = kwargs.get('notify_on_print_cancelled', user.notify_on_canceled if enabled else False)
     obj.notify_on_filament_change = kwargs.get('notify_on_filament_change', user.notify_on_filament_change_req if enabled else False)
-    obj.notify_on_other_events = kwargs.get('notify_on_other_events', False)
+    obj.notify_on_other_print_events = kwargs.get('notify_on_other_print_events', False)
     obj.notify_on_heater_status = kwargs.get('notify_on_heater_status', False)
     obj.save()
     return obj, created
@@ -79,6 +79,6 @@ def sync_plugins_of_user(user: User) -> None:
         notify_on_print_done=False,
         notify_on_print_cancelled=False,
         notify_on_filament_change=False,
-        notify_on_other_events=False,
+        notify_on_other_print_events=False,
         notify_on_heater_status=False,
     )

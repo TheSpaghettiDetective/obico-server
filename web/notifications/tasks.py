@@ -8,7 +8,7 @@ from celery import shared_task  # type: ignore
 
 
 from .handlers import handler
-from . import events
+from . import notification_types
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ LOGGER = logging.getLogger(__name__)
 @shared_task
 def send_printer_notifications(
     printer_id: int,
-    event_name: str,
-    event_data: Dict,
+    notification_type: str,
+    notification_data: Dict,
     print_id: Optional[int],
     poster_url: str = '',
     extra_context: Optional[Dict] = None,
@@ -36,18 +36,9 @@ def send_printer_notifications(
         # FIXME any additional filter? User.is_active?
         printer = Printer.objects.select_related('user').get(id=printer_id)
 
-    if event_name in events.PRINT_END_EVENTS:
-        assert cur_print, "cannot process print end event without a print"
-
-        if not will_record_timelapse(cur_print):
-            LOGGER.warning(f'will not record timelapse, {event_name} is suppressed for print (pk: {cur_print.id}')
-            return
-
-        compile_timelapse.delay(cur_print.id)
-
     handler.send_printer_notifications(
-        event_name=event_name,
-        event_data=event_data,
+        notification_type=notification_type,
+        notification_data=notification_data,
         printer=printer,
         print_=cur_print,
         poster_url=poster_url or '',

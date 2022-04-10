@@ -52,20 +52,18 @@ def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
 
-    poster_url = save_print_snapshot(
-        printer,
-        last_pic_of_print(printer.current_print, 'tagged'),
-        f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
-        rotated=True,
-        to_long_term_storage=False
-    )
+    rotated_jpg_url = save_print_snapshot(printer,
+                        last_pic_of_print(printer.current_print, 'tagged'),
+                        f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
+                        rotated=True,
+                        to_long_term_storage=False)
 
     handler.send_failure_alerts(
         printer=printer,
-        is_warning=True,
-        print_paused=False,
+        is_warning=is_warning,
+        print_paused=print_paused,
         print_=printer.current_print,
-        poster_url=poster_url or ''
+        poster_url=rotated_jpg_url or ''
     )
 
 

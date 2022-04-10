@@ -15,7 +15,7 @@ from notifications.plugin import (
     site,
     FailureAlertContext,
     PrinterNotificationContext,
-    events,
+    notification_types,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -34,32 +34,32 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         return extra_context
 
     def get_printer_notification_subject(self, context: PrinterNotificationContext, **kwargs) -> str:
-        event_name = context.event_name
-        event_data = context.event_data
+        notification_type = context.notification_type
+        notification_data = context.notification_data
 
-        if event_name == events.PrintStarted:
+        if notification_type == notification_types.PrintStarted:
             text = f"{context.print.filename} started"
-        elif event_name == events.PrintFailed:
+        elif notification_type == notification_types.PrintFailed:
             text = f"{context.print.filename} failed"
-        elif event_name == events.PrintDone:
+        elif notification_type == notification_types.PrintDone:
             text = f"🙌 {context.print.filename} is ready"
-        elif event_name == events.PrintCancelled:
+        elif notification_type == notification_types.PrintCancelled:
             text = f"{context.print.filename} is canceled"
-        elif event_name == events.PrintPaused:
+        elif notification_type == notification_types.PrintPaused:
             text = f"{context.print.filename} is paused"
-        elif event_name == events.PrintResumed:
+        elif notification_type == notification_types.PrintResumed:
             text = f"{context.print.filename} is resumed"
-        elif event_name == events.FilamentChange:
+        elif notification_type == notification_types.FilamentChange:
             text = f"{context.print.filename} requires filament change"
-        elif event_name == events.HeaterCooledDown:
+        elif notification_type == notification_types.HeaterCooledDown:
             text = (
-                f"Heater {self.b(event_data['name'])} "
-                f"has cooled down to {self.b(str(event_data['actual']) + '℃')}"
+                f"Heater {self.b(notification_data['name'])} "
+                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')}"
             )
-        elif event_name == events.HeaterTargetReached:
+        elif notification_type == notification_types.HeaterTargetReached:
             text = (
-                f"Heater {self.b(event_data['name'])} "
-                f"has reached target temperature {self.b(str(event_data['actual']) + '℃')} "
+                f"Heater {self.b(notification_data['name'])} "
+                f"has reached target temperature {self.b(str(notification_data['actual']) + '℃')} "
             )
         else:
             return ''
@@ -76,8 +76,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         template_name = 'email/FailureAlert.html'
         tpl = self.get_template(template_name)
-        assert tpl, f'Cannot send failure alert email, template "{template_name}" is missing'
-
+        
         mailing_list: str = 'alert'
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
@@ -129,10 +128,10 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
-        template_name = f'email/{context.event_name}.html'
+        template_name = f'email/{context.notification_type}.html'
         tpl = self.get_template(template_name)
         if not tpl:
-            LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.event_name}"')
+            LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.notification_type}"')
             return
 
         subject = self.get_printer_notification_subject(context, **kwargs)

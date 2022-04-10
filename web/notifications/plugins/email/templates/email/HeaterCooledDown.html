@@ -1,5 +1,5 @@
 {% extends 'email/print_notification.html' %}
 
 {% block subject %}
-Heater <b>{{ context.event_data.name }}</b> has cooled down to temperature <b>{{ context.event_data.actual }}℃ .</b>
+Heater <b>{{ context.notification_data.name }}</b> has cooled down to temperature <b>{{ context.notification_data.actual }}℃ .</b>
 {% endblock  %}

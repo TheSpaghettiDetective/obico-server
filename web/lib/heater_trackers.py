@@ -5,8 +5,8 @@ from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
 from app.models import Printer, HeaterTracker, PrintHeaterTarget
-from lib.mobile_notifications import send_heater_event
-from notifications.events import HeaterCooledDown, HeaterTargetReached
+from lib.mobile_notifications import send_heater_event as send_mobile_push_heater_event
+from notifications.notification_types import HeaterCooledDown, HeaterTargetReached
 from notifications.handlers import handler
 from django.utils.timezone import now
 from django.db import IntegrityError
@@ -177,7 +177,7 @@ def update_heater_trackers(printer: Printer,
                 tracker.save()
 
         if event is not None:
-            send_heater_event(
+            send_mobile_push_heater_event(
                 printer,
                 event=event.type_as_str(),
                 heater_name=event.state.name,
@@ -187,8 +187,8 @@ def update_heater_trackers(printer: Printer,
             poster_url: str = printer.current_print.poster_url if printer.current_print_id else ''  # type: ignore
             handler.queue_send_printer_notifications_task(
                 printer=printer,
-                event_name=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
-                event_data={
+                notification_type=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
+                notification_data={
                     'name': event.state.name,
                     'actual': event.state.actual,
                     'target': event.state.target,

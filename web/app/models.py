@@ -255,7 +255,7 @@ class Printer(SafeDeleteModel):
         if current_print_ts == -1:      # Not printing
             if self.current_print:
                 if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
-                    self.unset_current_print(gone=True)
+                    self.unset_current_print()
                 else:
                     LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
 
@@ -274,51 +274,24 @@ class Printer(SafeDeleteModel):
 
                 return
             LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
-            self.unset_current_print(gone=True)
+            self.unset_current_print()
             self.set_current_print(filename, current_print_ts)
         else:
             self.set_current_print(filename, current_print_ts)
 
-    def unset_current_print(self, gone=False, failed=False, canceled=False):
-        prev_print = self.current_print
+    def unset_current_print(self):
+        print = self.current_print
         self.current_print = None
         self.save()
 
         self.printerprediction.reset_for_new_print()
 
-        if not prev_print:
-            return
-
-        if prev_print.cancelled_at is None:
-            prev_print.finished_at = timezone.now()
-            prev_print.save()
-
-        PrintEvent.create(prev_print, PrintEvent.ENDED)
+        if print.cancelled_at is None:
+            print.finished_at = timezone.now()
+            print.save()
+        
+        PrintEvent.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
-
-        event_name = 'PrintDone'
-        event_data = {}  # TODO original event data somehow
-        if canceled:
-            event_name = 'PrintCancelled'
-        elif failed:
-            event_name = 'PrintFailed'
-        elif gone:
-            # FIXME
-            # Print not properly ended before next start, or got -1 as print id.
-            # In notifications v1 a PrintDone was emitted for gone prints,
-            # following that behaviour.
-            event_name = 'PrintDone'
-            event_data["gone"] = True
-
-        # TODO circular import problem
-        from notifications.handlers import handler
-        handler.queue_send_printer_notifications_task(
-            printer=self,
-            event_name=event_name,
-            event_data=event_data,
-            print_=prev_print,
-            poster_url=prev_print.poster_url or '',
-        )
 
     def set_current_print(self, filename, current_print_ts):
         if not current_print_ts or current_print_ts == -1:
@@ -345,18 +318,7 @@ class Printer(SafeDeleteModel):
 
         self.printerprediction.reset_for_new_print()
         PrintEvent.create(cur_print, PrintEvent.STARTED)
-
         self.send_should_watch_status()
-
-        # TODO circular import problem
-        from notifications.handlers import handler
-        handler.queue_send_printer_notifications_task(
-            printer=self,
-            event_name='PrintStarted',
-            event_data={},  # TODO original event data somehow
-            print_=cur_print,
-            poster_url=cur_print.poster_url or '',
-        )
 
     ## return: succeeded? ##
     def resume_print(self, mute_alert=False, initiator=None):
@@ -592,8 +554,6 @@ class PrintEvent(models.Model):
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
     )
 
-    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
-
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=256,
@@ -603,15 +563,16 @@ class PrintEvent(models.Model):
     alert_muted = models.BooleanField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    @classmethod
-    def create(cls, print, event_type):
+    def create(print_, event_type):
         event = PrintEvent.objects.create(
-            print=print,
+            print=print_,
             event_type=event_type,
-            alert_muted=(print.alert_muted_at is not None)
+            alert_muted=(print_.alert_muted_at is not None)
         )
-        return event
-
+        celery_app.send_task(
+            settings.PRINT_EVENT_HANDLER,
+            args=(event.id, ),
+        )
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
@@ -832,7 +793,6 @@ class OctoPrintTunnel(SafeDeleteModel):
         return host
 
     def get_basicauth_url(self, request, plain_basicauth_password):
-        assert self.basicauth_username and self.basicauth_password
         return f'{request.scheme}://{self.basicauth_username}:{plain_basicauth_password}@{self.get_host(request)}'
 
     def get_internal_tunnel_url(self, request):
@@ -857,7 +817,7 @@ class NotificationSetting(models.Model):
     notify_on_print_done = models.BooleanField(blank=True, default=False)
     notify_on_print_cancelled = models.BooleanField(blank=True, default=False)
     notify_on_filament_change = models.BooleanField(blank=True, default=False)
-    notify_on_other_events = models.BooleanField(blank=True, default=False)
+    notify_on_other_print_events = models.BooleanField(blank=True, default=False)
 
     notify_on_heater_status = models.BooleanField(blank=True, default=False)
 

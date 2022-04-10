@@ -403,7 +403,7 @@ class Handler(object):
         extra_context: Optional[Dict] = None,
     ) -> None:
         feature = self.feature_for_notification_type(notification_type, notification_data)
-        if not feature:
+        if not feature or not printer.user.notification_enabled:
             return
 
         should_fire = NotificationSetting.objects.filter(

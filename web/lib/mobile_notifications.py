@@ -16,7 +16,7 @@ firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certific
 
 
 def send_if_needed(_print, op_event, op_data):
-    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1:
+    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1 or not _print.user.notification_enabled:
         return
 
     rotated_jpg_url = None      # Cache it as it's expensive to generate

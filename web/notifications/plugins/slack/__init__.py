@@ -1,6 +1,7 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Set
 import logging
 import requests  # type: ignore
+import os
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -15,6 +16,21 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SlackNotificationPlugin(BaseNotificationPlugin):
+
+    def env_vars(self) -> Set[Dict]:
+        return [
+            {
+                'name': 'SLACK_CLIENT_ID',
+                'is_required': True,
+                'is_set': 'SLACK_CLIENT_ID' in os.environ,
+                'value': os.environ.get('SLACK_CLIENT_ID'),
+            },
+            {
+                'name': 'SLACK_CLIENT_SECRET',
+                'is_required': True,
+                'is_set': 'SLACK_CLIENT_SECRET' in os.environ,
+            },
+        ]
 
     def validate_config(self, data: Dict) -> Dict:
         if 'access_token' in data:

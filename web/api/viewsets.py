@@ -547,10 +547,11 @@ class NotificationSettingsViewSet(
         for plugin in handler.notification_plugins():
             try:
                 loaded[plugin.name] = {
-                    "features": [
+                    'features': [
                         feature.name
                         for feature in plugin.instance.supported_features()
-                    ]
+                    ],
+                    'env_vars': plugin.instance.env_vars(),
                 }
             except Exception:
                 LOGGER.exception("could not get plugin details")

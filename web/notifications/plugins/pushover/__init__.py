@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any, Set
+from typing import Dict, Optional, Any
 import logging
 import requests  # type: ignore
 import io
@@ -40,14 +40,13 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             return {'user_key': user_key}
         raise ValidationError('user_key is missing from config')
 
-    def env_vars(self) -> Set[Dict]:
-        return [
-            {
-                'name': 'PUSHOVER_APP_TOKEN',
+    def env_vars(self) -> Dict:
+        return {
+            'PUSHOVER_APP_TOKEN': {
                 'is_required': True,
                 'is_set': 'PUSHOVER_APP_TOKEN' in os.environ,
             },
-        ]
+        }
 
     def get_user_key_from_config(self, config: Dict) -> str:
         if config and 'user_key' in config:

@@ -118,8 +118,8 @@ class BaseNotificationPlugin(object):
             Feature.notify_on_other_print_events,
         }
 
-    def env_vars(self) -> Set[Dict]:
-        return []
+    def env_vars(self) -> Dict:
+        return {}
 
     def i(self, s: str) -> str:
         # format to italic

@@ -30,25 +30,22 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             Feature.notify_on_failure_alert,
         }
 
-    def env_vars(self) -> Set[Dict]:
-        return [
-            {
-                'name': 'TWILIO_ACCOUNT_SID',
+    def env_vars(self) -> Dict:
+        return {
+            'TWILIO_ACCOUNT_SID': {
                 'is_required': True,
                 'is_set': 'TWILIO_ACCOUNT_SID' in os.environ,
                 'value': os.environ.get('TWILIO_ACCOUNT_SID'),
             },
-            {
-                'name': 'TWILIO_AUTH_TOKEN',
+            'TWILIO_AUTH_TOKEN': {
                 'is_required': True,
                 'is_set': 'TWILIO_AUTH_TOKEN' in os.environ,
             },
-            {
-                'name': 'TWILIO_FROM_NUMBER',
+            'TWILIO_FROM_NUMBER': {
                 'is_required': True,
                 'is_set': 'TWILIO_FROM_NUMBER' in os.environ,
             },
-        ]
+        }
 
     def get_number_from_config(self, config: Dict) -> str:
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')

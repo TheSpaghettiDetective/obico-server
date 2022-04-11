@@ -33,6 +33,11 @@
                     :errorMessages="errorMessages"
                     :saving="saving"
                     :config="config"
+                    :notificationChannel="(currentSection && currentSection.isNotificationChannel) ? currentSection : {}"
+                    @createNotificationChannel="createNotificationChannel"
+                    @updateNotificationChannel="patchNotificationChannel"
+                    @clearErrorMessages="clearErrorMessages"
+                    @addErrorMessage="addErrorMessage"
                     @updateSetting="updateSetting"
                     @errorAlert="errorAlert"
                   ></component>
@@ -54,6 +59,7 @@
                     :key="name"
                     :title-item-class="value.isSubcategory ? 'subcategory' : ''"
                     :active="$route.path === value.route"
+                    :disabled="value.isNotificationChannel && !user.notification_enabled"
                   >
                     <template #title>
                       <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']"></i>
@@ -65,6 +71,11 @@
                       :errorMessages="errorMessages"
                       :saving="saving"
                       :config="config"
+                      :notificationChannel="value.isNotificationChannel ? value : {}"
+                      @createNotificationChannel="createNotificationChannel"
+                      @updateNotificationChannel="patchNotificationChannel"
+                      @clearErrorMessages="clearErrorMessages"
+                      @addErrorMessage="addErrorMessage"
                       @updateSetting="updateSetting"
                       @errorAlert="errorAlert"
                     ></component>
@@ -98,6 +109,7 @@ import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { mobilePlatform } from '@src/lib/page_context'
+import { getNotificationSettingKey } from '@src/lib/utils'
 
 export default {
   name: 'UserPreferencesPage',
@@ -119,6 +131,8 @@ export default {
   data() {
     return {
       sections,
+      availableNotificationPlugins: null,
+      configuredNotificationChannels: null,
       onlyNotifications,
       user: null,
       saving: {},
@@ -132,30 +146,8 @@ export default {
           'delay': 1000,
           'timeoutId': null
         },
-        'pushbullet_access_token': {
-          'delay': 1000,
-          'timeoutId': null
-        },
-        'discord_webhook': {
-          'delay': 1000,
-          'timeoutId': null
-        },
-        'phone_number': {
-          'delay': 1000,
-          'timeoutId': null
-        },
-        'pushover_user_token': {
-          'delay': 1000,
-          'timeoutId': null
-        },
-        'telegram_chat_id': {
-          'delay': 1000,
-          'timeoutId': null
-        }
       },
-      combinedInputs: { // Send changes to API only if all the other values in the array have data
-        phone: ['phone_country_code', 'phone_number'],
-      },
+      combinedInputs: {}, // Send changes to API only if all the other values in the array have data
       useMobileLayout: false,
     }
   },
@@ -168,6 +160,14 @@ export default {
       for (const [component, route] of Object.entries(routes)) {
         if (this.$route.path === route) {
           return component
+        }
+      }
+      return null
+    },
+    currentSection() {
+      for (const section of Object.values(this.sections)) {
+        if (section.route === this.$route.path) {
+          return section
         }
       }
       return null
@@ -194,58 +194,10 @@ export default {
         this.user.last_name = newValue
       }
     },
-    phoneCountryCode: {
-      get: function() {
-        return this.user ? this.user.phone_country_code : undefined
-      },
-      set: function(newValue) {
-        this.user.phone_country_code = newValue
-      }
-    },
-    phoneNumber: {
-      get: function() {
-        return this.user ? this.user.phone_number : undefined
-      },
-      set: function(newValue) {
-        this.user.phone_number = newValue
-      }
-    },
-    pushbulletToken: {
-      get: function() {
-        return this.user ? this.user.pushbullet_access_token : undefined
-      },
-      set: function(newValue) {
-        this.user.pushbullet_access_token = newValue
-      }
-    },
-    discordWebhook: {
-      get: function() {
-        return this.user ? this.user.discord_webhook : undefined
-      },
-      set: function(newValue) {
-        this.user.discord_webhook = newValue
-      }
-    },
-    pushoverUserToken: {
-      get: function() {
-        return this.user ? this.user.pushover_user_token : undefined
-      },
-      set: function(newValue) {
-        this.user.pushover_user_token = newValue
-      }
-    },
-    telegramChatId: {
-      get: function() {
-        return this.user ? this.user.telegram_chat_id : undefined
-      },
-      set: function(newValue) {
-        this.user.telegram_chat_id = newValue
-      }
-    },
   },
 
   watch: {
-    // FIXME: come up with better solution to make android webview handle updateNavigationState
+    // FIXME: delete when android fix will be released
     currentRouteComponent() {
       if (mobilePlatform() === 'android') {
         this.$router.go()
@@ -261,53 +213,11 @@ export default {
         this.updateSetting('last_name')
       }
     },
-    phoneCountryCode: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.errorMessages.phone = []
-        // Allow clear data
-        if (newValue === '') {
-          this.updateSetting('phone_country_code')
-          return
-        }
-        const codeNumber = parseInt(newValue.replace(/\s/g, '')) // will parse both '1' / '+1', clear spaces for safety
-        if (isNaN(codeNumber)) {
-          return
-        }
-        if (this.config.twilioCountryCodes && (this.config.twilioCountryCodes.length !== 0) && !this.config.twilioCountryCodes.includes(codeNumber)) {
-          this.errorMessages.phone = ['Oops, we don\'t send SMS to this country code']
-        } else {
-          this.updateSetting('phone_country_code')
-        }
-      }
-    },
-    phoneNumber: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('phone_number')
-      }
-    },
-    pushbulletToken: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('pushbullet_access_token')
-      }
-    },
-    discordWebhook: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('discord_webhook')
-      }
-    },
-    pushoverUserToken: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('pushover_user_token')
-      }
-    },
-    telegramChatId: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('telegram_chat_id')
-      }
-    }
   },
 
   created() {
+    this.fetchNotificationPlugins()
+    this.fetchNotificationChannels()
     this.fetchUser()
   },
 
@@ -338,6 +248,101 @@ export default {
         .then(response => {
           this.user = response.data
         })
+    },
+    fetchNotificationPlugins() {
+      return axios
+        .get(urls.notificationPlugins())
+        .then(response => {
+          const plugins = response.data.plugins || {}
+          this.availableNotificationPlugins = plugins
+          for (const [key, val] of Object.entries(this.sections)) {
+            if (val.isNotificationChannel) {
+              this.sections[key].pluginInfo = plugins[val.channelName]
+            }
+          }
+        })
+    },
+    fetchNotificationChannels() {
+      return axios
+        .get(urls.notificationChannels())
+        .then(response => {
+          const channels = response.data
+          this.configuredNotificationChannels = channels
+          for (const [key, val] of Object.entries(this.sections)) {
+            if (val.isNotificationChannel) {
+              this.sections[key].channelInfo = channels.filter(channel => channel.name === val.channelName)[0]
+            }
+          }
+        })
+    },
+    createNotificationChannel(channelName) {
+      console.log('[createNotificationChannel]')
+      const data = {
+        user: this.user.id,
+        name: channelName,
+      }
+      return axios
+        .post(urls.notificationChannels(), data)
+        .catch(err => {
+          console.log(err)
+          this.errorAlert()
+        })
+        .then(() => {
+          this.$router.go()
+        })
+    },
+    patchNotificationChannel(section, propNames) {
+      let data = {
+        name: section.channelName
+      }
+
+      for (const prop of propNames) {
+        data[prop] = section.channelInfo[prop]
+      }
+
+      for (const prop of propNames) {
+        const key = getNotificationSettingKey(section, prop)
+        this.setSavingStatus(key, true)
+      }
+
+      return axios
+        .patch(urls.updateNotificationChannel(section.channelInfo.id), data)
+        .catch(err => {
+          if (err.response && err.response.data && typeof err.response.data === 'object') {
+            let errors = []
+            for (const error of Object.values(err.response.data)) {
+              if (typeof error === 'object') {
+                for (const innnerError of Object.values(error)) {
+                  errors.push(innnerError)
+                }
+              } else if (typeof error === 'string') {
+                errors.push(error)
+              } else {
+                console.warn('Undefined error object structure')
+                console.log(err.response)
+              }
+            }
+            for (const prop of propNames) {
+              const key = getNotificationSettingKey(section, prop)
+              this.errorMessages[key] = errors
+            }
+          } else {
+            console.log(err.response)
+            this.errorAlert()
+          }
+        })
+        .then(() => {
+          for (const prop of propNames) {
+            const key = getNotificationSettingKey(section, prop)
+            this.setSavingStatus(key, false)
+          }
+        })
+    },
+    clearErrorMessages(propName) {
+      this.errorMessages[propName] = []
+    },
+    addErrorMessage(propName, message) {
+      this.errorMessages[propName] ? this.errorMessages[propName].push(message) : this.errorMessages[propName] = [message]
     },
     patchUser(propName, propValue) {
       let data = {}
@@ -496,4 +501,7 @@ $container-border-radius: 16px
     border: initial
 ::v-deep .nav-tabs
   border-bottom: none
+
+::v-deep .inactive
+  opacity: .3
 </style>

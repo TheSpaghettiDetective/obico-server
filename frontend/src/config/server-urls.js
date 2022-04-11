@@ -24,6 +24,12 @@ export default {
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
   printerDiscovery: () => '/api/v1/printer_discovery/',
 
+  // Notifications
+  notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',
+  notificationChannels: () => '/api/v1/notification_settings/',
+  updateNotificationChannel: (id) => `/api/v1/notification_settings/${id}/`,
+  testNotificationChannel: (id) => `/api/v1/notification_settings/${id}/send_test_message/`,
+
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,
   printerWebSocket: printerId => `/ws/web/${printerId}/`,

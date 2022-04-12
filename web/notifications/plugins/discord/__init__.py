@@ -36,8 +36,11 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         return f"__{s}__"
 
     @classmethod
-    def call_webhook(self, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None):
+    def call_webhook(self, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None, image_content: Optional[bytes] = None):
         webhook = DiscordWebhook(url=webhook_url, username="The Spaghetti Detective")
+        if image_content:
+            webhook.add_file(image_content, 'Snapshot.jpg')
+
         embed = DiscordEmbed(title=title, description=text, color=color)
         if image_url:
             embed.set_image(url=image_url)
@@ -74,7 +77,8 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.poster_url,
+            image_url=context.poster_url if context.site_is_public else None,
+            image_content=context.get_poster_url_content() if not context.site_is_public else None,
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
@@ -93,7 +97,8 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.poster_url
+            image_url=context.poster_url if context.site_is_public else None,
+            image_content=context.get_poster_url_content() if not context.site_is_public else None,
         )
 
     def notification_type_to_color(self, notification_type: str) -> int:

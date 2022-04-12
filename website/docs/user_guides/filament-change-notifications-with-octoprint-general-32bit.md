@@ -32,8 +32,34 @@ First,  lets install all of the necessary programs. All of these programs have M
 
 1. When prompted, choose to overwrite the two files that are already there.
 
+## Step 3: Set the correct Environment
 
-## Step 3: Enable HOST_ACTION_COMMANDS and M600
+1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
+
+![Open Project Platform.io](/img/user_guides/filament-change/open-project-platform-io.PNG)
+
+1. Click the *Open Project* button.
+
+1. Find the unzipped Marlin folder and click *Open*
+
+1. Click the *Explorer* button on the left side, and click the platform.ini menu
+
+1. Navigate to the Marlin Folder on the left side of the screen.
+
+![Find pins.h](/img/user_guides/filament-change/find-environment-for-board-marlin-ender-3-v2.jpg)
+
+1. Select the *Marlin* folder. Select *pins*. Select *pins.h* 
+
+1. Type control-f and then search for your mainboard manufacturer and find the name of the mainboard on your printer. If you do not know which mainboard is equipped with your printer, reach out to the manufacturer and ask them which mainboard your printer has and which environment you need to use to recompile Marlin. For example, the creality ender 3V2 uses the Creality 4.2.2 mainboard but every printer is different. 
+
+![Find the environment for your mainboard](/img/user_guides/filament-change/platformio-environment-for-creality-ender-3v2.jpg)
+
+1. Copy the environment corresponding to your board.
+
+1. Replace the default_envs with the environment you found in the previous step. 
+
+
+## Step 4: Enable HOST_ACTION_COMMANDS and M600
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
@@ -60,7 +86,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 9. Save the file
 
 
-## Step 4: Compile the firmware
+## Step 5: Compile the firmware
 
 1.  Hover over the build section on the top left side of the screen and you will see a hammer icon. Click this icon and click Build on the right to start building the firmware.
 
@@ -72,7 +98,7 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 2.  At the end of the terminal, you should see a list of boards, with most of them saying Ignored, and your board listed as Success.
 
-## Step 5: Flash the new firmware
+## Step 6: Flash the new firmware
 
 1.  Go to the folder where you extracted Marlin, and under, .\.pio\build\TheNameOfYourBoard. You should see a firmware.bin file. This is the file you will flash to your 3D printer.
 

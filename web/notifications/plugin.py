@@ -117,6 +117,7 @@ class BaseNotificationPlugin(object):
             Feature.notify_on_print_cancelled,
             Feature.notify_on_filament_change,
             Feature.notify_on_other_print_events,
+            Feature.notify_on_heater_status,
         }
 
     def env_vars(self) -> Dict:
@@ -185,7 +186,7 @@ class BaseNotificationPlugin(object):
         elif notification_type == notification_types.HeaterCooledDown:
             text = (
                 f"Heater {self.b(notification_data['name'])} "
-                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')}"
+                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')} "
             )
         elif notification_type == notification_types.HeaterTargetReached:
             text = (

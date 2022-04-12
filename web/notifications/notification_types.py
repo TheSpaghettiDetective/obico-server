@@ -20,11 +20,14 @@ HeaterTargetReached = NotificationType('HeaterTargetReached')
 OTHER_PRINT_EVENT_MAP = {
   PrintEvent.STARTED: PrintStarted,
   PrintEvent.PAUSED: PrintPaused,
-  PrintEvent.RESUMED: PrintResumed
+  PrintEvent.RESUMED: PrintResumed,
 }
 
 def from_print_event(print_event):
   if print_event.event_type == PrintEvent.ENDED:
     return PrintCancelled if print_event.print.is_canceled() else PrintDone
+
+  if print_event.event_type == PrintEvent.FILAMENT_CHANGE:
+    return FilamentChange
   
   return OTHER_PRINT_EVENT_MAP.get(print_event.event_type)

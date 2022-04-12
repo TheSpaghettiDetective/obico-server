@@ -126,7 +126,7 @@ class Handler(object):
         )
 
     def get_print_context(self, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> PrintContext:
-        alert_overwrite: str = _print.alert_overwrite or ''  # type: ignore
+        alert_overwrite: str = (_print.alert_overwrite or '') if _print is not None else ''
         ctx = PrintContext(
             id=_print.id if _print else 0,
             filename=_print.filename if _print else '',

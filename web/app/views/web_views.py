@@ -184,7 +184,7 @@ def slack_oauth_callback(request):
     user.slack_access_token = r.json().get('access_token')
     user.save()
 
-    return redirect('/user_preferences/slack_notifications/')
+    return redirect('/user_preferences/notification_slack/')
 
 
 def unsubscribe_email(request):

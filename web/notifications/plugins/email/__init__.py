@@ -150,7 +150,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         ctx.update(
             print=context.print,
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
-            user_pref_url=site.build_full_url('/user_preferences/'),
+            user_pref_url=site.build_full_url('/user_preferences/notification_email/'),
             unsub_url=unsub_url,
             context=context,
         )

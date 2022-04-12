@@ -33,4 +33,4 @@ Again the easiest way to test if The Detective is worth her while is to upload a
 
 1. Start a test print and let it run for at least 5 minutes.
 2. Then you can throw in a ball of spaghetti and watch on "My Printers" page to see if it's correctly identified.
-3. Leave that spaghetti ball on the bed for a couple minutes to convince The Detective that this spaghetti monster is here to stay, and she should send you an alert via email or text (if you have set the phone number in [Preferences](https://app.thespaghettidetective.com/user_preferences/)).
+3. Leave that spaghetti ball on the bed for a couple minutes to convince The Detective that this spaghetti monster is here to stay, and she should send you an alert via email or text (if you have set the phone number in [Preferences](https://app.thespaghettidetective.com/user_preferences/notification_twilio/)).

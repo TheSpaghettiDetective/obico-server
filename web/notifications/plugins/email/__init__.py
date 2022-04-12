@@ -95,6 +95,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             cancel_link=site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
             resume_link=site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
             unsub_url=unsub_url,
+            context=context,
         )
 
         attachments = []
@@ -151,6 +152,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
             user_pref_url=site.build_full_url('/user_preferences/'),
             unsub_url=unsub_url,
+            context=context,
         )
 
         if context.print.ended_at and context.print.started_at:

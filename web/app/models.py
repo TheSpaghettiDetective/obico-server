@@ -835,11 +835,11 @@ class NotificationSetting(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
-    def config(self):
-        return json.loads(self.config_json) if self.config_json else None
+    def config(self) -> Dict:
+        return json.loads(self.config_json) if self.config_json else {}
 
     @config.setter
-    def config(self, data):
+    def config(self, data: Dict) -> None:
         self.config_json = json.dumps(data)
 
     class Meta:

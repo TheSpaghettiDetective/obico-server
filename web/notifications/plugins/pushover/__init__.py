@@ -122,7 +122,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.get_poster_url_content() if not context.site_is_public else None
+        file_content = context.get_poster_url_content()
         self.call_pushover(
             token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,
@@ -145,7 +145,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.get_poster_url_content() if not context.site_is_public else None
+        file_content = context.get_poster_url_content()
         self.call_pushover(
             token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,

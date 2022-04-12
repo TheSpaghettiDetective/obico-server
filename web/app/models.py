@@ -159,7 +159,11 @@ def update_consented_at(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def init_email_notification_setting(sender, instance, created, **kwargs):
     if created:
-        NotificationSetting.objects.get_or_create(user=instance, name='email')
+        NotificationSetting.objects.create(
+            user=instance,
+            name='email',
+            config={'unsub_token': str(uuid.uuid4())}
+        )
 
 
 class PrinterManager(SafeDeleteManager):

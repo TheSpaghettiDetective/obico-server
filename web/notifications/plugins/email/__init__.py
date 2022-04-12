@@ -10,6 +10,7 @@ from django.core.mail import EmailMessage
 
 from allauth.account.admin import EmailAddress  # type: ignore
 
+from notifications.handlers import handler
 from notifications.plugin import (
     BaseNotificationPlugin,
     site,
@@ -77,7 +78,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         template_name = 'email/FailureAlert.html'
         tpl = self.get_template(template_name)
         
-        mailing_list: str = 'alert'
+        mailing_list: str = 'failure_alert'
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
         )
@@ -135,8 +136,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             return
 
         subject = self.get_printer_notification_subject(context, **kwargs)
+        mailing_list: str = context.feature.name.replace('notify_on_', '')
 
-        mailing_list: str = 'print_notification'
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
         )

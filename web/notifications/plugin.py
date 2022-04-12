@@ -38,6 +38,16 @@ class PrintContext:
         return self._poster_url_fetcher.send(timeout)
 
 
+class Feature(enum.Enum):
+    notify_on_failure_alert = 'notify_on_failure_alert'
+    notify_on_print_done = 'notify_on_print_done'
+    notify_on_print_cancelled = 'notify_on_print_cancelled'
+    notify_on_filament_change = 'notify_on_filament_change'
+    notify_on_other_print_events = 'notify_on_other_print_events'
+    notify_on_heater_status = 'notify_on_heater_status'
+    notify_on_print_progress = 'notify_on_print_progress'
+
+
 @dataclasses.dataclass(frozen=True)
 class UserContext:
     id: int
@@ -67,6 +77,7 @@ class FailureAlertContext(NotificationContext):
 
 @dataclasses.dataclass(frozen=True)
 class PrinterNotificationContext(NotificationContext):
+    feature: Feature
     notification_type: str
     notification_data: Dict
 
@@ -77,16 +88,6 @@ class TestMessageContext:
     user: UserContext
     site_is_public: bool
     extra_context: Dict
-
-
-class Feature(enum.Enum):
-    notify_on_failure_alert = 'notify_on_failure_alert'
-    notify_on_print_done = 'notify_on_print_done'
-    notify_on_print_cancelled = 'notify_on_print_cancelled'
-    notify_on_filament_change = 'notify_on_filament_change'
-    notify_on_other_print_events = 'notify_on_other_print_events'
-    notify_on_heater_status = 'notify_on_heater_status'
-    notify_on_print_progress = 'notify_on_print_progress'
 
 
 class BaseNotificationPlugin(object):

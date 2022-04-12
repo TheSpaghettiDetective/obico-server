@@ -321,6 +321,7 @@ class Handler(object):
                     continue
 
                 extra_context = plugin.instance.build_print_notification_extra_context(
+                    feature=feature,
                     user=printer.user,
                     print_=print_,
                     printer=printer,
@@ -328,6 +329,7 @@ class Handler(object):
                 )
 
                 context = PrinterNotificationContext(
+                    feature=feature,
                     config=nsetting.config,
                     user=user_ctx,
                     printer=printer_ctx,

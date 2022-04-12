@@ -1,5 +1,5 @@
 import routes from '@config/user-preferences/routes'
-import notificationPlugins from '@src/components/user-preferences/notifications/plugins'
+import notificationPlugins from '@src/notifications/plugins'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 
 const defaultSections = {
@@ -49,7 +49,7 @@ const notificationSections = Object.keys(notificationPlugins).reduce((obj, name)
     isSubcategory: true,
     isNotificationChannel: true,
     route: routes[name],
-    importComponent: () => import('@src/components/user-preferences/notifications/'+name),
+    importComponent: () => import('@src/notifications/plugins/'+name),
   }})
 }, {})
 

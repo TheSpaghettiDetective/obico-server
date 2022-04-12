@@ -1,4 +1,4 @@
-import notificationPlugins from '@src/components/user-preferences/notifications/plugins'
+import notificationPlugins from '@src/notifications/plugins'
 
 const defaultRoutes = {
   ThemePreferences: '/user_preferences/personalization/',

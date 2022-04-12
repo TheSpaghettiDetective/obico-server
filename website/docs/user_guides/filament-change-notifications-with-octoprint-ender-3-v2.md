@@ -32,9 +32,9 @@ First,  lets install all of the necessary programs. All of these programs have M
 
 1. Download [Marlin](https://marlinfw.org/meta/download/). Most likely, you will want the latest version, which is 2.0.9.3 at this time. Make sure you download the both “Marlin-2.0.x.zip” and “Configurations-release-2.0.x.x.zip”.
 
-1. After downloading, extract the zip file.
+2. After downloading, extract the zip file.
 
-1. Find the configuration.h and configuration.adv files for your the Creality Ender 3V2.
+3. Find the configuration.h and configuration.adv files for your the Creality Ender 3V2.
 
 :::Note
 
@@ -42,14 +42,13 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 
 :::
 
-1. In the examples folder, select Creality. then select Creality Ender 3V2. You will see 
+4. In the examples folder, select Creality. then select Creality Ender 3V2. You will see 
 
+5. Copy and paste the files into the .\Marlin folder that is in the Marlin 2.xx folder that you unzipped in the previous step.
 
-1. Copy and paste the files into the .\Marlin folder that is in the Marlin 2.xx folder that you unzipped in the previous step.
+6. When prompted, choose to overwrite the two files that are already there.
 
-1. When prompted, choose to overwrite the two files that are already there.
-
-## Step 3: Set the Environment
+## Step 3: Set the correct Environment
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
@@ -59,9 +58,7 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 
 1. Find the unzipped Marlin folder and click *Open*
 
-
 1. Click the *Explorer* button on the left side, and click the platform.ini menu
-
 
 1. Navigate to the Marlin Folder on the left side of the screen.
 
@@ -72,7 +69,6 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 1. Type control-f and then search for your mainboard manufacturer. The Ender 3 V2 comes stock with a Creality 4.2.2 32-bit mainboard. 
 
 ![Find the environment for your mainboard](/img/user_guides/filament-change/platformio-environment-for-creality-ender-3v2.jpg)
-
 
 1. Copy the environment corresponding to your board as shown.
 

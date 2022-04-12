@@ -70,6 +70,7 @@ def send_notification_for_print_event(_print, print_event, extra_context=None):
             print_=_print,
             poster_url=_print.poster_url or '',
             extra_context=extra_context,
+            in_process=True,
         )
 
 

@@ -401,6 +401,7 @@ class Handler(object):
         print_: Optional[Print],
         poster_url: str = '',
         extra_context: Optional[Dict] = None,
+        in_process: Optional[bool] = False,
     ) -> None:
         feature = self.feature_for_notification_type(notification_type, notification_data)
         if not feature or not printer.user.notification_enabled:
@@ -413,22 +414,24 @@ class Handler(object):
             **{feature.name: True},
         ).exists()
 
-        if should_fire:
-            self._queue_send_printer_notifications_task(
-                kwargs={
-                    'printer_id': printer.id,
-                    'notification_type': notification_type,
-                    'notification_data': notification_data,
-                    'print_id': print_.id if print_ else None,
-                    'poster_url': poster_url,
-                    'extra_context': extra_context,
-                }
-            )
-            return
+        if not should_fire:
+            LOGGER.debug('no matching NotificationSetting objects, ignoring event')
 
-        LOGGER.debug('no matching NotificationSetting objects, ignoring event')
+        kwargs = {
+                'printer_id': printer.id,
+                'notification_type': notification_type,
+                'notification_data': notification_data,
+                'print_id': print_.id if print_ else None,
+                'poster_url': poster_url,
+                'extra_context': extra_context,
+
+            }
+        if in_process:
+            from . import tasks
+            tasks.send_printer_notifications(**kwargs)
+        else:
+            self._queue_send_printer_notifications_task(kwargs=kwargs)
 
     def _queue_send_printer_notifications_task(self, kwargs: Dict) -> None:
         from . import tasks
-        print(kwargs)
         tasks.send_printer_notifications.apply_async(kwargs=kwargs)

@@ -27,13 +27,13 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         raise ValidationError('webhook_url key is missing from config')
 
     def i(self, s: str) -> str:
-        return f"_{s}_"
+        return "_{}_".format(s.replace('_', '\_'))
 
     def b(self, s: str) -> str:
-        return f"**{s}**"
+        return "**{}**".format(s.replace('*', '\*'))
 
     def u(self, s: str) -> str:
-        return f"__{s}__"
+        return "__{}__".format(s.replace('_', '\_'))
 
     @classmethod
     def call_webhook(self, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None, image_content: Optional[bytes] = None):

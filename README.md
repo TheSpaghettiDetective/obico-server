@@ -5,6 +5,7 @@ This repo is everything you need to run a server for [The Spaghetti Detective](h
 The core of this project is based on a Deep Learning model. [See how the model works on real data](https://app.thespaghettidetective.com/ent_pub/publictimelapses/).
 
 # Install and run the server
+*Warning: Any guide not directly maintained by the TSD Team and Contributers may be outdated, and should be used at user discretion. Always cross-check commands and instructions used with those located on this repo.*
 
 If you are on Windows 10 and prefer a video tutorial, head to LukesLaboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
 

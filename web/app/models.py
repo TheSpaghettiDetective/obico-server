@@ -147,14 +147,19 @@ class User(AbstractUser):
         else:
             return cache.octoprinttunnel_get_stats(self.id) > self.tunnel_cap() * 1.1 # Cap x 1.1 to give some grace period to users
 
+
 # We use a signal as opposed to a form field because users may sign up using social buttons
-
-
 @receiver(post_save, sender=User)
 def update_consented_at(sender, instance, created, **kwargs):
     if created:
         instance.consented_at = timezone.now()
         instance.save()
+
+
+@receiver(post_save, sender=User)
+def init_email_notification_setting(sender, instance, created, **kwargs):
+    if created:
+        NotificationSetting.objects.get_or_create(user=instance, name='email')
 
 
 class PrinterManager(SafeDeleteManager):

@@ -5,8 +5,6 @@ import io
 import os
 from enum import IntEnum
 
-from django.conf import settings
-
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
@@ -124,9 +122,9 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.print.get_poster_url_content() if not context.site_is_public else None
+        file_content = context.get_poster_url_content() if not context.site_is_public else None
         self.call_pushover(
-            token=os.environ.get('PUSHOVER_APP_TOKEN'),
+            token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,
             priority=PushoverPriority.HIGH,
             title=title,
@@ -147,9 +145,9 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.print.get_poster_url_content()
+        file_content = context.get_poster_url_content() if not context.site_is_public else None
         self.call_pushover(
-            token=os.environ.get('PUSHOVER_APP_TOKEN'),
+            token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,
             title=title,
             message=text,

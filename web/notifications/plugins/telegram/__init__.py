@@ -57,7 +57,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             buttons = ['cancel', 'more_info']
 
         message = f"Hi {context.user.first_name},\n{text}"
-        file_content = context.print.get_poster_url_content()
+        file_content = context.get_poster_url_content()
 
         markups = []
         if context.site_is_public:
@@ -81,7 +81,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return
 
         message = f"Hi {context.user.first_name},\n{text}"
-        file_content = context.print.get_poster_url_content()
+        file_content = context.get_poster_url_content()
         self.call_telegram(
             chat_id=chat_id,
             message=message,

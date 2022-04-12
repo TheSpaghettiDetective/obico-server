@@ -90,8 +90,8 @@ def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> G
         try:
             resp = requests.get(poster_url, timeout=timeout)
             resp.raise_for_status()
-        except Exception:
-            sentryClient.captureException()
+        except Exception as e:
+            LOGGER.error(f'could not fetch poster_url ({e})')
             continue
 
         content = resp.content
@@ -125,20 +125,17 @@ class Handler(object):
             watching_enabled=printer.watching_enabled,
         )
 
-    def get_print_context(self, _print: Optional[Print], poster_url: str, timeout: float = 5.0) -> PrintContext:
+    def get_print_context(self, _print: Optional[Print]) -> PrintContext:
         alert_overwrite: str = (_print.alert_overwrite or '') if _print is not None else ''
         ctx = PrintContext(
             id=_print.id if _print else 0,
             filename=_print.filename if _print else '',
-            poster_url=poster_url or '',
-            _poster_url_fetcher=get_poster_url_content(poster_url or '', timeout=timeout),
             started_at=_print.started_at if _print else None,
             alerted_at=_print.alerted_at if _print else None,
             ended_at=(_print.finished_at or _print.cancelled_at or None) if _print else None,
             alert_overwrite=alert_overwrite,
         )
 
-        ctx._poster_url_fetcher.send(None)
         return ctx
 
     def get_user_context(self, user: User) -> UserContext:
@@ -186,7 +183,9 @@ class Handler(object):
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
-        print_ctx = self.get_print_context(print_, poster_url=poster_url)
+        print_ctx = self.get_print_context(print_)
+        _poster_url_fetcher = get_poster_url_content(poster_url, timeout=5.0)
+        _poster_url_fetcher.send(None)
 
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
@@ -211,6 +210,8 @@ class Handler(object):
                     is_warning=is_warning,
                     print_paused=print_paused,
                     extra_context=extra_context,
+                    poster_url=poster_url,
+                    _poster_url_fetcher=_poster_url_fetcher,
                 )
 
                 self._send_failure_alert(nsetting=nsetting, context=context)
@@ -311,7 +312,9 @@ class Handler(object):
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
-        print_ctx = self.get_print_context(print_, poster_url=poster_url)
+        print_ctx = self.get_print_context(print_)
+        _poster_url_fetcher = get_poster_url_content(poster_url, timeout=5.0)
+        _poster_url_fetcher.send(None)
 
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
@@ -337,7 +340,9 @@ class Handler(object):
                     site_is_public=settings.SITE_IS_PUBLIC,
                     notification_type=notification_type,
                     notification_data=notification_data,
-                    extra_context=extra_context,
+                    extra_context=extra_context or {},
+                    poster_url=poster_url,
+                    _poster_url_fetcher=_poster_url_fetcher,
                 )
 
                 self._send_printer_notification(nsetting=nsetting, context=context)

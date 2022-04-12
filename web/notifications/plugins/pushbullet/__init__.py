@@ -68,13 +68,13 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.print.get_poster_url_content() if not context.site_is_public else None
+        file_content = context.get_poster_url_content() if not context.site_is_public else None
         self.call_pushbullet(
             access_token=access_token,
             title=title,
             body=text,
             link=link,
-            file_url=context.print.poster_url,
+            file_url=context.poster_url,
             file_name='Detected Failure.jpg',
             file_content=file_content,
         )
@@ -89,7 +89,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
         if not text or not title:
             return
 
-        file_content = context.print.get_poster_url_content() if not context.site_is_public else None
+        file_content = context.get_poster_url_content() if not context.site_is_public else None
         link = site.build_full_url('/')
 
         self.call_pushbullet(
@@ -97,7 +97,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             title=title,
             body=text,
             link=link,
-            file_url=context.print.poster_url,
+            file_url=context.poster_url,
             file_name='Snapshot.jpg',
             file_content=file_content,
         )

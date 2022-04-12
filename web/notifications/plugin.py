@@ -22,20 +22,11 @@ class PrintContext:
     id: int
     filename: str
 
-    poster_url: str
-    _poster_url_fetcher: Generator[Optional[bytes], Optional[float], None]
-
     started_at: Optional[datetime.datetime]
     ended_at: Optional[datetime.datetime]
     alerted_at: Optional[datetime.datetime]
 
     alert_overwrite: str
-
-    def get_poster_url_content(self, timeout: float = 5.0) -> Optional[bytes]:
-        # We need to avoid refetching same image many times.
-        # This class is frozen as it reused accross notification handler calls, what should not tamper it.
-        # Adding this "generator-style caching" to the class.
-        return self._poster_url_fetcher.send(timeout)
 
 
 class Feature(enum.Enum):
@@ -67,6 +58,15 @@ class NotificationContext:
     print: PrintContext
     site_is_public: bool
     extra_context: Dict
+    poster_url: str
+
+    _poster_url_fetcher: Generator[Optional[bytes], Optional[float], None]
+
+    def get_poster_url_content(self, timeout: float = 5.0) -> Optional[bytes]:
+        # We need to avoid refetching same image many times.
+        # This class is frozen as it reused accross notification handler calls, what should not tamper it.
+        # Adding this "generator-style caching" to the class.
+        return self._poster_url_fetcher.send(timeout)
 
 
 @dataclasses.dataclass(frozen=True)

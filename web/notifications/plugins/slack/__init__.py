@@ -62,7 +62,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
         self.call_slack(
             access_token=access_token,
             text=text,
-            image_url=context.print.poster_url,
+            image_url=context.poster_url,
         )
 
     def call_slack(self, access_token: str, text: str, image_url: Optional[str] = None, timeout: float = 5.0) -> None:
@@ -119,7 +119,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
         self.call_slack(
             access_token=access_token,
             text=text,
-            image_url=context.print.poster_url,
+            image_url=context.poster_url,
         )
 
     def send_test_message(self, context: TestMessageContext, **kwargs) -> None:

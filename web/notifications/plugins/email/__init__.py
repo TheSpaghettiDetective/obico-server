@@ -99,17 +99,17 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         )
 
         attachments = []
-        if context.print.poster_url:
+        if context.poster_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
                 if not context.site_is_public:
-                    poster_url_content = context.print.get_poster_url_content()
+                    poster_url_content = context.get_poster_url_content()
                     if poster_url_content:
                         attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
             except Exception:
                 LOGGER.exception('error while fetching image content for email')
 
-            ctx['poster_url'] = None if attachments else context.print.poster_url
+            ctx['poster_url'] = None if attachments else context.poster_url
 
         message = tpl.render(ctx)
         subject = 'Your print {} on {} {}.'.format(
@@ -161,17 +161,17 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         ctx.update(kwargs.get('extra_ctx', {}))
 
         attachments = []
-        if context.print.poster_url:
+        if context.poster_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
                 if not context.site_is_public:
-                    poster_url_content = context.print.get_poster_url_content()
+                    poster_url_content = context.get_poster_url_content()
                     if poster_url_content:
                         attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
             except Exception:
                 LOGGER.exception('error while fetching image content for email')
 
-            ctx['poster_url'] = None if attachments else context.print.poster_url
+            ctx['poster_url'] = None if attachments else context.poster_url
 
         message = tpl.render(ctx)
         self._send_emails(

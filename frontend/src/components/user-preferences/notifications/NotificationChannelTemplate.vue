@@ -1,5 +1,5 @@
 <template>
-  <section v-if="notificationChannel.channelInfo">
+  <section>
     <h2 class="section-title">{{ notificationChannel.title }}</h2>
 
     <div v-if="envVarsToSet.length === 0">
@@ -23,7 +23,7 @@
         </div>
       </slot>
 
-      <div v-if="showSettings">
+      <div v-if="channelCreated && showSettings">
         <div class="row">
           <div class="col">
             <h5 class="font-weight-bold">Alerts settings</h5>
@@ -161,6 +161,9 @@ export default {
   },
 
   computed: {
+    channelCreated() {
+      return !!this.notificationChannel.channelInfo
+    },
     notificationsEnabled() {
       return this.notificationChannel.channelInfo ? this.notificationChannel.channelInfo.enabled : false
     },
@@ -218,10 +221,10 @@ export default {
   },
 
   created() {
-    if (!this.notificationChannel.channelInfo) {
-      this.$emit('createNotificationChannel', this.notificationChannel.channelName)
-    } else if (this.notificationChannel.channelInfo.config && this.configVariableName) {
+    if (this.notificationChannel.channelInfo && this.notificationChannel.channelInfo.config && this.configVariableName) {
       this.configVariable = this.notificationChannel.channelInfo.config[this.configVariableName]
+    } else {
+      this.configVariable = ''
     }
   },
 
@@ -244,11 +247,22 @@ export default {
         clearTimeout(this.configUpdateTimeout)
       }
 
-      this.notificationChannel.channelInfo.config = {
+      const config = {
         [this.configVariableName]: this.configVariable,
       }
 
-      this.configUpdateTimeout = setTimeout(() => this.$emit('updateNotificationChannel', this.notificationChannel, ['config']), 1000)
+      if (this.channelCreated) {
+        this.configUpdateTimeout = setTimeout(() => {
+          if (this.configVariable) {
+            this.notificationChannel.channelInfo.config = config
+            this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
+          } else {
+            this.$emit('deleteNotificationChannel', this.notificationChannel)
+          }
+        }, 1000)
+      } else if (this.configVariable) {
+        this.configUpdateTimeout = setTimeout(() => this.$emit('createNotificationChannel', this.notificationChannel, config), 1000)
+      }
     }
   }
 }

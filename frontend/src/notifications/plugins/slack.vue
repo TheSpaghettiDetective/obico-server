@@ -5,8 +5,10 @@
     :notificationChannel="notificationChannel"
     :showSettings="setupCompleted"
 
-    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
+    @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <div v-if="setupCompleted" class="mb-4">
@@ -83,7 +85,7 @@ export default {
 
   computed: {
     setupCompleted() {
-      return !!this.notificationChannel.channelInfo.config && !!this.notificationChannel.channelInfo.config.access_token
+      return !!this.notificationChannel.channelInfo?.config?.access_token
     },
     slackClientId() {
       return this.notificationChannel.pluginInfo.env_vars.SLACK_CLIENT_ID.value

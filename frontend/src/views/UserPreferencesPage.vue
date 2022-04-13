@@ -36,6 +36,7 @@
                     :notificationChannel="(currentSection && currentSection.isNotificationChannel) ? currentSection : {}"
                     @createNotificationChannel="createNotificationChannel"
                     @updateNotificationChannel="patchNotificationChannel"
+                    @deleteNotificationChannel="deleteNotificationChannel"
                     @clearErrorMessages="clearErrorMessages"
                     @addErrorMessage="addErrorMessage"
                     @updateSetting="updateSetting"
@@ -74,6 +75,7 @@
                       :notificationChannel="value.isNotificationChannel ? value : {}"
                       @createNotificationChannel="createNotificationChannel"
                       @updateNotificationChannel="patchNotificationChannel"
+                      @deleteNotificationChannel="deleteNotificationChannel"
                       @clearErrorMessages="clearErrorMessages"
                       @addErrorMessage="addErrorMessage"
                       @updateSetting="updateSetting"
@@ -275,20 +277,44 @@ export default {
           }
         })
     },
-    createNotificationChannel(channelName) {
-      console.log('[createNotificationChannel]')
+    createNotificationChannel(section, config) {
       const data = {
         user: this.user.id,
-        name: channelName,
+        name: section.channelName,
+        config,
       }
+
+      const key = getNotificationSettingKey(section, 'config')
+      this.setSavingStatus(key, true)
+
       return axios
         .post(urls.notificationChannels(), data)
-        .catch(err => {
-          console.log(err)
-          this.errorAlert()
-        })
         .then(() => {
+          this.setSavingStatus(key, false)
           this.$router.go()
+        })
+        .catch(err => {
+          this.setSavingStatus(key, false)
+          if (err.response && err.response.data && typeof err.response.data === 'object') {
+            let errors = []
+            for (const error of Object.values(err.response.data)) {
+              if (typeof error === 'object') {
+                for (const innnerError of Object.values(error)) {
+                  errors.push(innnerError)
+                }
+              } else if (typeof error === 'string') {
+                errors.push(error)
+              } else {
+                console.warn('Undefined error object structure')
+                console.log(err.response)
+              }
+            }
+            const key = getNotificationSettingKey(section, 'config')
+            this.$set(this.errorMessages, key, errors)
+          } else {
+            console.log(err.response)
+            this.errorAlert()
+          }
         })
     },
     patchNotificationChannel(section, propNames) {
@@ -307,7 +333,17 @@ export default {
 
       return axios
         .patch(urls.updateNotificationChannel(section.channelInfo.id), data)
+        .then(() => {
+          for (const prop of propNames) {
+            const key = getNotificationSettingKey(section, prop)
+            this.setSavingStatus(key, false)
+          }
+        })
         .catch(err => {
+          for (const prop of propNames) {
+            const key = getNotificationSettingKey(section, prop)
+            this.setSavingStatus(key, false)
+          }
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             let errors = []
             for (const error of Object.values(err.response.data)) {
@@ -324,18 +360,23 @@ export default {
             }
             for (const prop of propNames) {
               const key = getNotificationSettingKey(section, prop)
-              this.errorMessages[key] = errors
+              this.$set(this.errorMessages, key, errors)
             }
           } else {
             console.log(err.response)
             this.errorAlert()
           }
         })
+    },
+    deleteNotificationChannel(section) {
+      return axios
+        .delete(urls.updateNotificationChannel(section.channelInfo.id))
         .then(() => {
-          for (const prop of propNames) {
-            const key = getNotificationSettingKey(section, prop)
-            this.setSavingStatus(key, false)
-          }
+          this.$router.go()
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.errorAlert()
         })
     },
     clearErrorMessages(propName) {

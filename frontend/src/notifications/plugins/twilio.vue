@@ -5,8 +5,10 @@
     :notificationChannel="notificationChannel"
     :notificationSettings="notificationSettings"
 
-    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
+    @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #configuration>
       <div class="form-group row">
@@ -157,13 +159,19 @@ export default {
         clearTimeout(this.configUpdateTimeout)
       }
 
-      this.configUpdateTimeout = setTimeout(() => {
-        this.notificationChannel.channelInfo.config = {
-          phone_country_code: this.phoneCountryCode,
-          phone_number: this.phoneNumber,
-        }
-        this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
-      }, 1000)
+      const config = {
+        phone_country_code: this.phoneCountryCode,
+        phone_number: this.phoneNumber,
+      }
+
+      if (this.notificationChannel.channelInfo) {
+        this.configUpdateTimeout = setTimeout(() => {
+          this.notificationChannel.channelInfo.config = config
+          this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
+        }, 1000)
+      } else {
+        this.configUpdateTimeout = setTimeout(() => this.$emit('createNotificationChannel', this.notificationChannel, config), 1000)
+      }
     }
   },
 }

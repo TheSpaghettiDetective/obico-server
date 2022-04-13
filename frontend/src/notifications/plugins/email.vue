@@ -3,8 +3,12 @@
     :errorMessages="errorMessages"
     :saving="saving"
     :notificationChannel="notificationChannel"
-    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+
+    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
+    @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
+
     ref="notificationChannelTemplate"
   >
     <template #header>
@@ -70,6 +74,12 @@ export default {
       type: Object,
       required: true,
     },
+  },
+
+  created() {
+    if (!this.notificationChannel.channelInfo) {
+      this.$emit('createNotificationChannel', this.notificationChannel, {})
+    }
   },
 }
 </script>

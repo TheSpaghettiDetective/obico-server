@@ -8,8 +8,10 @@
     configVariablePlaceholder="Pushbullet Access Token"
     configVariableName="access_token"
 
-    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
+    @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <small class="form-text text-muted">

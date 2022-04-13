@@ -6,8 +6,10 @@
     :saving="saving"
     :notificationChannel="notificationChannel"
 
-    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
+    @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <small class="form-text text-muted">
@@ -70,13 +72,12 @@ export default {
 
   methods: {
     onTelegramAuth(telegram_user) {
-      this.this.notificationChannel.channelInfo.config = { chat_id: JSON.stringify(telegram_user.id) }
-      this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
+      const config = { chat_id: JSON.stringify(telegram_user.id) }
+      this.$emit('createNotificationChannel', this.notificationChannel, config)
     },
 
     onTelegramLogout() {
-      this.this.notificationChannel.channelInfo.config = null
-      this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
+      this.$emit('deleteNotificationChannel', this.notificationChannel)
     },
 
     onTelegramTest(event) {

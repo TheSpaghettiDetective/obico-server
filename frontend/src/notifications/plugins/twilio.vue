@@ -1,8 +1,14 @@
 <template>
-  <section v-if="notificationChannel.channelInfo">
-    <h2 class="section-title">SMS</h2>
+  <notification-channel-template
+    :errorMessages="errorMessages"
+    :saving="saving"
+    :notificationChannel="notificationChannel"
+    :notificationSettings="notificationSettings"
 
-    <div v-if="twilioEnabled">
+    @createNotificationChannel="(channel) => $emit('createNotificationChannel', channel)"
+    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+  >
+    <template #configuration>
       <div class="form-group row">
         <label for="id_email" class="col-12 col-form-label">Phone Number</label>
         <div class="col-12 col-form-label">
@@ -30,72 +36,24 @@
           </saving-animation>
         </div>
       </div>
-
-      <div>
-        <div class="row">
-          <div class="col">
-            <h5 class="font-weight-bold">Alerts settings</h5>
-          </div>
-        </div>
-
-        <notification-setting-switch
-          class="mb-0"
-          settingId="enabled"
-          settingTitle="Enable"
-          :errorMessages="errorMessages"
-          :saving="saving"
-          :notificationChannel="notificationChannel"
-          @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
-        />
-
-        <div :class="{'inactive': !notificationsEnabled}">
-          <hr class="my-1">
-          <notification-setting-switch
-            v-for="setting in notificationSettings"
-            :key="setting.id"
-            :settingId="setting.id"
-            :settingTitle="setting.title"
-            :settingDescription="setting.description"
-            :isSubcategory="setting.isSubcategory"
-            :disabled="!notificationsEnabled"
-            :errorMessages="errorMessages"
-            :saving="saving"
-            :notificationChannel="notificationChannel"
-            @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
-          />
-        </div>
-
-      </div>
-    </div>
-    <div v-else>
-      <p class="text-warning">Please configure the following variables in the "docker-compose.override.yml" file to enable SMS notifications:</p>
-      <ul class="text-warning">
-        <li>TWILIO_ACCOUNT_SID</li>
-        <li>TWILIO_AUTH_TOKEN</li>
-        <li>TWILIO_FROM_NUMBER</li>
-      </ul>
-    </div>
-  </section>
+    </template>
+  </notification-channel-template>
 </template>
 
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
-import NotificationSettingSwitch from '@src/components/user-preferences/notifications/NotificationSettingSwitch.vue'
+import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 import { getNotificationSettingKey } from '@src/lib/utils'
 
 export default {
-  name: 'SmsNotifications',
+  name: 'twilio',
 
   components: {
     SavingAnimation,
-    NotificationSettingSwitch,
+    NotificationChannelTemplate,
   },
 
   props: {
-    config: {
-      default() {return {}},
-      type: Object,
-    },
     errorMessages: {
       type: Object,
       required: true,
@@ -104,9 +62,17 @@ export default {
       type: Object,
       required: true,
     },
+    user: {
+      type: Object,
+      required: true,
+    },
     notificationChannel: {
       type: Object,
       required: true,
+    },
+    config: {
+      default() {return {}},
+      type: Object,
     },
   },
 
@@ -125,29 +91,10 @@ export default {
     }
   },
 
-  computed: {
-    twilioEnabled() {
-      const envVars = this.notificationChannel.pluginInfo ? (this.notificationChannel.pluginInfo.env_vars || {}) : {}
-      for (const variable of Object.values(envVars)) {
-        if (variable.is_required && !variable.is_set) {
-          return false
-        }
-      }
-      return true
-    },
-    notificationsEnabled() {
-      return this.notificationChannel.channelInfo ? this.notificationChannel.channelInfo.enabled : false
-    },
-  },
-
   created() {
-    if (!this.notificationChannel.channelInfo) {
-      this.$emit('createNotificationChannel', this.notificationChannel.channelName)
-    } else {
-      if (this.notificationChannel.channelInfo.config) {
-        this.phoneCountryCode = this.notificationChannel.channelInfo.config.phone_country_code
-        this.phoneNumber = this.notificationChannel.channelInfo.config.phone_number
-      }
+    if (this.notificationChannel.channelInfo && this.notificationChannel.channelInfo.config) {
+      this.phoneCountryCode = this.notificationChannel.channelInfo.config.phone_country_code
+      this.phoneNumber = this.notificationChannel.channelInfo.config.phone_number
     }
   },
 

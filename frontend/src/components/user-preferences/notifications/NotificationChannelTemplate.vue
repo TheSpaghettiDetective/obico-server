@@ -168,7 +168,7 @@ export default {
       return this.notificationChannel.channelInfo ? this.notificationChannel.channelInfo.enabled : false
     },
     envVarsToSet() {
-      const envVars = this.notificationChannel.pluginInfo ? (this.notificationChannel.pluginInfo.env_vars || {}) : {}
+      const envVars = this.notificationChannel.pluginInfo?.env_vars || {}
       let missedEnvVars = []
       for (const [key, val] of Object.entries(envVars)) {
         if (val.is_required && !val.is_set) {

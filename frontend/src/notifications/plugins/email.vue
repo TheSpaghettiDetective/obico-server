@@ -75,11 +75,5 @@ export default {
       required: true,
     },
   },
-
-  created() {
-    if (!this.notificationChannel.channelInfo) {
-      this.$emit('createNotificationChannel', this.notificationChannel, {})
-    }
-  },
 }
 </script>

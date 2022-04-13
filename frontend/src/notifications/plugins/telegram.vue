@@ -1,10 +1,9 @@
 <template>
   <notification-channel-template
-    v-if="config.telegramBotName"
-
     :errorMessages="errorMessages"
     :saving="saving"
     :notificationChannel="notificationChannel"
+    :showSettings="!!config.telegramBotName"
 
     @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
@@ -17,7 +16,7 @@
       </small>
       <br>
       <div class="form-group row">
-        <div v-if="notificationChannel.channelInfo.config && notificationChannel.channelInfo.config.chat_id">
+        <div v-if="notificationChannel.channelInfo && notificationChannel.channelInfo.config && notificationChannel.channelInfo.config.chat_id">
           <div class="col-12">
             <div class="btn btn-sm btn-primary float-left mr-2" @click="onTelegramLogout">Unlink Telegram</div>
             <div class="btn btn-sm btn-primary float-left" @click="onTelegramTest($event)">Test Telegram Notification</div>

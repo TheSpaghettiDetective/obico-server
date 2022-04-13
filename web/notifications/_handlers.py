@@ -433,12 +433,8 @@ class Handler(object):
                 'extra_context': extra_context,
 
             }
+        from . import tasks
         if in_process:
-            from . import tasks
             tasks.send_printer_notifications(**kwargs)
         else:
-            self._queue_send_printer_notifications_task(kwargs=kwargs)
-
-    def _queue_send_printer_notifications_task(self, kwargs: Dict) -> None:
-        from . import tasks
-        tasks.send_printer_notifications.apply_async(kwargs=kwargs)
+            tasks.send_printer_notifications.apply_async(kwargs=kwargs)

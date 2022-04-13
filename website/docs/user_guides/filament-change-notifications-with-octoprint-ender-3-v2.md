@@ -32,47 +32,74 @@ First,  lets install all of the necessary programs. All of these programs have M
 
 1. Download [Marlin](https://marlinfw.org/meta/download/). Most likely, you will want the latest version, which is 2.0.9.3 at this time. Make sure you download the both “Marlin-2.0.x.zip” and “Configurations-release-2.0.x.x.zip”.
 
-1. After downloading, extract the zip file.
+2. After downloading, extract the zip file.
 
-1. Find the configuration.h and configuration.adv files for your printer.
+3. Find the configuration.h and configuration.adv files for your the Creality Ender 3V2.
 
-1. Copy and paste the files into the .\Marlin folder that is in the Marlin 2.xx folder that you unzipped in the previous step.
+:::Note
 
-1. When prompted, choose to overwrite the two files that are already there.
+If you don't have a Creality Ender 3V2, go to our general guide for 32 bit boards
 
-1. Neil please can you please the above steps more specific to ender v2?
+:::
 
+4. In the examples folder, select Creality. then select Creality Ender 3V2. You will see 
 
-## Step 3: Enable HOST_ACTION_COMMANDS and M600
+5. Copy and paste the files into the .\Marlin folder that is in the Marlin 2.xx folder that you unzipped in the previous step.
+
+6. When prompted, choose to overwrite the two files that are already there.
+
+## Step 3: Set the correct Environment
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
 ![Open Project Platform.io](/img/user_guides/filament-change/open-project-platform-io.PNG)
 
-2. Click the *Open Project* button.
+1. Click the *Open Project* button.
 
-3. Find the unzipped Marlin folder and click *Open*
+1. Find the unzipped Marlin folder and click *Open*
 
-4. Click the *Explorer* button on the left side and edit the configuration_adv file in the Marlin folder.
+1. Click the *Explorer* button on the left side, and click the platform.ini menu
 
-5. To enable the M600 command, type *control-f* on your keyboard, and search for *M600* to find where it is listed in the file.
+1. Navigate to the Marlin Folder on the left side of the screen.
+
+![Find pins.h](/img/user_guides/filament-change/find-environment-for-board-marlin-ender-3-v2.jpg)
+
+1. Select the *Marlin* folder. Select *pins*. Select *pins.h* 
+
+1. Type control-f and then search for your mainboard manufacturer. The Ender 3 V2 comes stock with a Creality 4.2.2 32-bit mainboard. 
+
+![Find the environment for your mainboard](/img/user_guides/filament-change/platformio-environment-for-creality-ender-3v2.jpg)
+
+1. Copy the environment corresponding to your board as shown.
+
+![Enter the correct environment](/img/user_guides/filament-change/creality-ender-3-v2-marlin-environment.jpg)
+
+1. Replace the default_envs with the environment you found in the previous step.  For the Creality Ender 3 V2 with the 4.2.2 32-bit mainboard, it the value is: default_envs = STM32F103RET6_creality
+
+
+
+## Step 4: Enable HOST_ACTION_COMMANDS and M600
+
+1. Click the *Explorer* button on the left side and edit the configuration_adv file in the Marlin folder.
+
+1. To enable the M600 command, type *control-f* on your keyboard, and search for *M600* to find where it is listed in the file.
  
-6. Delete the two `/` symbols in front of `#define ADVANCED_PAUSE_FEATURE`
+1. Delete the two `/` symbols in front of `#define ADVANCED_PAUSE_FEATURE`
 
 ![Enable M600](/img/user_guides/filament-change/advanced-pause-m600.png)
 
-7. To enable Host Action Commands Type *control-f* again and search for host action command. Scroll down until you see *Host Action Commands*
+1. To enable Host Action Commands Type *control-f* again and search for host action command. Scroll down until you see *Host Action Commands*
 
-8. Delete the `/` symbol in front of `#define HOST_ACTION_COMMANDS`
+1. Delete the `/` symbol in front of `#define HOST_ACTION_COMMANDS` and any other necessary symbols so yours looks identical to the image shown below. 
 
 ![Host Action Commands](/img/user_guides/filament-change/host-action-commands.png)
 
-9. Save the file
+1. Save the file
 
 
-## Step 4: Compile the firmware
+## Step 5: Compile the firmware
 
-1.  Hover over the build section on the top left side of the screen and you will see a hammer icon. Click this icon and click Build on the right to start building the firmware.
+1.  Click the Marlin icon on the left side of the screen and hover over the build section on the top left side of the screen and you will see a hammer icon. Click this icon and click Build on the right to start building the firmware.
 
 :::note
 
@@ -80,9 +107,9 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 :::
 
-2.  At the end of the terminal, you should see a list of boards, with most of them saying Ignored, and your board listed as Success.
+2.  At the end of the terminal, you should see a list of boards, with most of them saying Ignored, and your board listed as "Success".
 
-## Step 5: Flash the new firmware
+## Step 6: Flash the new firmware
 
 1. Go to your “Marlin-2.0.x” folder, 
 
@@ -90,7 +117,7 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 1. Open the build folder and then open the folder with a name beginning with “STM32” (names might vary depending on the mainboard).
 
-1. Find and copy the most recent (by time) BIN file. Make sure not to change the firmware’s name, as it won’t work if the name is changed.
+1. Find the most recent (by time) BIN file. You must change the name to a unique name other than "firmware.bin." For example, a suitable name would be "mfirmware.bin" Once you have changed the name, copy the .bin file. 
 
 1. Plug in your mainboard’s Micro SD card into your device.
 
@@ -98,4 +125,3 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 1. Save the BIN firmware file to the Micro SD card.
 
-1. Neil can you check to confirm the steps above?

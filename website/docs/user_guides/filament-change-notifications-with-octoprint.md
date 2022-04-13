@@ -47,33 +47,28 @@ You can turn on the filament notifications from the mobile app or the web app.
 
 **Mobile App:**
 
-![Printer Screen](/img/user_guides/filament-change/printer-screen.png)
+<div style={{display: "flex", flexWrap: "wrap"}}>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/printer-screen.png" alt="Printer Screen"></img>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/preferences.png" alt="Select Preferences"></img>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/notification-screen.png" alt="Preferences Screen"></img>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/notifications.png" alt="Notifications Menu"></img>
+</div>
 
 1.  From the printer screen, click the three vertical lines on the upper left corner
-    ![Select Preferences](/img/user_guides/filament-change/preferences.png)
-
 2.  Select Preferences
-
-    ![Preferences Screen](/img/user_guides/filament-change/notification-screen.png)
-
-
 3.  Select Notifications
-    ![Notifications Menu](/img/user_guides/filament-change/notifications.png)
-
 4.  Select “Notify me when filament runs out or needs a change.” With this enabled, you will now be sent filament notifications to your email and through push notifications.
-
 5.  You can enable filament runout and color change notifications to be sent through email or as a push notification to your phone.
 
 
-**Enable Email Notifications**
+**Enable Notifications**
 
-**Enable Push Notifications**
+<div style={{display: "flex", flexWrap: "wrap"}}>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/select-push-notifications.png" alt="Select Push Notifications"></img>
+    <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user_guides/filament-change/push-notification.png" alt="Push Notifications Screen"></img>
+</div>
 
-![Select Push Notifications](/img/user_guides/filament-change/select-push-notifications.png)
-1. Select *Push Notifications* from the *Notifications Screen*
-
-![Push Notifications Screen](/img/user_guides/filament-change/push-notification.png)
-
+Select *Push Notifications* from the *Notifications Screen*
 
 
 **On The Spaghetti Detective's Website**

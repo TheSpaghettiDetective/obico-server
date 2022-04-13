@@ -8433,6 +8433,11 @@ vue-mugen-scroll@^0.2.6:
     element-in-view "^0.1.0"
     throttleit "^1.0.0"
 
+vue-onoff-toggle@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/vue-onoff-toggle/-/vue-onoff-toggle-1.1.1.tgz#72bc9715eba813ed1833a8a7c9076468d677d31e"
+  integrity sha512-/uC+demEwR5p1XbfHByxhMQGu1axCuGTn3kGZVaxS8wMJFwgdkBKM4Uamto6yGiOUm5QAuK/IwszRaKSF+h7VQ==
+
 vue-pluralize@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/vue-pluralize/-/vue-pluralize-0.0.2.tgz#61310447e6e7c9cdb073c164dc36b014cae96484"

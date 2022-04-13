@@ -131,6 +131,9 @@ export default {
     if (staticAlert && this.inMobileWebView) {
       staticAlert.classList.add('is-in-mobile')
     }
+    if (this.inMobileWebView) {
+      document.querySelector('body').style.paddingBottom = 0
+    }
   },
 }
 </script>

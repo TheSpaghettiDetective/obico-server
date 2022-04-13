@@ -35,34 +35,61 @@
           :errorMessages="errorMessages"
           :saving="saving"
           :notificationChannel="notificationChannel"
+          :bottomDivider="true"
           @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
         />
         <div :class="{'inactive': !notificationsEnabled}">
-          <hr class="my-1">
           <slot name="custom-settings"></slot>
           <div
             v-for="setting in notificationSettings"
             :key="setting.id"
           >
             <template v-if="setting.id === 'printer_status_change'">
-              <div class="row">
-                <div class="col col-form-label">
+              <!-- FIXME: reuse NotificationSettingSwitch -->
+              <div v-if="theme === 'web'" class="row">
+                <div class="col-12 col-form-label">
                   <saving-animation :errors="[]" :saving="false">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
                         type="checkbox"
                         class="custom-control-input"
-                        :id="`id_${notificationChannel.channelName}_printer_status_change`"
+                        :id="`id_${settingKey(setting.id)}`"
                         :disabled="!notificationsEnabled"
                         v-model="printerStatusChangeNotifications"
                       >
-                      <label class="custom-control-label" :for="`id_${notificationChannel.channelName}_printer_status_change`">
+                      <label class="custom-control-label" :for="`id_${settingKey(setting.id)}`">
                         {{ setting.title }}
-                        <span v-if="setting.description" class="text-muted setting-description"><br>{{ setting.description }}</span>
+                        <span  v-if="setting.description" class="text-muted setting-description"><br>{{ setting.description }}</span>
                       </label>
                     </div>
                   </saving-animation>
                 </div>
+              </div>
+              <div v-else>
+                <saving-animation :errors="[]" :saving="false">
+                  <div class="mobile-setting-item-wrapper">
+                    <div class="setting-item-text">
+                      <label :for="`id_${settingKey(setting.id)}`">
+                        {{ setting.title }}
+                        <span v-if="setting.description" class="text-muted setting-description"><br>{{ setting.description }}</span>
+                      </label>
+                    </div>
+                    <div class="setting-item-switch">
+                      <onoff-toggle
+                        :theme="theme"
+                        :width="theme === 'ios' ? 48 : 30"
+                        :height="theme === 'ios' ? 24 : 12"
+                        :onColor="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-on-primary)'"
+                        offColor="var(--color-divider)"
+                        borderColor="var(--color-divider)"
+                        :thumbColor="theme === 'ios' ? 'var(--color-on-primary)' : 'var(--color-primary)'"
+                        v-model="printerStatusChangeNotifications"
+                        :disabled="!notificationsEnabled"
+                        class="mb-0"
+                      />
+                    </div>
+                  </div>
+                </saving-animation>
               </div>
             </template>
             <template v-else>
@@ -112,6 +139,7 @@ import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NotificationSettingSwitch from '@src/components/user-preferences/notifications/NotificationSettingSwitch.vue'
 import { getNotificationSettingKey } from '@src/lib/utils'
 import defaultNotificationSettings from '@config/user-preferences/notification-settings'
+import { mobilePlatform } from '@src/lib/page_context'
 
 export default {
   name: 'NotificationChannelTemplate',
@@ -218,6 +246,15 @@ export default {
         }
       }
     },
+    // FIXME: remove after NotificationSettingSwitch reuse
+    theme() {
+      const platform = mobilePlatform()
+      if (!platform) {
+        return 'web'
+      } else {
+        return platform === 'ios' ? 'ios' : 'material'
+      }
+    },
   },
 
   created() {
@@ -272,4 +309,23 @@ export default {
 .setting-description
   font-size: 14px
   margin-bottom: 0
+
+// FIXME: remove after NotificationSettingSwitch reuse
+.setting-description
+  font-size: 14px
+  margin-bottom: 0
+.mobile-setting-item-wrapper
+  display: flex
+  align-items: center
+  gap: .5rem
+  padding: 10px 0
+  border-bottom: 1px solid var(--color-divider)
+  &.is-subcategory
+    margin-left: 1rem
+  .setting-item-text
+    flex: 1
+  .setting-item-switch
+    flex: 0 0 1
+  label
+    margin-bottom: 0
 </style>

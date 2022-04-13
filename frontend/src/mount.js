@@ -8,6 +8,7 @@ import '@src/lib/filters'
 import setupSentry from '@src/lib/sentry'
 import { initTheme } from '@src/styles/colors'
 import VuePluralize from 'vue-pluralize'
+import OnoffToggle from 'vue-onoff-toggle'
 
 export default (router, components) => {
   initTheme()
@@ -18,6 +19,7 @@ export default (router, components) => {
   Vue.use(Sticky)
   Vue.use(VueMoment)
   Vue.use(VuePluralize)
+  Vue.use(OnoffToggle)
 
   if (document.getElementById('app')) {
     new Vue({

@@ -248,10 +248,12 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         if not plugin:
             raise Exception(f'Notification Plugin "{name}" is not loaded')
 
-        try:
-            data['config'] = plugin.instance.validate_config(data['config'])
-        except serializers.ValidationError as e:
-            raise serializers.ValidationError({'config': e.detail})
+        need_to_validate_config = (not self.partial) or 'config' in data
+        if need_to_validate_config:
+            try:
+                data['config'] = plugin.instance.validate_config(data['config'])
+            except serializers.ValidationError as e:
+                raise serializers.ValidationError({'config': e.detail})
 
         return data
 

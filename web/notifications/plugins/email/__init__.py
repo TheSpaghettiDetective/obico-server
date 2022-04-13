@@ -2,6 +2,7 @@ from typing import Dict, Optional, List
 import smtplib
 import logging
 import backoff  # type: ignore
+import os
 
 from django.conf import settings
 from django.template.base import Template
@@ -23,6 +24,28 @@ LOGGER = logging.getLogger(__name__)
 
 
 class EmailNotificationPlugin(BaseNotificationPlugin):
+
+    def env_vars(self) -> Dict:
+        return {
+            'EMAIL_HOST': {
+                'is_required': True,
+                'is_set': 'EMAIL_HOST' in os.environ,
+                'value': os.environ.get('EMAIL_HOST'),
+            },
+            'EMAIL_PORT': {
+                'is_required': True,
+                'is_set': 'EMAIL_PORT' in os.environ,
+                'value': os.environ.get('EMAIL_PORT'),
+            },
+            'EMAIL_HOST_USER': {
+                'is_required': True,
+                'is_set': 'EMAIL_HOST_USER' in os.environ,
+            },
+            'EMAIL_HOST_PASSWORD': {
+                'is_required': True,
+                'is_set': 'EMAIL_HOST_PASSWORD' in os.environ,
+            },
+        }
 
     def build_failure_alert_extra_context(self, **kwargs) -> Dict:
         extra_context = super().build_print_notification_extra_context(**kwargs)

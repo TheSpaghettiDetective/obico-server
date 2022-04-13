@@ -29,6 +29,14 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
     def a(self, s: str) -> str:
         return f'<a href="{s}">{s}</a>'
 
+    def env_vars(self) -> Dict:
+        return {
+            'TELEGRAM_BOT_TOKEN': {
+                'is_required': True,
+                'is_set': 'TELEGRAM_BOT_TOKEN' in os.environ,
+            },
+        }
+
     def validate_config(self, data: Dict) -> Dict:
         if 'chat_id' in data:
             chat_id = data['chat_id'].strip()

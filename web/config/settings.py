@@ -302,7 +302,7 @@ CACHES = {
     }
 }
 
-# Email and SMS settings
+# Django Email settings
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')

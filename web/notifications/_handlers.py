@@ -75,28 +75,6 @@ def _load_all_plugins() -> Dict[str, PluginDesc]:
     return loaded
 
 
-def get_poster_url_content(poster_url: str, timeout: Optional[float] = 5.0) -> Generator[Optional[bytes], Optional[float], None]:
-    # generator, receives timeout and then retreives file content from cache or network
-    content: Optional[bytes] = None
-    while True:
-        timeout = (yield content) or timeout
-
-        if not poster_url:
-            continue
-
-        if content is not None:
-            continue
-
-        try:
-            resp = requests.get(poster_url, timeout=timeout)
-            resp.raise_for_status()
-        except Exception as e:
-            LOGGER.error(f'could not fetch poster_url ({e})')
-            continue
-
-        content = resp.content
-
-
 class Handler(object):
 
     def __init__(self) -> None:
@@ -184,9 +162,7 @@ class Handler(object):
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
         print_ctx = self.get_print_context(print_)
-        _poster_url_fetcher = get_poster_url_content(poster_url, timeout=5.0)
-        _poster_url_fetcher.send(None)
-
+        
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
@@ -206,12 +182,10 @@ class Handler(object):
                     user=user_ctx,
                     printer=printer_ctx,
                     print=print_ctx,
-                    site_is_public=settings.SITE_IS_PUBLIC,
                     is_warning=is_warning,
                     print_paused=print_paused,
                     extra_context=extra_context,
                     poster_url=poster_url,
-                    _poster_url_fetcher=_poster_url_fetcher,
                 )
 
                 self._send_failure_alert(nsetting=nsetting, context=context)
@@ -313,9 +287,7 @@ class Handler(object):
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
         print_ctx = self.get_print_context(print_)
-        _poster_url_fetcher = get_poster_url_content(poster_url, timeout=5.0)
-        _poster_url_fetcher.send(None)
-
+        
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
@@ -337,12 +309,10 @@ class Handler(object):
                     user=user_ctx,
                     printer=printer_ctx,
                     print=print_ctx,
-                    site_is_public=settings.SITE_IS_PUBLIC,
                     notification_type=notification_type,
                     notification_data=notification_data,
                     extra_context=extra_context or {},
                     poster_url=poster_url,
-                    _poster_url_fetcher=_poster_url_fetcher,
                 )
 
                 self._send_printer_notification(nsetting=nsetting, context=context)
@@ -394,7 +364,6 @@ class Handler(object):
         context = TestMessageContext(
             config=nsetting.config,
             user=self.get_user_context(nsetting.user),
-            site_is_public=settings.SITE_IS_PUBLIC,
             extra_context=extra_context or {},
         )
 

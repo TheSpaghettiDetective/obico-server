@@ -125,12 +125,10 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         if context.poster_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
-                if not context.site_is_public:
-                    poster_url_content = context.get_poster_url_content()
-                    if poster_url_content:
-                        attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
-            except Exception:
-                LOGGER.exception('error while fetching image content for email')
+                if not settings.SITE_IS_PUBLIC:
+                    attachments = [('Image.jpg', requests.get(context.poster_url).content, 'image/jpeg')]
+            except:
+                pass
 
             ctx['poster_url'] = None if attachments else context.poster_url
 
@@ -187,12 +185,10 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         if context.poster_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
-                if not context.site_is_public:
-                    poster_url_content = context.get_poster_url_content()
-                    if poster_url_content:
-                        attachments = [('Image.jpg', poster_url_content, 'image/jpeg')]
-            except Exception:
-                LOGGER.exception('error while fetching image content for email')
+                if not settings.SITE_IS_PUBLIC:
+                    attachments = [('Image.jpg', requests.get(context.poster_url).content, 'image/jpeg')]
+            except:
+                pass
 
             ctx['poster_url'] = None if attachments else context.poster_url
 

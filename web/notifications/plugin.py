@@ -56,17 +56,8 @@ class NotificationContext:
     user: UserContext
     printer: PrinterContext
     print: PrintContext
-    site_is_public: bool
     extra_context: Dict
     poster_url: str
-
-    _poster_url_fetcher: Generator[Optional[bytes], Optional[float], None]
-
-    def get_poster_url_content(self, timeout: float = 5.0) -> Optional[bytes]:
-        # We need to avoid refetching same image many times.
-        # This class is frozen as it reused accross notification handler calls, what should not tamper it.
-        # Adding this "generator-style caching" to the class.
-        return self._poster_url_fetcher.send(timeout)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -86,7 +77,6 @@ class PrinterNotificationContext(NotificationContext):
 class TestMessageContext:
     config: Dict
     user: UserContext
-    site_is_public: bool
     extra_context: Dict
 
 

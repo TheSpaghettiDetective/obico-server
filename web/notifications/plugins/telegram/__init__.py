@@ -3,8 +3,8 @@ import logging
 import os
 import time
 from telebot import TeleBot, types  # type: ignore
-
 from django.conf import settings
+import requests
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -65,12 +65,13 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             buttons = ['cancel', 'more_info']
 
         message = f"Hi {context.user.first_name},\n{text}"
-        file_content = context.get_poster_url_content()
 
-        markups = []
-        if context.site_is_public:
-            # "localhost" etc in urls result in HTTP 400, dropping buttons
-            markups = self.inline_buttons(context, buttons) if file_content else self.default_button()
+        try:
+            file_content = requests.get(context.poster_url).content
+        except:
+            file_content = None
+
+        markups = self.inline_buttons(context, buttons) if file_content else self.default_button()
 
         self.call_telegram(
             chat_id=chat_id,
@@ -89,7 +90,12 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return
 
         message = f"Hi {context.user.first_name},\n{text}"
-        file_content = context.get_poster_url_content()
+        
+        try:
+            file_content = requests.get(context.poster_url).content
+        except:
+            file_content = None
+
         self.call_telegram(
             chat_id=chat_id,
             message=message,
@@ -109,7 +115,6 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         message: str,
         markups: Optional[List] = None,
         file_content: Optional[bytes] = None,
-        timeout: float = 5.0,
     ) -> None:
         bot = self.get_telegram_bot()
         if not bot:

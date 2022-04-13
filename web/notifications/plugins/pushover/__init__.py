@@ -4,6 +4,7 @@ import requests  # type: ignore
 import io
 import os
 from enum import IntEnum
+import requests
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -122,7 +123,11 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.get_poster_url_content()
+        try:
+            file_content = requests.get(context.poster_url).content
+        except:
+            file_content = None
+
         self.call_pushover(
             token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,
@@ -145,7 +150,11 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         if not title or not text:
             return
 
-        file_content = context.get_poster_url_content()
+        try:
+            file_content = requests.get(context.poster_url).content
+        except:
+            file_content = None
+
         self.call_pushover(
             token=os.environ.get('PUSHOVER_APP_TOKEN', ''),
             user_key=user_key,

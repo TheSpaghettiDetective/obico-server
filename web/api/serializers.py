@@ -243,16 +243,15 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         return name
 
     def validate(self, data):
-        if 'config' in data:
-            name = data['name']
-            plugin = handler.notification_plugin_by_name(name)
-            if not plugin:
-                raise Exception(f'Notification Plugin "{name}" is not loaded')
+        name = data['name']
+        plugin = handler.notification_plugin_by_name(name)
+        if not plugin:
+            raise Exception(f'Notification Plugin "{name}" is not loaded')
 
-            try:
-                data['config'] = plugin.instance.validate_config(data['config'])
-            except serializers.ValidationError as e:
-                raise serializers.ValidationError({'config': e.detail})
+        try:
+            data['config'] = plugin.instance.validate_config(data['config'])
+        except serializers.ValidationError as e:
+            raise serializers.ValidationError({'config': e.detail})
 
         return data
 

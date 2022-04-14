@@ -72,7 +72,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             title=title,
             body=text,
             link=link,
-            file_url=context.poster_url,
+            file_url=context.img_url,
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
@@ -92,7 +92,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             title=title,
             body=text,
             link=link,
-            file_url=context.poster_url,
+            file_url=context.img_url,
         )
 
     def send_test_message(self, context: TestMessageContext, **kwargs) -> None:

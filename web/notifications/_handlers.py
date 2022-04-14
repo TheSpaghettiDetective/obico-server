@@ -133,13 +133,13 @@ class Handler(object):
         print_paused: bool,
         printer: Printer,
         print_: Print,
-        poster_url: str,
+        img_url: str,
         extra_context: Optional[Dict] = None,
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
         try:
-            mobile_notifications.send_failure_alert(printer, poster_url, is_warning, print_paused)
+            mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
         except Exception:
             sentryClient.captureException()
 
@@ -186,7 +186,7 @@ class Handler(object):
                     is_warning=is_warning,
                     print_paused=print_paused,
                     extra_context=extra_context,
-                    poster_url=poster_url,
+                    img_url=img_url,
                 )
 
                 self._send_failure_alert(nsetting=nsetting, context=context)
@@ -285,9 +285,9 @@ class Handler(object):
             return
 
         if print_ and print_.poster_url:
-            poster_url = print_.poster_url
+            img_url = print_.poster_url
         else:
-            poster_url = get_rotated_jpg_url(printer)
+            img_url = get_rotated_jpg_url(printer)
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
@@ -317,7 +317,7 @@ class Handler(object):
                     notification_type=notification_type,
                     notification_data=notification_data,
                     extra_context=extra_context or {},
-                    poster_url=poster_url,
+                    img_url=img_url,
                 )
 
                 self._send_printer_notification(nsetting=nsetting, context=context)

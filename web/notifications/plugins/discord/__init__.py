@@ -75,7 +75,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.poster_url
+            image_url=context.img_url
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
@@ -94,7 +94,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             text=text,
             color=color,
             webhook_url=context.config['webhook_url'],
-            image_url=context.poster_url
+            image_url=context.img_url
         )
 
     def notification_type_to_color(self, notification_type: str) -> int:

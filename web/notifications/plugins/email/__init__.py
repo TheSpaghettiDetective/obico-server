@@ -122,15 +122,15 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         )
 
         attachments = []
-        if context.poster_url:
+        if context.img_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
                 if not settings.SITE_IS_PUBLIC:
-                    attachments = [('Image.jpg', requests.get(context.poster_url).content, 'image/jpeg')]
+                    attachments = [('Image.jpg', requests.get(context.img_url).content, 'image/jpeg')]
             except:
                 pass
 
-            ctx['poster_url'] = None if attachments else context.poster_url
+            ctx['img_url'] = None if attachments else context.img_url
 
         message = tpl.render(ctx)
         subject = 'Your print {} on {} {}.'.format(
@@ -182,15 +182,15 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         ctx.update(kwargs.get('extra_ctx', {}))
 
         attachments = []
-        if context.poster_url:
+        if context.img_url:
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
                 if not settings.SITE_IS_PUBLIC:
-                    attachments = [('Image.jpg', requests.get(context.poster_url).content, 'image/jpeg')]
+                    attachments = [('Image.jpg', requests.get(context.img_url).content, 'image/jpeg')]
             except:
                 pass
 
-            ctx['poster_url'] = None if attachments else context.poster_url
+            ctx['img_url'] = None if attachments else context.img_url
 
         message = tpl.render(ctx)
         self._send_emails(

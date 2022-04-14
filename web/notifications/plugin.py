@@ -57,7 +57,7 @@ class NotificationContext:
     printer: PrinterContext
     print: PrintContext
     extra_context: Dict
-    poster_url: str
+    img_url: str
 
 
 @dataclasses.dataclass(frozen=True)

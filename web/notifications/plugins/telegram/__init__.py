@@ -67,7 +67,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         message = f"Hi {context.user.first_name},\n{text}"
 
         try:
-            file_content = requests.get(context.poster_url).content
+            file_content = requests.get(context.img_url).content
         except:
             file_content = None
 
@@ -92,7 +92,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         message = f"Hi {context.user.first_name},\n{text}"
         
         try:
-            file_content = requests.get(context.poster_url).content
+            file_content = requests.get(context.img_url).content
         except:
             file_content = None
 

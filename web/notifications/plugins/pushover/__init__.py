@@ -124,7 +124,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             return
 
         try:
-            file_content = requests.get(context.poster_url).content
+            file_content = requests.get(context.img_url).content
         except:
             file_content = None
 
@@ -151,7 +151,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             return
 
         try:
-            file_content = requests.get(context.poster_url).content
+            file_content = requests.get(context.img_url).content
         except:
             file_content = None
 

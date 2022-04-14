@@ -5,7 +5,7 @@ import firebase_admin
 from django.utils.timezone import now
 from raven.contrib.django.raven_compat.models import client as sentryClient
 
-from .utils import save_print_snapshot, shortform_duration, shortform_localtime
+from .utils import save_print_snapshot, shortform_duration, shortform_localtime, get_rotated_jpg_url
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
@@ -16,12 +16,12 @@ firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certific
 
 
 def send_if_needed(_print, op_event, op_data):
-    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1:
+    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1 or not _print.user.notification_enabled:
         return
 
     rotated_jpg_url = None      # Cache it as it's expensive to generate
     if op_event.get('event_type') in PRINT_EVENTS:
-        rotated_jpg_url = get_rotated_jpg_url(_print)
+        rotated_jpg_url = get_rotated_jpg_url(_print.printer)
         send_print_event(_print, op_event.get('event_type'), rotated_jpg_url)
 
     send_print_progress(_print, op_data, rotated_jpg_url)
@@ -131,7 +131,7 @@ def send_print_progress(_print, op_data, existed_rotated_jpg_url):
                 data['title'] += ' | 🔴'
 
         if not rotated_jpg_url:
-            rotated_jpg_url = get_rotated_jpg_url(_print)
+            rotated_jpg_url = get_rotated_jpg_url(_print.printer)
         if rotated_jpg_url:
             data['picUrl'] = rotated_jpg_url
 
@@ -165,22 +165,6 @@ def send_to_device(msg, mobile_device):
         import traceback; traceback.print_exc()
         sentryClient.captureException()
 
-def get_rotated_jpg_url(_print):
-    printer = _print.printer
-    if not printer.pic or not printer.pic.get('img_url'):
-        return None
-    jpg_url = printer.pic.get('img_url')
-
-    need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
-    if not need_rotation:
-        return jpg_url
-
-    jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
-    return save_print_snapshot(printer,
-                        jpg_path.group(1),
-                        f'snapshots/{printer.id}/latest_rotated.jpg',
-                        rotated=True,
-                        to_long_term_storage=False)
 
 if __name__ == '__main__':
     import json

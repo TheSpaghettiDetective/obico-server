@@ -61,7 +61,7 @@ export default {
       return this.height === 'small'
     },
     errorMsg() {
-      return this.errors.join(' ')
+      return this.errors ? this.errors.join(' ') : ''
     }
   },
 

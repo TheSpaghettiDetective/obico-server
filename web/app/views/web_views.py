@@ -20,7 +20,7 @@ from allauth.account.views import LoginView
 
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
-from app.models import (User, Printer, SharedResource, GCodeFile)
+from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
 from lib.integrations.telegram_bot import bot_name, telegram_bot, telegram_send
@@ -184,15 +184,39 @@ def slack_oauth_callback(request):
     user.slack_access_token = r.json().get('access_token')
     user.save()
 
-    return redirect('/user_preferences/slack_notifications/')
+    return redirect('/user_preferences/notification_slack/')
 
 
 def unsubscribe_email(request):
     unsub_token = request.GET['unsub_token']
     email_list = request.GET['list']
+
     user = get_object_or_404(User.objects, unsub_token=unsub_token)
-    setattr(user, f'{email_list}_by_email', False)
-    user.save()
+    nsetting = NotificationSetting.objects.get(user_id=user.id, name='email')
+    if email_list == 'alert':
+        # FIXME added to support emails already sent
+        # can be removed later
+        nsetting.notify_on_failure_alert = False
+        nsetting.save()
+    elif email_list == 'print_notification':
+        # FIXME added to support emails already sent
+        # can be removed later
+        nsetting.notify_on_print_done = False
+        nsetting.notify_on_print_cancelled = False
+        nsetting.notify_on_filament_change = False
+        nsetting.notify_on_other_print_events = False
+        nsetting.notify_on_heater_status = False
+        nsetting.save()
+    elif email_list == 'account_notification':
+        user.account_notification_by_email = False
+        user.save()
+    else:
+        # let's not fail silently on unexpected email_list param
+        # this raises FieldDoesNotExist
+        nsetting._meta.get_field(f'notify_on_{email_list}')
+
+        setattr(nsetting, f'notify_on_{email_list}', False)
+        nsetting.save()
 
     return render(request, 'unsubscribe_email.html', dict(email_list=email_list))
 

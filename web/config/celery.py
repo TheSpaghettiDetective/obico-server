@@ -25,11 +25,11 @@ celery_app.conf.task_store_errors_even_if_ignored = True
 celery_app.conf.worker_prefetch_multiplier = 1
 celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
 celery_app.conf.task_routes = {
-    'app.tasks.print_notification': {'queue': 'realtime'},
     'app.tasks.process_print_events': {'queue': 'realtime'},
     'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},
     'app_ent.tasks.process_print_events_ent': {'queue': 'realtime'},
     'app_ent.tasks.setup_free_trial': {'queue': 'realtime'},
+    'notifications.tasks.send_print_notifications': {'queue': 'realtime'},
 }
 
 # Using a string here means the worker doesn't have to serialize

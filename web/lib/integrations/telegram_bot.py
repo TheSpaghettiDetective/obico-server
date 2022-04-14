@@ -1,6 +1,7 @@
 from telebot import TeleBot, types
 from django.conf import settings
 from lib import site
+import os
 from app.models import Printer
 import time
 
@@ -11,8 +12,8 @@ LOGGER = logging.getLogger(__name__)
 def telegram_bot():
     bot = None
 
-    if settings.TELEGRAM_BOT_TOKEN:
-        bot = TeleBot(settings.TELEGRAM_BOT_TOKEN)
+    if os.environ.get('TELEGRAM_BOT_TOKEN'):
+        bot = TeleBot(os.environ.get('TELEGRAM_BOT_TOKEN'))
 
     return bot
 

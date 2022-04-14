@@ -106,6 +106,7 @@ class User(AbstractUser):
     print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
+    notification_enabled = models.BooleanField(null=False, blank=False, default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -146,14 +147,19 @@ class User(AbstractUser):
         else:
             return cache.octoprinttunnel_get_stats(self.id) > self.tunnel_cap() * 1.1 # Cap x 1.1 to give some grace period to users
 
+
 # We use a signal as opposed to a form field because users may sign up using social buttons
-
-
 @receiver(post_save, sender=User)
 def update_consented_at(sender, instance, created, **kwargs):
     if created:
         instance.consented_at = timezone.now()
         instance.save()
+
+
+@receiver(post_save, sender=User)
+def init_email_notification_setting(sender, instance, created, **kwargs):
+    if created:
+        NotificationSetting.objects.get_or_create(user=instance, name='email')
 
 
 class PrinterManager(SafeDeleteManager):
@@ -289,7 +295,7 @@ class Printer(SafeDeleteModel):
         if print.cancelled_at is None:
             print.finished_at = timezone.now()
             print.save()
-
+        
         PrintEvent.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
 
@@ -554,8 +560,6 @@ class PrintEvent(models.Model):
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
     )
 
-    STOPPING_EVENT_TYPES = (ENDED, PAUSED, ALERT_MUTED)
-
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=256,
@@ -565,19 +569,16 @@ class PrintEvent(models.Model):
     alert_muted = models.BooleanField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def create(print, event_type):
+    def create(print_, event_type):
         event = PrintEvent.objects.create(
-            print=print,
+            print=print_,
             event_type=event_type,
-            alert_muted=(print.alert_muted_at is not None)
+            alert_muted=(print_.alert_muted_at is not None)
         )
-
-        if event_type in (PrintEvent.ENDED, PrintEvent.FILAMENT_CHANGE):
-            celery_app.send_task(
-                settings.PRINT_EVENT_HANDLER,
-                args=(event.id, ),
-            )
-
+        celery_app.send_task(
+            settings.PRINT_EVENT_HANDLER,
+            args=(event.id, ),
+        )
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
@@ -798,7 +799,6 @@ class OctoPrintTunnel(SafeDeleteModel):
         return host
 
     def get_basicauth_url(self, request, plain_basicauth_password):
-        assert self.basicauth_username and self.basicauth_password
         return f'{request.scheme}://{self.basicauth_username}:{plain_basicauth_password}@{self.get_host(request)}'
 
     def get_internal_tunnel_url(self, request):
@@ -808,3 +808,35 @@ class OctoPrintTunnel(SafeDeleteModel):
         return channels.num_ws_connections(
             channels.octo_group_name(self.printer.id)
         ) > 0
+
+
+class NotificationSetting(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    name = models.TextField()
+    config_json = models.TextField(default='', blank=True)
+
+    enabled = models.BooleanField(default=True)
+
+    notify_on_failure_alert = models.BooleanField(blank=True, default=True)
+
+    notify_on_print_done = models.BooleanField(blank=True, default=True)
+    notify_on_print_cancelled = models.BooleanField(blank=True, default=False)
+    notify_on_filament_change = models.BooleanField(blank=True, default=True)
+    notify_on_other_print_events = models.BooleanField(blank=True, default=False)
+
+    notify_on_heater_status = models.BooleanField(blank=True, default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def config(self) -> Dict:
+        return json.loads(self.config_json) if self.config_json else {}
+
+    @config.setter
+    def config(self, data: Dict) -> None:
+        self.config_json = json.dumps(data)
+
+    class Meta:
+        unique_together = ('user', 'name')

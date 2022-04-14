@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 import os
 import time
+import logging
 from binascii import hexlify
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
@@ -24,10 +25,12 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
-    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer)
+    PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
+    NotificationSettingSerializer,
+)
 from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
@@ -37,6 +40,9 @@ from .printer_discovery import (
     get_active_devices_for_client_ip,
     DeviceMessage,
 )
+from notifications.handlers import handler
+
+LOGGER = logging.getLogger(__file__)
 
 PREDICTION_FETCH_TIMEOUT = 20
 
@@ -516,3 +522,48 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
         )
 
         return Response({'queued': True})
+
+
+class NotificationSettingsViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = NotificationSettingSerializer
+
+    def get_queryset(self):
+        assert self.request.user.is_anonymous is False
+        loaded = (plugin.name for plugin in handler.notification_plugins())
+        return NotificationSetting.objects.filter(user=self.request.user, name__in=loaded)
+
+    @action(detail=False, methods=['get', ])
+    def available_plugins(self, request):
+        loaded = {}
+        for plugin in handler.notification_plugins():
+            try:
+                loaded[plugin.name] = {
+                    'features': [
+                        feature.name
+                        for feature in plugin.instance.supported_features()
+                    ],
+                    'env_vars': plugin.instance.env_vars(),
+                }
+            except Exception:
+                LOGGER.exception("could not get plugin details")
+
+        return Response({"plugins": loaded})
+
+    @action(detail=True, methods=['post', ])
+    def send_test_message(self, request, pk):
+        obj = self.get_object()
+        try:
+            handler.send_test_message(obj)
+        except Exception as e:
+            LOGGER.exception("cannot test message")
+            return Response({"status": "error", "detail": str(e)}, status=418)
+        return Response({"status": "sent"})

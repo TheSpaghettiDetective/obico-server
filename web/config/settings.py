@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'api',
+    'notifications',
 
     'webpack_loader',
 ]
@@ -114,7 +115,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'notifications/plugins/email/templates/'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -299,7 +302,7 @@ CACHES = {
     }
 }
 
-# Email and SMS settings
+# Django Email settings
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
@@ -333,7 +336,6 @@ TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER')
 TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 TWILIO_ENABLED = TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER
 
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 PUSHOVER_APP_TOKEN = os.environ.get('PUSHOVER_APP_TOKEN')
 
 SLACK_CLIENT_ID = os.environ.get('SLACK_CLIENT_ID')
@@ -406,3 +408,7 @@ ESCALATING_FACTOR = float(os.environ.get('ESCALATING_FACTOR', 1.75))
 PRINT_EVENT_HANDLER = 'app.tasks.process_print_events'
 
 WELL_KNOWN_PATH = None
+
+NOTIFICATION_PLUGIN_DIRS = [
+    os.path.join(BASE_DIR, 'notifications/plugins'),
+]

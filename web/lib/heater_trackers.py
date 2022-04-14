@@ -4,14 +4,18 @@ from datetime import datetime
 from typing import Dict, Optional, Any, List, Tuple, Set
 import logging
 
-from app.models import Printer, Print, HeaterTracker, PrintHeaterTarget
-from lib.mobile_notifications import send_heater_event
+from app.models import Printer, HeaterTracker, PrintHeaterTarget
+from lib.mobile_notifications import send_heater_event as send_mobile_push_heater_event
+from notifications.notification_types import HeaterCooledDown, HeaterTargetReached
+from notifications.handlers import handler
 from django.utils.timezone import now
 from django.db import IntegrityError
 
 
 COOLDOWN_THRESHOLD = 35.0  # degree celsius
 TARGET_REACHED_DELTA = 3.0  # degree celsius
+
+LOGGER = logging.getLogger(__file__)
 
 
 class UpdateError(Exception):
@@ -173,12 +177,24 @@ def update_heater_trackers(printer: Printer,
                 tracker.save()
 
         if event is not None:
-            send_heater_event(
+            send_mobile_push_heater_event(
                 printer,
                 event=event.type_as_str(),
                 heater_name=event.state.name,
                 # 0.0 for pleasing mypy, actual cannot be None here
                 actual_temperature=event.state.actual or 0.0)
+
+            handler.queue_send_printer_notifications_task(
+                printer=printer,
+                notification_type=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
+                notification_data={
+                    'name': event.state.name,
+                    'actual': event.state.actual,
+                    'target': event.state.target,
+                    'offset': event.state.offset,
+                },
+                print_=printer.current_print if printer.current_print_id else None,
+            )
 
             if event.type == HeaterEventType.TARGET_REACHED:
                 # Trying to save the moment when target first

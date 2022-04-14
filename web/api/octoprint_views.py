@@ -15,6 +15,7 @@ import requests
 import json
 import io
 import os
+import logging
 from ipware import get_client_ip
 from binascii import hexlify
 
@@ -28,8 +29,9 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
+from lib.utils import save_print_snapshot, last_pic_of_print
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
-from lib.notifications import send_failure_alert
+from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
@@ -38,9 +40,31 @@ from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSeria
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+LOGGER = logging.getLogger(__name__)
 
 IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
+
+
+def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -> None:
+    LOGGER.info(f'Printer {printer.user.id} {"smells fishy" if is_warning else "is probably failing"}. Sending Alerts')
+    if not printer.current_print:
+        LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
+        return
+
+    rotated_jpg_url = save_print_snapshot(printer,
+                        last_pic_of_print(printer.current_print, 'tagged'),
+                        f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
+                        rotated=True,
+                        to_long_term_storage=False)
+
+    handler.send_failure_alerts(
+        printer=printer,
+        is_warning=is_warning,
+        print_paused=print_paused,
+        print_=printer.current_print,
+        poster_url=rotated_jpg_url or ''
+    )
 
 
 class OctoPrintPicView(APIView):

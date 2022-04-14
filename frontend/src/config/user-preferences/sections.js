@@ -1,10 +1,8 @@
 import routes from '@config/user-preferences/routes'
-import { settings } from '@src/lib/page_context'
+import notificationPlugins from '@src/notifications/plugins'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 
-const { PUSHOVER_APP_TOKEN } = settings()
-
-export default {
+const defaultSections = {
   ThemePreferences: {
     title: 'Appearance',
     faIcon: 'fas fa-magic',
@@ -27,61 +25,35 @@ export default {
     isHidden: onlyNotifications(),
   },
 
-  // Notificatons
+  // Notifications
   GeneralNotifications: {
     title: 'Notifications',
     faIcon: 'fas fa-bell',
-    importComponent: () => import('@src/components/user-preferences/GeneralNotifications'),
+    importComponent: () => import('@src/components/user-preferences/notifications/GeneralNotifications'),
     route: routes.GeneralNotifications,
   },
   PushNotifications: {
     title: 'Push Notifications',
     isSubcategory: true,
+    isNotificationChannel: true,
     importComponent: () => ({}),
     route: routes.PushNotifications,
     isHidden: !inMobileWebView(),
   },
-  EmailNotifications: {
-    title: 'Email',
+}
+
+const notificationSections = Object.keys(notificationPlugins).reduce((obj, name) => {
+  return Object.assign(obj, { [name]: {
+    title: notificationPlugins[name].displayName,
+    channelName: name,
     isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/EmailNotifications'),
-    route: routes.EmailNotifications,
-  },
-  SmsNotifications: {
-    title: 'SMS',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/SmsNotifications'),
-    route: routes.SmsNotifications,
-  },
-  PushbulletNotifications: {
-    title: 'Pushbullet',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/PushbulletNotifications'),
-    route: routes.PushbulletNotifications,
-  },
-  DiscordNotifications: {
-    title: 'Discord',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/DiscordNotifications'),
-    route: routes.DiscordNotifications,
-  },
-  TelegramNotifications: {
-    title: 'Telegram',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/TelegramNotifications'),
-    route: routes.TelegramNotifications,
-  },
-  PushoverNotifications: {
-    title: 'Pushover',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/PushoverNotifications'),
-    route: routes.PushoverNotifications,
-    isHidden: !PUSHOVER_APP_TOKEN,
-  },
-  SlackNotifications: {
-    title: 'Slack',
-    isSubcategory: true,
-    importComponent: () => import('@src/components/user-preferences/SlackNotifications'),
-    route: routes.SlackNotifications,
-  },
+    isNotificationChannel: true,
+    route: routes[name],
+    importComponent: () => import('@src/notifications/plugins/'+name),
+  }})
+}, {})
+
+export default {
+  ...defaultSections,
+  ...notificationSections,
 }

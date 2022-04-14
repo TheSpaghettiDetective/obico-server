@@ -184,7 +184,6 @@ def update_heater_trackers(printer: Printer,
                 # 0.0 for pleasing mypy, actual cannot be None here
                 actual_temperature=event.state.actual or 0.0)
 
-            poster_url: str = printer.current_print.poster_url if printer.current_print_id else ''  # type: ignore
             handler.queue_send_printer_notifications_task(
                 printer=printer,
                 notification_type=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
@@ -195,7 +194,6 @@ def update_heater_trackers(printer: Printer,
                     'offset': event.state.offset,
                 },
                 print_=printer.current_print if printer.current_print_id else None,
-                poster_url=poster_url,
             )
 
             if event.type == HeaterEventType.TARGET_REACHED:

@@ -19,6 +19,7 @@ from .plugin import (
 )
 from app.models import Print, Printer, NotificationSetting, User
 from lib import mobile_notifications
+from lib.utils import get_rotated_jpg_url
 
 from . import notification_types
 
@@ -258,7 +259,6 @@ class Handler(object):
         notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
-        poster_url: str,
         extra_context: Optional[Dict] = None,
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
@@ -283,6 +283,11 @@ class Handler(object):
         if not nsettings:
             LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
             return
+
+        if print_ and print_.poster_url:
+            poster_url = print_.poster_url
+        else:
+            poster_url = get_rotated_jpg_url(printer)
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
@@ -375,7 +380,6 @@ class Handler(object):
         notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
-        poster_url: str = '',
         extra_context: Optional[Dict] = None,
         in_process: Optional[bool] = False,
     ) -> None:
@@ -398,7 +402,6 @@ class Handler(object):
                 'notification_type': notification_type,
                 'notification_data': notification_data,
                 'print_id': print_.id if print_ else None,
-                'poster_url': poster_url,
                 'extra_context': extra_context,
 
             }

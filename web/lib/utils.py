@@ -82,6 +82,24 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     _, dest_jpg_url = save_file_obj(dest_jpg_path, img_bytes, to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
+
+def get_rotated_jpg_url(printer):
+    if not printer.pic or not printer.pic.get('img_url'):
+        return None
+    jpg_url = printer.pic.get('img_url')
+
+    need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
+    if not need_rotation:
+        return jpg_url
+
+    jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    return save_print_snapshot(printer,
+                        jpg_path.group(1),
+                        f'snapshots/{printer.id}/latest_rotated.jpg',
+                        rotated=True,
+                        to_long_term_storage=False)
+
+
 def shortform_duration(total_seconds):
     if not total_seconds:
         return '--:--'

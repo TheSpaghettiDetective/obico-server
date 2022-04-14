@@ -19,7 +19,6 @@ def send_printer_notifications(
     notification_type: str,
     notification_data: Dict,
     print_id: Optional[int],
-    poster_url: str = '',
     extra_context: Optional[Dict] = None,
     plugin_names: Tuple[str, ...] = (),
     **kwargs
@@ -41,7 +40,6 @@ def send_printer_notifications(
         notification_data=notification_data,
         printer=printer,
         print_=cur_print,
-        poster_url=poster_url or '',
         extra_context=extra_context,
         plugin_names=plugin_names,
     )

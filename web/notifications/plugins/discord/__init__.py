@@ -44,7 +44,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             embed.set_image(url=image_url)
 
         embed.set_author(
-            name="Click Here to Examine.",
+            name="Printer Notification",
             url=site.build_full_url('/printers/'),
             icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-square.png"
         )

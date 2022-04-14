@@ -24,14 +24,10 @@
       </slot>
 
       <div v-if="channelCreated && showSettings">
-        <div class="row">
-          <div class="col">
-            <h5 class="font-weight-bold">Alerts settings</h5>
-          </div>
-        </div>
         <notification-setting-switch
           settingId="enabled"
-          settingTitle="Enable"
+          settingTitle="Enable Notification"
+          isHeader="true"
           :errorMessages="errorMessages"
           :saving="saving"
           :notificationChannel="notificationChannel"

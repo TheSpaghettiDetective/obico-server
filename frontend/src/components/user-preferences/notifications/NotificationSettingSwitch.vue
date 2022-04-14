@@ -14,7 +14,7 @@
             v-model="notificationChannel.channelInfo[settingId]"
             @change="$emit('updateNotificationChannel', notificationChannel, [settingId])"
           >
-          <label class="custom-control-label" :for="`id_${settingKey(settingId)}`">
+          <label :class="['custom-control-label', labelClass]" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
             <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
           </label>
@@ -33,7 +33,7 @@
     >
       <div class="mobile-setting-item-wrapper" :class="{'is-subcategory': isSubcategory}">
         <div class="setting-item-text">
-          <label :for="`id_${settingKey(settingId)}`">
+          <label :class="labelClass" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
             <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
           </label>
@@ -106,6 +106,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isHeader: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
@@ -117,6 +121,9 @@ export default {
         return platform === 'ios' ? 'ios' : 'material'
       }
     },
+    labelClass() {
+      return this.isHeader ? 'lg' : ''
+    }
   },
 
   methods: {
@@ -131,6 +138,11 @@ export default {
 .setting-description
   font-size: 14px
   margin-bottom: 0
+.form-check-inline
+  label
+    &.lg
+      font-size: 1.25em
+      font-weight: bolder
 .mobile-setting-item-wrapper
   display: flex
   align-items: center
@@ -145,4 +157,7 @@ export default {
     flex: 0 0 1
   label
     margin-bottom: 0
+    &.lg
+      font-size: 1.25em
+      font-weight: bolder
 </style>

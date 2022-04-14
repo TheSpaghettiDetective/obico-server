@@ -8,7 +8,7 @@ def forwards(apps, schema_editor):
     if schema_editor.connection.vendor == 'postgresql':
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'email', id, '{"unsub_token": "' || unsub_token || '"}', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', now(), now() from app_user;
+                select 'email', id, '', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', now(), now() from app_user;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
@@ -38,7 +38,7 @@ def forwards(apps, schema_editor):
     if schema_editor.connection.vendor == 'sqlite':
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'email', id, '{"unsub_token": "' || unsub_token || '"}', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', date(), date() from app_user;
+                select 'email', id, '', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', date(), date() from app_user;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)

@@ -26,7 +26,7 @@
       <div v-if="channelCreated && showSettings">
         <notification-setting-switch
           settingId="enabled"
-          settingTitle="Enable Notification"
+          settingTitle="Enable notification"
           isHeader="true"
           :errorMessages="errorMessages"
           :saving="saving"

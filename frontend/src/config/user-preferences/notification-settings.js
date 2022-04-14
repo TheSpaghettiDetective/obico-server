@@ -7,6 +7,7 @@ export default [
   {
     id: 'printer_status_change',
     title: 'Printer status change',
+    description: 'Upon start/end/cancellation of a print job',
     subcategories: [
       {
         id: 'notify_on_print_done',
@@ -26,7 +27,7 @@ export default [
       {
         id: 'notify_on_other_print_events',
         title: 'When other event happens',
-        description: 'Print start, pause, resume, etc. (TBD. Help wanted!)',
+        description: 'Such as start, pause, and resume',
         enabledByDefault: false,
       },
     ]
@@ -34,6 +35,6 @@ export default [
   {
     id: 'notify_on_heater_status',
     title: 'Heater status change',
-    description: 'Reached target or cooled down (TBD. Help wanted!)',
+    description: 'Heater reached target or cooled down',
   },
 ]

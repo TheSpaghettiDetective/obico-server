@@ -141,7 +141,7 @@ export default {
 .form-check-inline
   label
     &.lg
-      font-size: 1.25em
+      font-size: 1.15em
       font-weight: bolder
 .mobile-setting-item-wrapper
   display: flex
@@ -158,6 +158,6 @@ export default {
   label
     margin-bottom: 0
     &.lg
-      font-size: 1.25em
+      font-size: 1.15em
       font-weight: bolder
 </style>

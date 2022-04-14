@@ -52,6 +52,22 @@ def orientation_to_ffmpeg_options(printer_settings):
 
     return options
 
+def shortform_duration(total_seconds):
+    if not total_seconds:
+        return '--:--'
+    hours, remainder = divmod(total_seconds,60*60)
+    minutes, seconds = divmod(remainder,60)
+    return '{:02}:{:02}'.format(hours, minutes)
+
+def shortform_localtime(seconds_from_now, tz):
+    if not seconds_from_now:
+        return '--:--'
+
+    return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M%p")
+
+
+## util functions for printer snapshot
+
 def last_pic_of_print(_print, path_prefix):
     print_pics = list_dir(f'{path_prefix}/{_print.printer.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
     if not print_pics:
@@ -98,17 +114,3 @@ def get_rotated_jpg_url(printer):
                         f'snapshots/{printer.id}/latest_rotated.jpg',
                         rotated=True,
                         to_long_term_storage=False)
-
-
-def shortform_duration(total_seconds):
-    if not total_seconds:
-        return '--:--'
-    hours, remainder = divmod(total_seconds,60*60)
-    minutes, seconds = divmod(remainder,60)
-    return '{:02}:{:02}'.format(hours, minutes)
-
-def shortform_localtime(seconds_from_now, tz):
-    if not seconds_from_now:
-        return '--:--'
-
-    return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M%p")

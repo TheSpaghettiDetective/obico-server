@@ -1,12 +1,12 @@
 from typing import Dict, Optional
 import logging
 from django.conf import settings
+from rest_framework.serializers import ValidationError
 
 from discord_webhook import DiscordWebhook, DiscordEmbed  # type: ignore
 from lib import site as site
 from notifications.plugin import (
     BaseNotificationPlugin,
-    ValidationError,
     FailureAlertContext, PrinterNotificationContext, TestMessageContext,
     notification_types,
 )

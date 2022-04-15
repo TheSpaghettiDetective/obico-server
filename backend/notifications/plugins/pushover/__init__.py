@@ -5,6 +5,7 @@ import io
 import os
 from enum import IntEnum
 import requests
+from rest_framework.serializers import ValidationError
 
 from lib import site as site
 
@@ -13,7 +14,6 @@ from notifications.plugin import (
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
-    ValidationError,
 )
 
 LOGGER = logging.getLogger(__name__)

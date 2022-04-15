@@ -2,6 +2,7 @@ from typing import Dict, Optional
 import logging
 import requests  # type: ignore
 import os
+from rest_framework.serializers import ValidationError
 
 from lib import site as site
 
@@ -10,7 +11,6 @@ from notifications.plugin import (
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
-    ValidationError,
 )
 
 LOGGER = logging.getLogger(__name__)

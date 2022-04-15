@@ -5,6 +5,7 @@ import time
 from telebot import TeleBot, types  # type: ignore
 from django.conf import settings
 import requests
+from rest_framework.serializers import ValidationError
 
 from lib import site as site
 
@@ -13,7 +14,6 @@ from notifications.plugin import (
     PrinterNotificationContext,
     FailureAlertContext,
     TestMessageContext,
-    ValidationError,
 )
 
 LOGGER = logging.getLogger(__name__)

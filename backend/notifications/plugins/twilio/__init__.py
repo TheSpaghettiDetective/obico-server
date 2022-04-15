@@ -4,12 +4,12 @@ import phonenumbers  # type: ignore
 from twilio.rest import Client  # type: ignore
 from django.conf import settings
 import os
+from rest_framework.serializers import ValidationError
 
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     TestMessageContext,
-    ValidationError,
     Feature,
 )
 

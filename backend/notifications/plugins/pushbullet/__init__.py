@@ -2,6 +2,7 @@ from typing import Dict, Optional
 import logging
 import requests
 from django.conf import settings
+from rest_framework.serializers import ValidationError
 
 from pushbullet import Pushbullet, PushbulletError, PushError  # type: ignore
 from lib import site as site
@@ -11,7 +12,6 @@ from notifications.plugin import (
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
-    ValidationError,
 )
 
 LOGGER = logging.getLogger(__name__)

@@ -3,13 +3,14 @@ import logging
 import requests  # type: ignore
 import os
 
+from lib import site as site
+
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
     ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)

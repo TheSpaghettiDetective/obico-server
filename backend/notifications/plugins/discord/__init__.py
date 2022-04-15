@@ -3,11 +3,10 @@ import logging
 from django.conf import settings
 
 from discord_webhook import DiscordWebhook, DiscordEmbed  # type: ignore
-
+from lib import site as site
 from notifications.plugin import (
     BaseNotificationPlugin,
     ValidationError,
-    site,
     FailureAlertContext, PrinterNotificationContext, TestMessageContext,
     notification_types,
 )

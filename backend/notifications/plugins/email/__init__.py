@@ -10,11 +10,11 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 
 from allauth.account.admin import EmailAddress  # type: ignore
+from lib import site as site
 
 from notifications.handlers import handler
 from notifications.plugin import (
     BaseNotificationPlugin,
-    site,
     FailureAlertContext,
     PrinterNotificationContext,
     notification_types,

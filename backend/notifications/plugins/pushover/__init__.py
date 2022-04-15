@@ -6,13 +6,14 @@ import os
 from enum import IntEnum
 import requests
 
+from lib import site as site
+
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
     ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)

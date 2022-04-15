@@ -6,13 +6,14 @@ from telebot import TeleBot, types  # type: ignore
 from django.conf import settings
 import requests
 
+from lib import site as site
+
 from notifications.plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext,
     FailureAlertContext,
     TestMessageContext,
     ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)

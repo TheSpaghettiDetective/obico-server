@@ -4,6 +4,7 @@ import requests
 from django.conf import settings
 
 from pushbullet import Pushbullet, PushbulletError, PushError  # type: ignore
+from lib import site as site
 
 from notifications.plugin import (
     BaseNotificationPlugin,
@@ -11,7 +12,6 @@ from notifications.plugin import (
     PrinterNotificationContext,
     TestMessageContext,
     ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)

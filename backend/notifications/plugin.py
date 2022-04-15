@@ -5,7 +5,6 @@ import enum
 from rest_framework.serializers import ValidationError as ValidationError  # noqa: F401
 from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore  # noqa
 
-from lib import site as site  # noqa: F401
 from . import notification_types
 
 

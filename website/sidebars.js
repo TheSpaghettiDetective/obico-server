@@ -89,9 +89,9 @@ module.exports = {
     {
       type: 'category',
       label: 'Developing Plugins',
-      link: {type: 'doc', id: 'plugins/index'},
+      link: {type: 'doc', id: 'developer_guides/plugins/index'},
       items: [
-        'plugins/notification-plugin',
+        'developer_guides/plugins/notification-plugin',
       ],
     },
   ],

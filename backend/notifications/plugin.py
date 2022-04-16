@@ -80,23 +80,19 @@ class TestMessageContext:
 
 class BaseNotificationPlugin(object):
 
+    ## Public APIs.
+
     def validate_config(self, data: Dict) -> Dict:
         return data
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         raise NotImplementedError
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         raise NotImplementedError
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         raise NotImplementedError
-
-    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
-
-    def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
 
     def supported_features(self) -> Set[Feature]:
         return {
@@ -110,6 +106,15 @@ class BaseNotificationPlugin(object):
 
     def env_vars(self) -> Dict:
         return {}
+
+
+    ## APIs reserved for Obico internal use. Do not override.
+
+    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
+        return kwargs.get('extra_context') or {}
+
+    def build_print_notification_extra_context(self, **kwargs) -> Dict:
+        return kwargs.get('extra_context') or {}
 
     def i(self, s: str) -> str:
         # format to italic

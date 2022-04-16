@@ -57,7 +57,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         extra_context["unsub_token"] = kwargs['user'].unsub_token
         return extra_context
 
-    def get_printer_notification_subject(self, context: PrinterNotificationContext, **kwargs) -> str:
+    def get_printer_notification_subject(self, context: PrinterNotificationContext) -> str:
         notification_type = context.notification_type
         notification_data = context.notification_data
 
@@ -93,7 +93,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
     def get_template(self, name: str) -> Optional[Template]:
         return get_template(name)
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
@@ -146,7 +146,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             attachments=attachments,
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
@@ -157,7 +157,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.notification_type}"')
             return
 
-        subject = self.get_printer_notification_subject(context, **kwargs)
+        subject = self.get_printer_notification_subject(context)
         mailing_list: str = context.feature.name.replace('notify_on_', '')
 
         unsub_url = site.build_full_url(
@@ -178,8 +178,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         if context.print.ended_at and context.print.started_at:
             ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
-
-        ctx.update(kwargs.get('extra_ctx', {}))
 
         attachments = []
         if context.img_url:

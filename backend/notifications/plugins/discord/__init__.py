@@ -52,7 +52,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         webhook.add_embed(embed)
         webhook.execute()
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if 'webhook_url' not in context.config:
             return
 
@@ -77,7 +77,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             image_url=context.img_url
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         if 'webhook_url' not in context.config:
             return
 
@@ -108,7 +108,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
         return self.INFO_COLOR
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         self.call_webhook(
             title='Test Notification',
             text='It works!',

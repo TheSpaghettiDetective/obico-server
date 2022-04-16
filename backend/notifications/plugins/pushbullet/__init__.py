@@ -56,7 +56,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             pb.push_link(title, link, body)
 
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return
@@ -75,7 +75,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             file_url=context.img_url,
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return
@@ -95,7 +95,7 @@ class PushBulletNotificationPlugin(BaseNotificationPlugin):
             file_url=context.img_url,
         )
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         link = site.build_full_url('/')
         self.call_pushbullet(

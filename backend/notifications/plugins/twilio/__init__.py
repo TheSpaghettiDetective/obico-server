@@ -56,7 +56,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if not settings.TWILIO_ENABLED:
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return
@@ -68,7 +68,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         return self.send_sms(body=text, to_number=to_number)
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         to_number = self.get_number_from_config(context.config)
         self.send_sms(
             body='TSD Test Notification - It works!',

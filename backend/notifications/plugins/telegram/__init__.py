@@ -49,7 +49,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return config['chat_id']
         return ''
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         if not chat_id:
             return
@@ -81,7 +81,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         if not chat_id:
             return
@@ -103,7 +103,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         self.call_telegram(
             chat_id=chat_id,

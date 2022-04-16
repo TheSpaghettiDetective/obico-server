@@ -110,7 +110,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
         req = requests.post(API_URL, data=payload, files=files, timeout=timeout)
         req.raise_for_status()
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if not os.environ.get('PUSHOVER_APP_TOKEN'):
             return
 
@@ -138,7 +138,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         if not os.environ.get('PUSHOVER_APP_TOKEN'):
             return
 
@@ -164,7 +164,7 @@ class PushOverNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         user_key = self.get_user_key_from_config(context.config)
         self.call_pushover(
             token=os.environ.get('PUSHOVER_APP_TOKEN') or '',

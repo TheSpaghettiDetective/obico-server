@@ -200,7 +200,7 @@ class Handler(object):
                     raise
 
     def feature_for_notification_type(self, notification_type: str, notification_data: Dict) -> Optional[Feature]:
-        if notification_type in (notification_types.PrintFailed, notification_types.PrintDone):
+        if notification_type == notification_types.PrintDone:
             return Feature.notify_on_print_done
 
         if notification_type == notification_types.PrintCancelled:
@@ -211,10 +211,6 @@ class Handler(object):
 
         if notification_type in (notification_types.HeaterCooledDown, notification_types.HeaterTargetReached):
             return Feature.notify_on_heater_status
-
-        if notification_type == notification_types.PrintProgress:
-            # return Feature.notify_on_print_progress # TODO
-            return None
 
         if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
             return Feature.notify_on_other_print_events

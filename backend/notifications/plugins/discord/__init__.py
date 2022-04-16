@@ -97,7 +97,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         )
 
     def notification_type_to_color(self, notification_type: str) -> int:
-        if notification_type in (notification_types.PrintFailed, ):
+        if notification_type in (notification_types.PrintCancelled, ):
             return self.FAILURE_COLOR
 
         if notification_type in (notification_types.FilamentChange, ):

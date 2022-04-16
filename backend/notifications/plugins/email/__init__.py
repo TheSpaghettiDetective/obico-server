@@ -63,8 +63,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         if notification_type == notification_types.PrintStarted:
             text = f"{context.print.filename} started"
-        elif notification_type == notification_types.PrintFailed:
-            text = f"{context.print.filename} failed"
         elif notification_type == notification_types.PrintDone:
             text = f"🙌 {context.print.filename} is ready"
         elif notification_type == notification_types.PrintCancelled:

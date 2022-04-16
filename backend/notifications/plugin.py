@@ -34,7 +34,6 @@ class Feature(enum.Enum):
     notify_on_filament_change = 'notify_on_filament_change'
     notify_on_other_print_events = 'notify_on_other_print_events'
     notify_on_heater_status = 'notify_on_heater_status'
-    notify_on_print_progress = 'notify_on_print_progress'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -164,8 +163,6 @@ class BaseNotificationPlugin(object):
 
         if notification_type == notification_types.PrintStarted:
             text += "has started "
-        elif notification_type == notification_types.PrintFailed:
-            text += "failed "
         elif notification_type == notification_types.PrintDone:
             text += "is ready "
         elif notification_type == notification_types.PrintCancelled:

@@ -15,6 +15,9 @@ from notifications.plugin import (
 
 LOGGER = logging.getLogger(__name__)
 
+# docker-compose insists on parsing this env var as something like "3.312468804737331e+12". Do this hack so that I don't have to spend hours to figure out why.
+def slack_client_id():
+    return os.environ.get('SLACK_CLIENT_ID').replace('dummy-to-prevent-docker-parsing-as-number-', '') if 'SLACK_CLIENT_ID' in os.environ else None
 
 class SlackNotificationPlugin(BaseNotificationPlugin):
 
@@ -23,7 +26,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             'SLACK_CLIENT_ID': {
                 'is_required': True,
                 'is_set': 'SLACK_CLIENT_ID' in os.environ,
-                'value': os.environ.get('SLACK_CLIENT_ID'),
+                'value': slack_client_id(),
             },
             'SLACK_CLIENT_SECRET': {
                 'is_required': True,

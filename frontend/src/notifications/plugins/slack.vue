@@ -91,7 +91,7 @@ export default {
       return this.notificationChannel.pluginInfo.env_vars.SLACK_CLIENT_ID.value
     },
     redirectUri() {
-      return `${window.location.origin}/slack_oauth_callback`
+      return `${window.location.origin}/slack_oauth_callback/`
     },
   },
 

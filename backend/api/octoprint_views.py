@@ -63,7 +63,7 @@ def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -
         is_warning=is_warning,
         print_paused=print_paused,
         print_=printer.current_print,
-        poster_url=rotated_jpg_url or ''
+        img_url=rotated_jpg_url or ''
     )
 
 

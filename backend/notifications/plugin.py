@@ -42,7 +42,7 @@ class UserContext:
     email: str
     first_name: str
     last_name: str
-
+    unsub_token: str
     dh_balance: float
     is_pro: bool
 
@@ -108,12 +108,6 @@ class BaseNotificationPlugin(object):
 
 
     ## APIs reserved for Obico internal use. Do not override.
-
-    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
-
-    def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
 
     def i(self, s: str) -> str:
         # format to italic

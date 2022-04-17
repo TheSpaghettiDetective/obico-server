@@ -257,6 +257,7 @@ The method the Obico server will call when the user press the "Test notification
 - `email`: `str`
 - `first_name`: `str`
 - `last_name`: `str`
+- `unsub_token`: `str`
 - `dh_balance`: `float`
 - `is_pro`: `bool`
 

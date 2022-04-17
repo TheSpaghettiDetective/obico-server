@@ -125,6 +125,7 @@ class Handler(object):
             last_name=user.last_name,
             dh_balance=user.dh_balance,
             is_pro=user.is_pro,
+            unsub_token=user.unsub_token,
         )
 
     def send_failure_alerts(
@@ -170,13 +171,6 @@ class Handler(object):
                 plugin = self.notification_plugin_by_name(nsetting.name)
                 if not plugin:
                     continue
-
-                extra_context = plugin.instance.build_failure_alert_extra_context(
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                    extra_context=extra_context or {},
-                )
 
                 context = FailureAlertContext(
                     config=nsetting.config,
@@ -295,14 +289,6 @@ class Handler(object):
                 plugin = self.notification_plugin_by_name(nsetting.name)
                 if not plugin:
                     continue
-
-                extra_context = plugin.instance.build_print_notification_extra_context(
-                    feature=feature,
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                    extra_context=extra_context or {},
-                )
 
                 context = PrinterNotificationContext(
                     feature=feature,

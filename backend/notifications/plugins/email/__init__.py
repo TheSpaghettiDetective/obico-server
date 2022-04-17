@@ -47,16 +47,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             },
         }
 
-    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        extra_context = super().build_print_notification_extra_context(**kwargs)
-        extra_context["unsub_token"] = kwargs['user'].unsub_token
-        return extra_context
-
-    def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        extra_context = super().build_print_notification_extra_context(**kwargs)
-        extra_context["unsub_token"] = kwargs['user'].unsub_token
-        return extra_context
-
     def get_printer_notification_subject(self, context: PrinterNotificationContext) -> str:
         notification_type = context.notification_type
         notification_data = context.notification_data
@@ -88,26 +78,23 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         return text
 
-    def get_template(self, name: str) -> Optional[Template]:
-        return get_template(name)
-
     def send_failure_alert(self, context: FailureAlertContext) -> None:
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
         template_name = 'email/FailureAlert.html'
-        tpl = self.get_template(template_name)
+        tpl = get_template(template_name)
         
         mailing_list: str = 'failure_alert'
         unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
+            f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
         )
         headers = {
             'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
         }
 
-        ctx = context.extra_context
+        ctx = context.extra_context or {}
         ctx.update(
             printer=context.printer,
             print_paused=context.print_paused,
@@ -150,7 +137,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             return
 
         template_name = f'email/{context.notification_type}.html'
-        tpl = self.get_template(template_name)
+        tpl = get_template(template_name)
         if not tpl:
             LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.notification_type}"')
             return
@@ -159,13 +146,13 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         mailing_list: str = context.feature.name.replace('notify_on_', '')
 
         unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={context.extra_context["unsub_token"]}&list={mailing_list}'
+            f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
         )
         headers = {
             'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
         }
 
-        ctx = context.extra_context
+        ctx = context.extra_context or {}
         ctx.update(
             print=context.print,
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),

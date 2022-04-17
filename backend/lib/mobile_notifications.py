@@ -1,5 +1,4 @@
 import os
-import re
 from firebase_admin.messaging import Message, send, Notification, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
 import firebase_admin
 from django.utils.timezone import now

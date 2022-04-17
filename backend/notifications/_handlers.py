@@ -283,7 +283,7 @@ class Handler(object):
         if print_ and print_.poster_url:
             img_url = print_.poster_url
         else:
-            img_url = get_rotated_jpg_url(printer)
+            img_url = get_rotated_jpg_url(printer, force_snapshot=True)
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)

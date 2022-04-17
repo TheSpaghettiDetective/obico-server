@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import os
 import io
+import re
 import shutil
 from operator import itemgetter
 from django.utils import timezone
@@ -99,18 +100,19 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     return dest_jpg_url
 
 
-def get_rotated_jpg_url(printer):
+def get_rotated_jpg_url(printer, force_snapshot=False):
     if not printer.pic or not printer.pic.get('img_url'):
         return None
     jpg_url = printer.pic.get('img_url')
 
     need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
-    if not need_rotation:
+
+    if not need_rotation and not force_snapshot:
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
     return save_print_snapshot(printer,
                         jpg_path.group(1),
                         f'snapshots/{printer.id}/latest_rotated.jpg',
-                        rotated=True,
+                        rotated=not 'latest_rotated' in jpg_url,
                         to_long_term_storage=False)

@@ -27,7 +27,7 @@
         <notification-setting-switch
           settingId="enabled"
           settingTitle="Enable notification"
-          isHeader="true"
+          :isHeader="true"
           :errorMessages="errorMessages"
           :saving="saving"
           :notificationChannel="notificationChannel"

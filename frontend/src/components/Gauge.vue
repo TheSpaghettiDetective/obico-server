@@ -10,7 +10,8 @@
 
 <script>
 import RadialGauge from 'vue2-canvas-gauges/src/RadialGauge'
-import { Themes, theme } from '@src/styles/colors.js'
+import { Themes } from '@static/js/color-scheme'
+import { currentThemeValue } from '@src/lib/color-scheme-controller'
 
 export default {
   name: 'Gauge',
@@ -45,10 +46,10 @@ export default {
       }
 
       const inactiveColor = {
-        highlight1: theme.value === Themes.Light ? '#929292' : '#8395a7',
-        highlight2: theme.value === Themes.Light ? '#b7b7b7' : '#a8bacc',
-        highlight3: theme.value === Themes.Light ? '#7b7b7b' : '#6c7e90',
-        needle: theme.value === Themes.Light ? '#2d3e4f' : '#ffffff',
+        highlight1: currentThemeValue() === Themes.Light ? '#929292' : '#8395a7',
+        highlight2: currentThemeValue() === Themes.Light ? '#b7b7b7' : '#a8bacc',
+        highlight3: currentThemeValue() === Themes.Light ? '#7b7b7b' : '#6c7e90',
+        needle: currentThemeValue() === Themes.Light ? '#2d3e4f' : '#ffffff',
       }
 
       return {

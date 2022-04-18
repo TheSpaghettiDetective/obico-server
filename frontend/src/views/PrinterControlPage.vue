@@ -84,7 +84,7 @@ import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import Layout from '@src/components/Layout.vue'
-import { isLocalStorageSupported } from '@src/lib/utils'
+import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page_context'
 
 const AXIS = {

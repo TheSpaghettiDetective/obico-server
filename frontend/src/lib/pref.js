@@ -1,5 +1,5 @@
 
-import { isLocalStorageSupported } from '@src/lib/utils'
+import { isLocalStorageSupported } from '@static/js/utils'
 
 export const getLocalPref = (prefId, defaultValue) => {
   var savedVal = isLocalStorageSupported() ? localStorage.getItem(prefId) : null

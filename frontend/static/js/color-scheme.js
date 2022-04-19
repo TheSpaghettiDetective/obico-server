@@ -17,14 +17,14 @@ const colors = [
     name: 'primary',
     values: {
       [Themes.Light]: '#3BCD9C',
-      [Themes.Dark]: '#5FD3AC'
+      [Themes.Dark]: '#3BCD9C'
     }
   },
   {
     name: 'primary-hover',
     values: {
-      [Themes.Light]: '#5FD3AC',
-      [Themes.Dark]: '#3BCD9C'
+      [Themes.Light]: '#2BB788',
+      [Themes.Dark]: '#2BB788'
     }
   },
   {

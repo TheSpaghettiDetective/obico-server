@@ -12,7 +12,7 @@ export function currentThemeValue() {
 }
 
 export function initTheme() {
-  return init(theme.value)
+  return init(currentThemeValue())
 }
 
 export function setTheme(newTheme) {

@@ -5,7 +5,7 @@ const theme = {
 }
 
 // initialize theme for static pages
-initTheme(theme.value)
+initTheme(currentThemeValue(theme))
 
 // manually control navbar color
 let navbar = document.getElementById('dynamic-navbar')

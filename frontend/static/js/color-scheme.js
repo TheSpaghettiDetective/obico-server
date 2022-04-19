@@ -238,10 +238,10 @@ const urls = [
     }
   },
   {
-    name: 'tail-spin',
+    name: 'loader',
     values: {
-      [Themes.Light]: 'url("/static/img/tail-spin/tail-spin_light.svg")',
-      [Themes.Dark]: 'url("/static/img/tail-spin/tail-spin_dark.svg")'
+      [Themes.Light]: 'url("/static/img/loader/loader_light-scheme.svg")',
+      [Themes.Dark]: 'url("/static/img/loader/loader_dark-scheme.svg")'
     }
   },
 ]

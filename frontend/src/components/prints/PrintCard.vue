@@ -24,7 +24,7 @@
             class="no-corner no-shadow"
             :disabled="!canShowDetectiveView"
           >
-            <dark-light-image path="logo-square" ext="png" alt="TSD" class="seg-control-icon"></dark-light-image>
+            <dark-light-image path="logo/compact" filename="logo-compact" format="png" alt="TSD" class="seg-control-icon"></dark-light-image>
           </b-form-radio>
           <b-form-radio value="info" class="no-corner no-shadow">
             <svg class="seg-control-icon" fill="currentColor" viewBox="0 0 348 348">

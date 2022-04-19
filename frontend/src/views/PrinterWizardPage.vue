@@ -81,7 +81,7 @@
                       </div>
                       <div class="row justify-content-center">
                         <div class="col-sm-12 col-lg-8 img-container">
-                          <img class="mx-auto" :src="require('@static/img/plugin_rerun_setup.png')">
+                          <img class="mx-auto" :src="require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')">
                         </div>
                       </div>
                     </div>
@@ -102,7 +102,7 @@
                         <div class="col-sm-12 col-lg-8 img-container">
                           <img
                             class="mx-auto screenshot"
-                            :src="require('@static/img/install_plugin.png')"
+                            :src="require('@static/img/octoprint-plugin-guide/install_plugin.png')"
                             @click="zoomIn($event)">
                         </div>
                       </div>
@@ -160,7 +160,7 @@
                         <div class="col-sm-12 col-lg-8 img-container">
                           <img
                             class="mx-auto screenshot"
-                            :src="require('@static/img/plugin_wizard_websetup.png')"
+                            :src="require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')"
                             @click="zoomIn($event)">
                         </div>
                       </div>
@@ -180,7 +180,7 @@
                         <div class="col-sm-12 col-lg-8 img-container">
                           <img
                             class="screenshot"
-                            :src="require('@static/img/plugin_verification_code.png')"
+                            :src="require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')"
                             @click="zoomIn($event)">
                           <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
                         </div>

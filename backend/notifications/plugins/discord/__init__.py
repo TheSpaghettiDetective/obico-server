@@ -45,7 +45,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         embed.set_author(
             name="Printer Notification",
             url=site.build_full_url('/printers/'),
-            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-square.png"
+            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo/compact/logo-compact_light-scheme.png"
         )
         embed.set_timestamp()
         embed.set_footer(text="The Spaghetti Detective")

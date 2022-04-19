@@ -2,13 +2,13 @@
   <div>
     <img
       v-show="theme === themes.Light"
-      :src="require(`@static/img/${path}/${path}_light.${ext}`)"
+      :src="require(`@static/img/${path}/${filename}_light-scheme.${format}`)"
       draggable="false"
       :alt="alt"
     >
     <img
       v-show="theme === themes.Dark"
-      :src="require(`@static/img/${path}/${path}_dark.${ext}`)"
+      :src="require(`@static/img/${path}/${filename}_dark-scheme.${format}`)"
       draggable="false"
       :alt="alt"
     >
@@ -24,10 +24,14 @@ export default {
 
   props: {
     path: {
-      type: String, // i.e. 'logo'
+      type: String, // i.e. 'logo/compact'
       required: true,
     },
-    ext: {
+    filename: {
+      type: String, // i.e. 'logo-compact'
+      required: true,
+    },
+    format: {
       type: String, // i.e. 'png'
       require: true,
     },

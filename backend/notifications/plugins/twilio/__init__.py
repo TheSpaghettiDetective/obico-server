@@ -12,6 +12,7 @@ from notifications.plugin import (
     TestMessageContext,
     Feature,
 )
+from lib import site as site
 
 LOGGER = logging.getLogger(__file__)
 
@@ -62,7 +63,8 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
             return
 
         to_number = self.get_number_from_config(context.config)
-        text = self.get_failure_alert_text(context=context)
+        link = site.build_full_url('/printers/')
+        text = self.get_failure_alert_text(context=context, link=link)
         if not text or not to_number:
             return
 

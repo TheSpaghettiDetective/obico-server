@@ -134,7 +134,7 @@ class BaseNotificationPlugin(object):
         if context.print_paused:
             pausing_msg = 'Printer is paused.'
         elif context.printer.pause_on_failure and context.is_warning:
-            pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
+            pausing_msg = 'Printer is NOT paused.'
 
         text = 'Your print {} on {} {}.\n{}'.format(
             self.b(context.print.filename),

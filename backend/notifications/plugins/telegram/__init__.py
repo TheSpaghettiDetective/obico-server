@@ -54,7 +54,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         if not chat_id:
             return
 
-        link = site.build_full_url('/')
+        link = site.build_full_url('/printers/')
         text = self.get_failure_alert_text(context=context, link=link)
         if not text:
             return

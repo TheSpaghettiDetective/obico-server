@@ -16,15 +16,15 @@ const colors = [
   {
     name: 'primary',
     values: {
-      [Themes.Light]: 'rgb(153 101 244)',
-      [Themes.Dark]: 'rgb(165 123 238)'
+      [Themes.Light]: '#3BCD9C',
+      [Themes.Dark]: '#5FD3AC'
     }
   },
   {
     name: 'primary-hover',
     values: {
-      [Themes.Light]: 'rgb(178 137 248)',
-      [Themes.Dark]: 'rgb(154 106 239)'
+      [Themes.Light]: '#5FD3AC',
+      [Themes.Dark]: '#3BCD9C'
     }
   },
   {

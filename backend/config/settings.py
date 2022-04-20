@@ -40,9 +40,6 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'tsd_sessionid'
 
-if os.environ.get('SITE_DOMAIN'):
-    SESSION_COOKIE_DOMAIN = os.environ.get('SITE_DOMAIN')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool('DEBUG', False)
 
@@ -99,7 +96,7 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'app.middleware.SessionHostDomainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

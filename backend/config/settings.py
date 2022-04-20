@@ -5,6 +5,8 @@ import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 from django.contrib.messages import constants as messages
 
 
@@ -272,6 +274,10 @@ if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[
+            LoggingIntegration(
+                level=logging.INFO, # Capture info and above as breadcrumbs
+                event_level=None  # Send logs as events above a logging level, disabled it
+            ),
             DjangoIntegration(),
             CeleryIntegration(),
         ],

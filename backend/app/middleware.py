@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.exceptions import MiddlewareNotUsed
 
 from whitenoise.middleware import WhiteNoiseMiddleware
 
@@ -52,39 +51,5 @@ def fix_tunnelv2_apple_cache(get_response):
                 del resp['Vary']
 
         return resp
-
-    return middleware
-
-
-def rename_session_cookie(get_response):
-
-    if settings.SESSION_COOKIE_NAME == 'sessionid':
-        raise MiddlewareNotUsed
-
-    def middleware(request):
-        if (
-            settings.SESSION_COOKIE_NAME != 'sessionid' and
-            settings.SESSION_COOKIE_NAME not in request.COOKIES and
-            'sessionid' in request.COOKIES
-        ):
-            request.COOKIES[
-                settings.SESSION_COOKIE_NAME
-            ] = request.COOKIES['sessionid']
-
-        response = get_response(request)
-
-        if (
-            settings.SESSION_COOKIE_NAME != 'sessionid' and
-            settings.SESSION_COOKIE_NAME in request.COOKIES and
-            'sessionid' in request.COOKIES
-        ):
-            response.delete_cookie(
-                'sessionid',
-                path=settings.SESSION_COOKIE_PATH,
-                domain=settings.SESSION_COOKIE_DOMAIN,
-                samesite=settings.SESSION_COOKIE_SAMESITE,
-            )
-
-        return response
 
     return middleware

@@ -2,6 +2,6 @@ ipdb
 flask>=1.0
 redis==3.0.1
 newrelic==4.12.0.113
-raven[flask]==6.10.0
+sentry_sdk[flask]==1.5.10
 requests==2.21.0
 gunicorn==19.9.0

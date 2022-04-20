@@ -3,7 +3,8 @@
 import flask
 from flask import request, jsonify
 from os import path, environ
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import cv2
 import numpy as np
 import requests
@@ -14,15 +15,28 @@ from lib.detection_model import load_net, detect
 THRESH = 0.08  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
 
+# Sentry
+if environ.get('SENTRY_DSN'):
+    sentry_sdk.init(
+        dsn=environ.get('SENTRY_DSN'),
+        integrations=[FlaskIntegration(), ],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0,
+
+        # By default the SDK will try to use the SENTRY_RELEASE
+        # environment variable, or infer a git commit
+        # SHA as release, however you may want to set
+        # something more human-readable.
+        # release="myapp@1.0.0",
+        release=environ.get('VERSION'),
+    )
+
 app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
-
-# Sentry
-sentry = None
-if environ.get('SENTRY_DSN'):
-    sentry = Sentry(app, dsn=environ.get('SENTRY_DSN'))
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
@@ -39,8 +53,7 @@ def get_p():
             detections = detect(net_main, meta_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
         except:
-            if sentry:
-                sentry.captureException()
+            sentry_sdk.capture_exception()
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 

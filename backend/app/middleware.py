@@ -92,5 +92,6 @@ class SessionHostDomainMiddleware(SessionMiddleware):
                             expires=expires, domain=host,
                             path=settings.SESSION_COOKIE_PATH,
                             secure=settings.SESSION_COOKIE_SECURE or None,
-                            httponly=settings.SESSION_COOKIE_HTTPONLY or None)
+                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,
+                            samesite='Lax')
         return response

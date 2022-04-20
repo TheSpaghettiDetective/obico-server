@@ -9,7 +9,7 @@ from pushbullet import Pushbullet, PushbulletError, PushError
 import requests
 import logging
 from urllib.parse import urlparse
-from raven.contrib.django.raven_compat.models import client as sentryClient
+from sentry_sdk import capture_exception
 import smtplib
 import backoff
 
@@ -39,46 +39,46 @@ def send_failure_alert(printer, is_warning=True, print_paused=False):
     # Calls wrapped in individual try/except because anyone of them could fail, and we still want the flow to continue
     try:
         mobile_notifications.send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if printer.user.alert_by_email:
             send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if printer.user.is_pro and printer.user.alert_by_sms:
             send_failure_alert_sms(printer, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if printer.user.is_pro:
             send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         send_failure_alert_discord(printer, rotated_jpg_url, is_warning, print_paused)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
 
 def send_failure_alert_email(printer, rotated_jpg_url, is_warning, print_paused):
@@ -324,38 +324,38 @@ def send_print_notification(_print, extra_ctx={}, event_type=None):
     try:
         if _print.printer.user.print_notification_by_email:
             send_print_notification_email(_print, extra_ctx=extra_ctx, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if _print.printer.user.print_notification_by_pushbullet:
             send_print_notification_pushbullet(_print, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if _print.printer.user.print_notification_by_pushover:
             send_print_notification_pushover(_print, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if _print.printer.user.print_notification_by_telegram:
             send_print_notification_telegram(_print, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if _print.printer.user.print_notification_by_discord:
             send_print_notification_discord(_print, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
     try:
         if _print.printer.user.is_pro:
             send_print_notification_slack(_print, event_type=event_type)
-    except:
-        sentryClient.captureException()
+    except Exception:
+        capture_exception()
 
 
 def get_notification_body(_print, event_type=None):

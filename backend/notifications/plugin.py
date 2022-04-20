@@ -2,7 +2,6 @@ from typing import Dict, Optional, Generator, Set
 import datetime
 import dataclasses
 import enum
-from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore  # noqa
 
 from . import notification_types
 

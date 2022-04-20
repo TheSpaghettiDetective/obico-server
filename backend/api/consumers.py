@@ -9,7 +9,7 @@ from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
 from asgiref.sync import async_to_sync
 import logging
-from raven.contrib.django.raven_compat.models import client as sentryClient
+from sentry_sdk import capture_exception, capture_message
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 from django.forms import model_to_dict
@@ -273,7 +273,7 @@ class OctoPrintConsumer(WebsocketConsumer):
         except Exception:  # sentry doesn't automatically capture consumer errors
             import traceback
             traceback.print_exc()
-            sentryClient.captureException()
+            capture_exception()
 
     @newrelic.agent.background_task()
     def printer_message(self, data):
@@ -283,11 +283,11 @@ class OctoPrintConsumer(WebsocketConsumer):
                 self.send(text_data=None, bytes_data=bson.dumps(data))
             else:
                 self.send(text_data=json.dumps(data))
-        except:  # sentry doesn't automatically capture consumer errors
+        except Exception:  # sentry doesn't automatically capture consumer errors
             LOGGER.error(data)
             import traceback
             traceback.print_exc()
-            sentryClient.captureException()
+            capture_exception()
 
 
 class JanusWebConsumer(WebsocketConsumer):
@@ -353,9 +353,9 @@ class JanusSharedWebConsumer(JanusWebConsumer):
                 # frontend should request only video,
                 # if thats's not the case, then something went wrong
                 # with patching the offer (bellow)
-                sentryClient.captureMessage(
+                capture_message(
                     'bad sdp bundle',
-                    extra={'sdp': sdp}
+                    extras={'sdp': sdp}
                 )
                 return
 
@@ -389,9 +389,9 @@ class JanusSharedWebConsumer(JanusWebConsumer):
 
             if delete_from < 0:
                 # too strange, ignoring message
-                sentryClient.captureMessage(
+                capture_message(
                     'missing application from sdp bundle',
-                    extra={'sdp': sdp}
+                    extras={'sdp': sdp}
                 )
                 return
 
@@ -492,10 +492,10 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                     },
                     'as_binary': True
                 })
-        except:  # sentry doesn't automatically capture consumer errors
+        except Exception:  # sentry doesn't automatically capture consumer errors
             import traceback
             traceback.print_exc()
-            sentryClient.captureException()
+            capture_exception()
 
     @newrelic.agent.background_task()
     def octoprinttunnel_message(self, msg, **kwargs):
@@ -516,10 +516,10 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
                 self.send(text_data=payload['data'])
 
             cache.octoprinttunnel_update_stats(self.printer.user_id, len(payload['data']))
-        except:  # sentry doesn't automatically capture consumer errors
+        except Exception:  # sentry doesn't automatically capture consumer errors
             import traceback
             traceback.print_exc()
-            sentryClient.captureException()
+            capture_exception()
 
 
 class AnomalyTracker:
@@ -587,18 +587,7 @@ class AnomalyTracker:
         data['print.current'] = model_to_dict(
             printer.current_print) if printer.current_print else None
 
-        from raven import Client
-        c = Client(
-            install_sys_hook=False,
-            install_logging_hook=False,
-            enable_breadcrumbs=False,
-            tags={
-                'printer_id': printer.id,
-                'ext_id': ext_id,
-                'connected_at': self.connected_at,
-                'comeback': comeback,
-                'ex': ex
-            }
+        capture_message(
+            'Resurrected print',
+            extras=data,
         )
-        c.extra_context(data=data)
-        c.captureMessage('Resurrected print')

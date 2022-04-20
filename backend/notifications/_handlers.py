@@ -7,7 +7,7 @@ import importlib.util
 import logging
 import requests  # type: ignore
 from collections import OrderedDict
-from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
+from sentry_sdk import capture_exception
 
 from django.conf import settings
 
@@ -66,7 +66,7 @@ def _load_plugins(root: str, loaded: Dict[str, PluginDesc]) -> None:
             loaded[name] = _load_plugin(name, path)
         except Exception:
             logging.exception(f'error loading plugin "{name}" from {path}')
-            sentryClient.captureException()
+            capture_exception()
 
 
 def _load_all_plugins() -> Dict[str, PluginDesc]:
@@ -142,7 +142,7 @@ class Handler(object):
         try:
             mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
         except Exception:
-            sentryClient.captureException()
+            capture_exception()
 
         if plugin_names:
             names = list(set(self.notification_plugin_names()) & set(plugin_names))
@@ -189,7 +189,7 @@ class Handler(object):
             except Exception:
                 if fail_silently:
                     LOGGER.exception('send_failure_alert plugin error')
-                    sentryClient.captureException()
+                    capture_exception()
                 else:
                     raise
 
@@ -308,7 +308,7 @@ class Handler(object):
             except Exception:
                 if fail_silently:
                     LOGGER.exception('send_printer_notification plugin error')
-                    sentryClient.captureException()
+                    capture_exception()
                 else:
                     raise
 

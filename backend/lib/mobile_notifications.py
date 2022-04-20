@@ -2,7 +2,7 @@ import os
 from firebase_admin.messaging import Message, send, Notification, AndroidConfig, APNSConfig, APNSPayload, Aps, UnregisteredError, SenderIdMismatchError
 import firebase_admin
 from django.utils.timezone import now
-from raven.contrib.django.raven_compat.models import client as sentryClient
+from sentry_sdk import capture_exception
 
 from .utils import save_print_snapshot, shortform_duration, shortform_localtime, get_rotated_jpg_url
 from app.models import calc_normalized_p, MobileDevice
@@ -160,9 +160,9 @@ def send_to_device(msg, mobile_device):
         return send(message, app=firebase_app)
     except (UnregisteredError, SenderIdMismatchError, firebase_admin.exceptions.InternalError):
         MobileDevice.objects.filter(device_token=mobile_device.device_token).update(deactivated_at=now())
-    except:
+    except Exception:
         import traceback; traceback.print_exc()
-        sentryClient.captureException()
+        capture_exception()
 
 
 if __name__ == '__main__':

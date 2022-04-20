@@ -12,7 +12,6 @@
             <saving-animation :errors="errorMessages[settingKey('config')]" :saving="saving[settingKey('config')]">
               <input
                 type="text"
-                maxlength="45"
                 :placeholder="configVariablePlaceholder"
                 class="form-control"
                 :id="`id_${settingKey(configVariableName)}`"

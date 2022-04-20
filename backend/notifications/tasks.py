@@ -1,12 +1,10 @@
 from typing import Dict, Optional, Tuple
 import logging
+from sentry_sdk import set_user
+from celery import shared_task  # type: ignore
 
 from app.models import Printer, Print
 from app.tasks import will_record_timelapse, compile_timelapse
-
-from celery import shared_task  # type: ignore
-
-
 from .handlers import handler
 from . import notification_types
 
@@ -34,6 +32,8 @@ def send_printer_notifications(
         cur_print = None
         # FIXME any additional filter? User.is_active?
         printer = Printer.objects.select_related('user').get(id=printer_id)
+
+    set_user({"id": printer.user_id})
 
     handler.send_printer_notifications(
         notification_type=notification_type,

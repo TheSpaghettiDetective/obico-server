@@ -2,10 +2,7 @@ from typing import Dict, Optional, Generator, Set
 import datetime
 import dataclasses
 import enum
-from rest_framework.serializers import ValidationError as ValidationError  # noqa: F401
-from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore  # noqa
 
-from lib import site as site  # noqa: F401
 from . import notification_types
 
 
@@ -36,7 +33,6 @@ class Feature(enum.Enum):
     notify_on_filament_change = 'notify_on_filament_change'
     notify_on_other_print_events = 'notify_on_other_print_events'
     notify_on_heater_status = 'notify_on_heater_status'
-    notify_on_print_progress = 'notify_on_print_progress'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -45,7 +41,7 @@ class UserContext:
     email: str
     first_name: str
     last_name: str
-
+    unsub_token: str
     dh_balance: float
     is_pro: bool
 
@@ -82,23 +78,19 @@ class TestMessageContext:
 
 class BaseNotificationPlugin(object):
 
+    ## Public APIs.
+
     def validate_config(self, data: Dict) -> Dict:
         return data
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         raise NotImplementedError
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         raise NotImplementedError
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         raise NotImplementedError
-
-    def build_failure_alert_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
-
-    def build_print_notification_extra_context(self, **kwargs) -> Dict:
-        return kwargs.get('extra_context') or {}
 
     def supported_features(self) -> Set[Feature]:
         return {
@@ -112,6 +104,9 @@ class BaseNotificationPlugin(object):
 
     def env_vars(self) -> Dict:
         return {}
+
+
+    ## APIs reserved for Obico internal use. Do not override.
 
     def i(self, s: str) -> str:
         # format to italic
@@ -138,7 +133,7 @@ class BaseNotificationPlugin(object):
         if context.print_paused:
             pausing_msg = 'Printer is paused.'
         elif context.printer.pause_on_failure and context.is_warning:
-            pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
+            pausing_msg = 'Printer is NOT paused.'
 
         text = 'Your print {} on {} {}.\n{}'.format(
             self.b(context.print.filename),
@@ -161,8 +156,6 @@ class BaseNotificationPlugin(object):
 
         if notification_type == notification_types.PrintStarted:
             text += "has started "
-        elif notification_type == notification_types.PrintFailed:
-            text += "failed "
         elif notification_type == notification_types.PrintDone:
             text += "is ready "
         elif notification_type == notification_types.PrintCancelled:

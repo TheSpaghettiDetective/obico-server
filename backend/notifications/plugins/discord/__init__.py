@@ -1,13 +1,12 @@
 from typing import Dict, Optional
 import logging
 from django.conf import settings
+from rest_framework.serializers import ValidationError
 
 from discord_webhook import DiscordWebhook, DiscordEmbed  # type: ignore
-
+from lib import site as site
 from notifications.plugin import (
     BaseNotificationPlugin,
-    ValidationError,
-    site,
     FailureAlertContext, PrinterNotificationContext, TestMessageContext,
     notification_types,
 )
@@ -46,14 +45,14 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         embed.set_author(
             name="Printer Notification",
             url=site.build_full_url('/printers/'),
-            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-square.png"
+            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo/compact/logo-compact_light-scheme.png"
         )
         embed.set_timestamp()
         embed.set_footer(text="The Spaghetti Detective")
         webhook.add_embed(embed)
         webhook.execute()
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if 'webhook_url' not in context.config:
             return
 
@@ -78,7 +77,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             image_url=context.img_url
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         if 'webhook_url' not in context.config:
             return
 
@@ -98,7 +97,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         )
 
     def notification_type_to_color(self, notification_type: str) -> int:
-        if notification_type in (notification_types.PrintFailed, ):
+        if notification_type in (notification_types.PrintCancelled, ):
             return self.FAILURE_COLOR
 
         if notification_type in (notification_types.FilamentChange, ):
@@ -109,7 +108,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
         return self.INFO_COLOR
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         self.call_webhook(
             title='Test Notification',
             text='It works!',

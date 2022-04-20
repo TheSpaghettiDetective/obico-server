@@ -40,7 +40,8 @@
 </template>
 
 <script>
-import { Themes, theme, setTheme, currentThemeValue } from '@src/styles/colors.js'
+import { Themes } from '@static/js/color-scheme'
+import { theme, setTheme, currentThemeValue } from '@src/lib/color-scheme-controller'
 import { mobilePlatform } from '@src/lib/page_context'
 
 export default {

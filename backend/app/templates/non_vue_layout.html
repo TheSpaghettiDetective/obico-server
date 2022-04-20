@@ -1,7 +1,14 @@
 {% extends settings.TEMPLATE_LAYOUT %}
+{% load static %}
 
 {% block navbar %}
   {% if not app_platform.platform %}
     {{ block.super }}
   {% endif %}
 {% endblock navbar %}
+
+
+{% block page_js %}
+<!-- Dark/Light theme -->
+<script type="module" src="{% static 'js/static-color-scheme-controller.js' %}"></script>
+{% endblock page_js %}

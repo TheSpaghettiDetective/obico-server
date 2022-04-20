@@ -97,7 +97,7 @@ export default {
     position: relative
 
     &:before
-      background-image: var(--url-tail-spin)
+      background-image: var(--url-loader)
 
   &.successfully-saved
     position: relative

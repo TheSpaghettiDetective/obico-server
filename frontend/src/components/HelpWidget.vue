@@ -39,7 +39,7 @@
               <p>The stream is on only when the printer is printing.</p>
               <strong>
                 Learn more about
-                <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
+                <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
               </strong>
             </template>
 
@@ -53,7 +53,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
+                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -69,7 +69,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
+                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -84,7 +84,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
+                  <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -96,7 +96,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
+                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -107,7 +107,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
+                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -355,14 +355,6 @@ export default {
           left: 0
           width: 100%
           height: 100%
-
-      a.external:after
-        content: url('/static/img/link.svg')
-        display: inline-block
-        width: 1em
-        margin-left: .25em
-        position: relative
-        top: .125em
 </style>
 
 <style scoped>

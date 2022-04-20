@@ -27,7 +27,7 @@
         <notification-setting-switch
           settingId="enabled"
           settingTitle="Enable notification"
-          isHeader="true"
+          :isHeader="true"
           :errorMessages="errorMessages"
           :saving="saving"
           :notificationChannel="notificationChannel"
@@ -122,7 +122,7 @@
       <slot name="footer"></slot>
     </div>
     <div v-else>
-      <p class="text-warning">Please configure the following variables in the "docker-compose.override.yml" file:</p>
+      <p class="text-warning">Please configure the following variables in the ".env" file:</p>
       <ul class="text-warning">
         <li v-for="variable in envVarsToSet" :key="variable">{{ variable }}</li>
       </ul>

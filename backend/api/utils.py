@@ -1,6 +1,6 @@
 import logging
 import functools
-from raven.contrib.django.raven_compat.models import client as sentryClient
+from sentry_sdk import capture_exception
 from rest_framework.exceptions import ValidationError
 
 LOGGER = logging.getLogger(__name__)
@@ -16,6 +16,6 @@ def report_validationerror(f):
             return f(*args, **kwargs)
         except ValidationError:
             LOGGER.exception('validationerror')
-            sentryClient.captureException()
+            capture_exception()
             raise
     return wrapper

@@ -7,7 +7,7 @@ import importlib.util
 import logging
 import requests  # type: ignore
 from collections import OrderedDict
-from raven.contrib.django.raven_compat.models import client as sentryClient  # type: ignore
+from sentry_sdk import capture_exception
 
 from django.conf import settings
 
@@ -66,7 +66,7 @@ def _load_plugins(root: str, loaded: Dict[str, PluginDesc]) -> None:
             loaded[name] = _load_plugin(name, path)
         except Exception:
             logging.exception(f'error loading plugin "{name}" from {path}')
-            sentryClient.captureException()
+            capture_exception()
 
 
 def _load_all_plugins() -> Dict[str, PluginDesc]:
@@ -125,6 +125,7 @@ class Handler(object):
             last_name=user.last_name,
             dh_balance=user.dh_balance,
             is_pro=user.is_pro,
+            unsub_token=user.unsub_token,
         )
 
     def send_failure_alerts(
@@ -141,7 +142,7 @@ class Handler(object):
         try:
             mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
         except Exception:
-            sentryClient.captureException()
+            capture_exception()
 
         if plugin_names:
             names = list(set(self.notification_plugin_names()) & set(plugin_names))
@@ -171,13 +172,6 @@ class Handler(object):
                 if not plugin:
                     continue
 
-                extra_context = plugin.instance.build_failure_alert_extra_context(
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                    extra_context=extra_context or {},
-                )
-
                 context = FailureAlertContext(
                     config=nsetting.config,
                     user=user_ctx,
@@ -195,12 +189,12 @@ class Handler(object):
             except Exception:
                 if fail_silently:
                     LOGGER.exception('send_failure_alert plugin error')
-                    sentryClient.captureException()
+                    capture_exception()
                 else:
                     raise
 
     def feature_for_notification_type(self, notification_type: str, notification_data: Dict) -> Optional[Feature]:
-        if notification_type in (notification_types.PrintFailed, notification_types.PrintDone):
+        if notification_type == notification_types.PrintDone:
             return Feature.notify_on_print_done
 
         if notification_type == notification_types.PrintCancelled:
@@ -211,10 +205,6 @@ class Handler(object):
 
         if notification_type in (notification_types.HeaterCooledDown, notification_types.HeaterTargetReached):
             return Feature.notify_on_heater_status
-
-        if notification_type == notification_types.PrintProgress:
-            # return Feature.notify_on_print_progress # TODO
-            return None
 
         if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
             return Feature.notify_on_other_print_events
@@ -287,7 +277,7 @@ class Handler(object):
         if print_ and print_.poster_url:
             img_url = print_.poster_url
         else:
-            img_url = get_rotated_jpg_url(printer)
+            img_url = get_rotated_jpg_url(printer, force_snapshot=True)
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
@@ -299,14 +289,6 @@ class Handler(object):
                 plugin = self.notification_plugin_by_name(nsetting.name)
                 if not plugin:
                     continue
-
-                extra_context = plugin.instance.build_print_notification_extra_context(
-                    feature=feature,
-                    user=printer.user,
-                    print_=print_,
-                    printer=printer,
-                    extra_context=extra_context or {},
-                )
 
                 context = PrinterNotificationContext(
                     feature=feature,
@@ -326,7 +308,7 @@ class Handler(object):
             except Exception:
                 if fail_silently:
                     LOGGER.exception('send_printer_notification plugin error')
-                    sentryClient.captureException()
+                    capture_exception()
                 else:
                     raise
 

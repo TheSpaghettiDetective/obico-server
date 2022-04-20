@@ -4,14 +4,15 @@ import phonenumbers  # type: ignore
 from twilio.rest import Client  # type: ignore
 from django.conf import settings
 import os
+from rest_framework.serializers import ValidationError
 
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     TestMessageContext,
-    ValidationError,
     Feature,
 )
+from lib import site as site
 
 LOGGER = logging.getLogger(__file__)
 
@@ -56,19 +57,20 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         if not settings.TWILIO_ENABLED:
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return
 
         to_number = self.get_number_from_config(context.config)
-        text = self.get_failure_alert_text(context=context)
+        link = site.build_full_url('/printers/')
+        text = self.get_failure_alert_text(context=context, link=link)
         if not text or not to_number:
             return
 
         return self.send_sms(body=text, to_number=to_number)
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         to_number = self.get_number_from_config(context.config)
         self.send_sms(
             body='TSD Test Notification - It works!',

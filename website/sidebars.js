@@ -86,5 +86,13 @@ module.exports = {
         },
       ],
     },
+    {
+      type: 'category',
+      label: 'Developing Plugins',
+      link: {type: 'doc', id: 'developer_guides/plugins/index'},
+      items: [
+        'developer_guides/plugins/notification-plugin',
+      ],
+    },
   ],
 };

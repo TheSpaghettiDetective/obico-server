@@ -2,18 +2,22 @@ from typing import Dict, Optional
 import logging
 import requests  # type: ignore
 import os
+from rest_framework.serializers import ValidationError
+
+from lib import site as site
 
 from notifications.plugin import (
     BaseNotificationPlugin,
     FailureAlertContext,
     PrinterNotificationContext,
     TestMessageContext,
-    ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)
 
+# docker-compose insists on parsing this env var as something like "3.312468804737331e+12". Do this hack so that I don't have to spend hours to figure out why.
+def slack_client_id():
+    return os.environ.get('SLACK_CLIENT_ID').replace('dummy-to-prevent-docker-parsing-as-number-', '') if 'SLACK_CLIENT_ID' in os.environ else None
 
 class SlackNotificationPlugin(BaseNotificationPlugin):
 
@@ -22,7 +26,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             'SLACK_CLIENT_ID': {
                 'is_required': True,
                 'is_set': 'SLACK_CLIENT_ID' in os.environ,
-                'value': os.environ.get('SLACK_CLIENT_ID'),
+                'value': slack_client_id(),
             },
             'SLACK_CLIENT_SECRET': {
                 'is_required': True,
@@ -47,7 +51,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
     def b(self, s: str) -> str:
         return f"*{s}*"
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return
@@ -106,7 +110,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             )
             req.raise_for_status()
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         if not access_token:
             return
@@ -122,7 +126,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
             image_url=context.img_url,
         )
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         access_token = self.get_access_token_from_config(context.config)
         self.call_slack(
             access_token=access_token,

@@ -5,14 +5,15 @@ import time
 from telebot import TeleBot, types  # type: ignore
 from django.conf import settings
 import requests
+from rest_framework.serializers import ValidationError
+
+from lib import site as site
 
 from notifications.plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext,
     FailureAlertContext,
     TestMessageContext,
-    ValidationError,
-    site,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -48,12 +49,12 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return config['chat_id']
         return ''
 
-    def send_failure_alert(self, context: FailureAlertContext, **kwargs) -> None:
+    def send_failure_alert(self, context: FailureAlertContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         if not chat_id:
             return
 
-        link = site.build_full_url('/')
+        link = site.build_full_url('/printers/')
         text = self.get_failure_alert_text(context=context, link=link)
         if not text:
             return
@@ -80,7 +81,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_printer_notification(self, context: PrinterNotificationContext, **kwargs) -> None:
+    def send_printer_notification(self, context: PrinterNotificationContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         if not chat_id:
             return
@@ -102,7 +103,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             file_content=file_content,
         )
 
-    def send_test_message(self, context: TestMessageContext, **kwargs) -> None:
+    def send_test_message(self, context: TestMessageContext) -> None:
         chat_id = self.get_chat_id_from_config(context.config)
         self.call_telegram(
             chat_id=chat_id,

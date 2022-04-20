@@ -170,20 +170,23 @@ def test_slack(request):
 # Slack setup callback
 @login_required
 def slack_oauth_callback(request):
+    from notifications.plugins.slack import slack_client_id
     code = request.GET['code']
-    r = requests.get(
+    r = requests.post(
         url='https://slack.com/api/oauth.v2.access',
-        params={
+        data={
             'code': code,
-            'client_id': settings.SLACK_CLIENT_ID,
-            'client_secret': settings.SLACK_CLIENT_SECRET
+            'client_id': slack_client_id(),
+            'client_secret': os.environ.get('SLACK_CLIENT_SECRET'),
+            'redirect_uri': request.build_absolute_uri(''),
         })
     r.raise_for_status()
 
-    user = request.user
-    user.slack_access_token = r.json().get('access_token')
-    user.save()
-
+    NotificationSetting.objects.create(
+        user=request.user,
+        name='slack',
+        config={'access_token': r.json().get('access_token')}
+    )
     return redirect('/user_preferences/notification_slack/')
 
 

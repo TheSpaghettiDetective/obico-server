@@ -155,17 +155,6 @@ html[data-theme=dark] .tsd-button {
   height: 100%;
 }
 
-
-/* External link icon */
-a.external:after {
-  content: url(../../static/img/link.svg);
-  display: inline-block;
-  width: 1rem;
-  margin-left: .25rem;
-  position: relative;
-  top: .125rem;
-}
-
 .superscript {
   vertical-align: super;
   font-size: 0.8em;

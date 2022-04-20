@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <dark-light-image path="logo-square" ext="png" alt="TSD" class="logo-small"></dark-light-image>
+        <dark-light-image path="logo/compact" filename="logo-compact" format="png" alt="TSD" class="logo-small"></dark-light-image>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{'active': path === '/ent_pub/pricing/'}">

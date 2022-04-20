@@ -17,7 +17,7 @@ import split from 'lodash/split'
 import filesize from 'filesize'
 import urls from '@config/server-urls'
 import { user } from '@src/lib/page_context'
-import { isLocalStorageSupported } from '@src/lib/utils'
+import { isLocalStorageSupported } from '@static/js/utils'
 
 export default {
   name: 'OctoPrintTunnelPage',

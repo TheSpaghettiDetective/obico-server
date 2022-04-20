@@ -19,7 +19,7 @@
         <h2>What's Next?</h2>
         <br />
         <p>1. Make sure The Spaghetti Detective Slack App to the channels you want the notifications to be sent to.</p>
-        <img class="mw-100" :src="require('@static/img/slack_setup1.png')" />
+        <img class="mw-100" :src="require('@static/img/notification-guides/slack/slack_setup1.png')" />
         <br /><br />
         <p>2. There is no 2. You are all set. It's this simple. :)</p>
       </div>
@@ -45,9 +45,9 @@
         <br />
         <p>Q: How do I remove The Spaghetti Detective Slack App from a slack channel so that it won't send notifications to that channel?</p>
         <p>A: </p>
-        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup2.png')" />
-        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup3.png')" />
-        <img class="mw-100 mb-2" :src="require('@static/img/slack_setup4.png')" />
+        <img class="mw-100 mb-2" :src="require('@static/img/notification-guides/slack/slack_setup2.png')" />
+        <img class="mw-100 mb-2" :src="require('@static/img/notification-guides/slack/slack_setup3.png')" />
+        <img class="mw-100 mb-2" :src="require('@static/img/notification-guides/slack/slack_setup4.png')" />
         <br /><br />
         <p>Q: How do I remove The Spaghetti Detective Slack App from the entire workspace?</p>
         <p>A: Please follow the instructions in <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">this Slack help doc</a>.</p>
@@ -91,7 +91,7 @@ export default {
       return this.notificationChannel.pluginInfo.env_vars.SLACK_CLIENT_ID.value
     },
     redirectUri() {
-      return `${window.location.origin}/slack_oauth_callback`
+      return `${window.location.origin}/slack_oauth_callback/`
     },
   },
 

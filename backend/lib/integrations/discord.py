@@ -9,7 +9,7 @@ def send_discord_notification(printer, text, color, webhook_url, image_url=None)
     embed = DiscordEmbed(title=printer.name, description=text, color=color)
     if image_url:
         embed.set_image(url=image_url)
-    embed.set_author(name="Printer Notification", url=site.build_full_url('/printers/'), icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-square.png")
+    embed.set_author(name="Printer Notification", url=site.build_full_url('/printers/'), icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo/compact/logo-compact_light-scheme.png")
     embed.set_timestamp()
     embed.set_footer(text="The Spaghetti Detective")
     webhook.add_embed(embed)

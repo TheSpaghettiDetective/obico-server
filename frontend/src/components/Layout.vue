@@ -172,8 +172,8 @@ export default {
   background: var(--color-surface-primary)
   position: fixed
   left: 0
-  top: 0
-  height: 100%
+  top: var(--message-height)
+  height: calc(100% - var(--message-height))
   display: flex
   flex-direction: column
   z-index: 1000
@@ -251,7 +251,7 @@ export default {
   height: 50px
   background: var(--color-surface-primary) !important
   position: fixed
-  top: 0
+  top: var(--message-height)
   left: 0
   width: 100%
   padding-left: calc(100px + 15px)
@@ -295,7 +295,7 @@ export default {
       .top-nav
         display: none
       .page-content
-        padding-top: 30px
+        padding-top: calc(30px)
         min-height: calc(100vh - 68px)
 
 @media (max-width: 768px)

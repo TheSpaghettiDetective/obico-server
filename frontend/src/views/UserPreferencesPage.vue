@@ -473,9 +473,9 @@ export default {
   mounted() {
     this.checkMobileLayout()
     window.onresize = this.checkMobileLayout
-    if (this.useMobileLayout) {
-      document.querySelector('body').style.paddingTop = '0px'
-    }
+    // if (this.useMobileLayout) {
+    // document.querySelector('body').style.paddingTop = '0px'
+    // }
   },
 }
 </script>

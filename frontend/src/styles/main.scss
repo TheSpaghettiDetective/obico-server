@@ -814,3 +814,31 @@ a.text-warning {
     }
   }
 }
+
+
+:root {
+  --message-height: 36px;
+}
+body {
+  padding-top: var(--message-height);
+}
+.top-message {
+  height: var(--message-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 1rem;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  text-align: center;
+  font-size: 15px;
+}
+@media (max-width: 768px) {
+  :root {
+    --message-height: 50px;
+  }
+}

@@ -95,18 +95,17 @@ class SessionHostDomainMiddleware(SessionMiddleware):
                             path=settings.SESSION_COOKIE_PATH,
                             secure=settings.SESSION_COOKIE_SECURE or None,
                             httponly=settings.SESSION_COOKIE_HTTPONLY or None,
-                            samesite='Lax')
+                            samesite=settings.SESSION_COOKIE_SAMESITE,
+                    )
         return response
 
 
-def rename_session_cookie(get_response):
+# TODO: To be removed when mobile apps older than 1.60 are not longer active.
 
-    if settings.SESSION_COOKIE_NAME == 'sessionid':
-        raise MiddlewareNotUsed
+def rename_session_cookie(get_response):
 
     def middleware(request):
         if (
-            settings.SESSION_COOKIE_NAME != 'sessionid' and
             settings.SESSION_COOKIE_NAME not in request.COOKIES and
             'sessionid' in request.COOKIES
         ):
@@ -117,7 +116,6 @@ def rename_session_cookie(get_response):
         response = get_response(request)
 
         if (
-            settings.SESSION_COOKIE_NAME != 'sessionid' and
             settings.SESSION_COOKIE_NAME in request.COOKIES and
             'sessionid' in request.COOKIES
         ):

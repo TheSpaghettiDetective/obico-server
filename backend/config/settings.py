@@ -88,6 +88,7 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'app.middleware.rename_session_cookie',
     'app.middleware.SessionHostDomainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

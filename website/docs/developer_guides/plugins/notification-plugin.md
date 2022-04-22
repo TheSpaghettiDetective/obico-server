@@ -1,6 +1,6 @@
 ---
 id: notification-plugin
-title: Notification Plugin
+title: Notification plugin
 ---
 
 You may be interested in getting a notification when certain printer events happen, such as when a print is done, or a possible print failure is detected. But different people have their own preferred way to get notified: Email, Mobile Push Notification, Telegram, Discord, etc.
@@ -391,7 +391,7 @@ Skip this part if your plugin doesn't need any new environment variables.
 
 ### Set up environment variables
 
-Follow [this guide](/docs/server_guides/server-configuration/#if-you-need-to-add-a-new-environment-variable) to add new environment variables to the self-hosted Obico Server.
+Follow [this guide](/docs/server_guides/configure/#if-you-need-to-add-a-new-environment-variable) to add new environment variables to the self-hosted Obico Server.
 
 ### Declare the environment variable requirements in the plugin
 

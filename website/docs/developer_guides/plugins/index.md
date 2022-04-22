@@ -8,4 +8,4 @@ Currently the only plugin type supported is the **Notification Plugin**.
 
 You can make proposal for us to support other types of plugins by opening a github issue (feature request).
 
-- [Notification Plugin](./notification-plugin.md)
+- [Notification plugin](./notification-plugin.md)

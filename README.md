@@ -9,11 +9,11 @@ The core of this project is based on a Deep Learning model. [See how the model w
 
 If you are on Windows 10 and prefer a video tutorial, head to LukesLaboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
 
-If you are on Windows Server, follow [this Windows Server-specific guide](docs/server_2019.md) instead.
+If you are on Windows Server, follow [this Windows Server-specific guide](website/docs/server_guides/platform-specific/server_2019.md) instead.
 
-If you are on a NVIDIA Jetson Nano, follow [this Jetson Nano specific guide](docs/jetson_guide.md) instead.
+If you are on a NVIDIA Jetson Nano, follow [this Jetson Nano specific guide](website/docs/server_guides/platform-specific/jetson_guide.md) instead.
 
-If you are on UNRAID, follow [this UNRAID specific guide](docs/unraid_guide.md) instead.
+If you are on UNRAID, follow [this UNRAID specific guide](website/docs/server_guides/platform-specific/unraid_guide.md) instead.
 
 If you otherwise prefer textual instructions, follow the steps below.
 
@@ -65,7 +65,7 @@ The Spaghetti Detective server needs to have an IP address that is accessible by
 
 ## Port/Firewall
 
-The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](docs/firewall_guides.md).
+The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](website/docs/server_guides/firewall_guides.md).
 
 You can set up a reverse-proxy, such as nginx, in front of The Spaghetti Detective server, so that it's exposed on a different port. In this case, please use whichever port you choose to expose in the steps below. For simplicity
 sake, this document assumes the server port is 3334.
@@ -86,7 +86,7 @@ sake, this document assumes the server port is 3334.
 
 ![Site configuration](docs/img/readme/site_config.png)
 
-*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](docs/advanced_config.md#using-a-reverse-proxy) for details.*
+*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](website/docs/server_guides/advanced_config.md#using-a-reverse-proxy) for details.*
 
 ## Configure Email server (SMTP)
 
@@ -128,7 +128,7 @@ Then, navigate to octoprint to setup the plugin side of things:
 
 1. Make sure that you have installed the [TSD plugin](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/).
 
-1. After restarting, go through the wizard as described in [the setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup-manual-link/), until you are at the last step that asks for the 6-digit Verification Code. *Note: If TSD plugin for OctoPrint has been installed before and you do not see the wizard, click [here](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/master/docs/Rerun-Wizard.md).*
+1. After restarting, go through the wizard as described in [the setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup-manual-link/), until you are at the last step that asks for the 6-digit Verification Code. *Note: If TSD plugin for OctoPrint has been installed before and you do not see the wizard, click [here](docs/Rerun-Wizard.md).*
 
 1. Expand "Advanced Server Configuration".  Find and change the Server Address to `http://your_server_ip:3334` (use https:// if you have HTTPS configured, if you aren't sure, just use http://). You MUST include the "http://".
 
@@ -162,7 +162,7 @@ Path to timelapses:
 
 # Advanced server configuration
 
-Feeling adventurous? [Go advanced](docs/advanced_config.md).
+Feeling adventurous? [Go advanced](website/docs/server_guides/advanced_config.md).
 
 # Operating and maintaining The Spaghetti Detective server
 
@@ -182,7 +182,7 @@ Just make a copy of `TheSpaghettiDetective/web/db.sqlite3`
 
 # Difficulties at getting The Spaghetti Detective server up and running?
 
-Check out the [FAQ document](docs/faq.md). If you can't find the answer there, consult the [Discord](https://discord.gg/NcZkQfj) or [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
+Check out the [FAQ document](website/docs/server_guides/faq.md). If you can't find the answer there, consult the [Discord](https://discord.gg/NcZkQfj) or [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
 
 # Thanks
 ![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.

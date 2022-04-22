@@ -1,4 +1,7 @@
-# Run TSD server on NVIDIA Jetson Nano
+---
+title: Run TSD server on NVIDIA Jetson Nano
+---
+
 
 *If you follow this guide and run into problems, please seek help at: https://discord.gg/NcZkQfj*
 
@@ -43,7 +46,7 @@ cd TheSpaghettiDetective
 
 4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
 
-## Continue to [server configuration the main documentation](../README.md#basic-server-configuration)
+## Continue to [server configuration the main documentation](../../configure)
 
 
 *Thanks to the work of Raymond, LyricPants, and others for their contribution!*

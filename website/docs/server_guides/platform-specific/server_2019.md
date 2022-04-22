@@ -1,4 +1,6 @@
-# Instructions for Server 2019 Installation
+---
+title: Instructions for Server 2019 Installation
+---
 
 If you happen to have a Server 2019 box up and running, here are the instructions to install Docker Enterprise and Docker-compose.
 
@@ -55,4 +57,4 @@ $dockerComposeVersion = "1.26.2"
 Invoke-WebRequest "https://github.com/docker/compose/releases/download/$dockerComposeVersion/docker-compose-Windows-x86_64.exe" -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
 ```
 
-### [Get the code and start the server](../README.md#get-the-code-and-start-the-server)
+### [Get the code and start the server](../../configure)

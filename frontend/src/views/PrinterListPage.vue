@@ -32,6 +32,7 @@
         </b-dropdown>
       </div>
     </template>
+
     <template v-slot:content>
       <div v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
         <div class="filter">

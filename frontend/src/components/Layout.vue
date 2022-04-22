@@ -84,6 +84,7 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
+        <content-top v-if="layoutSections.contentTop"></content-top>
         <slot name="content"></slot>
       </div>
     </div>
@@ -94,16 +95,21 @@
 <script>
 import { inMobileWebView } from '@src/lib/page_context'
 import DarkLightImage from '@src/components/DarkLightImage.vue'
+import layoutSections from '@config/layout/sections'
 
 export default {
   name: 'Layout',
 
   components: {
     DarkLightImage,
+    ...Object.keys(layoutSections).reduce((obj, name) => {
+      return Object.assign(obj, { [name]: layoutSections[name].importComponent })
+    }, {}),
   },
 
   data() {
     return {
+      layoutSections,
       collapsed: true,
       path: window.location.pathname,
       user: null,

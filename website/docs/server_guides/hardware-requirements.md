@@ -2,6 +2,24 @@
 title: Hardware requirements
 ---
 
-The Spaghetti Detective server needs to run on a real computer (Not a Pi, unfortunately. Raspberry Pi (yes even the Pi 4b,) or Latte Panda, is just not powerful enough to run the Machine Learning model). If you have an old PC with at least 4GB of memory, you will be probably be fine.
+The Spaghetti Detective runs an powerful Machine Learning model that requires a device powerful enough to run it. And by powerful, we mean most anything from the last decade. 
 
-*Help needed to flesh out with more details.*
+## Single Board Computers
+*only tested / known devices are included*
+Device | Can run TSD
+:---|:---:
+Raspberry Pi(any model)| ❌
+Latte Panda | ❌
+Jetson Nano 2gb | ❌
+Jetson Nano 4gb | ✅
+
+## PC's (and laptops)
+
+If it has at least 4gb of RAM, it should run fine. 
+Component | Requirement
+:---|:---
+CPU | One that can run a modern OS. CPU's as old as 4th gen intels have been able to run TSD just fine.  
+GPU | A GPU of somekind is **required**. Any integrated GPU's should be fine, and discrete cards more than enough.
+RAM | You should have at least 4gb of DDR3 ram, but the more the better. 
+OS |Your OS should also be recent(~3-5 old tops). For older devices, Linux is **highly** reccomended.
+RGB | Highly reccomended. The more your PC looks like a christmas tree, the more FPS you will have (sarcasm)

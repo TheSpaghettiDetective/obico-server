@@ -12,9 +12,15 @@ This is a general guide to install the Obico Server. For platform-specific guide
 
 :::
 
+## Hardware Requirements
+
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. A NVidia GPU is optional but can vastly reduce the power consumption and beef up the number of printers the server can handle.
+
+[More details about the hardware requirements for the Obico Server](hardware-requirements).
+
 :::caution
 
-Don't try to install the Obico Server on a Raspberry Pi. Pi's CPU is too weak to run the Machine Learning failure-detection model. [Hardware requirements for the Obico Server](hardware-requirements).
+Don't try to install the Obico Server on a Raspberry Pi. Pi's CPU is too weak to run the Machine Learning failure-detection model.
 
 :::
 

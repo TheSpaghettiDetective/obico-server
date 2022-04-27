@@ -490,12 +490,10 @@ class Print(SafeDeleteModel):
 
     FAILED = 'FAILED'
     NOT_FAILED = 'NOT_FAILED'
-    PARTIALY_FAILED = 'PARTIALY_FAILED'
 
     ALERT_OVERWRITE = (
         (FAILED, FAILED),
         (NOT_FAILED, NOT_FAILED),
-        (PARTIALY_FAILED, PARTIALY_FAILED),
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)

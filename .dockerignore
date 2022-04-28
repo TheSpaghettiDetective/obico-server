@@ -1,4 +1,4 @@
 npm_modules/
 __pycache__
 .git
-web/static_build/
+backend/static_build/

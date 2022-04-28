@@ -90,7 +90,7 @@ sake, this document assumes the server port is 3334.
 
 The following is using gmail as an example. Other web mail services may vary slightly, such as EMAIL_PORT
 
-1. In `TheSpaghettiDetective` directory, make a copy of `dotenv.example` and rename the copy as `.env`. 
+1. In `TheSpaghettiDetective` directory, make a copy of `dotenv.example` and rename the copy as `.env`.
 
 2. Open `.env` using your favorite editor.
 
@@ -156,7 +156,7 @@ Although you can simply download the timelapses from either the web interface or
 
 Path to timelapses:
 
-`[TSD Directory]/web/static_build/media/tsd-timelapses/private/`
+`[TSD Directory]/backend/static_build/media/tsd-timelapses/private/`
 
 # Advanced server configuration
 
@@ -174,7 +174,7 @@ Feeling adventurous? [Go advanced](docs/advanced_config.md).
 *Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
 ## Backup database
 
-Just make a copy of `TheSpaghettiDetective/web/db.sqlite3`
+Just make a copy of `TheSpaghettiDetective/backend/db.sqlite3`
 
 # How to train your own Machine Learning model (TBD)
 

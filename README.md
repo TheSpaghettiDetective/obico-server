@@ -63,7 +63,7 @@ The Spaghetti Detective server needs to have an IP address that is accessible by
 
 ## Port/Firewall
 
-The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](website/docs/server_guides/firewall_guides.md).
+The Spaghetti Detective server listens on port 3334. Please make sure this port is not blocked from OctoPrint. See [configuring firewalls on common platforms](docs/firewall_guides.md).
 
 You can set up a reverse-proxy, such as nginx, in front of The Spaghetti Detective server, so that it's exposed on a different port. In this case, please use whichever port you choose to expose in the steps below. For simplicity
 sake, this document assumes the server port is 3334.
@@ -84,7 +84,7 @@ sake, this document assumes the server port is 3334.
 
 ![Site configuration](docs/img/readme/site_config.png)
 
-*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](website/docs/server_guides/advanced_config.md#using-a-reverse-proxy) for details.*
+*Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](docs/advanced_config.md#using-a-reverse-proxy) for details.*
 
 ## Configure Email server (SMTP)
 
@@ -160,7 +160,7 @@ Path to timelapses:
 
 # Advanced server configuration
 
-Feeling adventurous? [Go advanced](website/docs/server_guides/advanced_config.md).
+Feeling adventurous? [Go advanced](docs/advanced_config.md).
 
 # Operating and maintaining The Spaghetti Detective server
 
@@ -180,7 +180,7 @@ Just make a copy of `TheSpaghettiDetective/web/db.sqlite3`
 
 # Difficulties at getting The Spaghetti Detective server up and running?
 
-Check out the [FAQ document](website/docs/server_guides/faq.md). If you can't find the answer there, consult the [Discord](https://discord.gg/NcZkQfj) or [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
+Check out the [FAQ document](docs/faq.md). If you can't find the answer there, consult the [Discord](https://discord.gg/NcZkQfj) or [open an issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new).
 
 # Thanks
 ![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.

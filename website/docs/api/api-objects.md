@@ -6,7 +6,7 @@ title: API Objects
 
 An object that represents a printer.
 
-- `id`:  ID used in API path.
+- `id`: ID used in API path. *ReadOnly*
 - `name`: Printer name.
 - `created_at`: The timestamp when the printer is created. In ISO-8601 format.
 - `action_on_failure`: What to do when a possible failure is detected. An `Enum`.

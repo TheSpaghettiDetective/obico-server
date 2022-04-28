@@ -2,7 +2,7 @@
 title: Configuration
 ---
 
-## If you don't need to add a new envioronment variable
+## If you don't need to add a new environment variable
 
 TBD
 

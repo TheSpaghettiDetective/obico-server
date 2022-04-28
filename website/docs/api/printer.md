@@ -2,10 +2,11 @@
 title: Printer API
 ---
 
-## If you don't need to add a new envioronment variable
+## GET `/api/v1/printers/`
 
-TBD
+### Accepted query parameters
 
-## If you need to add a new environment variable
+- `with_archived`: Boolean. Default to `false`. Whether or not archived printer need to be returned.
 
-TBD
+
+## GET `/api/v1/printers/`

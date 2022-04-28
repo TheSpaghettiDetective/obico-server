@@ -2,8 +2,6 @@
 title: API Objects
 ---
 
-## `User`
-
 ## `Printer`
 
 An object that represents a printer.
@@ -141,4 +139,8 @@ An object that contains the info about a video frame (a snapshot) in a print tim
     - `UNANSWERED`: It can be determined if it contains a failure.
 - `answered_at`: The timestamp when the user provides the feedback. Null if the user hasn't provided the feedback. In ISO-8601 format.
 
-## 
+## `User`
+
+- `email`: Email.
+- `consented_at`: The timestamp when the user has consented to the terms and conditions. It should always be the time when the user signs up. In ISO-8601 format.
+- `dh_balance`: The balance of the Detective Hours.

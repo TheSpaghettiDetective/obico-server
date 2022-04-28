@@ -677,7 +677,7 @@ export default {
 
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
       axios
-        .get(urls.printerAction(printerId, path))
+        .post(urls.printerAction(printerId, path))
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {

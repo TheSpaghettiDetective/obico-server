@@ -373,7 +373,7 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
     def acknowledge_alert(self, alert_overwrite):
-        if not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
+        if not self.current_print or not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
             return
 
         self.current_print.alert_acknowledged_at = timezone.now()

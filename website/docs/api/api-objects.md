@@ -15,7 +15,7 @@ An object that represents a printer.
 - `watching_enabled`: If the failure watching is enabled by the user. Note: even if the watching is enabled, the system may not actively watch a print, for one reason or another. See `not_watching_reason` for details.
 - `not_watching_reason`: A textual representation of why a print is not being actively watch.
     - *"Watch for failures" is turned off*: `watching_enabled` is set to `false`
-    - *You have run out of Detective Hours*: The `dh_balance` in the [User](#user) object is 0 or a negative number.
+    - *You have run out of Detective Hours*: The `dh_balance` in the [`User`](#user) object is 0 or a negative number.
     - *Printer is not actively printing*: Either `current_print` is `null`, or the printer is paused.
     - *Alerts are muted for current print*: The user has selected "mute alert for the rest of the print".
 - `tools_off_on_pause`: Whether or not the tool (hotend) heater should be shut off when a print is paused.
@@ -25,18 +25,18 @@ An object that represents a printer.
 - `detective_sensitivity`: The sensitivity for the failure detection. It should be a value between 0.8 (lowest sensitivity) and 1.2 (highest sensitivity).
 - `pic`: The most recent webcam image for the printer. An object. Currently it has only 1 property.
     - `img_url`: The url to the image.
-- `status`: An [PrinterStatus](#printerstatus) object.
-- `settings`: An [PrinterSettings](#printersettings) object.
-- `current_print`: An [Print] object that represents the current print job of the printer. `Null` when the printer is idle.
+- `status`: An [`PrinterStatus`](#printerstatus) object.
+- `settings`: An [`PrinterSettings`](#printersettings) object.
+- `current_print`: An [`Print] object that represents the current print job of the printer. `Null` when the printer is idle.
 - `normalized_p`: A normalized *prediction score* for failure detection. It's a number between 0 and 1. 0 means no failure is detected. 1 means the maximum confidence on predicting a print failure.
 - `auth_token`: The token the printer can use to authenticate itself.
 
 ## `PrinterStatus`
 
-- `state`: A [State](#state) object.
-- `job`: A [Job](#job) object.
-- `progress`: A [JobProgress](#jobprogress) object.
-- `temperatures`: A [temperatures](#temperatures) object.
+- `state`: A [`State`](#state) object.
+- `job`: A [`Job`](#job) object.
+- `progress`: A [`JobProgress`](#jobprogress) object.
+- `temperatures`: A [`temperatures`](#temperatures) object.
 
 ## `State`
 
@@ -76,7 +76,7 @@ An object that represents a printer.
 
 ## `Temperatures`
 
-An `Map` object. The `key` of the map is the name of the heater, such as "tool0", "bed". The `value` of the map is an [Temperature](#temperature) object.
+An `Map` object. The `key` of the map is the name of the heater, such as "tool0", "bed". The `value` of the map is an [`Temperature`](#temperature) object.
 
 ## `Temperature`
 
@@ -106,8 +106,8 @@ An object that represents a specific print job. If a G-Code file is printed mult
 
 A dummy print object will be created when a timelapse video is uploaded to the server.
 
-- `id`: ID used in API path.
-- `printer`: ID of the [Printer](#printer) object.
+- `id`: ID used in API path. *ReadOnly*
+- `printer`: ID of the [`Printer`](#printer) object.
 - `filename`: G-Code filename for this print.
 - `started_at`: The timestamp when the print starts. In ISO-8601 format.
 - `finished_at`: The timestamp when the print finishes **successfully**. Null if the print is cancelled. In ISO-8601 format.
@@ -123,15 +123,15 @@ A dummy print object will be created when a timelapse video is uploaded to the s
 - `prediction_json_url`: The URL for the json file of the detection result, frame by frame.
 - `alert_overwrite`: The response the user gives about if a print failure has happened during the print. An `Enum`.
     - `FAILED`: There is(are) print failure(s).
-    - `FAILED`: There are no print failures.
+    - `NOT_FAILED`: There are no print failures.
 - `printshotfeedback_set`: 
 
 ## `PrintShotFeedback`
 
 An object that contains the info about a video frame (a snapshot) in a print timelapse video and the user input (feedback) to indicate if it contains any failure.
 
-- `id`: ID used in API path.
-- `print_id`: ID of the [Print](#print) object.
+- `id`: ID used in API path. *ReadOnly*
+- `print_id`: ID of the [`Print`](#print) object.
 - `image_url`: The URL for the video frame.
 - `answer`: The feedback provide by the user. An `Enum`.
     - `LOOKS_BAD`: It contains a failure.

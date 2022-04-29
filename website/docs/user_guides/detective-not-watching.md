@@ -33,7 +33,7 @@ If you toggled of "**Watch for failures**" by accident, toggle it back on and Th
 
 When you receive an alert, you have an option to turn off watching for current print only. This is very convenient when you have a print that is causing excessive amount of false alarms. Once the current print is over and the next print starts, The Detective will be back on the duty to watch prints for you.
 
-#### 4. You have run out of Detective Hours
+#### 4. You have run out of AI Detection Hours
 
 The Detective Hour balance for your account is displayed on the right hand side of the navigation bar. When it dips below 0, The Detective will stop watching your prints. There are [several ways to get more Detective Hours](/docs/how-does-detective-hour-work#how-do-i-get-detective-hours).
 

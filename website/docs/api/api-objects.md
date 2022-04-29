@@ -139,6 +139,18 @@ An object that contains the info about a video frame (a snapshot) in a print tim
     - `UNANSWERED`: It can be determined if it contains a failure.
 - `answered_at`: The timestamp when the user provides the feedback. Null if the user hasn't provided the feedback. In ISO-8601 format.
 
+## `GCodeFile`
+
+An object that represents a G-Code file.
+
+- `id`: ID used in API path. *ReadOnly*
+- `user`: The [`User`](#user) this GCodeFile belongs to.
+- `filename`: The original filename uploaded.
+- `safe_filename`: The filename that is safe for any file system.
+- `url`: The URL from which the GCodeFile can be downloaded.
+- `num_bytes`: The size of the GCodeFile in bytes.
+
+
 ## `User`
 
 - `email`: Email.

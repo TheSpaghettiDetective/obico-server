@@ -63,21 +63,21 @@ None.
 
 JSON representation of the [`Print`](/docs/api/api-objects/#print) object, except the following read-only fields:
 
-- `id`
-- `printer`
-- `filename`
-- `started_at`
-- `finished_at`
-- `cancelled_at`
-- `uploaded_at`
-- `alerted_at`
-- `alert_acknowledged_at`
-- `alert_muted_at`
-- `paused_at`
-- `video_url`
-- `tagged_video_url`
-- `poster_url`
-- `prediction_json_url`
+- `id`.
+- `printer`. Always the printer on which it's printed on (duh!).
+- `filename`. Maybe an argument can be made that the G-Code file name can be changed once the print has started. But we haven't seen this case in the real world yet.
+- `started_at`. Always the timestamp when the print starts.
+- `finished_at`. Always the timestamp when the print finishes **successfully**.
+- `cancelled_at`. Always the timestamp when the print is cancelled.
+- `uploaded_at`. Always the timestamp when the time-lapse video is uploaded.
+- `alerted_at`. Check the [Websocket](/docs/api/websocket/) for how this field is set.
+- `alert_acknowledged_at`. Automatically set based on the rules. Check [`Print`](/docs/api/api-objects/#print) for details.
+- `alert_muted_at`. Automatically set based on the rules. Check [`Print`](/docs/api/api-objects/#print) for details.
+- `paused_at`. Automatically set based on the rules. Check [`Print`](/docs/api/api-objects/#print) for details.
+- `video_url`. Automatically generated when a time-lapse is generated and saved to the storage.
+- `tagged_video_url`. Automatically generated when a time-lapse is generated and saved to the storage.
+- `poster_url`. Automatically generated when a time-lapse is generated and saved to the storage.
+- `prediction_json_url`. Automatically generated when a time-lapse is generated and saved to the storage.
 
 ### Response
 
@@ -85,6 +85,43 @@ JSON representation of the [`Print`](/docs/api/api-objects/#print) object, excep
 
 - Code: `200`
 - Body: A [`Print`](/docs/api/api-objects/#print) object.
+
+#### Not found
+
+When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
+
+- Code: `404`
+
+
+## DELETE `/api/v1/prints/{:id}/`
+
+Delete the [`Print`](/docs/api/api-objects/#print) object specified by `{:id}`
+
+### Response
+
+#### Success
+
+- Code: `200`
+- Body: Empty.
+
+#### Not found
+
+When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
+
+- Code: `404`
+
+
+
+## GET `/api/v1/prints/{:id}/prediction_json`
+
+Retrieve the prediction (failure detection) json associated with the [`Print`](/docs/api/api-objects/#print) specified by `{:id}`
+
+### Response
+
+#### Success
+
+- Code: `200`
+- Body: A JSON that represents the frame-by-frame predictions.
 
 #### Not found
 

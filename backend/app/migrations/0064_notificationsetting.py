@@ -38,31 +38,31 @@ def forwards(apps, schema_editor):
     if schema_editor.connection.vendor == 'sqlite':
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'email', id, '', 't', alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 'f', 'f', date(), date() from app_user;
+                select 'email', id, '', 1, alert_by_email, notify_on_done and print_notification_by_email, notify_on_canceled and print_notification_by_email, notify_on_filament_change_req and print_notification_by_email, 0, 0, date(), date() from app_user;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'discord', id, '{"webhook_url": "' || discord_webhook || '"}', 't', 't', notify_on_done and print_notification_by_discord, notify_on_canceled and print_notification_by_discord, notify_on_filament_change_req and print_notification_by_discord, 'f', 'f', date(), date() from app_user where discord_webhook is not null;
+                select 'discord', id, '{"webhook_url": "' || discord_webhook || '"}', 1, 1, notify_on_done and print_notification_by_discord, notify_on_canceled and print_notification_by_discord, notify_on_filament_change_req and print_notification_by_discord, 0, 0, date(), date() from app_user where discord_webhook is not null;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'telegram', id, '{"chat_id": "' || telegram_chat_id || '"}', 't', 't', notify_on_done and print_notification_by_telegram, notify_on_canceled and print_notification_by_telegram, notify_on_filament_change_req and print_notification_by_telegram, 'f', 'f', date(), date() from app_user where telegram_chat_id is not null;
+                select 'telegram', id, '{"chat_id": "' || telegram_chat_id || '"}', 1, 1, notify_on_done and print_notification_by_telegram, notify_on_canceled and print_notification_by_telegram, notify_on_filament_change_req and print_notification_by_telegram, 0, 0, date(), date() from app_user where telegram_chat_id is not null;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json,  enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'slack', id, '{"access_token": "' || slack_access_token || '"}', 't', 't', 't', 'f', 't', 'f', 'f', date(), date() from app_user where slack_access_token is not null;
+                select 'slack', id, '{"access_token": "' || slack_access_token || '"}', 1, 1, 1, 0, 1, 0, 0, date(), date() from app_user where slack_access_token is not null;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'pushbullet', id, '{"access_token": "' || pushbullet_access_token || '"}', 't', 't', notify_on_done and print_notification_by_pushbullet, notify_on_canceled and print_notification_by_pushbullet, notify_on_filament_change_req and print_notification_by_pushbullet, 'f', 'f', date(), date() from app_user where  pushbullet_access_token is not null;
+                select 'pushbullet', id, '{"access_token": "' || pushbullet_access_token || '"}', 1, 1, notify_on_done and print_notification_by_pushbullet, notify_on_canceled and print_notification_by_pushbullet, notify_on_filament_change_req and print_notification_by_pushbullet, 0, 0, date(), date() from app_user where  pushbullet_access_token is not null;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'pushover', id, '{"user_key": "' || pushover_user_token || '"}', 't', 't', notify_on_done and print_notification_by_pushover, notify_on_canceled and print_notification_by_pushover, notify_on_filament_change_req and print_notification_by_pushover, 'f', 'f', date(), date() from app_user where  pushover_user_token is not null;
+                select 'pushover', id, '{"user_key": "' || pushover_user_token || '"}', 1, 1, notify_on_done and print_notification_by_pushover, notify_on_canceled and print_notification_by_pushover, notify_on_filament_change_req and print_notification_by_pushover, 0, 0, date(), date() from app_user where  pushover_user_token is not null;
             """)
         schema_editor.execute("""
                 insert into app_notificationsetting(name, user_id, config_json, enabled, notify_on_failure_alert, notify_on_print_done, notify_on_print_cancelled, notify_on_filament_change, notify_on_other_print_events, notify_on_heater_status, created_at, updated_at)
-                select 'twilio', id, '{"phone_country_code": "' || phone_country_code || '", "phone_number": "' || phone_number || '"}', 't', alert_by_sms, 'f', 'f', 'f', 'f', 'f', date(), date() from app_user where  phone_number is not null and phone_country_code is not null;
+                select 'twilio', id, '{"phone_country_code": "' || phone_country_code || '", "phone_number": "' || phone_number || '"}', 1, alert_by_sms, 0, 0, 0, 0, 0, date(), date() from app_user where  phone_number is not null and phone_country_code is not null;
             """)
 
 def reverse_func(apps, schema_editor):

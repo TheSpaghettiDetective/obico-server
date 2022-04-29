@@ -164,14 +164,6 @@ class PrintViewSet(
     def get_queryset(self):
         return Print.objects.filter(user=self.request.user)
 
-    @action(detail=True, methods=['post'])
-    def alert_overwrite(self, request, pk=None):
-        print = get_object_or_404(self.get_queryset(), pk=pk)
-        print.alert_overwrite = request.data.get('value', None)
-        print.save()
-        serializer = self.serializer_class(print, many=False)
-        return Response(serializer.data)
-
     def list(self, request):
         queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)
         filter = request.GET.get('filter', 'none')

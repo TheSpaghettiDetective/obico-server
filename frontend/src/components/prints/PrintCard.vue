@@ -362,8 +362,11 @@ export default {
     },
 
     alertOverwrite(value) {
-      axios
-        .post(urls.printAlertOverwrite(this.print.id), { value })
+      axios.patch(
+          urls.print(this.print.id),
+          {
+            alert_overwrite: value,
+          })
         .then(response => {
           this.$emit('printDataChanged', response.data)
           this.inflightAlertOverwrite = null

@@ -24,14 +24,16 @@ def send_printer_notifications(
     extra_context = extra_context or {}
 
     if print_id:
-        # FIXME any additional filter? User.is_active?
-        cur_print = Print.objects.all_with_deleted().select_related('printer', 'printer__user').get(
-            id=print_id, printer_id=printer_id)
+        cur_print = Print.objects.all_with_deleted().select_related('printer', 'printer__user').filter(
+            id=print_id, printer_id=printer_id).first()
+        if not cur_print: # Printer may be deleted or archived
+            return
         printer = cur_print.printer
     else:
         cur_print = None
-        # FIXME any additional filter? User.is_active?
-        printer = Printer.objects.select_related('user').get(id=printer_id)
+        printer = Printer.objects.select_related('user').filter(id=printer_id).first()
+        if not printer: # Printer may be deleted or archived
+            return
 
     set_user({"id": printer.user_id})
 

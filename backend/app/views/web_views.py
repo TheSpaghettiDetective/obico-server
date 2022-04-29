@@ -191,8 +191,10 @@ def slack_oauth_callback(request):
 
 
 def unsubscribe_email(request):
-    unsub_token = request.GET['unsub_token']
-    email_list = request.GET['list']
+    unsub_token = request.GET.get('unsub_token')
+    email_list = request.GET.get('list')
+    if not unsub_token or not email_list:
+        raise Http404("Request object not found")
 
     user = get_object_or_404(User.objects, unsub_token=unsub_token)
     nsetting = NotificationSetting.objects.get(user_id=user.id, name='email')

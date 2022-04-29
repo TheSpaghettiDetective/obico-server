@@ -261,4 +261,9 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         config = self.validated_data.pop('config', None)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
+
+        # HACK: For some reason sqlite will set created_at to None on a PATCH call and results in an exception. Force it now()
+        if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
+            return super().save(user=user, created_at=now(), updated_at=now())
+
         return super().save(user=user)

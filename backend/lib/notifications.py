@@ -126,7 +126,7 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
         pausing_msg = 'Printer is NOT paused. '
 
-    msg = 'The Spaghetti Detective - Your print {} on {} {}. {}Go check it at: {}'.format(
+    msg = 'The Obico app - Your print {} on {} {}. {}Go check it at: {}'.format(
         printer.current_print.filename or '',
         printer.name,
         'smells fishy' if is_warning else 'is probably failing',
@@ -147,7 +147,7 @@ def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_pa
         pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
     pb = Pushbullet(printer.user.pushbullet_access_token)
-    title = 'The Spaghetti Detective - Failure alert!'
+    title = 'The Obico app - Failure alert!'
 
     msg = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
@@ -187,7 +187,7 @@ def send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paus
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
         pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
-    title = 'The Spaghetti Detective - Failure alert!'
+    title = 'The Obico app - Failure alert!'
 
     msg = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
@@ -223,7 +223,7 @@ def send_failure_alert_telegram(printer, rotated_jpg_url, is_warning, print_paus
 
     notification_text = f"""Hi {printer.user.first_name or ''},
 
-_The Spaghetti Detective_ spotted some suspicious activity on your printer *{printer.name}*.
+_The Obico app_ spotted some suspicious activity on your printer *{printer.name}*.
 
 {action}"""
 
@@ -254,7 +254,7 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Spaghetti Detective - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smells fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n<{site.build_full_url('/printers/')}|Check it out.>"
+                        "text": f"*The Obico app - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smells fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n<{site.build_full_url('/printers/')}|Check it out.>"
                     }
                 }
             ]
@@ -297,7 +297,7 @@ def send_failure_alert_discord(printer, rotated_jpg_url, is_warning, print_pause
 
     text = f"""Hi {printer.user.first_name or ''},
 
-_The Spaghetti Detective_ spotted some suspicious activity on your printer *{printer.name}*.
+_The Obico app_ spotted some suspicious activity on your printer *{printer.name}*.
 
 {action}"""
 
@@ -420,7 +420,7 @@ def send_print_notification_pushbullet(_print, event_type=None):
 
     pb = Pushbullet(_print.printer.user.pushbullet_access_token)
 
-    title = 'The Spaghetti Detective - Print job notification'
+    title = 'The Obico app - Print job notification'
     link = site.build_full_url('/')
     body = get_notification_body(_print, event_type=event_type)
     file_url = None
@@ -450,7 +450,7 @@ def send_print_notification_pushover(_print, event_type=None):
     except:
         photo = None
 
-    title = 'The Spaghetti Detective - Print job notification'
+    title = 'The Obico app - Print job notification'
     body = get_notification_body(_print, event_type=event_type)
 
     try:
@@ -484,7 +484,7 @@ def send_print_notification_slack(_print, event_type=None):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Spaghetti Detective - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {status}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
+                        "text": f"*The Obico app - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {status}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
                     }
                 }
             ]
@@ -562,7 +562,7 @@ def send_email(user, subject, mailing_list, template_path, ctx, img_url=None, ve
             to=(email.email,),
             from_email=settings.DEFAULT_FROM_EMAIL,
             attachments=attachments,
-            headers={'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'},)
+            headers={'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'},)
         msg.content_subtype = 'html'
         if attachment:
             msg.attach_file(attachment)

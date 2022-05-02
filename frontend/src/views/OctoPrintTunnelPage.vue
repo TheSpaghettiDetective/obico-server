@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!isPro && usageFetched" class="floating-panel text-center pb-2">
-      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">?</a>)</div>
+      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.obico.io/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">?</a>)</div>
       <div :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</div>
       <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
     </div>
@@ -66,16 +66,16 @@ export default {
       this.$swal.Prompt.fire({
         html: `
           <h4 class="text-center p-2">
-            <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59" style="height: 1.1em;margin-right: 0.75em;">
+            <svg class="menu-icon" style="height: 1.1em; width: 1em; margin-right: 0.75em;">
               <use href="#svg-octoprint-tunneling" />
             </svg>
             OctoPrint Secure Tunnel
           </h4>
           <div class="p-1">
-            It may take long time for OctoPrint page to load as it is securely tunneled via The Spaghetti Detective server.
+            It may take long time for OctoPrint page to load as it is securely tunneled via the Obico app server.
           </div>
           <div class="p-1">
-            <a target="_blank" href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">
+            <a target="_blank" href="https://www.obico.io/docs/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">
             Learn more about OctoPrint Tunneling's security and page load speed.
             <i class="fas fa-external-link-alt"></i>
           </a>

@@ -85,13 +85,13 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
         template_name = 'email/FailureAlert.html'
         tpl = get_template(template_name)
-        
+
         mailing_list: str = 'failure_alert'
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
         )
         headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
         }
 
         ctx = context.extra_context or {}
@@ -149,7 +149,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
         )
         headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_{mailing_list}>'
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
         }
 
         ctx = context.extra_context or {}

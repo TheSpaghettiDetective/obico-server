@@ -122,7 +122,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
               type: 'error',
-              title: 'Failed to contact OctoPrint, or the TSD plugin version is older than 1.2.0.',
+              title: 'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
             })
           }
         }, 10*1000)

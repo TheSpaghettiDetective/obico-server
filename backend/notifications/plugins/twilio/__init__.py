@@ -73,7 +73,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
     def send_test_message(self, context: TestMessageContext) -> None:
         to_number = self.get_number_from_config(context.config)
         self.send_sms(
-            body='TSD Test Notification - It works!',
+            body='Obico App Test Notification - It works!',
             to_number=to_number,
         )
 

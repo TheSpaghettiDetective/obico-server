@@ -92,7 +92,7 @@ class PrinterViewSet(
             return Printer.objects.filter(user=self.request.user)
 
     # TODO: Remove the "GET" method after old mobile app versions have faded
-    
+
     @action(detail=True, methods=['post', 'get'])
     def cancel_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)

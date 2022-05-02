@@ -26,7 +26,7 @@
       <div v-if="!discoveredPrinter.octopi_version && discoveredPrinter.os" class="text-muted small">
         OS: {{discoveredPrinter.os}}
       </div>
-      <div v-if="!satisfyVersionForAutoLink" class="text-danger small">Auto-linking is not available as the version of The Spaghetti Detective plugin is lower than 1.8.0. Please upgrade the plugin to the latest version, or switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a>.</div>
+      <div v-if="!satisfyVersionForAutoLink" class="text-danger small">Auto-linking is not available as the version of the Obico plugin is lower than 1.8.0. Please upgrade the plugin to the latest version, or switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a>.</div>
     </div>
     <div v-if="satisfyVersionForAutoLink" class="col-sm-12 col-md-2 center px-3">
       <button class="btn btn-block btn-primary" @click="$emit('auto-link-printer', {...discoveredPrinter})">Link</button>

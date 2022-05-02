@@ -24,7 +24,7 @@
             <i class="fas fa-share-alt fa-lg"></i>Share
           </b-dropdown-item>
           <b-dropdown-item :href="octoPrintTunnelUrl()">
-            <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59">
+            <svg class="menu-icon">
               <use href="#svg-octoprint-tunneling" />
             </svg>
             Tunneling
@@ -63,7 +63,7 @@
           <h5 class="text-warning">The Detective Is Not Watching</h5>
           <small
             v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
+          >{{ printer.not_watching_reason }}. <a href="https://www.obico.io/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
           <div></div>
         </div>
         <Gauge
@@ -451,7 +451,7 @@ export default {
     },
     onPrinterActionPauseClicked() {
       this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
       }).then((result) => {
         if (result.value) {
           this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
@@ -742,6 +742,6 @@ export default {
 <style lang="sass" scoped>
 .menu-icon
   width: 20px
-  margin-right: 12px
-  margin-bottom: 6px
+  height: 20px
+  margin-right: 6px
 </style>

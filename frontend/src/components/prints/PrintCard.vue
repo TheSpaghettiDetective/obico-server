@@ -24,10 +24,12 @@
             class="no-corner no-shadow"
             :disabled="!canShowDetectiveView"
           >
-            <dark-light-image path="logo/compact" filename="logo-compact" format="png" alt="TSD" class="seg-control-icon"></dark-light-image>
+            <svg class="seg-control-icon">
+              <use href="#svg-logo-compact" />
+            </svg>
           </b-form-radio>
           <b-form-radio value="info" class="no-corner no-shadow">
-            <svg class="seg-control-icon" fill="currentColor" viewBox="0 0 348 348">
+            <svg class="seg-control-icon">
               <use href="#svg-info-icon" />
             </svg>
           </b-form-radio>
@@ -55,7 +57,11 @@
       </div>
       <div>
         <div class="position-relative" v-if="print.video_archived_at">
-          <img class="mw-100" :src="posterSrc" />
+          <div class="poster-placeholder-wrapper">
+            <svg class="poster-placeholder">
+              <use :href="posterSrc" />
+            </svg>
+          </div>
           <div class="archived-info">
             <div class="text">Video file is deleted. <a href="#" @click="showVideoArchivedDescription($event)">Why?</a></div>
           </div>
@@ -151,12 +157,7 @@
                   >
                     F
                     <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
-                    <svg
-                      v-if="!focusedFeedbackCompleted"
-                      viewBox="0 0 523 360"
-                      class="seg-control-icon ml-1"
-                      fill="currentColor"
-                    >
+                    <svg v-if="!focusedFeedbackCompleted" class="seg-control-icon ml-1 double-hours-icon">
                       <use href="#svg-hour-double" />
                     </svg>
                   </a>
@@ -171,7 +172,7 @@
                 <span v-else>
                   With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
                   <a
-                    href="https://www.thespaghettidetective.com/docs/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
+                    href="https://www.obico.io/docs/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
                   >You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
                 </span>
               </small>
@@ -179,7 +180,7 @@
               <small v-else>
                 Every time you give The Detective feedback,
                 <a
-                  href="https://www.thespaghettidetective.com/docs/how-does-credits-work/"
+                  href="https://www.obico.io/docs/how-does-credits-work/"
                 >you help her get better at detecting spaghetti</a>.
               </small>
             </div>
@@ -201,8 +202,6 @@ import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
 import Gauge from '@src/components/Gauge'
 import DetectiveWorking from '@src/components/DetectiveWorking'
-import printerStockImgSrc from '@static/img/3d_printer.png'
-import DarkLightImage from '@src/components/DarkLightImage.vue'
 
 export default {
   name: 'PrintCard',
@@ -211,7 +210,6 @@ export default {
     VideoBox,
     Gauge,
     DetectiveWorking,
-    DarkLightImage,
   },
 
   data: () => {
@@ -328,7 +326,7 @@ export default {
     },
 
     posterSrc() {
-      return this.print.poster_url || printerStockImgSrc
+      return this.print.poster_url || '#svg-3d-printer'
     },
   },
 
@@ -363,10 +361,10 @@ export default {
 
     alertOverwrite(value) {
       axios.patch(
-          urls.print(this.print.id),
-          {
-            alert_overwrite: value,
-          })
+        urls.print(this.print.id),
+        {
+          alert_overwrite: value,
+        })
         .then(response => {
           this.$emit('printDataChanged', response.data)
           this.inflightAlertOverwrite = null
@@ -395,8 +393,8 @@ export default {
       this.$swal.Prompt.fire({
         title: 'Time-lapse video deleted',
         html: `
-          <p>Time-lapse videos older than 6-months are deleted from TSD server as they are rarely needed and cost significant amount to store in the cloud.</p>
-          <p>If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please <a href="mailto:support@thespaghettidetective.com?subject=Please%20keep%20my%20timelapse%20videos">contact us</a>.</p>
+          <p>Time-lapse videos older than 6-months are deleted from the Obico app server as they are rarely needed and cost significant amount to store in the cloud.</p>
+          <p>If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">contact us</a>.</p>
           `,
         showCloseButton: true,
       })
@@ -424,8 +422,11 @@ export default {
   justify-content: space-between
   align-items: center
 
-.seg-control-icon, ::v-deep .seg-control-icon img
+.seg-control-icon
   height: 1.2rem
+  width: 1.2rem
+  &.double-hours-icon
+    width: 1.5rem
 
 .feedback-section
   background-color: var(--color-surface-secondary)
@@ -463,4 +464,18 @@ export default {
 
 ::v-deep .vjs-poster, ::v-deep .video-js
   background-color: #000
+
+.poster-placeholder-wrapper
+  height: 250px
+  background-color: #000
+
+  .poster-placeholder
+    $size: 100px
+    color: rgb(255 255 255 / .2)
+    width: $size
+    height: $size
+    position: absolute
+    left: calc(50% - #{$size / 2})
+    top: calc(50% - #{$size / 2} - 20px)
+
 </style>

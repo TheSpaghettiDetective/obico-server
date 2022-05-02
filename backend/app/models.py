@@ -295,7 +295,7 @@ class Printer(SafeDeleteModel):
         if print.cancelled_at is None:
             print.finished_at = timezone.now()
             print.save()
-        
+
         PrintEvent.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
 
@@ -707,7 +707,7 @@ class OctoPrintTunnelManager(SafeDeleteManager):
 
 class OctoPrintTunnel(SafeDeleteModel):
     # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
-    INTERNAL_APP = 'TSD'
+    INTERNAL_APP = 'Obico'
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     app = models.TextField(null=False, blank=False, db_index=True)

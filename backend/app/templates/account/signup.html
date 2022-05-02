@@ -17,9 +17,9 @@
         <div style="margin-bottom: 1rem; padding-left: 24px;">
           <div class="custom-control custom-checkbox form-check-inline">
             <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
-            <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">By signing up, I agree to The
-              Spaghetti Detective's <a class="link" href="https://www.thespaghettidetective.com/terms.html">Terms of
-                Use</a> and <a class="link" href="https://www.thespaghettidetective.com/privacy.html">Privacy
+            <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox">By signing up, I agree to
+              the Obico app's <a class="link" href="https://www.obico.io/terms.html">Terms of
+                Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
                 Policy</a></label>
           </div>
         </div>
@@ -81,8 +81,9 @@
           <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN UP" %}</button>
           <div class="text-center pt-3 w-100">
             <div class="font-weight-light text-muted">- OR -</div>
-            <a class="btn"
-            href="{% url 'account_login' %}?{{request.GET.urlencode}}">{% trans "SIGN IN" %}
+            <a class="btn" href="{% url 'account_login' %}?{{request.GET.urlencode}}">
+              {% trans "SIGN IN" %}
+            </a>
           </div>
         </form>
       </div>
@@ -92,6 +93,7 @@
 {% endblock %}
 
 {% block page_js %}
+{{ block.super }}
 <script src="{% static 'js/signup.js' %}"></script>
 {% if settings.RECAPTCHA_SITE_KEY %}
 <script src="https://www.google.com/recaptcha/api.js?render={{ settings.RECAPTCHA_SITE_KEY }}"></script>

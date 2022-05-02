@@ -3,7 +3,7 @@
     <template v-slot:topBarRight>
       <div>
         <a v-if="isEnt" href="/user_preferences/dh/" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' Detective Hours'">
-          <svg viewBox="0 0 384 550">
+          <svg>
             <use href="#svg-detective-hours"></use>
           </svg>
           <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
@@ -296,10 +296,11 @@ export default {
 .btn.hours-btn
   position: relative
   padding-right: 1.625rem
+  color: var(--color-text-primary)
 
   svg
     height: 1.125rem
-    width: auto
+    width: 1.125rem
 
   .badge
     position: absolute

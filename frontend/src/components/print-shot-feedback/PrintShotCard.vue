@@ -12,7 +12,7 @@
       <small class="text-muted">
         Not sure? Look at
         <a target="_blank"
-          href="https://www.thespaghettidetective.com/docs/how-does-credits-work#spaghetti-examples"
+          href="https://www.obico.io/docs/how-does-credits-work#spaghetti-examples"
         >some examples. <small><i class="fas fa-external-link-alt"></i></small></a>
       </small>
     </div>

@@ -121,7 +121,7 @@ def test_telegram(request):
             # errors throw
             telegram_send(
                 bot.send_message,
-                user.telegram_chat_id, 'Test from TSD', parse_mode='Markdown')
+                user.telegram_chat_id, 'Test from Obico', parse_mode='Markdown')
 
             return JsonResponse(dict(status='Ok'))
 

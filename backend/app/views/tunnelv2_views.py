@@ -43,8 +43,8 @@ OVER_FREE_LIMIT_HTML = """
                 the free limit. Support this project and get unlimited
                 tunneling by
                 <a target="_blank"
-                   href="https://app.thespaghettidetective.com/ent/pricing/"
-                >upgrading to The Spaghetti Detective Pro plan</a>,
+                   href="https://app.obico.io/ent/pricing/"
+                >upgrading to the Obico app Pro plan</a>,
                 or wait for the reset of free limit at the start of
                 the next month.
             </h3>
@@ -63,7 +63,7 @@ NOT_CONNECTED_HTML = f"""
             <hr>
             <h3 style="color: red;">
                 Either your OctoPrint is offline,
-                or The Spaghetti Detective plugin version is
+                or the Obico plugin version is
                 lower than {MIN_SUPPORTED_VERSION.public}.
             </h3>
         </center>

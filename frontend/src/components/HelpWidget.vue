@@ -10,7 +10,7 @@
 
       <!-- Help icon -->
       <div class="question-mark" @click="positionWidget(); show = !show;">
-        <svg viewBox="0 0 40 40" fill="currentColor">
+        <svg>
           <use href="#svg-question-icon" />
         </svg>
       </div>
@@ -24,7 +24,7 @@
               In case you were wondering...
             </div>
             <div class="close-button" @click="show = false">
-              <svg viewBox="0 0 16 16" fill="currentColor">
+              <svg withd="16" height="16">
                 <use href="#svg-cross-icon" />
               </svg>
             </div>
@@ -39,7 +39,7 @@
               <p>The stream is on only when the printer is printing.</p>
               <strong>
                 Learn more about
-                <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                <a href="https://www.obico.io/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
               </strong>
             </template>
 
@@ -48,12 +48,12 @@
               <h3>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h3>
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
+                <li>You can also <a href="https://www.obico.io/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -64,12 +64,12 @@
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
                 <li>Detective Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
+                <li>You can also <a href="https://www.obico.io/docs/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -84,7 +84,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -96,7 +96,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -107,7 +107,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -117,14 +117,14 @@
               <i>
                 <ul>Required versions:
                   <li>OctoPrint 1.7.0 or higher</li>
-                  <li>The Spaghetti Detective plugin 1.8.11 or higher</li>
+                  <li>The Obico plugin 1.8.11 or higher</li>
                 </ul>
               </i>
               <h3>Filament Runout Notifications</h3>
               <p>
                 Host_action_commands must be enabled in your firmware to make it possible for your filament runout
-                sensor to communicate with OctoPrint and The Spaghetti Detective. If you enable action commands in
-                your firmware, then the filament runout sensor can work properly and The Spaghetti Detective can notify
+                sensor to communicate with OctoPrint and the Obico app. If you enable action commands in
+                your firmware, then the filament runout sensor can work properly and the Obico app can notify
                 you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable
                 to communicate with the printer to know that a filament runout was detected.
               </p>
@@ -257,9 +257,10 @@ export default {
     box-shadow: 0px 3px 30px rgb(0 0 0 / .5)
     border-radius: 12px
     overflow: hidden
-    background-color: #fff
+    background-color: var(--color-surface-primary)
     display: flex
     flex-direction: column
+    color: var(--color-text-primary)
 
     @media (min-width: $x-breakpoint-2)
       &.left
@@ -284,12 +285,11 @@ export default {
       width: auto
 
     .header
-      color: #28303A
       height: $widget-header-height
       width: 100%
       display: flex
       align-items: center
-      border-bottom: 1px solid #D4DAE0
+      border-bottom: 1px solid var(--color-divider)
       position: absolute
       top: 0
       left: 0
@@ -311,11 +311,11 @@ export default {
         display: flex
         align-items: center
         justify-content: center
-        color: #9CA3AF
+        color: var(--color-text-primary)
         transition: all .2s ease-out
         &:hover
-          color: #6B7280
           cursor: pointer
+          opacity: .7
 
         svg
           width: #{$widget-header-height * .58}
@@ -323,7 +323,6 @@ export default {
 
     .content
       padding: 1rem .875rem
-      color: #000
       font-size: 14px
       font-weight: normal
 

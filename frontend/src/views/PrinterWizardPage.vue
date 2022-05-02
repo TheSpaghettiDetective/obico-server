@@ -4,9 +4,9 @@
       <b-container>
         <b-row>
           <b-col>
-            <div class="wizard-container form-container full-on-mobile" :class="{'logo-bg': verifiedPrinter }">
+            <div class="wizard-container form-container full-on-mobile">
               <div v-if="verifiedPrinter" class="text-center py-5">
-                <svg class="success-checkmark" fill="currentColor" viewBox="0 0 446 410">
+                <svg class="success-checkmark">
                   <use href="#svg-success-checkmark" />
                 </svg>
                 <h3 class="pb-4">Successfully linked to your account!</h3>
@@ -60,7 +60,7 @@
                   step-size="sm"
                 >
                   <h3 slot="title">
-                    <svg class="header-img"  viewBox="0 0 165 152">
+                    <svg class="header-img">
                       <use href="#svg-octoprint-logo" />
                     </svg>
                     {{title}}
@@ -70,11 +70,11 @@
                       <div class="row justify-content-center pb-3">
                         <div class="col-sm-12 col-lg-8">
                           <div class="text-warning">
-                            Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.thespaghettidetective.com/help/">TSD's help website</a>.
+                            Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.obico.io/help/">Obico's help website</a>.
                           </div>
                           <ol>
                             <li>Open OctoPrint in another browser tab. </li>
-                            <li>Select <em>"OctoPrint settings menu → Access Anywhere - The Spaghetti Detective"</em>.</li>
+                            <li>Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.</li>
                             <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                           </ol>
                         </div>
@@ -93,7 +93,7 @@
                           <ol>
                             <li>Open OctoPrint in another browser tab. </li>
                             <li>Select <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.</li>
-                            <li>Enter "The Spaghetti Detective" to locate the plugin. Click <em>"Install"</em>.</li>
+                            <li>Enter "Obico" to locate the plugin. Click <em>"Install"</em>.</li>
                             <li>Restart OctoPrint when prompted.</li>
                           </ol>
                         </div>
@@ -139,7 +139,7 @@
                           <ul>
                             <li>The Raspberry Pi is powered on.</li>
                             <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                            <li>The Spaghetti Detective plugin version is 1.8.0 or above.</li>
+                            <li>The Obico plugin version is 1.8.0 or above.</li>
                           </ul>
                         </div>
                       </div>
@@ -150,7 +150,7 @@
                       <div class="row justify-content-center pb-3">
                         <div class="col-sm-12 col-lg-8">
                           <ol>
-                            <li>Wait for <em>"Access Anywhere - The Spaghetti Detective"</em> wizard to popup.</li>
+                            <li>Wait for <em>"Obico for OctoPrint"</em> wizard to popup.</li>
                             <li>Follow the instructions in the wizard.</li>
                             <li>Select <em>"Web Setup"</em> when asked.</li>
                           </ol>
@@ -193,12 +193,12 @@
                       <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
                     </div>
                     <div class="wizard-footer-right">
-                      <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
+                      <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="{...props.fillButtonStyle, color: 'var(--color-on-primary)'}">Next &gt;</wizard-button>
                     </div>
                   </template>
                 </form-wizard>
                 <div class="row">
-                  <div class="helper col-sm-12">Need help? Check out the <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">step-by-step set up guide.</a></div>
+                  <div class="helper col-sm-12">Need help? Check out the <a href="https://www.obico.io/docs/octoprint-plugin-setup/">step-by-step set up guide.</a></div>
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export default {
       discoveredPrinters: [],
       chosenDeviceId: null,
       gotSecret: null,
-      tsdDiscoveryPopup: null,
+      obicoDiscoveryPopup: null,
       apiCallIntervalId: null,
     }
   },
@@ -428,11 +428,11 @@ export default {
     showVerificationCodeHelpModal() {
       this.$swal.fire({
         title: 'Can\'t find the page to enter the 6-digit code?',
-        html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+        html: `<p>The 6-digit code needs to be entered in the Obico plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">set up guide</a>.</li>
+        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.obico.io/docs/octoprint-plugin-setup/">set up guide</a>.</li>
         </ul></p>`,
         customClass: {
           container: 'dark-backdrop',
@@ -516,11 +516,6 @@ export default {
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
-  &.logo-bg
-    background-image: var(--url-logo-bg)
-    background-repeat: no-repeat
-    background-position: -250px 100px
-    background-size: 500px
 .btn-back
   color: var(--color-text-primary)
   min-width: auto
@@ -578,20 +573,23 @@ li
 .wizard-nav.wizard-nav-pills li:not(.active)
   .wizard-icon-circle.checked i
     display: none
-  .wizard-icon-circle.checked:before
-    $size: 30px
-    content: ""
-    display: block
-    width: $size
-    height: $size
-    background-image: var(--url-logo-bg)
-    background-size: $size $size
-    position: absolute
-    top: calc(50% - #{$size / 2})
-    left: calc(50% - #{$size / 2})
-    bottom: calc(50% - #{$size / 2})
-    right: calc(50% - #{$size / 2})
+  .wizard-icon-circle.checked
+    background-color: var(--color-primary)
+    &:before
+      $size: 20px
+      content: ""
+      display: block
+      width: $size
+      height: $size
+      background-image: url('/static/img/tick_dark.svg')
+      background-size: $size $size
+      position: absolute
+      top: calc(50% - #{$size / 2})
+      left: calc(50% - #{$size / 2})
+      bottom: calc(50% - #{$size / 2})
+      right: calc(50% - #{$size / 2})
 .success-checkmark
+  width: 6rem
   height: 6rem
   margin-bottom: 1.5rem
 .printer-name-input

@@ -3,7 +3,9 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <dark-light-image path="logo/compact" filename="logo-compact" format="png" alt="TSD" class="logo-small"></dark-light-image>
+        <svg class="logo-small">
+          <use href="#svg-logo-compact" />
+        </svg>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{'active': path === '/ent_pub/pricing/'}">
@@ -14,9 +16,10 @@
         </li>
         <li v-if="user" :class="{'active': path === '/printers/'}">
           <a href="/printers/">
-            <svg viewBox="0 0 128 128" width="100%" height="1.4em" fill="none" style="margin-bottom: 5px">
+            <svg width="1.4em" height="1.4em" style="margin-bottom: 5px">
               <use href="#svg-3d-printer" />
             </svg>
+            <br>
             Printers
           </a>
         </li>
@@ -42,7 +45,7 @@
             </a>
           </li>
           <li>
-            <a href="https://www.thespaghettidetective.com/help/" target="_blank">
+            <a href="https://www.obico.io/help/" target="_blank">
               <i class="fas fa-question"></i>
               Help
             </a>
@@ -94,14 +97,12 @@
 
 <script>
 import { inMobileWebView } from '@src/lib/page_context'
-import DarkLightImage from '@src/components/DarkLightImage.vue'
 import layoutSections from '@config/layout/sections'
 
 export default {
   name: 'Layout',
 
   components: {
-    DarkLightImage,
     ...Object.keys(layoutSections).reduce((obj, name) => {
       return Object.assign(obj, { [name]: layoutSections[name].importComponent })
     }, {}),
@@ -230,9 +231,10 @@ export default {
       transform: translateX(50%)
   ul.components
     padding: 20px 0
-  ::v-deep .logo-small img
+  ::v-deep .logo-small
     width: 30px
     height: 30px
+    color: var(--color-text-primary)
   .dropdown-toggle
     position: relative
     &::after

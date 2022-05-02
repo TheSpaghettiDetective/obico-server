@@ -188,5 +188,7 @@ export default {
 
 <style lang="sass" scoped>
 ::v-deep .control-options .btn
-  color: var(--color-text-primary)
+  color: var(--color-primary)
+  &.active span
+    color: var(--color-on-primary)
 </style>

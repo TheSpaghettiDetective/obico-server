@@ -15,7 +15,7 @@ To speed up the diagnosis and get the problem figured out and solved faster, ple
 
 The robot behind The Spaghetti Detective is extremely powerful. But there are humans in The Detective Team (what a shocker!) and  they are pretty helpful too.
 
-If you have the Pro plan, you can get a guaranteed technical support by [emailing us](mailto:support@thespaghettidetective.com). We will get back to you within 8 business hours **Mention in your email that you are a Pro subscriber.**
+If you have the Pro plan, you can get a guaranteed technical support by [emailing us](mailto:support@obico.io). We will get back to you within 8 business hours **Mention in your email that you are a Pro subscriber.**
 
 ## If you have the Free plan
 

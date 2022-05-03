@@ -58,7 +58,7 @@ To test if the webcam is correctly configured in OctoPrint,
 
 If the test failed, the webcam is not configured correctly in OctoPrint. You need to fix this problem first. The best place for find the information and/or get help is the [OctoPrint community forum](https://community.octoprint.org/).
 
-If the test passed, please re-enable The Spaghetti Detective plugin and restart OctoPrint. After that, if the webcam streaming OctoPrint stops working again, it probably means you have run into a bug in The Spaghetti Detective plugin. In this case, [report the problem to us](mailto:support@thespaghettidetective.com).
+If the test passed, please re-enable The Spaghetti Detective plugin and restart OctoPrint. After that, if the webcam streaming OctoPrint stops working again, it probably means you have run into a bug in The Spaghetti Detective plugin. In this case, [report the problem to us](mailto:support@obico.io).
 
 :::info
 If you are running OctoPrint on a Raspberry Pi, and you followed the official OctoPi setup guide, and you have one webcam (either a Pi Camera or a USB camera) directly plugged in the Pi, the default webcam configurations should work.

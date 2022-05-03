@@ -9,7 +9,7 @@ An old PC is a perfect machine to run TSD server on. With a few tweaks you can a
 
 Get to [TSD source code repo](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective) and follow the instructions to set up your own server.
 
-If you are running a print farm and you need technical support to set up and maintain your TSD server, please [contact us](mailto:support@thespaghettidetective.com).
+If you are running a print farm and you need technical support to set up and maintain your TSD server, please [contact us](mailto:support@obico.io).
 
 Oh - and we would really appreciate it if you can buy us a couple coffees each month:
 

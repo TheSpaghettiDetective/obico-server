@@ -271,13 +271,13 @@ export default {
   height: 3rem
   top: calc(50% - 1.5rem)
   left: calc(50% - 1.5rem)
-  z-index: 100
+  z-index: 99
 
 .streaming-switch
   position: absolute
   right: 20px
   top: 20px
-  z-index: 100
+  z-index: 99
 
   .dropdown-item
     .title.active

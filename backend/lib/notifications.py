@@ -126,7 +126,7 @@ def send_failure_alert_sms(printer, is_warning, print_paused):
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
         pausing_msg = 'Printer is NOT paused. '
 
-    msg = 'The Obico app - Your print {} on {} {}. {}Go check it at: {}'.format(
+    msg = 'Obico - Your print {} on {} {}. {}Go check it at: {}'.format(
         printer.current_print.filename or '',
         printer.name,
         'smells fishy' if is_warning else 'is probably failing',
@@ -147,7 +147,7 @@ def send_failure_alert_pushbullet(printer, rotated_jpg_url, is_warning, print_pa
         pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
     pb = Pushbullet(printer.user.pushbullet_access_token)
-    title = 'The Obico app - Failure alert!'
+    title = 'Obico - Failure alert!'
 
     msg = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
@@ -187,7 +187,7 @@ def send_failure_alert_pushover(printer, rotated_jpg_url, is_warning, print_paus
     elif printer.action_on_failure == Printer.PAUSE and is_warning:
         pausing_msg = 'Printer is NOT paused because The Detective is not very sure about it.'
 
-    title = 'The Obico app - Failure alert!'
+    title = 'Obico - Failure alert!'
 
     msg = 'Your print {} on {} {}.'.format(
         printer.current_print.filename or '',
@@ -254,7 +254,7 @@ def send_failure_alert_slack(printer, rotated_jpg_url, is_warning, print_paused)
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Obico app - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smells fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n<{site.build_full_url('/printers/')}|Check it out.>"
+                        "text": f"*Obico - Failure alert*\n\nYour print {printer.current_print.filename or ''} on {printer.name} {'smells fishy' if is_warning else 'is probably failing'}.\nThe printer is {'paused' if print_paused else 'NOT paused'}.\n<{site.build_full_url('/printers/')}|Check it out.>"
                     }
                 }
             ]
@@ -420,7 +420,7 @@ def send_print_notification_pushbullet(_print, event_type=None):
 
     pb = Pushbullet(_print.printer.user.pushbullet_access_token)
 
-    title = 'The Obico app - Print job notification'
+    title = 'Obico - Print job notification'
     link = site.build_full_url('/')
     body = get_notification_body(_print, event_type=event_type)
     file_url = None
@@ -450,7 +450,7 @@ def send_print_notification_pushover(_print, event_type=None):
     except:
         photo = None
 
-    title = 'The Obico app - Print job notification'
+    title = 'Obico - Print job notification'
     body = get_notification_body(_print, event_type=event_type)
 
     try:
@@ -484,7 +484,7 @@ def send_print_notification_slack(_print, event_type=None):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*The Obico app - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {status}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
+                        "text": f"*Obico - Print job notification*\n\n*G-Code*: {_print.filename} \n*Status*: {status}\n*Printer*: <{site.build_full_url('/printers/')}|{_print.printer.name}>"
                     }
                 }
             ]

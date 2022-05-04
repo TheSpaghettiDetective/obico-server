@@ -62,7 +62,7 @@
             <div class="new-printer-container">
               <a href="/printers/wizard/">
                 <i class="fa fa-plus fa-2x"></i>
-                <div>Link OctoPrint Printer</div>
+                <div>Link New Printer</div>
               </a>
             </div>
           </div>

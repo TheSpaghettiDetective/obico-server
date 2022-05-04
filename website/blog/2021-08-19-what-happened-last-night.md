@@ -42,7 +42,7 @@ Users who were not linking during this period were not impacted. No user data, l
 
 If you were one of 73 users who got affected, you would have received a separate email from us.
 
-If you were one of the affected users, we have disabled your printer token so it can't be connected remotely. You will need to [re-link your printer](https://www.thespaghettidetective.com/docs/user_guides/relink-octoprint/) to get it back in TSD.
+If you were one of the affected users, we have disabled your printer token so it can't be connected remotely. You will need to [re-link your printer](https://www.thespaghettidetective.com/docs/user-guides/relink-octoprint/) to get it back in TSD.
 
 If you didn't receive email from us, you were not affected.
 

@@ -131,7 +131,7 @@ You can look for solutions such as printing your mount depending on how much mon
 
 ### Position & Lighting
 
-You will also need to experiment with the camera position so that the print is visible, and plugins such as The Spaghetti Detective (a powerful tool for identifying printing issues such as spaghetti creation, potential fire hazards, and so on) can detect printing problems. This is affected not only by the position, but also by the light. If their workspace is dark, some users use an additional light source. Consider purchasing an LED light that can be clipped to the table the printer is resting on. Just make sure the light source is behind the camera. For more information on getting the right camera setup, check out [this guide.](https://www.thespaghettidetective.com/docs/user_guides/optimal-camera-setup/)
+You will also need to experiment with the camera position so that the print is visible, and plugins such as The Spaghetti Detective (a powerful tool for identifying printing issues such as spaghetti creation, potential fire hazards, and so on) can detect printing problems. This is affected not only by the position, but also by the light. If their workspace is dark, some users use an additional light source. Consider purchasing an LED light that can be clipped to the table the printer is resting on. Just make sure the light source is behind the camera. For more information on getting the right camera setup, check out [this guide.](https://www.thespaghettidetective.com/docs/user-guides/optimal-camera-setup/)
 
 
 

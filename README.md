@@ -9,17 +9,17 @@ The core of this project is based on a Deep Learning model. [See how the model w
 
 If you are on Windows 10 and prefer a video tutorial, head to LukesLaboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
 
-If you are on Windows Server, follow [this Windows Server-specific guide](website/docs/server_guides/platform-specific/server_2019.md) instead.
+If you are on Windows Server, follow [this Windows Server-specific guide](website/docs/server-guides/platform-specific/server_2019.md) instead.
 
-If you are on a NVIDIA Jetson Nano, follow [this Jetson Nano specific guide](website/docs/server_guides/platform-specific/jetson_guide.md) instead.
+If you are on a NVIDIA Jetson Nano, follow [this Jetson Nano specific guide](website/docs/server-guides/platform-specific/jetson_guide.md) instead.
 
-If you are on UNRAID, follow [this UNRAID specific guide](website/docs/server_guides/platform-specific/unraid_guide.md) instead.
+If you are on UNRAID, follow [this UNRAID specific guide](website/docs/server-guides/platform-specific/unraid_guide.md) instead.
 
 If you otherwise prefer textual instructions, follow the steps below.
 
 ## Prerequisites
 
-[Hardware minimum spec](website/docs/server_guides/hardware-requirements.md)
+[Hardware minimum spec](website/docs/server-guides/hardware-requirements.md)
 
 ### Software requirements
 

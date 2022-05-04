@@ -94,7 +94,7 @@ OctoPrint interface/Courtesy: Adafruit Learning System
 
 As mentioned above, The Spaghetti Detective (TSD) is the enhanced version of the popular OctoPrint Anywhere plugin. Once you connect OctoPrint to your 3D printer you will get complete access to all its operations. It allows you to remotely monitor your 3D printer from anywhere on this planet. It does this by creating a secure connection between your 3D printer and your device using superior bank-level encryption.
 
-All this can be configured in less than two minutes. If you have already installed OctoPrint but are unaware of how to install TSD then check out our [Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup).
+All this can be configured in less than two minutes. If you have already installed OctoPrint but are unaware of how to install TSD then check out our [Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user-guides/octoprint-plugin-setup).
 
 ![](/img/blogs/octoprint-remote-access-mobile-app-the-spaghetti-detective-features.png)
 
@@ -145,5 +145,5 @@ Step 2: Sign up for a The Spaghetti Detective account
 
 Step 3: Link OctoPrint to your The Spaghetti Detective account
 
-Get [detailed instructions on installing The Spaghetti Detective](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup/) alternatively you can also follow this [video guide](https://www.youtube.com/watch?v=l2yMySAxIKw) which covers the setup process.
+Get [detailed instructions on installing The Spaghetti Detective](https://www.thespaghettidetective.com/docs/user-guides/octoprint-plugin-setup/) alternatively you can also follow this [video guide](https://www.youtube.com/watch?v=l2yMySAxIKw) which covers the setup process.
 

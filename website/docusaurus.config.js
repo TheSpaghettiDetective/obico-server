@@ -76,7 +76,7 @@ module.exports = {
           items: [
             {
               label: 'Open Source',
-              to: '/docs/user_guides/open-source',
+              to: '/docs/user-guides/open-source',
               target: '_self',
             },
             {
@@ -129,7 +129,7 @@ module.exports = {
             },
             {
               label: 'Open Source',
-              to: '/docs/user_guides/open-source',
+              to: '/docs/user-guides/open-source',
             },
           ],
         },
@@ -138,19 +138,19 @@ module.exports = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/user_guides/octoprint-plugin-setup',
+              to: '/docs/user-guides/octoprint-plugin-setup',
             },
             {
               label: 'Failure Detection',
-              to: '/docs/user_guides/detection-print-job-settings',
+              to: '/docs/user-guides/detection-print-job-settings',
             },
             {
               label: 'Webcam Streaming',
-              to: '/docs/user_guides/webcam-streaming-for-human-eyes',
+              to: '/docs/user-guides/webcam-streaming-for-human-eyes',
             },
             {
               label: 'Troubleshooting Guides',
-              to: '/docs/user_guides/troubleshoot-server-connection-issues/',
+              to: '/docs/user-guides/troubleshoot-server-connection-issues/',
             },
           ],
         },
@@ -160,7 +160,7 @@ module.exports = {
           items: [
             {
               label: 'Contact Us',
-              to: '/docs/user_guides/contact-us-for-support',
+              to: '/docs/user-guides/contact-us-for-support',
             },
             {
               label: 'Terms of Use',

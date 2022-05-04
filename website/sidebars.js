@@ -15,35 +15,35 @@ module.exports = {
 
   // But you can create a sidebar manually
   guideSidebar: [
-    'user_guides/octoprint-plugin-setup',
+    'user-guides/octoprint-plugin-setup',
     {
       type: 'category',
       label: 'Failure Detection',
-      items: ['user_guides/how-to-test-failure-detection', 'user_guides/failure-detection-false-alarms', 'user_guides/optimal-camera-setup', 'user_guides/how-does-credits-work', 'user_guides/help-the-detective-improve', 'user_guides/detective-not-watching',],
+      items: ['user-guides/how-to-test-failure-detection', 'user-guides/failure-detection-false-alarms', 'user-guides/optimal-camera-setup', 'user-guides/how-does-credits-work', 'user-guides/help-the-detective-improve', 'user-guides/detective-not-watching',],
     },
     {
       type: 'category',
       label: 'Use The App',
-      items: ['user_guides/detection-print-job-settings', 'user_guides/printer-feed-sharing', 'user_guides/octoprint-tunneling', 'user_guides/octoprint-plugin-setup-manual-link', 'user_guides/notification-settings'],
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/octoprint-tunneling', 'user-guides/octoprint-plugin-setup-manual-link', 'user-guides/notification-settings'],
     },
     {
       type: 'category',
       label: 'Webcam Streaming',
       items: [
-        'user_guides/webcam-streaming-for-human-eyes',
-        'user_guides/more-about-webcam-streaming',
-        'user_guides/optimal-camera-setup',
-        'user_guides/webcam-streaming-resolution-framerate',
+        'user-guides/webcam-streaming-for-human-eyes',
+        'user-guides/more-about-webcam-streaming',
+        'user-guides/optimal-camera-setup',
+        'user-guides/webcam-streaming-resolution-framerate',
         {
           type: 'category',
           label: 'More... ',
           items: [
-            'user_guides/streaming-compatibility-mode',
-            'user_guides/adjust-webcam-settings-premium-streaming',
-            'user_guides/check-webcam-streaming-mode',
-            'user_guides/internet-speed-requirement-premium-streaming',
-            'user_guides/premium-streaming-raspberry-pi-connection-speed',
-            'user_guides/premium-streaming-computer-phone-connection-speed',
+            'user-guides/streaming-compatibility-mode',
+            'user-guides/adjust-webcam-settings-premium-streaming',
+            'user-guides/check-webcam-streaming-mode',
+            'user-guides/internet-speed-requirement-premium-streaming',
+            'user-guides/premium-streaming-raspberry-pi-connection-speed',
+            'user-guides/premium-streaming-computer-phone-connection-speed',
           ],
         },
       ],
@@ -51,46 +51,46 @@ module.exports = {
     {
       type: 'category',
       label: 'Account & Subscription',
-      items: ['user_guides/upgrade-to-pro', 'user_guides/free-trial-pro-plan', 'user_guides/check-type-of-your-account', 'user_guides/how-does-detective-hour-work', 'user_guides/unarchive-printer', 'user_guides/open-source', ],
+      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer', 'user-guides/open-source', ],
     },
     {
       type: 'category',
       label: 'Troubleshooting Guides',
       items: [
-        'user_guides/troubleshoot-server-connection-issues',
+        'user-guides/troubleshoot-server-connection-issues',
         {
           type: 'category',
           label: 'Webcam Streaming Troubleshooting',
           items: [
-            'user_guides/webcam-feed-is-not-showing',
-            'user_guides/webcam-feed-is-laggy',
-            'user_guides/premium-streaming-stuck-in-basic-mode',
-            'user_guides/octoprint-webcam-not-streaming',
+            'user-guides/webcam-feed-is-not-showing',
+            'user-guides/webcam-feed-is-laggy',
+            'user-guides/premium-streaming-stuck-in-basic-mode',
+            'user-guides/octoprint-webcam-not-streaming',
           ],
         },
-        'user_guides/connectivity-error-report',
-        'user_guides/turn-on-debug-logging',
-        'user_guides/send-mobile-app-log-files',
+        'user-guides/connectivity-error-report',
+        'user-guides/turn-on-debug-logging',
+        'user-guides/send-mobile-app-log-files',
       ],
     },
-    'user_guides/contact-us-for-support',
+    'user-guides/contact-us-for-support',
   ],
   developerSidebar: [
     {
       type: 'category',
       label: 'Self-hosted Obico Server',
-      link: {type: 'doc', id: 'server_guides/index'},
+      link: {type: 'doc', id: 'server-guides/index'},
       items: [
-        'server_guides/hardware-requirements',
-        'server_guides/install',
-        'server_guides/configure',
+        'server-guides/hardware-requirements',
+        'server-guides/install',
+        'server-guides/configure',
         {
           type: 'category',
           label: 'Platform-Specific Guides',
           items: [
             {
               type: 'autogenerated',
-              dirName: 'server_guides/platform-specific',
+              dirName: 'server-guides/platform-specific',
             },
           ],
         },
@@ -119,9 +119,9 @@ module.exports = {
     {
       type: 'category',
       label: 'Obico Server Plugins',
-      link: {type: 'doc', id: 'developer_guides/plugins/index'},
+      link: {type: 'doc', id: 'developer-guides/plugins/index'},
       items: [
-        'developer_guides/plugins/notification-plugin',
+        'developer-guides/plugins/notification-plugin',
       ],
     },
   ],

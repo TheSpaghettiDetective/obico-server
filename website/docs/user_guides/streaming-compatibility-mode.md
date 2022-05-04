@@ -21,14 +21,14 @@ Here is a comprehensive comparison between the compatibility mode and the advanc
 
 |  | Compatibility mode | Advanced mode |
 |---|------|-------|
-| **Webcam Compatibility** | Compatible with virtually any webcam or IP camera. | Compatible with [all Pi Cameras and most USB cameras](/docs/25-fps-streaming-hw-compatibility). Not compatible with IP cameras. |
+| **Webcam Compatibility** | Compatible with virtually any webcam or IP camera. | Compatible with [all Pi Cameras and most USB cameras](/docs/user_guides/25-fps-streaming-hw-compatibility). Not compatible with IP cameras. |
 | **CPU usage** | High CPU usage. [May slow down 3D printer and cause print quality issues](#more-about-cpu-usage-in-compatibility-mode). | Low CPU usage. Rarely causes any print quality issues. |
 | **Frame rate** | Any value specified in "*/boot/octopi.txt*". Has big impact on CPU usage. | Fixed at 25 frames per seconds. |
 | **Resolution and aspect ratio** | Any value specified in "*/boot/octopi.txt*". Has big impact on CPU usage. | Limited options. |
 | **Custom webcam settings** | All [custom webcam settings](https://community.octoprint.org/t/how-can-i-change-mjpg-streamer-parameters-on-octopi/203) in "*/boot/octopi.txt*" will be honored. | No custom webcam settings. "*/boot/octopi.txt*" is ignored. |
 
 :::info
-Learn more about [Webcam streaming resolution and frame rate](/docs/webcam-streaming-resolution-framerate).
+Learn more about [Webcam streaming resolution and frame rate](/docs/user_guides/webcam-streaming-resolution-framerate).
 :::
 
 ## When should I "always stream in the compatibility mode"?
@@ -45,7 +45,7 @@ Learn more about [Webcam streaming resolution and frame rate](/docs/webcam-strea
     * It is a smartphone running an IP camera app.
     * The webcam is connected to another Pi.
     * Any other situations that require you to change the Snapshot URL settings in OctoPrint to be different than the default value of "*http://localhost:8080/?action=snapshot*" .
-* You don't like the fact that [the webcam stream in OctoPrint now has a lower frame rate](/docs/more-about-webcam-streaming/#now-i-have-the-awesome-25-fps-streaming-but-the-webcam-feed-in-octoprint-becomes-slower-why).
+* You don't like the fact that [the webcam stream in OctoPrint now has a lower frame rate](/docs/user_guides/more-about-webcam-streaming/#now-i-have-the-awesome-25-fps-streaming-but-the-webcam-feed-in-octoprint-becomes-slower-why).
 
 ## How to change the compatibility mode setting?
 
@@ -94,8 +94,8 @@ The only situation where you may want to tell The Detective to "never stream in 
 
 #### How can I adjust webcam resolution, frame rate, and other settings?
 
-It depends on which mode your webcam is streaming in. Learn more in [this guide](/docs/webcam-streaming-resolution-framerate).
+It depends on which mode your webcam is streaming in. Learn more in [this guide](/docs/user_guides/webcam-streaming-resolution-framerate).
 
 #### How can I find out if my webcam is currently streaming in the compatibility mode?
 
-Follow [this guide](/docs/check-webcam-streaming-mode).
+Follow [this guide](/docs/user_guides/check-webcam-streaming-mode).

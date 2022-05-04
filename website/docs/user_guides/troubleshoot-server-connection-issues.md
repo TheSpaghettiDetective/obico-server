@@ -78,7 +78,7 @@ If the server address is correct, and you still have server connection error, mo
 
 ![](/img/user_guides/helpdocs/tsd-plugin-invalid-credential.png)
 
-When you [set up The Spaghetti Detective plugin for the first time](/docs/octoprint-plugin-setup), account credentials were established so that the plugin can connect to the server securely.
+When you [set up The Spaghetti Detective plugin for the first time](/docs/user_guides/octoprint-plugin-setup), account credentials were established so that the plugin can connect to the server securely.
 
 There are a few reasons why account credentials would become invalid later on:
 
@@ -93,11 +93,11 @@ The Detective doesn't make mistakes since she is a robot. But we humans do. 😜
 
 So don't feel bad if you deleted your printer in The Spaghetti Detective by mistake.
 
-We have made it super easy for you to [re-link your OctoPrint to your The Spaghetti Detective account](/docs/octoprint-plugin-setup-manual-link) in less than 2 minutes.
+We have made it super easy for you to [re-link your OctoPrint to your The Spaghetti Detective account](/docs/user_guides/octoprint-plugin-setup-manual-link) in less than 2 minutes.
 
 #### 2.2.2 What if my printer was archived
 
-[Unarchive your printer](/docs/unarchive-printer).
+[Unarchive your printer](/docs/user_guides/unarchive-printer).
 
 :::info
 When a printer is "archived", it isn't deleted from the system. You can "unarchive" the printer when you bump up your subscription to the right number of printers.
@@ -109,11 +109,11 @@ If you have a Free plan and you have added a 2nd printer, your 1st printer will 
 
 #### 2.2.3 I don't know what happened
 
-If the plugin troubleshooting page shows "invalid account credentials", and you are not sure what is causing the problem, the easiest way to solve this problem is to [re-link OctoPrint for that printer](/docs/octoprint-plugin-setup-manual-link).
+If the plugin troubleshooting page shows "invalid account credentials", and you are not sure what is causing the problem, the easiest way to solve this problem is to [re-link OctoPrint for that printer](/docs/user_guides/octoprint-plugin-setup-manual-link).
 
 #### 2.2.4 Still getting "<span className="text--danger">Invalid account credentials</span>" after re-linking OctoPrint?
 
-Something weird is going on. You will need to [get help from a human](/docs/contact-us-for-support).
+Something weird is going on. You will need to [get help from a human](/docs/user_guides/contact-us-for-support).
 
 ### 2.3 If the test result is "<span className="text--success">Succeeded</span>":
 
@@ -137,7 +137,7 @@ Based on what the status shows, click one of the following links to continue tro
 
 Hmm, you got us. It looks like you are experiencing a problem the plugin's self-diagnostic tool failed to detect.
 
-When robots failed, [humans will pitch in to help](/docs/contact-us-for-support).
+When robots failed, [humans will pitch in to help](/docs/user_guides/contact-us-for-support).
 
 :::info
 The Detective's speciality is in detecting spaghetti, not connection problems. Just saying...
@@ -149,7 +149,7 @@ If the server test button shows "succeeded" but the "Connection to sever" row in
 
 The cause for this rare situation can be complicated. A common one is some firewalls would block WebSocket connection but allow HTTP connection to the same port.
 
-This is probably a situation in which you will have fun with your "Google-fu". However, if Google fails to come to the rescue, you can [get help from a human in the TSD community](/docs/contact-us-for-support).
+This is probably a situation in which you will have fun with your "Google-fu". However, if Google fails to come to the rescue, you can [get help from a human in the TSD community](/docs/user_guides/contact-us-for-support).
 
 :::info
 The plugin connects to the server via 2 connections: HTTP and WebSocket. 99% of the time when one connection works, so will the other. But there are rare situations when HTTP connection works but the WebSocket connection doesn't.
@@ -163,8 +163,8 @@ Fortunately, The Spaghetti Detective plugin provides an diagnostic page that can
 
 1. Click the "<span className="text--danger">Connection to server: Error</span>" link to open the diagnostic page.
 ![](/img/user_guides/helpdocs/tsd-plugin-server-connection-error.jpg)
-2. [Find out the severity of the connectivity issue and the possible solution](/docs/connectivity-error-report#how-to-assess-the-server-connectivity-issues).
+2. [Find out the severity of the connectivity issue and the possible solution](/docs/user_guides/connectivity-error-report#how-to-assess-the-server-connectivity-issues).
 
 ## None of the above solves the problem?
 
-[Get help from a human](/docs/contact-us-for-support).
+[Get help from a human](/docs/user_guides/contact-us-for-support).

@@ -45,7 +45,7 @@ Please bear with me here as I won't spare any details about the new auto-discove
 1. The plugin receives the `local_secret` and verifies it matches the one being held in memory.
 1. In addition, The Spaghetti Detective server enforces a very strict policy that **allows only 1 OctoPrint to be visible as auto-discovery at a time**. This restriction will prevent an attacker who can, in a sophisticated but rare situation, spoof the public IP of a victim, from even seeing the victim's printer.
 
-Whew! That's all the steps we are taking to make sure auto-discovery is as secure as it can be. If any of the steps described above doesn't work as expected, the plugin will simply turn off auto-discovery. We know doing so will also prevent some legitimate users from using the auto-discovery feature and force them to fall back to [manual linking using the 6-digit code](/docs/octoprint-plugin-setup-manual-link), which is less convenient. But again, we have learned that, under all circumstances, security triumphs over convenience.
+Whew! That's all the steps we are taking to make sure auto-discovery is as secure as it can be. If any of the steps described above doesn't work as expected, the plugin will simply turn off auto-discovery. We know doing so will also prevent some legitimate users from using the auto-discovery feature and force them to fall back to [manual linking using the 6-digit code](/docs/user_guides/octoprint-plugin-setup-manual-link), which is less convenient. But again, we have learned that, under all circumstances, security triumphs over convenience.
 
 
 ## The bug bounty program!

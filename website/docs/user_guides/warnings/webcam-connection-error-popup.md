@@ -7,6 +7,6 @@ title: '"Plugin failed to connect to the webcam"'
 
 If you see this warning in OctoPrint, follow these troubleshooting steps:
 
-1. Test if the webcam works in OctoPrint. If not, [follow this guide](/docs/octoprint-webcam-not-streaming) to troubleshoot and fix it.
-1. If the webcam works in OctoPrint but you still get this error, [reach out to us for help](/docs/contact-us-for-support).
+1. Test if the webcam works in OctoPrint. If not, [follow this guide](/docs/user_guides/octoprint-webcam-not-streaming) to troubleshoot and fix it.
+1. If the webcam works in OctoPrint but you still get this error, [reach out to us for help](/docs/user_guides/contact-us-for-support).
 

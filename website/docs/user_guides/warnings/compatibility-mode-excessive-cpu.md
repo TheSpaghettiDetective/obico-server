@@ -11,10 +11,10 @@ Most of the times The Spaghetti Detective plugin does a fair job at balancing be
 
 There are a few things you can do to fix the problem:
 
-* [Lower the frame rate or resolution for the "compatibility mode" in premium webcam streaming](/docs/webcam-streaming-resolution-framerate/).
-* [Change the compatibility mode settings](/docs/streaming-compatibility-mode#how-to-change-the-compatibility-mode-setting) to "**Never use compatibility mode**".
-* [Disable the premium webcam streaming](/docs/disable-25-fps-streaming/).
+* [Lower the frame rate or resolution for the "compatibility mode" in premium webcam streaming](/docs/user_guides/webcam-streaming-resolution-framerate/).
+* [Change the compatibility mode settings](/docs/user_guides/streaming-compatibility-mode#how-to-change-the-compatibility-mode-setting) to "**Never use compatibility mode**".
+* [Disable the premium webcam streaming](/docs/user_guides/disable-25-fps-streaming/).
 
 :::info
-Learn more about the [Premium Streaming](/docs/more-about-webcam-streaming/).
+Learn more about the [Premium Streaming](/docs/user_guides/more-about-webcam-streaming/).
 :::

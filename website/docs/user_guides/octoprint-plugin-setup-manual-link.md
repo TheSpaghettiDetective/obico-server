@@ -5,11 +5,11 @@ title: Link OctoPrint with a 6-digit code
 
 Follow this guide in one of these 2 rare cases:
 
-* You are trying to re-link OctoPrint. There are only [a few reasons](/docs/relink-octoprint/) why you need to re-link OctoPrint.
-* Your OctoPrint can't be identified at the last step in [The Spaghetti Detective Setup Guide](/docs/octoprint-plugin-setup/). You don't need a 6-digit code if your OctoPrint can be identified and linked automatically.
+* You are trying to re-link OctoPrint. There are only [a few reasons](/docs/user_guides/relink-octoprint/) why you need to re-link OctoPrint.
+* Your OctoPrint can't be identified at the last step in [The Spaghetti Detective Setup Guide](/docs/user_guides/octoprint-plugin-setup/). You don't need a 6-digit code if your OctoPrint can be identified and linked automatically.
 
 :::caution
-If you are setting up The Spaghetti Detective for the first time, you should follow [The Spaghetti Detective Setup Guide](/docs/octoprint-plugin-setup) first. **Please DO NOT PROCEED** if you haven't done so.
+If you are setting up The Spaghetti Detective for the first time, you should follow [The Spaghetti Detective Setup Guide](/docs/user_guides/octoprint-plugin-setup) first. **Please DO NOT PROCEED** if you haven't done so.
 :::
 
 
@@ -52,11 +52,11 @@ Follow instructions in the "**📱  Mobile App**" tab if you are using The Spagh
 
 1. Click the "**Setup Plugin**" button.
 1. On the next page, click on “**Continue with Mobile App**".
-1. Since you have already downloaded the mobile app and signed up for an account, just click “**Continue**” here. 
+1. Since you have already downloaded the mobile app and signed up for an account, just click “**Continue**” here.
   :::caution
-  If you haven't signed up for an The Spaghetti Detective account, stop here and follow [The Spaghetti Detective Setup Guide](/docs/octoprint-plugin-setup) first.
+  If you haven't signed up for an The Spaghetti Detective account, stop here and follow [The Spaghetti Detective Setup Guide](/docs/user_guides/octoprint-plugin-setup) first.
   :::
-1. Now you should see a page that asks you for a 6-digit verification code. Keep this browser tab open while you obtain the 6-digit code in The Spaghetti Detective app. 
+1. Now you should see a page that asks you for a 6-digit verification code. Keep this browser tab open while you obtain the 6-digit code in The Spaghetti Detective app.
 
 ![TSD Wizard Page](/img/user_guides/setupguide/tsd-plugin-wizard-mobile.gif)
 
@@ -65,9 +65,9 @@ Follow instructions in the "**📱  Mobile App**" tab if you are using The Spagh
 
 1. Click the "**Setup Plugin**" button.
 1. On the next page, click on “**Continue with Web Site**".
-1. Since you have already signed up for an account, just click “**Continue**” here. 
+1. Since you have already signed up for an account, just click “**Continue**” here.
   :::caution
-  If you haven't signed up for an The Spaghetti Detective account, stop here and follow [The Spaghetti Detective Setup Guide](/docs/octoprint-plugin-setup) first.
+  If you haven't signed up for an The Spaghetti Detective account, stop here and follow [The Spaghetti Detective Setup Guide](/docs/user_guides/octoprint-plugin-setup) first.
   :::
 1. Now you should see a page that asks you for a 6-digit verification code.
 
@@ -110,8 +110,8 @@ If you wan to re-link OctoPrint to an existing printer, you should do [step 3a](
 If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-launch-the-link-octoprint-wizard-in-the-spaghetti-detective-app) instead.
 :::
 
-1. From the printer screen, click the kebab menu (⋮) on the top right of the screen. 
-2. Click "**Configure 🔧**".  
+1. From the printer screen, click the kebab menu (⋮) on the top right of the screen.
+2. Click "**Configure 🔧**".
 3. Scroll down to the bottom and click "**Re-link OctoPrint**".
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user_guides/setupguide/launch-relink-wizard.gif" /></div>
@@ -127,7 +127,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
   ]}>
   <TabItem value="mobile">
 
-1. Assuming you have followed [this Setup Guide](/docs/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
+1. Assuming you have followed [this Setup Guide](/docs/user_guides/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
 1. On the next screen, if it is stuck in "Scanning..." for more than 1 minutes, tap the "**Manual Setup**" link.
 1. Tap "**I'm ready now**" on the next screen.
 1. Now you will see a screen with a 6-digit verification code. This is the code you will use the manually link OctoPrint. You can long-press the number to copy it to the clipboard.
@@ -137,7 +137,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
   </TabItem>
   <TabItem value="web">
 
-1. Assuming you have followed [this Setup Guide](/docs/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Next>**" button.
+1. Assuming you have followed [this Setup Guide](/docs/user_guides/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Next>**" button.
 1. On the next screen, if it is stuck in "Scanning..." for more than 1 minutes, tap the "**Manual Setup**" link.
 1. Tap "**Next >**" on the next screen.
 1. Now you will see a screen with a 6-digit verification code. This is the code you will use the manually link OctoPrint. You can press Ctrl-C (Windows) or Cmd-C (Mac) to copy the 6 digit code to the clipboard.

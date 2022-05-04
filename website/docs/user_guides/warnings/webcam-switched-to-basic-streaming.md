@@ -8,9 +8,9 @@ title: '"The Premium Streaming failed to start"'
 This warning message means the Premium Webcam Streaming has failed to start for some reason, and switched to the Basic Streaming.
 
 :::info
-Learn more about [Premium Streaming vs Basic Streaming](/docs/webcam-streaming-for-human-eyes).
+Learn more about [Premium Streaming vs Basic Streaming](/docs/user_guides/webcam-streaming-for-human-eyes).
 :::
 
 In some rare situations, The Detective can't find any viable option to make the Premium Webcam Streaming work. In these cases, she will fall back to the Basic Streaming.
 
-When this happens, you'll have the laggy, 1-frame-per-10-seconds streaming, even if your account is eligible for the Premium Streaming. Follow [this guide](/docs/premium-streaming-stuck-in-basic-mode/) to figure out why.
+When this happens, you'll have the laggy, 1-frame-per-10-seconds streaming, even if your account is eligible for the Premium Streaming. Follow [this guide](/docs/user_guides/premium-streaming-stuck-in-basic-mode/) to figure out why.

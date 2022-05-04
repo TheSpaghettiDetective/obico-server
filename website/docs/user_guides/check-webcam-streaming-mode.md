@@ -23,9 +23,9 @@ The status can be one of the following:
 * "**Basic**" - Basic Streaming.
 
 :::info
-Learn more about [Premium Streaming vs Basic Streaming](/docs/webcam-streaming-for-human-eyes).
+Learn more about [Premium Streaming vs Basic Streaming](/docs/user_guides/webcam-streaming-for-human-eyes).
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user_guides/streaming-compatibility-mode).
 :::

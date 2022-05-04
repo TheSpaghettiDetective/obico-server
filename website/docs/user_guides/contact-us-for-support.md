@@ -8,7 +8,7 @@ sidebar_label: Get help from a human
 To speed up the diagnosis and get the problem figured out and solved faster, please collect the following info before you ask for help.
 * Take a screenshot.
 * Jot down a quick note on what you did or what happened immediately before the problem.
-* [Turn on debug logging and download "octoprint.log" file](/docs/turn-on-debug-logging).
+* [Turn on debug logging and download "octoprint.log" file](/docs/user_guides/turn-on-debug-logging).
 :::
 
 ## If you have the Pro plan

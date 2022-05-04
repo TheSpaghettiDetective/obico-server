@@ -7,9 +7,9 @@ In order to get a buttery-smooth webcam stream, you need to make sure the Intern
 
 The minimum Internet speed required for a solid Premium Stream depends on 3 factors:
 
-* [The streaming mode](/docs/check-webcam-streaming-mode)
-* [The webcam resolution](/docs/webcam-streaming-resolution-framerate)
-* [The streaming frame rate](/docs/webcam-streaming-resolution-framerate)
+* [The streaming mode](/docs/user_guides/check-webcam-streaming-mode)
+* [The webcam resolution](/docs/user_guides/webcam-streaming-resolution-framerate)
+* [The streaming frame rate](/docs/user_guides/webcam-streaming-resolution-framerate)
 
 :::info
 
@@ -61,13 +61,13 @@ When the webcam streaming is in "Premium (compatibility)" mode, The Spaghetti De
 
 ## If the streaming is in "Basic":
 
-Basic Streaming doesn't have any requirement on the Internet connection speed. Almost anywhere you have an Internet connection, the Basic Streaming will work. 
+Basic Streaming doesn't have any requirement on the Internet connection speed. Almost anywhere you have an Internet connection, the Basic Streaming will work.
 
 :::info
 
 See also:
 
-* [Test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/premium-streaming-computer-phone-connection-speed).
-* [Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/premium-streaming-raspberry-pi-connection-speed).
+* [Test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/user_guides/premium-streaming-computer-phone-connection-speed).
+* [Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/user_guides/premium-streaming-raspberry-pi-connection-speed).
 
 :::

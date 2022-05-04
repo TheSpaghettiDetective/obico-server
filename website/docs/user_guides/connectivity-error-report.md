@@ -59,7 +59,7 @@ For instance, if you run OctoPrint on a Raspberry Pi, just like 90% of other Oct
 If you are not running the OctoPrint on a Raspberry Pi, the commands may be slightly different.
 :::
 
-The error you may see will probably be very hard to understand. Remember you can always [get help from a human](/docs/contact-us-for-support).
+The error you may see will probably be very hard to understand. Remember you can always [get help from a human](/docs/user_guides/contact-us-for-support).
 
 ### 4.2 If the error rate is less than 100%:
 
@@ -80,4 +80,4 @@ Below is a list of some quick things you can do to confirm a Wi-Fi problem and f
 
 In most case, your webcam is connected to the Raspberry Pi, or is on the same WiFi network. So it should rarely fail. If you are seeing any errors here, it's most likely caused by the misconfigured webcam settings in OctoPrint.
 
-Follow [these steps](/docs/webcam-feed-is-not-showing#the-webcam-streaming-in-octoprint-has-problems) to figure out the configuration problem and fix it.
+Follow [these steps](/docs/user_guides/webcam-feed-is-not-showing#the-webcam-streaming-in-octoprint-has-problems) to figure out the configuration problem and fix it.

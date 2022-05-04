@@ -12,7 +12,7 @@ In just a couple of days, the number of hours that The Detective has watched wil
 
 This incredible milestone, first and foremost, is a clear demonstration of the heroic actions taken by the makers around the world to fight against COVID-19. In the past two months, TSD users have been printing Personal Protection Equipments (PPEs) days and nights. [The daily print hours on TSD has more than doubled](/blog/2020/03/25/3d-printing-makers-fight-against-covid-19-coronavirus).
 
-This milestone is also the direct result of [TSD's contribution to this collective fight against COVID-19](/blog/2020/03/25/3d-printing-makers-fight-against-covid-19-coronavirus#get-in-action). Yes it [costs us significant amount to serve those hours](/docs/upgrade-to-pro#what-cant-the-detective-just-work-for-free-people-love-free-you-know), but as a member of the 3D printing community, we want to help out since we are lucky enough to be doing just fine during the time of this pandemic.
+This milestone is also the direct result of [TSD's contribution to this collective fight against COVID-19](/blog/2020/03/25/3d-printing-makers-fight-against-covid-19-coronavirus#get-in-action). Yes it [costs us significant amount to serve those hours](/docs/user_guides/upgrade-to-pro#what-cant-the-detective-just-work-for-free-people-love-free-you-know), but as a member of the 3D printing community, we want to help out since we are lucky enough to be doing just fine during the time of this pandemic.
 
 To celebrate this incredible milestone, as well as to give our users some dopamine while we are all stuck home, we will give away some goodies and prizes.
 
@@ -35,7 +35,7 @@ Ah yes - the dopamine!
 We will give away 50 prizes:
 
 * Free 1 year Pro account (limit 25). Claim it with coupon code **<span style={{backgroundColor: "#ddd"}}>FIRSTBILLFREE</span>**
-    
+
     Your first bill is on us! If you choose annual plan (why not!), that's a full year of FREE Pro account! No limit on the number of printers or which DH Pack you choose. *This prize is available to only the first 25 subscribers who claim it.*
 
 * 50% off Pro account forever (limit 25). Claim it with coupon code **<span style={{backgroundColor: "#ddd"}}>50PERCENTOFF</span>**

@@ -24,23 +24,23 @@ The first and most obvious step is to gather all of the hardware required to ins
 ## What Hardware is Needed to Install OctoPrint on the Ender 3?
 
 -   Creality Ender 3
-    
--   Raspberry Pi
-    
--   SD Card (16gb or larger recommended)
-    
--   Webcam or Raspberry Pi Camera
-    
--   Raspberry Pi camera extension cable, 610mm (if using the pi camera)
-    
--   Short mini-USB to USB cable
-    
--   XT60 Y-splitter cable (optional)
-    
--   Small metric bolt and nut set (optional)
-    
 
-  
+-   Raspberry Pi
+
+-   SD Card (16gb or larger recommended)
+
+-   Webcam or Raspberry Pi Camera
+
+-   Raspberry Pi camera extension cable, 610mm (if using the pi camera)
+
+-   Short mini-USB to USB cable
+
+-   XT60 Y-splitter cable (optional)
+
+-   Small metric bolt and nut set (optional)
+
+
+
 
 ## 1. Install OctoPrint on Ender 3
 
@@ -61,37 +61,37 @@ For a more detailed set of OctoPrint installation instructions, see our [How to 
 However, this is only the first step in OctoPrint calibration, which will be followed by a series of steps such as connecting the webcam, mounting it, firmware upgrade, plugin installation, and so on.
 
 ## 2. Ender 3 Octoprint Settings
-    
+
 
 In this step, we'll begin by configuring the OctoPrint settings for your Ender 3 printer. The Ender 3 OctoPrint settings that need to be changed are listed below.
 
 #### Printer Settings
 
 -   Form factor: Rectangular
-    
--   Origin: Lower Left
-    
--   Heated Bed: Yes (checked)
-    
--   Heated Chamber: No (unchecked)
-    
--   Dimensions: 220 x 220 x 250 mm
-    
--   Custom Bounding Box: No (unchecked)
-    
--   Nozzle Diameter: 0.4mm
-    
--   Number of Extruders: 1
-    
--   Serial Port: /dev/ttyUSB0
-    
--   Baudrate: AUTO
-    
 
-  
+-   Origin: Lower Left
+
+-   Heated Bed: Yes (checked)
+
+-   Heated Chamber: No (unchecked)
+
+-   Dimensions: 220 x 220 x 250 mm
+
+-   Custom Bounding Box: No (unchecked)
+
+-   Nozzle Diameter: 0.4mm
+
+-   Number of Extruders: 1
+
+-   Serial Port: /dev/ttyUSB0
+
+-   Baudrate: AUTO
+
+
+
 
 ## 3. Ender 3 Camera Setup
-    
+
 
 We're going to set up a webcam now. Installing a webcam has two advantages: it aids in remote monitoring and control of your 3D printer and also helps in creating mesmerizing time-lapse videos (an awesome feature of OctoPrint).
 
@@ -131,9 +131,9 @@ You can look for solutions such as printing your mount depending on how much mon
 
 ### Position & Lighting
 
-You will also need to experiment with the camera position so that the print is visible, and plugins such as The Spaghetti Detective (a powerful tool for identifying printing issues such as spaghetti creation, potential fire hazards, and so on) can detect printing problems. This is affected not only by the position, but also by the light. If their workspace is dark, some users use an additional light source. Consider purchasing an LED light that can be clipped to the table the printer is resting on. Just make sure the light source is behind the camera. For more information on getting the right camera setup, check out [this guide.](https://www.thespaghettidetective.com/docs/optimal-camera-setup/)
+You will also need to experiment with the camera position so that the print is visible, and plugins such as The Spaghetti Detective (a powerful tool for identifying printing issues such as spaghetti creation, potential fire hazards, and so on) can detect printing problems. This is affected not only by the position, but also by the light. If their workspace is dark, some users use an additional light source. Consider purchasing an LED light that can be clipped to the table the printer is resting on. Just make sure the light source is behind the camera. For more information on getting the right camera setup, check out [this guide.](https://www.thespaghettidetective.com/docs/user_guides/optimal-camera-setup/)
 
-  
+
 
 ## 3. Install Plugins
 
@@ -146,17 +146,17 @@ Now that you've installed OctoPrint and even upgraded the firmware, there's only
 ##### Installing the temperature plugins
 
 -   Launch the OctoPrint online interface.
-    
+
 -   Navigate to the Settings tab > Plugin Manager and click the Get More button.
-    
+
 -   Search for "Creality" in the search bar and then download the "Creality Temperature" plugin.
-    
+
 -   Restart your OctoPrint server once the pop-up dialogue box says "Done!"
-    
+
 -   Steps 1 and 2 must be repeated, as well as a search for "Creality" and the download of the "Creality-2x-temperature-reporting-fix" plugin.
-    
+
 -   Restart your OctoPrint server and check the "Temperature" section of your OctoPrint interface to ensure that the temperatures displayed are correct now.
-    
+
 
 ## 4. Access OctoPrint Anywhere
 
@@ -182,7 +182,7 @@ Not only does The Spaghetti Detective offer the best remote monitoring and webca
 
 It is one of the few plugins that uses an AI engine to monitor prints. In the event of failures, spaghettis, or even fire hazards, the AI engine can intervene and take corrective action, such as stopping the print. These ground-breaking features are a must-have for all of you who want to safely access your printers from anywhere.
 
-  
+
 
 ### Options for OctoPrint Remote Access With The Spaghetti Detective
 
@@ -190,15 +190,15 @@ It is one of the few plugins that uses an AI engine to monitor prints. In the ev
 
 The Spaghetti Detective website allows you to easily access your OctoPrint connected printer from a desktop computer from anywhere. You can access basic printer controls in their simplified user interface or you can open up the full OctoPrint user interface to access more advanced printer controls with the click of a button.
 
-  
+
 
 #### Mobile App:
 
-  
+
 
 The Spaghetti Detective’s mobile app gives you full 3D printer monitoring and control capabilities at your fingertips. This app makes it easier than ever to watch the high quality live stream of your 3D prints, start, stop and cancel prints, and you can do it all from your phone. The mobile app is available for both iOS and Android.
 
-  
+
 
 ## 5. Firmware Upgrade
 
@@ -207,7 +207,7 @@ Upgrading the Ender 3 firmware is an important, although not critical, step that
 Let's see how it’s done.
 
 ### 1. Flashing a Bootloader
-    
+
 
 The first step is to put a bootloader on the device. This will allow you to flash the firmware using a standard USB device. This process may take some time, so be patient. You can also [install the bootloader](https://www.youtube.com/results?search_query=ender+3+Flashing+a+Bootloader) by watching YouTube videos.
 
@@ -222,24 +222,24 @@ To begin installing Marlin, you must first obtain the most recent version of [Ma
 The procedure is as follows:
 
 -   Download the most recent Marlin firmware version.
-    
--   Unzip the package and navigate to the folder containing the example configurations (in the Marlin folder). All of the files in the Ender 3 folder should be copied back into the Marlin folder. Accept the overwriting of the files.
-    
--   Now, locate the marlin.ino file and open it in the Arduino IDE or [PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html) with a [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=MarlinFirmware.auto-build). Use the latter option if you're using a 32-bit ARM board.
-    
--   Check that your printer is connected via USB, that the port is correct, and that you are using a Sanguino board. Then select the upload option. When the copying is finished, the installation is also finished.
-    
--   You have successfully upgraded your firmware, and you can now disconnect the printer from the computer. The first time you boot up your 3D printer after the upgrade, it may take longer than usual, but don't worry. The printer is in good working order.
-    
 
-  
-  
-  
+-   Unzip the package and navigate to the folder containing the example configurations (in the Marlin folder). All of the files in the Ender 3 folder should be copied back into the Marlin folder. Accept the overwriting of the files.
+
+-   Now, locate the marlin.ino file and open it in the Arduino IDE or [PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html) with a [Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=MarlinFirmware.auto-build). Use the latter option if you're using a 32-bit ARM board.
+
+-   Check that your printer is connected via USB, that the port is correct, and that you are using a Sanguino board. Then select the upload option. When the copying is finished, the installation is also finished.
+
+-   You have successfully upgraded your firmware, and you can now disconnect the printer from the computer. The first time you boot up your 3D printer after the upgrade, it may take longer than usual, but don't worry. The printer is in good working order.
+
+
+
+
+
 
 ## Frequently Asked Questions
 
 1.  ### Can you use OctoPrint without a Raspberry Pi?
-    
+
 
 The most efficient way to use OctoPrint is to run it on a Raspberry Pi. However, if you're wondering if it'll work without a Raspberry Pi, then the short answer is yes!
 
@@ -248,27 +248,27 @@ OctoPrint can definitely be installed on a Windows computer because it was writt
 #### Why not use Windows?
 
 -   Unlike installing OctoPrint on a Raspberry Pi, installing OctoPrint on Windows is a much more laborious and time-consuming process.
-    
+
 -   You must be familiar with the Windows command line as well as the Python terminal.
-    
+
 -   Running OctoPrint on Windows compromises the security of your desktop or server.
-    
+
 -   You must disable automatic restarting with Windows updates and turn off power management (sleeping or hibernating) (which can restart your PC during the middle of a print.)
-    
+
 -   A desktop computer can consume a lot of energy and will cost you more in terms of electricity than a simple and less power-hungry device like a Raspberry Pi.
-    
+
 -   Finally, The Spaghetti Detective's premium streaming (up to 25 frames per second) is only available if OctoPrint is installed on a Raspberry Pi.
-    
+
 
 Another, newer, option is using Octo4A to run OctoPrint using an Android phone instad of a raspberry Pi. While some of the same limitations mentioned above may be true with this option, if you can’t get your hands on a Raspberry Pi, it might be worth checking out [Tom Sanladerer’s video on Octo4A](https://www.youtube.com/watch?v=74xdib_-X38).
 
 2.  ### How much RAM does OctoPrint need?
-    
+
 
 OctoPrint requires 2GB of RAM to function properly. It has been extensively tested, and multiple results indicate that the required RAM power to run OctoPrint with an onboard slicer, webcam, and printer is around 2GB.
 
 3.  ### Does OctoPrint need a screen?
-    
+
 
 ![](/img/blogs/octoprint-ender-3-setup-guide/octoprint-screen.jpg)
 

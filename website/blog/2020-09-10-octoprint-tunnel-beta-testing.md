@@ -12,7 +12,7 @@ OctoPrint Tunneling is a secure way to access the full OctoPrint UI even when yo
 
 The Spaghetti Detective provides the access to the most critical functions - webcam feed, pause/cancel, changing heater temperature, etc. However, we understand there are times when you want to access other OctoPrint functions while you are not home, such as using its PSU plugin to turn on/off power supply to your printer.
 
-So we built OctoPrint Tunneling to make it possible for you. 🚀🚀🚀 
+So we built OctoPrint Tunneling to make it possible for you. 🚀🚀🚀
 
 ## Is OctoPrint Tunneling secure?
 
@@ -48,7 +48,7 @@ Please [let us know](mailto:support@thespaghettidetective.com) if OctoPrint Tunn
 
 We have disabled tunneling webcam feed in OctoPrint. The reason for that is OctoPrint uses mjpeg, a very inefficient streaming protocol that takes a lot of bandwidth. We simply can't afford to tunnel this volume of data via our servers.
 
-We urge you to use [TSD's webcam feed](/docs/webcam-streaming-for-human-eyes) instead.
+We urge you to use [TSD's webcam feed](/docs/user_guides/webcam-streaming-for-human-eyes) instead.
 
 ## I found a bug! How can I report it?
 

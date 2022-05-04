@@ -14,7 +14,7 @@ OctoPrint Tunneling not available for private server users outside of their home
 
 The Spaghetti Detective provides the access to the most critical functions - webcam feed, pause/cancel, changing heater temperature, etc. However, we understand there are times when you want to access other OctoPrint functions while you are not home, such as using its PSU plugin to turn on/off power supply to your printer.
 
-So we built OctoPrint Tunneling to make it possible for you. 🚀🚀🚀 
+So we built OctoPrint Tunneling to make it possible for you. 🚀🚀🚀
 
 ## Is OctoPrint Tunneling secure?
 
@@ -56,7 +56,7 @@ This is obviously different from other ways to directly access OctoPrint, such a
 
 The first time when you use OctoPrint Tunneling, it will be particularly slow because nothing is cached in your browser. However, subsequent uses should be a lot faster since most parts of the OctoPrint page have already been cached.
 
-Please [let us know](/docs/contact-us-for-support) if OctoPrint Tunneling takes longer than 2 minutes to load on its first time, or longer than 30 seconds on the subsequent uses.
+Please [let us know](/docs/user_guides/contact-us-for-support) if OctoPrint Tunneling takes longer than 2 minutes to load on its first time, or longer than 30 seconds on the subsequent uses.
 
 ## It doesn't work for me!
 
@@ -74,10 +74,10 @@ However, all hopes are not lost even if you experience this problem. Please foll
 
 3. If OctoPrint still doesn't load, repeat steps 1 and 2 up to 5 times.
 
-These steps will work for most users who couldn't get OctoPrint to load in the tunnel on the first try. The reason why it works is, again, because OctoPrint Tunneling is optimized for reusing the cache in your browser. So when OctoPrint fails to load on the first try and you refresh the page, the browser doesn't need to download the files that were already downloaded and cached in the browser. 
+These steps will work for most users who couldn't get OctoPrint to load in the tunnel on the first try. The reason why it works is, again, because OctoPrint Tunneling is optimized for reusing the cache in your browser. So when OctoPrint fails to load on the first try and you refresh the page, the browser doesn't need to download the files that were already downloaded and cached in the browser.
 
 ## I got "Webcam stream not loaded" error in OctoPrint!
 
 We have disabled tunneling webcam feed in OctoPrint. The reason for that is OctoPrint uses [M-JPEG](https://en.wikipedia.org/wiki/Motion_JPEG), a very inefficient streaming protocol that takes a lot of bandwidth. We simply can't afford to tunnel this volume of data via our servers.
 
-We urge you to use [TSD's webcam feed](/docs/webcam-streaming-for-human-eyes/) instead.
+We urge you to use [TSD's webcam feed](/docs/user_guides/webcam-streaming-for-human-eyes/) instead.

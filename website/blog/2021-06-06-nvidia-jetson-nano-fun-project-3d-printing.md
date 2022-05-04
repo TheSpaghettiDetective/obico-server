@@ -27,7 +27,7 @@ If you are one of the people who want to jump on the Deep Learning bandwagon by 
 
 ## Flash the Micro SD card
 
-1. Go to the [NVIDIA JetPack SDK official website](https://developer.nvidia.com/embedded/jetpack). 
+1. Go to the [NVIDIA JetPack SDK official website](https://developer.nvidia.com/embedded/jetpack).
 
 2. Download the JetPack SD card image. Make sure the JetPack version is 4.5.1 or higher. NVIDIA may require you to register a free account before they give you the download link (I know... I don't like that either!).
 
@@ -92,7 +92,7 @@ cd TheSpaghettiDetective
 
 ## Link OctoPrint to your own awesome The Spaghetti Detective private server!
 
-The process to link OctoPrint to TSD private server is almost the same as the [Setup Guide](/docs/octoprint-plugin-setup), except one setting: the "Server Address" needs to be set as `http://your_server_ip:3334`.
+The process to link OctoPrint to TSD private server is almost the same as the [Setup Guide](/docs/user_guides/octoprint-plugin-setup), except one setting: the "Server Address" needs to be set as `http://your_server_ip:3334`.
 
 ![](/img/blogs/jetson/jetson_9.png)
 
@@ -100,4 +100,4 @@ After the linking process is successful, restart the OctoPrint, refresh The Spag
 
 ![](/img/blogs/jetson/jetson_10.png)
 
-Hooray! Now you can enjoy the peace of mind while printing, thanks to The Spaghetti Detective server and NVIDIA Jetson Nano! 
+Hooray! Now you can enjoy the peace of mind while printing, thanks to The Spaghetti Detective server and NVIDIA Jetson Nano!

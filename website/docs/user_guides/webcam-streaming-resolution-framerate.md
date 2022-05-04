@@ -15,21 +15,21 @@ If you are using a Raspberry Pi, please keep in mind that it has a weak CPU. If 
 
 The resolution and frame rate depends on the webcam's streaming mode.
 
-Follow [this guide](/docs/check-webcam-streaming-mode) to find out the webcam streaming mode.
+Follow [this guide](/docs/user_guides/check-webcam-streaming-mode) to find out the webcam streaming mode.
 
 :::info
-Learn more about [Premium Streaming vs Basic Streaming](/docs/webcam-streaming-for-human-eyes).
+Learn more about [Premium Streaming vs Basic Streaming](/docs/user_guides/webcam-streaming-for-human-eyes).
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user_guides/streaming-compatibility-mode).
 :::
 
 ## If the streaming mode is "**premium (advanced)**":
 
 This means the webcam is in the Premium Streaming (advanced mode). In this mode, there are only limited options for resolutions and frame rates.
 
-**If you want to set your own resolution and frame rate, you will need to [change the compatibility mode to "always"](/docs/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode), then follow [the instructions for Premium Streaming (compatibility mode)](#if-the-streaming-mode-is-premium-compatibility-or-basic).**
+**If you want to set your own resolution and frame rate, you will need to [change the compatibility mode to "always"](/docs/user_guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode), then follow [the instructions for Premium Streaming (compatibility mode)](#if-the-streaming-mode-is-premium-compatibility-or-basic).**
 
 :::info
 The Premium Streaming (advanced mode) has to take total control of the webcam, such as the resolution, frame rate, auto-focus, etc., so that the stream can be encoded in highly-efficient H.264.
@@ -61,7 +61,7 @@ If you have a Pi Camera, you can find or change its current resolution on the pl
 4. Click the "Settings" button.
 
 ![](/img/user_guides/helpdocs/tsd-plugin-open-settings-page.gif)
- 
+
 Pi Camera's current resolution level is in the "Premium Webcam Streaming" section.
 
 If the webcam aspect ratio setting in OctoPrint is 4:3 (default):
@@ -84,7 +84,7 @@ When you have a USB camera and its streaming mode is "Premium (advanced)", the r
 
 However, if you really want to change the resolution and/or the frame rate, follow these 2 steps:
 
-1. [Change the compatibility mode to "always"](/docs/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode).
+1. [Change the compatibility mode to "always"](/docs/user_guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode).
 
 2. Change the resolution and/or frame rate as instructed in [this section](#if-the-streaming-mode-is-premium-compatibility-or-basic).
 

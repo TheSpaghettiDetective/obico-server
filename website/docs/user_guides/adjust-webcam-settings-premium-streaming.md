@@ -3,7 +3,7 @@ id: adjust-webcam-settings-premium-streaming
 title: Adjust advanced webcam settings
 ---
 
-If you just want to adjust the resolution and frame rate, you should check out [this guide](/docs/webcam-streaming-resolution-framerate).
+If you just want to adjust the resolution and frame rate, you should check out [this guide](/docs/user_guides/webcam-streaming-resolution-framerate).
 
 If you want to learn about adjusting advanced webcam settings, such as auto focus, read on.
 
@@ -13,21 +13,21 @@ Adjusting advanced webcam settings may result in an excessive amount of CPU usag
 
 ## Make sure the webcam is not in the **Premium Streaming (advanced mode)**"
 
-1. Follow [this guide](/docs/check-webcam-streaming-mode) to check the webcam streaming mode.
+1. Follow [this guide](/docs/user_guides/check-webcam-streaming-mode) to check the webcam streaming mode.
 
 :::info
-Learn more about [Premium Streaming vs Basic Streaming](/docs/webcam-streaming-for-human-eyes).
+Learn more about [Premium Streaming vs Basic Streaming](/docs/user_guides/webcam-streaming-for-human-eyes).
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user_guides/streaming-compatibility-mode).
 :::
 
-2. If the streaming mode is "**premium (advanced)**", [change the compatibility mode to "always"](/docs/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode). Otherwise, skip to [changing the webcam settings](/docs/adjust-webcam-settings-premium-streaming#change-the-webcam-settings).
+2. If the streaming mode is "**premium (advanced)**", [change the compatibility mode to "always"](/docs/user_guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode). Otherwise, skip to [changing the webcam settings](/docs/user_guides/adjust-webcam-settings-premium-streaming#change-the-webcam-settings).
 
 3. Restart the Raspberry Pi (only if you have changed the compatibility mode in the previous step).
 
-4. [Check the streaming mode](/docs/check-webcam-streaming-mode) again to make sure it's now in "**Premium (compatibility)**" or "**Basic**" mode.
+4. [Check the streaming mode](/docs/user_guides/check-webcam-streaming-mode) again to make sure it's now in "**Premium (compatibility)**" or "**Basic**" mode.
 
 ## Change the webcam settings
 

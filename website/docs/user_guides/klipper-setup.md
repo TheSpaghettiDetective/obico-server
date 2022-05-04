@@ -108,7 +108,7 @@ Connect OctoPrint to **the same local network** as your phone or computer. The S
 3. The app will start scanning for the OctoPrint connected to the same local network.
 4. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
   :::note
-  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
+  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user_guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
   :::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user_guides/setupguide/auto-link-mobile.gif" /></div>
@@ -126,9 +126,9 @@ Connect OctoPrint to **the same local network** as your phone or computer. The S
 3. The app will start scanning for the OctoPrint connected to the same local network.
 4. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
   :::note
-  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
+  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user_guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
   :::
-5. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
+5. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user_guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user_guides/setupguide/auto-link-web.gif" /></div>
 <br />
@@ -156,11 +156,11 @@ Press "Go Check Out Printer Feed!" to see everything you care about your printer
 
 ### Test the magical failure detection!
 
-The Detective sounds too magical to be true? [See The Detective in action for yourself](/docs/how-to-test-failure-detection).
+The Detective sounds too magical to be true? [See The Detective in action for yourself](/docs/user_guides/how-to-test-failure-detection).
 
 ### Change printer settings.
 
 The default settings for your printer in The Spaghetti Detective are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
 
-- [Change notification settings](/docs/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
-- [Change printer settings](/docs/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.
+- [Change notification settings](/docs/user_guides/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
+- [Change printer settings](/docs/user_guides/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.

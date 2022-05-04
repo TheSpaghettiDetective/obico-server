@@ -5,13 +5,13 @@ title: Getting Basic Streaming when eligible for Premium Streaming
 
 Follow this troubleshooting guide if your account is eligible for the Premium Streaming but you are only getting the Basic Streaming. Please make sure:
 
-1. You are eligible for the Premium Webcam Streaming. If you are not sure, [follow this guide](/docs/webcam-feed-is-not-showing) to find out.
-1. The webcam streaming is currently stuck in the "**Basic**" mode. Follow [this guide](/docs/check-webcam-streaming-mode/) to find out the current webcam streaming mode.
+1. You are eligible for the Premium Webcam Streaming. If you are not sure, [follow this guide](/docs/user_guides/webcam-feed-is-not-showing) to find out.
+1. The webcam streaming is currently stuck in the "**Basic**" mode. Follow [this guide](/docs/user_guides/check-webcam-streaming-mode/) to find out the current webcam streaming mode.
 
-If any of the above is not true, you need to follow this [general webcam streaming troubleshooting guide](/docs/webcam-feed-is-not-showing/) instead. If both are confirmed, go through the following steps to figure out why and fix it.
+If any of the above is not true, you need to follow this [general webcam streaming troubleshooting guide](/docs/user_guides/webcam-feed-is-not-showing/) instead. If both are confirmed, go through the following steps to figure out why and fix it.
 
 :::info
-Learn more about [Premium Streaming vs Basic Streaming](/docs/webcam-streaming-for-human-eyes).
+Learn more about [Premium Streaming vs Basic Streaming](/docs/user_guides/webcam-streaming-for-human-eyes).
 :::
 
 ## 1. Restart OctoPrint
@@ -32,14 +32,14 @@ By default, the Premium Streaming is enabled. Let's make sure it has not been di
 
 ![](/img/user_guides/helpdocs/tsd-plugin-disable-premium-streaming.gif)
 
-Uncheck the "Disable premium webcam streaming" if it's currently checked. Don't forget to click the "Save" button and restart OctoPrint afterward. 
+Uncheck the "Disable premium webcam streaming" if it's currently checked. Don't forget to click the "Save" button and restart OctoPrint afterward.
 
 :::info
 When "Disable the Premium Webcam Streaming" is checked, you only get the Basic Streaming even if you are on the Pro plan.
 :::
 
 :::info
-There are [a few rare reasons](/docs/disable-25-fps-streaming) why you may want to have the Premium Streaming disabled.
+There are [a few rare reasons](/docs/user_guides/disable-25-fps-streaming) why you may want to have the Premium Streaming disabled.
 :::
 
 ## 3. Is OctoPrint running on a Raspberry Pi?
@@ -56,10 +56,10 @@ The reason why Raspberry Pi is required for the Premium Streaming is because it 
 
 In most cases, the Premium Streaming will automatically switch to the compatibility mode when the advanced mode fails. But there is a slight possibility it will get stuck in the "Basic" mode.
 
-Try to [set the compatibility mode set to "**always**"](/docs/streaming-compatibility-mode#how-to-change-the-compatibility-mode-setting) to see if it'll get it out of the "Basic" streaming mode. **You need to restart the Raspberry Pi after the switch**.
+Try to [set the compatibility mode set to "**always**"](/docs/user_guides/streaming-compatibility-mode#how-to-change-the-compatibility-mode-setting) to see if it'll get it out of the "Basic" streaming mode. **You need to restart the Raspberry Pi after the switch**.
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user_guides/streaming-compatibility-mode).
 :::
 
 ## 5. Flash the SD card with an OctoPi image
@@ -75,5 +75,5 @@ If that's the case, grab a spare SD card, flash it with latest [official OctoPi 
 
 ## 6. If none of the above worked
 
-[Get help from a human](/docs/contact-us-for-support).
+[Get help from a human](/docs/user_guides/contact-us-for-support).
 

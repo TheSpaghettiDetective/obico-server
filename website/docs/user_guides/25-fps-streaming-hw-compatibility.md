@@ -3,7 +3,7 @@ id: 25-fps-streaming-hw-compatibility
 title: Webcams supported in advanced mode streaming
 ---
 
-Please note that all webcams we have tested so far are compatible when it is streaming in ["compatibility mode"](/docs/streaming-compatibility-mode).
+Please note that all webcams we have tested so far are compatible when it is streaming in ["compatibility mode"](/docs/user_guides/streaming-compatibility-mode).
 
 The list below only applies when you configured TSD plugin to "never stream in compatibility mode".
 

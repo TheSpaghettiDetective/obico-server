@@ -8,12 +8,12 @@ Follow this troubleshooting guide if the webcam streaming stops working in OctoP
 :::caution
 This guide is for troubleshooting webcam streaming **in OctoPrint**.
 
-If the webcam works in OctoPrint but not in The Spaghetti Detective, you need to check [this troubleshooting guide](/docs/webcam-feed-is-not-showing).
+If the webcam works in OctoPrint but not in The Spaghetti Detective, you need to check [this troubleshooting guide](/docs/user_guides/webcam-feed-is-not-showing).
 :::
 
 ## 1. Check the current webcam streaming mode
 
-Follow [this guide](/docs/check-webcam-streaming-mode) to find out the current webcam streaming mode.
+Follow [this guide](/docs/user_guides/check-webcam-streaming-mode) to find out the current webcam streaming mode.
 
 * If the streaming mode is "**Premium (advanced)**", go to [step 2](#2-set-the-streaming-to-always-stream-in-compatibility-mode).
 * If the streaming mode is "**Premium (compatibility)**" or "**Basic**", go to [step 3](#3-disable-the-premium-webcam-streaming).
@@ -23,12 +23,12 @@ Follow [this guide](/docs/check-webcam-streaming-mode) to find out the current w
 :::
 
 :::info
-Learn more about [the advanced mode and the compatibility mode in the Premium Streaming](/docs/streaming-compatibility-mode).
+Learn more about [the advanced mode and the compatibility mode in the Premium Streaming](/docs/user_guides/streaming-compatibility-mode).
 :::
 
 ## 2. Change settings to "Always stream in compatibility mode"
 
-1. Open the plugin's settings page and set the streaming mode to "**Always stream in compatibility mode**". Follow [this guide](/docs/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting) if you are not sure how to do it.
+1. Open the plugin's settings page and set the streaming mode to "**Always stream in compatibility mode**". Follow [this guide](/docs/user_guides/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting) if you are not sure how to do it.
 1.  **(Very important)** Restart the Raspberry Pi. Just restarting OctoPrint is NOT enough in this case.
 1. Check if the webcam streaming works now in OctoPrint. If it does, you can claim victory and open a champagne. Otherwise, continue to [the next step](#3-disable-the-premium-webcam-streaming).
 

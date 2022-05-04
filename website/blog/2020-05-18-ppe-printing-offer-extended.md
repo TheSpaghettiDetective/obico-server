@@ -18,9 +18,9 @@ Claiming this offer is as easy as 1-2-3!
 
 ### 1. Install TSD's OctoPrint plugin and sign up for an TSD account.
 
-This step [only takes only 56 seconds](/docs/user_guides/octoprint-plugin-setup).
+This step [only takes only 56 seconds](/docs/user-guides/octoprint-plugin-setup).
 
-### 2. Select the number of printers you have, and the right amount of Detective Hours ([what is it?](/docs/user_guides/how-does-detective-hour-work)) you will need.
+### 2. Select the number of printers you have, and the right amount of Detective Hours ([what is it?](/docs/user-guides/how-does-detective-hour-work)) you will need.
 
 1. Go to [the upgrade page](https://app.thespaghettidetective.com/ent_pub/pricing/).
 1. Click "Upgrade" button.

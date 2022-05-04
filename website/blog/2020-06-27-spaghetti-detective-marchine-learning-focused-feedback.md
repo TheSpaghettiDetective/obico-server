@@ -27,4 +27,4 @@ Now with the Focused Feedback, things become a lot more cut and dried. When you 
 
 The only down side of the Focused Feedback is that for each print, there may be multiple "interesting" snapshots The Detective wants you to review, and it may take quite a few mouse clicks to finish a Focused Feedback. And that is also why we decided to reward you with 2 Detective Hours, instead of 1, when you finish a Focused Feedback.
 
-#### To get more details about the Focused Feedback, head to [this help doc](/docs/user_guides/how-does-credits-work).
+#### To get more details about the Focused Feedback, head to [this help doc](/docs/user-guides/how-does-credits-work).

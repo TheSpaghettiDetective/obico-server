@@ -48,7 +48,7 @@ Please [let us know](mailto:support@thespaghettidetective.com) if OctoPrint Tunn
 
 We have disabled tunneling webcam feed in OctoPrint. The reason for that is OctoPrint uses mjpeg, a very inefficient streaming protocol that takes a lot of bandwidth. We simply can't afford to tunnel this volume of data via our servers.
 
-We urge you to use [TSD's webcam feed](/docs/user_guides/webcam-streaming-for-human-eyes) instead.
+We urge you to use [TSD's webcam feed](/docs/user-guides/webcam-streaming-for-human-eyes) instead.
 
 ## I found a bug! How can I report it?
 

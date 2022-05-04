@@ -92,7 +92,7 @@ cd TheSpaghettiDetective
 
 ## Link OctoPrint to your own awesome The Spaghetti Detective private server!
 
-The process to link OctoPrint to TSD private server is almost the same as the [Setup Guide](/docs/user_guides/octoprint-plugin-setup), except one setting: the "Server Address" needs to be set as `http://your_server_ip:3334`.
+The process to link OctoPrint to TSD private server is almost the same as the [Setup Guide](/docs/user-guides/octoprint-plugin-setup), except one setting: the "Server Address" needs to be set as `http://your_server_ip:3334`.
 
 ![](/img/blogs/jetson/jetson_9.png)
 

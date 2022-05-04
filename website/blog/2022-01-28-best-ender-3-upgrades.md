@@ -163,7 +163,7 @@ The Spaghetti Detective (TSD) is a fantastic OctoPrint plugin. It enhances what 
 
 Well, The Spaghetti Detective does just that. This application has developed AI-powered error detection algorithms to detect and correct fire hazards or other printing issues such as Spaghettis. It eliminates many of the time-consuming tasks required for a successful 3D print. When running a print farm, the power of this plugin is amplified exponentially.
 
-It is a recommended upgrade for anyone unaware of the power of autonomous error detection. If you're not sure how to install TSD, read [The Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup).
+It is a recommended upgrade for anyone unaware of the power of autonomous error detection. If you're not sure how to install TSD, read [The Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user-guides/octoprint-plugin-setup).
 
 If you're interested in OctoPrint and its plugins, take a look at our [list of the best OctoPrint plugins](https://www.thespaghettidetective.com/blog/2021/09/10/best-octoprint-plugins/) to improve your 3D printing experience.
 

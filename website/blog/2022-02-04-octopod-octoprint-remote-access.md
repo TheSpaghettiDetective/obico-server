@@ -40,7 +40,7 @@ A situation arises when you are away from home, and you are unable to access Oct
 
 
 
-Once you have downloaded OctoPod from the App Store, [follow these instructions](https://github.com/gdombiak/OctoPod/wiki/How-to-add-new-printers-to-OctoPod%3F) to link your printer to OctoPod. If you don’t already have an account with The Spaghetti Detective, [follow this guide](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup/) to set up The Spaghetti Detective.
+Once you have downloaded OctoPod from the App Store, [follow these instructions](https://github.com/gdombiak/OctoPod/wiki/How-to-add-new-printers-to-OctoPod%3F) to link your printer to OctoPod. If you don’t already have an account with The Spaghetti Detective, [follow this guide](https://www.thespaghettidetective.com/docs/user-guides/octoprint-plugin-setup/) to set up The Spaghetti Detective.
 
 
 At this point, you should have a printer linked to OctoPod you created an account with The Spaghetti Detective and linked the OctoPrint Plugin. To link The Spaghetti Detective with OctoPod, complete the following steps:

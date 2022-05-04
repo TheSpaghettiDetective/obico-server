@@ -14,7 +14,7 @@ The Spaghetti Detective has come out of beta! With improved AI accuracy, and shi
 
 Real video streaming (based on H.264 encoding) is by far the coolest feature in our public release. After thoroughly testing it for a full month and bug-fixing, this video streaming now works for almost all kinds of webcams, including Pi Camera and the popular Logitech webcams.
 
-Of course, we have also improved the accuracy of the AI model based on [the feedback all beta testers have given to The Detective](/docs/user_guides/how-does-detective-hour-work).
+Of course, we have also improved the accuracy of the AI model based on [the feedback all beta testers have given to The Detective](/docs/user-guides/how-does-detective-hour-work).
 
 ## Now does it cost me to let The Detective watch my prints?
 

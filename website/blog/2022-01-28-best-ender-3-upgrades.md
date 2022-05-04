@@ -24,7 +24,7 @@ In this article, we'll discuss the following Ender 3 upgrades:
 
 
 We will also answer some of the most [frequently asked questions](#faq) about the Ender 3 3D printer.
-  
+
 <!--truncate-->
 
 <a name="fans_and_silent_mainboard">&nbsp;</a>
@@ -44,20 +44,20 @@ The Ender 3 has four fans: the PSU fan, the mainboard fan, the hot end fan, and 
 According to estimates, the Ender 3 PSU and mainboard fans produce 30-50 dB of sound/noise. If you are confident in your ability to replace these fans, you can look for a few low decibel alternatives that are Ender compatible. A few fans options for you to consider are as below:
 
 -   Sunon MagLev's 24 V fan is very inexpensive, costing close to $2 and operating at only 29.5 dB.
-    
+
 -   Another option is Noctua's fans (approximately $15), which operate quietly and produce only 18 dB of noise.
-    
+
 -   Anvision fans are also popular because they produce only 23 decibels of sound.
-    
+
 
 Users frequently replace the hot end fans, and you can also try to upgrade yours to ones that produce less noise. The fan on the TH3D is widely used and produces only 25 dB of noise while pushing a significant amount of air.
 
 Finally, you could try upgrading your part cooling fan. However, this should be the last priority. Two common options are as below:
 
 -   Evercool's 4010 fan has a noise level of only 21 decibels.
-    
+
 -   Silent 40 mm fan by Fractal Designs.
-    
+
 
 ### Silent Mainboard
 
@@ -163,7 +163,7 @@ The Spaghetti Detective (TSD) is a fantastic OctoPrint plugin. It enhances what 
 
 Well, The Spaghetti Detective does just that. This application has developed AI-powered error detection algorithms to detect and correct fire hazards or other printing issues such as Spaghettis. It eliminates many of the time-consuming tasks required for a successful 3D print. When running a print farm, the power of this plugin is amplified exponentially.
 
-It is a recommended upgrade for anyone unaware of the power of autonomous error detection. If you're not sure how to install TSD, read [The Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup).
+It is a recommended upgrade for anyone unaware of the power of autonomous error detection. If you're not sure how to install TSD, read [The Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup).
 
 If you're interested in OctoPrint and its plugins, take a look at our [list of the best OctoPrint plugins](https://www.thespaghettidetective.com/blog/2021/09/10/best-octoprint-plugins/) to improve your 3D printing experience.
 
@@ -173,7 +173,7 @@ If you're interested in OctoPrint and its plugins, take a look at our [list of t
 ## Ender 3: Frequently Asked Questions
 
 1.  ### How high can the Ender 3 print?
-    
+
 
 If you're reading this, it's safe to assume you've heard conflicting opinions about Ender 3's bed size. To Creality's credit, the product is always marketed as having a bed size of 220 x 220 x 250 mm. If you physically measure the print bed, the x and y dimensions are 235 x 235 mm. So, why is Creality marketing a printer with 14% smaller dimensions?
 
@@ -194,7 +194,7 @@ Now that you've made more room on the print bed, you'll need to notify the print
 This new update will essentially allow you to change the print area and print larger parts.
 
 2.  ### Can I make my Ender 3 bigger?
-    
+
 
 ![](/img/blogs/ender-3-upgrades/fix/ender-size-extender.png)
 
@@ -219,7 +219,7 @@ All Ender Extender installation guides are available [here](https://enderextende
 It is important to note that these conversion kits are sold as a customized option by third-party vendors rather than Creality. Though these kits work and many makers swear by them, changing the default hardware and firmware of your printer will void your Creality warranty.
 
 3.  ### Can the Ender 3 print 2 colors?
-    
+
 
 It is common knowledge that if you want to print in two colors efficiently, you will need two extruders (Dual extrusion system). Can an Ender 3 print in two colors because it only has one extruder? Yes, it is possible in a variety of ways, but you must buckle up and be prepared for some technical work.
 

@@ -4,7 +4,7 @@ title: Other ways to help The Detective improve
 sidebar_label: Other ways to help The Detective improve
 ---
 
-In addition to [Focused Feedback](/docs/how-does-credits-work), there are a few other ways to help The Detective, which are listed below:
+In addition to [Focused Feedback](/docs/user_guides/how-does-credits-work), there are a few other ways to help The Detective, which are listed below:
 
 ## Print failure-detection feedback
 

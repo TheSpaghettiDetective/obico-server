@@ -26,5 +26,5 @@ As a result, although our users have given The Detective mountains of feedback (
 Now with the Focused Feedback, things become a lot more cut and dried. When you can see any traces of spaghetti on a snapshot, you indicate so to The Detective. Otherwise just tell her there is nothing "interesting" there. It is a much easier call for you. And it's a lot less confusing to The Detective too.
 
 The only down side of the Focused Feedback is that for each print, there may be multiple "interesting" snapshots The Detective wants you to review, and it may take quite a few mouse clicks to finish a Focused Feedback. And that is also why we decided to reward you with 2 Detective Hours, instead of 1, when you finish a Focused Feedback.
- 
-#### To get more details about the Focused Feedback, head to [this help doc](/docs/how-does-credits-work).
+
+#### To get more details about the Focused Feedback, head to [this help doc](/docs/user_guides/how-does-credits-work).

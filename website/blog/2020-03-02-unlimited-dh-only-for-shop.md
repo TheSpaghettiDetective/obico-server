@@ -18,7 +18,7 @@ Shop subscribers can still subscribe to the Unlimited Detective Hour Pack. Pleas
 
 The reason why we made the decision to remove Unlimited Detective Hour Pack from Pro plan is the cost.
 
-Hosting The Spaghetti Detective in the cloud for fellow 3D printing enthusiasts incurs non-trivial amount of cost. [The largest part of the cost is to serve Detective Hours.](/docs/how-does-detective-hour-work)
+Hosting The Spaghetti Detective in the cloud for fellow 3D printing enthusiasts incurs non-trivial amount of cost. [The largest part of the cost is to serve Detective Hours.](/docs/user_guides/how-does-detective-hour-work)
 
 Depending on the webcam resolution and how often the printers print, the price of Unlimited Detective Hour Pack ($20/month for annual plan) is just enough to serve 3-5 printers. The reason why we originally decided to offer Unlimited Detective Hour Pack to Pro subscribers was because we hoped to make it easy for Pro subscribers who print a lot. We (mistakenly) thought 3D Printing shops who have more than 5 printers will likely take Shop plan anyway because of all the advanced features offered in the Shop plan.
 

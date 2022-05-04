@@ -44,7 +44,7 @@ Detective Hour is sometimes abbreviated as **DH**.
 :::
 
 :::info
-Learn more about [how Detective Hour works](/docs/how-does-detective-hour-work).
+Learn more about [how Detective Hour works](/docs/user_guides/how-does-detective-hour-work).
 :::
 
 The more Focused Feedback you give to The Detective, the more free Detective Hours you will get rewarded with, which can be used to get The Detective to watch more of your prints, which can then be turned into Focused Feedbacks and help The Detective get better. The power coming from infinite self-improving cycle is why The Spaghetti Detective has become one of the most vibrant 3D printing communities in the world!

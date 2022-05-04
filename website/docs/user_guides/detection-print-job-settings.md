@@ -8,7 +8,7 @@ For most users, the default settings in The Spaghetti Detective is good enough. 
 
 To access these settings
 
-1. From the printer screen, click the kebab menu (**⋮**) on the top right of the screen. 
+1. From the printer screen, click the kebab menu (**⋮**) on the top right of the screen.
 2. Click "**Configure 🔧**"
 
 ![Printer Settings Menu](/img/user_guides/helpdocs/printer_settings_menu.png)
@@ -18,10 +18,10 @@ To access these settings
 This part of the settings tells The Detective how to react when a potential failure is detected.
 
 :::info
-The Detective makes mistakes and some times sends out false alarms. [Learn more about false alarms](/docs/failure-detection-false-alarms).
+The Detective makes mistakes and some times sends out false alarms. [Learn more about false alarms](/docs/user_guides/failure-detection-false-alarms).
 :::
 
-- **Just notify me via email and text.** Quite self-explanatory. When you choose this option, The Detective will NOT freak out when she sees a potential print failure. She will just calmly sends you an email (and a text if you have your phone number on file) and be done with it.  
+- **Just notify me via email and text.** Quite self-explanatory. When you choose this option, The Detective will NOT freak out when she sees a potential print failure. She will just calmly sends you an email (and a text if you have your phone number on file) and be done with it.
 
 - **Pause the print and notify me via email and text.** With this you are telling The Detective to be more proactive. When she thinks she sees a crime scene, she will pause your print to prevent further damage.
 
@@ -42,7 +42,7 @@ Pausing a print is actually a little complex. Since it's possible that your prin
 Please do NOT check this if you already have pause/resume GCode scripts in OctoPrint, as it may cause unpredictable behavior at the moment of pause and resume.
 :::
 
-- **Lift extruder along Z axis by yy mm.** If checked, the extruder will lift along the Z-axis by the specified distance, to best preserve the print quality. When the print is resumed, the extruder will be lowered to the previous height before the pause.  
+- **Lift extruder along Z axis by yy mm.** If checked, the extruder will lift along the Z-axis by the specified distance, to best preserve the print quality. When the print is resumed, the extruder will be lowered to the previous height before the pause.
 :::danger
 Similar to retraction, please do NOT check this if you already have pause/resume GCode scripts in OctoPrint, as it may cause unpredictable behavior at the moment of pause and resume.
 :::
@@ -53,6 +53,6 @@ Similar to retraction, please do NOT check this if you already have pause/resume
 Advanced settings. If you are not sure how this setting may effect your printer, we recommend leaving it as is.
 :::
 
-We all know [The Detective makes mistakes](/docs/failure-detection-false-alarms/), we want to give you an option to decide how aggressively she needs to be looking for something fishy (or cheesy if that's the flavor of your spaghetti).
+We all know [The Detective makes mistakes](/docs/user_guides/failure-detection-false-alarms/), we want to give you an option to decide how aggressively she needs to be looking for something fishy (or cheesy if that's the flavor of your spaghetti).
 
 Drag the slider around to see what each alertness level would give you. Our suggestion is to keep it at "**Medium**" (the default) to start with. If after a few prints, The Detective has been annoying you with too many false positives, set it to low and you should receive fewer alerts. Conversely, if The Detective has missed some delicious spaghetti, you may want to set the level higher.

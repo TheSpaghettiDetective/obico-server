@@ -13,7 +13,7 @@ If you are experiencing a choppy Premium Streaming, follow the instructions in t
 If it is not, [here are a few options you have](#the-solutions-if-the-connection-speed-on-your-phonecomputer-is-not-fast-enough).
 
 :::note
-Even if the connection speed that your Internet/cellular provider promises you satisfies the [webcam streaming speed requirements](/docs/internet-speed-requirement-premium-streaming/), it is possible there is a congested link along the connection chain from The Spaghetti Detective server to your phone.
+Even if the connection speed that your Internet/cellular provider promises you satisfies the [webcam streaming speed requirements](/docs/user_guides/internet-speed-requirement-premium-streaming/), it is possible there is a congested link along the connection chain from The Spaghetti Detective server to your phone.
 
 Always follow the steps below to check the real connection speed you are getting.
 :::
@@ -52,7 +52,7 @@ If the webcam stream is smooth on the computer, it's confirmed that the phone's 
 
 Run your favorite Internet speed testing app.
 
-The number you need is the download speed in the test result. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/internet-speed-requirement-premium-streaming).
+The number you need is the download speed in the test result. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/user_guides/internet-speed-requirement-premium-streaming).
 
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
 <img src="/img/user_guides/helpdocs/mobile-speed-test.jpg" style={{maxWidth: "308px"}} alt=""></img>
@@ -64,7 +64,7 @@ You want to make sure the measured download speed is higher than the minimum spe
 
 Run your favorite Internet speed testing program.
 
-The number you need is the download speed in the test result. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/internet-speed-requirement-premium-streaming).
+The number you need is the download speed in the test result. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/user_guides/internet-speed-requirement-premium-streaming).
 
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
 <img src="/img/user_guides/helpdocs/computer-speed-test.png" style={{maxWidth: "308px"}} alt=""></img>
@@ -80,5 +80,5 @@ You have 2 options here:
 * Do nothing. Just put up with the problem. This may be a reasonable option if you don't often view the webcam stream on the device that has a low connection speed, and you don't want to sacrifice the resolution or the frame rate you can get on your other phones/computers.
 
 :::info
-Also check [test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/premium-streaming-raspberry-pi-connection-speed) if you are sure your phone/computer connection is fast enough.
+Also check [test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/user_guides/premium-streaming-raspberry-pi-connection-speed) if you are sure your phone/computer connection is fast enough.
 :::

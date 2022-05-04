@@ -76,7 +76,7 @@ module.exports = {
           items: [
             {
               label: 'Open Source',
-              to: 'https://www.thespaghettidetective.com/docs/open-source',
+              to: '/docs/user_guides/open-source',
               target: '_self',
             },
             {
@@ -129,7 +129,7 @@ module.exports = {
             },
             {
               label: 'Open Source',
-              to: '/docs/open-source',
+              to: '/docs/user_guides/open-source',
             },
           ],
         },
@@ -138,19 +138,19 @@ module.exports = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/octoprint-plugin-setup',
+              to: '/docs/user_guides/octoprint-plugin-setup',
             },
             {
               label: 'Failure Detection',
-              to: '/docs/detection-print-job-settings',
+              to: '/docs/user_guides/detection-print-job-settings',
             },
             {
               label: 'Webcam Streaming',
-              to: '/docs/webcam-streaming-for-human-eyes',
+              to: '/docs/user_guides/webcam-streaming-for-human-eyes',
             },
             {
               label: 'Troubleshooting Guides',
-              to: '/docs/troubleshoot-server-connection-issues/',
+              to: '/docs/user_guides/troubleshoot-server-connection-issues/',
             },
           ],
         },
@@ -160,7 +160,7 @@ module.exports = {
           items: [
             {
               label: 'Contact Us',
-              to: '/docs/contact-us-for-support',
+              to: '/docs/user_guides/contact-us-for-support',
             },
             {
               label: 'Terms of Use',

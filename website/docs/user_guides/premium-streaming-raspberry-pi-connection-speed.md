@@ -14,7 +14,7 @@ If you are experiencing a choppy Premium Streaming, follow the instructions in t
 If it is not, [here are a few options you have](#the-solutions-if-the-connection-speed-on-your-raspberry-pi-is-not-fast-enough).
 
 :::note
-Even if the connection speed that your Internet/cellular provider promises you satisfies the [webcam streaming speed requirements](/docs/internet-speed-requirement-premium-streaming/), it is possible there is a congested link along the connection chain from The Spaghetti Detective server to your Raspberry Pi.
+Even if the connection speed that your Internet/cellular provider promises you satisfies the [webcam streaming speed requirements](/docs/user_guides/internet-speed-requirement-premium-streaming/), it is possible there is a congested link along the connection chain from The Spaghetti Detective server to your Raspberry Pi.
 
 Always follow the steps below to check the real connection speed you are getting.
 :::
@@ -66,7 +66,7 @@ speedtest-cli
 <img src="/img/user_guides/helpdocs/speed-test-raspberry-pi.gif" style={{maxWidth: "308px"}} alt=""></img>
 </Zoom>
 
-3. Get the upload speed from the test result. In this example, the upload speed is 5.9Mbps. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/internet-speed-requirement-premium-streaming).
+3. Get the upload speed from the test result. In this example, the upload speed is 5.9Mbps. Compare this number to [the minimum Internet connection speed for Premium Streaming](/docs/user_guides/internet-speed-requirement-premium-streaming).
 
 You want to make sure the measured upload speed is higher than the minimum speed with a comfortable margin. For instance, if the minimum speed is 10Mbps, you want to have at least 15Mbps download speed to be able to rule out the connection speed as the the problem.
 
@@ -91,5 +91,5 @@ These tips are primarily for the Raspberry Pi, which is what most users use to r
 
 
 :::info
-Also check [test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/premium-streaming-computer-phone-connection-speed) if you are sure your Raspberry Pi's connection is fast enough.
+Also check [test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/user_guides/premium-streaming-computer-phone-connection-speed) if you are sure your Raspberry Pi's connection is fast enough.
 :::

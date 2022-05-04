@@ -35,7 +35,7 @@ When you receive an alert, you have an option to turn off watching for current p
 
 #### 4. You have run out of AI Detection Hours
 
-The Detective Hour balance for your account is displayed on the right hand side of the navigation bar. When it dips below 0, The Detective will stop watching your prints. There are [several ways to get more Detective Hours](/docs/how-does-detective-hour-work#how-do-i-get-detective-hours).
+The Detective Hour balance for your account is displayed on the right hand side of the navigation bar. When it dips below 0, The Detective will stop watching your prints. There are [several ways to get more Detective Hours](/docs/user_guides/how-does-detective-hour-work#how-do-i-get-detective-hours).
 
 ![Watch for failures is off](/img/user_guides/helpdocs/negative-dh-balance.png)
 

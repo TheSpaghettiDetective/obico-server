@@ -47,7 +47,7 @@ Monitoring a single 3D printer can be difficult; imagine managing a 3D printer f
 
 While this may not be a huge problem, no one likes the tiny SD cards that come with 3D printers. They are hard to get in and out of the printer. Not only are SD cards annoying to use, running back and forth between the computer where you have your slicer installed, and your 3D printer wastes time and is just generally tedious!
 
-I could go on and on about many more tedious tasks that you may be performing right now, but it is also simple to list how OctoPrint can optimize your workflow and help you get the most out of 3D printing. It goes without saying that its numerous popular features will vastly improve your 3D printing experience. 
+I could go on and on about many more tedious tasks that you may be performing right now, but it is also simple to list how OctoPrint can optimize your workflow and help you get the most out of 3D printing. It goes without saying that its numerous popular features will vastly improve your 3D printing experience.
 
 ## Why should you use OctoPrint?
 
@@ -75,18 +75,18 @@ With remote monitoring comes another crucial advantage of identifying printing s
 
 The Spaghetti Detective platform/Courtesy: The Spaghetti Detective
 
-[The Spaghetti Detective](https://www.thespaghettidetective.com/) is one of the most well-known and widely used open-source software for desktop 3D printing. It is hands-down the best OctoPrint plugin there is due to the intelligent features it provides its users. 
+[The Spaghetti Detective](https://www.thespaghettidetective.com/) is one of the most well-known and widely used open-source software for desktop 3D printing. It is hands-down the best OctoPrint plugin there is due to the intelligent features it provides its users.
 
 TSD is developed to make 3D printing easier, smarter and a fun activity. The Spaghetti Detective is the successor of the popular OctoPrint Anywhere plugin. The new plugin builds on its earlier version to deliver powerful features like detecting spaghetti and detecting fire hazards. Additionally, the software offers remote monitoring tools that can be leveraged to control your 3D printer, observe it through a webcam, start, pause and stop the prints in case of failures.
 
-There are multiple reasons to use The Spaghetti Detective. I'l share some of the top ones below: 
+There are multiple reasons to use The Spaghetti Detective. I'l share some of the top ones below:
 
 ### Reasons to Use The Spaghetti Detective
 
 All these capabilities offer unprecedented ease to your printing experience. With its AI engine, the software is constantly learning to intervene and take corrective action like stopping the print if it detects spaghettis or even fire hazards.
 
 1.  #### Monitor and control your 3D printer from anywhere
-    
+
 
 ![](/img/blogs/octoprint-user-interface-prusa-mini-connected.PNG)
 
@@ -94,7 +94,7 @@ OctoPrint interface/Courtesy: Adafruit Learning System
 
 As mentioned above, The Spaghetti Detective (TSD) is the enhanced version of the popular OctoPrint Anywhere plugin. Once you connect OctoPrint to your 3D printer you will get complete access to all its operations. It allows you to remotely monitor your 3D printer from anywhere on this planet. It does this by creating a secure connection between your 3D printer and your device using superior bank-level encryption.
 
-All this can be configured in less than two minutes. If you have already installed OctoPrint but are unaware of how to install TSD then check out our [Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup).
+All this can be configured in less than two minutes. If you have already installed OctoPrint but are unaware of how to install TSD then check out our [Spaghetti Detective OctoPrint plugin setup guide](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup).
 
 ![](/img/blogs/octoprint-remote-access-mobile-app-the-spaghetti-detective-features.png)
 
@@ -103,7 +103,7 @@ TSD mobile application/Courtesy: Google Play Store
 TSD also has an efficient web application and a mobile app for both Android and iOS. This enables seamless control over your 3D printer and you need not worry about being close to a laptop at all times.
 
 2.  #### OctoPrint Remote Access
-    
+
 
 ![](/img/blogs/full-octoprint-remote-access-anywhere-the-spaghetti-detective-tunneling.png)
 
@@ -116,7 +116,7 @@ For casual printing occasions, the TSD mobile app or web app has most of the nee
 OctoPrint tunneling is free for all users up to a 50MB per month limit which is sufficient enough to operate OctoPrint close to 20 times. If your usage is greater than this, especially for those using multiple 3D printers, then you’ll need to upgrade to the Pro plan which offers unlimited tunneling.
 
 3.  ### Failure Detection
-    
+
 
 ![](/img/blogs/the-spaghetti-detective-software-3d-printing-ai-failure-detection.png)
 
@@ -125,7 +125,7 @@ TSD failure detection feature/Courtesy: The Spaghetti Detective
 The most attractive and industry-leading feature of TSD is its failure detection. The AI engine is capable of detecting early signs of print failures. It detects spaghettis formed, possibly due to layer slipping, high nozzle height, g-code errors, and more. The TSD goes a step further, it is also capable of detecting fire hazards safeguarding you from a possibility of fire. A truly remarkable feature is to catch failures early. To see the failure detection in action, [check out this video](https://www.youtube.com/watch?v=4O24eAeB05M).
 
 4. ### Notifications
-    
+
 
 Notifications are much needed to track various printer activities. Especially when you start a print you want to know if the print is being successfully printed or not. Notifications increase printing efficiency, ensuring you always know right when a print finishes so you can start another one, and get notified when a print is potentially failing can save time and money.
 
@@ -145,5 +145,5 @@ Step 2: Sign up for a The Spaghetti Detective account
 
 Step 3: Link OctoPrint to your The Spaghetti Detective account
 
-Get [detailed instructions on installing The Spaghetti Detective](https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/) alternatively you can also follow this [video guide](https://www.youtube.com/watch?v=l2yMySAxIKw) which covers the setup process.
+Get [detailed instructions on installing The Spaghetti Detective](https://www.thespaghettidetective.com/docs/user_guides/octoprint-plugin-setup/) alternatively you can also follow this [video guide](https://www.youtube.com/watch?v=l2yMySAxIKw) which covers the setup process.
 

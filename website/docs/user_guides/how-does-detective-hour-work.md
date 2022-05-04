@@ -20,13 +20,13 @@ You do **NOT** need Detective Hours to watch your printer feed in the app. You c
 
 There are several ways to get Detective Hours:
 
-1. You can earn Detective Hours by [helping The Detective get better](/docs/how-does-credits-work/).
+1. You can earn Detective Hours by [helping The Detective get better](/docs/user_guides/how-does-credits-work/).
 
-1. If you have [the Free plan](/docs/upgrade-to-pro), you will get 10 Detective Hours for free each month.
+1. If you have [the Free plan](/docs/user_guides/upgrade-to-pro), you will get 10 Detective Hours for free each month.
 
 1. You can buy or subscribe to one of the [Detective Hour packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
 
-1. If you subscribe to [the Pro plan](/docs/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save Detective Hour packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
+1. If you subscribe to [the Pro plan](/docs/user_guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save Detective Hour packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
 
 ## FAQs
 
@@ -52,9 +52,9 @@ Go to [your subscription page](https://app.thespaghettidetective.com/ent_pub/pri
 
 #### 10 FREE DHs per month for free account is not enough!
 
-[It costs non-trivial amount to watch every hour of print](/docs/how-does-detective-hour-work#why-do-you-make-it-so-complicated) and therefore we can't afford to give more to users on the free plan. :(
-  
-Even if 10 DHs per month is not a lot, if you turn on detection only for your "risky prints", it can still significantly reduce your stress level, and sometimes save your printer from a jammed heater block or fan. 
+[It costs non-trivial amount to watch every hour of print](/docs/user_guides/how-does-detective-hour-work#why-do-you-make-it-so-complicated) and therefore we can't afford to give more to users on the free plan. :(
+
+Even if 10 DHs per month is not a lot, if you turn on detection only for your "risky prints", it can still significantly reduce your stress level, and sometimes save your printer from a jammed heater block or fan.
 
 #### Tell me more about the DHs that are included in the Pro plan.
 

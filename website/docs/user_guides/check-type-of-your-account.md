@@ -17,4 +17,4 @@ title: How to check if you have a Free or a Pro account
 * **Pro** means either you have subscribed to the Pro plan (thank you!), or you are still in the free trial period, which is the first month after you sign up for a The Spaghetti Detective account.
 * **Free** means your free trial period has expired and you haven't upgraded to the Pro plan afterward.
 
-Learn more about [the difference between Free and Pro](/docs/upgrade-to-pro).
+Learn more about [the difference between Free and Pro](/docs/user_guides/upgrade-to-pro).

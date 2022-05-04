@@ -12,7 +12,7 @@ I screwed up. It was the first security breach The Spaghetti Detective has had i
 
 I made a stupid mistake last night when I re-configured TSD cloud to make it more efficient and run faster. My mistake created a security vulnerability for about 8 hours. The users who happened to be linking a printer at that time were able to see each other's printer through auto-discovery, and were able to link to them too! We were notified of [a case in which a user started a print on someone else's printer](https://www.reddit.com/r/3Dprinting/comments/p7jdhi/wake_up_this_morning_and_see_this_on_my_3d/).
 
-73 users got impacted as a result. It's not a huge number. There are bugs that impact a lot more users. But the consequence is very severe. Nobody wants his/her own printers being linked to and controlled by another account. 
+73 users got impacted as a result. It's not a huge number. There are bugs that impact a lot more users. But the consequence is very severe. Nobody wants his/her own printers being linked to and controlled by another account.
 
 I created The Spaghetti Detective to let all 3D printing hobbyists have a way to safely monitor their printers from everywhere. And this is one of the worst mistakes I can make. My sincere apologies to our community for this horrible mistake.
 
@@ -32,7 +32,7 @@ Our database shows that during the period of the incident, 73 users tried to lin
 
 1. Turned off the auto-discovery function as soon as we found this security vulnerability and hence prevented this problem from impacting more users.
 1. Disabled the secure token for all printers that belonged to these 73 impacted users. Once a token is disabled, TSD plugin will refuse to trust the server and hence can no longer be remotely controlled. Only the people who have physical access to that printer can do so.
-1. Send emails to all these 73 users to inform them about what happened, and the ways to get their printer back. 
+1. Send emails to all these 73 users to inform them about what happened, and the ways to get their printer back.
 
 Users who were not linking during this period were not impacted. No user data, login credentials, or any other data were breached.
 
@@ -42,7 +42,7 @@ Users who were not linking during this period were not impacted. No user data, l
 
 If you were one of 73 users who got affected, you would have received a separate email from us.
 
-If you were one of the affected users, we have disabled your printer token so it can't be connected remotely. You will need to [re-link your printer](https://www.thespaghettidetective.com/docs/relink-octoprint/) to get it back in TSD.
+If you were one of the affected users, we have disabled your printer token so it can't be connected remotely. You will need to [re-link your printer](https://www.thespaghettidetective.com/docs/user_guides/relink-octoprint/) to get it back in TSD.
 
 If you didn't receive email from us, you were not affected.
 
@@ -59,7 +59,7 @@ Please [upgrade the server code](https://github.com/TheSpaghettiDetective/TheSpa
 
 ## Detailed timeline
 
-1. 2021-08-19 6:29 AM UTC. The load-balancer was reconfigured. The start of this security vulnerability. 
+1. 2021-08-19 6:29 AM UTC. The load-balancer was reconfigured. The start of this security vulnerability.
 1. 2021-08-19 ~11 AM UTC. One of our engineers (Shutout to Bence Tamas) noticed that he could see other user's printers. He immediately started investigating the problem.
 1. 2021-08-19 ~12 PM UTC. The possible cause of the problem (misconfigured load-balancer) was identified. Based on the severity of the problem, we decided to disabled auto-discovery function.
 1. 2021-08-19 12:33 PM UTC. A patched version of the server is pushed to production to stop this problem from impacting more users. Also the work started to identified the users who were potentially impacted.

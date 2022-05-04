@@ -21,16 +21,16 @@ Otherwise, you will see:
 
 ## 2. Feedback
 
-Should be quite self-explanatory. This is where you've a chance to [give The Detective feedback to help her get better](/docs/how-does-credits-work/).
+Should be quite self-explanatory. This is where you've a chance to [give The Detective feedback to help her get better](/docs/user_guides/how-does-credits-work/).
 
 :::note
-Please note [some times there won't be the Focused Feedback link in the email](/docs/how-does-credits-work/#why-is-the-focused-feedback-button-missing-from-some-of-my-prints).
+Please note [some times there won't be the Focused Feedback link in the email](/docs/user_guides/how-does-credits-work/#why-is-the-focused-feedback-button-missing-from-some-of-my-prints).
 :::
 
 ## 3. Print job info and Detective Hours
 
 :::info
-Learn more about [how Detective Hour works](/docs/how-does-detective-hour-work).
+Learn more about [how Detective Hour works](/docs/user_guides/how-does-detective-hour-work).
 :::
 
 ### 3.1 Print time
@@ -47,7 +47,7 @@ This is the amount of time that The Detective actually spent on watching your pr
 
 Time watched by The Detective can be shorter than the print time because of a few reasons:
 
-* You have [turned off "Watch for failures"](/docs/detective-not-watching/#2-you-turned-off-watch-for-failures-option) in the app.
+* You have [turned off "Watch for failures"](/docs/user_guides/detective-not-watching/#2-you-turned-off-watch-for-failures-option) in the app.
 * There were periods when your OctoPrint lost Internet connection and sent nothing to The Detective.
 * The print was paused during the print. When a print is paused, The Detective will also pause watching and hence won't clock her time.
 * You have chosen "Don't alert me again" in case of a false alarm.
@@ -57,7 +57,7 @@ Time watched by The Detective can be shorter than the print time because of a fe
 The amount of Detective Hours left in your account *after the amount in 3.2 was deducted from the balance*.
 
 :::note
-Detective Hour balance may be a negative number. [Learn why this is the case](/docs/how-does-detective-hour-work/#hey-my-dh-balance-shows-a-negative-number-is-the-detective-out-of-her-mind).
+Detective Hour balance may be a negative number. [Learn why this is the case](/docs/user_guides/how-does-detective-hour-work/#hey-my-dh-balance-shows-a-negative-number-is-the-detective-out-of-her-mind).
 :::
 
 ## FAQs
@@ -79,4 +79,4 @@ Rest assured this will NOT cost you more Detective Hours. This is because The De
 
 #### Why is my DH balance a negative number?
 
-Here is [why](/docs/how-does-detective-hour-work/#hey-my-dh-balance-shows-a-negative-number-is-the-detective-out-of-her-mind).
+Here is [why](/docs/user_guides/how-does-detective-hour-work/#hey-my-dh-balance-shows-a-negative-number-is-the-detective-out-of-her-mind).

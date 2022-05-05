@@ -197,9 +197,13 @@ git checkout obico
                         </div>
                         <div class="row justify-content-center">
                           <div class="col-sm-12 col-lg-8 img-container">
-                            <img
+                            <img v-if="targetOctoPrint"
                               class="screenshot"
-                              :src="verificationCodeScreenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')"
+                              @click="zoomIn($event)">
+                            <img v-if="targetMoonraker"
+                              class="screenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')"
                               @click="zoomIn($event)">
                             <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
                           </div>
@@ -274,9 +278,6 @@ import SavingAnimation from '@src/components/SavingAnimation.vue'
 import DiscoveredPrinter from '@src/components/printers/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/AutoLinkPopup.vue'
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
-
-const octoprintVeriCode = require(`@static/img/octoprint-plugin-guide/plugin_verification_code.png`)
-const moonrakerVeriCode = require(`@static/img/octoprint-plugin-guide/moonraker_verification_code.png`)
 
 export default {
   components: {
@@ -355,9 +356,6 @@ export default {
     targetMoonraker() {
       return this.targetPlatform === 'moonraker'
     },
-    verificationCodeScreenshot() {
-      return this.targetPlatform === 'octoprint'? octoprintVeriCode : moonrakerVeriCode
-    }
   },
   methods: {
     setSavingStatus(propName, status) {

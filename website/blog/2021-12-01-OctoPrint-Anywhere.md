@@ -8,7 +8,7 @@ tags: ['Tech', '3D Printer Remote Access', 'OctoPrint']
 
   
 
-![OctoPrint Anywhere](/img/blogs/octoprint-anywhere-remote-access.jpg)
+![OctoPrint Anywhere](/img/blogs/Octoprint-anywhere-remote-access.jpg)
 
 
 OctoPrint is a Raspberry Pi-based open-source software application that allows you to monitor and control your 3D printer remotely. It was created by Gina Häußge in 2012, and since then it is being constantly updated and upgraded by its active community of supporters and developers to include a wide range of features.

@@ -150,7 +150,7 @@ In a world where everything is being controlled and monitored, there aren’t ma
 
   
 
-![OctoPrint Plugin Manager](/img/blogs/octoprint-plugin-manager-get-more.png)
+![OctoPrint Plugin Manager](/img/blogs/octoprint-plugin-manager-get-more.PNG)
 
 10.  ### 277+ More Reasons to Use OctoPrint with OctoPrint Plugins
     

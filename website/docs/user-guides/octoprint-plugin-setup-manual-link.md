@@ -90,16 +90,14 @@ If you wan to re-link OctoPrint to an existing printer, you should do [step 3a](
   ]}>
   <TabItem value="mobile">
 
-1. Open The Spaghetti Detective mobile app. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "Link New Printer".
+Open The Spaghetti Detective mobile app. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "Link New Printer".
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/launch-manual-link-mobile.jpg" /></div>
 
   </TabItem>
   <TabItem value="web">
 
-1. Open [The Spaghetti Detective web app](https://app.thespaghettidetective.com/) in another browser tab. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, click "Link OctoPrint Printer" button.
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/launch-manual-link-web.jpg" /></div>
+Open [The Spaghetti Detective web app](https://app.thespaghettidetective.com/) in another browser tab. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, click "Link OctoPrint Printer" button.
 
   </TabItem>
 </Tabs>

@@ -15,7 +15,11 @@ module.exports = {
 
   // But you can create a sidebar manually
   guideSidebar: [
-    'user-guides/octoprint-plugin-setup',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      items: ['user-guides/octoprint-plugin-setup', 'user-guides/klipper-setup',],
+    },
     {
       type: 'category',
       label: 'Failure Detection',

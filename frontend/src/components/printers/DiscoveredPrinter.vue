@@ -15,7 +15,7 @@
         {{discoveredPrinter.machine_type}}
       </div>
       <div v-if="discoveredPrinter.agent" class="text-muted small">
-        Agent: {{discoveredPrinter.agent}}
+        Platform: {{discoveredPrinter.agent}}
       </div>
       <div v-if="discoveredPrinter.host_or_ip" class="text-muted small">
         IP address: {{discoveredPrinter.host_or_ip}}

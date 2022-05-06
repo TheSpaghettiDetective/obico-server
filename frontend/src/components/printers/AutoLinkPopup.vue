@@ -114,7 +114,8 @@ export default {
     },
 
     destUrl() {
-      return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port || '80'}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
+      const pluginName = this.discoveredPrinter.agent ? 'obico' : 'thespaghettidetective'
+      return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port || '80'}/plugin/${pluginName}/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
     },
 
     switchToManual() {

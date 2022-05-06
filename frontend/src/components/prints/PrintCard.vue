@@ -172,7 +172,7 @@
                 <span v-else>
                   With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
                   <a
-                    href="https://www.obico.io/docs/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
+                    href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
                   >You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
                 </span>
               </small>
@@ -180,7 +180,7 @@
               <small v-else>
                 Every time you give The Detective feedback,
                 <a
-                  href="https://www.obico.io/docs/how-does-credits-work/"
+                  href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
                 >you help her get better at detecting spaghetti</a>.
               </small>
             </div>

@@ -39,7 +39,7 @@
               <p>The stream is on only when the printer is printing.</p>
               <strong>
                 Learn more about
-                <a href="https://www.obico.io/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
               </strong>
             </template>
 
@@ -48,12 +48,12 @@
               <h3>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h3>
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.obico.io/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -64,12 +64,12 @@
               <ul>
                 <li>Unused Detective Hours roll over month to month.</li>
                 <li>Detective Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.obico.io/docs/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -84,7 +84,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -96,7 +96,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
@@ -107,7 +107,7 @@
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>

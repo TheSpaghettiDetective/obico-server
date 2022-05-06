@@ -43,7 +43,7 @@ OVER_FREE_LIMIT_HTML = """
                 the free limit. Support this project and get unlimited
                 tunneling by
                 <a target="_blank"
-                   href="https://app.obico.io/ent/pricing/"
+                   href="https://app.obico.io/ent_pub/pricing/"
                 >upgrading to the Obico app Pro plan</a>,
                 or wait for the reset of free limit at the start of
                 the next month.

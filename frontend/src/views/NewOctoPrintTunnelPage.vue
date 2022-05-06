@@ -20,8 +20,8 @@
               </b-col>
             </b-row>
             <b-row v-if="isEnt && trialDaysLeft > 0">
-              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.obico.io/docs/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
-              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.obico.io/docs/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
+              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
+              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
               <div class="mt-3 col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your OctoPrint</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
@@ -57,16 +57,16 @@
             <div>
               <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
               <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
-              <p class="text-muted"><a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by the Obico app to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+              <p class="text-muted"><a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by the Obico app to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
                 </div>
               </b-alert>
               <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
                 </div>
               </b-alert>
 
@@ -127,7 +127,7 @@
               <h1 class="mx-auto">{{appName}}</h1>
             </b-row>
             <b-row class="justify-content-center">
-              <p class="text-muted mt-5">The Obico app provides <a href="https://www.obico.io/docs/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
+              <p class="text-muted mt-5">The Obico app provides <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
               <p class="text-muted">With the Obico app, you can now use {{appName}} to control and monitor your printer from anywhere.</p>
             </b-row>
             <b-row>

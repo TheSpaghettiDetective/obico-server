@@ -105,7 +105,7 @@
     >
       <div>
         OctoPrint is not powered on, or is offline.
-        <a target="_blank" href="https://www.obico.io/docs/octoprint-is-offline/">Why? <small><i class="fas fa-external-link-alt"></i></small></a>
+        <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-is-offline/">Why? <small><i class="fas fa-external-link-alt"></i></small></a>
       </div>
     </div>
   </div>

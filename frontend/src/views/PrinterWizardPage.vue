@@ -221,7 +221,7 @@ git checkout obico
                     </template>
                   </form-wizard>
                   <div class="row">
-                    <div class="helper col-sm-12">Need help? Check out the <a href="https://www.obico.io/docs/octoprint-plugin-setup/">step-by-step set up guide.</a></div>
+                    <div class="helper col-sm-12">Need help? Check out the <a :href="targetMoonraker ? 'https://www.obico.io/docs/user-guides/klipper-setup/' : 'https://www.obico.io/docs/octoprint-plugin-setup/'">step-by-step set up guide.</a></div>
                   </div>
                 </div>
                 <div v-else class="container">

@@ -5,14 +5,14 @@
         <div v-if="printersToShow.length === 0" class="wizard-container full-on-mobile">
           <b-container>
             <b-row>
-              <h1 class="mx-auto">Welcome To</h1>
-            </b-row>
-            <b-row>
               <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                <svg class="logo-img">
-                  <use href="#svg-logo-full" />
+                <svg viewBox="0 0 1965 240" class="logo-img">
+                  <use href="#svg-logo-compact" />
                 </svg>
               </div>
+            </b-row>
+            <b-row>
+              <h1 class="mx-auto">Welcome To Obico</h1>
             </b-row>
             <b-row>
               <b-col>

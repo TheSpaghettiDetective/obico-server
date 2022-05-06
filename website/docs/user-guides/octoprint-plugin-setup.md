@@ -29,11 +29,11 @@ If you have purchased a hardware kit with OctoPrint and The Spaghetti Detective 
 1. Open OctoPrint page in a browser.
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 1. On the settings page, click "**Plugin Manager**", then "**Get More...**".
-1. Type "The Spaghetti Detective" in the box, you will see "**Access Anywhere - The Spaghetti Detective**" plugin.
+1. Type "Obico" in the box, you will see "Obico for OctoPrint" plugin.
 1. Click "**Install**".
 1. Click "**Restart Now**" when OctoPrint asks.
 
-![Install the Plugin](/img/user-guides/setupguide/tsd-plugin-install.gif)
+![Install the Plugin](/img/user-guides/setupguide/install-plugin.png)
 
 ## Step 2: Sign up for an Obico account.
 
@@ -127,7 +127,10 @@ Connect OctoPrint to **the same local network** as your phone or computer. The S
   </TabItem>
   <TabItem value="web">
 
-1. Click "**Link Printer**" button.
+1. On the welcome page, click the "**Link Printer**" button.
+
+![Welcome page](/img/user-guides/setupguide/welcome-web.jpg)
+
 2. Click "OctoPrint" on the page that asks you to select a platform.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/select-platform-web.jpg" /></div>

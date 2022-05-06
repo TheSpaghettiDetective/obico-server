@@ -30,7 +30,14 @@ Alternatively, you can just disable *Access Anywhere - The Spaghetti Detective"*
 
 ### Step 2. Install the *Obico for OctoPrint* plugin
 
-TBD
+1. Open OctoPrint page in a browser.
+1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
+1. On the settings page, click "**Plugin Manager**", then "**Get More...**".
+1. Type "Obico" in the box, you will see "Obico for OctoPrint" plugin.
+1. Click "**Install**".
+1. Click "**Restart Now**" when OctoPrint asks.
+
+![Install the Plugin](/img/user-guides/setupguide/install-plugin.png)
 
 Once OctoPrint has restarted, you will see dialog that pops up like this:
 
@@ -68,4 +75,4 @@ If you forgot your password, click the "Forgot Password?" link on the login page
 
 If you are not sure if you are using the correct email, you can also try to [sign up for a new Obico account](https://app.obico.io/accounts/signup/) with that email. The sign up page will tell you so if there has been an account with that email.
 
-If everything fails, please reach out to [aNoO](mailto:support@obico.io) for help.
+If everything fails, please reach out to [the Obico team](mailto:support@obico.io) for help.

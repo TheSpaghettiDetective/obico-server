@@ -115,7 +115,9 @@ Open The Spaghetti Detective mobile app. You should see a screen with a big "**L
   </TabItem>
   <TabItem value="web">
 
-Open [the Obico web app](https://app.obico.io/) in another browser tab. Click the "**Link Printer**" button.
+On the welcome page, click the "**Link Printer**" button.
+
+![Welcome page](/img/user-guides/setupguide/welcome-web.jpg)
 
   </TabItem>
 </Tabs>
@@ -156,7 +158,7 @@ Open [the Obico web app](https://app.obico.io/) in another browser tab. Click th
 
 1. Go back to terminal for your SSH session in Step 1.
 1. Enter the 6-digit code you obtained in the previous step.
-1. As the final step, you will be asked if you want to opt in bug reporting. We strongly recommend you answer `Y` here. Bug reporting will help us catch and fix bugs earlier and more easily, and hence a better Obico app for you! :)
+1. As the final step, you will be asked if you want to opt in bug reporting. We strongly recommend you answer "Y" here. Bug reporting will help us catch and fix bugs earlier and more easily, and hence a better Obico app for you! :)
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-klipper.png" /></div>
 <br />

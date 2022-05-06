@@ -1,7 +1,7 @@
 ---
 id: octoprint-plugin-setup
 title: Set up The Spaghetti Detective in 56 seconds
-sidebar_label: Getting started in 56 seconds
+sidebar_label: Obico for OctoPrint
 ---
 
 import Tabs from '@theme/Tabs';
@@ -35,23 +35,23 @@ If you have purchased a hardware kit with OctoPrint and The Spaghetti Detective 
 
 ![Install the Plugin](/img/user-guides/setupguide/tsd-plugin-install.gif)
 
-## Step 2: Sign up for a The Spaghetti Detective account.
+## Step 2: Sign up for an Obico account.
 
 :::tip
 
-Follow instructions in the "**📱  Mobile App**" tab if you are using The Spaghetti Detective mobile app, or the "**🌐  Web App**" tab if you are using the web app.
+Follow instructions in the "**📱  Mobile App**" tab if you are using the Obico mobile app, or the "**🌐  Web App**" tab if you are using the web app.
 
 :::
 
 :::info
 
-Your The Spaghetti Detective account is the same for the mobile app and the web app. If you sign up for an account using the mobile app, you can sign in to the web app later with the same email and password. And vice versa.
+Your Obico account is the same for the mobile app and the web app. If you sign up for an account using the mobile app, you can sign in to the web app later with the same email and password. And vice versa.
 
 :::
 
 :::info
 
-All The Spaghetti Detective functions are available equally in the mobile and the web app. However, with the mobile app, you can receive push notifications on your phone for events like detected print failures or the end of a print job.
+All functions are available equally in the mobile and the web app. However, with the mobile app, you can receive push notifications on your phone to easily track the print progress, and get alerted in case a failure is detected.
 
 :::
 
@@ -63,21 +63,27 @@ All The Spaghetti Detective functions are available equally in the mobile and th
   ]}>
   <TabItem value="mobile">
 
-1. Download The Spaghetti Detective app from the [Apple App Store](https://apps.apple.com/us/app/the-spaghetti-detective/id1540646623?ign-itsct=apps_box&ign-itscg=30200) or [Google Play Store](https://play.google.com/store/apps/details?id=com.thespaghettidetective.android).
+1. Download the Obico app from the [Apple App Store](https://apps.apple.com/us/app/the-spaghetti-detective/id1540646623?ign-itsct=apps_box&ign-itscg=30200) or [Google Play Store](https://play.google.com/store/apps/details?id=com.thespaghettidetective.android).
 1. Open the mobile app. Click through the first time tour and then tap **“Let’s Go!”**.
 1. Simply tap "**YES!**" on the "Hardware Required" screen.
 1. Tap "**Sign Up/Sign In**" button to proceed to the sign up/sign in screen.
 1. Sign up with your email, Google or Facebook account. If you have already registered, click the "Sign In" button and sign in to your account.
 
-<br />
+:::info
+If you are connecting to a self-hosted Obico Server, press the wrench icon (**🔧**) on the top-left corner of the sign-up screen to change the server address.
+:::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/mobile-app-signup.gif" /></div>
 
   </TabItem>
   <TabItem value="web">
 
-1. Open [The Spaghetti Detective sign up page](https://app.thespaghettidetective.com/accounts/signup/) in a new browser tab.
+1. Open the [Obico Server sign up page](https://app.obico.io/accounts/signup/) in a new browser tab.
 1. Sign up with your email, Google or Facebook account. If you have already registered, click the "Sign In" button and sign in to your account.
+
+:::info
+If you are connecting to a self-hosted Obico Server, you should sign up for an account on your own server.
+:::
 
 ![Sign Up Account](/img/user-guides/setupguide/tsd-signup.png)
 
@@ -121,19 +127,23 @@ Connect OctoPrint to **the same local network** as your phone or computer. The S
   </TabItem>
   <TabItem value="web">
 
-1. Click "**Link OctoPrint**" button.
-2. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Next**" button.
-3. The app will start scanning for the OctoPrint connected to the same local network.
-4. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
+1. Click "**Link Printer**" button.
+2. Click "OctoPrint" on the page that asks you to select a platform.
+
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/select-platform-web.jpg" /></div>
+
+3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Next**" button.
+4. The app will start scanning for the OctoPrint connected to the same local network.
+5. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
   :::note
   **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
   :::
-5. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
+6. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-web.gif" /></div>
 <br />
 
-6. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
+7. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-web.gif" /></div>
 

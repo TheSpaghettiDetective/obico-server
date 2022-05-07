@@ -161,7 +161,7 @@
                 <h2 class="section-title">Time-lapse</h2>
                 <p v-if="!(timelapseOnFinishEnabled && timelapseOnCancelEnabled)" class="text-warning">
                   <i class="fas fa-exclamation-triangle"></i>
-                  Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">help The Detective get better while earning Detective Hours for yourself</a>.
+                  Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">help The Detective get better while earning AI Detection Hours for yourself</a>.
                 </p>
                 <div class="form-group mt-4">
                   <saving-animation :errors="errorMessages.min_timelapse_secs_on_finish" :saving="saving.min_timelapse_secs_on_finish" class="mobile-full-width">

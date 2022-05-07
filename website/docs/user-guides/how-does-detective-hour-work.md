@@ -1,44 +1,44 @@
 ---
 id: how-does-detective-hour-work
-title: What is Detective Hour and how does it work?
-sidebar_label: Detective Hours
+title: What is AI Detection Hour and how does it work?
+sidebar_label: AI Detection Hours
 ---
 
-## What is "Detective Hour"?
+## What is "AI Detection Hour"?
 
-Detective Hour, or simply DH, is the unit used to measure the time The Detective spends watching your prints.
+AI Detection Hour, or simply DH, is the unit used to measure the time the AI failure detection system spends on your prints.
 
-It is indicated by the symbol <img src="/img/user-guides/detective-hour-primary.png" alt="Detective Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> in the system.
+It is indicated by the symbol <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> in the system.
 
-## Why do I need Detective Hours?
+## Why do I need AI Detection Hours?
 
-You need a positive balance of Detective Hours on your account to have The Detective watch your prints. [Here is why.](#why-do-you-make-it-so-complicated)
+You need a positive balance of AI Detection Hours on your account to have the failure detection on. [Here is why.](#why-do-you-make-it-so-complicated)
 
-You do **NOT** need Detective Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
+You do **NOT** need AI Detection Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
+å
+## How do I get AI Detection Hours?
 
-## How do I get Detective Hours?
+There are several ways to get AI Detection Hours:
 
-There are several ways to get Detective Hours:
+1. You can earn AI Detection Hours by [helping the AI failure detection system get better](/docs/user-guides/how-does-credits-work/).
 
-1. You can earn Detective Hours by [helping The Detective get better](/docs/user-guides/how-does-credits-work/).
+1. If you have [the Free plan](/docs/user-guides/upgrade-to-pro), you will get 10 AI Detection Hours for free each month.
 
-1. If you have [the Free plan](/docs/user-guides/upgrade-to-pro), you will get 10 Detective Hours for free each month.
+1. You can buy or subscribe to one of the [AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
 
-1. You can buy or subscribe to one of the [Detective Hour packs](https://app.obico.io/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
-
-1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save Detective Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
+1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
 
 ## FAQs
 
 #### Where can I check the DH balance on my account?
 
-There is an icon <img src="/img/user-guides/detective-hour-primary.png" alt="Detective Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> at the top of the page that shows the current DH balance on your account. You can click on that icon and see this balance broken down to the DHs included in your plan and the DHs you earned or bought.
+There is an icon <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> at the top of the page that shows the current DH balance on your account. You can click on that icon and see this balance broken down to the DHs included in your plan and the DHs you earned or bought.
 
 ![DH nav bar](/img/user-guides/helpdocs/dh-balance-navbar.png)
 
 #### What will happen if the DH balance on my account goes to 0?
 
-When your Detective Hours run out, The Detective will stop watching your prints, and you won't get alerted even if your prints start to fail. Everything else remains the same. You can still start, pause, or cancel your prints in OctoPrint or The Spaghetti Detective. Your webcam feed will stream as usual too.
+When your AI Detection Hours run out, the failure detection will be paused, and you won't get alerted even if your prints start to fail. Everything else remains the same. You can still start, pause, or cancel your prints in OctoPrint or in Obico. Your webcam feed will stream as usual too.
 
 :::note
 You can still watch your printer feed in the app even if your DH balance goes to 0.
@@ -64,31 +64,29 @@ If you subscribe to the Pro plan, you will get 50 DHs **every month**. If not al
 
 If you cancel your subscription plan, the remaining DHs that originally came from the Pro plan or the Subscribe&Save DH pack will expire at the time when the plan ends.
 
-You will get to keep the DHs that you bought in a Pre-paid DH pack, or earned by contributing to The Detective's learning.
+You will get to keep the DHs that you bought in a Pre-paid DH pack, or earned by providing Focused Feedback.
 
-#### Is there an easy way to tell The Detective not to watch my prints when I don't want to use DHs?
+#### Is there an easy way to tell turn off failure detection when I don't want to use DHs?
 
 Yes! We have redesigned our printer page to make it super easy! We have also added visual cue so that it's clear when you are not using your hard-earned DHs.
 
-![How to disable watching](/img/user-guides/helpdocs/disable_watching.png)
+![How to disable AI failure detection](/img/user-guides/helpdocs/disable_watching.png)
 
-#### Hey my DH balance shows a negative number. Is The Detective out of her mind?
+#### Why is my DH balance a negative number?
 
-No. The Detective is just being extra nice.
+If you have a positive DH balance when a print starts, the failure detection won't be turned off mid print just because your DH balance reaches 0. This is to make sure you wouldn't be surprised that you were not covered where you thought you were.
 
-As long as you have a positive DH balance when a print starts, The Detective will watch your print and she will **not** stop watching mid-print just because your DH balance reaches 0. This is to make sure you wouldn't be surprised that you were not covered where you thought you were.
-
-Suppose you only have 1 DH when you kick off a 10-hour print. The Detective will still watch the whole 10-hour even if you are already in the red zone after 1 hour. However, after the print is done, your DH balance will be -9.
+Suppose you only have 1 DH when you kick off a 10-hour print. The failure detection will still be on for the whole 10-hour even if you are already in the red zone after 1 hour. However, after the print is done, your DH balance will be -9.
 
 Your DH balance will be filled up to a positive number at the time when you [get more DHs](#how-do-i-get-detective-hours).
 
 #### Why do you make it so complicated?
 
-The reason why we took the trouble to properly account for DHs is because every single <img src="/img/user-guides/detective-hour-primary.png" alt="Detective Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> costs computational resources.
+The reason why we took the trouble to properly account for DHs is because every single <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> costs computational resources.
 
-When The Detective is actively watching your print, the TSD server continuously analyzes the pictures sent from your webcam. This analysis, known as [Deep Learning](https://en.wikipedia.org/wiki/Deep_learning), uses an expensive resource called [GPU](https://en.wikipedia.org/wiki/Graphics_processing_unit).
+When the AI failure detection is on, the Obico Server continuously analyzes the pictures sent from your webcam. This analysis, known as [Deep Learning](https://en.wikipedia.org/wiki/Deep_learning), uses an expensive resource called [GPU](https://en.wikipedia.org/wiki/Graphics_processing_unit).
 
-This is exactly why we took the trouble to program The Detective so that she doesn't spend any time watching when you are not printing, or don't want her to watch your prints.
+This is exactly why we took the trouble to program AI failure detection in a way so that no resource is used when you are not printing, or don't want to use any Detection Hours.
 
 Also by accounting for the usage of DHs, we want to motivate everyone to optimize how we use our DHs. Only by doing so can we provide this service to the entire 3D printing community at affordable cost.
 
@@ -97,11 +95,11 @@ Also by accounting for the usage of DHs, we want to motivate everyone to optimiz
 
 #### Tell me exactly how DHs are accounted for.
 
-*1 DH = 1 hour worth of time when your printer is printing AND The Detective is actively watching your print.*
+*1 DH = 1 hour worth of time when your printer is printing AND the failure detection is on.*
 
 This means the time when your printing is idle (not printing) won't be counted as DHs. Also, when you disable detection for a print, or for a period in a print, that period will not be counted as DHs either.
 
-Let's use an example to illustrate how Detective Hours are accounted for:
+Let's use an example to illustrate how AI Detection Hours are accounted for:
 
 | Start  | End    | Activity                                                                                                | Duration   | Is DH? | Explanation                        |
 |--------|--------|---------------------------------------------------------------------------------------------------------|------------|--------|------------------------------------|
@@ -126,7 +124,7 @@ Here are the complete list of all roll-over rules on DHs:
 - The balance of *earned DH*s roll over infinitely. It doesn't matter if you have a subscription plan at all.
 - To minimize the amount of *included DH*s you would loose should you cancel the subscription plan, *included DH*s are always used before *earned DH*s.
 
-#### A complete example to show how Detective Hour works.
+#### A complete example to show how AI Detection Hour works.
 
 | Date      | Activity                                                                | Earned DHs | Included DHs | Total DH |
 |-----------|-------------------------------------------------------------------------|------------|--------------|----------|

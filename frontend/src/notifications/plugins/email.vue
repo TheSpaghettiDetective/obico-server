@@ -36,7 +36,7 @@
               >
               <label class="custom-control-label" for="id_account_notification_by_email">
                 Account events
-                <span class="text-muted setting-description"><br>Plan changed; Detective Hours running low; etc.</span>
+                <span class="text-muted setting-description"><br>Plan changed; AI Detection Hours running low; etc.</span>
               </label>
             </div>
           </saving-animation>
@@ -48,7 +48,7 @@
             <div class="setting-item-text">
               <label for="id_account_notification_by_email">
                 Account events
-                <span class="text-muted setting-description"><br>Plan changed; Detective Hours running low; etc.</span>
+                <span class="text-muted setting-description"><br>Plan changed; AI Detection Hours running low; etc.</span>
               </label>
             </div>
             <div class="setting-item-switch">

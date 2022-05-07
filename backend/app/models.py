@@ -239,10 +239,10 @@ class Printer(SafeDeleteModel):
 
     def not_watching_reason(self):
         if not self.watching_enabled:
-            return '"Watch for failures" is turned off'
+            return 'AI failure detection is disabled'
 
         if self.user.dh_balance < 0:
-            return "You have run out of Detective Hours"
+            return "You have run out of AI Detection Hours"
 
         if not self.actively_printing():
             return "Printer is not actively printing"

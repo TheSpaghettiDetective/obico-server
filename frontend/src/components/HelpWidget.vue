@@ -45,31 +45,31 @@
 
             <!-- detective-hours-free-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-free-plan-on-pricing-page'">
-              <h3>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h3>
+              <h3>Yup! Even Free account gets 10 AI Detection Hours for FREE each month.</h3>
               <ul>
-                <li>Unused Detective Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
+                <li>Unused AI Detection Hours roll over month to month.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>
 
             <!-- detective-hours-pro-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-pro-plan-on-pricing-page'">
-              <h3>Pro plan includes 50 Detective Hours each month.</h3>
+              <h3>Pro plan includes 50 AI Detection Hours each month.</h3>
               <ul>
-                <li>Unused Detective Hours roll over month to month.</li>
-                <li>Detective Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
+                <li>Unused AI Detection Hours roll over month to month.</li>
+                <li>AI Detection Hours expire when subscription ends.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
                 <strong>
-                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the Detective Hour works <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
                 </strong>
               </p>
             </template>

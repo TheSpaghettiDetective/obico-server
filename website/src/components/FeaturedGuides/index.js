@@ -4,7 +4,7 @@ import styles from './index.module.css';
 
 const LinksList = [
   {
-    title: 'Why is The Detective "not watching"?',
+    title: 'Why is the AI failure detection off?',
     route: '/docs/user-guides/detective-not-watching/',
   },
   {
@@ -12,7 +12,7 @@ const LinksList = [
     route: '/docs/user-guides/octoprint-is-offline/',
   },
   {
-    title: 'What is Detective Hour and how does it work?',
+    title: 'What is AI Detection Hour and how does it work?',
     route: '/docs/user-guides/how-does-detective-hour-work/',
   },
   {

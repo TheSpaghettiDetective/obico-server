@@ -26,7 +26,7 @@ Once you are on the upload page, drop as many time-lapse video files as you want
 
 ### FAQs
 
-#### Does it cost my detective hours?
+#### Does it cost my AI Detection Hours?
 
 No. The time The Detective spends on looking at your uploaded time-lapse videos is completely on the house. :)
 

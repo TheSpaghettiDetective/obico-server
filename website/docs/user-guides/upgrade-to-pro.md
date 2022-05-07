@@ -11,9 +11,9 @@ The Spaghetti Detective offers two plan options to our users:
 | | Pro plan | Free plan |
 |-|----------|----------|
 | [Webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) | 25fps (25 frames per second) Premium Streaming. Always streaming. | 0.1fps (1 frame per 10 seconds). Streaming only when you are printing. |
-| Free [Detective Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
-| [Pre-paid Detective Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
-| [Subscribe&Save Detective Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |
+| Free [AI Detection Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
+| [Pre-paid AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
+| [Subscribe&Save AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |
 | [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 50MB/month |
 | Multiple printers | Each additional printer costs 50% of that of the 1st printer | Can have only 1 printer |
 
@@ -40,7 +40,7 @@ You can get more details on [TSD pricing page](https://app.obico.io/ent_pub/pric
 
 Everyone at TSD loves free too! And we also love 3D printing and we want to make TSD as accessible as possible to 3D printing enthusiasts like us. That's why we offer the Free plan to give everyone an option to remotely monitor their 3D printers. Feel free (pun intended) to stay on the Free plan for as long as you want if a paid subscription is not your cup of tea (or plate of spaghetti in our case).
 
-However, we do have some limits on the Free plan. For instance, it doesn't have the sleek 25 frames-per-second webcam streaming. And it is limited to 10 Detective Hours ([what is it?](/docs/user-guides/how-does-detective-hour-work)). The reason is that these cool features do cost non-trivial amount on things like GPU (the expensive computational resources that power the AI behind TSD), cloud storage, and network bandwidth. If The Detective just offers unlimited free service to everyone, she and her team can't sustain themselves.
+However, we do have some limits on the Free plan. For instance, it doesn't have the sleek 25 frames-per-second webcam streaming. And it is limited to 10 AI Detection Hours ([what is it?](/docs/user-guides/how-does-detective-hour-work)). The reason is that these cool features do cost non-trivial amount on things like GPU (the expensive computational resources that power the AI behind TSD), cloud storage, and network bandwidth. If The Detective just offers unlimited free service to everyone, she and her team can't sustain themselves.
 
 #### Can I just pay a one time fee for the service, just like Simplify3D?
 

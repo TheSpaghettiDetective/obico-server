@@ -1,7 +1,7 @@
 ---
 id: how-does-credits-work
 title: I want to help The Detective get better at her job. How can I do it?
-sidebar_label: Help The Detective improve and earn Detective Hours
+sidebar_label: Help The Detective improve and earn AI Detection Hours
 ---
 
 Glad that you asked.
@@ -35,19 +35,19 @@ Once granted, The Spaghetti Detective team will have the option to review this p
 
 This is necessary because we want to ensure that all TSD users use consistent criteria in these Focused Feedbacks. The Focused Feedbacks users give us will serve as the most important input to train (teach) The Detective's AI. If The Detective receives inconsistent input from different users, she will be confused and make the wrong calls more often.
 
-### You earn Detective Hours for giving Focused Feedback
+### You earn AI Detection Hours for giving Focused Feedback
 
-Every time you finish a Focused Feedback, you will earn two **Detective Hours**. The reward is indicated by this icon:  <img src="/img/user-guides/detective-hour-2-primary.png" alt="Detective Hour" style={{height: "1em", display: "inline",  verticalAlign: "text-bottom"}}></img>.
+Every time you finish a Focused Feedback, you will earn two **AI Detection Hours**. The reward is indicated by this icon:  <img src="/img/user-guides/detective-hour-2-primary.png" alt="AI Detection Hour" style={{height: "1em", display: "inline",  verticalAlign: "text-bottom"}}></img>.
 
 :::info
-Detective Hour is sometimes abbreviated as **DH**.
+AI Detection Hour is sometimes abbreviated as **DH**.
 :::
 
 :::info
-Learn more about [how Detective Hour works](/docs/user-guides/how-does-detective-hour-work).
+Learn more about [how AI Detection Hour works](/docs/user-guides/how-does-detective-hour-work).
 :::
 
-The more Focused Feedback you give to The Detective, the more free Detective Hours you will get rewarded with, which can be used to get The Detective to watch more of your prints, which can then be turned into Focused Feedbacks and help The Detective get better. The power coming from infinite self-improving cycle is why The Spaghetti Detective has become one of the most vibrant 3D printing communities in the world!
+The more Focused Feedback you give to The Detective, the more free AI Detection Hours you will get rewarded with, which can be used to get The Detective to watch more of your prints, which can then be turned into Focused Feedbacks and help The Detective get better. The power coming from infinite self-improving cycle is why The Spaghetti Detective has become one of the most vibrant 3D printing communities in the world!
 
 ## FAQs
 
@@ -55,7 +55,7 @@ The more Focused Feedback you give to The Detective, the more free Detective Hou
 
 It is because you can't give the Focused Feedback for that particular print. There are a few reasons why this is so:
 
-* If the option "Watch for failures" was turned off for the print, The Detective would turn a blind eye to that print, and hence couldn't see anything. This is the most common reason why the Focused Feedback is not available for a print.
+* The option "Enable AI failure detection" is turned off for the print. This is the most common reason why the Focused Feedback is not available for a print.
 * Sometimes The Detective simply didn't see anything "interesting" throughout the print (which, by the way, usually means it's an impeccable print and hence a good thing for you). Therefore there are nothing to give the Focused Feedback on.
 * The Focused Feedback is only available for 30 days. After 30 days, the snapshots will be removed from the system if you have not given feedback to them.
 

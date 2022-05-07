@@ -15,7 +15,7 @@
       You will earn
       <strong
         class="text-light"
-      >2 non-expirable Detective Hours</strong> after you finish this Focused Feedback.
+      >2 non-expirable AI Detection Hours</strong> after you finish this Focused Feedback.
       <a target="_blank"
         href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
       >Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>

@@ -60,7 +60,7 @@
           style="left: 0; width: 100%; top: 50%; margin-top: -55px;"
         >
           <H1><i class="far fa-eye-slash"></i></H1>
-          <h5 class="text-warning">The Detective Is Not Watching</h5>
+          <h5 class="text-warning">Failure Detection is Off</h5>
           <small
             v-if="printer.not_watching_reason"
           >{{ printer.not_watching_reason }}. <a href="https://www.obico.io/docs/user-guides/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
@@ -116,10 +116,10 @@
                   <label
                     class="toggle-label"
                     :for="'watching_enabled-toggle-' + printer.id"
-                  >Watch for failures
+                  >Enable AI failure detection
                     <div
                       v-if="!watchForFailures"
-                      class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned on.
+                      class="text-muted font-weight-light font-size-sm">AI failure detection is disabled. You are on your own.
                     </div>
                   </label>
                   <div class="custom-control custom-switch">
@@ -412,7 +412,7 @@ export default {
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
-        html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
+        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
       }).then((result) => {

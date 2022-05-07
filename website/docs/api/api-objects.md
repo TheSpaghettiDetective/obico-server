@@ -10,12 +10,12 @@ An object that represents a printer.
 - `name`: Printer name.
 - `created_at`: The timestamp when the printer is created. In ISO-8601 format.
 - `action_on_failure`: What to do when a possible failure is detected. An `Enum`.
-    - `PAUSE`: The print will be paused automatically. Note: when the detection (prediction score) is not very high, the print won't be paused. An alert will be sent instead in this case. 
+    - `PAUSE`: The print will be paused automatically. Note: when the detection (prediction score) is not very high, the print won't be paused. An alert will be sent instead in this case.
     - `NONE`: No action. Since an alert will always be sent, `NONE` means the user will still receive an alert.
-- `watching_enabled`: If the failure watching is enabled by the user. Note: even if the watching is enabled, the system may not actively watch a print, for one reason or another. See `not_watching_reason` for details.
+- `watching_enabled`: If the failure detection is enabled by the user. Note: even if the failure detection is enabled, the system may not actively watch a print, for one reason or another. See `not_watching_reason` for details.
 - `not_watching_reason`: A textual representation of why a print is not being actively watch.
-    - *"Watch for failures" is turned off*: `watching_enabled` is set to `false`
-    - *You have run out of Detective Hours*: The `dh_balance` in the [`User`](#user) object is 0 or a negative number.
+    - *AI failure detection is disabled*: `watching_enabled` is set to `false`
+    - *You have run out of AI Detection Hours*: The `dh_balance` in the [`User`](#user) object is 0 or a negative number.
     - *Printer is not actively printing*: Either `current_print` is `null`, or the printer is paused.
     - *Alerts are muted for current print*: The user has selected "mute alert for the rest of the print".
 - `tools_off_on_pause`: Whether or not the tool (hotend) heater should be shut off when a print is paused.
@@ -124,7 +124,7 @@ A dummy print object will be created when a timelapse video is uploaded to the s
 - `alert_overwrite`: The response the user gives about if a print failure has happened during the print. An `Enum`.
     - `FAILED`: There is(are) print failure(s).
     - `NOT_FAILED`: There are no print failures.
-- `printshotfeedback_set`: 
+- `printshotfeedback_set`:
 
 ## `PrintShotFeedback`
 
@@ -155,4 +155,4 @@ An object that represents a G-Code file.
 
 - `email`: Email.
 - `consented_at`: The timestamp when the user has consented to the terms and conditions. It should always be the time when the user signs up. In ISO-8601 format.
-- `dh_balance`: The balance of the Detective Hours.
+- `dh_balance`: The balance of the AI Detection Hours.

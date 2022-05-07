@@ -171,7 +171,7 @@ When the printer specified by the `{:id}` doesn't exist, or the access is not au
 
 ## POST `/api/v1/printers/{:id}/mute_current_print`
 
-Mute (temporarily disable watching for the rest of the print) the current print on the [`Printer`](/docs/api/api-objects/#printer) object specified by `{:id}`
+Mute (temporarily disable failure detection for the rest of the print) the current print on the [`Printer`](/docs/api/api-objects/#printer) object specified by `{:id}`
 
 ### Request
 

@@ -168,12 +168,12 @@
               <small v-if="focusedFeedbackEligible">
                 <span
                   v-if="focusedFeedbackCompleted"
-                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable Detective Hours. You can click the button again to change your feedback.</span>
+                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.</span>
                 <span v-else>
                   With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
                   <a
                     href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
-                  >You will earn 2 Detective Hours once you finish the Focused Feedback</a>.
+                  >You will earn 2 AI Detection Hours once you finish the Focused Feedback</a>.
                 </span>
               </small>
 

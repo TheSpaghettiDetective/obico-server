@@ -2,7 +2,7 @@
 title: 20 Million Hours And Going Strong
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates', 'Community']
 ---
 import Zoom from 'react-medium-image-zoom'
@@ -40,5 +40,5 @@ It means you are a little too early or too late. *Hint: refresh the page to get 
 
 #### How long will it take to reach the coupon limits?
 
-Last time we limited to 25 coupons and it took about 1 hour to reach the limit. We hope this time around the coupons can last for more than 2 hours but there is no guarantee. 
+Last time we limited to 25 coupons and it took about 1 hour to reach the limit. We hope this time around the coupons can last for more than 2 hours but there is no guarantee.
 Good luck!

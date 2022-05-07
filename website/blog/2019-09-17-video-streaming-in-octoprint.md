@@ -2,7 +2,7 @@
 title: Video Streaming Is Here!
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['OctoPrint', 'Webcam Streaming']
 ---
 
@@ -39,7 +39,7 @@ Again, because WebRTC is a new technology, it's not yet well supported by all br
 
 1. Upgrade The Spaghetti Detective plugin to version 0.8.0 when OctoPrint prompt you to do so.
 
-2. Turn on video streaming by going to OctoPrint settings --> The Spaghetti Detective (beta) --> Opt In --> Smooth video streaming testing. 
+2. Turn on video streaming by going to OctoPrint settings --> The Spaghetti Detective (beta) --> Opt In --> Smooth video streaming testing.
 
 ![Opt in alpha testing](/img/blogs/video-streaming-alpha-testing.png)
 

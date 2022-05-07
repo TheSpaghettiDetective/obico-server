@@ -5,7 +5,7 @@ title: Set up your own TSD private server
 
 Surprise Surprise! The Spaghetti Detective is actually open source. From the plugin to the backend to the algorithm, every single bit (pun intended) of it.
 
-An old PC is a perfect machine to run TSD server on. With a few tweaks you can also [run it on a 4gb Jetson Nano](https://www.thespaghettidetective.com/blog/2021/06/06/nvidia-jetson-nano-fun-project-3d-printing).
+An old PC is a perfect machine to run TSD server on. With a few tweaks you can also [run it on a 4gb Jetson Nano](https://www.obico.io/blog/2021/06/06/nvidia-jetson-nano-fun-project-3d-printing).
 
 Get to [TSD source code repo](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective) and follow the instructions to set up your own server.
 

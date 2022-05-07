@@ -2,7 +2,7 @@
 title: Pricing adjustment for the monthly Pro plan
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates']
 ---
 
@@ -12,7 +12,7 @@ We will be making some pricing adjustments on the monthly Pro plan as of **July 
 
 * For each additional printer, the monthly Pro plan will be adjusted **from $2.75 per month to $3 per month**.
 
-* Nothing else changes. 
+* Nothing else changes.
 
 ### Why these changes?
 

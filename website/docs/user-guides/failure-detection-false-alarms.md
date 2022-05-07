@@ -30,7 +30,7 @@ Our users have reported quite a few things The Detective is likely to get wrong,
 
 Fortunately a few simple measures can be taken to avoid most of the false alarms. This is particularly important before The Detective has the time and resource needed to be trained into Sherlock Holmes.
 
-- [Review the time-lapses](https://app.thespaghettidetective.com/prints/) from time to time to see what objects confuse The Detective the most, and, if possible, move them to a different place so that they are not in the camera's view.
+- [Review the time-lapses](https://app.obico.io/prints/) from time to time to see what objects confuse The Detective the most, and, if possible, move them to a different place so that they are not in the camera's view.
 - If it's not practical to remove the objects that cause confusion, e.g., the extruder's reflection on the glass bed, you can adjust the angle and position of the camera to see if it helps.
 - If you are still getting excessive false alarms, you can adjust [the alertness level](/docs/user-guides/detection-print-job-settings/#how-alerted-do-you-want-the-detective-to-be-on-this-printer) in printer settings to low.
 - If setting the alertness level still doesn't help, you can change the printer settings so that The Detective won't pause the print on false alarm ([here is how](/docs/user-guides/detection-print-job-settings/#when-potential-failure-is-detected)). The Detective is quite adaptive. Once she realizes she is detecting certain patterns over and over again in all prints, she will realize that she must be wrong with it and correct herself.

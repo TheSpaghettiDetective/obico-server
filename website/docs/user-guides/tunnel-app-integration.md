@@ -7,23 +7,23 @@ title: Guide to integrate with OctoPrint Tunneling
 
 Example:
 
-`https://app.thespaghettidetective.com/tunnels/new/?app=Great%20App&printer_id=12345&success_redirect_url=greatapp://callback`
+`https://app.obico.io/tunnels/new/?app=Great%20App&printer_id=12345&success_redirect_url=greatapp://callback`
 
 ### Address
 
-`https://app.thespaghettidetective.com/tunnels/new/`
+`https://app.obico.io/tunnels/new/`
 
 ### Parameters
 
 * `app`: Required. The name of your app.
 * `printer_id`: Optional. If not provided, and the user has more than 1 printers in The Spaghetti Detective, the page will list all printers for the user to choose from.
-* `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.thespaghettidetective.com/tunnels/succeeded/` on successful authorization.
+* `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
 
 ### Redirect on success
 
-On a successful authorization, the page will be redirect to `{success_redirect_url}/?tunnel_endpoint=https://basic_auth_username:basic_auth_password@tunnel-domain.tunnels.app.thespaghettidetective.com`
+On a successful authorization, the page will be redirect to `{success_redirect_url}/?tunnel_endpoint=https://basic_auth_username:basic_auth_password@tunnel-domain.tunnels.app.obico.io`
 
-Use `https://basic_auth_username:basic_auth_password@tunnel-domain.tunnels.app.thespaghettidetective.com` as endpoint to connect to OctoPrint.
+Use `https://basic_auth_username:basic_auth_password@tunnel-domain.tunnels.app.obico.io` as endpoint to connect to OctoPrint.
 
 This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document.
 

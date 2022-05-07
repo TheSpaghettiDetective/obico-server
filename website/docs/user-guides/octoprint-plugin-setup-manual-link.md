@@ -97,7 +97,7 @@ Open The Spaghetti Detective mobile app. You should see a screen with a big "**L
   </TabItem>
   <TabItem value="web">
 
-Open [The Spaghetti Detective web app](https://app.thespaghettidetective.com/) in another browser tab. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, click "Link OctoPrint Printer" button.
+Open [The Spaghetti Detective web app](https://app.obico.io/) in another browser tab. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, click "Link OctoPrint Printer" button.
 
   </TabItem>
 </Tabs>

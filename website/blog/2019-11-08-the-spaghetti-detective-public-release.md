@@ -2,7 +2,7 @@
 title: The Spaghetti Detective Public Launch Annoucement
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates']
 ---
 

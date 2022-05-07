@@ -12,8 +12,8 @@ The Spaghetti Detective offers two plan options to our users:
 |-|----------|----------|
 | [Webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) | 25fps (25 frames per second) Premium Streaming. Always streaming. | 0.1fps (1 frame per 10 seconds). Streaming only when you are printing. |
 | Free [Detective Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
-| [Pre-paid Detective Hour Packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) | Eligible | Eligible |
-| [Subscribe&Save Detective Hour Packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) | Eligible | Not eligible |
+| [Pre-paid Detective Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
+| [Subscribe&Save Detective Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |
 | [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 50MB/month |
 | Multiple printers | Each additional printer costs 50% of that of the 1st printer | Can have only 1 printer |
 
@@ -34,7 +34,7 @@ The Pro plan costs $4 per month if you subscribe to the annual plan. This is bar
 
 The base plan is limited to 1 printer. If you have more printers, you can add them at $2 per month per additional printer.
 
-You can get more details on [TSD pricing page](https://app.thespaghettidetective.com/ent_pub/pricing/).
+You can get more details on [TSD pricing page](https://app.obico.io/ent_pub/pricing/).
 
 #### Why can't The Detective just work for free? People love FREE, you know.
 

@@ -20,7 +20,7 @@ To make sure you don’t feel bogged down by the problems and abandon this revol
 ## Top 10 3D Printer Problems
 
 1.  ### First Layer Adhesion
-    
+
 
 ![](/img/blogs/3d-printer-failure-first-layer-adhesion.jpg)
 
@@ -61,7 +61,7 @@ If all other solutions are tried but the problem persists, the height between th
 The bed adhesion tools (brim and raft) are offered in almost all slicing applications for a reason. It is recommended to use bed adhesion tools as a default for all prints. Even with non-warping materials like PLA.
 
 2.  ### Nozzle not extruding material
-    
+
 
 ![](/img/blogs/3d-printer-failure-not-extruding.jpg)
 
@@ -126,13 +126,13 @@ Print speed is also taken into account when removing stringing. Stringing may oc
 To keep the nozzle from oozing out material, avoid long free nozzle travel. The free movement of the nozzle can be adjusted and controlled through the slicer settings. Ascertain that the nozzle takes the shortest possible path to the next printing point.
 
 4.  ### Spaghetti
-    
+
 
 ![](/img/blogs/3d-printer-failure-spaghetti-2.jpg)
 
 Spaghetti mess while 3D printing Groot/Source: [Prusa3D](https://help.prusa3d.com/en/article/spaghetti-monster_1999)
 
-This 3D printer issue is exactly what its name implies. The print results in a jumbled mess of filament strings that resemble spaghetti. This spaghetti mess accumulates in and around the print due to a variety of factors such as print detachment from the bed, the collapse of printed objects, or even issues such as erroneous G-code. However, this is one issue that you can eliminate if you are using OctoPrint. By using [The Spaghetti Detective](https://www.thespaghettidetective.com/) OctoPrint plugin, you can easily detect and stop the print as it starts to form spaghettis thereby reducing the material wastage. This plugin includes an AI-powered detection engine that detects the formation of spaghetti and immediately sends a message to your 3D printer to stop printing. On a more comical note, if you enjoy the cringe-worthy spaghetti picture above, check out The Spaghetti Detective's [Spaghetti Gallery](https://app.thespaghettidetective.com/ent_pub/publictimelapses/)- a compendium of videos of failed 3D prints caught in action by The Detective's AI. 
+This 3D printer issue is exactly what its name implies. The print results in a jumbled mess of filament strings that resemble spaghetti. This spaghetti mess accumulates in and around the print due to a variety of factors such as print detachment from the bed, the collapse of printed objects, or even issues such as erroneous G-code. However, this is one issue that you can eliminate if you are using OctoPrint. By using [The Spaghetti Detective](https://www.thespaghettidetective.com/) OctoPrint plugin, you can easily detect and stop the print as it starts to form spaghettis thereby reducing the material wastage. This plugin includes an AI-powered detection engine that detects the formation of spaghetti and immediately sends a message to your 3D printer to stop printing. On a more comical note, if you enjoy the cringe-worthy spaghetti picture above, check out The Spaghetti Detective's [Spaghetti Gallery](https://app.obico.io/ent_pub/publictimelapses/)- a compendium of videos of failed 3D prints caught in action by The Detective's AI.
 
 #### 3D Printer Troubleshooting
 
@@ -149,7 +149,7 @@ The temperature of the bed also plays an important role in this. If your printer
 Most of the time, you rely on downloaded designs without verifying the model or whether it is printable. It is always a good idea to double-check the generated G-code and preview the model in the slicer software to ensure that the model can be printed. If the model has any geometrical errors, then avoid printing or find alternatives for the same design.
 
 5.  ### Warping and Curling
-    
+
 
 ![](/img/blogs/3d-printer-failure-warping.jpg)
 
@@ -184,7 +184,7 @@ A brim is similar to a raft but is only attached to the outer edges of the print
 Make use of both these tools to increase layer adhesion and avoid warping issues.
 
 6.  ### Gaps in Top Layers
-    
+
 
 ![](/img/blogs/3d-printer-failure-gaps-top-layer.jpg)
 
@@ -213,7 +213,7 @@ If you tried both of the above-mentioned methods but the issue persists then you
 This problem is most frequently encountered by those of you who use smaller filament diameters (1.75mm). If none of the above solutions work for you, you can try using a 2.85mm (also referred to as 3mm) diameter filament.
 
 7.  ### Over-Extrusion and Under-Extrusion
-    
+
 
 ![](/img/blogs/3d-printer-failure-under-extrusion.jpg)
 
@@ -238,7 +238,7 @@ The flow of the material is affected by the print temperature. Lower the tempera
 The rate at which material flows through a 3D printer's extrusion system is defined by the extrusion multiplier. The higher the material flow, the greater the extrusion multiplier. If you notice under-extrusion while printing, then increase the extrusion multiplier to ensure proper printing.
 
 8.  ### Layer Splitting and Separation
-    
+
 
 ![](/img/blogs/3d-printer-failure-layer-separation.jpg)
 
@@ -257,7 +257,7 @@ In 3D printing, the layer height is determined by the nozzle diameter. The ideal
 The ideal printing temperature is always specified by the filament manufacturer. If the printing temperature is kept low for any reason, the successive layers may not be warm enough to bond with each other. Layer binding issues will also arise as a result of this. In this case, try increasing the temperature slightly and monitoring the results until ideal layer bonding is achieved.
 
 9.  ### Bridging issues
-    
+
 
 ![](/img/blogs/3d-printer-failure-bridging.jpg)
 
@@ -278,7 +278,7 @@ Another option is to add supports to the bridge through slicing software. A brid
 Printing at slow speeds can help to reduce bridging issues. Slower speeds ensure that the deposited material has enough time to cool. It also allows the previously deposited layer to bond with the newly deposited layer later on.
 
 10.  ### Weak Infill
-    
+
 
 ![](/img/blogs/3d-printer-failure-weak-infill.jpg)
 

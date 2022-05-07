@@ -39,7 +39,7 @@ Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out y
 
 Basic Streaming is fixed at 0.1 fps (1 frame every 10 seconds). That's why it appears to be very choppy.
 
-You need to [upgrade to the Pro plan to get the buttery-smooth, 25 fps Premium Streaming](https://app.thespaghettidetective.com/ent_pub/pricing/).
+You need to [upgrade to the Pro plan to get the buttery-smooth, 25 fps Premium Streaming](https://app.obico.io/ent_pub/pricing/).
 
 :::info
 

@@ -8,14 +8,14 @@ We know The Spaghetti Detective sounds like a magic. So we don't blame you if yo
 
 ## Upload your previously recorded time-lapse videos
 
-If you've been using Octoprint for a while, chances are you might already have a folder of time 3D printing time-lapses laying around. 
+If you've been using Octoprint for a while, chances are you might already have a folder of time 3D printing time-lapses laying around.
 
-If you do, you can upload them on the time-lapse page before ever starting a print with The Detective to see for yourself that The Detective really can catch 3D print failures! 
+If you do, you can upload them on the time-lapse page before ever starting a print with The Detective to see for yourself that The Detective really can catch 3D print failures!
 
-While she does sometimes make mistakes, she has successfully caught thousands of print failures all over the globe to date! 
+While she does sometimes make mistakes, she has successfully caught thousands of print failures all over the globe to date!
 
 :::tip
-Upload your time-lapse videos [here](https://app.thespaghettidetective.com/prints/upload/).
+Upload your time-lapse videos [here](https://app.obico.io/prints/upload/).
 :::
 
 ## FAQs
@@ -33,4 +33,4 @@ Again the easiest way to test if The Detective is worth her while is to upload a
 
 1. Start a test print and let it run for at least 5 minutes.
 2. Then you can throw in a ball of spaghetti and watch on "My Printers" page to see if it's correctly identified.
-3. Leave that spaghetti ball on the bed for a couple minutes to convince The Detective that this spaghetti monster is here to stay, and she should send you an alert via email or text (if you have set the phone number in [Preferences](https://app.thespaghettidetective.com/user_preferences/notification_twilio/)).
+3. Leave that spaghetti ball on the bed for a couple minutes to convince The Detective that this spaghetti monster is here to stay, and she should send you an alert via email or text (if you have set the phone number in [Preferences](https://app.obico.io/user_preferences/notification_twilio/)).

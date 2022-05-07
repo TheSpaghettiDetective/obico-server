@@ -53,7 +53,7 @@ Troubleshooting networking issues is outside the scope of this guide. But a good
 For instance, if you run OctoPrint on a Raspberry Pi, just like 90% of other OctoPrint users, the commands will be:
 
 1. SSH to the Raspberry Pi.
-1. Once you are on the Pi, run `curl https://app.thespaghettidetective.com/`. If the Pi has a good connection to the The Spaghetti Detective server, the command won't report any error.
+1. Once you are on the Pi, run `curl https://app.obico.io/`. If the Pi has a good connection to the The Spaghetti Detective server, the command won't report any error.
 
 :::note
 If you are not running the OctoPrint on a Raspberry Pi, the commands may be slightly different.

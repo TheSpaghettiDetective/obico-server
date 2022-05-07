@@ -1,6 +1,6 @@
 ---
 title: Remote G-Code upload and printing - a tutorial
-author: Mitch Bardijn 
+author: Mitch Bardijn
 author_url: https://www.facebook.com/SleepyBlueCat
 author_image_url: https://scontent-sjc3-1.xx.fbcdn.net/v/t31.0-1/c3.0.480.480a/p480x480/30051793_10212220411287521_371651864893343373_o.jpg?_nc_cat=111&_nc_ohc=PSK7bD8DeY0AQlZ9SJETUg41DJaPF3n2HOUh9gxBwKISEuD6RKDKKV0RQ&_nc_ht=scontent-sjc3-1.xx&_nc_tp=1&oh=1ce79826f69eb4a9a5a5925c10b689e2&oe=5EABFCC4
 tags: ['The Spaghetti Detective Updates']
@@ -14,7 +14,7 @@ This is a short and easy-to-consume tutorial on how you can use this feature. Pl
 
 ## Uploading a G-code file to print
 
-Head to [The Spaghetti Detective](https://app.thespaghettidetective.com/) starting page and click the G-code tab. It’ll look like this
+Head to [The Spaghetti Detective](https://app.obico.io/) starting page and click the G-code tab. It’ll look like this
 
 ![](/img/blogs/remote-print-1.png)
 

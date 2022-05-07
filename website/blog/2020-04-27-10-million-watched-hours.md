@@ -2,7 +2,7 @@
 title: 10 Million Hours That Demonstrate Maker's Heroic Fights Against COVID-19
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates']
 ---
 import Zoom from 'react-medium-image-zoom'
@@ -26,7 +26,7 @@ Sure! By the end of the month, we will start sending these goodies to our users:
 * 250 Detective Hours for every **Pro Plan** subscriber.
 * 25 Detective Hours for every free user.
 
-You can check [your Detective Hours log](https://app.thespaghettidetective.com/ent/detective_hours/) for the record of "Credit | 10M-hour giveaway" after May 1st to make sure you get it.
+You can check [your Detective Hours log](https://app.obico.io/ent/detective_hours/) for the record of "Credit | 10M-hour giveaway" after May 1st to make sure you get it.
 
 ## How about the prizes?
 

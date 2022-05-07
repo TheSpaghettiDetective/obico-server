@@ -10,10 +10,10 @@ If some of your printers have been archived, that's because you have more printe
 
 * If your account is on the Free plan, you can't have more than 1 printer.
 
-* If your account is on the Pro plan, you can add unlimited number of printers to your plan with as low as $2 per printer per month. 
+* If your account is on the Pro plan, you can add unlimited number of printers to your plan with as low as $2 per printer per month.
 
 :::info
-Learn more about the limits of the Free plan on [the pricing page](https://app.thespaghettidetective.com/ent_pub/pricing/).
+Learn more about the limits of the Free plan on [the pricing page](https://app.obico.io/ent_pub/pricing/).
 :::
 
 ## How can I un-archive my printers?
@@ -25,7 +25,7 @@ For instance, if you have subscribed for 3 printers in your Pro plan, and you al
 There are a few things you can do to make sure your plan has enough number of printers:
 
 * Delete the printers you no longer need. You can delete active printers or archived printers.
-* [Upgrade to the Pro plan](https://app.thespaghettidetective.com/ent_pub/pricing/) if you are currently on the Free plan.
-* If you are already on the Pro plan, you can change the number of printers on [your subscription page](https://app.thespaghettidetective.com/ent/subscription/).
+* [Upgrade to the Pro plan](https://app.obico.io/ent_pub/pricing/) if you are currently on the Free plan.
+* If you are already on the Pro plan, you can change the number of printers on [your subscription page](https://app.obico.io/ent/subscription/).
 
-Once your account is set up to allow for more printers, come back to the [printer archive page](https://app.thespaghettidetective.com/ent/printers/archived/) and un-archive the printers there.
+Once your account is set up to allow for more printers, come back to the [printer archive page](https://app.obico.io/ent/printers/archived/) and un-archive the printers there.

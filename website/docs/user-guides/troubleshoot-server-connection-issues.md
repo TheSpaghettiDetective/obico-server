@@ -60,7 +60,7 @@ Most likely, this error means the plugin is configured to point to the wrong ser
 
 Make sure the "**Server Address**" field is:
 
-`https://app.thespaghettidetective.com`
+`https://app.obico.io`
 
 If it is not, please
 

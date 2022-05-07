@@ -2,7 +2,7 @@
 title: The Spaghetti Detective Integrates with 3D Geeks Mobile App for Better User Experience
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates']
 ---
 

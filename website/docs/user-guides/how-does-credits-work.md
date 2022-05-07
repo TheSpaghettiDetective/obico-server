@@ -15,7 +15,7 @@ This is how Focused Feedback works - For the print in which The Detective found 
 
 ### "Cool! I want to give the Focused Feedback! Where can I find it?"
 
-The Focused Feedback is available on the [TIME-LAPSE](https://app.thespaghettidetective.com/prints/) page. Look for the big "Focused Feedback" button as shown below:
+The Focused Feedback is available on the [TIME-LAPSE](https://app.obico.io/prints/) page. Look for the big "Focused Feedback" button as shown below:
 
 ![Focused Feedback button](/img/user-guides/focused-feedback-button.png)
 

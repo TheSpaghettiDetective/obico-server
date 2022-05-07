@@ -2,7 +2,7 @@
 title: Auto-discovery re-implemented with improved security as strong as 2FA
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates']
 ---
 

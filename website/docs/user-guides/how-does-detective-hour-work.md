@@ -24,9 +24,9 @@ There are several ways to get Detective Hours:
 
 1. If you have [the Free plan](/docs/user-guides/upgrade-to-pro), you will get 10 Detective Hours for free each month.
 
-1. You can buy or subscribe to one of the [Detective Hour packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
+1. You can buy or subscribe to one of the [Detective Hour packs](https://app.obico.io/ent_pub/pricing/#need-more). You can get 500 hours for just $20.
 
-1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save Detective Hour packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
+1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save Detective Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
 
 ## FAQs
 
@@ -46,9 +46,9 @@ You can still watch your printer feed in the app even if your DH balance goes to
 
 #### I heard I can buy more DHs. Is it true?
 
-Yes. Additional DHs can be bought at $20 for 500 hours, or $0.04/hour. If you have subscribed to the Pro plan, you can also add one of the [Subscribe&Save DH packs](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) to your Pro plan at a much lower rate.
+Yes. Additional DHs can be bought at $20 for 500 hours, or $0.04/hour. If you have subscribed to the Pro plan, you can also add one of the [Subscribe&Save DH packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a much lower rate.
 
-Go to [your subscription page](https://app.thespaghettidetective.com/ent_pub/pricing/#need-more) to buy more DHs.
+Go to [your subscription page](https://app.obico.io/ent_pub/pricing/#need-more) to buy more DHs.
 
 #### 10 FREE DHs per month for free account is not enough!
 

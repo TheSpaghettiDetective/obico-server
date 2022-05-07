@@ -2,7 +2,7 @@
 title: The Spaghetti Detective Mobile App Is Coming! And It'll Be FREE!
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates', '3D Printer Remote Access']
 ---
 
@@ -56,7 +56,7 @@ Please click the button below to go to the donation page:
 
 ### When will the app be released?
 
-The current plan is to have an Early-Access version available for beta testing in 2-3 months.   
+The current plan is to have an Early-Access version available for beta testing in 2-3 months.
 
 It'll take another 1 month or longer to get all bugs fixed, and to get the app approved by the app stores. So optimistically we can expect to have the app ready for download in the app stores by the end of this year.
 

@@ -2,7 +2,7 @@
 title: The offer of 2 FREE months is now extended to anyone who prints PPEs
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 tags: ['The Spaghetti Detective Updates', 'COVID-19']
 ---
 
@@ -22,7 +22,7 @@ This step [only takes only 56 seconds](/docs/user-guides/octoprint-plugin-setup)
 
 ### 2. Select the number of printers you have, and the right amount of Detective Hours ([what is it?](/docs/user-guides/how-does-detective-hour-work)) you will need.
 
-1. Go to [the upgrade page](https://app.thespaghettidetective.com/ent_pub/pricing/).
+1. Go to [the upgrade page](https://app.obico.io/ent_pub/pricing/).
 1. Click "Upgrade" button.
 1. Select the number of printers and Detective Hours.
 

@@ -2,7 +2,7 @@
 title: Fun project with NVIDIA Jetson Nano - AI failure detection for 3D printing
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 description: Put your NVIDIA Jetson Nano to real use that brings you some practical benefit. Run an AI failure detection for your 3D printer.
 tags: ['3D Printng Tips and Tricks', 'How-To']
 ---

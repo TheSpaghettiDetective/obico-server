@@ -2,7 +2,7 @@
 title: OctoPrint Remote Access
 author: Kenneth Jiang
 author_url: https://medium.com/@kennethjiang
-author_image_url: https://www.thespaghettidetective.com/img/kj.jpg
+author_image_url: https://www.obico.io/img/kj.jpg
 description: Port forwarding? VPN? Confused by the different ways for secure remote access your OctoPrint? This guide covers all you need to know.
 tags: ['OctoPrint', '3D Printer Remote Access']
 ---
@@ -208,7 +208,7 @@ The most common peer-to-peer solutions are: [TeamViewer](https://www.teamviewer.
 | [VNC](https://www.realvnc.com/en/connect/download/viewer/) | <span style={{color: "orange"}}>Kinda</span> [^8] | <span style={{color: "green"}}>Yes</span> | <span style={{color: "green"}}>Yes</span> |  <span style={{color: "red"}}>No</span> | <span style={{color: "orange"}}>Kinda</span> [^5] | <span style={{color: "green"}}>Yes</span> |
 
 [^1]: When you are using TouchUI plugin or Printoid.
-[^2]: If you set up your own VPN server (such as [PiVPN](http://www.pivpn.io/)), or your router has a built-in VPN. 
+[^2]: If you set up your own VPN server (such as [PiVPN](http://www.pivpn.io/)), or your router has a built-in VPN.
 [^3]: OctoPrint Anywhere: The first printer is free. $5/month: 2-3 printer. $10/month: unlimited printers.
 [^4]: AstroPrint: The first 2 printers are free. $10/month: up to 5 printer; $5/month/printer after that.
 [^5]: It's webcam feed embedded in OCtoPrint that refreshes a few times a second but not as smooth as you'd expect from a youtube video.

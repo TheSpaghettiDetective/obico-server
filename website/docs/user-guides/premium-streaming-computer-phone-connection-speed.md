@@ -44,7 +44,7 @@ If now you have a smooth webcam stream, it's confirmed that the phone's connecti
 
 ### Test the Premium Streaming on a computer
 
-Open [The Spaghetti Detective web app](https://app.thespaghettidetective.com/) on a computer. If possible, try to run an Internet speed testing on the computer to make sure it has a solid connection.
+Open [The Spaghetti Detective web app](https://app.obico.io/) on a computer. If possible, try to run an Internet speed testing on the computer to make sure it has a solid connection.
 
 If the webcam stream is smooth on the computer, it's confirmed that the phone's connection speed is the problem.
 

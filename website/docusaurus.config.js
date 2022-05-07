@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 module.exports = {
   title: 'The Spaghetti Detective', // Title for your website.
   tagline: '3D Printer Remote Monitoring & Control',
-  url: 'https://www.thespaghettidetective.com', // Your website URL
+  url: 'https://www.obico.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
   trailingSlash: true,
   projectName: 'public',
@@ -52,13 +52,13 @@ module.exports = {
         alt: 'The Spaghetti Detective Logo',
         src: 'img/logo.svg',
         srcDark: 'img/logo_dark.svg',
-        href: 'https://www.thespaghettidetective.com',
+        href: 'https://www.obico.io',
         target: '_self',
       },
       items: [
         {
           label: 'Pricing',
-          to: 'https://app.thespaghettidetective.com/ent_pub/pricing/',
+          to: 'https://app.obico.io/ent_pub/pricing/',
           target: '_self',
         },
         {
@@ -85,21 +85,21 @@ module.exports = {
             },
             {
               label: 'The Detective Team',
-              to: 'https://www.thespaghettidetective.com/team.html',
+              to: 'https://www.obico.io/team.html',
               target: '_self',
             },
           ],
         },
         {
           label: 'Sign In',
-          to: 'https://app.thespaghettidetective.com/accounts/login/',
+          to: 'https://app.obico.io/accounts/login/',
           target: '_self',
           position: 'right',
           className: ' tsd-button tsd-button-secondary tsd-navbar-button',
         },
         {
           label: 'Sign Up',
-          to: 'https://app.thespaghettidetective.com/accounts/signup/',
+          to: 'https://app.obico.io/accounts/signup/',
           target: '_self',
           position: 'right',
           className: 'tsd-button tsd-button-primary tsd-navbar-button',
@@ -114,17 +114,17 @@ module.exports = {
           items: [
             {
               label: 'What Is The Spaghetti Detective',
-              to: 'https://thespaghettidetective.com/',
+              to: 'https://obico.io/',
               target: '_self',
             },
             {
               label: 'See It In Action',
-              to: 'https://www.thespaghettidetective.com/#gallery',
+              to: 'https://www.obico.io/#gallery',
               target: '_self',
             },
             {
               label: 'Pricing',
-              to: 'https://app.thespaghettidetective.com/ent_pub/pricing/',
+              to: 'https://app.obico.io/ent_pub/pricing/',
               target: '_self',
             },
             {
@@ -164,17 +164,17 @@ module.exports = {
             },
             {
               label: 'Terms of Use',
-              to: 'https://www.thespaghettidetective.com/terms.html',
+              to: 'https://www.obico.io/terms.html',
               target: '_self',
             },
             {
               label: 'Privacy Policy',
-              to: 'https://www.thespaghettidetective.com/privacy.html',
+              to: 'https://www.obico.io/privacy.html',
               target: '_self',
             },
             {
               label: 'Disclaimer',
-              to: 'https://www.thespaghettidetective.com/disclaimer.html',
+              to: 'https://www.obico.io/disclaimer.html',
               target: '_self',
             },
           ],
@@ -290,8 +290,8 @@ module.exports = {
   // Add custom scripts here that would be placed in <script> tags.
   scripts: [
     'https://buttons.github.io/buttons.js',
-    'https://www.thespaghettidetective.com/vendor/jquery/jquery.min.js',
-    'https://www.thespaghettidetective.com/js/analytics.min.js',
+    'https://code.jquery.com/jquery-3.6.0.min.js',
+    'https://www.obico.io/js/analytics.min.js',
     '/js/compact-view.js',
   ],
   plugins: [

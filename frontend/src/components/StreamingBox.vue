@@ -49,7 +49,7 @@
       <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
         <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
           <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
-          Detective webcam view
+          Failure detection view
         </span><br>
         <span class="description">Shows detection boxes if present (0.1 fps)</span>
       </b-dropdown-item>

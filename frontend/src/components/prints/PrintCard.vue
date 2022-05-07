@@ -24,14 +24,10 @@
             class="no-corner no-shadow"
             :disabled="!canShowDetectiveView"
           >
-            <svg class="seg-control-icon">
-              <use href="#svg-logo-compact" />
-            </svg>
+            <i class="fas fa-balance-scale"></i>
           </b-form-radio>
           <b-form-radio value="info" class="no-corner no-shadow">
-            <svg class="seg-control-icon">
-              <use href="#svg-info-icon" />
-            </svg>
+            <i class="fas fa-info"></i>
           </b-form-radio>
         </b-form-radio-group>
         <b-dropdown right no-caret toggle-class="icon-btn">
@@ -477,5 +473,8 @@ export default {
     position: absolute
     left: calc(50% - #{$size / 2})
     top: calc(50% - #{$size / 2} - 20px)
+
+i.fas
+  width: 1em
 
 </style>

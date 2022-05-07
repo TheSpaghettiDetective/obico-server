@@ -305,7 +305,7 @@ def send_timelapse_detection_done_email(_print):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
-    subject = 'The Detective is done looking at the time-lapse you uploaded.'
+    subject = 'We are done detecting failures on the time-lapse you uploaded.'
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {

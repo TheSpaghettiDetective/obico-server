@@ -415,4 +415,4 @@ Every time you make a change to the plugin frontend, you need to re-compile the 
 This step is completely optional. You won't violate the Obico license if you just want to keep the plugin to yourself without contributing back.
 :::
 
-Please read this [contributor's guide](/docs/developer-guides/contribute-code) for how you can contribute the plugin you developed back to the Obico project.
+Please read this [contributor's guide](../contribute.md) for how you can contribute the plugin you developed back to the Obico project.

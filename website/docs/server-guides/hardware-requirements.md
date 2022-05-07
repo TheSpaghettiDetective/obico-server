@@ -2,7 +2,7 @@
 title: Hardware requirements
 ---
 
-The Spaghetti Detective runs a powerful Machine Learning model that requires a device powerful enough to run it. And by powerful, we mean most anything from the last decade.
+The Obico Server runs a powerful Machine Learning model that requires a device powerful enough to run it. And by powerful, we mean most anything from the last decade.
 
 ## Single Board Computers
 

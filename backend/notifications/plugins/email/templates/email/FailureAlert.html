@@ -3,7 +3,7 @@
 {% block email_content %}
 
 <p>Hi {{ context.user.first_name|default:"" }},</p>
-<p>The Obico app spotted some suspicious activities on your printer <b>{{ context.printer.name }}</b>.</p>
+<p>Obi The Owl has detected a possible failure on your printer <b>{{ context.printer.name }}</b>.</p>
 
 {% if context.print_paused %}
 <p>
@@ -103,16 +103,16 @@
         <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can
           click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you
           can suppress alerts for the
-          resest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
+          rest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
         {% endif %}
         <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click
           "Go to the Obico app to take a closer look" to go to the real time webcam view. From there you can
           see the webcam in real time,
           and decide if you want to cancel the print.</li>
         {% if context.print_paused %}
-        <li>If you can directly access your OctoPrint right now, you can also resume the print from there. Just remember
+        <li>You can also resume the print in OctoPrint or Mainsail/Fluidd. Just remember
           that the Obico app has turned off the heaters for your safety. Remember to turn them back on before
-          resuming it in OctoPrint.</li>
+          resuming the print.</li>
         {% endif %}
       </ul>
     </td>

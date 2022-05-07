@@ -25,7 +25,7 @@
               <div class="mt-3 col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your OctoPrint</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
-                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 Print Hours Watched by The Detective</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 AI Failure Detection Hours</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>
               </div>
             </b-row>

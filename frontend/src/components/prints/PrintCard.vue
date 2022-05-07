@@ -128,9 +128,9 @@
               <div
                 class="lead"
                 :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
-              >{{ print.alerted_at ? 'The Detective found spaghetti' : 'The Detective found nothing fishy' }}</div>
+              >{{ print.alerted_at ? 'Failure detected' : 'Failure detected' }}</div>
               <div class="py-2">
-                Did she get it right?
+                Did we get it right?
                 <b-button
                   :variant="thumbedUp ? 'primary' : 'outline'"
                   @click="onThumbUpClick"
@@ -168,9 +168,9 @@
               <small v-if="focusedFeedbackEligible">
                 <span
                   v-if="focusedFeedbackCompleted"
-                >Thank you for completing the Focused Feedback for The Detective. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.</span>
+                >Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.</span>
                 <span v-else>
-                  With Focused Feedback, you can tell The Detective exactly where she got it wrong. This is the most effective way to help her improve.
+                  With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.
                   <a
                     href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
                   >You will earn 2 AI Detection Hours once you finish the Focused Feedback</a>.
@@ -178,10 +178,10 @@
               </small>
 
               <small v-else>
-                Every time you give The Detective feedback,
+                Every time you give us feedback,
                 <a
                   href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-                >you help her get better at detecting spaghetti</a>.
+                >you help us get better at detecting failures</a>.
               </small>
             </div>
           </div>

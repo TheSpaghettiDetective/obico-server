@@ -11,7 +11,7 @@
       <span class="feedback-estimate">{{ this.estimatedFeedbackTime }}</span>
     </p>
     <p class="font-weight-light">
-      Help The Detective get better by giving her in-depth feedback on the snapshots of the print.
+      Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of the print.
       You will earn
       <strong
         class="text-light"

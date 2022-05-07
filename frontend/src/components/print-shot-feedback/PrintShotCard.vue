@@ -62,7 +62,7 @@ export default {
             this.$swal.Prompt.fire({
               title: 'You are awesome!',
               html:
-                '<p>The Detective just got a little smarter because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
+                '<p>The AI failure detection just got a little better because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
               confirmButtonText: 'I\'m done!',
               showCancelButton: true,
               cancelButtonText: 'Change feedback'

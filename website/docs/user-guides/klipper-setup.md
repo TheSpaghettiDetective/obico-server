@@ -1,6 +1,7 @@
 ---
 id: klipper-setup
 title: Set up Obico for Klipper
+description: For Klipper/Moonraker/Mainsail/Fluidd users
 sidebar_label: Obico for Klipper
 ---
 

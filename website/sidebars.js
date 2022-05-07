@@ -18,6 +18,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Getting Started',
+      link: {type: 'doc', id: 'user-guides/getting-started'},
       items: ['user-guides/octoprint-plugin-setup', 'user-guides/klipper-setup',],
     },
     {

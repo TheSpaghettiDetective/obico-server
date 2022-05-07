@@ -1,6 +1,7 @@
 ---
 id: octoprint-plugin-setup
-title: Set up The Spaghetti Detective in 56 seconds
+title: Set up Obico for OctoPrint
+description: For OctoPrint users
 sidebar_label: Obico for OctoPrint
 ---
 

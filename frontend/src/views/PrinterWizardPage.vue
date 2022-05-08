@@ -234,7 +234,7 @@ git checkout obico
                       <img
                         :src="require('@static/img/octoprint_logo.png')" />
                         <h3  class="mt-4">OctoPrint</h3>
-                        <div>Note: If you are using OctoPrint with Klipper, select this.</div>
+                        <div>Including OctoPrint for Klipper such as OctoKlipper.</div>
                       </div>
                     </div>
                     <div class="col-sm-12 col-lg-6 p-4">

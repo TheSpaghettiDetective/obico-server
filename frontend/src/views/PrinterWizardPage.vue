@@ -173,8 +173,7 @@
                               <li><div>Run:</div>
                                 <pre class="mt-2">
 cd ~
-git clone https://github.com/TheSpaghettiDetective/tsd-moonraker.git moonraker-obico
-git checkout obico
+git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
 ./install.sh
                                </pre>
                               </li>

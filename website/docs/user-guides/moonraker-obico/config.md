@@ -1,5 +1,5 @@
 ---
-id: moonraker-obico-config
+id: config
 title: moonraker-obico.cfg
 ---
 
@@ -54,3 +54,13 @@ Usually, you don't need to directly set anything in the `[webcam]` section. In t
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
 
 - `snapshot_url`:
+- `stream_url`:
+- `flip_h`:
+- `flip_v`:
+- `rotate_90`:
+- `aspect_ratio_169`:
+
+## `[logging]` section
+
+- `path`: The path to the log file. Will be automatically rotated at 5MB size.
+- `level`: Default to `INFO`. Set to `DEBUG` to see *a lot* more details in the logs

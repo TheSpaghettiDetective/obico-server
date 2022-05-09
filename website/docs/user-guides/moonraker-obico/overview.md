@@ -1,5 +1,5 @@
 ---
-id: moonraker-obico-overview
+id: overview
 title: Obico for Klipper Overview
 ---
 

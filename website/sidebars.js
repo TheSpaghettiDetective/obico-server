@@ -23,13 +23,24 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'Obico for OctoPrint',
+      items: ['user-guides/octoprint-plugin-setup-manual-link', 'user-guides/check-webcam-streaming-mode', 'user-guides/octoprint-webcam-not-streaming'],
+    },
+    {
+      type: 'category',
+      label: 'Obico for Klipper',
+      link: {type: 'doc', id: 'user-guides/moonraker-obico-overview'},
+      items: ['user-guides/moonraker-obico-config'],
+    },
+    {
+      type: 'category',
       label: 'Failure Detection',
       items: ['user-guides/how-to-test-failure-detection', 'user-guides/failure-detection-false-alarms', 'user-guides/optimal-camera-setup', 'user-guides/how-does-credits-work', 'user-guides/help-the-detective-improve', 'user-guides/detective-not-watching',],
     },
     {
       type: 'category',
       label: 'Use The App',
-      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/octoprint-tunneling', 'user-guides/octoprint-plugin-setup-manual-link', 'user-guides/notification-settings'],
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/octoprint-tunneling', 'user-guides/notification-settings'],
     },
     {
       type: 'category',

@@ -134,24 +134,25 @@ On the welcome page, click the "**Link Printer**" button.
   <TabItem value="mobile">
 
 1. Choose "**Klipper**" on the next screen.
-1. Assuming you have followed [this Setup Guide](/docs/user-guides/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
-1. On the next screen, if it is stuck in "Scanning..." for more than 1 minutes, tap the "**Manual Setup**" link.
-1. Tap "**I'm ready now**" on the next screen.
-1. Now you will see a screen with a 6-digit verification code. This is the code you will use the manually link OctoPrint. You can long-press the number to copy it to the clipboard.
+1. Assuming you have followed the previous steps and run the `install.sh` script, simply press "**Yes. Obico for Klipper is installed**".
+1. Now you will see a screen with a 6-digit verification code. This is the code you will use to link your printer. You can long-press the number to copy it to the clipboard.
 
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/manual-link-mobile.gif" /></div>
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/klipper-verification-code-mobile.jpg" /></div>
+
+<div />
 
   </TabItem>
+
   <TabItem value="web">
 
 1. Click "Klipper" on the page that asks you to select a platform.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/select-platform-web.jpg" /></div>
 
-2. Assuming you have followed Step 1 and installed Obico for Klipper, you can simply click the "**Next>**" button.
+2. Assuming you have followed Step 1 and run the `install.sh` script, you can simply click the "**Next>**" button.
 3. Now you will see a screen with a 6-digit verification code. You can press Ctrl-C (Windows) or Cmd-C (Mac) to copy the 6 digit code to the clipboard.
 
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/manual-link-web.gif" /></div>
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/klipper-verification-code-web.jpg" /></div>
 
   </TabItem>
 </Tabs>

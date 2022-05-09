@@ -3,16 +3,18 @@ title: Self-hosted Obico Server Guides
 ---
 
 You don't need to be a programmer, or a superman, to self-host an Obico Server. However, the following skills are highly desired:
- 
+
 - A basic understanding on how Docker container works.
 - Basic knowledge about Linux command lines. All Obico Docker containers are built from Linux images.
     - If you are hosting your Obico Server on a Window system, you will also need to know how to use Window commands or Windows Power Shell.
 - A solid understanding on networking - IP addresses, port, routing, firewall, DNS, etc. Obico is an open-source project to connect all 3D Printers. So networking is at the core of the project.
 
-- [Hardware requirements](./hardware-requirements.md)
-- [Install the server](./install.md)
-- [Configure the server](./configure.md)
+```mdx-code-block
+import DocCardList from '@theme/DocCardList';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
 
+<DocCardList items={useCurrentSidebarCategory().items}/>
+```
 
 ## Other resources
 

@@ -28,7 +28,7 @@
             <b-nav-item v-if="isEnt && !user" href="/ent_pub/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
             <b-nav-item v-if="isEnt" href="/ent_pub/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
             <b-nav-item href="https://www.obico.io/help/">Help</b-nav-item>
-            <b-nav-item href="https://discord.gg/hsMwGpD">Community</b-nav-item>
+            <b-nav-item href="https://obico.io/discord">Community</b-nav-item>
           </b-navbar-nav>
 
           <b-navbar-nav class="ml-auto">

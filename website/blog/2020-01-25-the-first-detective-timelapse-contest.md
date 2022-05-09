@@ -90,4 +90,4 @@ No. You can use your own time-lapses, such as the ones produced by Octolapse. Ho
 
 ## I have other questions about this contest. Who should I ask?
 
-You can reach out to me on [Reddit](https://www.reddit.com/user/SleepyBlueCat/), [TSD Discord server](https://discord.gg/hsMwGpD) (My user name: SleepyBlueCat), or on [Facebook](https://www.facebook.com/SleepyBlueCat).
+You can reach out to me on [Reddit](https://www.reddit.com/user/SleepyBlueCat/), [TSD Discord server](https://obico.io/discord) (My user name: SleepyBlueCat), or on [Facebook](https://www.facebook.com/SleepyBlueCat).

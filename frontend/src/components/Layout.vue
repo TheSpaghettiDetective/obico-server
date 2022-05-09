@@ -51,7 +51,7 @@
             </a>
           </li>
           <li>
-            <a href="https://discord.gg/hsMwGpD" target="_blank">
+            <a href="https://obico.io/discord" target="_blank">
               <i class="fas fa-comments"></i>
               Community
             </a>

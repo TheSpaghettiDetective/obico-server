@@ -1,15 +1,16 @@
+---
+title: Configure Obico to work with a reverse proxy
+---
 
-# Advanced server configuration
+:::danger
+**Security Warning**: The guide below only cover the basic steps to set up a reverse proxy for self-hosted Obico Server. The setup required to properly secure your reverse proxy is too complicated to be covered here. Please do your own research to gather the necessary info before you proceed.
+:::
 
-## Using a reverse proxy
-
-> :warning: **Security Warning**: The guide below only cover the basic steps to set up a reverse proxy for The Spaghetti Detective server. The setup required to properly secure your reverse proxy is too complicated to be covered here. Please do your own research to gather the necessary info before you proceed.
-
-You can set up a reverse proxy in front of The Spaghetti Detective server.
+You can set up a reverse proxy in front of your self-hosted Obico Server.
 
 Two configuration items need to be set differently if you are using a reverse proxy.
 
-### 1. "Domain name" in Django site configuration.
+## 1. "Domain name" in Django site configuration.
 
 1. Open Django admin page at `http://tsd_server_ip:3334/admin/`.
 
@@ -24,17 +25,17 @@ Suppose:
 
 The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The `:reverse_proxy_port` part can be omitted if it is standard 80 or 443 port.
 
-### 2. If the reverse proxy is accessed through HTTPS:
+## 2. If the reverse proxy is accessed through HTTPS:
 
 1. Open `docker-compose.yml`, find `SITE_USES_HTTPS: 'False'` and replace it with `SITE_USES_HTTPS: 'True'`.
 
 2. Restart the server: `docker-compose restart`.
 
-### NGINX
+## NGINX
 
 For webcam feed to work, remember to activate Websockets support. Otherwise there will no webfeed when accessing through proxy.
 
-![NginxProxyManagerSettings](docs/img/nginxsettings.png)
+![NginxProxyManagerSettings](/img/server-guides/nginxsettings.png)
 
 Please note that this is not a general guide. Your situation/configuration may be different.
 
@@ -87,13 +88,13 @@ server {
 }
 ```
 
-### Traefik
+## Traefik
 
 1. [Follow these instructions on how to setup Traefik (First two steps)](https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-debian-9)
 
-1. Navigate to your directory of TheSpaghettiDetective `cd TheSpaghettiDetective`
+1. `cd obico-server`
 
-1. Edit the docker-compose.yml file with your favorite editor: `nano docker-compose.yml`
+1. Edit the `docker-compose.override.yml` file with your favorite editor.
 
 1. Add `labels:` and `networks:` to the `web:` section, and also add `networks:` at the end of the file:
 
@@ -124,42 +125,6 @@ server {
             external: true
       ```
 
-1. Start TheSpaghettiDetective with `docker-compose up -d`
+1. Retart the Obico Server with `docker-compose restart`
 
 1. You should now be able to browse to `spaghetti.your.domain`
-
-## Running TSD with Nvidia GPU acceleration
-
-This is only available on Linux based host machines
-
-In addition to the steps in [README](../README.md), you will need to:
-
-- [Install Cuda driver](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on your server.
-- [Install nvidia-docker](https://github.com/NVIDIA/nvidia-docker).
-- Run this command in `TheSpaghettiDetective` directory:
-```
-cat >docker-compose.override.yml <<EOF
-version: '2.4'
-
-services:
-  ml_api:
-    runtime: nvidia
-EOF
-```
-- Restart the docker cluster by running `docker-compose down && docker-compose up -d`
-
-## Running on Nvidia Jetson hardware
-
-[Document Here](jetson_guide.md)
-
-## Running on unRAID
-
-[Document Here](unraid_guide.md)
-
-## Enable telegram notifications
-
-[Document Here](telegram_guide.md)
-
-## Enable social login (TBD)
-
-## Change email server to be one other than `sendmail` on localhost (TBD)

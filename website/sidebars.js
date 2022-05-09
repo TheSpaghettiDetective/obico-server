@@ -110,6 +110,25 @@ module.exports = {
             },
           ],
         },
+        {
+          type: 'category',
+          label: 'Advanced Configurations',
+          link: {type: 'doc', id: 'server-guides/advanced/index'},
+          items: [
+            'server-guides/advanced/firewall-guides',
+            'server-guides/advanced/reverse-proxy',
+            'server-guides/advanced/nvidia-gpu',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Obico Clients',
+          items: [
+            'server-guides/configure-octoprint-plugin',
+            'server-guides/configure-mobile-app',
+          ],
+        },
+        'server-guides/ops',
       ],
     },
     {

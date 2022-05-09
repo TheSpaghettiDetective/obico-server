@@ -67,7 +67,7 @@ module.exports = {
         },
         {
           label: 'Forum',
-          to: 'https://discord.gg/hsMwGpD',
+          to: 'https://obico.io/discord',
           target: '_self',
         },
         {

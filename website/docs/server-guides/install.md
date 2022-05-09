@@ -1,5 +1,5 @@
 ---
-title: Install
+title: Installation
 ---
 
 :::info
@@ -10,6 +10,10 @@ This is a general guide to install the Obico Server. For platform-specific guide
 - [Obico installation guide for NVIDIA Jetson Nano](platform-specific/jetson_guide.md)
 - [Obico installation guide for UNRAID](platform-specific/unraid_guide.md)
 
+:::
+
+:::caution
+Guides not directly maintained by the Obico Team and Contributors may be outdated, and should be used at user discretion. Always cross-check commands and instructions used with those located on the [official doc site](https://www.obico.io/docs/server-guides/).
 :::
 
 ## Hardware Requirements
@@ -39,14 +43,24 @@ The following software is required before you start installing the server:
 1. Get the code:
 
 ```
-git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd TheSpaghettiDetective && sudo docker-compose up -d`
-    - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
-    - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
+    - If you are on Linux: `cd obico-server && sudo docker-compose up -d`
+    - If you are on Mac: `cd obico-server && docker-compose up -d`
+    - If you are on Windows: `cd obico-server; docker-compose up -d`
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
+4. There is no step 4. This is how easy it is to get Obico Server up and running (thanks to Docker and Docker-compose).
+
+## 3. Test the server
+
+Open "http://localhost:3334" on the same computer. If you see this page, the congratulations - your self-hosted Obico Server is now up and running!
+
+![](/img/server-guides/login-page.png)
+
+## 4. Configure the server
+
+Your Obico Server will [need some basic configurations](configure.md) to work correctly with OctoPrint or Klipper, or to send emails and other notifications.

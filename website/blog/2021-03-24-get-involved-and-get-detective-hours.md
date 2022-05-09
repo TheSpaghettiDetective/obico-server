@@ -4,7 +4,7 @@ author: Ryryog25
 tags: ['The Spaghetti Detective Updates', 'Community']
 ---
 
-If you didn't know, The Spaghetti Detective has [a wonderful Discord forum](https://discord.gg/hsMwGpD) filled with some really bright people. Many TSD users have been spending their time in the forum to help each other out.
+If you didn't know, The Spaghetti Detective has [a wonderful Discord forum](https://obico.io/discord) filled with some really bright people. Many TSD users have been spending their time in the forum to help each other out.
 
 To acknowledge time and effort these helpful community members have contributed, we have recently implemented a Discord bot. The bot will take notice anytime when a forum member is thanking another one for the help provided.
 

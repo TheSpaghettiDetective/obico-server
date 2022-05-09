@@ -57,7 +57,7 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 
 ## 3. Test the server
 
-Open "http://localhost:3334" on the same computer. If you see this page, the congratulations - your self-hosted Obico Server is now up and running!
+Open [http://localhost:3334](http://localhost:3334) on the same computer. If you see this page, the congratulations - your self-hosted Obico Server is now up and running!
 
 ![](/img/server-guides/login-page.png)
 

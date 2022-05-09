@@ -4,7 +4,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'Obico Knowledge Base', // Title for your website.
-  tagline: '3D Printer Remote Monitoring & Control',
+  tagline: 'Open-Source, Community-Built Smart 3D Printing Platform',
   url: 'https://www.obico.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
   trailingSlash: true,

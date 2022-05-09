@@ -55,11 +55,7 @@ If you run into issues with Email server settings, please follow this [Email ser
 
 ## Advanced server configuration
 
-### Port/Firewall
-
-This is actually not a configuration for the Obico Server itself. But if your network/computer has firewall enabled, you need to make sure the server can be accessed on the port it is listening on. Fore more details, see [configuring firewalls on common platforms](advanced/firewall-guides.md).
-
-
+Ready for some advanced server chops? Feel free to dive into the [advanced server stuff](advanced/index.md).
 
 ### If you don't need to add a new environment variable
 

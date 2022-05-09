@@ -160,23 +160,5 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
-<Tabs
-  defaultValue="mobile"
-  values={[
-    {label: '📱  Mobile App', value: 'mobile'},
-    {label: '🌐  Web App', value: 'web'},
-  ]}>
-  <TabItem value="mobile">
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-mobile.gif" /></div>
-
-  </TabItem>
-  <TabItem value="web">
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-web.gif" /></div>
-
-  </TabItem>
-</Tabs>
-
 <b />
 

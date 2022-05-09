@@ -8,7 +8,9 @@ sidebar_label: Obico for OctoPrint
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Setting up The Spaghetti Detective is super simple. There is a good chance you can get it all set up in 56 seconds (start your stop watch now!). If you prefer, you can also follow [this video guide](https://youtu.be/l2yMySAxIKw) that covers the same setup process.
+:::info
+This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
+:::
 
 ## Hardware requirements
 
@@ -19,13 +21,7 @@ Before you start, make sure:
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
-## Step 1: Install "Access Anywhere - The Spaghetti Detective" plugin in OctoPrint.
-
-:::note
-
-If you have purchased a hardware kit with OctoPrint and The Spaghetti Detective plugin pre-installed, skip this step and jump to [Step 2](#step-2-sign-up-for-a-the-spaghetti-detective-account).
-
-:::
+## Step 1: Install "Obico for OctoPrint" plugin.
 
 1. Open OctoPrint page in a browser.
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
@@ -58,6 +54,7 @@ All functions are available equally in the mobile and the web app. However, with
 
 <Tabs
   defaultValue="mobile"
+  groupId="app"
   values={[
     {label: '📱  Mobile App', value: 'mobile'},
     {label: '🌐  Web App', value: 'web'},
@@ -82,10 +79,6 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**�
 1. Open the [Obico Server sign up page](https://app.obico.io/accounts/signup/) in a new browser tab.
 1. Sign up with your email, Google or Facebook account. If you have already registered, click the "Sign In" button and sign in to your account.
 
-:::info
-If you are connecting to a self-hosted Obico Server, you should sign up for an account on your own server.
-:::
-
 ![Sign Up Account](/img/user-guides/setupguide/tsd-signup.png)
 
 
@@ -94,73 +87,55 @@ If you are connecting to a self-hosted Obico Server, you should sign up for an a
 
 <br />
 
-## Step 3: Link OctoPrint to your The Spaghetti Detective account.
+## Step 3: Launch the "Link Printer" wizard in the Obico app
 
 :::tip
 
-Connect OctoPrint to **the same local network** as your phone or computer. The Spaghetti Detective app can find your OctoPrint automatically. This is the easiest way to link OctoPrint to your The Spaghetti Detective account.
+If you are phone or computer is one the **the same local network** as your OctoPrint is, the Obico app can find your OctoPrint automatically. This is the easiest way to link printer to your Obico account.
 
 :::
 
 <Tabs
   defaultValue="mobile"
+  groupId="app"
   values={[
     {label: '📱  Mobile App', value: 'mobile'},
     {label: '🌐  Web App', value: 'web'},
   ]}>
   <TabItem value="mobile">
 
-1. Click "**Link OctoPrint**" button.
-2. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
-3. The app will start scanning for the OctoPrint connected to the same local network.
-4. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
-  :::note
+1. Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
+2. Choose "**OctoPrint**" on the next screen.
+3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
+4. The app will start scanning for the OctoPrint connected to the same local network.
+5. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
+  :::tip
   **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
   :::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-mobile.gif" /></div>
-<br />
-
-5. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-mobile.gif" /></div>
+6. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
   </TabItem>
   <TabItem value="web">
 
 1. On the welcome page, click the "**Link Printer**" button.
-
-![Welcome page](/img/user-guides/setupguide/welcome-web.jpg)
-
 2. Click "OctoPrint" on the page that asks you to select a platform.
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/select-platform-web.jpg" /></div>
-
 3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Next**" button.
 4. The app will start scanning for the OctoPrint connected to the same local network.
 5. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
-  :::note
+  :::tip
   **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
   :::
 6. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-web.gif" /></div>
-<br />
-
 7. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-web.gif" /></div>
 
   </TabItem>
 </Tabs>
 
 <b />
-
-## Step 4: There is no step 4. It is this simple.
-
-You are done! Hope it didn't take more than 56 seconds. :)
-
-The Detective will now watch your prints and send you alerts when things go awry. Start printing and enjoying the peace of the mind.
 
 ## What's next?
 
@@ -170,11 +145,11 @@ Press "Go Check Out Printer Feed!" to see everything you care about your printer
 
 ### Test the magical failure detection!
 
-The Detective sounds too magical to be true? [See The Detective in action for yourself](/docs/user-guides/how-to-test-failure-detection).
+AI-powered failure detection sounds too magical to be true? [See the magic in action for yourself](/docs/user-guides/how-to-test-failure-detection).
 
 ### Change printer settings.
 
-The default settings for your printer in The Spaghetti Detective are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
+The default settings for your printer in Obico are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
 
-- [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
-- [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.
+- [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when a possible print failure is detected. You will also get status update on your lock screen when your printer is printing. But you can choose to receive a lot more.
+- [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if Obico should pause your printer when a failure is detected.

@@ -9,13 +9,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::caution
-If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
-
-This guide is for the users who use Moonraker with Klipper.
+ This guide is for the users who use **Moonraker with Klipper**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
 :::
 
 :::info
-This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](https://www.obico.io/docs/server-guides/), you will need to use the address of your self-hosted server.
+This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::
 
 ## Hardware requirements
@@ -33,8 +31,7 @@ Before you start, make sure:
 2. Run:
 ```
     cd ~
-    git clone https://github.com/TheSpaghettiDetective/tsd-moonraker.git moonraker-obico
-    git checkout obico
+    git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
     ./install.sh
 ```
 3. Follow the installation steps. You may be asked to enter the password in order to run `sudo` commands.
@@ -66,6 +63,7 @@ All functions are available equally in the mobile and the web app. However, with
 :::
 
 <Tabs
+  groupId="app"
   defaultValue="mobile"
   values={[
     {label: '📱  Mobile App', value: 'mobile'},
@@ -102,6 +100,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**�
 ## Step 3: Launch the "Link Printer" wizard in the Obico app
 
 <Tabs
+  groupId="app"
   defaultValue="mobile"
   values={[
     {label: '📱  Mobile App', value: 'mobile'},
@@ -109,7 +108,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**�
   ]}>
   <TabItem value="mobile">
 
-Open The Spaghetti Detective mobile app. You should see a screen with a big "**Link OctoPrint**" button. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "Link New Printer".
+Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/launch-manual-link-mobile.jpg" /></div>
 
@@ -126,6 +125,7 @@ On the welcome page, click the "**Link Printer**" button.
 ## Step 4: Obtain the 6-digit verification code
 
 <Tabs
+  groupId="app"
   defaultValue="mobile"
   values={[
     {label: '📱  Mobile App', value: 'mobile'},
@@ -133,6 +133,7 @@ On the welcome page, click the "**Link Printer**" button.
   ]}>
   <TabItem value="mobile">
 
+1. Choose "**Klipper**" on the next screen.
 1. Assuming you have followed [this Setup Guide](/docs/user-guides/octoprint-plugin-setup) and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
 1. On the next screen, if it is stuck in "Scanning..." for more than 1 minutes, tap the "**Manual Setup**" link.
 1. Tap "**I'm ready now**" on the next screen.
@@ -169,24 +170,6 @@ Hooray! You are done! You can now close the terminal. Obico for Klipper is now r
 ## Step 6 (optional): Give your printer a shinny name!
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
-
-<Tabs
-  defaultValue="mobile"
-  values={[
-    {label: '📱  Mobile App', value: 'mobile'},
-    {label: '🌐  Web App', value: 'web'},
-  ]}>
-  <TabItem value="mobile">
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-mobile.gif" /></div>
-
-  </TabItem>
-  <TabItem value="web">
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-web.gif" /></div>
-
-  </TabItem>
-</Tabs>
 
 ## What's next?
 

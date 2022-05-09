@@ -10,7 +10,7 @@ const GroupedGuides = [
     Svg: require('../../../static/img/user-guides/home/getting-started.svg').default,
     links: [
       {
-        title: 'Set up The Spaghetti Detective in 56 seconds',
+        title: 'Set up the Obico app in 56 seconds',
         route: '/docs/user-guides/octoprint-plugin-setup',
       },
     ]

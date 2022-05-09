@@ -26,8 +26,8 @@ export default function Home() {
   // const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="The Spaghetti Detective Knowledge Base"
-      description="Access The Spaghetti Detective knowledge base to learn more about popular topics and find resources that will help you answer any questions you may have.">
+      title="Obico Knowledge Base"
+      description="Access the Obico app knowledge base to learn more about popular topics and find resources that will help you answer any questions you may have.">
       <HomepageHeader />
       <main>
         <FeaturedGuides />

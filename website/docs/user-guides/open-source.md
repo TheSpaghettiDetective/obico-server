@@ -1,6 +1,6 @@
 ---
 id: open-source
-title: Set up your own TSD private server
+title: Set up your own Obico private server
 ---
 
 Surprise Surprise! The Spaghetti Detective is actually open source. From the plugin to the backend to the algorithm, every single bit (pun intended) of it.

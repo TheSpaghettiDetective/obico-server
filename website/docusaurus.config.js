@@ -3,16 +3,16 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'The Spaghetti Detective', // Title for your website.
+  title: 'Obico Knowledge Base', // Title for your website.
   tagline: '3D Printer Remote Monitoring & Control',
   url: 'https://www.obico.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
   trailingSlash: true,
   projectName: 'public',
-  organizationName: 'The Spaghetti Detective',
+  organizationName: 'Obico',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
-  favicon: 'favicon-32x32.png',
+  favicon: '/img/favicon.png',
   themeConfig: {
     colorMode: {
       // "light" | "dark"
@@ -49,7 +49,7 @@ module.exports = {
     navbar: {
       title: '',
       logo: {
-        alt: 'The Spaghetti Detective Logo',
+        alt: 'Obico logo',
         src: 'img/logo.svg',
         srcDark: 'img/logo_dark.svg',
         href: 'https://www.obico.io',
@@ -95,14 +95,14 @@ module.exports = {
           to: 'https://app.obico.io/accounts/login/',
           target: '_self',
           position: 'right',
-          className: ' tsd-button tsd-button-secondary tsd-navbar-button',
+          className: ' obico-button obico-button-secondary obico-navbar-button',
         },
         {
           label: 'Sign Up',
           to: 'https://app.obico.io/accounts/signup/',
           target: '_self',
           position: 'right',
-          className: 'tsd-button tsd-button-primary tsd-navbar-button',
+          className: 'obico-button obico-button-primary obico-navbar-button',
         },
       ],
     },
@@ -113,7 +113,7 @@ module.exports = {
           title: 'The Product',
           items: [
             {
-              label: 'What Is The Spaghetti Detective',
+              label: 'What Is The Obico app',
               to: 'https://obico.io/',
               target: '_self',
             },
@@ -253,7 +253,7 @@ module.exports = {
           ],
         },
       ],
-      copyright: `<div class="copyright">Copyright © The Spaghetti Detective ${new Date().getFullYear()}. All Rights Reserved.</div>`,
+      copyright: `<div class="copyright">Copyright © Obico ${new Date().getFullYear()}. All Rights Reserved.</div>`,
     },
     prism: {
       theme: lightCodeTheme,

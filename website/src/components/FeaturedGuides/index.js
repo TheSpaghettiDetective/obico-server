@@ -20,7 +20,7 @@ const LinksList = [
     route: '/docs/user-guides/webcam-feed-is-laggy/',
   },
   {
-    title: 'Set up your own TSD private server',
+    title: 'Set up your own Obico private server',
     route: '/docs/user-guides/open-source/',
   },
   {
@@ -63,8 +63,8 @@ export default function FeaturedGuides() {
         <div className="row">
           <div className={clsx('col col--6')}>
             <a href='/docs/user-guides/octoprint-plugin-setup' className={clsx('guide-link', styles.guideLink)}>
-              <Icon className={styles.linkIcon} alt='Getting Started with The Spaghetti Detective' />
-              <div>Getting Started with The Spaghetti Detective</div>
+              <Icon className={styles.linkIcon} alt='Getting Started with the Obico app' />
+              <div>Getting Started with the Obico app</div>
             </a>
           </div>
           {LinksList.map((props, idx) => (

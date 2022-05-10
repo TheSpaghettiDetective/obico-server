@@ -130,7 +130,7 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
         access_token = self.get_access_token_from_config(context.config)
         self.call_slack(
             access_token=access_token,
-            text='TSD Test Notification - It works!',
+            text='Obico App Test Notification - It works!',
         )
 
 

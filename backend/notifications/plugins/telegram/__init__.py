@@ -91,7 +91,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
             return
 
         message = f"Hi {context.user.first_name},\n{text}"
-        
+
         try:
             file_content = requests.get(context.img_url).content
         except:
@@ -157,7 +157,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
     def default_button(self):
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(types.InlineKeyboardButton(
-            'Go to The Spaghetti Detective to take a closer look.',
+            'Go to the Obico app to take a closer look.',
             url=site.build_full_url('/printers/'))
         )
         return markup
@@ -178,7 +178,7 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
                 'url': site.build_full_url(f'/prints/{print_id}/resume/?mute_alert=true')
             },
             'more_info': {
-                'text': 'Go to The Spaghetti Detective to take a closer look.',
+                'text': 'Go to the Obico app to take a closer look.',
                 'url': site.build_full_url('/printers/')
             }
         }

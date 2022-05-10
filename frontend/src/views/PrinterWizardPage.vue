@@ -4,9 +4,9 @@
       <b-container>
         <b-row>
           <b-col>
-            <div class="wizard-container form-container full-on-mobile" :class="{'logo-bg': verifiedPrinter }">
+            <div class="wizard-container form-container full-on-mobile">
               <div v-if="verifiedPrinter" class="text-center py-5">
-                <svg class="success-checkmark" fill="currentColor" viewBox="0 0 446 410">
+                <svg class="success-checkmark">
                   <use href="#svg-success-checkmark" />
                 </svg>
                 <h3 class="pb-4">Successfully linked to your account!</h3>
@@ -55,150 +55,202 @@
               </div>
 
               <div v-else>
-                <form-wizard
-                  color="var(--color-primary)"
-                  step-size="sm"
-                >
-                  <h3 slot="title">
-                    <svg class="header-img"  viewBox="0 0 165 152">
-                      <use href="#svg-octoprint-logo" />
-                    </svg>
-                    {{title}}
-                  </h3>
-                  <tab-content v-if="printerIdToLink" title="Open Plugin Settings">
-                    <div class="container">
-                      <div class="row justify-content-center pb-3">
-                        <div class="col-sm-12 col-lg-8">
-                          <div class="text-warning">
-                            Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.thespaghettidetective.com/help/">TSD's help website</a>.
-                          </div>
-                          <ol>
-                            <li>Open OctoPrint in another browser tab. </li>
-                            <li>Select <em>"OctoPrint settings menu → Access Anywhere - The Spaghetti Detective"</em>.</li>
-                            <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
-                          </ol>
-                        </div>
-                      </div>
-                      <div class="row justify-content-center">
-                        <div class="col-sm-12 col-lg-8 img-container">
-                          <img class="mx-auto" :src="require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')">
-                        </div>
-                      </div>
-                    </div>
-                  </tab-content>
-                  <tab-content v-else title="Install Plugin">
-                    <div class="container">
-                      <div class="row justify-content-center pb-3">
-                        <div class="col-sm-12 col-lg-8">
-                          <ol>
-                            <li>Open OctoPrint in another browser tab. </li>
-                            <li>Select <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.</li>
-                            <li>Enter "The Spaghetti Detective" to locate the plugin. Click <em>"Install"</em>.</li>
-                            <li>Restart OctoPrint when prompted.</li>
-                          </ol>
-                        </div>
-                      </div>
-                      <div class="row justify-content-center">
-                        <div class="col-sm-12 col-lg-8 img-container">
-                          <img
-                            class="mx-auto screenshot"
-                            :src="require('@static/img/octoprint-plugin-guide/install_plugin.png')"
-                            @click="zoomIn($event)">
-                        </div>
-                      </div>
-                    </div>
-                  </tab-content>
-                  <tab-content v-if="discoveryEnabled" title="Link It!">
-                    <loading :active="chosenDeviceId != null"
-                      :can-cancel="false"
-                    >
-                    </loading>
-                    <div class="discover">
-                      <div class="discover-body">
-                        <div v-if="!canStartLinking" style="text-align: center;">
-                          <div class="spinner-border big" role="status">
-                            <span class="sr-only"></span>
-                          </div>
-                          <div class="lead">
-                          Scanning...
+                <div v-if="targetPlatform">
+                  <form-wizard
+                    color="var(--color-primary)"
+                    step-size="sm"
+                  >
+                    <h3 slot="title">
+                      {{title}}
+                    </h3>
+                    <tab-content v-if="printerIdToLink && targetOctoPrint" title="Open Plugin Settings">
+                      <div class="container">
+                        <div class="row justify-content-center pb-3">
+                          <div class="col-sm-12 col-lg-8">
+                            <div class="text-warning">
+                              Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.obico.io/help/">Obico's help website</a>.
+                            </div>
+                            <ol>
+                              <li>Open OctoPrint in another browser tab. </li>
+                              <li>Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.</li>
+                              <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
+                            </ol>
                           </div>
                         </div>
-                        <div v-else>
-                          <div class="lead my-3">
-                            <div class="spinner-border" role="status">
-                            <span class="sr-only"></span>
-                          </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
-                          <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
-                        </div>
-                        <div class="mt-5 mb-3">
-                          Can't find the OctoPrint you want to link?
-                          Switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a> instead.
-                        </div>
-                        <div v-if="discoveryCount>=2" class="text-muted">
-                          <div>To link your OctoPrint, please make sure:</div>
-                          <ul>
-                            <li>The Raspberry Pi is powered on.</li>
-                            <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
-                            <li>The Spaghetti Detective plugin version is 1.8.0 or above.</li>
-                          </ul>
+                        <div class="row justify-content-center">
+                          <div class="col-sm-12 col-lg-8 img-container">
+                            <img class="mx-auto" :src="require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')">
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </tab-content>
-                  <tab-content v-else title="Plugin Wizard" >
-                    <div class="container">
-                      <div class="row justify-content-center pb-3">
-                        <div class="col-sm-12 col-lg-8">
-                          <ol>
-                            <li>Wait for <em>"Access Anywhere - The Spaghetti Detective"</em> wizard to popup.</li>
-                            <li>Follow the instructions in the wizard.</li>
-                            <li>Select <em>"Web Setup"</em> when asked.</li>
-                          </ol>
+                    </tab-content>
+                    <tab-content v-if="!printerIdToLink && targetOctoPrint" title="Install Plugin">
+                      <div class="container">
+                        <div class="row justify-content-center pb-3">
+                          <div class="col-sm-12 col-lg-8">
+                            <ol>
+                              <li>Open OctoPrint in another browser tab. </li>
+                              <li>Select <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.</li>
+                              <li>Enter "Obico" to locate the plugin. Click <em>"Install"</em>.</li>
+                              <li>Restart OctoPrint when prompted.</li>
+                            </ol>
+                          </div>
+                        </div>
+                        <div class="row justify-content-center">
+                          <div class="col-sm-12 col-lg-8 img-container">
+                            <img
+                              class="mx-auto screenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/install_plugin.png')"
+                              @click="zoomIn($event)">
+                          </div>
                         </div>
                       </div>
-                      <div class="row justify-content-center">
-                        <div class="col-sm-12 col-lg-8 img-container">
-                          <img
-                            class="mx-auto screenshot"
-                            :src="require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')"
-                            @click="zoomIn($event)">
+                    </tab-content>
+                    <tab-content v-if="discoveryEnabled && targetOctoPrint" title="Link It!">
+                      <loading :active="chosenDeviceId != null"
+                        :can-cancel="false"
+                      >
+                      </loading>
+                      <div class="discover">
+                        <div class="discover-body">
+                          <div v-if="!canStartLinking" style="text-align: center;">
+                            <div class="spinner-border big" role="status">
+                              <span class="sr-only"></span>
+                            </div>
+                            <div class="lead">
+                            Scanning...
+                            </div>
+                          </div>
+                          <div v-else>
+                            <div class="lead my-3">
+                              <div class="spinner-border" role="status">
+                              <span class="sr-only"></span>
+                            </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
+                            <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+                          </div>
+                          <div class="mt-5 mb-3">
+                            Can't find the OctoPrint you want to link?
+                            Switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a> instead.
+                          </div>
+                          <div v-if="discoveryCount>=2" class="text-muted">
+                            <div>To link your OctoPrint, please make sure:</div>
+                            <ul>
+                              <li>The Raspberry Pi is powered on.</li>
+                              <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+                              <li>The Obico plugin version is 1.8.0 or above.</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </tab-content>
-                  <tab-content v-if="!discoveryEnabled" title="Enter Code">
-                    <div class="container">
-                      <div class="row justify-content-center pb-3">
-                        <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
-                            <input disabled ref="code" class="code-btn" :value="`${verificationCode && verificationCode.code}`"/>
-                            <small class="mx-auto py-1" :class="{'text-muted': !copied}">{{ copied ? 'Code copied to system clipboard' : 'Ctrl-C/Cmd-C to copy the code'}}</small>
-                            <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code expires in </span>{{timeToExpire}}</div>
-                          <div class="lead">Enter the <strong>6-digit verification code</strong> in the plugin</div>
+                    </tab-content>
+                    <tab-content v-if="!discoveryEnabled && targetOctoPrint" title="Plugin Wizard" >
+                      <div class="container">
+                        <div class="row justify-content-center pb-3">
+                          <div class="col-sm-12 col-lg-8">
+                            <ol>
+                              <li>Wait for <em>"Obico for OctoPrint"</em> wizard to popup.</li>
+                              <li>Follow the instructions in the wizard.</li>
+                              <li>Select <em>"Web Setup"</em> when asked.</li>
+                            </ol>
+                          </div>
+                        </div>
+                        <div class="row justify-content-center">
+                          <div class="col-sm-12 col-lg-8 img-container">
+                            <img
+                              class="mx-auto screenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')"
+                              @click="zoomIn($event)">
+                          </div>
                         </div>
                       </div>
-                      <div class="row justify-content-center">
-                        <div class="col-sm-12 col-lg-8 img-container">
-                          <img
-                            class="screenshot"
-                            :src="require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')"
-                            @click="zoomIn($event)">
-                          <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
+                    </tab-content>
+                    <tab-content v-if="targetMoonraker" title="Install Obico for Klipper">
+                      <div class="container">
+                        <div class="row justify-content-center pb-3">
+                          <div class="col-sm-12 col-lg-8">
+                            <ol>
+                              <li>SSH to the Raspberry Pi your Klipper runs on.</li>
+                              <li><div>Run:</div>
+                                <pre class="mt-2">
+cd ~
+git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
+./install.sh
+                               </pre>
+                              </li>
+                              <li>Follow the installation steps.</li>
+                              <li>At the end, you will be asked to enter a 6-digit verification code.</li>
+                            </ol>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </tab-content>
+                    </tab-content>
+                    <tab-content v-if="!discoveryEnabled" title="Enter Code">
+                      <div class="container">
+                        <div class="row justify-content-center pb-3">
+                          <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
+                              <input disabled ref="code" class="code-btn" :value="`${verificationCode && verificationCode.code}`"/>
+                              <small class="mx-auto py-1" :class="{'text-muted': !copied}">{{ copied ? 'Code copied to system clipboard' : 'Ctrl-C/Cmd-C to copy the code'}}</small>
+                              <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code will expire in </span>{{timeToExpire}}</div>
+                            <div class="lead">Enter the <strong>6-digit verification code</strong></div>
+                          </div>
+                        </div>
+                        <div class="row justify-content-center">
+                          <div class="col-sm-12 col-lg-8 img-container">
+                            <img v-if="targetOctoPrint"
+                              class="screenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')"
+                              @click="zoomIn($event)">
+                            <img v-if="targetMoonraker"
+                              class="screenshot"
+                              :src="require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')"
+                              @click="zoomIn($event)">
+                            <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
+                          </div>
+                        </div>
+                      </div>
+                    </tab-content>
 
-                  <template slot="footer" slot-scope="props">
-                    <div class="wizard-footer-left">
-                      <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
+                    <template slot="footer" slot-scope="props">
+                      <div class="wizard-footer-left">
+                        <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
+                      </div>
+                      <div class="wizard-footer-right">
+                        <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="{...props.fillButtonStyle, color: 'var(--color-on-primary)'}">Next &gt;</wizard-button>
+                      </div>
+                    </template>
+                  </form-wizard>
+                  <div class="row">
+                    <div class="helper col-sm-12">Need help? Check out the <a :href="targetMoonraker ? 'https://www.obico.io/docs/user-guides/klipper-setup/' : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">step-by-step set up guide.</a></div>
+                  </div>
+                </div>
+                <div v-else class="container">
+                  <div class="row">
+                    <h3 class="col-sm-12 text-center p-3">Which platform are you using?</h3>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-lg-6 p-4">
+                      <div class="wizard-card" @click="targetPlatform='octoprint'">
+                      <img
+                        :src="require('@static/img/octoprint_logo.png')" />
+                        <h3  class="mt-4">OctoPrint</h3>
+                        <div>Including OctoPrint for Klipper such as OctoKlipper.</div>
+                      </div>
                     </div>
-                    <div class="wizard-footer-right">
-                      <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="props.fillButtonStyle">Next &gt;</wizard-button>
+                    <div class="col-sm-12 col-lg-6 p-4">
+                      <div class="wizard-card" @click="targetPlatform='moonraker'; discoveryEnabled=false;">
+                      <div>
+                        <img
+                          :src="require('@static/img/klipper_logo.jpg')" />
+                        <img
+                          :src="require('@static/img/mainsail_logo.png')" />
+                        <img
+                          :src="require('@static/img/fluidd_logo.png')" />
+                        </div>
+                        <h3 class="mt-4">Klipper</h3>
+                        <h5>with Mainsail/Fluidd/Moonraker</h5>
+                      </div>
                     </div>
-                  </template>
-                </form-wizard>
-                <div class="row">
-                  <div class="helper col-sm-12">Need help? Check out the <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">step-by-step set up guide.</a></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -225,6 +277,7 @@ import SavingAnimation from '@src/components/SavingAnimation.vue'
 import DiscoveredPrinter from '@src/components/printers/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/AutoLinkPopup.vue'
 const MAX_DISCOVERY_CALLS = 60 // Scaning for up to 5 minutes
+
 export default {
   components: {
     FormWizard,
@@ -255,8 +308,9 @@ export default {
       discoveredPrinters: [],
       chosenDeviceId: null,
       gotSecret: null,
-      tsdDiscoveryPopup: null,
+      obicoDiscoveryPopup: null,
       apiCallIntervalId: null,
+      targetPlatform: null,
     }
   },
   created() {
@@ -270,7 +324,7 @@ export default {
       return new URLSearchParams(window.location.search.substring(1)).get('printerId')
     },
     title() {
-      return this.printerIdToLink ? 'Re-Link OctoPrint' : 'Link OctoPrint'
+      return this.printerIdToLink ? 'Re-Link Printer' : 'Link Printer'
     },
     editPrinterUrl() {
       return `/printers/${this.verifiedPrinter.id}/`
@@ -294,7 +348,13 @@ export default {
     },
     redirectToTunnelCreation() {
       return new URLSearchParams(window.location.search).get('redirectToTunnelCreation')
-    }
+    },
+    targetOctoPrint() {
+      return this.targetPlatform === 'octoprint'
+    },
+    targetMoonraker() {
+      return this.targetPlatform === 'moonraker'
+    },
   },
   methods: {
     setSavingStatus(propName, status) {
@@ -428,11 +488,11 @@ export default {
     showVerificationCodeHelpModal() {
       this.$swal.fire({
         title: 'Can\'t find the page to enter the 6-digit code?',
-        html: `<p>The 6-digit code needs to be entered in The Spaghetti Detective plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+        html: `<p>The 6-digit code needs to be entered in the Obico plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.thespaghettidetective.com/docs/octoprint-plugin-setup/">set up guide</a>.</li>
+        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">set up guide</a>.</li>
         </ul></p>`,
         customClass: {
           container: 'dark-backdrop',
@@ -508,6 +568,26 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+$container-border-radius: 16px
+
+.wizard-card
+  background-color: var(--color-surface-primary)
+  border-radius: $container-border-radius
+  padding: 1em
+  display: flex
+  flex-direction: column
+  align-items: center
+  min-height: 24em
+  justify-content: center
+  text-align: center
+  &:hover
+    cursor: pointer
+    color: var(--color-primary)
+    background-color: var(--color-hover)
+.wizard-card img
+  height: 3em
+  margin: 1em
+
 .wizard-btn
   border-radius: 300px
 .wizard-container
@@ -516,11 +596,6 @@ export default {
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
-  &.logo-bg
-    background-image: var(--url-logo-bg)
-    background-repeat: no-repeat
-    background-position: -250px 100px
-    background-size: 500px
 .btn-back
   color: var(--color-text-primary)
   min-width: auto
@@ -561,6 +636,10 @@ li
     transform: scale(2)
     position: relative
     z-index: 9
+
+pre
+  color: var(--color-text-secondary)
+  font-size: 0.9em
 </style>
 
 <style lang="sass">
@@ -578,20 +657,23 @@ li
 .wizard-nav.wizard-nav-pills li:not(.active)
   .wizard-icon-circle.checked i
     display: none
-  .wizard-icon-circle.checked:before
-    $size: 30px
-    content: ""
-    display: block
-    width: $size
-    height: $size
-    background-image: var(--url-logo-bg)
-    background-size: $size $size
-    position: absolute
-    top: calc(50% - #{$size / 2})
-    left: calc(50% - #{$size / 2})
-    bottom: calc(50% - #{$size / 2})
-    right: calc(50% - #{$size / 2})
+  .wizard-icon-circle.checked
+    background-color: var(--color-primary)
+    &:before
+      $size: 20px
+      content: ""
+      display: block
+      width: $size
+      height: $size
+      background-image: url('/static/img/tick_dark.svg')
+      background-size: $size $size
+      position: absolute
+      top: calc(50% - #{$size / 2})
+      left: calc(50% - #{$size / 2})
+      bottom: calc(50% - #{$size / 2})
+      right: calc(50% - #{$size / 2})
 .success-checkmark
+  width: 6rem
   height: 6rem
   margin-bottom: 1.5rem
 .printer-name-input

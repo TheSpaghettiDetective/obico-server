@@ -6,9 +6,9 @@
       <h5 class="mb-5">Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to enable Printer feed. </h5>
       <p>Printer feed sharing is a Pro feature.</p>
       <p><a
-          href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running
-          TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a
-        Pro account and help us run TSD smoothly.</p>
+          href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running
+         the Obico app incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a
+        Pro account and help us run the Obico app smoothly.</p>
       <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
     </div>
     <div v-else>
@@ -60,9 +60,8 @@
             <small>
               <div>Notes:</div>
               <ul>
-                <li>Send the secure link to anyone you want to share your printer feed with. They do NOT need a The
-                  Spaghetti Detective account to see your printer feed.</li>
-                <li>Anyone with this shareable link will be able to see your printer feed. <a href="https://www.thespaghettidetective.com/docs/printer-feed-sharing/">Learn more about what
+                <li>Send the secure link to anyone you want to share your printer feed with. They do NOT need the Obico account to see your printer feed.</li>
+                <li>Anyone with this shareable link will be able to see your printer feed. <a href="https://www.obico.io/docs/user-guides/printer-feed-sharing/">Learn more about what
                     they can see.</a></li>
               </ul>
             </small>
@@ -189,6 +188,6 @@ hr
 
   &:hover
     background-color: var(--color-primary)
-    color: var(--color-text-primary)
+    color: var(--color-on-primary)
     cursor: pointer
 </style>

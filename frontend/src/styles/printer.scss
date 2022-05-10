@@ -192,8 +192,8 @@
         width: 60px !important;
         height: 60px !important;
         margin: 8px !important;
-        // border: solid thick;
         background: var(--color-primary);
+        color: var(--color-on-primary);
       }
 
       .xy-controls {
@@ -484,6 +484,7 @@ form#printer_form {
   &.vue-dropzone > .dz-preview .dz-details {
     border-radius: 20px;
     background-color: var(--color-primary);
+    color: var(--color-on-primary);
   }
 }
 

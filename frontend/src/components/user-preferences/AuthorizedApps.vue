@@ -1,7 +1,7 @@
 <template>
   <section class="profile">
     <h2 class="section-title">Authorized Apps</h2>
-    <div class="tsd-table break-md mt-3">
+    <div class="obico-table break-md mt-3">
       <div class="table-head">
         <div class="table-row">
           <div>App Name</div>

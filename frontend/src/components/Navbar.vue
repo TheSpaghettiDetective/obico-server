@@ -9,8 +9,8 @@
       }">
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <svg viewBox="0 0 1965 240" width="232" height="28.34">
-            <use href="#svg-navbar-brand" />
+          <svg width="100" height="30">
+            <use href="#svg-logo-full" />
           </svg>
         </b-navbar-brand>
 
@@ -27,8 +27,8 @@
             <b-nav-item v-if="user" href="/gcodes/" :class="{'active': viewName.includes('gcodes')}">G-Code</b-nav-item>
             <b-nav-item v-if="isEnt && !user" href="/ent_pub/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
             <b-nav-item v-if="isEnt" href="/ent_pub/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
-            <b-nav-item href="https://www.thespaghettidetective.com/help/">Help</b-nav-item>
-            <b-nav-item href="https://discord.gg/hsMwGpD">Community</b-nav-item>
+            <b-nav-item href="https://www.obico.io/help/">Help</b-nav-item>
+            <b-nav-item href="https://obico.io/discord">Community</b-nav-item>
           </b-navbar-nav>
 
           <b-navbar-nav class="ml-auto">
@@ -117,9 +117,6 @@ export default {
 
   a.navbar-brand
     margin-top: -3px
-
-    img
-      width: 232px
 
   .navbar-toggler
     color: var(--color-text-primary)

@@ -12,7 +12,7 @@
       <small class="text-muted">
         Not sure? Look at
         <a target="_blank"
-          href="https://www.thespaghettidetective.com/docs/how-does-credits-work#spaghetti-examples"
+          href="https://www.obico.io/docs/user-guides/how-does-credits-work#spaghetti-examples"
         >some examples. <small><i class="fas fa-external-link-alt"></i></small></a>
       </small>
     </div>
@@ -62,7 +62,7 @@ export default {
             this.$swal.Prompt.fire({
               title: 'You are awesome!',
               html:
-                '<p>The Detective just got a little smarter because of your feedback!</p><p>You just earned 2 non-expirable Detective Hours - Yay!</p>',
+                '<p>The AI failure detection just got a little better because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
               confirmButtonText: 'I\'m done!',
               showCancelButton: true,
               cancelButtonText: 'Change feedback'

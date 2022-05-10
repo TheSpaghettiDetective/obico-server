@@ -239,10 +239,10 @@ class Printer(SafeDeleteModel):
 
     def not_watching_reason(self):
         if not self.watching_enabled:
-            return '"Watch for failures" is turned off'
+            return 'AI failure detection is disabled'
 
         if self.user.dh_balance < 0:
-            return "You have run out of Detective Hours"
+            return "You have run out of AI Detection Hours"
 
         if not self.actively_printing():
             return "Printer is not actively printing"
@@ -295,7 +295,7 @@ class Printer(SafeDeleteModel):
         if print.cancelled_at is None:
             print.finished_at = timezone.now()
             print.save()
-        
+
         PrintEvent.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
 
@@ -373,7 +373,7 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
     def acknowledge_alert(self, alert_overwrite):
-        if not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
+        if not self.current_print or not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
             return
 
         self.current_print.alert_acknowledged_at = timezone.now()
@@ -490,12 +490,10 @@ class Print(SafeDeleteModel):
 
     FAILED = 'FAILED'
     NOT_FAILED = 'NOT_FAILED'
-    PARTIALY_FAILED = 'PARTIALY_FAILED'
 
     ALERT_OVERWRITE = (
         (FAILED, FAILED),
         (NOT_FAILED, NOT_FAILED),
-        (PARTIALY_FAILED, PARTIALY_FAILED),
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
@@ -709,7 +707,7 @@ class OctoPrintTunnelManager(SafeDeleteManager):
 
 class OctoPrintTunnel(SafeDeleteModel):
     # For INTERNAL_APP (TSD), tunnel is accessed by session cookie; Otherwise, it's by http basic auth
-    INTERNAL_APP = 'TSD'
+    INTERNAL_APP = 'Obico'
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     app = models.TextField(null=False, blank=False, db_index=True)

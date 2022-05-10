@@ -6,7 +6,7 @@ There are several ways to further debug this issue.
 
 ### Rule out the basics.
 
-Follow [these steps](https://www.thespaghettidetective.com/docs/webcam-feed-is-not-showing/) to make sure your TSD plugin, as well as the webcam, is configured correctly.
+Follow [these steps](https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/) to make sure your TSD plugin, as well as the webcam, is configured correctly.
 
 ### If the Server Connection Test returns successfully, but you still can't see the webcam.
 

@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
-from .models import User, Printer
+from .models import User, Printer, NotificationSetting
 from lib.notifications import send_email
 
 
@@ -44,3 +44,12 @@ class UserAdmin(DjangoUserAdmin):
 @admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):
     exclude = ('current_img_url', 'detection_score')
+
+@admin.register(NotificationSetting)
+class NotificationSettingAdmin(admin.ModelAdmin):
+    list_display = ('get_user', 'name', 'enabled', 'notify_on_failure_alert', 'notify_on_print_done',
+        'notify_on_print_cancelled', 'notify_on_filament_change', 'notify_on_other_print_events', 'notify_on_heater_status')
+    search_fields = ('user__email',)
+
+    def get_user(self, obj):
+        return obj.user.email

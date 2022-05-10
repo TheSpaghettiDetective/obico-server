@@ -1,5 +1,4 @@
 ---
-sidebar_position: 0
 id: pushover-notification-plugin
 title: Build a Pushover notification plugin for Obico
 ---
@@ -21,7 +20,7 @@ The "API Token/Key" will be used to configure the Obico notification plugin we w
 
 ### 2.1 Backend plugin files
 
-1. Create a sub-folder named `mypushover` in `backend/plugins`. The folder name `mypushover` is your plugin ID and shouldn't be the same as any other plugins `backend/plugins`. 
+1. Create a sub-folder named `mypushover` in `backend/plugins`. The folder name `mypushover` is your plugin ID and shouldn't be the same as any other plugins `backend/plugins`.
 2. Download [this file](https://raw.githubusercontent.com/TheSpaghettiDetective/TheSpaghettiDetective/master/backend/notifications/plugins/pushover/__init__.py) and save it as `__init__.py` in `backend/plugins/mypushover`.
 
 ### 2.2 Frontend plugin files

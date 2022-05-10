@@ -11,7 +11,7 @@
             <div class="form-container m-0 printer-settings">
             <h5 class="mb-5">Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to upload G-Code files or start prints remotely. </h5>
               <p>G-Code remote upload and printing is a Pro feature.</p>
-              <p><a href="https://www.thespaghettidetective.com/docs/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running TSD incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run TSD smoothly.</p>
+              <p><a href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running the Obico app incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the Obico app smoothly.</p>
               <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
             </div>
           </b-col>

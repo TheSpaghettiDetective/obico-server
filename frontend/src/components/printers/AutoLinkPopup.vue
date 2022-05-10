@@ -11,7 +11,7 @@
       :src="require('@static/img/octoprint_logo.png')" />
     </div>
     <div class="my-4">
-      <p>The Spaghetti Detective needs to make sure you have access to selected OctoPrint.</p>
+      <p>The Obico app needs to make sure you have access to selected OctoPrint.</p>
       <p>When you press "Link Now" button below, a new browser window will pop up to finish a handshake with this OctoPrint.</p>
     </div>
     <div>
@@ -63,13 +63,13 @@ export default {
       this.linking = true
       this.gotSecret = null
 
-      this.tsdDiscoveryPopup = window.open(
+      this.obicoDiscoveryPopup = window.open(
         this.destUrl(),
         '_blank',
         'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=100'
       )
 
-      if (!this.tsdDiscoveryPopup) {
+      if (!this.obicoDiscoveryPopup) {
         this.cancel()
         this.$swal.Prompt.fire({
           icon: 'error',
@@ -114,7 +114,8 @@ export default {
     },
 
     destUrl() {
-      return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port || '80'}/plugin/thespaghettidetective/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
+      const pluginName = this.discoveredPrinter.agent ? 'obico' : 'thespaghettidetective'
+      return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port || '80'}/plugin/${pluginName}/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
     },
 
     switchToManual() {
@@ -123,9 +124,9 @@ export default {
     },
 
     closeDiscoveryPopup() {
-      if (this.tsdDiscoveryPopup) {
-        this.tsdDiscoveryPopup.close()
-        this.tsdDiscoveryPopup = null
+      if (this.obicoDiscoveryPopup) {
+        this.obicoDiscoveryPopup.close()
+        this.obicoDiscoveryPopup = null
       }
     },
 

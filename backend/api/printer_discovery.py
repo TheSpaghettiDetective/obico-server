@@ -34,9 +34,9 @@ class DeviceInfoSerializer(serializers.Serializer):
     rpi_model = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
     octopi_version = serializers.CharField(
-        required=True, max_length=253, allow_blank=True)
+        required=False, max_length=253, allow_blank=True, default='')
     printerprofile = serializers.CharField(
-        required=True, max_length=253, allow_blank=True)
+        required=False, max_length=253, allow_blank=True, default='')
     machine_type = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
     host_or_ip = serializers.CharField(
@@ -45,6 +45,8 @@ class DeviceInfoSerializer(serializers.Serializer):
         required=False, min_value=1, max_value=65535,
         allow_null=True, default=None)
     plugin_version = serializers.CharField(
+        required=False, max_length=253, allow_blank=True, default='')
+    agent = serializers.CharField(
         required=False, max_length=253, allow_blank=True, default='')
 
     def validate_host_or_ip(self, value):
@@ -69,13 +71,14 @@ class DeviceInfo:
     hostname: str
     os: str
     arch: str
-    octopi_version: str
+    octopi_version: Optional[str]
     rpi_model: str
-    printerprofile: str
+    printerprofile: Optional[str]
     machine_type: str
     host_or_ip: str
     port: Optional[int]
     plugin_version: Optional[str]
+    agent: Optional[str]
 
     @classmethod
     def from_dict(cls, data) -> 'DeviceInfo':

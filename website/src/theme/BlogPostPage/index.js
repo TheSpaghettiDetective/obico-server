@@ -53,7 +53,7 @@ function BlogPostPage(props) {
                 className={styles.discussion}
                 config={
                   {
-                    url: `https://thespaghettidetective.com${metadata.permalink}`,
+                    url: `https://www.obico.io${metadata.permalink}`,
                     identifier: metadata.permalink,
                     title: title,
                   }

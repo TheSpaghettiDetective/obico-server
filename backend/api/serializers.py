@@ -140,9 +140,8 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'pic', 'status', 'settings', 'current_print',
                   'normalized_p', 'auth_token', 'archived_at',)
 
-        read_only_fields = (
-            'auth_token', 'archived_at',
-        )
+        read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status', 
+        'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at',)
 
     def get_normalized_p(self, obj: Printer) -> float:
         return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None

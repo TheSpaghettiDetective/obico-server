@@ -14,10 +14,9 @@
           <streaming-box :printer="printer" :webrtc="webrtc" />
           <div class="p-3 p-md-5">
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
-            <a
-              href="https://www.thespaghettidetective.com/">
-              <svg viewBox="0 0 1965 240" width="100%" class="logo-img">
-                <use href="#svg-navbar-brand" />
+            <a href="https://www.obico.io/">
+              <svg width="100%" class="logo-img">
+                <use href="#svg-logo-full" />
               </svg>
             </a>
             <hr />

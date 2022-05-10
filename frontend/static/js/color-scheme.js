@@ -15,244 +15,141 @@ const defaultTheme = (isLocalStorageSupported() ? localStorage.getItem('colorThe
 const colors = [
   {
     name: 'primary',
-    values: {
-      [Themes.Light]: 'rgb(153 101 244)',
-      [Themes.Dark]: 'rgb(165 123 238)'
-    }
+    values: {[Themes.Light]: '#00B1A4', [Themes.Dark]: '#74EED1'},
   },
   {
     name: 'primary-hover',
-    values: {
-      [Themes.Light]: 'rgb(178 137 248)',
-      [Themes.Dark]: 'rgb(154 106 239)'
-    }
+    values: {[Themes.Light]: '#02D4C5', [Themes.Dark]: '#34C5A3'},
   },
   {
     name: 'on-primary',
-    values: {
-      [Themes.Light]: 'rgb(255 255 255)',
-      [Themes.Dark]: 'rgb(255 255 255)'
-    }
+    values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'},
   },
-
   {
     name: 'secondary',
-    values: {
-      [Themes.Light]: 'rgb(40 48 58)',
-      [Themes.Dark]: 'rgb(235 235 235)'
-    }
+    values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
+  },
+  {
+    name: 'secondary-hover',
+    values: {[Themes.Light]: '#424A54', [Themes.Dark]: '#D0D0D0'},
   },
   {
     name: 'on-secondary',
-    values: {
-      [Themes.Light]: 'rgb(235 235 235)',
-      [Themes.Dark]: 'rgb(40 48 58)'
-    }
+    values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'},
   },
-
   {
     name: 'success',
-    values: {
-      [Themes.Light]: 'rgb(92 184 92)',
-      [Themes.Dark]: 'rgb(92 184 92)'
-    }
+    values: {[Themes.Light]: '#5CB85C', [Themes.Dark]: '#5CB85C'},
   },
   {
     name: 'success-hover',
-    values: {
-      [Themes.Light]: 'rgb(76 174 76)',
-      [Themes.Dark]: 'rgb(76 174 76)'
-    }
+    values: {[Themes.Light]: '#4CAE4C', [Themes.Dark]: '#4CAE4C'},
   },
   {
     name: 'on-success',
-    values: {
-      [Themes.Light]: 'rgb(255 255 255)',
-      [Themes.Dark]: 'rgb(255 255 255)'
-    }
+    values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'},
   },
-
   {
     name: 'danger',
-    values: {
-      [Themes.Light]: 'rgb(217 83 79)',
-      [Themes.Dark]: 'rgb(217 83 79)'
-    }
+    values: {[Themes.Light]: '#D9534F', [Themes.Dark]: '#D9534F'},
   },
   {
     name: 'danger-hover',
-    values: {
-      [Themes.Light]: 'rgb(194 65 61)',
-      [Themes.Dark]: 'rgb(194 65 61)'
-    }
+    values: {[Themes.Light]: '#C2413D', [Themes.Dark]: '#C2413D'},
   },
   {
     name: 'on-danger',
-    values: {
-      [Themes.Light]: 'rgb(255 255 255)',
-      [Themes.Dark]: 'rgb(255 255 255)'
-    }
+    values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'},
   },
-
   {
     name: 'warning',
-    values: {
-      [Themes.Light]: 'rgb(240 173 78)',
-      [Themes.Dark]: 'rgb(240 173 78)'
-    }
+    values: {[Themes.Light]: '#F0AD4E', [Themes.Dark]: '#F0AD4E'},
   },
   {
     name: 'warning-hover',
-    values: {
-      [Themes.Light]: 'rgb(219 154 63)',
-      [Themes.Dark]: 'rgb(219 154 63)'
-    }
+    values: {[Themes.Light]: '#DB9A3F', [Themes.Dark]: '#DB9A3F'},
   },
   {
     name: 'on-warning',
-    values: {
-      [Themes.Light]: 'rgb(255 255 255)',
-      [Themes.Dark]: 'rgb(255 255 255)'
-    }
+    values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'},
   },
   {
     name: 'on-warning-2',
-    values: {
-      [Themes.Light]: 'rgb(0 0 0)',
-      [Themes.Dark]: 'rgb(0 0 0)'
-    }
+    values: {[Themes.Light]: '#000000', [Themes.Dark]: '#000000'},
   },
-
   {
     name: 'background',
-    values: {
-      [Themes.Light]: 'rgb(235 235 235)',
-      [Themes.Dark]: 'rgb(35 49 65)'
-    }
+    values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'},
   },
   {
     name: 'surface-primary',
-    values: {
-      [Themes.Light]: 'rgb(255 255 255)',
-      [Themes.Dark]: 'rgb(72 91 113)'
-    }
+    values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#485B71'},
   },
   {
     name: 'surface-secondary',
-    values: {
-      [Themes.Light]: 'rgb(245 245 245)',
-      [Themes.Dark]: 'rgb(45 62 79)'
-    }
+    values: {[Themes.Light]: '#F5F5F5', [Themes.Dark]: '#2D3E4F'},
   },
   {
     name: 'overlay',
-    values: {
-      [Themes.Light]: 'rgb(245 245 245 / .8)',
-      [Themes.Dark]: 'rgb(0 0 0 / .8)'
-    }
+    values: {[Themes.Light]: '#F5F5F5CC', [Themes.Dark]: '#000000CC'},
   },
   {
     name: 'hover',
-    values: {
-      [Themes.Light]: 'rgb(102 102 102 / .075)',
-      [Themes.Dark]: 'rgb(255 255 255 / .075)'
-    }
+    values: {[Themes.Light]: '#66666613', [Themes.Dark]: '#FFFFFF13'},
   },
-
   {
     name: 'divider',
-    values: {
-      [Themes.Light]: 'rgb(171 182 194)',
-      [Themes.Dark]: 'rgb(106 123 138)'
-    }
+    values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'},
   },
-
   {
     name: 'text-primary',
-    values: {
-      [Themes.Light]: 'rgb(40 48 58)',
-      [Themes.Dark]: 'rgb(235 235 235)'
-    }
+    values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
   },
   {
     name: 'text-secondary',
-    values: {
-      [Themes.Light]: 'rgb(138 148 162)',
-      [Themes.Dark]: 'rgb(170 172 176)'
-    }
+    values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'},
   },
   {
     name: 'text-help',
-    values: {
-      [Themes.Light]: 'rgb(76 155 232)',
-      [Themes.Dark]: 'rgb(76 155 232)'
-    }
+    values: {[Themes.Light]: '#4C9BE8', [Themes.Dark]: '#4C9BE8'},
   },
 
   {
     name: 'input-background',
-    values: {
-      [Themes.Light]: 'rgb(226 232 237)',
-      [Themes.Dark]: 'rgb(66 86 107)'
-    }
+    values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'},
   },
   {
     name: 'input-placeholder',
-    values: {
-      [Themes.Light]: 'rgb(40 48 58 / .5)',
-      [Themes.Dark]: 'rgb(235 235 235 / .5)'
-    }
+    values: {[Themes.Light]: '#28303A80', [Themes.Dark]: '#EBEBEB80'},
   },
 
   {
     name: 'table-accent',
-    values: {
-      [Themes.Light]: 'rgb(227 227 227)',
-      [Themes.Dark]: 'rgb(40 56 72)'
-    }
+    values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#283848'},
   },
 
   // Icon colors
   {
     name: 'icon-tunneling-1',
-    values: {
-      [Themes.Light]: 'rgb(78 93 108)',
-      [Themes.Dark]: 'rgb(234 234 234)'
-    }
+    values: {[Themes.Light]: '#4E5D6C', [Themes.Dark]: '#EAEAEA'},
   },
   {
     name: 'icon-tunneling-2',
-    values: {
-      [Themes.Light]: 'rgb(29 41 53)',
-      [Themes.Dark]: 'rgb(205 205 205)'
-    }
+    values: {[Themes.Light]: '#1D2935', [Themes.Dark]: '#CDCDCD'},
   },
 ]
 
 const urls = [
   {
-    name: 'logo-bg',
-    values: {
-      [Themes.Light]: 'url("/static/img/logo-bg/logo-bg_light.svg")',
-      [Themes.Dark]: 'url("/static/img/logo-bg/logo-bg_dark.svg")'
-    }
-  },
-  {
     name: 'loader',
-    values: {
-      [Themes.Light]: 'url("/static/img/loader/loader_light-scheme.svg")',
-      [Themes.Dark]: 'url("/static/img/loader/loader_dark-scheme.svg")'
-    }
+    values: {[Themes.Light]: 'url("/static/img/loader/loader_light-scheme.svg")', [Themes.Dark]: 'url("/static/img/loader/loader_dark-scheme.svg")'},
   },
 ]
 
 const shadows = [
   {
     name: 'top-nav',
-    values: {
-      [Themes.Light]: '0px 2px 10px rgb(0 0 0 / .1)',
-      [Themes.Dark]: '0px 2px 10px rgb(0 0 0 / .3)'
-    }
+    values: {[Themes.Light]: '0px 2px 10px rgb(0 0 0 / .1)', [Themes.Dark]: '0px 2px 10px rgb(0 0 0 / .3)'},
   },
 ]
 

@@ -126,7 +126,7 @@ class BaseNotificationPlugin(object):
         link: Optional[str] = None,
         **kwargs
     ) -> str:
-        return 'The Spaghetti Detective - Failure alert!'
+        return 'Obico - Failure alert!'
 
     def get_failure_alert_text(self, context: FailureAlertContext, link: Optional[str] = None, **kwargs) -> str:
         pausing_msg = ''
@@ -147,7 +147,7 @@ class BaseNotificationPlugin(object):
         return text
 
     def get_printer_notification_title(self, context: PrinterNotificationContext) -> str:
-        return 'The Spaghetti Detective - Print job notification'
+        return 'Obico - Print job notification'
 
     def get_printer_notification_text(self, context: PrinterNotificationContext) -> str:
         text = f"Your print job {self.b(context.print.filename)} "

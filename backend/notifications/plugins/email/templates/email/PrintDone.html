@@ -23,9 +23,9 @@
   <tr>
     <td style="padding: 0px 0px 9px 0px;width:100%;">
       {% if context.print.alerted_at %}
-      <div style="color: #d9534f;">The Detective found possible spaghetti for this print.</div>
+      <div style="color: #d9534f;">Possible failures were detected for this print.</div>
       {% else %}
-      <div style="color: #5cb85c">The Detective found nothing fishy for this print.</div>
+      <div style="color: #5cb85c">No failures were detected for this print.</div>
       {% endif %}
     </td>
   </tr>
@@ -36,14 +36,14 @@
       {% if focused_feedback_eligible %}
 
       {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
-      👉 You told her it was a false alarm. Help her improve by <a href="{{ timelapse_link }}">giving her the Focused
-        Feedback</a> in the next 30 days and earn 2 Detective Hours for yourself.
+      👉 You told us it was a false alarm. Help us improve by <a href="{{ timelapse_link }}">giving us the Focused
+        Feedback</a> in the next 30 days and earn 2 AI Detection Hours for yourself.
       {% else %}
-      👉 Help her improve by <a href="{{ timelapse_link }}">giving her the Focused Feedback</a> in the next 30 days and earn
-      2 Detective Hours for yourself.
+      👉 Help us improve by <a href="{{ timelapse_link }}">giving us the Focused Feedback</a> in the next 30 days and earn
+      2 AI Detection Hours for yourself.
       {% endif %}
       <div><a
-          href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Learn
+          href="https://www.obico.io/docs/user-guides/how-does-credits-work/">Learn
           more about the Focused
           Feedback.</a>
       </div>
@@ -51,10 +51,10 @@
       {% else %}
 
       {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
-      👉 You told her it was a false alarm. Thank you for helping her improve! You can <a href="{{ timelapse_link }}">
+      👉 You told us it was a false alarm. Thank you for helping us improve! You can <a href="{{ timelapse_link }}">
         change your response</a>.
       {% else %}
-      👉 Help her get better by <a href="{{ timelapse_link }}">telling her if she got it right</a>.
+      👉 Help us get better by <a href="{{ timelapse_link }}">telling us if we got it right</a>.
       {% endif %}
 
       {% endif %}
@@ -88,11 +88,13 @@
       <div><b>File name:</b> {{ context.print.filename }}</div>
       <div><b>Printer:</b> {{ context.printer.name }}</div>
       {% if print_time %}
-      <div><b>Print time:</b> {{ print_time }} {% if dh_consumed and not unlimited_dh %} ({{ dh_consumed }} watched by
-        The Detective){% endif %}</div>
+      <div><b>Print time:</b> {{ print_time }}</div>
+      {% endif %}
+      {% if dh_consumed and not unlimited_dh %}
+      <div><b></b>AI failure detection time:</b> {{ dh_consumed }}</div>
       {% endif %}
       {% if dh_consumed and not unlimited_dh %} <div><b>DH balance (<a
-            href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/">?</a>):</b>
+            href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/">?</a>):</b>
         {{ context.user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
     </td>
   </tr>
@@ -102,9 +104,9 @@
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 0px 0px 18px 0px;width:100%;">
-      👉 You are running low on Detective Hours. <a
-        href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get
-        more</a> if you want The Detective to keep watching your prints.
+      👉 You are running low on AI Detection Hours. <a
+        href="https://app.obico.io/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Get
+        more</a> if you want Obi to continue guarding your prints.
     </td>
   </tr>
 </table>
@@ -133,32 +135,32 @@
     <td style="padding: 18px 0px 18px 0px;width:100%;">
       <p style="font-size:16px;text-align:center;"><strong>You print a lot, which is awesome!👍👍👍</strong></p>
 
-      <p>That also means you have kept The Detective pretty busy and now your Detective Hours (<a
-          href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/">what
+      <p>That also means your AI Detection Hours (<a
+          href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/">what
           is it?</a>) have run out.
-        The Detective is no longer watching your prints, and you won't get alerted even if your prints start to fail.
+          AI failure detection is paused for your printers. You won't get alerted even if your prints start to fail.
       </p>
 
       <p>Everything else remains the same. You can still start, pause, or cancel your prints. Your webcam feed will
         stream as usual too.</p>
 
-      <p>There are several ways to get more Detective Hours:</p>
+      <p>There are several ways to get more AI Detection Hours:</p>
       <ul>
         <li><a
-            href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">Earn
-            Detective Hours by helping The Detective get better at her job.</a></li>
+            href="https://www.obico.io/docs/user-guides/how-does-credits-work/">Earn
+            AI Detection Hours by giving Focused Feedback.</a></li>
         <li><a
-            href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Buy
-            Pre-paid Detective Hour Pack.</a></li>
+            href="https://app.obico.io/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice#need-more">Buy
+            Pre-paid AI Detection Hour Pack.</a></li>
         {% if user.is_pro %}
         <li><a
-            href="https://app.thespaghettidetective.com/user_preferences/subscription/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Change
+            href="https://app.obico.io/user_preferences/subscription/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Change
             your plan to include a Subscribe&Save Pack that fits your printing needs.</a></li>
         {% else %}
         <li><a
-            href="https://app.thespaghettidetective.com/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Upgrade
-            to the Pro plan.</a> You get 50, instead of 10, free Detective Hours a month with the Pro plan. Also you can
-          add Subscribe&Save Detective Hour Pack to your Pro plan at rates much lower than Pre-paid Packs.</li>
+            href="https://app.obico.io/ent_pub/pricing/?utm_source=TSD&utm_medium=email&utm_campaign=print_notice">Upgrade
+            to the Pro plan.</a> You get 50, instead of 10, free AI Detection Hours a month with the Pro plan. Also you can
+          add Subscribe&Save AI Detection Hour Pack to your Pro plan at rates much lower than Pre-paid Packs.</li>
         {% endif %}
       </ul>
     </td>

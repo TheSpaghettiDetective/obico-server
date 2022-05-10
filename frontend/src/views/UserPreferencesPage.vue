@@ -452,7 +452,7 @@ export default {
     errorAlert(text=null) {
       this.$swal({
         icon: 'error',
-        html: `<p>${text ? text : 'Can not update your preferences.'}</p><p>Get help from <a href="https://discord.com/invite/NcZkQfj">TSD discussion forum</a> if this error persists.</p>`,
+        html: `<p>${text ? text : 'Can not update your preferences.'}</p><p>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</p>`,
       })
     },
     updateSetting(settingsItem) {

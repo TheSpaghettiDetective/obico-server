@@ -91,37 +91,37 @@ class PrinterViewSet(
         else:
             return Printer.objects.filter(user=self.request.user)
 
-    # TODO: Should these be removed, or changed to POST after switching to Vue?
+    # TODO: Remove the "GET" method after old mobile app versions have faded
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post', 'get'])
     def cancel_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
         succeeded = printer.cancel_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post', 'get'])
     def pause_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
         succeeded = printer.pause_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post', 'get'])
     def resume_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
         succeeded = printer.resume_print(initiator='api')
 
         return self.send_command_response(printer, succeeded)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post', 'get'])
     def mute_current_print(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
         printer.mute_current_print(request.GET.get('mute_alert', 'false').lower() == 'true')
 
         return self.send_command_response(printer, True)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post', 'get'])
     def acknowledge_alert(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
         printer.acknowledge_alert(request.GET.get('alert_overwrite'))
@@ -163,14 +163,6 @@ class PrintViewSet(
 
     def get_queryset(self):
         return Print.objects.filter(user=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def alert_overwrite(self, request, pk=None):
-        print = get_object_or_404(self.get_queryset(), pk=pk)
-        print.alert_overwrite = request.data.get('value', None)
-        print.save()
-        serializer = self.serializer_class(print, many=False)
-        return Response(serializer.data)
 
     def list(self, request):
         queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)

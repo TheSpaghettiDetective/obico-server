@@ -1,7 +1,7 @@
 <template>
-  <div class="tsd-gauge-container">
+  <div class="obico-gauge-container">
     <span id="title" :style="{color: titleColor}">{{ titleText }}</span>
-    <div class="tsd-gauge">
+    <div class="obico-gauge">
       <radial-gauge :value="value" :options="computedOptions"></radial-gauge>
     </div>
     <hr />
@@ -134,10 +134,10 @@ export default {
   width: 100%
   top: 50%
 
-.tsd-gauge-container
+.obico-gauge-container
   position: relative
   padding: 0 16px
-  .tsd-gauge
+  .obico-gauge
     text-align: center
     padding: 8px
     margin-bottom: -150px

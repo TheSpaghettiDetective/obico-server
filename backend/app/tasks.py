@@ -297,7 +297,7 @@ def will_record_timelapse(_print):
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
         _print.save(keep_deleted=True)
-    
+
     return True
 
 def send_timelapse_detection_done_email(_print):
@@ -305,12 +305,12 @@ def send_timelapse_detection_done_email(_print):
         LOGGER.warn("Email settings are missing. Ignored send requests")
         return
 
-    subject = 'The Detective is done looking at the time-lapse you uploaded.'
+    subject = 'We are done detecting failures on the time-lapse you uploaded.'
     from_email = settings.DEFAULT_FROM_EMAIL
 
     ctx = {
         'print': _print,
-        'unsub_url': 'https://app.thespaghettidetective.com/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
+        'unsub_url': 'https://app.obico.io/ent/email_unsubscribe/?list=notification&email={}'.format(_print.user.email),
         'prints_link': site.build_full_url('/prints/'),
     }
     emails = [email.email for email in EmailAddress.objects.filter(user=_print.user)]
@@ -318,7 +318,7 @@ def send_timelapse_detection_done_email(_print):
     msg = EmailMessage(subject, message,
                        to=emails,
                        from_email=from_email,
-                       headers={'List-Unsubscribe': '<{}>, <mailto:support@thespaghettidetective.com?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
+                       headers={'List-Unsubscribe': '<{}>, <mailto:support@obico.io?subject=Unsubscribe_notification>'.format(ctx['unsub_url'])},
                        )
     msg.content_subtype = 'html'
     msg.send()

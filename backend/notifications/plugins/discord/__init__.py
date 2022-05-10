@@ -37,7 +37,7 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
 
     @classmethod
     def call_webhook(self, title: str, text: str, color: int, webhook_url: str, image_url: Optional[str] = None):
-        webhook = DiscordWebhook(url=webhook_url, username="The Spaghetti Detective")
+        webhook = DiscordWebhook(url=webhook_url, username="Obico")
         embed = DiscordEmbed(title=title, description=text, color=color)
         if image_url:
             embed.set_image(url=image_url)
@@ -45,10 +45,10 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
         embed.set_author(
             name="Printer Notification",
             url=site.build_full_url('/printers/'),
-            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo/compact/logo-compact_light-scheme.png"
+            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-compact.png"
         )
         embed.set_timestamp()
-        embed.set_footer(text="The Spaghetti Detective")
+        embed.set_footer(text="The Obico app")
         webhook.add_embed(embed)
         webhook.execute()
 

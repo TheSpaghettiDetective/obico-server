@@ -6,14 +6,14 @@
       <div class="col-sm-9 col-md-10">
         <div class="theme-controls">
           <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
-            <svg viewBox="0 0 39.68 39.68" fill="currentColor" class="icon" :class="{'active': themeValue === Themes.Dark}">
+            <svg class="icon" :class="{'active': themeValue === Themes.Dark}">
               <use href="#svg-moon-icon" />
             </svg>
             <div class="label">
               <span class="dark" v-show="themeValue === Themes.Dark">DARK</span>
               <span class="light" v-show="themeValue === Themes.Light">LIGHT</span>
             </div>
-            <svg viewBox="0 0 42.07 42.07" fill="currentColor" class="icon" :class="{'active': themeValue === Themes.Light}">
+            <svg class="icon" :class="{'active': themeValue === Themes.Light}">
               <use href="#svg-sun-icon" />
             </svg>
             <div class="active-indicator" :class="{'right': themeValue === Themes.Light}">
@@ -115,6 +115,7 @@ export default {
   .icon
     flex: 0 0 18px
     height: 18px
+    width: 18px
     margin: 10px
     color: #ABB6C2
 

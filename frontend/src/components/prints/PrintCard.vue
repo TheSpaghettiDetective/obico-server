@@ -124,7 +124,7 @@
               <div
                 class="lead"
                 :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
-              >{{ print.alerted_at ? 'Failure detected' : 'Failure detected' }}</div>
+              >{{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}</div>
               <div class="py-2">
                 Did we get it right?
                 <b-button

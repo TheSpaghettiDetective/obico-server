@@ -216,7 +216,7 @@
                   <a
                     class="btn btn-outline-secondary"
                     :href="printerWizardUrl">
-                        Re-Link OctoPrint
+                        Re-Link Printer
                   </a>
                   <div class="text-muted mt-1">
                     <small>If your OctoPrint is always showing as "offline", and you have gone through <a href="https://www.obico.io/docs/user-guides/octoprint-is-offline/">all the trouble-shooting steps</a>, you can try to re-link OctoPrint as the last resort.</small>

@@ -291,6 +291,7 @@ module.exports = {
   scripts: [
     'https://buttons.github.io/buttons.js',
     'https://code.jquery.com/jquery-3.6.0.min.js',
+    'https://www.googletagmanager.com/gtag/js?id=UA-133768246-1',
     'https://www.obico.io/js/analytics.min.js',
     '/js/compact-view.js',
   ],

@@ -121,6 +121,7 @@ git remote remove origin
 git remote add origin https://github.com/TheSpaghettiDetective/obico-server.git
 git fetch
 git checkout release
+docker-compose up --build -d
 ```
 
 ## We are expanding the core team. We need you!

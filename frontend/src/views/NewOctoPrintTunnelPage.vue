@@ -49,7 +49,7 @@
             </svg>
           </div>
 
-          <div v-if="!authorized" class="authorization-successful">
+          <div v-if="authorized" class="authorization-successful">
             <h4 class="title">Authorization Successful!</h4>
             <p>You can close this page</p>
           </div>

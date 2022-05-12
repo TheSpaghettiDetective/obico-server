@@ -55,7 +55,7 @@
               </div>
 
               <div v-else>
-                <div v-if="targetPlatform">
+                <div v-if="$route.path === routes.printerWizardSetup">
                   <form-wizard
                     color="var(--color-primary)"
                     step-size="sm"
@@ -229,7 +229,7 @@ git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
                   </div>
                   <div class="row">
                     <div class="col-sm-12 col-lg-6 p-4">
-                      <div class="wizard-card" @click="targetPlatform='octoprint'">
+                      <div class="wizard-card" @click="setTargetPlatform('octoprint')">
                       <img
                         :src="require('@static/img/octoprint_logo.png')" />
                         <h3  class="mt-4">OctoPrint</h3>
@@ -237,7 +237,7 @@ git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
                       </div>
                     </div>
                     <div class="col-sm-12 col-lg-6 p-4">
-                      <div class="wizard-card" @click="targetPlatform='moonraker'; discoveryEnabled=false;">
+                      <div class="wizard-card" @click="setTargetPlatform('moonraker')">
                       <div>
                         <img
                           :src="require('@static/img/klipper_logo.jpg')" />
@@ -265,6 +265,7 @@ git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
 import axios from 'axios'
 import moment from 'moment'
 import urls from '@config/server-urls'
+import routes from '@src/views/printer-wizard/wizard-routes'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
@@ -311,6 +312,7 @@ export default {
       obicoDiscoveryPopup: null,
       apiCallIntervalId: null,
       targetPlatform: null,
+      routes,
     }
   },
   created() {
@@ -357,6 +359,14 @@ export default {
     },
   },
   methods: {
+    setTargetPlatform(platfrom) {
+      this.targetPlatform = platfrom
+      if (platfrom === 'moonraker') {
+        this.discoveryEnabled = false
+      }
+
+      this.$router.push(routes.printerWizardSetup + `?${window.location.search}`)
+    },
     setSavingStatus(propName, status) {
       if (status) {
         delete this.errorMessages[propName]

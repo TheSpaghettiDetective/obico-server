@@ -5,7 +5,7 @@ author_url: https://obico.io/team.html
 author_image_url: https://www.obico.io/img/favicon.png
 ---
 
-As some of you might be aware at this time, [The Spaghetti Detective is now Obico](/blog/2022/05/10-the-spaghetti-detective-is-now-obico-open-source-smart-3d-printing-platform).
+As some of you might be aware at this time, [The Spaghetti Detective is now Obico](/blog/2022/05/10/the-spaghetti-detective-is-now-obico-open-source-smart-3d-printing-platform).
 
 If you have previously installed The Spaghetti Detective mobile app, we have made moving to Obico extremely easy for you.
 

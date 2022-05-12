@@ -31,7 +31,7 @@ TSD can now be installed on your unRAID server the same way as the normal Linux 
 
 ```Bash
 cd /mnt/user/appdata/
-git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 # from the README
 cd TheSpaghettiDetective && docker-compose up -d
 ```
@@ -66,7 +66,18 @@ Rebuild the container (Note - if you are going to limit the CPU usage you can al
 docker-compose up -d --force-recreate --build
 ```
 
+## Updating to Obico
 
+Since TSD has been renamed to Obico, updates aren't pushed to the old Repository anymore, if you have previously installed TSD with the old repository, here are the steps to update.
+
+```Bash
+cd /mnt/user/appdata/TheSpaghettiDetective # or where you installed TSD to
+git remote remove origin
+git remote add origin https://github.com/TheSpaghettiDetective/obico-server.git
+git fetch
+git checkout release
+docker-compose up --build -d
+```
 
 ## Issues with the Installation
 

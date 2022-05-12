@@ -90,4 +90,8 @@ Finally, spread the love to other makers who haven't heard of us. Your maker fri
 
 Also, don't forget about following us and liking us on the social media:
 
-TBD
+<a href="https://www.tiktok.com/@obico.io"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/TikTok-Logo.png" /></a>
+<a href="https://www.instagram.com/obico.io/"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/instagram-logo.jpg" /></a>
+<a href="https://www.youtube.com/channel/UCbAJcR6t5lrdZ1JXjPPRjGA"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/youtube-logo.png" /></a>
+<a href="https://www.facebook.com/obico.io/"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/facebook-logo.png" /></a>
+<a href="https://twitter.com/obico_io"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/twitter-logo.png" /></a>

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.contrib.sessions.backends.base import UpdateError
 
 from whitenoise.middleware import WhiteNoiseMiddleware
 import time

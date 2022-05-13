@@ -114,11 +114,9 @@
         <div>
           <b-container>
             <b-row>
-              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                <svg class="logo-img">
+                <svg class="logo-img mx-auto">
                   <use href="#svg-logo-full" />
                 </svg>
-              </div>
             </b-row>
             <b-row>
               <h5 class="mx-auto">FOR</h5>
@@ -261,5 +259,9 @@ body
 .authorization-successful
   padding-top: 6rem
   text-align: center
+
+.logo-img
+  max-height: 4em
+  margin-bottom: 2em
 </style>
 

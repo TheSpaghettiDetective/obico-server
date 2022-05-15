@@ -1,5 +1,5 @@
 const routes = {
-  printerWizardPlatformSelection: '/printers/wizard/',
+  printerWizard: '/printers/wizard/',
   printerWizardSetup: '/printers/wizard/setup/',
 }
 

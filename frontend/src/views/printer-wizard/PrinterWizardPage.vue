@@ -221,7 +221,7 @@ cd moonraker-obico
                     </template>
                   </form-wizard>
                   <div class="row">
-                    <div class="helper col-sm-12">Need help? Check out the <a :href="targetMoonraker ? 'https://www.obico.io/docs/user-guides/klipper-setup/' : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">step-by-step set up guide.</a></div>
+                    <div class="helper col-sm-12">Need help? Check out the <a target="_blank" :href="targetMoonraker ? 'https://www.obico.io/docs/user-guides/klipper-setup/' : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">step-by-step set up guide.</a></div>
                   </div>
                 </div>
                 <div v-else class="container">
@@ -321,6 +321,11 @@ export default {
       this.discoveryEnabled = false
     }
     this.getVerificationCode()
+
+    // Start from platform selection after page refresh
+    if (this.$route.path !== routes.printerWizard) {
+      this.$router.push(routes.printerWizard + `?${window.location.search}`)
+    }
   },
   computed: {
     printerIdToLink() {
@@ -503,7 +508,7 @@ export default {
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">set up guide</a>.</li>
+        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">set up guide</a>.</li>
         </ul></p>`,
         customClass: {
           container: 'dark-backdrop',

@@ -48,7 +48,7 @@ The following is using gmail as an example. Other web mail services may vary sli
     # EMAIL_USE_TLS="True"  # Set it to 'False' if your email provider doesn't use TLS, which is uncommon
 ```
 
-4. Restart the server `docker-compose restart`.
+4. Restart the server `sudo docker-compose restart`.
 
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](email_guide.md).
 

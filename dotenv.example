@@ -11,7 +11,7 @@
 # DATABASE_URL="" # Don't set it unless you know what you are doing.
 # ACCOUNT_ALLOW_SIGN_UP="False"  # Set to 'True' if you want to open sign up form
 # WEBPACK_LOADER_ENABLED="False"  # Don't set it to 'True' unless you want to develop the frontend
-# OCTOPRINT_TUNNEL_PORT_RANGE=""  # Port range reserved for tunnels. Change it only if the default range conflicts with other services running on the same host.
+# OCTOPRINT_TUNNEL_PORT_RANGE="15853-15873"  # Port range reserved for tunnels. Default to 15853-15873. Each tunnel will be allocated a port.
 # TELEGRAM_BOT_TOKEN=""  # https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
 # TWILIO_ACCOUNT_SID=""  # https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
 # TWILIO_AUTH_TOKEN=""

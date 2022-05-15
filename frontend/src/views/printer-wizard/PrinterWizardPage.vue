@@ -174,6 +174,7 @@
                                 <pre class="mt-2">
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
+cd moonraker-obico
 ./install.sh
                                </pre>
                               </li>

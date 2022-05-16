@@ -47,9 +47,11 @@ class PrinterAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationSetting)
 class NotificationSettingAdmin(admin.ModelAdmin):
+    list_select_related = True
     list_display = ('get_user', 'name', 'enabled', 'notify_on_failure_alert', 'notify_on_print_done',
         'notify_on_print_cancelled', 'notify_on_filament_change', 'notify_on_other_print_events', 'notify_on_heater_status')
     search_fields = ('user__email',)
+    readonly_fields = ['user', ]
 
     def get_user(self, obj):
         return obj.user.email

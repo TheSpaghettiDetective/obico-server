@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'pushbullet',
     'corsheaders',
     'safedelete',
+    'nplusone.ext.django',
     'qr_code',
     'app',  # app has to come before allauth for template override to work
     'allauth',
@@ -72,7 +73,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'api',
     'notifications',
-
     'webpack_loader',
 ]
 
@@ -88,6 +88,7 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'nplusone.ext.django.NPlusOneMiddleware',
     'app.middleware.rename_session_cookie',
     'app.middleware.SessionHostDomainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -169,6 +170,8 @@ USE_L10N = True
 USE_TZ = True
 
 # Request logging for debugging purpose
+
+NPLUSONE_LOG_LEVEL = logging.WARN
 
 LOGGING = {
     'version': 1,

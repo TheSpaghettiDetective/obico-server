@@ -2,7 +2,7 @@
 id: klipper-setup
 title: Set up Obico for Klipper
 description: For Klipper/Moonraker/Mainsail/Fluidd users
-sidebar_label: Obico for Klipper
+sidebar_label: Set up Obico for Klipper
 ---
 
 import Tabs from '@theme/Tabs';

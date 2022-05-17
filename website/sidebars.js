@@ -128,6 +128,7 @@ module.exports = {
             'server-guides/configure-mobile-app',
           ],
         },
+        'server-guides/faqs',
         'server-guides/ops',
       ],
     },

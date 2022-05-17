@@ -33,7 +33,7 @@ const defaultSections = {
     route: routes.GeneralNotifications,
   },
   PushNotifications: {
-    title: 'Push Notifications',
+    title: 'Push Notification',
     isSubcategory: true,
     isNotificationChannel: true,
     importComponent: () => ({}),

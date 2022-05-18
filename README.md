@@ -27,8 +27,7 @@ The following software is required before you start installing the server:
 
 ### Email delivery
 
-You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
-should also work but we haven't tried them.
+You will also need an email account that has SMTP access enabled (gmail will not work. As of May 30, 2022 Google has removed the option for allowing SMTP access). Other web mail such as Yahoo should work but we haven't tried them.
 
 ## Get the code and start the server.
 
@@ -39,13 +38,13 @@ git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetect
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd TheSpaghettiDetective && sudo docker-compose up -d`
+    - If you are on Linux: `cd TheSpaghettiDetective && sudo docker compose up -d`
     - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
     - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
+4. There is no step 4. This is how easy it is to get Obico up and running (thanks to Docker and Docker-compose).
 
 Open "http://localhost:3334" on the same computer. Voila - your self-hosted Obico Server is now up and running!
 
@@ -88,9 +87,9 @@ That's it! You now have a fully-functional Obico Server that your OctoPrint can 
 
 Feeling excited? Want to contribute? [Check out how.](https://www.obico.io/docs/developer-guides/contribute/)
 
-# Difficulties at getting The Spaghetti Detective server up and running?
+# Difficulties in getting the Obico server up and running?
 
 Browse and search in the [Obico Server guide website](https://www.obico.io/docs/server-guides/). If you can't find the answer there, consult the [Discord](https://obico.io/discord) or [open an issue](https://github.com/TheSpaghettiDetective/obico-server/issues/new).
 
 # Thanks
-![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.
+![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.

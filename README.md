@@ -56,7 +56,11 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 
 ## Obtain server's IP address
 
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be an private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
+This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
+    - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
+    - If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
+
+The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 
 ## Login as Django admin
 
@@ -64,7 +68,7 @@ The Obico Server needs to have an IP address that is accessible by OctoPrint or 
 
 *Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 
-2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
+2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but are highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 
 ## Configure Django site
 

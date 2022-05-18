@@ -57,8 +57,8 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 ## Obtain server's IP address
 
 This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
-    - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
-    - If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
+- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
+- If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
 
 The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 

@@ -34,13 +34,13 @@ You will also need an email account that has SMTP access enabled (gmail will not
 1. Get the code:
 
 ```
-git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd TheSpaghettiDetective && sudo docker compose up -d`
-    - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
-    - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
+    - If you are on Linux: `cd obico-server && sudo docker compose up -d`
+    - If you are on Mac: `cd obico-server && docker-compose up -d`
+    - If you are on Windows: `cd obico-server; docker-compose up -d`
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 

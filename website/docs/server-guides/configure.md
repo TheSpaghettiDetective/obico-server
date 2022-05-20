@@ -41,14 +41,14 @@ The following is using gmail as an example. Other web mail services may vary sli
 3. Find the following lines, and set them to the correct values of your email account:
 
 ```
-    # EMAIL_HOST=""  # Such as "smtp.gmail.com"
-    # EMAIL_HOST_USER="" # Such as your email address for a Gmail account
-    # EMAIL_HOST_PASSWORD="" # Your email account password
-    # EMAIL_PORT=587   # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
-    # EMAIL_USE_TLS="True"  # Set it to 'False' if your email provider doesn't use TLS, which is uncommon
+EMAIL_HOST="your_email_host_here"  # Such as "smtp.gmail.com"
+EMAIL_HOST_USER="your_email_user_here" # Such as your email address for a Gmail account
+EMAIL_HOST_PASSWORD="your_email_password_here" # Your email account password
+EMAIL_PORT=587   # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
+EMAIL_USE_TLS="True"  # Set it to 'False' if your email provider doesn't use TLS, which is uncommon
 ```
 
-4. Restart the server `docker-compose restart`.
+4. Restart the server `docker-compose up --build -d`.
 
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](email_guide.md).
 

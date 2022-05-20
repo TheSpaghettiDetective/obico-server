@@ -108,7 +108,7 @@ Find more details in [this guide](https://www.obico.io/docs/user-guides/move-fro
 
 ### Klipper Users (not using OctoPrint)
 
-If you are using Klipper with Mainsail and Fluidd, you can follow [this guide](https://obico.io/docs/user_guides/klipper-setup) to get started with Obico for Klipper. Remember, it is a beta release, so [providing feedback and reporting any bugs](https://github.com/TheSpaghettiDetective/moonraker-obico/issues) is greatly appreciated!
+If you are using Klipper with Mainsail and Fluidd, you can follow [this guide](https://obico.io/docs/user-guides/klipper-setup) to get started with Obico for Klipper. Remember, it is a beta release, so [providing feedback and reporting any bugs](https://github.com/TheSpaghettiDetective/moonraker-obico/issues) is greatly appreciated!
 
 
 
@@ -121,6 +121,7 @@ git remote remove origin
 git remote add origin https://github.com/TheSpaghettiDetective/obico-server.git
 git fetch
 git checkout release
+docker-compose up --build -d
 ```
 
 ## We are expanding the core team. We need you!

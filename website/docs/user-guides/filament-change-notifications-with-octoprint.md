@@ -68,7 +68,7 @@ You can turn on the filament notifications from the mobile app or the web app.
     <img style={{maxWidth: "220px", margin: "1em 0.5em 1em 0"}} src="/img/user-guides/filament-change/push-notification.png" alt="Push Notifications Screen"></img>
 </div>
 
-Select *Push Notifications* from the *Notifications Screen*
+Select *Push Notification* from the *Notifications Screen*
 
 
 **On The Spaghetti Detective's Website**

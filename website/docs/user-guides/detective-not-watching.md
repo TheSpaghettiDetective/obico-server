@@ -4,11 +4,11 @@ title: Why is the Failure Detection Off?
 sidebar_label: Why is the Failure Detection Off?
 ---
 
-If you open the Obico app and you see this warning, the failure detection is on for your prints. Hence you won't get alerted in case there is a print failure. 😟
+If you open the Obico app and you see this warning, the failure detection is off for your prints. Hence you won't get alerted in case there is a print failure. 😟
 
 ![](/img/user-guides/helpdocs/not-watching.png)
 
-Right below this warning, there is a short message that explains why the failure detection is off. Blow is a list of all possible reasons.
+Right below this warning, there is a short message that explains why the failure detection is off. Below is a list of all possible reasons.
 
 :::note
 Whenever the failure detection is off, you are not using AI Detection Hours.

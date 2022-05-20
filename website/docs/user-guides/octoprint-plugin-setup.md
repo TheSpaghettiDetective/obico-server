@@ -2,7 +2,7 @@
 id: octoprint-plugin-setup
 title: Set up Obico for OctoPrint
 description: For OctoPrint users
-sidebar_label: Obico for OctoPrint
+sidebar_label: Set up Obico for OctoPrint
 ---
 
 import Tabs from '@theme/Tabs';

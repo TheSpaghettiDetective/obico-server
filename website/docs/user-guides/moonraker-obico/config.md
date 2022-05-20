@@ -50,6 +50,7 @@ The configuration for connecting to the Obico Server.
 
 :::caution
 Usually, you don't need to directly set anything in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain it from Moonraker.
+:::
 
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
 

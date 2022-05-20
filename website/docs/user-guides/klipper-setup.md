@@ -2,7 +2,7 @@
 id: klipper-setup
 title: Set up Obico for Klipper
 description: For Klipper/Moonraker/Mainsail/Fluidd users
-sidebar_label: Obico for Klipper
+sidebar_label: Set up Obico for Klipper
 ---
 
 import Tabs from '@theme/Tabs';
@@ -32,6 +32,7 @@ Before you start, make sure:
 ```
     cd ~
     git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
+    cd moonraker-obico
     ./install.sh
 ```
 3. Follow the installation steps. You may be asked to enter the password in order to run `sudo` commands.

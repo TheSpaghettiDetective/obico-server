@@ -101,3 +101,13 @@ Also, don't forget about following us and liking us on the social media:
 - [The Obico Server](https://github.com/TheSpaghettiDetective/obico-server/)
 - [Obico for OctoPrint plugin](https://github.com/TheSpaghettiDetective/OctoPrint-Obico/)
 - [Obico for Klipper (Moonraker plugin)](https://github.com/TheSpaghettiDetective/moonraker-obico/)
+
+## Buy us a coffee
+
+We gulp down a lot of caffeine for some mysterious reason. ;)
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="6MWLR4UJPJFGY" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>

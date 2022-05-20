@@ -67,7 +67,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Account & Subscription',
-      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer', 'user-guides/open-source', ],
+      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer',],
     },
     {
       type: 'category',

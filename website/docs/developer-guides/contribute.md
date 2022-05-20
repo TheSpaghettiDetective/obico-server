@@ -95,3 +95,9 @@ Also, don't forget about following us and liking us on the social media:
 <a href="https://www.youtube.com/channel/UCbAJcR6t5lrdZ1JXjPPRjGA"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/youtube-logo.png" /></a>
 <a href="https://www.facebook.com/obico.io/"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/facebook-logo.png" /></a>
 <a href="https://twitter.com/obico_io"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/twitter-logo.png" /></a>
+
+## Star our github repos
+
+- [The Obico Server](https://github.com/TheSpaghettiDetective/obico-server/)
+- [Obico for OctoPrint plugin](https://github.com/TheSpaghettiDetective/OctoPrint-Obico/)
+- [Obico for Klipper (Moonraker plugin)](https://github.com/TheSpaghettiDetective/moonraker-obico/)

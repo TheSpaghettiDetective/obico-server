@@ -74,8 +74,8 @@ def parse_states(d: Dict[str, Dict[str, Any]]) -> Dict[str, HeaterState]:
      'chamber': {'actual': None, 'target': None, 'offset': 0}}
     """
     return {
-        name: HeaterState(name=name, target=v['target'], actual=v['actual'],
-                          offset=v.get('offset', 0))
+        name: HeaterState(name=name, target=float(v['target']), actual=float(v['actual']),
+                          offset=float(v.get('offset', 0)))
         for name, v in d.items()
     }
 

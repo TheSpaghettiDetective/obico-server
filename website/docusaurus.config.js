@@ -75,11 +75,6 @@ module.exports = {
           position: 'left', // or 'right'
           items: [
             {
-              label: 'Open Source',
-              to: '/docs/user-guides/open-source',
-              target: '_self',
-            },
-            {
               label: 'Blog',
               to: '/blog',
             },
@@ -126,10 +121,6 @@ module.exports = {
               label: 'Pricing',
               to: 'https://app.obico.io/ent_pub/pricing/',
               target: '_self',
-            },
-            {
-              label: 'Open Source',
-              to: '/docs/user-guides/open-source',
             },
           ],
         },

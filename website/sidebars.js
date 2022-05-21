@@ -30,7 +30,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/update-manager'],
+      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     {
       type: 'category',
@@ -67,7 +67,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Account & Subscription',
-      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer', 'user-guides/open-source', ],
+      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer',],
     },
     {
       type: 'category',

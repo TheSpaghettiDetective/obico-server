@@ -27,25 +27,24 @@ The following software is required before you start installing the server:
 
 ### Email delivery
 
-You will also need an email account that has SMTP access enabled. For a gmail account, this is [how you enable SMTP access](https://support.google.com/accounts/answer/6010255?hl=en). Other web mail such as Yahoo
-should also work but we haven't tried them.
+You will also need an email account that has SMTP access enabled (gmail will not work. As of May 30, 2022 Google has removed the option for allowing SMTP access). Other web mail such as Yahoo should work but we haven't tried them.
 
 ## Get the code and start the server.
 
 1. Get the code:
 
 ```
-git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd TheSpaghettiDetective && sudo docker-compose up -d`
-    - If you are on Mac: `cd TheSpaghettiDetective && docker-compose up -d`
-    - If you are on Windows: `cd TheSpaghettiDetective; docker-compose up -d`
+    - If you are on Linux: `cd obico-server && sudo docker compose up -d`
+    - If you are on Mac: `cd obico-server && docker-compose up -d`
+    - If you are on Windows: `cd obico-server; docker-compose up -d`
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
+4. There is no step 4. This is how easy it is to get Obico up and running (thanks to Docker and Docker-compose).
 
 Open "http://localhost:3334" on the same computer. Voila - your self-hosted Obico Server is now up and running!
 
@@ -57,7 +56,11 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 
 ## Obtain server's IP address
 
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be an private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
+This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
+- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
+- If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
+
+The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 
 ## Login as Django admin
 
@@ -65,7 +68,7 @@ The Obico Server needs to have an IP address that is accessible by OctoPrint or 
 
 *Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 
-2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
+2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but are highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 
 ## Configure Django site
 
@@ -88,9 +91,9 @@ That's it! You now have a fully-functional Obico Server that your OctoPrint can 
 
 Feeling excited? Want to contribute? [Check out how.](https://www.obico.io/docs/developer-guides/contribute/)
 
-# Difficulties at getting The Spaghetti Detective server up and running?
+# Difficulties in getting the Obico server up and running?
 
 Browse and search in the [Obico Server guide website](https://www.obico.io/docs/server-guides/). If you can't find the answer there, consult the [Discord](https://obico.io/discord) or [open an issue](https://github.com/TheSpaghettiDetective/obico-server/issues/new).
 
 # Thanks
-![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test TSD webcam streaming on different browsers/versions.
+![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.

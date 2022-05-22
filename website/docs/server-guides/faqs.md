@@ -28,8 +28,8 @@ If the Premium Streaming works in the Obico Cloud but not in your self-hosted se
 
 At the minimum, your server's firewall should have the following rules allowed:
 
-- Inbound - port 80. If your server is on http.
-- Inbound - port 443. If your server is on https.
+- Inbound - port 3334 or whatever port your reverse proxy is on. If your server is on http.
+- If you are using a reverse proxy, make sure it proxies WebSocket protocol.
 - Outbound - stun.l.google.com:19302.
 - UDP port range 20000-24999.
 

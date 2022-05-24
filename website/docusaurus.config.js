@@ -122,15 +122,15 @@ module.exports = {
         },
         {
           label: 'Help',
-          href: '/help',
+          to: '/help',
         },
         {
           label: 'Contribute',
-          href: '/docs/developer-guides/contribute/',
+          to: '/docs/developer-guides/contribute/',
         },
         {
           label: 'Blog',
-          href: '/blog',
+          to: '/blog',
         },
         {
           label: 'About',

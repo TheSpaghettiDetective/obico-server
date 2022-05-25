@@ -15,15 +15,19 @@ const defaultTheme = (isLocalStorageSupported() ? localStorage.getItem('colorThe
 const colors = [
   {
     name: 'primary',
-    values: {[Themes.Light]: '#00B1A4', [Themes.Dark]: '#74EED1'},
+    values: {[Themes.Light]: '#01A299', [Themes.Dark]: '#03DAC5'},
   },
   {
     name: 'primary-hover',
-    values: {[Themes.Light]: '#02D4C5', [Themes.Dark]: '#34C5A3'},
+    values: {[Themes.Light]: '#019592', [Themes.Dark]: '#70EFDE'},
+  },
+  {
+    name: 'primary-muted',
+    values: {[Themes.Light]: '#03DAC5', [Themes.Dark]: '#018786'},
   },
   {
     name: 'on-primary',
-    values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#233141'},
+    values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#001210'},
   },
   {
     name: 'secondary',

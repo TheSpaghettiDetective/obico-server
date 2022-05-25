@@ -20,10 +20,6 @@ const LinksList = [
     route: '/docs/user-guides/webcam-feed-is-laggy/',
   },
   {
-    title: 'Set up your own Obico private server',
-    route: '/docs/user-guides/open-source/',
-  },
-  {
     title: 'The Pro plan vs the Free plan',
     route: '/docs/user-guides/upgrade-to-pro/',
   },

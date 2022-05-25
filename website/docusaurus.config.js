@@ -224,7 +224,7 @@ module.exports = {
             },
             {
               label: 'Developer Tutorials',
-              to: '/api/',
+              to: '/docs/api/',
             },
           ],
         },

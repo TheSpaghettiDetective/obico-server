@@ -53,7 +53,7 @@ def process_print_end_event(print_event):
     if will_record_timelapse(_print):
         select_print_shots_for_feedback(_print)
         send_notification_for_print_event(_print, print_event)
-        compile_timelapse.delay(print_id)
+        compile_timelapse.delay(print_event.print_id)
 
 
 def send_notification_for_print_event(_print, print_event, extra_context=None):

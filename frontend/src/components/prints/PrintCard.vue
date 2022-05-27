@@ -252,10 +252,8 @@ export default {
       ) {
         return true
       }
-      // Time-lapses that finished or was uploaded within the past 24 hours are presumably still be processed
+      // Time-lapses that was uploaded within the past 24 hours are presumably still be processed
       if (
-        (this.print.ended_at &&
-          moment().diff(this.print.ended_at, 'hours') < 24) ||
         (this.print.uploaded_at &&
           moment().diff(this.print.uploaded_at, 'hours') < 24)
       ) {

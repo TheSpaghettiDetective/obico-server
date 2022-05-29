@@ -2,7 +2,7 @@
 title: The Spaghettilapse Contest
 author: Mitch Bardijn
 author_url: https://www.facebook.com/SleepyBlueCat
-author_image_url: https://scontent-sjc3-1.xx.fbcdn.net/v/t31.0-1/c3.0.480.480a/p480x480/30051793_10212220411287521_371651864893343373_o.jpg?_nc_cat=111&_nc_ohc=PSK7bD8DeY0AQlZ9SJETUg41DJaPF3n2HOUh9gxBwKISEuD6RKDKKV0RQ&_nc_ht=scontent-sjc3-1.xx&_nc_tp=1&oh=1ce79826f69eb4a9a5a5925c10b689e2&oe=5EABFCC4
+author_image_url: https://www.obico.io/img/mitch_bardijn.jpg
 tags: ['Contests & Giveaways']
 ---
 

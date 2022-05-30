@@ -91,6 +91,13 @@ class PrinterViewSet(
         else:
             return Printer.objects.filter(user=self.request.user)
 
+    @action(detail=True, methods=['post'])
+    def archive(self, request, pk=None):
+        printer = get_printer_or_404(pk, request)
+        printer.archived_at = timezone.now()
+        printer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     # TODO: Remove the "GET" method after old mobile app versions have faded
 
     @action(detail=True, methods=['post', 'get'])

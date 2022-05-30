@@ -58,6 +58,7 @@ def edit_printer(request, pk, template_dir=None):
     return render(request, get_template_path('printer_settings', template_dir))
 
 
+# TODO: Deprecated in favor the REST API call. Remove when calls from the Mobile app is all gone.
 @login_required
 def delete_printer(request, pk=None):
     printer = get_printer_or_404(pk, request, with_archived=True)

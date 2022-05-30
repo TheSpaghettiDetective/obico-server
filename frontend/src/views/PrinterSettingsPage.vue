@@ -545,17 +545,27 @@ export default {
       return 'Medium'
     },
 
-    deletePrinter() {
-      this.$swal.Confirm.fire().then((result) => {
-        if (result.value) {
-          window.location.href = `/printers/${this.printerId}/delete/`
+    deletePrinter(printer) {
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        text: `Delete ${this.printer.name} printer? This action can not be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then(userAction => {
+        if (userAction.isConfirmed) {
+          axios
+            .delete(urls.printer(this.printerId) + '?with_archived=true')
+            .then(() => {
+              window.location.href = `/printers/`
+            })
         }
       })
     },
 
     archivePrinter() {
-      this.$swal.Confirm.fire().then((result) => {
-        if (result.value) {
+      this.$swal.Confirm.fire().then((userAction) => {
+        if (userAction.isConfirmed) {
           axios
             .post(urls.printerAction(this.printerId, '/archive/'))
             .then(() => {
@@ -568,10 +578,8 @@ export default {
                   window.location.href = '/printers/'
                 })
             })
-            .catch( () => {
-            })
-          }
-        })
+        }
+      })
     },
 
     /**

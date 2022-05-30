@@ -87,9 +87,11 @@ class PrinterViewSet(
 
     def get_queryset(self):
         if self.request.query_params.get('with_archived') == 'true':
-            return Printer.with_archived.filter(user=self.request.user)
+            qs = Printer.with_archived.filter(user=self.request.user)
         else:
-            return Printer.objects.filter(user=self.request.user)
+            qs = Printer.objects.filter(user=self.request.user)
+
+        return qs.select_related('current_print', 'printerprediction')
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):

@@ -85,8 +85,9 @@
     <div
       class="col-12 text-center py-2 text-warning"
     >
-      <div>Printer is not connected to OctoPrint.</div>
+      <div>Printer not connected at the serial port.</div>
       <button
+        v-if="!printer.isAgentMoonraker()"
         id="connect-printer"
         type="button"
         class="btn btn-outline-primary btn-block mt-2"
@@ -104,8 +105,8 @@
       class="col-12 text-center py-3 text-warning"
     >
       <div>
-        OctoPrint is not powered on, or is offline.
-        <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-is-offline/">Why? <small><i class="fas fa-external-link-alt"></i></small></a>
+        Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
+        <a target="_blank" href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">Why? <small><i class="fas fa-external-link-alt"></i></small></a>
       </div>
     </div>
   </div>
@@ -127,7 +128,7 @@ export default {
   computed: {
     connecting() {
       return this.connectBtnClicked && this.printer.isDisconnected()
-    }
+    },
   },
   methods: {
     onPauseToggled(ev) {

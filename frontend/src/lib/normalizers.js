@@ -36,6 +36,7 @@ export const normalizedPrinter = (newData, oldData) => {
     inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
+    isAgentMoonraker: function() { return get(this, 'settings.agent_name', '') === 'moonraker_obico'},
     alertUnacknowledged: function() {
       return get(this, 'current_print.alerted_at')
                 && moment(

@@ -4,7 +4,7 @@ import firebase_admin
 from django.utils.timezone import now
 from sentry_sdk import capture_exception
 
-from .utils import save_print_snapshot, shortform_duration, shortform_localtime, get_rotated_jpg_url
+from .utils import shortform_duration, shortform_localtime, get_rotated_jpg_url
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 

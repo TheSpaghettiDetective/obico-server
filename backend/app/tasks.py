@@ -26,7 +26,7 @@ from channels_presence.models import Room
 from .models import *
 from .models import Print, PrintEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
-from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, save_pic, last_pic_of_print
+from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, copy_pic, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.image import overlay_detections
 from lib import cache
@@ -275,11 +275,12 @@ def will_record_timelapse(_print):
         return False
 
     # Save the unrotated snapshot so that it is still viewable even after the print is done.
-    unrotated_jpg_url = save_pic(
+    unrotated_jpg_url = copy_pic(
                             last_pic,
                             f'snapshots/{_print.printer.id}/latest_unrotated.jpg',
                             rotated=False,
-                            to_long_term_storage=False)
+                            to_long_term_storage=False
+                        )
     cache.printer_pic_set(_print.printer.id, {'img_url': unrotated_jpg_url}, ex=IMG_URL_TTL_SECONDS)
 
     min_timelapse_secs = _print.printer.min_timelapse_secs_on_cancel if _print.is_canceled() else _print.printer.min_timelapse_secs_on_finish
@@ -288,13 +289,14 @@ def will_record_timelapse(_print):
         clean_up_print_pics(_print)
         return False
 
-    rotated_jpg_url = save_pic(
-                            last_pic,
-                            f'private/{_print.id}_poster.jpg',
-                            to_container=settings.TIMELAPSE_CONTAINER,
-                            rotated=True,
-                            printer_settings=_print.printer.settings,
-                            to_long_term_storage=True)
+    rotated_jpg_url = copy_pic(
+                        last_pic,
+                        f'private/{_print.id}_poster.jpg',
+                        to_container=settings.TIMELAPSE_CONTAINER,
+                        rotated=True,
+                        printer_settings=_print.printer.settings,
+                        to_long_term_storage=True
+                    )
     if rotated_jpg_url:
         _print.poster_url = rotated_jpg_url
         _print.save(keep_deleted=True)
@@ -343,10 +345,11 @@ def select_print_shots_for_feedback(_print):
         return sorted(selected_timestamps)
 
     for ts in highest_7_predictions(cache.print_highest_predictions_get(_print.id)):
-        rotated_jpg_url = save_pic(
+        rotated_jpg_url = copy_pic(
                             f'raw/{_print.printer.id}/{_print.id}/{ts}.jpg',
                             f'ff_printshots/{_print.user.id}/{_print.id}/{ts}.jpg',
                             rotated=True,
                             printer_settings=_print.printer.settings,
-                            to_long_term_storage=False)
+                            to_long_term_storage=False
+                        )
         PrintShotFeedback.objects.create(print=_print, image_url=rotated_jpg_url)

@@ -77,7 +77,7 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def save_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
         return None
 
@@ -111,9 +111,10 @@ def get_rotated_pic_url(printer, force_snapshot=False):
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
-    return save_pic(
-                        jpg_path.group(1),
-                        f'snapshots/{printer.id}/latest_rotated.jpg',
-                        rotated=not 'latest_rotated' in jpg_url,
-                        printer_settings=printer.settings,
-                        to_long_term_storage=False)
+    return copy_pic(
+                jpg_path.group(1),
+                f'snapshots/{printer.id}/latest_rotated.jpg',
+                rotated=not 'latest_rotated' in jpg_url,
+                printer_settings=printer.settings,
+                to_long_term_storage=False
+            )

@@ -13,12 +13,12 @@
     <template #header>
       <div v-if="setupCompleted" class="mb-4">
         <p class="lead">
-          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;The Obico app Slack App has been successfully added to your workspace.
+          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;Obico Messenger has been successfully added to your workspace.
         </p>
         <br />
         <h2>What's Next?</h2>
         <br />
-        <p>1. Make sure the Obico Slack App to the channels you want the notifications to be sent to.</p>
+        <p>1. Make sure Obico Messenger is added to the channels you want the notifications to be sent to.</p>
         <img class="mw-100" :src="require('@static/img/notification-guides/slack/slack_setup1.png')" />
         <br /><br />
         <p>2. There is no 2. You are all set. It's this simple. :)</p>

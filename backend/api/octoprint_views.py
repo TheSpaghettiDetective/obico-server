@@ -29,7 +29,7 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from lib.utils import save_print_snapshot, last_pic_of_print
+from lib.utils import save_pic, last_pic_of_print
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -52,11 +52,13 @@ def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
 
-    rotated_jpg_url = save_print_snapshot(printer,
+    rotated_jpg_url = save_pic(
                         last_pic_of_print(printer.current_print, 'tagged'),
                         f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
                         rotated=True,
-                        to_long_term_storage=False)
+                        printer_settings=printer.settings,
+                        to_long_term_storage=False
+                        )
 
     handler.send_failure_alerts(
         printer=printer,

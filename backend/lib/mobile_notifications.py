@@ -4,7 +4,7 @@ import firebase_admin
 from django.utils.timezone import now
 from sentry_sdk import capture_exception
 
-from .utils import shortform_duration, shortform_localtime, get_rotated_jpg_url
+from .utils import shortform_duration, shortform_localtime, get_rotated_pic_url
 from app.models import calc_normalized_p, MobileDevice
 from lib import cache
 
@@ -20,7 +20,7 @@ def send_if_needed(_print, op_event, op_data):
 
     rotated_jpg_url = None      # Cache it as it's expensive to generate
     if op_event.get('event_type') in PRINT_EVENTS:
-        rotated_jpg_url = get_rotated_jpg_url(_print.printer)
+        rotated_jpg_url = get_rotated_pic_url(_print.printer)
         send_print_event(_print, op_event.get('event_type'), rotated_jpg_url)
 
     send_print_progress(_print, op_data, rotated_jpg_url)
@@ -130,7 +130,7 @@ def send_print_progress(_print, op_data, existed_rotated_jpg_url):
                 data['title'] += ' | 🔴'
 
         if not rotated_jpg_url:
-            rotated_jpg_url = get_rotated_jpg_url(_print.printer)
+            rotated_jpg_url = get_rotated_pic_url(_print.printer)
         if rotated_jpg_url:
             data['picUrl'] = rotated_jpg_url
 

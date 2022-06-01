@@ -396,6 +396,8 @@ BUCKET_PREFIX = os.environ.get('BUCKET_PREFIX')
 ML_API_HOST = os.environ.get('ML_API_HOST')
 ML_API_TOKEN = os.environ.get('ML_API_TOKEN')
 
+PIC_POST_LIMIT_PER_MINUTE = int(os.environ.get('PIC_POST_LIMIT_PER_MINUTE', 0)) # 0 means no limits
+
 # Hyper parameters for prediction model
 # Definitely not failing if ewm mean is below this level. =(0.4 - 0.02): 0.4 - optimal THRESHOLD_LOW in hyper params grid search; 0.02 - average of rolling_mean_short
 THRESHOLD_LOW = float(os.environ.get('THRESHOLD_LOW', '0.38'))

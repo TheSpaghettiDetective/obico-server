@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework import status
 from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -76,6 +77,10 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
+
+        if settings.PIC_POST_LIMIT_PER_MINUTE and cache.pic_post_over_limit(printer.id, settings.PIC_POST_LIMIT_PER_MINUTE):
+            return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
+
         printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
         pic = request.FILES['pic']

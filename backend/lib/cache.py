@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.utils.timezone import now
+from datetime import datetime
 import redis
 import bson
 import json
@@ -50,6 +51,8 @@ def printer_key_prefix(printer_id):
 def print_key_prefix(print_id):
     return 'print:{}:'.format(print_id)
 
+def pic_post_throttle_key(printer_id):
+    return 'thr:{}:{}'.format(printer_id, datetime.now().minute)
 
 def printer_status_set(printer_id, mapping, ex):
     if isinstance(mapping, dict):
@@ -298,3 +301,12 @@ def disco_pop_raw_device_messages(
             tordset_key, min='-inf', max=cur_time - expiration_secs)
         conn.zpopmin(tordset_key, message_count)
         return [raw_msg for (raw_msg, _) in conn.execute()[1]]
+
+def pic_post_over_limit(printer_id, limit_per_minute):
+    key = pic_post_throttle_key(printer_id)
+    with REDIS.pipeline() as pipe:
+        pipe.incr(key)
+        pipe.expire(key, 60)
+        (cnt, _) = pipe.execute()
+
+    return cnt > limit_per_minute

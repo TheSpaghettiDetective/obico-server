@@ -87,18 +87,22 @@ class OctoPrintPicView(APIView):
         pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
 
-        if not printer.current_print:
-            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg',
-        else:
+        if printer.current_print:
             pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        else:
+            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg',
         internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
 
-        if not printer.should_watch() or not printer.actively_printing():
+        if printer.should_watch() and printer.actively_printing():
+            self.detect(printer, pic, pic_id, internal_url)
+        else:
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
-            send_status_to_web(printer.id)
-            return Response({'result': 'ok'})
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
+        send_status_to_web(printer.id)
+        return Response({'result': 'ok'})
+
+    def detect(self, printer, pic, pic_id, raw_pic_url):
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
         req.raise_for_status()
         resp = req.json()
 
@@ -118,7 +122,8 @@ class OctoPrintPicView(APIView):
         overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
         tagged_img.seek(0)
 
-        _, external_url = save_file_obj(f'tagged/{pic_path}', tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
+        pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
         cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])
@@ -131,9 +136,6 @@ class OctoPrintPicView(APIView):
             pause_if_needed(printer)
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
-
-        send_status_to_web(printer.id)
-        return Response({'result': 'ok'})
 
 
 class OctoPrinterView(APIView):

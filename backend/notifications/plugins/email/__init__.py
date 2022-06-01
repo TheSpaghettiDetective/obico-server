@@ -18,6 +18,7 @@ from notifications.plugin import (
     FailureAlertContext,
     PrinterNotificationContext,
     notification_types,
+    UserContext,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -83,16 +84,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
-        template_name = 'email/FailureAlert.html'
-        tpl = get_template(template_name)
-
+        template_path = 'email/FailureAlert.html'
         mailing_list: str = 'failure_alert'
-        unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
-        )
-        headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
-        }
 
         ctx = context.extra_context or {}
         ctx.update(
@@ -102,33 +95,20 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             view_link=site.build_full_url('/printers/'),
             cancel_link=site.build_full_url('/prints/{}/cancel/'.format(context.print.id)),
             resume_link=site.build_full_url('/prints/{}/resume/'.format(context.print.id)),
-            unsub_url=unsub_url,
-            context=context,
         )
 
-        attachments = []
-        if context.img_url:
-            # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
-            try:
-                if not settings.SITE_IS_PUBLIC:
-                    attachments = [('Image.jpg', requests.get(context.img_url).content, 'image/jpeg')]
-            except:
-                pass
-
-            ctx['img_url'] = None if attachments else context.img_url
-
-        message = tpl.render(ctx)
         subject = 'Your print {} on {} {}.'.format(
             context.print.filename,
             context.printer.name,
             'smells fishy' if context.is_warning else 'is probably failing')
 
         self._send_emails(
-            user_id=context.user.id,
+            user=context.user,
             subject=subject,
-            message=message,
-            headers=headers,
-            attachments=attachments,
+            mailing_list=mailing_list,
+            template_path=template_path,
+            ctx=ctx,
+            img_url=context.img_url,
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
@@ -136,64 +116,71 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
-        template_name = f'email/{context.notification_type}.html'
-        tpl = get_template(template_name)
-        if not tpl:
-            LOGGER.debug(f'Missing template "{template_name}", ignoring event "{context.notification_type}"')
-            return
-
+        template_path = f'email/{context.notification_type}.html'
         subject = self.get_printer_notification_subject(context)
         mailing_list: str = context.feature.name.replace('notify_on_', '')
-
-        unsub_url = site.build_full_url(
-            f'/unsubscribe_email/?unsub_token={context.user.unsub_token}&list={mailing_list}'
-        )
-        headers = {
-            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
-        }
 
         ctx = context.extra_context or {}
         ctx.update(
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
             user_pref_url=site.build_full_url('/user_preferences/notification_email/'),
-            unsub_url=unsub_url,
-            context=context,
         )
 
         if context.print.ended_at and context.print.started_at:
             ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
 
-        attachments = []
-        if context.img_url:
-            # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
-            try:
-                if not settings.SITE_IS_PUBLIC:
-                    attachments = [('Image.jpg', requests.get(context.img_url).content, 'image/jpeg')]
-            except:
-                pass
-
-            ctx['img_url'] = None if attachments else context.img_url
-
-        message = tpl.render(ctx)
         self._send_emails(
-            user_id=context.user.id,
+            user=context.user,
             subject=subject,
-            message=message,
-            headers=headers,
-            attachments=attachments,
+            mailing_list=mailing_list,
+            template_path=template_path,
+            ctx=ctx,
+            img_url=context.img_url,
         )
 
-    def _send_emails(self, user_id: int, subject: str, message: str, headers: Dict, verified_only: bool = True, attachments: Optional[List] = None) -> None:
+    def _send_emails(self,
+            user: UserContext,
+            subject: str,
+            mailing_list: str,
+            template_path: str,
+            ctx: Dict,
+            img_url: str = None,
+            verified_only: bool = True,
+            attachments: Optional[List] = []) -> None:
+
         if not settings.EMAIL_HOST:
             LOGGER.warn("Email settings are missing. Ignored send requests")
             return
 
+        tpl = get_template(template_path)
+
+        unsub_url = site.build_full_url(
+            f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}'
+        )
+        ctx['unsub_url'] = unsub_url
+
+        headers = {
+            'List-Unsubscribe': f'<{unsub_url}>, <mailto:support@obico.io?subject=Unsubscribe_{mailing_list}>'
+        }
+
+        if img_url:
+            # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
+            try:
+                if not settings.SITE_IS_PUBLIC:
+                    attachments.append(('Image.jpg', requests.get(context.img_url).content, 'image/jpeg'))
+                else:
+                    ctx['img_url'] = img_url
+            except:
+                ctx['img_url'] = img_url
+
+        message = tpl.render(ctx)
+
         # By default email verification should be required for notifications but
         # maybe users will want to disable it on private servers
         if settings.ACCOUNT_EMAIL_VERIFICATION != 'none' and verified_only:
-            emails = EmailAddress.objects.filter(user_id=user_id, verified=True)
+            emails = EmailAddress.objects.filter(user_id=user.id, verified=True)
         else:
-            emails = EmailAddress.objects.filter(user_id=user_id)
+            emails = EmailAddress.objects.filter(user_id=user.id)
 
         for email in emails:
             self._send_email(email=email.email, subject=subject, message=message, attachments=attachments, headers=headers)

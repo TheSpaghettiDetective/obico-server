@@ -5,7 +5,6 @@
 {% block vue_content %}
   <router-view
     :config='{
-      telegramBotName: "{{telegram_bot_name}}",
       twilioCountryCodes: {{ TWILIO_COUNTRY_CODES }},
     }'
   >

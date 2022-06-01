@@ -23,7 +23,6 @@ from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
 from app.forms import SocialAccountAwareLoginForm
 from lib import channels
-from lib.integrations.telegram_bot import bot_name, telegram_bot, telegram_send
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
 from lib import cache
@@ -105,68 +104,9 @@ def printer_control(request, pk):
 
 # User preferences
 
-
 @login_required
 def user_preferences(request, route=None, template_dir=None):
-    params = dict(telegram_bot_name=bot_name) if bot_name else dict()
-
-    return render(request, get_template_path('user_preferences', template_dir), params)
-
-@csrf_exempt
-@login_required
-def test_telegram(request):
-    if request.method == 'POST':
-        user = request.user
-        bot = telegram_bot()
-
-        if bot and user.telegram_chat_id:
-            # errors throw
-            telegram_send(
-                bot.send_message,
-                user.telegram_chat_id, 'Test from Obico', parse_mode='Markdown')
-
-            return JsonResponse(dict(status='Ok'))
-
-    return JsonResponse(dict(status='API error'), status=400)
-
-@csrf_exempt
-@login_required
-def test_slack(request):
-    if request.method == 'POST':
-        user = request.user
-        if user.slack_access_token:
-            req = requests.get(
-            url='https://slack.com/api/conversations.list',
-            headers={'Authorization': f'Bearer {user.slack_access_token}'},
-            params={
-                'types': 'public_channel,private_channel'
-            })
-        req.raise_for_status()
-        slack_channel_ids = [c['id'] for c in req.json().get('channels') or [] if c['is_member']]
-        for slack_channel_id in slack_channel_ids:
-            msg = {
-                "channel": slack_channel_id,
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": "Test from TSD"
-                        }
-                    }
-                ]
-            }
-
-            req = requests.post(
-                url='https://slack.com/api/chat.postMessage',
-                headers={'Authorization': f'Bearer {user.slack_access_token}'},
-                json=msg
-            )
-            req.raise_for_status()
-
-            return JsonResponse(dict(status='Ok'))
-
-    return JsonResponse(dict(status='API error'), status=400)
+    return render(request, get_template_path('user_preferences', template_dir))
 
 
 # Slack setup callback

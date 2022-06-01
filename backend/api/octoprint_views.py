@@ -82,11 +82,11 @@ class OctoPrintPicView(APIView):
         pic = cap_image_size(pic)
         pic_id = str(timezone.now().timestamp())
 
-        if not printer.current_print:     # Some times pics come in when current_print is not set - maybe because printer status is out of sync between plugin and server?
-            pic_path = f'{printer.id}/0.jpg'
+        if not printer.current_print:
+            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg',
         else:
-            pic_path = f'{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        internal_url, external_url = save_file_obj(f'raw/{pic_path}', pic, settings.PICS_CONTAINER, long_term_storage=False)
+            pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
 
         if not printer.should_watch() or not printer.actively_printing():
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)

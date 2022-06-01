@@ -5,17 +5,19 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
 from .models import User, Printer, NotificationSetting
-from lib.notifications import send_email
-
+from notifications.plugins.email import EmailNotificationPlugin
+from notifications.handlers import handler
 
 def send_test_email(modeladmin, request, queryset):
     for u in queryset.all():
-        send_email(
-            user=u,
+        user_ctx = handler.get_user_context(u)
+        EmailNotificationPlugin()._send_emails(
+            user=user_ctx,
             subject='Test email - it worked!',
             mailing_list='test',
             template_path='email/test_email.html',
             ctx={},
+            verified_only=False,
         )
     messages.success(request, 'Test email sent. Check your server logs if you do not see test email in your inbox.')
 

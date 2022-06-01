@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
+import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -93,23 +94,34 @@ class OctoPrintPicView(APIView):
             pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg',
         internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
 
-        if printer.should_watch() and printer.actively_printing():
-            self.detect(printer, pic, pic_id, internal_url)
-        else:
+        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)
+        if not img_url_updated:
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         send_status_to_web(printer.id)
         return Response({'result': 'ok'})
 
-    def detect(self, printer, pic, pic_id, raw_pic_url):
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
-        req.raise_for_status()
-        resp = req.json()
+    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url):
+        '''
+        Return:
+           True: Detection was performed. img_url was updated to the tagged image
+           False: No detection was performed. img_url was not updated
+        '''
+
+        if not printer.should_watch() or not printer.actively_printing():
+            return False
+
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+
+        if time.time() - prediction.updated_at.timestamp() < settings.MIN_DETECTION_INTERVAL:
+            return False
 
         cache.print_num_predictions_incr(printer.current_print.id)
 
-        detections = resp['detections']
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
+        req.raise_for_status()
+        detections = req.json()['detections']
+
         update_prediction_with_detections(prediction, detections)
         prediction.save()
 
@@ -137,6 +149,7 @@ class OctoPrintPicView(APIView):
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
 
+        return True
 
 class OctoPrinterView(APIView):
     authentication_classes = (PrinterAuthentication,)

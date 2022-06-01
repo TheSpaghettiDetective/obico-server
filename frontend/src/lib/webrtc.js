@@ -208,6 +208,7 @@ export default function WebRTCConnection(videoEnabled) {
       self.bitrateInterval = setInterval(function() {
         if (self.streaming) {
           console.log(self.streaming.getBitrate())
+          console.log(self.streaming.getFPS())
         }
       }, 5000)
     },

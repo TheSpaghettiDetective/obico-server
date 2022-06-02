@@ -86,12 +86,15 @@ class OctoPrintPicView(APIView):
 
         pic = request.FILES['pic']
         pic = cap_image_size(pic)
-        pic_id = str(timezone.now().timestamp())
 
-        if printer.current_print:
-            pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        else:
-            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg',
+        if (not printer.current_print) or request.POST.get('viewing_boost'):
+            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg'
+            internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
+            send_status_to_web(printer.id)
+            return Response({'result': 'ok'})
+
+        pic_id = str(timezone.now().timestamp())
+        pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
         internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
 
         img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)

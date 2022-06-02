@@ -38,52 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
             'unsub_token': {'read_only': True},
         }
 
-    def validate_phone_country_code(self, phone_country_code):
-        if phone_country_code:
-            phone_country_code = phone_country_code.strip().replace('+', '')
-
-            code = int_with_default(phone_country_code, None)
-            if (
-                settings.TWILIO_COUNTRY_CODES and
-                (code is None or code not in settings.TWILIO_COUNTRY_CODES)
-            ):
-                raise serializers.ValidationError("Oops, we don't send SMS to this country code")
-
-            if not phone_country_code.startswith('+'):
-                phone_country_code = '+' + phone_country_code
-
-        return phone_country_code
-
-    def validate_pushbullet_access_token(self, pushbullet_access_token):
-        pushbullet_access_token = pushbullet_access_token.strip()
-        if pushbullet_access_token:
-            try:
-                Pushbullet(pushbullet_access_token)
-            except PushbulletError:
-                raise serializers.ValidationError('Invalid pushbullet access token.')
-        else:
-            pushbullet_access_token = None
-
-        return pushbullet_access_token
-
-    def validate(self, data):
-        if 'phone_number' in data and not data['phone_number']:
-            data['phone_country_code'] = None
-            data['phone_number'] = None
-        elif 'phone_number' in data or 'phone_country_code' in data:
-            if 'phone_number' in data and 'phone_country_code' in data:
-                phone_number = data['phone_country_code'] + data['phone_number']
-                try:
-                    phone_number = phonenumbers.parse(phone_number, None)
-                    if not phonenumbers.is_valid_number(phone_number):
-                        raise serializers.ValidationError({'phone_number': 'Invalid phone number'})
-                except phonenumbers.NumberParseException as e:
-                    raise serializers.ValidationError({'phone_number': e})
-            else:
-                raise serializers.ValidationError('Both phone_number and phone_country_code need to be present.')
-
-        return data
-
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):
 
@@ -140,7 +94,7 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'pic', 'status', 'settings', 'current_print',
                   'normalized_p', 'auth_token', 'archived_at',)
 
-        read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status', 
+        read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status',
         'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at',)
 
     def get_normalized_p(self, obj: Printer) -> float:

@@ -30,7 +30,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     {
       type: 'category',

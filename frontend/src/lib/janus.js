@@ -3294,7 +3294,7 @@ function Janus(gatewayCallbacks) {
         }, 1000)
         return '0 kbits/sec' // We don't have a bitrate value yet
       }
-      return config.bitrate.value
+      return config.bitrate
     } else {
       Janus.warn('Getting the video bitrate unsupported by browser')
       return 'Feature unsupported by browser'

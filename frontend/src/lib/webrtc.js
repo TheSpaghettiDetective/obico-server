@@ -1,18 +1,16 @@
 import get from 'lodash/get'
-import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
 
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
-export default function WebRTCConnection(videoEnabled) {
+export default function WebRTCConnection() {
   let self = {
     callbacks: {},
     initialized: false,
     streamId: undefined,
     streaming: undefined,
-    videoEnabled: videoEnabled ?? false,
     bitrateInterval: null,
 
     openForShareToken(shareToken) {
@@ -39,14 +37,6 @@ export default function WebRTCConnection(videoEnabled) {
           }
           self.connectJanusWebSocket(wsUri, token)
         }
-      })
-
-      ifvisible.on('blur', () => {
-        self.stopStream()
-      })
-
-      ifvisible.on('focus', () => {
-        self.startStream()
       })
     },
 
@@ -90,7 +80,7 @@ export default function WebRTCConnection(videoEnabled) {
                     if (stream) {
                       self.streamId = stream.id
                       self.streaming = pluginHandle
-                      self.startStream()
+                      self.callbacks.onStreamAvailable()
                     }
                   }
                 })
@@ -170,8 +160,6 @@ export default function WebRTCConnection(videoEnabled) {
         return
       }
       if (jsep !== undefined && jsep !== null) {
-        Janus.debug('Handling SDP as well...')
-        Janus.debug(jsep)
         // Offer from the plugin, let's answer
         self.streaming?.createAnswer(
           {
@@ -197,7 +185,7 @@ export default function WebRTCConnection(videoEnabled) {
       if (!self.channelOpen()) {
         return
       }
-      const body = { 'request': 'watch', offer_video: self.videoEnabled, id: parseInt(self.streamId) }
+      const body = { 'request': 'watch', offer_video: true, id: parseInt(self.streamId) }
       self.streaming?.send({ 'message': body })
 
       if (self.bitrateInterval) {
@@ -207,9 +195,16 @@ export default function WebRTCConnection(videoEnabled) {
 
       self.bitrateInterval = setInterval(function() {
         if (self.streaming) {
-          console.log(self.streaming.getBitrate())
+          const bitrate = self.streaming.getBitrate()
+          if (bitrate && bitrate.tsnow) {
+            self.callbacks.onBitrateUpdated(self.streaming.getBitrate())
+          } else {
+            self.callbacks.onBitrateUpdated({value: null})
+          }
+        } else {
+          self.callbacks.onBitrateUpdated({value: null})
         }
-      }, 5000)
+      }, 2500)
     },
     stopStream() {
       if (self.bitrateInterval) {

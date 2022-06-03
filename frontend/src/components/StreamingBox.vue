@@ -24,36 +24,48 @@
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
+    <b-button v-if="!autoplay && isVideoAvailable && !isVideoVisible && remainingSecondsUntilNextCycle <= 0" @click="onPlayBtnClicked" class="loading-icon">
+      <i class="far fa-play-circle"></i>
+    </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
 
-    <b-dropdown v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch" right no-caret toggle-class="icon-btn">
-      <template #button-content>
-        <i class="fas fa-ellipsis-v"></i>
-      </template>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc(null)">
-        <span class="title" :class="{'active': stickyStreamingSrc === null}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
-          Auto
-        </span><br>
-        <span class="description">Show the best quality stream that is available</span>
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('VIDEO')">
-        <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
-          Premium webcam streaming view
-        </span><br>
-        <span class="description">Premium-only feature (25 fps)</span>
-      </b-dropdown-item>
-      <div class="dropdown-divider"></div>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
-        <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
-          Failure detection view
-        </span><br>
-        <span class="description">Shows detection boxes if present (0.1 fps)</span>
-      </b-dropdown-item>
-    </b-dropdown>
+    <div v-if="isVideoAvailable" class="streaming-switch">
+      <div v-if="isVideoAvailable" class="small mr-2">
+        <div v-if="currentBitrate">{{currentBitrate}}</div>
+        <div v-if="!autoplay">
+          <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
+          <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
+        </div>
+      </div>
+      <b-dropdown v-if="taggedImgAvailable" right no-caret toggle-class="icon-btn">
+        <template #button-content>
+          <i class="fas fa-ellipsis-v fa-sm"></i>
+        </template>
+        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc(null)">
+          <span class="title" :class="{'active': stickyStreamingSrc === null}">
+            <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
+            Auto
+          </span><br>
+          <span class="description">Show the best quality stream that is available</span>
+        </b-dropdown-item>
+        <b-dropdown-divider></b-dropdown-divider>
+        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('VIDEO')">
+          <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
+            <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
+            Premium webcam streaming view
+          </span><br>
+          <span class="description">Premium-only feature (25 fps)</span>
+        </b-dropdown-item>
+        <div class="dropdown-divider"></div>
+        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
+          <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
+            <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
+            Failure detection view
+          </span><br>
+          <span class="description">Shows detection boxes if present (0.1 fps)</span>
+        </b-dropdown-item>
+      </b-dropdown>
+    </div>
 
     <div
       :class="webcamRotateClass"
@@ -83,7 +95,7 @@
           <video
             ref="video"
             class="remote-video"
-            :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
+            :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
             :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
@@ -99,8 +111,10 @@
 
 <script>
 import get from 'lodash/get'
+import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
+import VideoLimit from '@src/lib/video_limit'
 
 export default {
   name: 'StreamingBox',
@@ -108,13 +122,30 @@ export default {
     if (this.webrtc) {
       this.webrtc.callbacks = {
         ...this.webrtc.callbacks,
+        onStreamAvailable: this.onStreamAvailable,
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
+        onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }
+
+      if (!this.autoplay) {
+        this.videoLimit = VideoLimit(this.countDownCallback)
+      }
+
+      ifvisible.on('blur', () => {
+        this.webrtc.stopStream()
+      })
+
+      ifvisible.on('focus', () => {
+        if (this.autoplay) {
+          this.webrtc.startStream()
+        }
+      })
     }
+
   },
 
   props: {
@@ -126,12 +157,20 @@ export default {
       type: Object,
       required: false,
     },
+    autoplay: {
+      type: Boolean,
+      required: true,
+    }
   },
 
   data() {
     return {
       stickyStreamingSrc: null,
+      isVideoAvailable: false,
       isVideoVisible: false,
+      remainingSecondsCurrentVideoCycle: 30,
+      remainingSecondsUntilNextCycle: -1,
+      currentBitrate: null,
       slowLinkLoss: 0,
       slowLinkShowing: false, // show on mousenter
       slowLinkHiding: false, // hide on moseleave
@@ -189,11 +228,22 @@ export default {
     },
     onCanPlay() {
       this.videoLoading = false
+      if (!this.autoplay) {
+        this.videoLimit.startOrResumeVideoCycle()
+      }
+
     },
     onLoadStart() {
       this.videoLoading = true
     },
-
+    onStreamAvailable() {
+      this.isVideoAvailable = true
+      if (this.autoplay) {
+        this.webrtc.startStream()
+      } else {
+        this.videoLimit.resumeVideoCycle()
+      }
+    },
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
 
@@ -210,7 +260,19 @@ export default {
       this.isVideoVisible = false
     },
 
+    countDownCallback(remainingSecondsCurrentVideoCycle, remainingSecondsUntilNextCycle) {
+      if (this.remainingSecondsCurrentVideoCycle > 0 && remainingSecondsCurrentVideoCycle <= 0) {
+        this.webrtc.stopStream()
+      }
+      this.remainingSecondsCurrentVideoCycle = remainingSecondsCurrentVideoCycle
+      this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle
+    },
+
     /** Video warning handling */
+
+    onPlayBtnClicked() {
+      this.webrtc.startStream()
+    },
 
     fixSlowLinkTextWidth() {
       const width = window.getComputedStyle(this.$refs.slowLinkText).width
@@ -278,6 +340,11 @@ export default {
   right: 20px
   top: 20px
   z-index: 99
+  background-color: rgb(0 0 0 / .5)
+  display: flex
+  padding: 4px 8px
+  border-radius: 1em
+  align-items: center
 
   .dropdown-item
     .title.active
@@ -410,4 +477,5 @@ export default {
   position: absolute
   left: calc(50% - #{$size / 2})
   top: calc(50% - #{$size / 2})
+
 </style>

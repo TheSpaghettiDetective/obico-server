@@ -35,7 +35,7 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" />
+      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -288,7 +288,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(this.isProAccount),
+      webrtc: WebRTCConnection(),
     }
   },
   created() {

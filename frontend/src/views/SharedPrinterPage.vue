@@ -11,7 +11,7 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box :printer="printer" :webrtc="webrtc" />
+          <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
           <div class="p-3 p-md-5">
             <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
             <a href="https://www.obico.io/">
@@ -62,7 +62,7 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
-      webrtc: WebRTCConnection(true),
+      webrtc: WebRTCConnection(),
     }
   },
 }

@@ -196,6 +196,7 @@ export default function WebRTCConnection() {
       self.bitrateInterval = setInterval(function() {
         if (self.streaming) {
           const bitrate = self.streaming.getBitrate()
+          console.log(bitrate)
           if (bitrate && bitrate.tsnow) {
             self.callbacks.onBitrateUpdated(self.streaming.getBitrate())
           } else {

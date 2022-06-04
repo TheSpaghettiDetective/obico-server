@@ -3269,6 +3269,7 @@ function Janus(gatewayCallbacks) {
                 }
                 // Parse stats now
                 if(inStats) {
+                  config.bitrate.fps = res.framesPerSecond
                   config.bitrate.bsnow = res.bytesReceived
                   config.bitrate.tsnow = res.timestamp
                   if(config.bitrate.bsbefore === null || config.bitrate.tsbefore === null) {

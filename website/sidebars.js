@@ -80,7 +80,7 @@ module.exports = {
           items: [
             'user-guides/webcam-feed-is-not-showing',
             'user-guides/webcam-feed-is-laggy',
-            'user-guides/premium-streaming-stuck-in-basic-mode',
+            'user-guides/webcam-stream-stuck-at-1-10-fps',
             'user-guides/octoprint-webcam-not-streaming',
           ],
         },

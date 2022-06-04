@@ -30,7 +30,7 @@
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
 
     <div v-if="isVideoAvailable" class="streaming-switch">
-      <div v-if="isVideoAvailable" class="small mr-2">
+      <div v-if="isVideoAvailable" class="small mr-2" @click="clickMethod">
         <div v-if="currentBitrate">{{currentBitrate}}</div>
         <div v-if="!autoplay">
           <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
@@ -260,6 +260,8 @@ export default {
       this.isVideoVisible = false
     },
 
+    /** Free user streaming **/
+
     countDownCallback(remainingSecondsCurrentVideoCycle, remainingSecondsUntilNextCycle) {
       if (this.remainingSecondsCurrentVideoCycle > 0 && remainingSecondsCurrentVideoCycle <= 0) {
         this.webrtc.stopStream()
@@ -267,6 +269,12 @@ export default {
       this.remainingSecondsCurrentVideoCycle = remainingSecondsCurrentVideoCycle
       this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle
     },
+
+    clickMethod() {
+      console.log('ad')
+    },
+
+    /** End of free user streaming **/
 
     /** Video warning handling */
 
@@ -322,6 +330,7 @@ export default {
       })
     }
     /** End of video warning handling */
+
   },
 }
 </script>
@@ -345,6 +354,7 @@ export default {
   padding: 4px 8px
   border-radius: 1em
   align-items: center
+  cursor: pointer
 
   .dropdown-item
     .title.active

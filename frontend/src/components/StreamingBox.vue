@@ -29,42 +29,12 @@
     </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
 
-    <div v-if="isVideoAvailable" class="streaming-switch">
-      <div v-if="isVideoAvailable" class="small mr-2" @click="clickMethod">
-        <div v-if="currentBitrate">{{currentBitrate}}</div>
-        <div v-if="!autoplay">
-          <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
-          <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
-        </div>
+    <div v-if="isVideoAvailable" class="streaming-info small" @click="clickMethod">
+      <div v-if="!autoplay">
+        <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
+        <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
       </div>
-      <b-dropdown v-if="taggedImgAvailable" right no-caret toggle-class="icon-btn">
-        <template #button-content>
-          <i class="fas fa-ellipsis-v fa-sm"></i>
-        </template>
-        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc(null)">
-          <span class="title" :class="{'active': stickyStreamingSrc === null}">
-            <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
-            Auto
-          </span><br>
-          <span class="description">Show the best quality stream that is available</span>
-        </b-dropdown-item>
-        <b-dropdown-divider></b-dropdown-divider>
-        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('VIDEO')">
-          <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
-            <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
-            Premium webcam streaming view
-          </span><br>
-          <span class="description">Premium-only feature (25 fps)</span>
-        </b-dropdown-item>
-        <div class="dropdown-divider"></div>
-        <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
-          <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
-            <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
-            Failure detection view
-          </span><br>
-          <span class="description">Shows detection boxes if present (0.1 fps)</span>
-        </b-dropdown-item>
-      </b-dropdown>
+      <div v-if="currentBitrate">{{currentBitrate}}</div>
     </div>
 
     <div
@@ -223,9 +193,6 @@ export default {
   },
 
   methods: {
-    forceStreamingSrc(src) {
-      this.stickyStreamingSrc = src
-    },
     onCanPlay() {
       this.videoLoading = false
       if (!this.autoplay) {
@@ -344,16 +311,13 @@ export default {
   left: calc(50% - 1.5rem)
   z-index: 99
 
-.streaming-switch
+.streaming-info
   position: absolute
-  right: 20px
-  top: 20px
+  right: 0px
+  top: 0px
   z-index: 99
   background-color: rgb(0 0 0 / .5)
-  display: flex
   padding: 4px 8px
-  border-radius: 1em
-  align-items: center
   cursor: pointer
 
   .dropdown-item

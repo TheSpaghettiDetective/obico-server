@@ -29,7 +29,7 @@
     </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
 
-    <div v-if="isVideoAvailable" class="streaming-info small" @click="clickMethod">
+    <div v-if="isVideoAvailable" class="streaming-info small" @click="onInfoClicked">
       <div v-if="!autoplay">
         <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
         <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
@@ -102,7 +102,7 @@ export default {
       }
 
       if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(printer.id, this.countDownCallback)
+        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
       }
 
       ifvisible.on('blur', () => {
@@ -237,8 +237,21 @@ export default {
       this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle
     },
 
-    clickMethod() {
-      console.log('ad')
+    onInfoClicked() {
+      if (this.autoplay) {
+        return
+      }
+
+      this.$swal.Prompt.fire({
+        title: 'Throttled streaming',
+        html: `
+          <p>Since you are on the Obico Cloud Free plan, your webcam streaming is throttled for 30 seconds every minute.</p>
+          <p>When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</p>
+          <p>For <span class="font-weight-bold">un-throttled, 25 FPS</span> webcam streaming, <a href="https://app.obico.io/ent_pub/pricing/">upgrade to the Pro plan for little more than 1 Starbucks a month.</a></p>
+          <p><a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">More info.</a></p>
+        `,
+        showCloseButton: true,
+      })
     },
 
     /** End of free user streaming **/

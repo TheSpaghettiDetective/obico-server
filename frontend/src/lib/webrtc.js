@@ -135,6 +135,7 @@ export default function WebRTCConnection() {
         destroyed() {
           self.streaming = undefined
           self.streamId = undefined
+          self.clearBitrateInterval()
         }
       })
     },
@@ -188,16 +189,11 @@ export default function WebRTCConnection() {
       const body = { 'request': 'watch', offer_video: true, id: parseInt(self.streamId) }
       self.streaming?.send({ 'message': body })
 
-      if (self.bitrateInterval) {
-        clearInterval(self.bitrateInterval)
-        self.bitrateInterval = null
-      }
-
+      self.clearBitrateInterval()
       self.bitrateInterval = setInterval(function() {
         if (self.streaming) {
           const bitrate = self.streaming.getBitrate()
-          console.log(bitrate)
-          if (bitrate && bitrate.tsnow) {
+          if (bitrate && bitrate.value) {
             self.callbacks.onBitrateUpdated(self.streaming.getBitrate())
           } else {
             self.callbacks.onBitrateUpdated({value: null})
@@ -205,14 +201,10 @@ export default function WebRTCConnection() {
         } else {
           self.callbacks.onBitrateUpdated({value: null})
         }
-      }, 2500)
+      }, 5000)
     },
     stopStream() {
-      if (self.bitrateInterval) {
-        clearInterval(self.bitrateInterval)
-        self.bitrateInterval = null
-      }
-
+      self.clearBitrateInterval()
       if (!self.channelOpen()) {
         return
       }
@@ -224,6 +216,14 @@ export default function WebRTCConnection() {
     sendData(data) {
       if (self.channelOpen()) {
         self.streaming?.data({text: data, success: () => {}})
+      }
+    },
+
+    clearBitrateInterval() {
+      if (self.bitrateInterval) {
+        clearInterval(self.bitrateInterval)
+        self.bitrateInterval = null
+        self.callbacks.onBitrateUpdated({value: null})
       }
     }
   }

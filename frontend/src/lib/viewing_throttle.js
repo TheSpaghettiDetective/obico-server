@@ -1,6 +1,7 @@
 import { isLocalStorageSupported } from '@static/js/utils'
 
-export default function VideoLimit(countDownCallback) {
+export default function ViewingThrottle(printerId, countDownCallback) {
+  const localStorageItemId = `tsNextVideoCycle-${printerId}`
   let self = {
     countDownTimer: null
   }
@@ -21,7 +22,7 @@ export default function VideoLimit(countDownCallback) {
     self.updateRemainingSeconds(remainingSeconds - 1)
 
     if (isLocalStorageSupported()) {
-      localStorage.setItem('tsNextVideoCycle', (new Date().getTime())/1000 + remainingSeconds)
+      localStorage.setItem(localStorageItemId, (new Date().getTime())/1000 + remainingSeconds)
     }
 
     if (remainingSeconds < 0) {
@@ -40,7 +41,7 @@ export default function VideoLimit(countDownCallback) {
 
   let remainingSeconds
   if (isLocalStorageSupported()) {
-    const tsNextVideoCycle = parseFloat(localStorage.getItem('tsNextVideoCycle'))
+    const tsNextVideoCycle = parseFloat(localStorage.getItem(localStorageItemId))
     const now = (new Date().getTime())/1000
     if (!tsNextVideoCycle || now > tsNextVideoCycle) {
       self.updateRemainingSeconds(60)

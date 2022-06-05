@@ -84,7 +84,7 @@ import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
-import VideoLimit from '@src/lib/video_limit'
+import ViewingThrottle from '@src/lib/viewing_throttle'
 
 export default {
   name: 'StreamingBox',
@@ -102,7 +102,7 @@ export default {
       }
 
       if (!this.autoplay) {
-        this.videoLimit = VideoLimit(this.countDownCallback)
+        this.videoLimit = ViewingThrottle(printer.id, this.countDownCallback)
       }
 
       ifvisible.on('blur', () => {

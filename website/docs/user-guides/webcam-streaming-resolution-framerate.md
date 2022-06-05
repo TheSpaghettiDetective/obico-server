@@ -41,7 +41,7 @@ If you have changed webcam settings in "octopi.txt", you may be surprised to see
 
 ### Frame rate
 
-In the Premium Streaming (advanced mode), the frame rate is always 25fps (frames-per-second).
+In the Premium Streaming (advanced mode), the frame rate is always 25 FPS (frames-per-second).
 
 ### Resolution
 

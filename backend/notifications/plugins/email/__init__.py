@@ -80,10 +80,6 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         return text
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        if not settings.EMAIL_HOST:
-            LOGGER.warn("Email settings are missing. Ignored send requests")
-            return
-
         template_path = 'email/FailureAlert.html'
         mailing_list: str = 'failure_alert'
 
@@ -112,16 +108,14 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
-        if not settings.EMAIL_HOST:
-            LOGGER.warn("Email settings are missing. Ignored send requests")
-            return
-
         template_path = f'email/{context.notification_type}.html'
         subject = self.get_printer_notification_subject(context)
         mailing_list: str = context.feature.name.replace('notify_on_', '')
 
         ctx = context.extra_context or {}
         ctx.update(
+            printer=context.printer,
+            print=context.print,
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
             user_pref_url=site.build_full_url('/user_preferences/notification_email/'),
         )
@@ -148,12 +142,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             verified_only: bool = True,
             attachments: Optional[List] = []) -> None:
 
-        if not settings.EMAIL_HOST:
-            LOGGER.warn("Email settings are missing. Ignored send requests")
-            return
-
         tpl = get_template(template_path)
 
+        ctx['user'] = user
         unsub_url = site.build_full_url(
             f'/unsubscribe_email/?unsub_token={user.unsub_token}&list={mailing_list}'
         )

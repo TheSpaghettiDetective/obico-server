@@ -29,29 +29,27 @@ if environ.get('SENTRY_DSN'):
 else:
     import traceback
 
+
+# To avoid edits to darknet files, symlink the appropriate CPU / GPU library here before importing darknet
+darknet_so_path = '/darknet/libdarknet.cpu.so'
+try:
+    import subprocess
+    subprocess.check_output('nvidia-smi')
+    print('Nvidia GPU detected - using GPU')
+    darknet_so_path = '/darknet/libdarknet.gpu.so'
+except Exception: # this command not being found can raise quite a few different errors depending on the configuration
+    print('No Nvidia GPU detected - using CPU')
+
 sys.path.append("/darknet")
+os.symlink(darknet_so_path, '/darknet/libdarknet.so')
 import darknet
+from darknet_images import image_detection
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 network, class_names, class_colors = darknet.load_network(
         path.join(model_dir, 'model.cfg'),
         path.join(model_dir, 'model.meta'),
         path.join(model_dir, 'model.weights')
     )
-
-# Modified from darknet_images.py to accept a cv2 image
-def image_detection(image, network, class_names, class_colors, thresh):
-    # Darknet doesn't accept numpy images.
-    # Create one with image we reuse for each detect
-    width = darknet.network_width(network)
-    height = darknet.network_height(network)
-    darknet_image = darknet.make_image(width, height, 3)
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image_resized = cv2.resize(image_rgb, (width, height),
-                               interpolation=cv2.INTER_LINEAR)
-    darknet.copy_image_from_bytes(darknet_image, image_resized.tobytes())
-    detections = darknet.detect_image(network, class_names, darknet_image, thresh)
-    darknet.free_image(darknet_image)
-    return detections
 
 @app.route('/p/', methods=['GET'])
 @token_required
@@ -64,7 +62,7 @@ def get_p():
             app.logger.debug(f"Converting image & detecting")
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)
-            detections = image_detection(img, network, class_names, class_colors, THRESH)
+            _, detections = image_detection(img, network, class_names, class_colors, THRESH)
             app.logger.debug(f"{len(detections)} detections: {detections}")
             return jsonify({'detections': detections})
         except:

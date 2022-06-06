@@ -1,9 +1,12 @@
-FROM nvidia/cuda:11.0-devel
+FROM nvidia/cuda:11.0.3-devel-ubuntu20.04
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential git ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/AlexeyAB/darknet.git && cd darknet && sed -i "s/LIBSO=0/LIBSO=1/g" Makefile && sed -i "s/GPU=0/GPU=1/g" Makefile && make
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential git ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/AlexeyAB/darknet.git && cd darknet && sed -i "s/LIBSO=0/LIBSO=1/g" Makefile \
+    && make && cp ./libdarknet.so ./libdarknet.cpu.so \
+    && sed -i "s/GPU=0/GPU=1/g" Makefile && make clean && make && mv ./libdarknet.so ./libdarknet.gpu.so
 
-FROM nvidia/cuda:11.0-runtime
+FROM nvidia/cuda:11.0.3-runtime-ubuntu20.04
 COPY --from=0 /darknet /darknet
 
 WORKDIR /app
@@ -14,7 +17,5 @@ RUN apt update && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 10 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
 
-RUN pip install --upgrade pip
 ADD requirements.txt requirements_x86_64.txt ./
-# This will have errors, apparently because python 3.5 is out of support. At some point we need to recompile darknet against higher version of cuda.
-RUN pip install -r requirements_x86_64.txt
+RUN pip install --upgrade pip && pip install -r requirements_x86_64.txt

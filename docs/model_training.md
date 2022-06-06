@@ -1,13 +1,10 @@
-# Model Training Guide (DRAFT)
-
-# This guide is not yet ready to be published
+# Model Training Guide
 
 ## Overview
 
 This guide describes a simple process to [fine-tune](https://stats.stackexchange.com/a/387095) the existing spaghetti detecting model's weights using new images from your printer setup.
 
-If you want to try your hand at improving the Spaghetti Detective's detecting ability for your setup, or if you just want to learn how to train a useful
-object detection model with a lot of the setup handled for you, read on!
+If you want to try your hand at improving the Spaghetti Detective's detecting ability for your setup, or if you just want to learn how to train a useful object detection model with a lot of the setup handled for you, read on!
 
 ## When to train
 
@@ -29,7 +26,7 @@ We'll need to install a few tools first.
 
 #### BBox-Label-Tool
 
-We'll use this to add bounding boxes to spaghetti in images.
+We'll use this labeling tool to add bounding boxes to spaghetti in images:
 
 ```shell
 sudo apt install python2.7 python-imaging-tk
@@ -37,21 +34,13 @@ pip install pillow
 git clone https://github.com/puzzledqs/BBox-Label-Tool
 ```
 
-#### Extraction
-
-This is a custom helper script for preparing the training data from video.
-
-```shell
-wget TODO
-```
-
 #### Spaghetti Detective Repo
 
 The repository contains model configuration details which we'll need for training.
 
 ```shell
-git clone https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
-cd TheSpaghettiDetective && wget -O ml_api/model/model.weights $(cat ml_api/model/model.weights.url | tr -d '\r')
+git clone https://github.com/TheSpaghettiDetective/orbico-server.git
+cd orbico-server && wget -O ml_api/model/model.weights $(cat ml_api/model/model.weights.url | tr -d '\r')
 ```
 
 ### Collect and Prepare Data
@@ -65,10 +54,9 @@ Now that we have our data, we need to transform it into something we can use for
 
 1. Create two directories: `positives` and `negatives`. 
 2. Move the downloaded videos into these directories - videos with spaghetti go in the `positives` directory, and those without go in `negatives`.
-3. Run `extraction.py setup_positives ./positives`. This wil create a new `config.txt` file.
 4. For each video in `positives`, note the time that the print started visibly failing and edit `config.txt`, replacing the placeholder with that time.
 5. Run `python ./BBox-Label-Tool/main.py`, and annotate the images with bounding boxes (see [here](https://texas-aerial-robotics.github.io/md_yoloTraining.html) for a more in depth tutorial).
-6. Run `extraction.py holdout ./positives ./negatives .` to collect all the information you've given so far and split it into two new folders: `./train` and `./test`. 
+6. Collect all the information you've given so far and split it into two new folders: `./train` and `./test`, with `train.txt` and `test.txt` files containing paths to image samples extracted from your positive and negative video samples (more details on structure [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects)).
 
 **On Holdout:** [See here](https://vitalflux.com/hold-out-method-for-training-machine-learning-model/) for a description on why we hold out data. As we're only training a single model and not selecting from multiple, we only need a train and test dataset.
 
@@ -96,11 +84,11 @@ Region Avg IOU: 0.800677, Class: 0.892181, Obj: 0.701590, No Obj: 0.004574, Avg 
 9002: 0.211667, 0.60730 avg, 0.001000 rate, 3.868000 seconds, 576128 images Loaded: 0.000000 seconds
 ```
 
-Watch the `0.XXXXXX avg` value, and wait until it stops decreasing. At this point, the model has mostly converged (see [here](https://github.com/AlexeyAB/darknet#when-should-i-stop-training) for details).
+Watch the `0.XXXXXX avg` value, and wait until it stops decreasing. At this point, the model has likely converged (see [here](https://github.com/AlexeyAB/darknet#when-should-i-stop-training) for details).
 
 ### Evaluate Performance
 
-We don't yet know whether the model will perform better in the field. Let's start up the server running our new weights to see how it performs (you can also find more data on model development steps [here](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/blob/master/docs/model_development.md)):
+We don't yet know whether the model will perform better in the field. Let's start up the server running our new weights to see how it performs (you can also find more data on model development steps [here](https://github.com/TheSpaghettiDetective/orbico-server/blob/master/docs/model_development.md)):
 
 ```
 docker-compose build ml_api
@@ -124,5 +112,5 @@ The model server will return a JSON blob with bounding box information for any s
 
 Given that this guide is for fine-tuning the model to your specific printing setup, it's unlikely that it will perform better than the base model in the general case. 
 
-However, if you have suggestions or improvements to the overall quality of the model, you can open a [new issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/new/choose) where it can be discussed. 
+However, if you have suggestions or improvements to the overall quality of the model, please open a [new issue](https://github.com/TheSpaghettiDetective/orbico-server/issues/new/choose) where it can be discussed. 
 

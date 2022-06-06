@@ -1,39 +1,40 @@
 @import 'theme';
 @import 'mixin';
 
-// Default colors
+// Default css variables to reduce flicker while JS is initializing
 :root {
-  --color-primary-hover: rgb(154 106 239);
-  --color-primary: rgb(165 123 238);
-  --color-on-primary: rgb(255 255 255);
-  --color-secondary: rgb(235 235 235);
-  --color-on-secondary: rgb(40 48 58);
-  --color-success: rgb(92 184 92);
-  --color-success-hover: rgb(76 174 76);
-  --color-on-success: rgb(255 255 255);
-  --color-danger: rgb(217 83 79);
-  --color-danger-hover: rgb(194 65 61);
-  --color-on-danger: rgb(255 255 255);
-  --color-warning: rgb(240 173 78);
-  --color-warning-hover: rgb(219 154 63);
-  --color-on-warning: rgb(255 255 255);
-  --color-on-warning-2: rgb(0 0 0);
-  --color-background: rgb(35 49 65);
-  --color-surface-primary: rgb(72 91 113);
-  --color-surface-secondary: rgb(45 62 79);
-  --color-overlay: rgb(0 0 0 / 0.8);
-  --color-hover: rgb(255 255 255 / 0.075);
-  --color-divider: rgb(106 123 138);
-  --color-text-primary: rgb(235 235 235);
-  --color-text-secondary: rgb(170 172 176);
-  --color-text-help: rgb(76 155 232);
-  --color-input-background: rgb(66 86 107);
-  --color-input-placeholder: rgb(235 235 235 / 0.5);
-  --color-table-accent: rgb(40 56 72);
-  --color-icon-tunneling-1: rgb(234 234 234);
-  --color-icon-tunneling-2: rgb(205 205 205);
-  --url-logo-bg: url("/static/img/logo-bg/logo-bg_dark.svg");
-  --url-tail-spin: url("/static/img/tail-spin/tail-spin_dark.svg");
+  --color-primary: #03DAC5;
+  --color-primary-hover: #70EFDE;
+  --color-primary-muted: #018786;
+  --color-on-primary: #001210;
+  --color-secondary: #EBEBEB;
+  --color-secondary-hover: #D0D0D0;
+  --color-on-secondary: #28303A;
+  --color-success: #5CB85C;
+  --color-success-hover: #4CAE4C;
+  --color-on-success: #ffffff;
+  --color-danger: #D9534F;
+  --color-danger-hover: #C2413D;
+  --color-on-danger: #ffffff;
+  --color-warning: #F0AD4E;
+  --color-warning-hover: #DB9A3F;
+  --color-on-warning: #ffffff;
+  --color-on-warning-2: #000000;
+  --color-background: #233141;
+  --color-surface-primary: #485B71;
+  --color-surface-secondary: #2D3E4F;
+  --color-overlay: #000000CC;
+  --color-hover: #FFFFFF13;
+  --color-divider: #6A7B8A;
+  --color-text-primary: #EBEBEB;
+  --color-text-secondary: #AAACB0;
+  --color-text-help: #4C9BE8;
+  --color-input-background: #42566B;
+  --color-input-placeholder: #EBEBEB80;
+  --color-table-accent: #283848;
+  --color-icon-tunneling-1: #EAEAEA;
+  --color-icon-tunneling-2: #CDCDCD;
+  --url-loader: url(/static/img/loader/loader_dark-scheme.svg);
   --shadow-top-nav: 0px 2px 10px rgb(0 0 0 / 0.3);
 }
 
@@ -357,6 +358,11 @@ a.link {
 
       &.swal2-confirm {
         background-color: var(--color-primary) !important;
+        color: var(--color-on-primary) !important;
+
+        &:focus {
+          box-shadow: 0 0 0 2px var(--color-on-primary), 0 0 0 4px rgb(50 100 150 / 40%);
+        }
       }
     }
     .bootstrap-select {
@@ -365,6 +371,12 @@ a.link {
       }
     }
   }
+
+.swal2-styled {
+  &.swal2-confirm {
+
+  }
+}
 }
 
 .swal2-container {
@@ -382,6 +394,7 @@ a.link {
 
 .dh-icon {
   height: 1em;
+  width: .8em;
   vertical-align: text-bottom;
 }
 
@@ -645,13 +658,15 @@ input, input.form-control {
   &:hover {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
-    color: var(--color-on-primary);
+    color: var(--color-on-primary) !important;
   }
 }
 
 .btn-primary {
   border-color: var(--color-primary);
   background-color: var(--color-primary);
+  color: var(--color-on-primary) !important;
+
 
   &:hover {
     background-color: var(--color-primary-hover);
@@ -780,7 +795,7 @@ a.text-warning {
 
 
 // Table
-.tsd-table {
+.obico-table {
   &.top-border {
     border-top: 1px solid var(--color-divider);
   }
@@ -813,4 +828,26 @@ a.text-warning {
       background-color: var(--color-table-accent);
     }
   }
+}
+
+
+.badge {
+  &.badge-light {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+}
+
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-primary.dropdown-toggle {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.vue-form-wizard .wizard-nav-pills>li.active>a .wizard-icon,
+.vue-form-wizard .wizard-nav-pills>li.active>a:focus .wizard-icon,
+.vue-form-wizard .wizard-nav-pills>li.active>a:hover .wizard-icon {
+  color: var(--color-on-primary);
 }

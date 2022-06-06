@@ -10,7 +10,7 @@
 
       <!-- Help icon -->
       <div class="question-mark" @click="positionWidget(); show = !show;">
-        <svg viewBox="0 0 40 40" fill="currentColor">
+        <svg>
           <use href="#svg-question-icon" />
         </svg>
       </div>
@@ -18,74 +18,73 @@
       <!-- Help widget -->
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
-          <div class="header">
-            <div class="title">
-              <i class="fas fa-question-circle"></i>
-              In case you were wondering...
-            </div>
             <div class="close-button" @click="show = false">
-              <svg viewBox="0 0 16 16" fill="currentColor">
+              <svg withd="16" height="16">
                 <use href="#svg-cross-icon" />
               </svg>
             </div>
-          </div>
 
           <!-- Help content -->
           <div class="content">
 
             <!-- basic-streaming-on-pricing-page -->
             <template v-if="id === 'basic-streaming-on-pricing-page'">
-              <p>Basic Streaming is at 0.1fps (1 frame per 10 seconds).</p>
-              <p>The stream is on only when the printer is printing.</p>
-              <strong>
+              <div>
+                Basic Streaming:
+                <ul>
+                <li>Up to 5 FPS (frame-per-second)</li>
+                <li>Throttled for 30 seconds every minute</li>
+                </ul>
+              </div>
+              <div>
                 Learn more about
-                <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
-              </strong>
+                <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+              </div>
             </template>
 
             <!-- detective-hours-free-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-free-plan-on-pricing-page'">
-              <h3>Yup! Even Free account gets 10 Detective Hours for FREE each month.</h3>
+              <h3>Yup! Even Free account gets 10 AI Detection Hours for FREE each month.</h3>
               <ul>
-                <li>Unused Detective Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn free Detective Hours by helping her improve</a>.</li>
+                <li>Unused AI Detection Hours roll over month to month.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
-                <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
-                </strong>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
               </p>
             </template>
 
             <!-- detective-hours-pro-plan-on-pricing-page -->
             <template v-if="id === 'detective-hours-pro-plan-on-pricing-page'">
-              <h3>Pro plan includes 50 Detective Hours each month.</h3>
+              <h3>Pro plan includes 50 AI Detection Hours each month.</h3>
               <ul>
-                <li>Unused Detective Hours roll over month to month.</li>
-                <li>Detective Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.thespaghettidetective.com/docs/how-does-credits-work/">earn more Detective Hours by helping her improve</a>.</li>
+                <li>Unused AI Detection Hours roll over month to month.</li>
+                <li>AI Detection Hours expire when subscription ends.</li>
+                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
               </ul>
               <p>
                 Learn more about
-                <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/how-does-detective-hour-work/" target="_blank" class="external">how the Detective Hour works</a>
-                </strong>
+                <div>
+                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
+                </div>
               </p>
             </template>
 
             <!-- premium-streaming-on-pricing-page -->
             <template v-if="id === 'premium-streaming-on-pricing-page'">
-              <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/liBTaFjkBnU" frameborder="0" allowfullscreen width="100%"></iframe>
+              <div>
+                Premium Streaming:
+                <ul>
+                <li>Up to 25 FPS (frame-per-second)</li>
+                <li>Un-throttled</li>
+                </ul>
               </div>
-              <h3>Webcam streaming at 25fps (25 frames per second).</h3>
-              <h3>It is always on regardless if your printer is printing.</h3>
               <p>
                 Learn more about
-                <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/webcam-streaming-for-human-eyes/" target="_blank" class="external">the differences between the Premium Streaming and the Basic Streaming</a>
-                </strong>
+                <div>
+                  <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                </div>
               </p>
             </template>
 
@@ -95,20 +94,20 @@
               <p>Free plan is subject to 50MB/month data cap. Data usage is reset on the 1st day of each month.</p>
               <p>
                 Learn more about
-                <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
-                </strong>
+                <div>
+                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                </div>
               </p>
             </template>
 
             <!-- tunneling-pro-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-pro-plan-on-pricing-page'">
-              <h3>Securely tunnel to your OctoPrint from anywhere. Unlimited.</h3>
+              <div>Securely tunnel to your OctoPrint from anywhere. Unlimited.</div>
               <p>
                 Learn more about
-                <strong>
-                  <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank" class="external">OctoPrint Tunneling</a>
-                </strong>
+                <div>
+                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                </div>
               </p>
             </template>
 
@@ -117,14 +116,14 @@
               <i>
                 <ul>Required versions:
                   <li>OctoPrint 1.7.0 or higher</li>
-                  <li>The Spaghetti Detective plugin 1.8.11 or higher</li>
+                  <li>The Obico plugin 1.8.11 or higher</li>
                 </ul>
               </i>
               <h3>Filament Runout Notifications</h3>
               <p>
                 Host_action_commands must be enabled in your firmware to make it possible for your filament runout
-                sensor to communicate with OctoPrint and The Spaghetti Detective. If you enable action commands in
-                your firmware, then the filament runout sensor can work properly and The Spaghetti Detective can notify
+                sensor to communicate with OctoPrint and the Obico app. If you enable action commands in
+                your firmware, then the filament runout sensor can work properly and the Obico app can notify
                 you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable
                 to communicate with the printer to know that a filament runout was detected.
               </p>
@@ -228,7 +227,6 @@ export default {
 
 .widget-wrapper
   $widget-width: 360px
-  $widget-header-height: 40px
   $x-breakpoint: #{$widget-width + 20px}
   $x-breakpoint-2: #{$widget-width * 2 + 20px}
   position: relative
@@ -251,15 +249,14 @@ export default {
 
   .widget
     width: $widget-width
-    padding-top: $widget-header-height
     z-index: 10
     position: absolute
     box-shadow: 0px 3px 30px rgb(0 0 0 / .5)
     border-radius: 12px
-    overflow: hidden
-    background-color: #fff
+    background-color: var(--color-surface-primary)
     display: flex
     flex-direction: column
+    color: var(--color-text-primary)
 
     @media (min-width: $x-breakpoint-2)
       &.left
@@ -283,47 +280,23 @@ export default {
       right: 1rem
       width: auto
 
-    .header
-      color: #28303A
-      height: $widget-header-height
-      width: 100%
-      display: flex
-      align-items: center
-      border-bottom: 1px solid #D4DAE0
+    .close-button
+      $close-btn-height: 24px
       position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      z-index: 10
+      left: #{$close-btn-height * -.5}
+      top: #{$close-btn-height * -.5}
+      color: var(--color-text-primary)
+      transition: all .2s ease-out
+      &:hover
+        cursor: pointer
+        opacity: .7
 
-      .title
-        flex: 1
-        font-size: 16px
-        font-weight: 400
-        padding-left: .875rem
-
-        i
-          margin-right: .125rem
-
-      .close-button
-        height: $widget-header-height
-        flex: 0 0 $widget-header-height
-        display: flex
-        align-items: center
-        justify-content: center
-        color: #9CA3AF
-        transition: all .2s ease-out
-        &:hover
-          color: #6B7280
-          cursor: pointer
-
-        svg
-          width: #{$widget-header-height * .58}
-          height: #{$widget-header-height * .58}
+      svg
+        width: $close-btn-height
+        height: $close-btn-height
 
     .content
       padding: 1rem .875rem
-      color: #000
       font-size: 14px
       font-weight: normal
 
@@ -355,14 +328,6 @@ export default {
           left: 0
           width: 100%
           height: 100%
-
-      a.external:after
-        content: url('/static/img/link.svg')
-        display: inline-block
-        width: 1em
-        margin-left: .25em
-        position: relative
-        top: .125em
 </style>
 
 <style scoped>

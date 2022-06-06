@@ -2,12 +2,12 @@
   <layout>
     <template v-slot:topBarRight>
       <div>
-        <a v-if="isEnt" href="/user_preferences/dh/" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' Detective Hours'">
-          <svg viewBox="0 0 384 550">
+        <a v-if="isEnt" href="/user_preferences/dh/" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' AI Detection Hours'">
+          <svg>
             <use href="#svg-detective-hours"></use>
           </svg>
           <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
-          <span class="sr-only">Detective Hours</span>
+          <span class="sr-only">AI Detection Hours</span>
         </a>
         <a href="/printers/wizard/" class="btn shadow-none icon-btn d-none d-md-inline" title="Link New Printer">
           <i class="fas fa-plus"></i>
@@ -17,7 +17,7 @@
             <i class="fas fa-ellipsis-v"></i>
           </template>
           <b-dropdown-item v-if="isEnt" href="/user_preferences/dh/" class="d-md-none">
-            <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} Detective Hours
+            <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} AI Detection Hours
           </b-dropdown-item>
           <b-dropdown-item href="/printers/wizard/" class="d-md-none">
             <i class="fas fa-plus"></i>Link New Printer
@@ -32,6 +32,7 @@
         </b-dropdown>
       </div>
     </template>
+
     <template v-slot:content>
       <div v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
         <div class="filter">
@@ -61,7 +62,7 @@
             <div class="new-printer-container">
               <a href="/printers/wizard/">
                 <i class="fa fa-plus fa-2x"></i>
-                <div>Link OctoPrint Printer</div>
+                <div>Link New Printer</div>
               </a>
             </div>
           </div>
@@ -295,10 +296,11 @@ export default {
 .btn.hours-btn
   position: relative
   padding-right: 1.625rem
+  color: var(--color-text-primary)
 
   svg
     height: 1.125rem
-    width: auto
+    width: 1.125rem
 
   .badge
     position: absolute

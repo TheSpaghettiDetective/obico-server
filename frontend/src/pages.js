@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
 import routes from '@config/user-preferences/routes'
+import wizardRoutes from '@src/views/printer-wizard/wizard-routes'
 
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
 import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'
@@ -10,12 +11,11 @@ import UploadPrintPage from '@src/views/UploadPrintPage.vue'
 import PrinterListPage from '@src/views/PrinterListPage.vue'
 import SharedPrinterPage from '@src/views/SharedPrinterPage.vue'
 import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
-import PrinterWizardPage from '@src/views/PrinterWizardPage.vue'
+import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodesPage from '@src/views/GCodesPage.vue'
-
-// User preferences
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
+
 const router = new VueRouter({
   mode: 'history',
   routes: [
@@ -26,6 +26,11 @@ const router = new VueRouter({
     ...Object.values(routes).map(route => ({
       path: route,
       component: UserPreferencesPage,
+    })),
+
+    ...Object.values(wizardRoutes).map(route => ({
+      path: route,
+      component: PrinterWizardPage,
     })),
   ]
 })

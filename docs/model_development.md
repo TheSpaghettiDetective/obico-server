@@ -2,7 +2,7 @@
 
 The following instructions will assist you in making changes to the ML model or its integration into the Spaghetti Detective service.
 
-*If you follow this guide and run into problems, please seek help at: https://discord.gg/NcZkQfj*
+*If you follow this guide and run into problems, please seek help at: https://obico.io/discord*
 
 ## Overview & Architecture
 
@@ -14,7 +14,7 @@ The model is run using https://github.com/AlexeyAB/darknet. **This is a fork of 
 
 Darknet itself is a C-based framework that compiles to a [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) which we then access in Python via the [ctypes](https://docs.python.org/3/library/ctypes.html) library (see `ml_api/lib/detection_model.py`). These shared libraries live in `ml_api/bin/*.so` and are specific to the architecture of whatever's hosting the `ml_api` docker container.
 
-The model is set up and hosted via `server.py`, which provides a `/p/?img=...` URL endpoint on port `3333` of the `ml_api` container. 
+The model is set up and hosted via `server.py`, which provides a `/p/?img=...` URL endpoint on port `3333` of the `ml_api` container.
 
 When passed an image URL, the server:
 
@@ -24,11 +24,11 @@ When passed an image URL, the server:
    2. evaluates the model via GPU
    3. filters the results (including via [non-max suppression](https://learnopencv.com/non-maximum-suppression-theory-and-implementation-in-pytorch/) and probability thresholds)
    4. returns one or more bounding boxes which are likely to contain spaghetti
-2. Formats the results so that they are easily parseable by the web server, and returns them as a JSON array of `[{category_name, detection_probability, bounding_box}]`. There's currently only one category of "failure", i.e. failure/spaghetti detected. 
+2. Formats the results so that they are easily parseable by the web server, and returns them as a JSON array of `[{category_name, detection_probability, bounding_box}]`. There's currently only one category of "failure", i.e. failure/spaghetti detected.
 
 ## Building and running `ml_api` locally
 
-The `ml_api` container is made up of a base docker image that provides ML dependencies and an additional image that actually installs our model. 
+The `ml_api` container is made up of a base docker image that provides ML dependencies and an additional image that actually installs our model.
 
 If you're running a Jetson Nano, add `"default-runtime": "nvidia"` to your `/etc/docker/daemon.json`, then run `sudo service docker restart` to update the change. This configures your Jetson to use the "nvidia" docker runtime during build time, which [exposes more include files](https://forums.developer.nvidia.com/t/nvidia-l4t-base-missing-cublas-v2-h/174582/4) needed for building the base image.
 
@@ -45,7 +45,7 @@ To build the main image locally:
 docker-compose build ml_api
 ```
 
-You can use the usual `docker-compose up` command to launch the whole ensemble including web and task containers, but the web container in particular takes several minutes to initialize. 
+You can use the usual `docker-compose up` command to launch the whole ensemble including web and task containers, but the web container in particular takes several minutes to initialize.
 
 For rapid development, it's faster to launch `ml_api` on its own, mounting the local directory and exposing the web port:
 
@@ -56,7 +56,7 @@ docker-compose run --service-ports --volume=./ml_api:/app ml_api /bin/bash
 gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi
 ```
 
-When you see `Loaded - names_list: model/names, classes = 1` in the logs, the model server should be ready. 
+When you see `Loaded - names_list: model/names, classes = 1` in the logs, the model server should be ready.
 
 You can verify the server is up by going to http://localhost:3333/hc/ in your browser (or replacing `localhost` with the host name if developing remotely). It should return a white page with the word `ok`.
 
@@ -70,22 +70,22 @@ You should see a result that looks like:
 {
   "detections": [
     [
-      "failure", 
-      12.82, 
+      "failure",
+      12.82,
       [
-        407.9657897949219, 
-        304.8846740722656, 
-        26.581132888793945, 
+        407.9657897949219,
+        304.8846740722656,
+        26.581132888793945,
         74.72808074951172
       ]
-    ], 
+    ],
     [
-      "failure", 
-      14.81, 
+      "failure",
+      14.81,
       [
-        260.202880859375, 
-        217.86647033691406, 
-        31.743249893188477, 
+        260.202880859375,
+        217.86647033691406,
+        31.743249893188477,
         62.16251754760742
       ]
     ]
@@ -95,9 +95,9 @@ You should see a result that looks like:
 
 ## Rebuilding darknet shared objects
 
-You may wish to rebuild the `ml_api/bin/*.so` files when updates to other dependencies of darknet - such as CUDART - cause `ml_api` to crash when attempting to load or run the model. This is especially true when hosting on the Jetson Nano, which regularly updates their [developer kit image](https://developer.nvidia.com/embedded/downloads) to use newer versions of these dependencies which may not be backwards-compatible (see e.g. [this issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)). 
+You may wish to rebuild the `ml_api/bin/*.so` files when updates to other dependencies of darknet - such as CUDART - cause `ml_api` to crash when attempting to load or run the model. This is especially true when hosting on the Jetson Nano, which regularly updates their [developer kit image](https://developer.nvidia.com/embedded/downloads) to use newer versions of these dependencies which may not be backwards-compatible (see e.g. [this issue](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)).
 
-Original instructions on how to build these libraries are available [here](https://github.com/AlexeyAB/darknet#how-to-use-yolo-as-dll-and-so-libraries). 
+Original instructions on how to build these libraries are available [here](https://github.com/AlexeyAB/darknet#how-to-use-yolo-as-dll-and-so-libraries).
 
 Run these commands on your host device to build the darknet `*.so` file and install it within the Spaghetti Detective repo:
 
@@ -125,7 +125,7 @@ cd $TSD_PATH && docker-compose build ml_api
 
 ## Troubleshooting `*.so` dependencies
 
-If you get errors relating to other missing `*.so` files, you can confirm they're missing dependencies of the darknet `*.so` file by checking with `ldd`. 
+If you get errors relating to other missing `*.so` files, you can confirm they're missing dependencies of the darknet `*.so` file by checking with `ldd`.
 
 Here's an example for an aarch64 device:
 
@@ -152,7 +152,7 @@ For missing link to libnvidia-ptxjitcompiler.so.1:
 ml_api_1  |  CUDA Error: PTX JIT compiler library not found
 ```
 
-For missing link ot `libcuda.so.1`: 
+For missing link ot `libcuda.so.1`:
 
 ```
 ml_api_1  | OSError: libcuda.so.1: cannot open shared object file: No such file or directory

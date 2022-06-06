@@ -11,7 +11,7 @@
                     <div class="printer-name">{{ printer.name }}</div>
                   </div>
                 </div>
-                <streaming-box :printer="printer" :webrtc="webrtc" />
+                <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="user.is_pro" />
                 <div class="card-body" :class="{'overlay': !printer.isIdle()}">
                   <div
                     class="overlay-top text-center"
@@ -84,7 +84,7 @@ import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import Layout from '@src/components/Layout.vue'
-import { isLocalStorageSupported } from '@src/lib/utils'
+import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page_context'
 
 const AXIS = {
@@ -132,7 +132,7 @@ export default {
     const storageValue = isLocalStorageSupported() ? localStorage.getItem(`mm-per-step-${this.printerId}`) : null
     this.jogDistance = storageValue ? storageValue : this.jogDistance
 
-    this.webrtc = WebRTCConnection(this.user.is_pro)
+    this.webrtc = WebRTCConnection()
 
     this.printerComm = PrinterComm(
       this.printerId,
@@ -188,5 +188,7 @@ export default {
 
 <style lang="sass" scoped>
 ::v-deep .control-options .btn
-  color: var(--color-text-primary)
+  color: var(--color-primary)
+  &.active span
+    color: var(--color-on-primary)
 </style>

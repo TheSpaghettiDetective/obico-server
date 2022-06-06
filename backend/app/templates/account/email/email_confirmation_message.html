@@ -1,0 +1,11 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}
+Thanks for choosing Obico!
+<br /><br />
+Please click <a href="{{ activate_url }}">this link</a> to verify your email address.
+<br /><br />
+If the click doesn't work, you can copy and paste this link into the browser's address bar:
+<br />
+{{ activate_url }}
+<br /><br />
+It is also a good idea to add our email address <strong>support@obico.io</strong> to your contact list so that our emails won't end up in your spam folder.
+{% endautoescape %}

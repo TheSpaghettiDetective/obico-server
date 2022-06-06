@@ -3,16 +3,16 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'The Spaghetti Detective', // Title for your website.
-  tagline: '3D Printer Remote Monitoring & Control',
-  url: 'https://www.thespaghettidetective.com', // Your website URL
+  title: 'Obico Knowledge Base', // Title for your website.
+  tagline: 'Open-Source, Community-Built Smart 3D Printing Platform',
+  url: 'https://www.obico.io', // Your website URL
   baseUrl: '/', // Base URL for your project */
   trailingSlash: true,
   projectName: 'public',
-  organizationName: 'The Spaghetti Detective',
+  organizationName: 'Obico',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
-  favicon: 'favicon-32x32.png',
+  favicon: '/img/favicon.png',
   themeConfig: {
     colorMode: {
       // "light" | "dark"
@@ -49,132 +49,216 @@ module.exports = {
     navbar: {
       title: '',
       logo: {
-        alt: 'The Spaghetti Detective Logo',
+        alt: 'Obico logo',
         src: 'img/logo.svg',
         srcDark: 'img/logo_dark.svg',
-        href: 'https://www.thespaghettidetective.com',
+        href: 'https://www.obico.io',
         target: '_self',
       },
       items: [
         {
+          label: 'Product',
+          items: [
+            {
+              label: 'Obico for Octoprint',
+              to: '/docs/user-guides/octoprint-plugin-setup/',
+            },
+            {
+              label: 'Obico for Klipper',
+              to: '/docs/user-guides/klipper-setup/',
+            },
+            {
+              label: 'Obico Android Mobile App',
+              to: 'https://play.google.com/store/apps/details?id=com.thespaghettidetective.android&hl=en_US&gl=US',
+              target: '_self',
+            },
+            {
+              label: 'Obico iOS Mobile App',
+              to: 'https://apps.apple.com/sg/app/the-spaghetti-detective/id1540646623',
+              target: '_self',
+            },
+            {
+              label: 'Obico Server',
+              to: 'https://github.com/TheSpaghettiDetective/obico-server',
+              target: '_self',
+            },
+            {
+              label: 'Obico Cloud vs Self-Hosted',
+              to: 'https://obico.io/obico-cloud-vs-self-hosted.html',
+              target: '_self',
+            },
+          ],
+        },
+        {
           label: 'Pricing',
-          to: 'https://app.thespaghettidetective.com/ent_pub/pricing/',
+          to: 'https://app.obico.io/ent_pub/pricing/',
           target: '_self',
+        },
+        {
+          label: 'Community',
+          to: 'https://obico.io/discord',
+          target: '_self',
+        },
+        {
+          label: 'Docs',
+          items: [
+            {
+              label: 'Self-hosting',
+              to: '/docs/server-guides/install/',
+            },
+            {
+              label: 'Obico Server Plugin',
+              to: '/docs/developer-guides/plugins/',
+            },
+            {
+              label: 'Client APIs',
+              to: '/docs/api/',
+            },
+            {
+              label: 'Developer Tutorials',
+              to: '/docs/api/',
+            },
+          ],
         },
         {
           label: 'Help',
-          href: '/help',
+          to: '/help',
         },
         {
-          label: 'Forum',
-          to: 'https://discord.gg/hsMwGpD',
-          target: '_self',
+          label: 'Contribute',
+          to: '/docs/developer-guides/contribute/',
+        },
+        {
+          label: 'Blog',
+          to: '/blog',
         },
         {
           label: 'About',
           position: 'left', // or 'right'
           items: [
             {
-              label: 'Open Source',
-              to: 'https://www.thespaghettidetective.com/docs/open-source',
+              label: 'Obico Team',
+              to: 'https://www.obico.io/team.html',
               target: '_self',
             },
+          ],
+        },
+        {
+          label: 'Log in',
+          to: 'https://app.obico.io/accounts/login/',
+          target: '_self',
+          position: 'right',
+          className: ' obico-button obico-button-secondary obico-navbar-button',
+        },
+        {
+          label: 'Get Started',
+          to: 'https://app.obico.io/accounts/signup/',
+          target: '_self',
+          position: 'right',
+          className: 'obico-button obico-button-primary obico-navbar-button',
+        },
+      ],
+    },
+    footer: {
+      style: 'light',
+      links: [
+        {
+          title: 'Product',
+          items: [
+            {
+              label: 'Obico for OctoPrint',
+              to: '/docs/user-guides/octoprint-plugin-setup/',
+            },
+            {
+              label: 'Obico for Klipper',
+              to: '/docs/user-guides/klipper-setup',
+            },
+            {
+              label: 'Obico Cloud vs Self-Hosted',
+              to: 'https://obico.io/obico-cloud-vs-self-hosted.html',
+              target: '_self',
+            },
+            {
+              label: 'Obico Cloud Pricing',
+              to: 'https://app.obico.io/ent_pub/pricing/',
+              target: '_self',
+            },
+          ],
+        },
+        {
+          title: 'Features',
+          items: [
+            {
+              label: 'Monitor and Control',
+              to: 'https://www.obico.io/',
+              target: '_self',
+            },
+            {
+              label: 'AI Failure Detection',
+              to: 'https://obico.io/failure-detection.html',
+              target: '_self',
+            },
+          ],
+        },
+        {
+          title: 'Docs',
+          items: [
+            {
+              label: 'Obico Cloud Help',
+              to: '/help',
+            },
+            {
+              label: 'Self-Hosting',
+              to: '/docs/server-guides/install/',
+            },
+            {
+              html: '<b style="display: block; margin-top: .5rem;">Developer</b>',
+            },
+            {
+              label: 'Obico Server Plugin',
+              to: '/docs/developer-guides/plugins/',
+            },
+            {
+              label: 'Client APIs',
+              to: '/docs/api/',
+            },
+            {
+              label: 'Developer Tutorials',
+              to: '/docs/api/',
+            },
+          ],
+        },
+        
+
+        {
+          title: 'Company',
+          items: [
             {
               label: 'Blog',
               to: '/blog',
             },
             {
-              label: 'The Detective Team',
-              to: 'https://www.thespaghettidetective.com/team.html',
+              label: 'Team',
+              to: 'https://obico.io/team.html',
               target: '_self',
             },
-          ],
-        },
-        {
-          label: 'Sign In',
-          to: 'https://app.thespaghettidetective.com/accounts/login/',
-          target: '_self',
-          position: 'right',
-          className: ' tsd-button tsd-button-secondary tsd-navbar-button',
-        },
-        {
-          label: 'Sign Up',
-          to: 'https://app.thespaghettidetective.com/accounts/signup/',
-          target: '_self',
-          position: 'right',
-          className: 'tsd-button tsd-button-primary tsd-navbar-button',
-        },
-      ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'The Product',
-          items: [
-            {
-              label: 'What Is The Spaghetti Detective',
-              to: 'https://thespaghettidetective.com/',
-              target: '_self',
-            },
-            {
-              label: 'See It In Action',
-              to: 'https://www.thespaghettidetective.com/#gallery',
-              target: '_self',
-            },
-            {
-              label: 'Pricing',
-              to: 'https://app.thespaghettidetective.com/ent_pub/pricing/',
-              target: '_self',
-            },
-            {
-              label: 'Open Source',
-              to: '/docs/open-source',
-            },
-          ],
-        },
-        {
-          title: 'Help',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/docs/octoprint-plugin-setup',
-            },
-            {
-              label: 'Failure Detection',
-              to: '/docs/detection-print-job-settings',
-            },
-            {
-              label: 'Webcam Streaming',
-              to: '/docs/webcam-streaming-for-human-eyes',
-            },
-            {
-              label: 'Troubleshooting Guides',
-              to: '/docs/troubleshoot-server-connection-issues/',
-            },
-          ],
-        },
-
-        {
-          title: 'About',
-          items: [
             {
               label: 'Contact Us',
-              to: '/docs/contact-us-for-support',
-            },
-            {
-              label: 'Terms of Use',
-              to: 'https://www.thespaghettidetective.com/terms.html',
-              target: '_self',
+              to: 'mailto:support@obico.io',
             },
             {
               label: 'Privacy Policy',
-              to: 'https://www.thespaghettidetective.com/privacy.html',
+              to: 'https://obico.io/privacy.html',
+              target: '_self',
+            },
+            {
+              label: 'Terms of Use',
+              to: 'https://obico.io/terms.html',
               target: '_self',
             },
             {
               label: 'Disclaimer',
-              to: 'https://www.thespaghettidetective.com/disclaimer.html',
+              to: 'https://obico.io/disclaimer.html',
               target: '_self',
             },
           ],
@@ -253,7 +337,7 @@ module.exports = {
           ],
         },
       ],
-      copyright: `<div class="copyright">Copyright © The Spaghetti Detective ${new Date().getFullYear()}. All Rights Reserved.</div>`,
+      copyright: `<div class="copyright">Copyright © Obico ${new Date().getFullYear()}. All Rights Reserved.</div>`,
     },
     prism: {
       theme: lightCodeTheme,
@@ -290,9 +374,9 @@ module.exports = {
   // Add custom scripts here that would be placed in <script> tags.
   scripts: [
     'https://buttons.github.io/buttons.js',
-    'https://www.thespaghettidetective.com/vendor/jquery/jquery.min.js',
-    'https://www.thespaghettidetective.com/js/analytics.min.js',
-    '/js/compact-view.js',
+    'https://code.jquery.com/jquery-3.6.0.min.js',
+    'https://www.googletagmanager.com/gtag/js?id=UA-133768246-1',
+    'https://www.obico.io/js/analytics.js',
   ],
   plugins: [
     [

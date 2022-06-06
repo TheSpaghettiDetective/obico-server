@@ -1,0 +1,135 @@
+{% load static %}
+{% load user_dict from user_dict %}
+{% load bundle from vue %}
+{% load bundlechunk from vue %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  {% block meta_viewport %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% endblock meta_viewport %}
+  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. Obico is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="author" content="">
+
+  <title>Obico</title>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous"
+  >
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'vendor/css/sweetalert2.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
+
+  {% bundle 'styles' %}
+  {% bundlechunk 'chunk-vendors' 'css' %}
+
+  {% block page_css %}{% endblock page_css %}
+
+  <!-- favicons -->
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <meta name="theme-color" content="rgb(45 62 79)">
+
+  {% block header_ext %}{% endblock header_ext %}
+
+  {{ settings|json_script:"settings-json" }}
+  {{ user|user_dict|json_script:"user-json" }}
+  {{ app_platform|json_script:"app-platform-json" }}
+</head>
+
+<body>
+  {% csrf_token %}
+  {% block top_page_js %}{% endblock top_page_js %}
+
+  {% block body_top_ext %}{% endblock body_top_ext %}
+  {% include "snippets/svg_sprite.html" %}
+
+  <!-- For non_vue_layout only -->
+  {% block navbar %} {% endblock navbar %}
+
+  <main>
+    {% include 'snippets/messages.html' %}
+    {% block content %}{% endblock content %}
+  </main>
+
+  {% block footer %}
+    {% if not app_platform.platform %}
+      <footer>
+        <div class="container">
+          <p>&copy; Obico {% now "Y" %}. All Rights Reserved.</p>
+        </div>
+      </footer>
+    {% endif %}
+  {% endblock footer %}
+
+  <!-- Optional: include a polyfill for ES6 Promises for IE11 and Android browser -->
+  <script src="{% static 'vendor/js/polyfill.min.js' %}"></script>
+
+  <!-- Bootstrap and dependecies -->
+  {% block bootstrap_js %}
+  <script src="{% static 'vendor/js/jquery-3.4.1.min.js' %}"></script>
+  <script src="{% static 'vendor/js/popper.min.js' %}"></script>
+  <script src="{% static 'vendor/js/bootstrap.min.js' %}"></script>
+  {% endblock %}
+
+  <!-- Useful libs -->
+  {% block useful_libs %}
+  <script src="{% static 'vendor/js/clipboard.min.js' %}"></script>
+  <script src="{% static 'vendor/js/bootstrap-input-spinner.min.js' %}"></script>
+  <script src="{% static 'vendor/js/download.min.js' %}"></script>
+  <script src="{% static 'vendor/js/filesize.min.js' %}"></script>
+  {% endblock %}
+
+  <!-- Bundles -->
+  {% bundlechunk 'chunk-vendors' 'js' %}
+
+  <!-- Sentry -->
+  {% block sentry %}
+  <script
+    src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js"
+    integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
+    {% if user.is_authenticated and user.is_pro %}
+      var isProAccount = true;
+    {% else %}
+      var isProAccount = false;
+    {% endif %}
+    {% if settings.SENTRY_DSN %}
+      if (Sentry) {
+        Sentry.init({
+          dsn: '{{ settings.SENTRY_DSN }}',
+          release: '{{ settings.VERSION }}',
+          ignoreErrors: [
+            'window.webkit.messageHandlers',
+            'api.telegram.org',
+            /^Network Error$/,
+          ]
+        });
+        {% if user.is_authenticated %}
+          Sentry.setUser({"email": "{{ user.email }}"});
+        {% endif %}
+      }
+    {% endif %}
+  </script>
+  {% endblock sentry %}
+
+  {% block page_js %}{% endblock page_js %}
+  {% block body_bottom_ext %}{% endblock body_bottom_ext %}
+</body>
+
+</html>

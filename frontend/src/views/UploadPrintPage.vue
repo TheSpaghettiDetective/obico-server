@@ -5,7 +5,7 @@
         <b-row class="justify-content-center">
           <b-col lg="8" class="text-center">
             <h1 class="pb-2">Upload Time-lapse</h1>
-            <p class="pb-2">Upload time-lapse videos to see if The Detective can correctly tell the bad prints from the good ones.</p>
+            <p class="pb-2">Upload time-lapse videos to test Obico's AI failure detection.</p>
             <vue-dropzone
               class="upload-box"
               id="dropzone"
@@ -23,9 +23,9 @@
               <div id="tl-uploaded">
                 <img style="height: auto; width: 12rem;" :src="require('@static/img/detective-working.gif')" />
                 <div class="py-2 text-center">
-                  <div class="py-2">The Detective is busy looking at the time-lapse video(s) you
+                  <div class="py-2">The Obico Server is running failure detection on the time-lapse video(s) you
                     uploaded.</div>
-                  <div>We will send you email when she is done.</div><a href="/prints/">Check status now >>></a>
+                  <div>We will send you email when it is done.</div><a href="/prints/">Check status now >>></a>
                 </div>
               </div>
             </div>

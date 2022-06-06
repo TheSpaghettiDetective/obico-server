@@ -3,7 +3,8 @@
 import flask
 from flask import request, jsonify
 from os import path, environ
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import cv2
 import numpy as np
 import requests
@@ -15,20 +16,21 @@ from auth import token_required
 THRESH = 0.08  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
 
+# Sentry
+if environ.get('SENTRY_DSN'):
+    sentry_sdk.init(
+        dsn=environ.get('SENTRY_DSN'),
+        integrations=[FlaskIntegration(), ],
+    )
+else:
+    import traceback
+
 app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
 LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 app.logger.setLevel(LOGLEVEL)
-
-# Sentry
-sentry = None
-if environ.get('SENTRY_DSN'):
-    sentry = Sentry(app, dsn=environ.get('SENTRY_DSN'))
-else:
-    import traceback
-
 
 # To avoid edits to darknet files, symlink the appropriate CPU / GPU library here before importing darknet
 darknet_so_path = '/darknet/libdarknet.gpu.so' if environ.get('HAS_GPU') else '/darknet/libdarknet.cpu.so'
@@ -59,8 +61,8 @@ def get_p():
             app.logger.debug(f"{len(detections)} detections: {detections}")
             return jsonify({'detections': detections})
         except:
-            if sentry:
-                sentry.captureException()
+            if environ.get('SENTRY_DSN'):
+                sentry_sdk.captureException()
             else:
                 traceback.print_exc()
     else:

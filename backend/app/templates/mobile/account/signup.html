@@ -1,0 +1,101 @@
+{% extends "account/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load account socialaccount %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+{% block head_title %}{% trans "SIGN UP" %}{% endblock %}
+
+{% block content %}
+{% get_providers as socialaccount_providers %}
+<div class="container">
+  <div class="row justify-content-center logreg">
+    <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+      <div id="logreg-forms" class="my-2">
+        <h2 class="text-center py-2">{% trans "SIGN UP" %}</h2>
+        <div style="margin-bottom: 1rem; padding-left: 12px;">
+          <div class="custom-control custom-checkbox form-check-inline">
+            <input type="checkbox" class="custom-control-input" id="tos-checkbox" checked>
+            <label class="custom-control-label" style="font-size: 16px;" for="tos-checkbox"><small>By signing up, I agree to
+              the Obico app's <a class="link" href="https://www.obico.io/terms.html">Terms of
+                Use</a> and <a class="link" href="https://www.obico.io/privacy.html">Privacy
+                Policy</a></small></label>
+          </div>
+        </div>
+        {% if socialaccount_providers %}
+        <div class="social-login">
+          <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+            role="button"><span><i class="fab fa-facebook-f mr-1"></i> Sign up with Facebook</span> </a>
+          <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+            role="button"><span><i class="fab fa-google mr-1"></i> Sign up with Google</span> </a>
+        </div>
+          {% if app_platform.platform == 'ios' %}
+          <div class="social-login">
+            <a href="{% provider_login_url "apple" method="oauth2" %}" class="btn btn-block" style="border-radius: 100px; background-color: black; height: 2.4em; font-size: 1em;"
+              role="button"><span><i class="fab fa-apple fa-lg" style="padding-right: 12px;"></i>Sign in with Apple</span> </a>
+          </div>
+          {% endif %}
+        {% endif %}
+
+        <div style="width: 100%; height: 20px; border-bottom: 1px solid var(--color-divider);"></div>
+        <form class="signup form-signup" id="signup_form" method="POST">
+          {% csrf_token %}
+          {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+          <div class="form-group">
+            {% render_field form.email class="form-control" aria-describedby="emailHelp" placeholder="Email address" %}
+            {% if form.email.errors %}
+            <small id="emailHelp" class="text-danger">
+              {% for error in form.email.errors %}
+              {{ error|escape }}
+              {% endfor %}
+            </small>
+            {% else %}
+            <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {% render_field form.password1 class="form-control" aria-describedby="password1Help" placeholder="Password" %}
+            {% if form.password1.errors %}
+            <small id="password1Help" class="text-danger">
+              {% for error in form.password1.errors %}
+              {{ error|escape }}
+              {% endfor %}
+            </small>
+            {% else %}
+            <small id="password1Help" class="form-text">At least 6 characters. And be secure, please.</small>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {% render_field form.password2 class="form-control" aria-describedby="password2Help" placeholder="Password. Again" %}
+            {% if form.password2.errors %}
+            <small id="password2Help" class="text-danger">
+              {% for error in form.password2.errors %}
+              {{ error|escape }}
+              {% endfor %}
+            </small>
+            {% endif %}
+          </div>
+          {% endwith %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN UP" %}</button>
+          <div class="text-center pt-3 w-100">
+            <div class="font-weight-light text-muted">- OR -</div>
+            <a class="btn" href="{% url 'mobile_auth_login' %}{% if redirect_field_value %}?next={{redirect_field_value}}{% endif %}">{% trans "SIGN IN" %}</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/signup.js' %}"></script>
+{% endblock page_js %}

@@ -24,7 +24,7 @@
             <i class="fas fa-share-alt fa-lg"></i>Share
           </b-dropdown-item>
           <b-dropdown-item :href="octoPrintTunnelUrl()">
-            <svg class="menu-icon" fill="currentColor" viewBox="0 0 346.26 368.59">
+            <svg class="menu-icon">
               <use href="#svg-octoprint-tunneling" />
             </svg>
             Tunneling
@@ -35,7 +35,7 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" />
+      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -60,10 +60,10 @@
           style="left: 0; width: 100%; top: 50%; margin-top: -55px;"
         >
           <H1><i class="far fa-eye-slash"></i></H1>
-          <h5 class="text-warning">The Detective Is Not Watching</h5>
+          <h5 class="text-warning">Failure Detection is Off</h5>
           <small
             v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}. <a href="https://www.thespaghettidetective.com/docs/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
+          >{{ printer.not_watching_reason }}. <a href="https://www.obico.io/docs/user-guides/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
           <div></div>
         </div>
         <Gauge
@@ -116,10 +116,10 @@
                   <label
                     class="toggle-label"
                     :for="'watching_enabled-toggle-' + printer.id"
-                  >Watch for failures
+                  >Enable AI failure detection
                     <div
                       v-if="!watchForFailures"
-                      class="text-muted font-weight-light font-size-sm">Subsequent prints NOT watched until turned on.
+                      class="text-muted font-weight-light font-size-sm">AI failure detection is disabled. You are on your own.
                     </div>
                   </label>
                   <div class="custom-control custom-switch">
@@ -288,7 +288,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(this.isProAccount),
+      webrtc: WebRTCConnection(),
     }
   },
   created() {
@@ -412,7 +412,7 @@ export default {
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
-        html: '<p>Do you want The Detective to keep watching this print?</p><small>If you select "No", The Detective will stop watching this print, but will automatically resume watching on your next print.</small>',
+        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
       }).then((result) => {
@@ -451,7 +451,7 @@ export default {
     },
     onPrinterActionPauseClicked() {
       this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.thespaghettidetective.com/docs/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
       }).then((result) => {
         if (result.value) {
           this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
@@ -677,7 +677,7 @@ export default {
 
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
       axios
-        .get(urls.printerAction(printerId, path))
+        .post(urls.printerAction(printerId, path))
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {
@@ -742,6 +742,6 @@ export default {
 <style lang="sass" scoped>
 .menu-icon
   width: 20px
-  margin-right: 12px
-  margin-bottom: 6px
+  height: 20px
+  margin-right: 6px
 </style>

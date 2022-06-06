@@ -5,14 +5,14 @@
         <div v-if="printersToShow.length === 0" class="wizard-container full-on-mobile">
           <b-container>
             <b-row>
-              <h1 class="mx-auto">Welcome To</h1>
-            </b-row>
-            <b-row>
               <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <svg viewBox="0 0 1965 240" class="logo-img">
-                  <use href="#svg-navbar-brand" />
+                  <use href="#svg-logo-compact" />
                 </svg>
               </div>
+            </b-row>
+            <b-row>
+              <h1 class="mx-auto">Welcome To Obico</h1>
             </b-row>
             <b-row>
               <b-col>
@@ -20,18 +20,18 @@
               </b-col>
             </b-row>
             <b-row v-if="isEnt && trialDaysLeft > 0">
-              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
-              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.thespaghettidetective.com/docs/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
+              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
+              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
               <div class="mt-3 col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your OctoPrint</span></div>
-                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25fps Webcam Streaming</span></div>
-                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 Print Hours Watched by The Detective</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25 FPS Webcam Streaming</span></div>
+                <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 AI Failure Detection Hours</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>
               </div>
             </b-row>
             <b-row>
               <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-                <p class="lead mt-5">OctoPrint has not been linked to your The Spaghetti Detective account.</p>
+                <p class="lead mt-5">OctoPrint has not been linked to your Obico account.</p>
                 <div>
                   <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg">Link OctoPrint Now</a>
                 </div>
@@ -44,8 +44,8 @@
         </div>
         <div v-else>
           <div class="text-center">
-            <svg viewBox="0 0 1965 240" width="232" height="28.34">
-              <use href="#svg-navbar-brand" />
+            <svg width="100" height="30">
+              <use href="#svg-logo-full" />
             </svg>
           </div>
 
@@ -57,16 +57,16 @@
             <div>
               <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
               <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
-              <p class="text-muted"><a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by The Spaghetti Detective to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+              <p class="text-muted"><a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by the Obico app to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
                 </div>
               </b-alert>
               <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.thespaghettidetective.com/ent/pricing/" target="_blank">upgrade to The Spaghetti Detective Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
                 </div>
               </b-alert>
 
@@ -103,7 +103,7 @@
                 Security notes:
               </p>
               <ul class="text-muted small pl-4">
-                <li>The app can only access the tunnel, not your The Spaghetti Detective account info such as your email address.</li>
+                <li>The app can only access the tunnel, not your Obico account info such as your email address.</li>
                 <li>The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.</li>
               </ul>
             </div>
@@ -114,11 +114,9 @@
         <div>
           <b-container>
             <b-row>
-              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                <svg viewBox="0 0 1965 240" class="logo-img">
-                  <use href="#svg-navbar-brand" />
+                <svg class="logo-img mx-auto">
+                  <use href="#svg-logo-full" />
                 </svg>
-              </div>
             </b-row>
             <b-row>
               <h5 class="mx-auto">FOR</h5>
@@ -127,8 +125,8 @@
               <h1 class="mx-auto">{{appName}}</h1>
             </b-row>
             <b-row class="justify-content-center">
-              <p class="text-muted mt-5">The Spaghetti Detective provides <a href="https://www.thespaghettidetective.com/docs/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
-              <p class="text-muted">With The Spaghetti Detective, you can now use {{appName}} to control and monitor your printer from anywhere.</p>
+              <p class="text-muted mt-5">The Obico app provides <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
+              <p class="text-muted">With the Obico app, you can now use {{appName}} to control and monitor your printer from anywhere.</p>
             </b-row>
             <b-row>
               <div class="my-5 w-100">
@@ -261,5 +259,9 @@ body
 .authorization-successful
   padding-top: 6rem
   text-align: center
+
+.logo-img
+  max-height: 4em
+  margin-bottom: 2em
 </style>
 

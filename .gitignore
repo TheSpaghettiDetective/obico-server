@@ -53,7 +53,7 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
-/web/data
+/backend/data
 
 # Flask stuff:
 instance/
@@ -132,5 +132,4 @@ docker-compose.override.yml
 *.code-workspace
 
 # generated webpack bundle stats for development
-web/frontend/webpack-stats.json
 frontend/webpack-stats.json

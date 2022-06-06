@@ -24,36 +24,18 @@
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
+    <b-button v-if="!autoplay && isVideoAvailable && !isVideoVisible && remainingSecondsUntilNextCycle <= 0" @click="onPlayBtnClicked" class="loading-icon">
+      <i class="far fa-play-circle"></i>
+    </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
 
-    <b-dropdown v-if="isVideoVisible && taggedImgAvailable" class="streaming-switch" right no-caret toggle-class="icon-btn">
-      <template #button-content>
-        <i class="fas fa-ellipsis-v"></i>
-      </template>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc(null)">
-        <span class="title" :class="{'active': stickyStreamingSrc === null}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === null"></i>
-          Auto
-        </span><br>
-        <span class="description">Show the best quality stream that is available</span>
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('VIDEO')">
-        <span class="title" :class="{'active': stickyStreamingSrc === 'VIDEO'}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === 'VIDEO'"></i>
-          Premium webcam streaming view
-        </span><br>
-        <span class="description">Premium-only feature (25 fps)</span>
-      </b-dropdown-item>
-      <div class="dropdown-divider"></div>
-      <b-dropdown-item href="#" @click.prevent="forceStreamingSrc('IMAGE')">
-        <span class="title" :class="{'active': stickyStreamingSrc === 'IMAGE'}">
-          <i class="fas fa-check" v-show="stickyStreamingSrc === 'IMAGE'"></i>
-          Detective webcam view
-        </span><br>
-        <span class="description">Shows detection boxes if present (0.1 fps)</span>
-      </b-dropdown-item>
-    </b-dropdown>
+    <div v-if="isVideoAvailable" class="streaming-info small" @click="onInfoClicked">
+      <div v-if="!autoplay">
+        <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
+        <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
+      </div>
+      <div v-if="currentBitrate">{{currentBitrate}}</div>
+    </div>
 
     <div
       :class="webcamRotateClass"
@@ -72,8 +54,8 @@
             :src="taggedSrc"
             :alt="printer.name + ' current image'"
           />
-          <svg v-else viewBox="0 0 1200 1200" width="100%" height="100%">
-            <use :href="'#' + printerStockImgSrc" />
+          <svg v-else class="poster-placeholder">
+            <use :href="printerStockImgSrc" />
           </svg>
         </div>
         <div
@@ -83,7 +65,7 @@
           <video
             ref="video"
             class="remote-video"
-            :class="{hide: !isVideoVisible, flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
+            :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
             :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
@@ -99,8 +81,10 @@
 
 <script>
 import get from 'lodash/get'
+import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
+import ViewingThrottle from '@src/lib/viewing_throttle'
 
 export default {
   name: 'StreamingBox',
@@ -108,13 +92,32 @@ export default {
     if (this.webrtc) {
       this.webrtc.callbacks = {
         ...this.webrtc.callbacks,
+        onStreamAvailable: this.onStreamAvailable,
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
+        onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }
+
+      if (!this.autoplay) {
+        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
+      }
+
+      ifvisible.on('blur', () => {
+        if (this.webrtc) {
+          this.webrtc.stopStream()
+        }
+      })
+
+      ifvisible.on('focus', () => {
+        if (this.webrtc && this.autoplay) {
+          this.webrtc.startStream()
+        }
+      })
     }
+
   },
 
   props: {
@@ -126,18 +129,26 @@ export default {
       type: Object,
       required: false,
     },
+    autoplay: {
+      type: Boolean,
+      required: true,
+    }
   },
 
   data() {
     return {
       stickyStreamingSrc: null,
+      isVideoAvailable: false,
       isVideoVisible: false,
+      remainingSecondsCurrentVideoCycle: 30,
+      remainingSecondsUntilNextCycle: -1,
+      currentBitrate: null,
       slowLinkLoss: 0,
       slowLinkShowing: false, // show on mousenter
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      printerStockImgSrc: 'svg-video-placeholder'
+      printerStockImgSrc: '#svg-3d-printer'
     }
   },
 
@@ -184,16 +195,27 @@ export default {
   },
 
   methods: {
-    forceStreamingSrc(src) {
-      this.stickyStreamingSrc = src
-    },
     onCanPlay() {
       this.videoLoading = false
+      if (!this.autoplay) {
+        this.videoLimit.startOrResumeVideoCycle()
+      }
+
     },
     onLoadStart() {
       this.videoLoading = true
     },
-
+    onStreamAvailable() {
+      if (this.autoplay) {
+        this.webrtc.startStream()
+      } else {
+        if (!this.printer.basicStreamingInWebrtc()) {
+          return
+        }
+        this.videoLimit.resumeVideoCycle()
+      }
+      this.isVideoAvailable = true
+    },
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
 
@@ -210,7 +232,40 @@ export default {
       this.isVideoVisible = false
     },
 
+    /** Free user streaming **/
+
+    countDownCallback(remainingSecondsCurrentVideoCycle, remainingSecondsUntilNextCycle) {
+      if (this.remainingSecondsCurrentVideoCycle > 0 && remainingSecondsCurrentVideoCycle <= 0) {
+        this.webrtc.stopStream()
+      }
+      this.remainingSecondsCurrentVideoCycle = remainingSecondsCurrentVideoCycle
+      this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle
+    },
+
+    onInfoClicked() {
+      if (this.autoplay) {
+        return
+      }
+
+      this.$swal.Prompt.fire({
+        title: 'Throttled streaming',
+        html: `
+          <p>Since you are on the Obico Cloud Free plan, your webcam streaming is throttled for 30 seconds every minute.</p>
+          <p>When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</p>
+          <p>For <span class="font-weight-bold">un-throttled, 25 FPS</span> webcam streaming, <a href="https://app.obico.io/ent_pub/pricing/">upgrade to the Pro plan for little more than 1 Starbucks a month.</a></p>
+          <p><a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">More info.</a></p>
+        `,
+        showCloseButton: true,
+      })
+    },
+
+    /** End of free user streaming **/
+
     /** Video warning handling */
+
+    onPlayBtnClicked() {
+      this.webrtc.startStream()
+    },
 
     fixSlowLinkTextWidth() {
       const width = window.getComputedStyle(this.$refs.slowLinkText).width
@@ -232,7 +287,7 @@ export default {
           <p>The video frames are getting dropped because there is a bandwidth bottleneck along the route it they take to travel from your Raspberry Pi to your computer. The bottleneck can be anywhere but in most cases <Text bold>it's either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
           <p>Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.</p>
           <p>If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as <b>low latency (ping)</b>.</p>
-          <p>Check out <a target="_blank" href="https://www.thespaghettidetective.com/docs/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
+          <p>Check out <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
         `,
         showCloseButton: true,
       })
@@ -254,12 +309,13 @@ export default {
           <p class="lead">2. The internet connection of your computer or phone is not fast enough.</p>
           <p class="lead">3. Your webcam is not properly connected to your Raspberry Pi.</p>
           <br>
-          <p>Check <a target="_blank" href="https://www.thespaghettidetective.com/docs/webcam-feed-is-laggy">this step-by-step troubleshooting guide</a>.</p>
+          <p>Check <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy">this step-by-step troubleshooting guide</a>.</p>
         `,
         showCloseButton: true,
       })
     }
     /** End of video warning handling */
+
   },
 }
 </script>
@@ -271,13 +327,16 @@ export default {
   height: 3rem
   top: calc(50% - 1.5rem)
   left: calc(50% - 1.5rem)
-  z-index: 100
+  z-index: 99
 
-.streaming-switch
+.streaming-info
   position: absolute
-  right: 20px
-  top: 20px
-  z-index: 100
+  right: 0px
+  top: 0px
+  z-index: 99
+  background-color: rgb(0 0 0 / .5)
+  padding: 4px 8px
+  cursor: pointer
 
   .dropdown-item
     .title.active
@@ -401,4 +460,14 @@ export default {
   background-color: var(--color-overlay)
   text-align: center
   padding: 10px 0
+
+.poster-placeholder
+  $size: 150px
+  color: rgb(255 255 255 / .2)
+  width: $size
+  height: $size
+  position: absolute
+  left: calc(50% - #{$size / 2})
+  top: calc(50% - #{$size / 2})
+
 </style>

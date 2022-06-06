@@ -1,0 +1,111 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "SIGN IN" %}{% endblock %}
+
+{% block content %}
+{% get_providers as socialaccount_providers %}
+<div class="container">
+  <div class="row justify-content-center logreg">
+    <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
+      <div id="logreg-forms">
+        <h1 class="text-center">{% trans "SIGN IN" %}</h1>
+
+        {% if socialaccount_providers %}
+        <div class="social-login">
+          <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn facebook-btn social-btn"
+            role="button"><span><i class="fab fa-facebook-f mr-1"></i> Sign In with Facebook</span> </a>
+          <a href="{% provider_login_url "google" method="oauth2" %}" class="btn google-btn social-btn"
+            role="button"><span><i class="fab fa-google mr-1"></i> Sign In with Google</span> </a>
+        </div>
+        {% endif %}
+
+        <div style="width: 100%; height: 20px; border-bottom: 1px solid var(--color-divider); margin-bottom: 16px;"></div>
+
+        <form class="login form-signin" method="POST">
+          {% if form.errors %}
+          <div style="padding-bottom: 0.5em">
+            {# user signed up using social accounts might not have password #}
+            {% if form.no_password_yet %}
+            <span class="text-danger">
+              This email was previously signed up using either Google or Facebook.
+            </span>
+            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Click here to reset your password" %}</a>.
+            {% else %}
+            <span class="text-danger">Wrong email or password.</span>
+            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% csrf_token %}
+          {% with WIDGET_ERROR_CLASS='field_error' WIDGET_REQUIRED_CLASS='field_required' %}
+          <div class="input-group mb-2">
+            {% render_field form.login class="form-control" placeholder="Email address" %}
+          </div>
+          <div class="input-group">
+            {% render_field form.password class="form-control" placeholder="Password" %}
+          </div>
+          <div style="padding-top: 0.5rem;">
+            <div class="custom-control custom-checkbox form-check-inline">
+              <input type="checkbox" name="remember" class="custom-control-input" id="remember-checkbox">
+              <label class="custom-control-label" style="font-size: 16px;" for="remember-checkbox">Remember me</label>
+            </div>
+          </div>
+          {% endwith %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button type="submit" class="btn btn-primary btn-block">{% trans "SIGN IN" %}</button>
+          <div class="pt-2">
+            <div class="row">
+              <div class="col">
+                <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+              </div>
+              <div class="col text-right">
+                <a class="button secondaryAction" href="#" data-toggle="modal" data-target="#loginHelpMessage">{% trans "Having Trouble?" %}</a>
+
+                <!-- Modal -->
+                <div class="modal fade" id="loginHelpMessage" tabindex="-1" role="dialog" aria-labelledby="loginHelpMessageTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">{% trans "Having trouble?" %}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body text-left">
+                        <ul>
+                          <li>Your sign-in credential is the same for the mobile app and the web app. If you previously signed up using the mobile app, you can use the same to sign in here.</li>
+                          <li>"Sign in with Apple" is not available in the web app. If you want to use the web app, please sign up for a different account and <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/relink-octoprint/">re-link OctoPrint</a>.</li>
+                          <li>Even if you previously signed up an account using Google or Facebook, you can still <a class="link" href="{% url 'account_reset_password' %}">{% trans "reset password" %}</a> using the same email address.</li>
+                          <li class="text-warning">If you can't sign in the mobile app, re-install the mobile app and try it again.</li>
+                          <li><a class="link" href="mailto:support@obico.io">Contact us</a> if you have tried everything else.</li>
+                        </ul>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            {% if settings.ACCOUNT_ALLOW_SIGN_UP %}
+            <div class="text-center pt-3 w-100">
+              <div class="font-weight-light text-muted">- OR -</div>
+              <a class="btn" href="{% url 'account_signup' %}?{{request.GET.urlencode}}">{% trans "SIGN UP" %}</a>
+            </div>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

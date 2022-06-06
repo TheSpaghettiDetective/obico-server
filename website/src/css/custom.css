@@ -7,23 +7,28 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #9965f4;
-  --ifm-color-primary-dark: #8445f2;
-  --ifm-color-primary-darker: #7935f1;
-  --ifm-color-primary-darkest: #5c10e1;
-  --ifm-color-primary-light: #ae85f6;
-  --ifm-color-primary-lighter: #b995f7;
-  --ifm-color-primary-lightest: #d9c6fb;
-
-  /* --ifm-color-secondary: #03dac6;
-  --ifm-color-secondary-dark: #03c4b2;
-  --ifm-color-secondary-darker: #03b9a8;
-  --ifm-color-secondary-darkest: #02998b;
-  --ifm-color-secondary-light: #03f0da;
-  --ifm-color-secondary-lighter: #03fbe4;
-  --ifm-color-secondary-lightest: #23fce8; */
-
+  --ifm-color-primary: #01a299;
+  --ifm-color-primary-dark: #01928a;
+  --ifm-color-primary-darker: #018a82;
+  --ifm-color-primary-darkest: #01716b;
+  --ifm-color-primary-light: #01b2a8;
+  --ifm-color-primary-lighter: #01bab0;
+  --ifm-color-primary-lightest: #01d3c7;
   --ifm-code-font-size: 95%;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #03dac5;
+  --ifm-color-primary-dark: #03c4b1;
+  --ifm-color-primary-darker: #03b9a7;
+  --ifm-color-primary-darkest: #02998a;
+  --ifm-color-primary-light: #03f0d9;
+  --ifm-color-primary-lighter: #03fbe3;
+  --ifm-color-primary-lightest: #23fce7;
+}
+
+.DocSearch {
+  --docsearch-hit-active-color: var(--ifm-color-content-inverse);
 }
 
 .docusaurus-highlight-code-line {
@@ -64,58 +69,54 @@ html[data-theme=dark] .guide-link:hover {
 }
 
 
-.tsd-button {
+.obico-button {
   border-radius: 10rem;
   padding-left: 1rem;
   padding-right: 1rem;
 
-  --tsd-button-primary-color: var(--ifm-color-primary);
-  --tsd-button-primary-text: var(--ifm-color-gray-100);
-  --tsd-button-primary-hover: var(--ifm-color-primary-dark);
+  --obico-button-primary-color: var(--ifm-color-primary);
+  --obico-button-primary-text: var(--ifm-color-gray-100);
+  --obico-button-primary-hover: var(--ifm-color-primary-dark);
 
-  --tsd-button-secondary-color: var(--ifm-color-gray-800);
-  --tsd-button-secondary-hover: var(--ifm-color-primary-dark);
+  --obico-button-secondary-color: var(--ifm-color-gray-600);
+  --obico-button-secondary-hover: var(--ifm-color-primary-dark);
 }
 
-html[data-theme=dark] .tsd-button {
-  --tsd-button-primary-hover: var(--ifm-color-primary-light);
-  --tsd-button-secondary-hover: var(--ifm-color-primary-light);
+html[data-theme=dark] .obico-button {
+  --obico-button-primary-hover: var(--ifm-color-primary-light);
+  --obico-button-secondary-hover: var(--ifm-color-primary-light);
+  --obico-button-primary-text: var(--ifm-color-gray-900);
 }
 
-.tsd-button-secondary {
-  border: 1px solid var(--tsd-button-secondary-color);
+.obico-button-secondary {
+  border: 1px solid var(--obico-button-secondary-color);
 }
-.tsd-button-secondary:hover {
-  color: var(--tsd-button-secondary-hover);
-  border-color: var(--tsd-button-secondary-hover);
+.obico-button-secondary:hover {
+  color: var(--obico-button-secondary-hover);
+  border-color: var(--obico-button-secondary-hover);
   background: none;
 }
 
-.tsd-button-primary {
-  border: 1px solid var(--tsd-button-primary-color);
-  color: var(--tsd-button-primary-text);
-  background-color: var(--tsd-button-primary-color);
+.obico-button-primary {
+  border: 1px solid var(--obico-button-primary-color);
+  color: var(--obico-button-primary-text);
+  background-color: var(--obico-button-primary-color);
 }
-.tsd-button-primary:hover {
-  background-color: var(--tsd-button-primary-hover);
-  border-color: var(--tsd-button-primary-hover);
-  color: var(--tsd-button-primary-text);
+.obico-button-primary:hover {
+  background-color: var(--obico-button-primary-hover);
+  border-color: var(--obico-button-primary-hover);
+  color: var(--obico-button-primary-text);
 }
 
-.tsd-navbar-button {
+.obico-navbar-button {
   margin-right: .5rem;
 }
 
-.tsd-doc-button {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.menu .tsd-navbar-button {
+.menu .obico-navbar-button {
   margin-right: 0;
   margin-top: .625rem;
 
-  --tsd-button-secondary-color: var(--ifm-menu-color) !important;
+  --obico-button-secondary-color: var(--ifm-menu-color) !important;
 }
 
 
@@ -153,17 +154,6 @@ html[data-theme=dark] .tsd-button {
   left: 0;
   width: 100%;
   height: 100%;
-}
-
-
-/* External link icon */
-a.external:after {
-  content: url(../../static/img/link.svg);
-  display: inline-block;
-  width: 1rem;
-  margin-left: .25rem;
-  position: relative;
-  top: .125rem;
 }
 
 .superscript {

@@ -22,6 +22,8 @@ if environ.get('SENTRY_DSN'):
         dsn=environ.get('SENTRY_DSN'),
         integrations=[FlaskIntegration(), ],
     )
+else:
+    import traceback
 
 app = flask.Flask(__name__)
 
@@ -29,15 +31,6 @@ app = flask.Flask(__name__)
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
 LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 app.logger.setLevel(LOGLEVEL)
-
-<<<<<<< bundle_darknet
-# Sentry
-sentry = None
-if environ.get('SENTRY_DSN'):
-    sentry = Sentry(app, dsn=environ.get('SENTRY_DSN'))
-else:
-    import traceback
-
 
 # To avoid edits to darknet files, symlink the appropriate CPU / GPU library here before importing darknet
 darknet_so_path = '/darknet/libdarknet.cpu.so'
@@ -53,8 +46,6 @@ sys.path.append("/darknet")
 os.symlink(darknet_so_path, '/darknet/libdarknet.so')
 import darknet
 from darknet_images import image_detection
-=======
->>>>>>> master
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 network, class_names, class_colors = darknet.load_network(
         path.join(model_dir, 'model.cfg'),
@@ -77,14 +68,10 @@ def get_p():
             app.logger.debug(f"{len(detections)} detections: {detections}")
             return jsonify({'detections': detections})
         except:
-<<<<<<< bundle_darknet
-            if sentry:
-                sentry.captureException()
+            if environ.get('SENTRY_DSN'):
+                sentry_sdk.captureException()
             else:
                 traceback.print_exc()
-=======
-            sentry_sdk.capture_exception()
->>>>>>> master
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 

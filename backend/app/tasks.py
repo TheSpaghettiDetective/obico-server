@@ -235,7 +235,7 @@ def detect_timelapse(self, print_id):
 
 # Websocket connection count house upkeep jobs
 
-@periodic_task(run_every=timedelta(seconds=120))
+@periodic_task(run_every=timedelta(seconds=1200))
 def prune_channel_presence():
     Room.objects.prune_presences(age=120)
 

@@ -44,7 +44,7 @@ services:
   ml_api:
     hostname: ml_api
     restart: unless-stopped
-    # runtime: nvidia   # Remove comment tag to enable GPU
+    # runtime: nvidia   # Remove comment tag and set HAS_GPU in environment to enable GPU
     ports: 
       - "3333:3333"
     build:
@@ -53,6 +53,7 @@ services:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
         #LOGLEVEL: 'DEBUG'
+        #HAS_GPU: 1
         #ML_API_TOKEN:
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 

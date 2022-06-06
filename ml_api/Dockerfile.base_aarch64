@@ -11,7 +11,7 @@ EXPOSE 3333
 RUN rm -rf /etc/apt/sources.list.d/cuda.list && \
 	apt update
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt install --no-install-recommends -y python3-opencv libsm6 libxrender1 libfontconfig1 python3-pip python3-setuptools vim wget curl \
+RUN apt-get install --no-install-recommends -y python3-opencv libsm6 libxrender1 libfontconfig1 python3-pip python3-setuptools vim wget curl \
         libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk2.0-0 && \
 	rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10 && \

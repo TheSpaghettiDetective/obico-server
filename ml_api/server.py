@@ -31,15 +31,8 @@ else:
 
 
 # To avoid edits to darknet files, symlink the appropriate CPU / GPU library here before importing darknet
-darknet_so_path = '/darknet/libdarknet.cpu.so'
-try:
-    import subprocess
-    subprocess.check_output('nvidia-smi')
-    print('Nvidia GPU detected - using GPU')
-    darknet_so_path = '/darknet/libdarknet.gpu.so'
-except Exception: # this command not being found can raise quite a few different errors depending on the configuration
-    print('No Nvidia GPU detected - using CPU')
-
+darknet_so_path = '/darknet/libdarknet.gpu.so' if environ.get('HAS_GPU') else '/darknet/libdarknet.cpu.so'
+app.logger.info(f'Using darknet lib {darknet_so_path}')
 sys.path.append("/darknet")
 os.symlink(darknet_so_path, '/darknet/libdarknet.so')
 import darknet

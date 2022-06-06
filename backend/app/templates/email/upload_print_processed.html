@@ -1,0 +1,15 @@
+{% extends 'email/Layout.html' %}
+
+{% block email_content %}
+
+<p>Hi {{ print.user.first_name|default:"" }},</p>
+<p>The Detective has finished examining <b>{{ print.filename }}</b>.</p>
+<p>
+  Curious if The Detective found any spaghetti in it? <a href="{{ prints_link }}">Go check
+    it out >>></a>
+</p>
+<p>Earn 2 AI Detection Hours by teaching The Detective if she got it right and helping her improve. <a
+    href="https://www.obico.io/docs/user-guides/how-does-credits-work/">Learn more >>></a>
+</p>
+
+{% endblock %}

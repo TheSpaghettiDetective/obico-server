@@ -6,8 +6,9 @@ import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'
 import '@src/lib/filters'
 import setupSentry from '@src/lib/sentry'
-import { initTheme } from '@src/styles/colors'
+import { initTheme } from '@src/lib/color-scheme-controller'
 import VuePluralize from 'vue-pluralize'
+import OnoffToggle from 'vue-onoff-toggle'
 
 export default (router, components) => {
   initTheme()
@@ -18,6 +19,7 @@ export default (router, components) => {
   Vue.use(Sticky)
   Vue.use(VueMoment)
   Vue.use(VuePluralize)
+  Vue.use(OnoffToggle)
 
   if (document.getElementById('app')) {
     new Vue({

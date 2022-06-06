@@ -7,7 +7,6 @@ export default {
   print: printId => `/api/v1/prints/${printId}/`,
   prints: () => '/api/v1/prints/',
   printsBulkDelete: () => '/api/v1/prints/bulk_delete/',
-  printAlertOverwrite: printId => `/api/v1/prints/${printId}/alert_overwrite/`,
   printers: () => '/api/v1/printers/',
   printer: printerId => `/api/v1/printers/${printerId}/`,
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
@@ -23,6 +22,12 @@ export default {
     + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
   printerDiscovery: () => '/api/v1/printer_discovery/',
+
+  // Notifications
+  notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',
+  notificationChannels: () => '/api/v1/notification_settings/',
+  updateNotificationChannel: (id) => `/api/v1/notification_settings/${id}/`,
+  testNotificationChannel: (id) => `/api/v1/notification_settings/${id}/send_test_message/`,
 
   // App urls
   printerControl: printerId => `/printers/${printerId}/control/`,

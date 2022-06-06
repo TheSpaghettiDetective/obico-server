@@ -61,7 +61,7 @@ export default {
       return this.height === 'small'
     },
     errorMsg() {
-      return this.errors.join(' ')
+      return this.errors ? this.errors.join(' ') : ''
     }
   },
 
@@ -97,7 +97,7 @@ export default {
     position: relative
 
     &:before
-      background-image: var(--url-tail-spin)
+      background-image: var(--url-loader)
 
   &.successfully-saved
     position: relative

@@ -3,7 +3,8 @@
 import flask
 from flask import request, jsonify
 from os import path, environ
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import cv2
 import numpy as np
 import requests
@@ -15,6 +16,13 @@ from auth import token_required
 THRESH = 0.08  # The threshold for a box to be considered a positive detection
 SESSION_TTL_SECONDS = 60*2
 
+# Sentry
+if environ.get('SENTRY_DSN'):
+    sentry_sdk.init(
+        dsn=environ.get('SENTRY_DSN'),
+        integrations=[FlaskIntegration(), ],
+    )
+
 app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -22,6 +30,7 @@ app.config['DEBUG'] = environ.get('DEBUG') == 'True'
 LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 app.logger.setLevel(LOGLEVEL)
 
+<<<<<<< bundle_darknet
 # Sentry
 sentry = None
 if environ.get('SENTRY_DSN'):
@@ -44,6 +53,8 @@ sys.path.append("/darknet")
 os.symlink(darknet_so_path, '/darknet/libdarknet.so')
 import darknet
 from darknet_images import image_detection
+=======
+>>>>>>> master
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 network, class_names, class_colors = darknet.load_network(
         path.join(model_dir, 'model.cfg'),
@@ -66,10 +77,14 @@ def get_p():
             app.logger.debug(f"{len(detections)} detections: {detections}")
             return jsonify({'detections': detections})
         except:
+<<<<<<< bundle_darknet
             if sentry:
                 sentry.captureException()
             else:
                 traceback.print_exc()
+=======
+            sentry_sdk.capture_exception()
+>>>>>>> master
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 

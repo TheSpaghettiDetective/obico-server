@@ -1,10 +1,10 @@
 <template>
   <b-dropdown
-    :toggle-class="'btn-light tsd-dropdown-toggle'"
-    :menu-class="'tsd-dropdown-menu'"
+    :toggle-class="'btn-light obico-dropdown-toggle'"
+    :menu-class="'obico-dropdown-menu'"
   >
     <template v-slot:button-content>
-      <div class="tsd-dropdown-selected-title">{{ selected_title }} <i v-if="selected.iconClass" :class="selected.iconClass"></i></div>
+      <div class="obico-dropdown-selected-title">{{ selected_title }} <i v-if="selected.iconClass" :class="selected.iconClass"></i></div>
     </template>
     <b-dropdown-item
       v-for="option in options"
@@ -41,14 +41,14 @@ export default {
 
 <style lang="sass" scoped>
 // bootstrap-select has this default
-$tsd-dropdown-with: 220px
+$obico-dropdown-with: 220px
 
-::v-deep .tsd-dropdown-menu
-  width: $tsd-dropdown-with
+::v-deep .obico-dropdown-menu
+  width: $obico-dropdown-with
 
-::v-deep .tsd-dropdown-toggle.btn-light
+::v-deep .obico-dropdown-toggle.btn-light
   text-align: left
-  width: $tsd-dropdown-with
+  width: $obico-dropdown-with
   color: white
   background-color: var(--color-primary)
   border-radius: 0px
@@ -67,7 +67,7 @@ $tsd-dropdown-with: 220px
   &:after
     margin-left: 0px
 
-::v-deep .tsd-dropdown-selected-title
+::v-deep .obico-dropdown-selected-title
   width: 99%
   float: left
 

@@ -3,42 +3,40 @@ version: '2.4'
 x-web-defaults: &web-defaults
   restart: unless-stopped
   build:
-    context: web
+    context: backend
     dockerfile: "Dockerfile${DOCKERFILE_VERSION-}"
   volumes:
-    - ./web:/app
+    - ./backend:/app
     - ./frontend:/frontend
   depends_on:
     - redis
   environment:
-    EMAIL_HOST:     # -> such as 'smtp.gmail.com'
-    EMAIL_HOST_USER:   # -> such as your email address for a Gmail account
-    EMAIL_HOST_PASSWORD:    # -> your email account password
-    EMAIL_PORT: 587  # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
-    EMAIL_USE_TLS: 'True' # Change it to 'False' if your email provider doesn't use TLS, which is uncommon
-    DEFAULT_FROM_EMAIL: 'changeme@example.com'
-    DEBUG: 'False'    # Don't set DEBUG to True, otherwise the static files will be cached in browser until hard-refresh
-    SITE_USES_HTTPS: 'False' # set it to 'True' if https is set up
-    SITE_IS_PUBLIC: 'False' # set it to 'True' if the site configured in django admin is accessible from the internet
-    SOCIAL_LOGIN: 'False'
-    REDIS_URL: 'redis://redis:6379'
-    DATABASE_URL: 'sqlite:////app/db.sqlite3'
-    INTERNAL_MEDIA_HOST: 'http://web:3334'
-    ML_API_HOST: 'http://ml_api:3333'
-    ACCOUNT_ALLOW_SIGN_UP: 'False'  # -> set to 'True' if you want to open sign up form
-    WEBPACK_LOADER_ENABLED:
+    EMAIL_HOST: '${EMAIL_HOST-}'
+    EMAIL_HOST_USER: '${EMAIL_HOST_USER-}'
+    EMAIL_HOST_PASSWORD: '${EMAIL_HOST_PASSWORD-}'
+    EMAIL_PORT: '${EMAIL_PORT-587}'
+    EMAIL_USE_TLS: '${EMAIL_USE_TLS-True}'
+    DEFAULT_FROM_EMAIL: '${DEFAULT_FROM_EMAIL-changeme@example.com}'
+    DEBUG: '${DEBUG-False}'    # Don't set DEBUG to True unless you know what you are doing. Otherwise the static files will be cached in browser until hard-refresh
+    SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
+    SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
+    SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
+    REDIS_URL: '${REDIS_URL-redis://redis:6379}'
+    DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
+    INTERNAL_MEDIA_HOST: '${INTERNAL_MEDIA_HOST-http://web:3334}'
+    ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
+    ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'
+    WEBPACK_LOADER_ENABLED: '${WEBPACK_LOADER_ENABLED-False}'
     OCTOPRINT_TUNNEL_PORT_RANGE: '${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}'
-
-    #### Optional env vars below this line ###
-    #TWILIO_ACCOUNT_SID: https://django-twilio.readthedocs.io/en/latest/settings.html for how to find and set the TWILIO_XXX vars
-    #TWILIO_AUTH_TOKEN:
-    #TWILIO_FROM_NUMBER:
-    #ML_API_TOKEN:
-    #SENTRY_DSN:
-    #TELEGRAM_BOT_TOKEN: https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token
-    #PUSHOVER_APP_TOKEN: https://pushover.net/api#registration for how to register an app api token
-    #SLACK_CLIENT_ID:
-    #SLACK_CLIENT_SECRET:
+    TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN-}'
+    TWILIO_ACCOUNT_SID: '${TWILIO_ACCOUNT_SID-}'
+    TWILIO_AUTH_TOKEN: '${TWILIO_AUTH_TOKEN-}'
+    TWILIO_FROM_NUMBER: '${TWILIO_FROM_NUMBER-}'
+    SENTRY_DSN: '${SENTRY_DSN-}'
+    PUSHOVER_APP_TOKEN: '${PUSHOVER_APP_TOKEN-}'
+    SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
+    SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
+    VERSION:
 
 services:
   ml_api:
@@ -64,7 +62,7 @@ services:
       - "${OCTOPRINT_TUNNEL_PORT_RANGE-15853-15873}:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && if test "${WEBPACK_LOADER_ENABLED}" != "True"; then python manage.py collectstatic -v 2 --noinput; fi  && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
+    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
 
   tasks:
     <<: *web-defaults

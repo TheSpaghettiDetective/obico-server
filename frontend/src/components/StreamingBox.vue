@@ -106,11 +106,13 @@ export default {
       }
 
       ifvisible.on('blur', () => {
-        this.webrtc.stopStream()
+        if (this.webrtc) {
+          this.webrtc.stopStream()
+        }
       })
 
       ifvisible.on('focus', () => {
-        if (this.autoplay) {
+        if (this.webrtc && this.autoplay) {
           this.webrtc.startStream()
         }
       })
@@ -204,12 +206,15 @@ export default {
       this.videoLoading = true
     },
     onStreamAvailable() {
-      this.isVideoAvailable = true
       if (this.autoplay) {
         this.webrtc.startStream()
       } else {
+        if (!this.printer.basicStreamingInWebrtc()) {
+          return
+        }
         this.videoLimit.resumeVideoCycle()
       }
+      this.isVideoAvailable = true
     },
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)

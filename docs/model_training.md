@@ -54,7 +54,7 @@ Now that we have our data, we need to transform it into something we can use for
 
 1. Create two directories: `positives` and `negatives`. 
 2. Move the downloaded videos into these directories - videos with spaghetti go in the `positives` directory, and those without go in `negatives`.
-4. For each video in `positives`, note the time that the print started visibly failing and edit `config.txt`, replacing the placeholder with that time.
+4. For each video in `positives`, note the time that the print started visibly failing. You'll need this to extract positive spaghetti images.
 5. Run `python ./BBox-Label-Tool/main.py`, and annotate the images with bounding boxes (see [here](https://texas-aerial-robotics.github.io/md_yoloTraining.html) for a more in depth tutorial).
 6. Collect all the information you've given so far and split it into two new folders: `./train` and `./test`, with `train.txt` and `test.txt` files containing paths to image samples extracted from your positive and negative video samples (more details on structure [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects)).
 

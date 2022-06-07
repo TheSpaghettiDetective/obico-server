@@ -250,10 +250,17 @@ export default {
       this.$swal.Prompt.fire({
         title: 'Throttled streaming',
         html: `
-          <p>Since you are on the Obico Cloud Free plan, your webcam streaming is throttled for 30 seconds every minute.</p>
-          <p>When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</p>
-          <p>For <span class="font-weight-bold">un-throttled, 25 FPS</span> webcam streaming, <a href="https://app.obico.io/ent_pub/pricing/">upgrade to the Pro plan for little more than 1 Starbucks a month.</a></p>
-          <p><a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">More info.</a></p>
+          <p>The webcam is in <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">Basic Streaming</a> since you are on the Obico Cloud Free plan:</p>
+          <ul>
+            <li>The webcam streaming is up to 5 FPS (frame per second).</li>
+            <li>The streaming is throttled for 30 seconds every minute. When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</li>
+          </ul>
+          <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan gives you many perks including the Premium Streaming:</p>
+          <ul>
+            <li>25 FPS (frame per second).</li>
+            <li>Un-throttled streaming. Stream for as long as you want.</li>
+          </ul>
+
         `,
         showCloseButton: true,
       })

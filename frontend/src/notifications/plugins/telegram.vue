@@ -3,7 +3,7 @@
     :errorMessages="errorMessages"
     :saving="saving"
     :notificationChannel="notificationChannel"
-    :showSettings="!!config.telegramBotName"
+    :showSettings="setupCompleted"
 
     @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
@@ -26,7 +26,7 @@
           <div class="col-12">
           <vue-telegram-login
             mode="callback"
-            :telegram-login="config.telegramBotName"
+            :telegram-login="notificationChannel.pluginInfo.env_vars.TELEGRAM_BOT_NAME.value"
             request-access="write"
             @callback="onTelegramAuth" />
             </div>
@@ -69,6 +69,11 @@ export default {
     },
   },
 
+  computed: {
+    setupCompleted() {
+      return !!this.notificationChannel.channelInfo?.config?.chat_id
+    },
+  },
   methods: {
     onTelegramAuth(telegram_user) {
       const config = { chat_id: JSON.stringify(telegram_user.id) }

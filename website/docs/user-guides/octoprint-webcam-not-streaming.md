@@ -3,12 +3,12 @@ id: octoprint-webcam-not-streaming
 title: Webcam streaming not working in OctoPrint
 ---
 
-Follow this troubleshooting guide if the webcam streaming stops working in OctoPrint after The Spaghetti Detective plugin is installed.
+Follow this troubleshooting guide if the webcam streaming stops working in OctoPrint after the "Obico for OctoPrint" plugin is installed.
 
 :::caution
 This guide is for troubleshooting webcam streaming **in OctoPrint**.
 
-If the webcam works in OctoPrint but not in The Spaghetti Detective, you need to check [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing).
+If the webcam works in OctoPrint but not in the Obico mobile app or mobile app, you need to check [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing).
 :::
 
 ## 1. Check the current webcam streaming mode
@@ -19,7 +19,7 @@ Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out t
 * If the streaming mode is "**Premium (compatibility)**" or "**Basic**", go to [step 3](#3-disable-the-premium-webcam-streaming).
 
 :::info
-"Premium (advanced)" mode means The Spaghetti Detective plugin has taken control over the webcam from OctoPrint. Whereas "Premium (compatibility)" or "Basic" mode means The Spaghetti Detective plugin left the webcam control to OctoPrint.
+"Premium (advanced)" mode means the Obico plugin has taken control over the webcam from OctoPrint. Whereas "Premium (compatibility)" or "Basic" mode means the plugin left the webcam control to OctoPrint.
 :::
 
 :::info
@@ -34,16 +34,15 @@ Learn more about [the advanced mode and the compatibility mode in the Premium St
 
 ## 3. Check if the webcam is configured correctly in OctoPrint
 
-Before checking if the webcam is configured correctly in OctoPrint, let's disable The Spaghetti Detective plugin to be 100% sure it is not the source of the problem.
+Before checking if the webcam is configured correctly in OctoPrint, let's disable the Obico plugin to be 100% sure it is not the source of the problem.
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 1. On the settings page, click "**Plugin Manager**".
-1. Find the "Access Anywhere - The Spaghetti Detective" plugin.
+1. Find the "Obico for OctoPrint" plugin.
 1. Disable the plugin by clicking the little toggle on the right-hand side.
 1. Follow the prompt to restart OctoPrint.
 
 ![](/img/user-guides/helpdocs/disable-tsd-plugin.gif)
-
 
 To test if the webcam is correctly configured in OctoPrint,
 
@@ -58,7 +57,7 @@ To test if the webcam is correctly configured in OctoPrint,
 
 If the test failed, the webcam is not configured correctly in OctoPrint. You need to fix this problem first. The best place for find the information and/or get help is the [OctoPrint community forum](https://community.octoprint.org/).
 
-If the test passed, please re-enable The Spaghetti Detective plugin and restart OctoPrint. After that, if the webcam streaming OctoPrint stops working again, it probably means you have run into a bug in The Spaghetti Detective plugin. In this case, [report the problem to us](mailto:support@obico.io).
+If the test passed, please re-enable the Obico plugin and restart OctoPrint. After that, if the webcam streaming OctoPrint stops working again, it probably means you have run into a bug in the Obico plugin. In this case, [report the problem to us](mailto:support@obico.io).
 
 :::info
 If you are running OctoPrint on a Raspberry Pi, and you followed the official OctoPi setup guide, and you have one webcam (either a Pi Camera or a USB camera) directly plugged in the Pi, the default webcam configurations should work.

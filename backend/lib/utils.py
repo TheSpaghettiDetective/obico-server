@@ -67,7 +67,7 @@ def shortform_localtime(seconds_from_now, tz):
     return (timezone.now() + timedelta(seconds=seconds_from_now)).astimezone(pytz.timezone(tz)).strftime("%I:%M%p")
 
 
-## util functions for printer snapshot
+## util functions for pictures
 
 def last_pic_of_print(_print, path_prefix):
     print_pics = list_dir(f'{path_prefix}/{_print.printer.id}/{_print.id}/', settings.PICS_CONTAINER, long_term_storage=False)
@@ -77,7 +77,7 @@ def last_pic_of_print(_print, path_prefix):
     return print_pics[-1]
 
 
-def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
     if not input_path:
         return None
 
@@ -86,11 +86,11 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     img_bytes.seek(0)
     tmp_img = Image.open(img_bytes)
     if rotated:
-        if printer.settings['webcam_flipH']:
+        if printer_settings['webcam_flipH']:
             tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
-        if printer.settings['webcam_flipV']:
+        if printer_settings['webcam_flipV']:
             tmp_img = tmp_img.transpose(Image.FLIP_TOP_BOTTOM)
-        if printer.settings['webcam_rotate90']:
+        if printer_settings['webcam_rotate90']:
             tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
     img_bytes = io.BytesIO()
@@ -100,7 +100,7 @@ def save_print_snapshot(printer, input_path, dest_jpg_path, rotated=False, to_co
     return dest_jpg_url
 
 
-def get_rotated_jpg_url(printer, force_snapshot=False):
+def get_rotated_pic_url(printer, force_snapshot=False):
     if not printer.pic or not printer.pic.get('img_url'):
         return None
     jpg_url = printer.pic.get('img_url')
@@ -111,8 +111,10 @@ def get_rotated_jpg_url(printer, force_snapshot=False):
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
-    return save_print_snapshot(printer,
-                        jpg_path.group(1),
-                        f'snapshots/{printer.id}/latest_rotated.jpg',
-                        rotated=not 'latest_rotated' in jpg_url,
-                        to_long_term_storage=False)
+    return copy_pic(
+                jpg_path.group(1),
+                f'snapshots/{printer.id}/latest_rotated.jpg',
+                rotated=not 'latest_rotated' in jpg_url,
+                printer_settings=printer.settings,
+                to_long_term_storage=False
+            )

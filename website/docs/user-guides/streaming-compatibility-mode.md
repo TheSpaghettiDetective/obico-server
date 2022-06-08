@@ -11,9 +11,9 @@ There are actually two different "modes" in the Premium Streaming:
 
 As the name suggested, the advanced mode is superior to the compatibility mode in most cases. It is efficient in CPU usage, and hence able to stream at full speed - 25 frames per second However, not all webcams can be streamed in the advanced mode.
 
-By default, The Spaghetti Detective will try to stream in the advanced mode first. When it fails because of an incompatible webcam, it'll switch to the compatibility mode. So chances are you can leave the decision to The Detective and she will figure out if the compatibility mode is right for you.
+By default, the Obico plugin will try to stream in the advanced mode first. When it fails because of an incompatible webcam, it'll switch to the compatibility mode. So chances are you can leave the decision to Obico and she will figure out if the compatibility mode is right for you.
 
-There are some rare situations when your webcam is compatible with the advanced mode, but the compatibility mode will suit your needs better. In these cases, you can tell The Detective to "always stream in compatibility mode".
+There are some rare situations when your webcam is compatible with the advanced mode, but the compatibility mode will suit your needs better. In these cases, you can tell Obi to "always stream in compatibility mode".
 
 ## The advanced mode vs the compatibility mode
 
@@ -38,7 +38,7 @@ Learn more about [Webcam streaming resolution and frame rate](/docs/user-guides/
 :::
 
 * You have a USB camera. And you are ok with streaming at a much lower frame rate in exchange for a webcam resolution higher than 640x480.
-* You have configured multiple cameras for your OctoPrint. And The Spaghetti Detective fails to use the correct one to stream from.
+* You have configured multiple cameras for your OctoPrint. And the Obico plugin fails to use the correct one to stream from.
 * You have custom webcam settings, auto-focus, white balance, etc., in either "*/boot/octopi.txt*" file or in Octolapse.
 * The webcam is not connected to the Pi running OctoPrint. Examples include:
     * It is an IP camera.
@@ -51,7 +51,7 @@ Learn more about [Webcam streaming resolution and frame rate](/docs/user-guides/
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 2. Scroll down the navigation bar on the left side.
-3. Click "Access Anywhere - The Spaghetti Detective" tab.
+3. Click "Obico for OctoPrint" tab.
 4. Click the "Settings" button.
 
 ![](/img/user-guides/helpdocs/tsd-plugin-open-settings-page.gif)
@@ -77,12 +77,12 @@ To confirm that, disable compatibility mode. If the problem goes away right afte
 
 #### Excessive CPU usage warning
 
-Because of the potential problem caused by high CPU usage in compatibility mode, The Spaghetti Detective plugin monitors CPU usage and warns you when the streaming is using too much CPU. If that happens, take the following steps:
+Because of the potential problem caused by high CPU usage in compatibility mode, the Obico plugin monitors CPU usage and warns you when the streaming is using too much CPU. If that happens, take the following steps:
 
 1. Lower the webcam resolution and frame rate in "*/boot/octopi.txt*".
 2. Restart the Raspberry Pi.
 3. Wait for 3 minutes.
-4. If the warning shows up again, you should consider choosing "**Never stream in compatibility mode**" in "**OctoPrint Settings -> The Spaghetti Detective -> Advanced Settings**".
+4. If the warning shows up again, you should consider choosing "**Never stream in compatibility mode**".
 
 ## FAQs
 

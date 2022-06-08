@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
+import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework import status
 from django.conf import settings
 from django.core import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -29,7 +31,7 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from lib.utils import save_print_snapshot, last_pic_of_print
+from lib.utils import copy_pic, last_pic_of_print
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -52,11 +54,13 @@ def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
 
-    rotated_jpg_url = save_print_snapshot(printer,
+    rotated_jpg_url = copy_pic(
                         last_pic_of_print(printer.current_print, 'tagged'),
                         f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
                         rotated=True,
-                        to_long_term_storage=False)
+                        printer_settings=printer.settings,
+                        to_long_term_storage=False
+                    )
 
     handler.send_failure_alerts(
         printer=printer,
@@ -74,31 +78,55 @@ class OctoPrintPicView(APIView):
 
     def post(self, request):
         printer = request.auth
+
+        if settings.PIC_POST_LIMIT_PER_MINUTE and cache.pic_post_over_limit(printer.id, settings.PIC_POST_LIMIT_PER_MINUTE):
+            return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
+
         printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
         pic = request.FILES['pic']
         pic = cap_image_size(pic)
-        pic_id = str(timezone.now().timestamp())
 
-        if not printer.current_print:     # Some times pics come in when current_print is not set - maybe because printer status is out of sync between plugin and server?
-            pic_path = f'{printer.id}/0.jpg'
-        else:
-            pic_path = f'{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
-        internal_url, external_url = save_file_obj(f'raw/{pic_path}', pic, settings.PICS_CONTAINER, long_term_storage=False)
-
-        if not printer.should_watch() or not printer.actively_printing():
+        if (not printer.current_print) or request.POST.get('viewing_boost'):
+            # Not need for failure detection if not printing, or the pic was send for viewing boost.
+            pic_path = f'snapshots/{printer.id}/latest_unrotated.jpg'
+            internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
             cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
             send_status_to_web(printer.id)
             return Response({'result': 'ok'})
 
-        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': internal_url}, headers=ml_api_auth_headers(), verify=False)
-        req.raise_for_status()
-        resp = req.json()
+        pic_id = str(timezone.now().timestamp())
+        pic_path = f'raw/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        internal_url, external_url = save_file_obj(pic_path, pic, settings.PICS_CONTAINER, long_term_storage=False)
+
+        img_url_updated = self.detect_if_needed(printer, pic, pic_id, internal_url)
+        if not img_url_updated:
+            cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
+
+        send_status_to_web(printer.id)
+        return Response({'result': 'ok'})
+
+    def detect_if_needed(self, printer, pic, pic_id, raw_pic_url):
+        '''
+        Return:
+           True: Detection was performed. img_url was updated to the tagged image
+           False: No detection was performed. img_url was not updated
+        '''
+
+        if not printer.should_watch() or not printer.actively_printing():
+            return False
+
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+
+        if time.time() - prediction.updated_at.timestamp() < settings.MIN_DETECTION_INTERVAL:
+            return False
 
         cache.print_num_predictions_incr(printer.current_print.id)
 
-        detections = resp['detections']
-        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
+        req = requests.get(settings.ML_API_HOST + '/p/', params={'img': raw_pic_url}, headers=ml_api_auth_headers(), verify=False)
+        req.raise_for_status()
+        detections = req.json()['detections']
+
         update_prediction_with_detections(prediction, detections)
         prediction.save()
 
@@ -111,7 +139,8 @@ class OctoPrintPicView(APIView):
         overlay_detections(Image.open(pic), detections_to_visualize).save(tagged_img, "JPEG")
         tagged_img.seek(0)
 
-        _, external_url = save_file_obj(f'tagged/{pic_path}', tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
+        pic_path = f'tagged/{printer.id}/{printer.current_print.id}/{pic_id}.jpg'
+        _, external_url = save_file_obj(pic_path, tagged_img, settings.PICS_CONTAINER, long_term_storage=False)
         cache.printer_pic_set(printer.id, {'img_url': external_url}, ex=IMG_URL_TTL_SECONDS)
 
         prediction_json = serializers.serialize("json", [prediction, ])
@@ -125,9 +154,7 @@ class OctoPrintPicView(APIView):
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer)
 
-        send_status_to_web(printer.id)
-        return Response({'result': 'ok'})
-
+        return True
 
 class OctoPrinterView(APIView):
     authentication_classes = (PrinterAuthentication,)

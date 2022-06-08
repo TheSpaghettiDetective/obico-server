@@ -8,10 +8,6 @@ const LinksList = [
     route: '/docs/user-guides/detective-not-watching/',
   },
   {
-    title: 'Why is OctoPrint showing as "offline"?',
-    route: '/docs/user-guides/octoprint-is-offline/',
-  },
-  {
     title: 'What is AI Detection Hour and how does it work?',
     route: '/docs/user-guides/how-does-detective-hour-work/',
   },

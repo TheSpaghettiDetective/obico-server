@@ -28,10 +28,10 @@ For instance,
 
 | Resolution | # of Pixels | frame rate | speed requirement |
 |------------|-------------|--------|-----------|
-| 320x240 (low) | ~77k | 25fps | 1.6Mbps |
-| 640x480 (medium) | ~300k | 25fps | 6Mbps |
-| 1296x972 (high) | ~1,260k | 25fps | 26Mbps |
-| 1640x1232 (ultra high) | ~2,000k | 25fps | 40Mbps |
+| 320x240 (low) | ~77k | 25 FPS | 1.6Mbps |
+| 640x480 (medium) | ~300k | 25 FPS | 6Mbps |
+| 1296x972 (high) | ~1,260k | 25 FPS | 26Mbps |
+| 1640x1232 (ultra high) | ~2,000k | 25 FPS | 40Mbps |
 
 :::info
 

@@ -17,8 +17,6 @@ urlpatterns = [
     path('printers/<int:pk>/control/', web_views.printer_control),
     path('printers/share_token/<share_token>/', web_views.printer_shared, name='printer_shared'),
     re_path('^user_preferences/(?P<route>([^/]+/)*)$', web_views.user_preferences),
-    path('test_telegram', web_views.test_telegram),
-    path('test_slack', web_views.test_slack),
     path('unsubscribe_email/', web_views.unsubscribe_email),
     path('prints/<int:pk>/cancel/', web_views.cancel_print),
     path('prints/<int:pk>/resume/', web_views.resume_print),

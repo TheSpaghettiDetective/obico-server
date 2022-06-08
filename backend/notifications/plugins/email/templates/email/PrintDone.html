@@ -2,7 +2,7 @@
 
 {% block email_content %}
 
-<p>Hi {{ context.user.first_name|default:"" }},</p>
+<p>Hi {{ user.first_name|default:"" }},</p>
 
 <p>
 {% block subject %}
@@ -10,19 +10,19 @@
 {% endblock %}
 </p>
 
-  {% if context.img_url %}
+  {% if img_url %}
 <table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td><img style="width: 100%;" alt="Print Snapshot" src="{{ context.img_url }}" /></td>
+    <td><img style="width: 100%;" alt="Print Snapshot" src="{{ img_url }}" /></td>
   </tr>
 </table>
 {% endif %}
 
-{% if context.print.alerted_at or context.printer.watching_enabled and context.user.dh_balance > 0 %}
+{% if print.alerted_at or printer.watching_enabled and user.dh_balance > 0 %}
 <table style="padding: 18px 0px 18px 0px;" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 0px 0px 9px 0px;width:100%;">
-      {% if context.print.alerted_at %}
+      {% if print.alerted_at %}
       <div style="color: #d9534f;">Possible failures were detected for this print.</div>
       {% else %}
       <div style="color: #5cb85c">No failures were detected for this print.</div>
@@ -35,7 +35,7 @@
 
       {% if focused_feedback_eligible %}
 
-      {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
+      {% if print.alerted_at and print.alert_overwrite == 'NOT_FAILED' %}
       👉 You told us it was a false alarm. Help us improve by <a href="{{ timelapse_link }}">giving us the Focused
         Feedback</a> in the next 30 days and earn 2 AI Detection Hours for yourself.
       {% else %}
@@ -50,7 +50,7 @@
 
       {% else %}
 
-      {% if context.print.alerted_at and context.print.alert_overwrite == 'NOT_FAILED' %}
+      {% if print.alerted_at and print.alert_overwrite == 'NOT_FAILED' %}
       👉 You told us it was a false alarm. Thank you for helping us improve! You can <a href="{{ timelapse_link }}">
         change your response</a>.
       {% else %}
@@ -85,8 +85,8 @@
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 18px 0px 18px 0px;width:100%;">
-      <div><b>File name:</b> {{ context.print.filename }}</div>
-      <div><b>Printer:</b> {{ context.printer.name }}</div>
+      <div><b>File name:</b> {{ print.filename }}</div>
+      <div><b>Printer:</b> {{ printer.name }}</div>
       {% if print_time %}
       <div><b>Print time:</b> {{ print_time }}</div>
       {% endif %}
@@ -95,12 +95,12 @@
       {% endif %}
       {% if dh_consumed and not unlimited_dh %} <div><b>DH balance (<a
             href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/">?</a>):</b>
-        {{ context.user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
+        {{ user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
     </td>
   </tr>
 </table>
 
-{% if dh_consumed and context.user.dh_balance < 10 and context.user.dh_balance >= 0 %}
+{% if dh_consumed and user.dh_balance < 10 and user.dh_balance >= 0 %}
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 0px 0px 18px 0px;width:100%;">
@@ -112,7 +112,7 @@
 </table>
 {% endif %}
 
-{% if dh_consumed and context.user.dh_balance < 0 %}
+{% if dh_consumed and user.dh_balance < 0 %}
 <table role="module" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
   <tbody>
     <tr>

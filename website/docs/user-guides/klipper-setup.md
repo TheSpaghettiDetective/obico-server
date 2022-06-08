@@ -39,7 +39,7 @@ Before you start, make sure:
 4. If you set up your Klipper platform in one of the common ways, such as [MainsailOS](https://docs.mainsail.xyz/setup/mainsail-os) or [FluiddPi](https://docs.fluidd.xyz/installation/fluiddpi), good for you. `install.sh` will automatically detect your configurations and ask you for confirmation.
 5. If you have a custom setup for your Klipper platform, we may have to ask you to enter the configurations necessary for the installation to complete, such as the location of your `moonraker.conf`, Moonraker's port, and the log directory.
 6. `install.sh` will now start the process to link your printer to the Obico server. You will be asked to enter:
-    - The Obico Server you want to link it to. The default is the [Obico Cloud](https://app.obico.io). You can also change it to using your own [self-hosted Obico Server](https://www.obico.io/docs/server-guides/).
+    - The Obico Server you want to link it to. The default is the [Obico Cloud](https://app.obico.io). You can also change it to using your own [self-hosted Obico Server](https://www.obico.io/docs/server-guides/) (ex: http://192.168.0.5:3334).
     - A **6-digit verification code**. You will obtain this 6-digit verification code in the following steps.
 7. Leave the terminal open. We will come back to enter the 6-digit code once we obtain it from the Obico app.
 

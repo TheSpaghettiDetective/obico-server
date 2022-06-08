@@ -10,7 +10,7 @@ The Obico Cloud offers two plan options to our users:
 
 | | Pro plan | Free plan |
 |-|----------|----------|
-| [Webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) | Unlimited 25 FPS(frames per second) Premium Streaming. | Basic Streaming up to 5 FPS. Throttled for 30 seconds per minute. |
+| [Webcam streaming](/docs/user-guides/webcam-streaming-for-human-eyes) | Unlimited 25 FPS (frames per second) Premium Streaming. | Basic Streaming up to 5 FPS. Throttled for 30 seconds per minute. |
 | Free [AI Detection Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
 | [Pre-paid AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
 | [Subscribe&Save AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |

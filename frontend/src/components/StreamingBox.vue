@@ -268,15 +268,15 @@ export default {
       this.$swal.Prompt.fire({
         title: 'Upgrade for Better Streaming',
         html: `
-          <p>The webcam is in <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">Basic Streaming</a> since you are on the Obico Cloud Free plan:</p>
+          <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">Obico Cloud Free plan</a>:</p>
           <ul>
-            <li>Streaming is limited to 5 FPS (frame per second).</li>
-            <li>After 30 seconds of streaming there is a 30 second cooldown before you can resume streaming.</li>
+            <li>Streaming is limited to 5 FPS (frames per second).</li>
+            <li>After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.</li>
           </ul>
-          <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan gives you many perks including the Premium Streaming:</p>
+          <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan offers many perks, including the <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">Premium Streaming</a>:</p>
           <ul>
             <li>Smooth 25 FPS.</li>
-            <li>Unlimited streaming with no cooldown.</li>
+            <li>Unlimited streaming with no cooldowns.</li>
           </ul>
 
         `,

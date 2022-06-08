@@ -41,10 +41,10 @@
         <div v-if="currentBitrate">{{currentBitrate}}</div>
       </div>
       <!-- show full-width info message -->
-      <div class="streaming-guide overlay-info" v-if="isBasicStreamingStopped">
-        <div class="message" v-if="isBasicStreamingReady">Webcam streams up to 5 FPS for Free users</div>
+      <div class="streaming-guide overlay-info" v-if="isBasicStreamingStopped" @click="onInfoClicked">
+        <div class="message" v-if="isBasicStreamingReady">Webcam streams up to 5 FPS for Free</div>
         <div class="message text-warning" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s left in the cooldown period</div>
-        <div class="learn-more" @click="onInfoClicked">Learn more...</div>
+        <div class="learn-more">Learn more...</div>
       </div>
     </div>
 
@@ -266,17 +266,17 @@ export default {
       }
 
       this.$swal.Prompt.fire({
-        title: 'Throttled streaming',
+        title: 'Upgrade for Better Streaming',
         html: `
           <p>The webcam is in <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">Basic Streaming</a> since you are on the Obico Cloud Free plan:</p>
           <ul>
-            <li>The webcam streaming is up to 5 FPS (frame per second).</li>
-            <li>The streaming is throttled for 30 seconds every minute. When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</li>
+            <li>Streaming is limited to 5 FPS (frame per second).</li>
+            <li>After 30 seconds of streaming there is a 30 second cooldown before you can resume streaming.</li>
           </ul>
           <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan gives you many perks including the Premium Streaming:</p>
           <ul>
-            <li>25 FPS (frame per second).</li>
-            <li>Un-throttled streaming. Stream for as long as you want.</li>
+            <li>Smooth 25 FPS.</li>
+            <li>Unlimited streaming with no cooldown.</li>
           </ul>
 
         `,

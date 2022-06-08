@@ -4,19 +4,26 @@
   <printer-settings-page></printer-settings-page>
 {% endblock vue_content %}
 
-{% if app_platform.platform %}
-  {# These blocks shouldn't display in the mobile app #}
+{% block body_bottom_ext %}
+  {% if not app_platform.platform %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 
-  {% block body_bottom_ext %}
-  {% endblock %}
+{% block useful_libs %}
+  {% if not app_platform.platform %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 
-  {% block useful_libs %}
-  {% endblock %}
+{% block header_ext %}
+  {% if not app_platform.platform %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
 
-  {% block header_ext %}
-  {% endblock %}
-
-  {% block bootstrap_js %}
-  {% endblock %}
-
-{% endif %}
+{% block bootstrap_js %}
+  {% if not app_platform.platform %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}

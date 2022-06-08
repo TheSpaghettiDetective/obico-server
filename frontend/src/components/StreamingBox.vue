@@ -25,26 +25,35 @@
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
     <b-button
-      v-if="isVideoAvailable && !isVideoVisible && (isBasicStreamingReady || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
+      v-if="isVideoAvailable && isStreamingBasic && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
       class="centered-element p-0"
       :disabled="isBasicStreamingFrozen"
     >
-      <i class="fas fa-play ml-1" v-if="isBasicStreamingReady"></i>
+      <i class="fas fa-play ml-1" v-if="isBasicStreamingReadyToPlay"></i>
       <span class="medium text-bold" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
     </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="centered-element" label="Buffering..."></b-spinner>
 
     <div v-if="isVideoAvailable">
       <!-- show countdown and bitrate while streaming -->
-      <div v-if="isStreamingInProgress" class="streaming-info overlay-info small" :class="{'clickable': isBasicStreamingInProgress}" @click="onInfoClicked">
+      <div
+        v-if="(isStreamingBasic && isBasicStreamingInProgress) || currentBitrate"
+        class="streaming-info overlay-info small"
+        :class="{'clickable': isBasicStreamingInProgress}"
+        @click="onInfoClicked"
+      >
         <div v-if="isBasicStreamingInProgress" class="text-success">{{remainingSecondsCurrentVideoCycle}}</div>
         <div v-if="currentBitrate">{{currentBitrate}}</div>
       </div>
       <!-- show full-width info message -->
-      <div class="streaming-guide overlay-info" v-if="isBasicStreamingStopped" @click="onInfoClicked">
-        <div class="message" v-if="isBasicStreamingReady">Webcam streams up to 5 FPS for Free</div>
+      <div
+        v-if="isStreamingBasic && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)"
+        class="streaming-guide overlay-info"
+        @click="onInfoClicked"
+      >
+        <div class="message" v-if="isBasicStreamingReadyToPlay">Webcam streams up to 5 FPS for Free</div>
         <div class="message text-warning" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s left in the cooldown period</div>
-        <div class="learn-more">Learn more...</div>
+        <a href="#" class="learn-more">Learn more...</a>
       </div>
     </div>
 
@@ -102,7 +111,7 @@ export default {
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }
 
-      if (!this.autoplay) {
+      if (this.isStreamingBasic) {
         this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
       }
 
@@ -113,7 +122,7 @@ export default {
       })
 
       ifvisible.on('focus', () => {
-        if (this.webrtc && this.autoplay) {
+        if (this.webrtc && !this.isStreamingBasic) {
           this.webrtc.startStream()
         }
       })
@@ -195,27 +204,24 @@ export default {
     },
 
     // streaming timeline
-    isStreamingInProgress() {
-      return (this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30) || this.currentBitrate
+    isStreamingBasic() {
+      return !this.autoplay
     },
     isBasicStreamingInProgress() {
-      return !this.autoplay && this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
+      return this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
     },
-    isBasicStreamingStopped() {
-      return !this.autoplay && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle > 0)
-    },
-    isBasicStreamingReady() {
-      return !this.autoplay && this.remainingSecondsCurrentVideoCycle == 30
+    isBasicStreamingReadyToPlay() {
+      return !this.isVideoVisible && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
     },
     isBasicStreamingFrozen() {
-      return !this.autoplay && this.remainingSecondsUntilNextCycle > 0
+      return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
   },
 
   methods: {
     onCanPlay() {
       this.videoLoading = false
-      if (!this.autoplay) {
+      if (this.isStreamingBasic) {
         this.videoLimit.startOrResumeVideoCycle()
       }
 
@@ -224,11 +230,14 @@ export default {
       this.videoLoading = true
     },
     onStreamAvailable() {
-      if (this.autoplay) {
+      if (!this.isStreamingBasic) {
         this.webrtc.startStream()
       } else {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
+        }
+        if ((this.isStreamingBasic && this.isBasicStreamingInProgress)) {
+          this.webrtc.startStream()
         }
         this.videoLimit.resumeVideoCycle()
       }
@@ -261,7 +270,7 @@ export default {
     },
 
     onInfoClicked() {
-      if (this.autoplay) {
+      if (!this.isStreamingBasic) {
         return
       }
 
@@ -371,10 +380,13 @@ export default {
   left: 0
   display: flex
   justify-content: space-between
+  cursor: pointer
 
-  .learn-more
-    text-decoration: underline
-    cursor: pointer
+  @media (max-width: 576px)
+    font-size: .8rem
+
+  &:hover .learn-more
+    color: var(--color-primary-hover)
 
 .slow-link-wrapper
   $height: 24px

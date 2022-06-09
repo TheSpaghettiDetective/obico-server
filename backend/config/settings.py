@@ -197,7 +197,7 @@ LOGGING = {
 
 # Django settings
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

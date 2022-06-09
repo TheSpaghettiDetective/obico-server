@@ -209,6 +209,10 @@ def gcodes(request, template_dir=None):
 @login_required
 def upload_gcode_file(request):
     if request.method == 'POST':
+        file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 100 * 1024 * 1024
+        if request.FILES['file'].size > file_size_limit:
+            return HttpResponse('File size too large', status=413)
+
         _, file_extension = os.path.splitext(request.FILES['file'].name)
         gcode_file = GCodeFile.objects.create(
             user=request.user,

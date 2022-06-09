@@ -30,7 +30,7 @@
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br>
                 Drop files here or click to upload.<br>
-                G-Code files only. Up to 100MB each.
+                G-Code files only. Up to {{maxFilesize}} MB each.
               </div>
             </vue-dropzone>
 
@@ -145,14 +145,7 @@ export default {
 
   data() {
     return {
-      dropzoneOptions: {
-        withCredentials: true,
-        maxFilesize: 100, // MB
-        timeout: 60 * 60 * 1000, // For large files
-        acceptedFiles: '.g,.gcode,.gco',
-        url: 'upload/',
-        headers: { 'X-CSRFToken': this.csrf },
-      },
+      user: null,
       searchText: '',
       activeSorting: SORTING.UPLOADED,
       sortDirection: SORT_DIRECTION.DESC,
@@ -166,6 +159,20 @@ export default {
   },
 
   computed: {
+    maxFilesize() {
+      return this.user.is_pro ? 500 : 100 // MB
+    },
+
+    dropzoneOptions() {
+      return {
+        withCredentials: true,
+        maxFilesize: this.maxFilesize,
+        timeout: 60 * 60 * 1000, // For large files
+        acceptedFiles: '.g,.gcode,.gco',
+        url: 'upload/',
+        headers: { 'X-CSRFToken': this.csrf },
+      }
+    },
     gcodesToShow() {
       let gcodes = this.gcodes
 
@@ -220,7 +227,7 @@ export default {
       }
 
       return gcodes
-    }
+    },
   },
 
   created() {

@@ -72,15 +72,17 @@ export default function WebRTCConnection() {
               success: function (pluginHandle) {
                 Janus.log('Plugin attached! (' + pluginHandle.getPlugin() + ', id=' + pluginHandle.getId() + ')')
 
-                const body = { 'request': 'list' }
+                const body = { 'request': 'info', id: 0 }
                 Janus.debug('Sending message (' + JSON.stringify(body) + ')')
                 pluginHandle.send({
                   'message': body, success: function (result) {
-                    let stream = get(result, 'list[0]')
+                    let stream = get(result, 'info')
                     if (stream) {
                       self.streamId = stream.id
                       self.streaming = pluginHandle
-                      self.callbacks.onStreamAvailable()
+                      if (get(stream, 'video')) {
+                        self.callbacks.onStreamAvailable()
+                      }
                     }
                   }
                 })

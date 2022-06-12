@@ -118,6 +118,7 @@ module.exports = {
             'server-guides/advanced/firewall-guides',
             'server-guides/advanced/reverse-proxy',
             'server-guides/advanced/nvidia-gpu',
+            'server-guides/advanced/email_guide',
           ],
         },
         {

@@ -1,0 +1,13 @@
+FROM thespaghettidetective/web:base-1.8
+
+WORKDIR /app
+EXPOSE 3334
+
+ADD ./backend /app
+ADD ./frontend /frontend
+RUN pip install -U pip
+RUN pip install -r requirements.txt
+RUN mkdir -p /frontend /frontend/static /frontend/builds
+RUN python manage.py collectstatic -v 2 --noinput
+
+CMD sh -c 'python manage.py migrate && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'

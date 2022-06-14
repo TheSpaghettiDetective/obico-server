@@ -25,7 +25,7 @@
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
     <b-button
-      v-if="isVideoAvailable && isStreamingBasic && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
+      v-if="isVideoAvailable && !autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
       class="centered-element p-0"
       :disabled="isBasicStreamingFrozen"
     >
@@ -37,7 +37,7 @@
     <div v-if="isVideoAvailable">
       <!-- show countdown and bitrate while streaming -->
       <div
-        v-if="(isStreamingBasic && isBasicStreamingInProgress) || currentBitrate"
+        v-if="(!autoplay && isBasicStreamingInProgress) || currentBitrate"
         class="streaming-info overlay-info small"
         :class="{'clickable': isBasicStreamingInProgress}"
         @click="onInfoClicked"
@@ -47,7 +47,7 @@
       </div>
       <!-- show full-width info message -->
       <div
-        v-if="isStreamingBasic && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)"
+        v-if="!autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)"
         class="streaming-guide overlay-info"
         @click="onInfoClicked"
       >
@@ -111,7 +111,7 @@ export default {
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }
 
-      if (this.isStreamingBasic) {
+      if (!this.autoplay) {
         this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
       }
 
@@ -122,7 +122,7 @@ export default {
       })
 
       ifvisible.on('focus', () => {
-        if (this.webrtc && !this.isStreamingBasic) {
+        if (this.webrtc && this.autoplay) {
           this.webrtc.startStream()
         }
       })
@@ -204,9 +204,6 @@ export default {
     },
 
     // streaming timeline
-    isStreamingBasic() {
-      return !this.autoplay
-    },
     isBasicStreamingInProgress() {
       return this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
     },
@@ -221,7 +218,7 @@ export default {
   methods: {
     onCanPlay() {
       this.videoLoading = false
-      if (this.isStreamingBasic) {
+      if (!this.autoplay) {
         this.videoLimit.startOrResumeVideoCycle()
       }
 
@@ -230,13 +227,13 @@ export default {
       this.videoLoading = true
     },
     onStreamAvailable() {
-      if (!this.isStreamingBasic) {
+      if (this.autoplay) {
         this.webrtc.startStream()
       } else {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
         }
-        if ((this.isStreamingBasic && this.isBasicStreamingInProgress)) {
+        if ((!this.autoplay && this.isBasicStreamingInProgress)) {
           this.webrtc.startStream()
         }
         this.videoLimit.resumeVideoCycle()
@@ -270,7 +267,7 @@ export default {
     },
 
     onInfoClicked() {
-      if (!this.isStreamingBasic) {
+      if (this.autoplay) {
         return
       }
 

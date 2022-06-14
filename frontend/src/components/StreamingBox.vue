@@ -230,9 +230,6 @@ export default {
       if (this.autoplay) {
         this.webrtc.startStream()
       } else {
-        if (!this.printer.basicStreamingInWebrtc()) {
-          return
-        }
         if ((!this.autoplay && this.isBasicStreamingInProgress)) {
           this.webrtc.startStream()
         }

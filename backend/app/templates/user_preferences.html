@@ -23,12 +23,6 @@
   {% endif %}
 {% endblock %}
 
-{% block header_ext %}
-  {% if not app_platform.platform %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
-
 {% block bootstrap_js %}
   {% if not app_platform.platform %}
     {{ block.super }}

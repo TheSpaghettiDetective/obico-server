@@ -83,6 +83,8 @@
                     <div class="filename">{{ item.filename }}</div>
                     <div class="filesize">{{ item.filesize }}</div>
                     <div class="uploaded">{{ item.created_at.fromNow() }}</div>
+                    <div>Previewz:</div>
+                    <GCodePreview class="gcode-preview" :url="item.url" />
                   </div>
                   <div class="remove-button-wrapper">
                     <div class="remove-button" @click="removeItem(item.id)">
@@ -114,6 +116,7 @@ import MugenScroll from 'vue-mugen-scroll'
 import { normalizedGcode } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
+import GCodePreview from '@src/components/GCodePreview.vue'
 
 const SORTING = {
   NAME: 1,
@@ -134,6 +137,7 @@ export default {
     SearchInput,
     vueDropzone: vue2Dropzone,
     MugenScroll,
+    GCodePreview,
   },
 
   props: {

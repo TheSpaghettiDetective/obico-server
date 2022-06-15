@@ -34,11 +34,11 @@
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item v-if="this.print.video_url" :href="this.print.video_url" target="_blank">
+          <b-dropdown-item v-if="this.print.video_url && !print.video_archived_at" :href="this.print.video_url" target="_blank">
             <i class="fas fa-download"></i>Download Original Time-lapse
           </b-dropdown-item>
           <b-dropdown-item
-            v-if="this.print.tagged_video_url"
+            v-if="this.print.tagged_video_url && !print.video_archived_at"
             :href="this.print.tagged_video_url" target="_blank"
           >
             <i class="fas fa-download"></i>Download Detective Time-lapse
@@ -252,10 +252,8 @@ export default {
       ) {
         return true
       }
-      // Time-lapses that finished or was uploaded within the past 24 hours are presumably still be processed
+      // Time-lapses that was uploaded within the past 24 hours are presumably still be processed
       if (
-        (this.print.ended_at &&
-          moment().diff(this.print.ended_at, 'hours') < 24) ||
         (this.print.uploaded_at &&
           moment().diff(this.print.uploaded_at, 'hours') < 24)
       ) {

@@ -3,7 +3,7 @@ id: connectivity-error-report
 title: Use the diagnostic page to help with troubleshooting
 ---
 
-The Spaghetti Detective plugin provides an advanced diagnostic page that can help you understand the severity of the connection issue that happen under the hood so that you can make informed decision if/how you should fix it.
+Obico for OctoPrint plugin provides an advanced diagnostic page that can help you understand the severity of the connection issue that happen under the hood so that you can make informed decision if/how you should fix it.
 
 ## Understand the Diagnostic Report
 
@@ -13,7 +13,7 @@ The Diagnostic Report may looks like this:
 
 Depending on whether or not there have been errors, there may be up to 2 parts in the report:
 
-1. This part displays the issues related to the connection to The Spaghetti Detective servers. This part will be missing if there have been no server connection errors since the restart of OctoPrint.
+1. This part displays the issues related to the connection to the Obico Server. This part will be missing if there have been no server connection errors since the restart of OctoPrint.
 1. This part displays the issues related to the connection to your webcam. This part will be missing if there have been no webcam errors since the restart of OctoPrint.
 
 ## How to assess the server connectivity issues
@@ -24,7 +24,7 @@ The info you need to assess the server connectivity issues is highlighted in thi
 
 #### Error rate
 
-When the error rate is smaller than 5%, it is usually not a problem as you can still use The Spaghetti Detective mobile app or web app just fine, often without even noticing even the slightest glitches.
+When the error rate is smaller than 5%, it is usually not a problem as you can still use Obico mobile app or web app just fine, often without even noticing even the slightest glitches.
 
 However, if the error rate is higher than 20%, you may want to take action to figure out what is wrong.
 
@@ -44,7 +44,7 @@ Please note only the errors happened in the current OctoPrint session. Errors fr
 
 ### 4.1 If the error rate is 100%:
 
-This means your OctoPrint has not connection to the server at all.
+This means your OctoPrint has no connection to the server at all.
 
 The problem is most likely networking-related, such as ill-configured Wi-Fi dongle, DNS configuration error, routing problem, restrictive firewall rules, etc.
 
@@ -53,7 +53,7 @@ Troubleshooting networking issues is outside the scope of this guide. But a good
 For instance, if you run OctoPrint on a Raspberry Pi, just like 90% of other OctoPrint users, the commands will be:
 
 1. SSH to the Raspberry Pi.
-1. Once you are on the Pi, run `curl https://app.obico.io/`. If the Pi has a good connection to the The Spaghetti Detective server, the command won't report any error.
+1. Once you are on the Pi, run `curl https://app.obico.io/`. If the Pi has a good connection to the Obico Server, the command won't report any error.
 
 :::note
 If you are not running the OctoPrint on a Raspberry Pi, the commands may be slightly different.

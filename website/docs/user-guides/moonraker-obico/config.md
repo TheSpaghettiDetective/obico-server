@@ -5,6 +5,12 @@ title: moonraker-obico.cfg
 
 Following Klipper toolchain's convention, the configuration file for **Obico for Klipper** is typically located at `~/klipper_config/moonraker-obico.cfg`
 
+:::caution
+You need to restart the service for any change to take effect:
+
+`systemctl restart moonraker-obico`
+:::
+
 An example of the configuration file:
 
 ```

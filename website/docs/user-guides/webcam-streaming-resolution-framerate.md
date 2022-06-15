@@ -22,7 +22,7 @@ Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user-guides/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 :::
 
 ## If the streaming mode is "**premium (advanced)**":
@@ -41,7 +41,7 @@ If you have changed webcam settings in "octopi.txt", you may be surprised to see
 
 ### Frame rate
 
-In the Premium Streaming (advanced mode), the frame rate is always 25fps (frames-per-second).
+In the Premium Streaming (advanced mode), the frame rate is always 25 FPS (frames-per-second).
 
 ### Resolution
 
@@ -57,12 +57,12 @@ If you have a Pi Camera, you can find or change its current resolution on the pl
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 2. Scroll down the navigation bar on the left side.
-3. Click "Access Anywhere - The Spaghetti Detective" tab.
+3. Click "Obico for OctoPrint" tab.
 4. Click the "Settings" button.
 
 ![](/img/user-guides/helpdocs/tsd-plugin-open-settings-page.gif)
 
-Pi Camera's current resolution level is in the "Premium Webcam Streaming" section.
+Pi Camera's current resolution level is in the "Premium Streaming" section.
 
 If the webcam aspect ratio setting in OctoPrint is 4:3 (default):
 

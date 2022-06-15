@@ -30,7 +30,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/update-manager'],
+      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     {
       type: 'category',
@@ -67,7 +67,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Account & Subscription',
-      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer', 'user-guides/open-source', ],
+      items: ['user-guides/upgrade-to-pro', 'user-guides/free-trial-pro-plan', 'user-guides/check-type-of-your-account', 'user-guides/how-does-detective-hour-work', 'user-guides/unarchive-printer',],
     },
     {
       type: 'category',
@@ -80,7 +80,7 @@ module.exports = {
           items: [
             'user-guides/webcam-feed-is-not-showing',
             'user-guides/webcam-feed-is-laggy',
-            'user-guides/premium-streaming-stuck-in-basic-mode',
+            'user-guides/webcam-stream-stuck-at-1-10-fps',
             'user-guides/octoprint-webcam-not-streaming',
           ],
         },

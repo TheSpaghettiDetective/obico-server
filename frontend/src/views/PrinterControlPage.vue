@@ -11,7 +11,7 @@
                     <div class="printer-name">{{ printer.name }}</div>
                   </div>
                 </div>
-                <streaming-box :printer="printer" :webrtc="webrtc" />
+                <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="user.is_pro" />
                 <div class="card-body" :class="{'overlay': !printer.isIdle()}">
                   <div
                     class="overlay-top text-center"
@@ -132,7 +132,7 @@ export default {
     const storageValue = isLocalStorageSupported() ? localStorage.getItem(`mm-per-step-${this.printerId}`) : null
     this.jogDistance = storageValue ? storageValue : this.jogDistance
 
-    this.webrtc = WebRTCConnection(this.user.is_pro)
+    this.webrtc = WebRTCConnection()
 
     this.printerComm = PrinterComm(
       this.printerId,

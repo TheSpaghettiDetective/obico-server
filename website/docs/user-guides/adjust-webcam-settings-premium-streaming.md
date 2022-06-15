@@ -20,7 +20,7 @@ Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user-guides/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 :::
 
 2. If the streaming mode is "**premium (advanced)**", [change the compatibility mode to "always"](/docs/user-guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode). Otherwise, skip to [changing the webcam settings](/docs/user-guides/adjust-webcam-settings-premium-streaming#change-the-webcam-settings).

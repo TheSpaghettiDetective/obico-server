@@ -57,48 +57,101 @@ module.exports = {
       },
       items: [
         {
+          label: 'Product',
+          items: [
+            {
+              label: 'Obico for Octoprint',
+              to: '/docs/user-guides/octoprint-plugin-setup/',
+            },
+            {
+              label: 'Obico for Klipper',
+              to: '/docs/user-guides/klipper-setup/',
+            },
+            {
+              label: 'Obico Android Mobile App',
+              to: 'https://play.google.com/store/apps/details?id=com.thespaghettidetective.android&hl=en_US&gl=US',
+              target: '_self',
+            },
+            {
+              label: 'Obico iOS Mobile App',
+              to: 'https://apps.apple.com/sg/app/the-spaghetti-detective/id1540646623',
+              target: '_self',
+            },
+            {
+              label: 'Obico Server',
+              to: 'https://github.com/TheSpaghettiDetective/obico-server',
+              target: '_self',
+            },
+            {
+              label: 'Obico Cloud vs Self-Hosted',
+              to: 'https://obico.io/obico-cloud-vs-self-hosted.html',
+              target: '_self',
+            },
+          ],
+        },
+        {
           label: 'Pricing',
           to: 'https://app.obico.io/ent_pub/pricing/',
           target: '_self',
         },
         {
-          label: 'Help',
-          href: '/help',
-        },
-        {
-          label: 'Forum',
+          label: 'Community',
           to: 'https://obico.io/discord',
           target: '_self',
+        },
+        {
+          label: 'Docs',
+          items: [
+            {
+              label: 'Self-hosting',
+              to: '/docs/server-guides/install/',
+            },
+            {
+              label: 'Obico Server Plugin',
+              to: '/docs/developer-guides/plugins/',
+            },
+            {
+              label: 'Client APIs',
+              to: '/docs/api/',
+            },
+            {
+              label: 'Developer Tutorials',
+              to: '/docs/api/',
+            },
+          ],
+        },
+        {
+          label: 'Help',
+          to: '/help',
+        },
+        {
+          label: 'Contribute',
+          to: '/docs/developer-guides/contribute/',
+        },
+        {
+          label: 'Blog',
+          to: '/blog',
         },
         {
           label: 'About',
           position: 'left', // or 'right'
           items: [
             {
-              label: 'Open Source',
-              to: '/docs/user-guides/open-source',
-              target: '_self',
-            },
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'The Detective Team',
+              label: 'Obico Team',
               to: 'https://www.obico.io/team.html',
               target: '_self',
             },
           ],
         },
         {
-          label: 'Sign In',
+          label: 'Log in',
           to: 'https://app.obico.io/accounts/login/',
           target: '_self',
           position: 'right',
           className: ' obico-button obico-button-secondary obico-navbar-button',
         },
         {
-          label: 'Sign Up',
+          label: 'Get Started',
           to: 'https://app.obico.io/accounts/signup/',
           target: '_self',
           position: 'right',
@@ -107,74 +160,105 @@ module.exports = {
       ],
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
         {
-          title: 'The Product',
+          title: 'Product',
           items: [
             {
-              label: 'What Is The Obico app',
-              to: 'https://obico.io/',
+              label: 'Obico for OctoPrint',
+              to: '/docs/user-guides/octoprint-plugin-setup/',
+            },
+            {
+              label: 'Obico for Klipper',
+              to: '/docs/user-guides/klipper-setup',
+            },
+            {
+              label: 'Obico Cloud vs Self-Hosted',
+              to: 'https://obico.io/obico-cloud-vs-self-hosted.html',
               target: '_self',
             },
             {
-              label: 'See It In Action',
-              to: 'https://www.obico.io/#gallery',
-              target: '_self',
-            },
-            {
-              label: 'Pricing',
+              label: 'Obico Cloud Pricing',
               to: 'https://app.obico.io/ent_pub/pricing/',
               target: '_self',
             },
-            {
-              label: 'Open Source',
-              to: '/docs/user-guides/open-source',
-            },
           ],
         },
         {
-          title: 'Help',
+          title: 'Features',
           items: [
             {
-              label: 'Getting Started',
-              to: '/docs/user-guides/octoprint-plugin-setup',
-            },
-            {
-              label: 'Failure Detection',
-              to: '/docs/user-guides/detection-print-job-settings',
-            },
-            {
-              label: 'Webcam Streaming',
-              to: '/docs/user-guides/webcam-streaming-for-human-eyes',
-            },
-            {
-              label: 'Troubleshooting Guides',
-              to: '/docs/user-guides/troubleshoot-server-connection-issues/',
-            },
-          ],
-        },
-
-        {
-          title: 'About',
-          items: [
-            {
-              label: 'Contact Us',
-              to: '/docs/user-guides/contact-us-for-support',
-            },
-            {
-              label: 'Terms of Use',
-              to: 'https://www.obico.io/terms.html',
+              label: 'Monitor and Control',
+              to: 'https://www.obico.io/',
               target: '_self',
             },
             {
+              label: 'AI Failure Detection',
+              to: 'https://obico.io/failure-detection.html',
+              target: '_self',
+            },
+          ],
+        },
+        {
+          title: 'Docs',
+          items: [
+            {
+              label: 'Obico Cloud Help',
+              to: '/help',
+            },
+            {
+              label: 'Self-Hosting',
+              to: '/docs/server-guides/install/',
+            },
+            {
+              html: '<b style="display: block; margin-top: .5rem;">Developer</b>',
+            },
+            {
+              label: 'Obico Server Plugin',
+              to: '/docs/developer-guides/plugins/',
+            },
+            {
+              label: 'Client APIs',
+              to: '/docs/api/',
+            },
+            {
+              label: 'Developer Tutorials',
+              to: '/docs/api/',
+            },
+          ],
+        },
+        
+
+        {
+          title: 'Company',
+          items: [
+            {
+              label: 'Blog',
+              to: '/blog',
+            },
+            {
+              label: 'Team',
+              to: 'https://obico.io/team.html',
+              target: '_self',
+            },
+            {
+              label: 'Contact Us',
+              to: 'mailto:support@obico.io',
+            },
+            {
               label: 'Privacy Policy',
-              to: 'https://www.obico.io/privacy.html',
+              to: 'https://obico.io/privacy.html',
+              target: '_self',
+            },
+            {
+              label: 'Terms of Use',
+              to: 'https://obico.io/terms.html',
               target: '_self',
             },
             {
               label: 'Disclaimer',
-              to: 'https://www.obico.io/disclaimer.html',
+              to: 'https://obico.io/disclaimer.html',
               target: '_self',
             },
           ],
@@ -292,8 +376,7 @@ module.exports = {
     'https://buttons.github.io/buttons.js',
     'https://code.jquery.com/jquery-3.6.0.min.js',
     'https://www.googletagmanager.com/gtag/js?id=UA-133768246-1',
-    'https://www.obico.io/js/analytics.min.js',
-    '/js/compact-view.js',
+    'https://www.obico.io/js/analytics.js',
   ],
   plugins: [
     [

@@ -8,20 +8,12 @@ const LinksList = [
     route: '/docs/user-guides/detective-not-watching/',
   },
   {
-    title: 'Why is OctoPrint showing as "offline"?',
-    route: '/docs/user-guides/octoprint-is-offline/',
-  },
-  {
     title: 'What is AI Detection Hour and how does it work?',
     route: '/docs/user-guides/how-does-detective-hour-work/',
   },
   {
     title: 'Troubleshoot Choppy/Jerky Premium Streaming',
     route: '/docs/user-guides/webcam-feed-is-laggy/',
-  },
-  {
-    title: 'Set up your own Obico private server',
-    route: '/docs/user-guides/open-source/',
   },
   {
     title: 'The Pro plan vs the Free plan',

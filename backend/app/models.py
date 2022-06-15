@@ -81,29 +81,12 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    phone_number = models.CharField(max_length=256, null=True, blank=True)
-    phone_country_code = models.CharField(max_length=256, null=True, blank=True)
-    pushbullet_access_token = models.CharField(max_length=256, null=True, blank=True)
-    telegram_chat_id = models.BigIntegerField(null=True, blank=True)
-    slack_access_token = models.CharField(max_length=256, null=True, blank=True)
     consented_at = models.DateTimeField(null=True, blank=True)
     last_active_at = models.DateTimeField(null=True, blank=True)
     is_pro = models.BooleanField(null=False, blank=False, default=True)
     dh_balance = models.FloatField(null=False, default=0)
     unsub_token = models.UUIDField(null=False, blank=False, unique=True, db_index=True, default=uuid.uuid4, editable=False)
-    notify_on_done = models.BooleanField(null=False, blank=False, default=True)
-    notify_on_canceled = models.BooleanField(null=False, blank=False, default=False)
-    notify_on_filament_change_req = models.BooleanField(null=False, blank=False, default=False)
-    print_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
     account_notification_by_email = models.BooleanField(null=False, blank=False, default=True)
-    alert_by_email = models.BooleanField(null=False, blank=False, default=True)
-    print_notification_by_pushbullet = models.BooleanField(null=False, blank=False, default=True)
-    print_notification_by_telegram = models.BooleanField(null=False, blank=False, default=True)
-    alert_by_sms = models.BooleanField(null=False, blank=False, default=True)
-    discord_webhook = models.CharField(max_length=256, null=True, blank=True)
-    print_notification_by_discord = models.BooleanField(null=False, blank=False, default=True)
-    pushover_user_token = models.CharField(max_length=256, null=True, blank=True)
-    print_notification_by_pushover = models.BooleanField(null=False, blank=False, default=True)
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
@@ -126,17 +109,6 @@ class User(AbstractUser):
     @property
     def is_dh_unlimited(self):
         return self.dh_balance >= UNLIMITED_DH
-
-    def has_valid_pushbullet_token(self):
-        if not self.pushbullet_access_token:
-            return False
-
-        try:
-            Pushbullet(self.pushbullet_access_token)
-
-            return True
-        except errors.InvalidKeyError:
-            return False
 
     def tunnel_cap(self):
         return -1 if self.is_pro else settings.OCTOPRINT_TUNNEL_CAP * self.tunnel_cap_multiplier

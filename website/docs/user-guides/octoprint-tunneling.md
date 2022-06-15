@@ -12,15 +12,11 @@ OctoPrint Tunneling is a secure way to access the full OctoPrint UI even when yo
 OctoPrint Tunneling not available for private server users outside of their home network, unless the private server is set up to be accessible from the internet.
 :::
 
-The Spaghetti Detective provides the access to the most critical functions - webcam feed, pause/cancel, changing heater temperature, etc. However, we understand there are times when you want to access other OctoPrint functions while you are not home, such as using its PSU plugin to turn on/off power supply to your printer.
-
-So we built OctoPrint Tunneling to make it possible for you. 🚀🚀🚀
-
 ## Is OctoPrint Tunneling secure?
 
 The answer to this question is a resounding **YES**!
 
-We understand the security is you ultimate consideration. Therefore we have built The Spaghetti Detective from ground up with the security as a cornerstone.
+We understand the security is you ultimate consideration. Therefore we have built Obico from ground up with the security as a cornerstone.
 
 Unlike port forwarding, your OctoPrint is never exposed to the wild internet when you access it via TSD's OctoPrint Tunneling. Instead, your OctoPrint page is loaded through an SSL-encrypted tunnel. Nobody can access that tunnel without your TSD account email and password (you didn't share them with anyone, right?).
 
@@ -42,17 +38,17 @@ The Pro plan subscribers get unlimited tunneling.
 
 ## Why is the limit on Free account only 50MB?
 
-We know 50MB is not a lot. The reason why we can't make this cap very high is because we need to temporarily store these data in our high-speed server cache, which is very expensive. In addition, any OctoPrint data tunneled through The Spaghetti Detective servers has to be replicated 4 times. So 50MB data actually means we are charged for 200MB by our cloud provider.
+We know 50MB is not a lot. The reason why we can't make this cap very high is because we need to temporarily store these data in our high-speed server cache, which is very expensive. In addition, any OctoPrint data tunneled through the Obico Server has to be replicated 4 times. So 50MB data actually means we are charged for 200MB by our cloud provider.
 
 Another reason for this limit is that every time OctoPrint is being loaded via the tunnel, there is a big "spike" of server requests. Therefore, we have to "over-provision" TSD servers to be able to respond to these spikes if multiple users happen to be using OctoPrint Tunneling at the same time. Limiting the usage will help keep the server cost at a reasonable level while still providing a responsive experience anyone who wants to use OctoPrint Tunneling.
 
-The good news is we have optimized our tunneling so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint for the first time, subsequent uses of the tunneling won't take nearly as much. 50MB is sufficient to load OctoPrint 10 to 20 times via the tunnel, which should be good enough for most users in a month. If you need to tunnel to OctoPrint frequently, your best option is to upgrade to The Spaghetti Detective Pro plan and enjoy unlimited tunneling.
+The good news is we have optimized our tunneling so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint for the first time, subsequent uses of the tunneling won't take nearly as much. 50MB is sufficient to load OctoPrint 10 to 20 times via the tunnel, which should be good enough for most users in a month. If you need to tunnel to OctoPrint frequently, your best option is to upgrade to the Obico Cloud Pro plan and enjoy unlimited tunneling.
 
 ## Why does it take so long to load the OctoPrint page in the Tunnel?
 
 This is because, instead of directly loading into your browser, the OctoPrint page has to travel a very long distance through the tunnel.
 
-This is obviously different from other ways to directly access OctoPrint, such as port forwarding, that may expose the traffic to malicious attackers. This is the cost we have to pay to make sure your OctoPrint stays home safely and not catches any virus (literally and metaphorically).
+This is obviously different from other ways to directly access OctoPrint, such as port forwarding, that may expose the traffic to malicious attackers. This is the cost we have to pay to make sure your OctoPrint is protected from the potential security attacks.
 
 The first time when you use OctoPrint Tunneling, it will be particularly slow because nothing is cached in your browser. However, subsequent uses should be a lot faster since most parts of the OctoPrint page have already been cached.
 
@@ -64,7 +60,7 @@ For some users, OctoPrint may fail to load in the tunnel, or the tunnel page rem
 
 ![](/img/user-guides/octoprint_tunneling_blank_page.png)
 
-This is usually caused by a slow internet connection on your Rasbperry Pi.
+This is usually caused by a slow internet connection on your Raspberry Pi.
 
 However, all hopes are not lost even if you experience this problem. Please follow the steps below:
 
@@ -80,4 +76,4 @@ These steps will work for most users who couldn't get OctoPrint to load in the t
 
 We have disabled tunneling webcam feed in OctoPrint. The reason for that is OctoPrint uses [M-JPEG](https://en.wikipedia.org/wiki/Motion_JPEG), a very inefficient streaming protocol that takes a lot of bandwidth. We simply can't afford to tunnel this volume of data via our servers.
 
-We urge you to use [TSD's webcam feed](/docs/user-guides/webcam-streaming-for-human-eyes/) instead.
+We urge you to use [Obico's webcam feed](/docs/user-guides/webcam-streaming-for-human-eyes/) instead.

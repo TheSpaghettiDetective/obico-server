@@ -95,3 +95,19 @@ Also, don't forget about following us and liking us on the social media:
 <a href="https://www.youtube.com/channel/UCbAJcR6t5lrdZ1JXjPPRjGA"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/youtube-logo.png" /></a>
 <a href="https://www.facebook.com/obico.io/"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/facebook-logo.png" /></a>
 <a href="https://twitter.com/obico_io"><img style={{maxHeight: "4em", margin: "1em"}} src="/img/developer-guides/twitter-logo.png" /></a>
+
+## Star our github repos
+
+- [The Obico Server](https://github.com/TheSpaghettiDetective/obico-server/)
+- [Obico for OctoPrint plugin](https://github.com/TheSpaghettiDetective/OctoPrint-Obico/)
+- [Obico for Klipper (Moonraker plugin)](https://github.com/TheSpaghettiDetective/moonraker-obico/)
+
+## Buy us a coffee
+
+We gulp down a lot of caffeine for some mysterious reason. ;)
+
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="6MWLR4UJPJFGY" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>

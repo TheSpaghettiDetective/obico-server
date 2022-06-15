@@ -31,10 +31,21 @@ class TelegramNotificationPlugin(BaseNotificationPlugin):
         return f'<a href="{s}">{s}</a>'
 
     def env_vars(self) -> Dict:
+        bot_name = None
+        bot = self.get_telegram_bot()
+        try:
+            bot_name = bot.get_me().username
+        except Exception as e:
+            LOGGER.warn("Couldn't get telegram bot name: " + str(e))
+
         return {
             'TELEGRAM_BOT_TOKEN': {
                 'is_required': True,
                 'is_set': 'TELEGRAM_BOT_TOKEN' in os.environ,
+            },
+            'TELEGRAM_BOT_NAME': {
+                'is_required': False,
+                'value': bot_name
             },
         }
 

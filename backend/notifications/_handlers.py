@@ -19,7 +19,7 @@ from .plugin import (
 )
 from app.models import Print, Printer, NotificationSetting, User
 from lib import mobile_notifications
-from lib.utils import get_rotated_jpg_url
+from lib.utils import get_rotated_pic_url
 
 from . import notification_types
 
@@ -164,7 +164,7 @@ class Handler(object):
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
         print_ctx = self.get_print_context(print_)
-        
+
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:
@@ -277,12 +277,12 @@ class Handler(object):
         if print_ and print_.poster_url:
             img_url = print_.poster_url
         else:
-            img_url = get_rotated_jpg_url(printer, force_snapshot=True)
+            img_url = get_rotated_pic_url(printer, force_snapshot=True)
 
         user_ctx = self.get_user_context(printer.user)
         printer_ctx = self.get_printer_context(printer)
         print_ctx = self.get_print_context(print_)
-        
+
         for nsetting in nsettings:
             LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
             try:

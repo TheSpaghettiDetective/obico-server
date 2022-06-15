@@ -7,7 +7,7 @@ title: Check the webcam streaming mode
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 1. Scroll down the navigation bar on the left side.
-1. Click "Access Anywhere - The Spaghetti Detective" tab.
+1. Click "Obico for OctoPrint" tab.
 1. Click the "Troubleshooting" button.
 
 ![](/img/user-guides/helpdocs/open-troubleshooting-page.gif)
@@ -27,5 +27,5 @@ Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam
 :::
 
 :::info
-Learn more about [advanced mode and compatibility mode in the Premium Streaming](/docs/user-guides/streaming-compatibility-mode).
+Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 :::

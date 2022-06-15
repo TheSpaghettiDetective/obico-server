@@ -59,7 +59,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        if not TWILIO_ENABLED:
+        if not TWILIO_ENABLED or not context.user.is_pro:
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return
 

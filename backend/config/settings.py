@@ -338,14 +338,7 @@ WEBPACK_LOADER = {
     }
 }
 
-
-TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
-TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER')
 TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
-TWILIO_ENABLED = TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER
-
-PUSHOVER_APP_TOKEN = os.environ.get('PUSHOVER_APP_TOKEN')
 
 OCTOPRINT_TUNNEL_CAP = int(os.environ.get('OCTOPRINT_TUNNEL_CAP', '1099511627776'))  # 1TB by default
 OCTOPRINT_TUNNEL_SUBDOMAIN_RE = re.compile(r'^(\w+)\.tunnels.*$')
@@ -357,8 +350,6 @@ OCTOPRINT_TUNNEL_PORT_RANGE = range(
 # settings export
 SETTINGS_EXPORT = [
     'VERSION',
-    'TWILIO_ENABLED',
-    'PUSHOVER_APP_TOKEN',
     'TEMPLATE_LAYOUT',
     'ACCOUNT_ALLOW_SIGN_UP',
     'RECAPTCHA_SITE_KEY',

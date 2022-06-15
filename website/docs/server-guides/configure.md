@@ -50,7 +50,7 @@ EMAIL_USE_TLS="True"  # Set it to 'False' if your email provider doesn't use TLS
 
 4. Restart the server `docker-compose up --build -d`.
 
-If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](email_guide.md).
+If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 
 
 ## Advanced server configuration

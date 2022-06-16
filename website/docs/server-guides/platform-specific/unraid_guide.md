@@ -5,6 +5,10 @@ If video is your cup of tea, follow [this awesome video guide](https://www.youtu
 
 ## Install docker-compose
 
+Since the original creation of this guide a great new tool to install Docker-Compose on unRAID has been released. It can be installed through the normal process of going to the Apps tab and doing a search for "Docker Compose Manager" and installing the plugin. The below instructions will still work if you'd like to do it manually, however, suggest using the Plug-In instead. Support can be found at the unRAID forums for the [Docker Compose Manager](https://forums.unraid.net/topic/114415-plugin-docker-compose-manager/).
+
+#### Old process to install Docer-Compose:
+
 To run Obico on unRAID, you first must install Docker-Compose on the server. This can be done following the usual instructions found on the [Docker-Compose Install Guide](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
 
 ```Bash

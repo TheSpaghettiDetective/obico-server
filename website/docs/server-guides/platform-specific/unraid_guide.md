@@ -31,7 +31,7 @@ Obico can now be installed on your unRAID server the same way as the normal Linu
 
 ```Bash
 cd /mnt/user/appdata/
-git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git Obico
 # from the README
 cd Obico && docker-compose up -d
 ```
@@ -71,7 +71,7 @@ docker-compose up -d --force-recreate --build
 Since Obico has been renamed to Obico, updates aren't pushed to the old Repository anymore, if you have previously installed Obico with the old repository, here are the steps to update.
 
 ```Bash
-cd /mnt/user/appdata/Obico # or where you installed Obico to
+cd /mnt/user/appdata/TheSpaghettiDetective # or where you installed Obico to
 git remote remove origin
 git remote add origin https://github.com/TheSpaghettiDetective/obico-server.git
 git fetch

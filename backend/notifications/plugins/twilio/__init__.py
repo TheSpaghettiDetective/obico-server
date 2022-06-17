@@ -53,7 +53,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')
 
     def send_sms(self, body: str, to_number: str):
-        twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+        twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
         from_number = settings.TWILIO_FROM_NUMBER
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)

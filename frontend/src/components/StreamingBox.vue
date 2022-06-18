@@ -1,12 +1,14 @@
 <template>
   <div class="card-img-top webcam_container">
+
+    <!-- Video frames dropped -->
     <div
-      v-show="slowLinkLoss > 50"
+      v-show="slowLinkLoss > slowLinkLossLimit"
       class="slow-link-wrapper"
       ref="slowLinkWrapper"
-      @click="slowLinkClicked"
-      @mouseenter="fixSlowLinkTextWidth(); slowLinkShowing = true; slowLinkHiding = false;"
-      @mouseleave="fixSlowLinkTextWidth(); slowLinkShowing = false; slowLinkHiding = true;"
+      @click="onSlowLinkClick"
+      @mouseenter="fixSlowLinkTextWidth(); isSlowLinkShowing = true; isSlowLinkHiding = false;"
+      @mouseleave="fixSlowLinkTextWidth(); isSlowLinkShowing = false; isSlowLinkHiding = true;"
     >
       <div class="icon bg-warning">
         <i class="fas fa-exclamation"></i>
@@ -15,70 +17,78 @@
         ref="slowLinkText"
         class="text"
         :class="{
-          'show-and-hide': !slowLinkShowing && !slowLinkHiding,
-          'showing': slowLinkShowing && !slowLinkHiding,
-          'hiding': !slowLinkShowing && slowLinkHiding}"
+          'show-and-hide': !isSlowLinkShowing && !isSlowLinkHiding,
+          'showing': isSlowLinkShowing && !isSlowLinkHiding,
+          'hiding': !isSlowLinkShowing && isSlowLinkHiding
+        }"
       >Video frames dropped</div>
     </div>
-    <div v-show="trackMuted" class="muted-status-wrapper">
+
+    <!-- Buffering -->
+    <div v-show="isTrackMuted" class="muted-status-wrapper">
       <div class="text">Buffering...</div>
-      <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
+      <a href="#" @click.prevent="onMutedStatusClick">Why is it stuck?</a>
     </div>
+
+    <!-- Loading spinner -->
+    <b-spinner v-if="isTrackMuted || isVideoLoading" class="centered-element" label="Buffering..."></b-spinner>
+
+    <!-- Play button -->
     <b-button
-      v-if="isVideoAvailable && !autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
+      v-if="isBasicStreamingReadyToPlay || isBasicStreamingFrozen"
+      @click="startActiveSession"
       class="centered-element p-0"
       :disabled="isBasicStreamingFrozen"
     >
       <i class="fas fa-play ml-1" v-if="isBasicStreamingReadyToPlay"></i>
-      <span class="medium text-bold" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
+      <span class="medium text-bold" v-if="isBasicStreamingFrozen">{{frozenSessionRemainingSeconds}}s</span>
     </b-button>
-    <b-spinner v-if="trackMuted || videoLoading" class="centered-element" label="Buffering..."></b-spinner>
 
-    <div v-if="isVideoAvailable">
-      <!-- show countdown and bitrate while streaming -->
-      <div
-        v-if="(!autoplay && isBasicStreamingInProgress) || currentBitrate"
-        class="streaming-info overlay-info small"
-        :class="{'clickable': isBasicStreamingInProgress}"
-        @click="onInfoClicked"
-      >
-        <div v-if="isBasicStreamingInProgress" class="text-success">{{remainingSecondsCurrentVideoCycle}}</div>
-        <div v-if="currentBitrate">{{currentBitrate}}</div>
-      </div>
-      <!-- show full-width info message -->
-      <div
-        v-if="!autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)"
-        class="streaming-guide overlay-info"
-        @click="onInfoClicked"
-      >
-        <div class="message" v-if="isBasicStreamingReadyToPlay">Webcam streams up to 5 FPS for Free</div>
-        <div class="message text-warning" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s left in the cooldown period</div>
-        <a href="#" class="learn-more">Learn more...</a>
-      </div>
+    <!-- Countdown and bitrate -->
+    <div
+      v-if="isBasicStreamingInProgress || currentBitrate"
+      class="streaming-info overlay-info small"
+      :class="{'clickable': isBasicStreamingInProgress}"
+      @click="onInfoClicked"
+    >
+      <div v-if="isBasicStreamingInProgress" class="text-success">{{activeSessionRemainingSeconds}}</div>
+      <div v-if="currentBitrate">{{currentBitrate}}</div>
     </div>
 
+    <!-- Free streaming info -->
+    <div
+      v-if="isBasicStreamingReadyToPlay || isBasicStreamingFrozen"
+      class="streaming-guide overlay-info"
+      @click="onInfoClicked"
+    >
+      <div class="message" v-if="isBasicStreamingReadyToPlay">Webcam streams up to 5 FPS for Free</div>
+      <div class="message text-warning" v-if="isBasicStreamingFrozen">{{frozenSessionRemainingSeconds}}s left in the cooldown period</div>
+      <a href="#" class="learn-more">Learn more...</a>
+    </div>
+
+    <!-- Video -->
     <div :class="webcamRotateClass">
       <div class="webcam_fixed_ratio" :class="webcamRatioClass">
-        <div class="webcam_fixed_ratio_inner full" >
+        <div class="webcam_fixed_ratio_inner full">
           <img
-            v-if="taggedSrc !== printerStockImgSrc"
+            v-if="webcamSnapshot"
             class="tagged-jpg"
             :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
-            :src="taggedSrc"
+            :src="webcamSnapshot"
             :alt="printer.name + ' current image'"
           />
           <svg v-else class="poster-placeholder">
-            <use :href="printerStockImgSrc" />
+            <use href="#svg-3d-printer" />
           </svg>
         </div>
-        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop full">
+        <div v-show="streamStatus === STREAM_STATUS.Started" class="webcam_fixed_ratio_inner ontop full">
           <video
             ref="video"
             class="remote-video"
             :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
             width=960
             :height="webcamVideoHeight"
-            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
+            :poster="webcamSnapshot"
             autoplay muted playsinline
             @loadstart="onLoadStart()"
             @canplay="onCanPlay()"
@@ -90,14 +100,20 @@
 </template>
 
 <script>
-import get from 'lodash/get'
 import ifvisible from 'ifvisible'
-
 import Janus from '@src/lib/janus'
-import ViewingThrottle from '@src/lib/viewing_throttle'
+import { StreamThrottle, STREAM_SESSION, STREAM_EVENT } from '@src/lib/stream-throttle'
+import { isLocalStorageSupported } from '@static/js/utils'
+
+const STREAM_STATUS = {
+  Unavailable: 'Unavailable',
+  Available: 'Available',
+  Started: 'Started',
+}
 
 export default {
   name: 'StreamingBox',
+
   created() {
     if (this.webrtc) {
       this.webrtc.callbacks = {
@@ -106,13 +122,13 @@ export default {
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
-        onTrackMuted: () => this.trackMuted = true,
-        onTrackUnmuted: () => this.trackMuted = false,
+        onisTrackMuted: () => this.isTrackMuted = true,
+        onTrackUnmuted: () => this.isTrackMuted = false,
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }
 
       if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
+        this.streamThrottle = new StreamThrottle(this.printer.id, isLocalStorageSupported() ? localStorage : null)
       }
 
       ifvisible.on('blur', () => {
@@ -127,7 +143,6 @@ export default {
         }
       })
     }
-
   },
 
   props: {
@@ -147,28 +162,26 @@ export default {
 
   data() {
     return {
-      stickyStreamingSrc: null,
-      isVideoAvailable: false,
-      isVideoVisible: false,
-      remainingSecondsCurrentVideoCycle: 30,
-      remainingSecondsUntilNextCycle: -1,
-      currentBitrate: null,
+      STREAM_STATUS,
+      streamStatus: STREAM_STATUS.Unavailable,
+      isTrackMuted: false,
+      isVideoLoading: false,
+
       slowLinkLoss: 0,
-      slowLinkShowing: false, // show on mousenter
-      slowLinkHiding: false, // hide on moseleave
-      trackMuted: false,
-      videoLoading: false,
-      printerStockImgSrc: '#svg-3d-printer'
+      slowLinkLossLimit: 50,
+      isSlowLinkShowing: false,  // show on mousenter
+      isSlowLinkHiding: false,  // hide on moseleave
+      currentBitrate: null,
+
+      remainingSeconds: StreamThrottle.defaultRemainingSeconds(),
+      activeSessionRemainingSeconds: StreamThrottle.calculateSessionsSeconds()[0],
+      frozenSessionRemainingSeconds: StreamThrottle.calculateSessionsSeconds()[1],
+      basicStreamTimerId: null,
+      currentSession: STREAM_SESSION.Idle,
     }
   },
 
   computed: {
-    taggedImgAvailable() {
-      return this.taggedSrc !== this.printerStockImgSrc
-    },
-    showVideo() {
-      return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
-    },
     webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {
       case true:
@@ -199,78 +212,89 @@ export default {
         return 720
       }
     },
-    taggedSrc() {
-      return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+    webcamSnapshot() {
+      return this.printer?.pic?.img_url
     },
 
-    // streaming timeline
+    // Free user streaming
     isBasicStreamingInProgress() {
-      return this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
+      return !this.autoplay && this.currentSession === STREAM_SESSION.Active
     },
     isBasicStreamingReadyToPlay() {
-      return !this.isVideoVisible && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
+      return !this.autoplay && this.streamStatus === STREAM_STATUS.Available && !this.isTrackMuted && !this.isVideoLoading &&
+        this.currentSession === STREAM_SESSION.Idle
     },
     isBasicStreamingFrozen() {
-      return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
+      return !this.autoplay && this.streamStatus === STREAM_STATUS.Available && this.currentSession === STREAM_SESSION.Frozen
     },
   },
 
-  methods: {
-    onCanPlay() {
-      this.videoLoading = false
-      if (!this.autoplay) {
-        this.videoLimit.startOrResumeVideoCycle()
-      }
+  watch: {
+    remainingSeconds(newSeconds, _) {
+      this.currentSession = StreamThrottle.currentSession(newSeconds);
+      const [active, frozen] = StreamThrottle.calculateSessionsSeconds(newSeconds);
+      this.activeSessionRemainingSeconds = active;
+      this.frozenSessionRemainingSeconds = frozen;
 
-    },
-    onLoadStart() {
-      this.videoLoading = true
-    },
+      const whatHappened = StreamThrottle.whatHappened(newSeconds);
+      if (whatHappened === STREAM_EVENT.FrozenSessionStarted) {
+        this.webrtc.stopStream();
+      } else if (whatHappened === STREAM_EVENT.CycleFinished) {
+        clearInterval(this.basicStreamTimerId);
+        this.remainingSeconds = StreamThrottle.defaultRemainingSeconds();
+        this.streamThrottle.removeFromStorage();
+      }
+    }
+  },
+
+  methods: {
     onStreamAvailable() {
+      this.streamStatus = STREAM_STATUS.Available
       if (this.autoplay) {
         this.webrtc.startStream()
       } else {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
         }
-        if ((!this.autoplay && this.isBasicStreamingInProgress)) {
-          this.webrtc.startStream()
+        const remainingSeconds = this.streamThrottle.restoreRemainingSeconds();
+        this.remainingSeconds = remainingSeconds;
+        const currSession = StreamThrottle.currentSession(remainingSeconds);
+        if (currSession === STREAM_SESSION.Frozen) {
+          this.basicStreamTimerId = setInterval(() => this.remainingSeconds -= 1, 1000);
+        } else if (currSession === STREAM_SESSION.Active) {
+          this.startActiveSession();
         }
-        this.videoLimit.resumeVideoCycle()
       }
-      this.isVideoAvailable = true
+    },
+    startActiveSession() {
+      this.webrtc.startStream();
     },
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
-
       const videoTracks = stream.getVideoTracks()
       if (videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
-        // No remote video
-        this.isVideoVisible = false
-      } else {
-        this.isVideoVisible = true
+        return
+      }
+      this.streamStatus = STREAM_STATUS.Started
+    },
+    onLoadStart() {
+      this.isVideoLoading = true
+    },
+    onCanPlay() {
+      this.isVideoLoading = false
+      if (!this.autoplay) {
+        this.basicStreamTimerId = setInterval(() => this.remainingSeconds -= 1, 1000);
+        this.streamThrottle.saveToStorage(this.remainingSeconds);
       }
     },
-
     onWebRTCCleanup() {
-      this.isVideoVisible = false
-    },
-
-    /** Free user streaming **/
-
-    countDownCallback(remainingSecondsCurrentVideoCycle, remainingSecondsUntilNextCycle) {
-      if (this.remainingSecondsCurrentVideoCycle > 0 && remainingSecondsCurrentVideoCycle <= 0) {
-        this.webrtc.stopStream()
-      }
-      this.remainingSecondsCurrentVideoCycle = remainingSecondsCurrentVideoCycle
-      this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle
+      this.streamStatus = STREAM_STATUS.Available
     },
 
     onInfoClicked() {
       if (this.autoplay) {
         return
       }
-
       this.$swal.Prompt.fire({
         title: 'Upgrade for Better Streaming',
         html: `
@@ -284,32 +308,22 @@ export default {
             <li>Smooth 25 FPS.</li>
             <li>Unlimited streaming with no cooldowns.</li>
           </ul>
-
         `,
         showCloseButton: true,
       })
     },
 
-    /** End of free user streaming **/
-
-    /** Video warning handling */
-
-    onPlayBtnClicked() {
-      this.webrtc.startStream()
-    },
-
+    // Slow link
     fixSlowLinkTextWidth() {
       const width = window.getComputedStyle(this.$refs.slowLinkText).width
       this.$refs.slowLinkText.style.width = width
     },
-
     onSlowLink(loss) {
       this.slowLinkLoss += loss
     },
-
-    slowLinkClicked() {
-      this.slowLinkShowing = false
-      this.slowLinkHiding = false
+    onSlowLinkClick() {
+      this.isSlowLinkShowing = false
+      this.isSlowLinkHiding = false
       this.slowLinkLoss = 0
 
       this.$swal.Prompt.fire({
@@ -324,9 +338,8 @@ export default {
       })
     },
 
-    showMutedStatusDescription(event) {
-      event.preventDefault()
-
+    // Track muted (buffering)
+    onMutedStatusClick() {
       this.$swal.Prompt.fire({
         title: 'Webcam stream buffering',
         html: `
@@ -345,8 +358,12 @@ export default {
         showCloseButton: true,
       })
     }
-    /** End of video warning handling */
+  },
 
+  unmounted() {
+    if (this.basicStreamTimerId) {
+      clearInterval(this.basicStreamTimerId);
+    }
   },
 }
 </script>
@@ -499,5 +516,4 @@ export default {
   position: absolute
   left: calc(50% - #{$size / 2})
   top: calc(50% - #{$size / 2})
-
 </style>

@@ -14,6 +14,7 @@ from django.http import Http404
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 
 from allauth.account.views import LoginView
@@ -91,6 +92,7 @@ def resume_print(request, pk):
     return render(request, 'printer_acted.html', {'printer': _print.printer, 'action': 'resume', 'succeeded': succeeded})
 
 
+@xframe_options_exempt
 def printer_shared(request, share_token=None):
     printer = get_object_or_404(Printer, sharedresource__share_token=share_token, user__is_pro=True)
 

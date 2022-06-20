@@ -199,6 +199,8 @@ LOGGING = {
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 

@@ -240,6 +240,13 @@ def serve_jpg_file(request, file_path):
         return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))
 
 
+def serve_gcode_file(request, gcode_url):
+    #print(f"Fetching {gcode_url}")
+    response = requests.get(gcode_url)
+    #(f"Response: {response.status_code}")
+    return HttpResponse(response.content, content_type=('text/plain'))
+
+
 # Health check that touches DB and redis
 def health_check(request):
     User.objects.all()[:1]

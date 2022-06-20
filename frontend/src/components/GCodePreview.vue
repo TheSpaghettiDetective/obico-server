@@ -1,12 +1,6 @@
 <template>
   <div>
     <canvas ref="preview"></canvas>
-    
-    <div>topLayerColor: {{topLayerColor}}</div>
-    <div>lastSegmentColor: {{lastSegmentColor}}</div>
-    <div>endLayer: {{endLayer}}</div>
-    <div>startLayer: {{startLayer}}</div>
-    <div>lineWidth: {{lineWidth}}</div>
   </div>
 </template>
 
@@ -32,7 +26,7 @@ export default {
     }
   },
   async mounted() {
-    this.preview = new GCodePreview.init({
+    this.preview = new GCodePreview.WebGLPreview({
       canvas: this.$refs.preview,
       endLayer: this.endLayer,
       startLayer: this.startLayer,
@@ -45,9 +39,14 @@ export default {
     window.addEventListener('resize', () => {
       this.preview.resize();
     });
-
-    const lines1 = await this.fetchGcode('https://storage.googleapis.com/prod-tsd-gcodes/11011/107347?Expires=1914362545&GoogleAccessId=appserviceaccount%40tsdtechnology.iam.gserviceaccount.com&Signature=tq%2BejmiSrhTEZR3JABFy8ezH4Tr0nChbliE4Zi4juboKhSWf6SWQ0e3wQT8dk3s0baaHoEFwVr1TAljiwLLlwqfwbMh%2F%2B5zHShAghs3Lslax6jPgklvASLQPGi0j6XVMYaaRJ0OsWywp1VfooPpiKeijh5AdSVLRpFxsPpbOdxVjdE58vqlAs2k%2BqY%2BFmNE%2FPSG6Bgu6b5IOLahrY4vUmcS2OTTYiK6HsJbFm97al8fRA5r5VrPjUxfSb%2BU4W1wuckka%2FFpp9IE4F%2FaUbhwhskIXacLA3RA7UnGVCikpuxINqwdgMKjNwlQyLLMY84Hyq%2F3qiWEsEknxCZnfGFAIEg%3D%3D'); //this.url);
-    this.loadPreviewChunked(this.$refs.gcodePreview1, lines1, 50);
+    //const staticUrl = 'https://storage.googleapis.com/prod-tsd-gcodes/11011/107347?Expires=1914362545&GoogleAccessId=appserviceaccount%40tsdtechnology.iam.gserviceaccount.com&Signature=tq%2BejmiSrhTEZR3JABFy8ezH4Tr0nChbliE4Zi4juboKhSWf6SWQ0e3wQT8dk3s0baaHoEFwVr1TAljiwLLlwqfwbMh%2F%2B5zHShAghs3Lslax6jPgklvASLQPGi0j6XVMYaaRJ0OsWywp1VfooPpiKeijh5AdSVLRpFxsPpbOdxVjdE58vqlAs2k%2BqY%2BFmNE%2FPSG6Bgu6b5IOLahrY4vUmcS2OTTYiK6HsJbFm97al8fRA5r5VrPjUxfSb%2BU4W1wuckka%2FFpp9IE4F%2FaUbhwhskIXacLA3RA7UnGVCikpuxINqwdgMKjNwlQyLLMY84Hyq%2F3qiWEsEknxCZnfGFAIEg%3D%3D';
+    const text = await this.fetchGcode(this.url);
+    this.processGCode(text);
+    //debugger;
+    //this.loadPreviewChunked(this.$refs.gcodePreview1, lines1, 50);
+    // lines1.forEach(line => {
+    //   this.processGCode(line);
+    // });
 
   },
   methods: {
@@ -56,12 +55,12 @@ export default {
       this.layerCount = this.preview.layers.length;
     },
     async fetchGcode(url) {
-      const response = await fetch(url);
+      const response = await fetch('/gcode-text/' + encodeURIComponent(url));
       if (response.status !== 200) {
         throw new Error(`status code: ${response.status}`);
       }
-      const file = await response.text();
-      return file.split('\n');
+      const text = await response.text();
+      return text;
     },
     loadPreviewChunked(lines, delay) {
       let c = 0;

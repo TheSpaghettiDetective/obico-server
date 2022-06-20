@@ -80,11 +80,10 @@
               <div class="gcode-items-wrapper">
                 <div v-for="item in gcodesToShow" :key="item.id" class="item">
                   <div class="item-info">
-                    <div class="filename">{{ item.filename }}</div>
+                    <div class="filename">{{ item.filename }}
+                    <GCodePreview class="gcode-preview" :url="item.url" /></div>
                     <div class="filesize">{{ item.filesize }}</div>
                     <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                    <div>Previewz:</div>
-                    <GCodePreview class="gcode-preview" :url="item.url" />
                   </div>
                   <div class="remove-button-wrapper">
                     <div class="remove-button" @click="removeItem(item.id)">

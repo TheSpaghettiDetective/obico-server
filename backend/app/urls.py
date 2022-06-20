@@ -10,6 +10,7 @@ urlpatterns = [
     path('', web_views.index, name='index'),
     path('accounts/login/', web_views.SocialAccountAwareLoginView.as_view(), name="account_login"),
     path('media/<path:file_path>', web_views.serve_jpg_file),  # semi hacky solution to serve image files
+    path('gcode-text/<path:gcode_url>', web_views.serve_gcode_file),
     path('printers/', web_views.printers, name='printers'),
     re_path('printers/wizard/(?P<route>([^/]+/)*)$', web_views.new_printer),
     path('printers/<int:pk>/', web_views.edit_printer),

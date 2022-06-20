@@ -46,7 +46,7 @@ export default {
       this.preview.resize();
     });
 
-    const lines1 = await this.fetchGcode(this.url);
+    const lines1 = await this.fetchGcode('https://storage.googleapis.com/prod-tsd-gcodes/11011/107347?Expires=1914362545&GoogleAccessId=appserviceaccount%40tsdtechnology.iam.gserviceaccount.com&Signature=tq%2BejmiSrhTEZR3JABFy8ezH4Tr0nChbliE4Zi4juboKhSWf6SWQ0e3wQT8dk3s0baaHoEFwVr1TAljiwLLlwqfwbMh%2F%2B5zHShAghs3Lslax6jPgklvASLQPGi0j6XVMYaaRJ0OsWywp1VfooPpiKeijh5AdSVLRpFxsPpbOdxVjdE58vqlAs2k%2BqY%2BFmNE%2FPSG6Bgu6b5IOLahrY4vUmcS2OTTYiK6HsJbFm97al8fRA5r5VrPjUxfSb%2BU4W1wuckka%2FFpp9IE4F%2FaUbhwhskIXacLA3RA7UnGVCikpuxINqwdgMKjNwlQyLLMY84Hyq%2F3qiWEsEknxCZnfGFAIEg%3D%3D'); //this.url);
     this.loadPreviewChunked(this.$refs.gcodePreview1, lines1, 50);
 
   },

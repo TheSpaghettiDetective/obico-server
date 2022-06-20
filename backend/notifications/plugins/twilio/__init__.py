@@ -54,7 +54,7 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
 
     def send_sms(self, body: str, to_number: str):
         twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
-        from_number = settings.TWILIO_FROM_NUMBER
+        from_number = os.environ.get('TWILIO_FROM_NUMBER')
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 

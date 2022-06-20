@@ -18,6 +18,12 @@ TARGET_REACHED_DELTA = 3.0  # degree celsius
 LOGGER = logging.getLogger(__file__)
 
 
+def float_or_none(v):
+    if v == None:
+        return None
+    return float(v)
+
+
 class UpdateError(Exception):
     pass
 
@@ -74,8 +80,9 @@ def parse_states(d: Dict[str, Dict[str, Any]]) -> Dict[str, HeaterState]:
      'chamber': {'actual': None, 'target': None, 'offset': 0}}
     """
     return {
-        name: HeaterState(name=name, target=v['target'], actual=v['actual'],
-                          offset=v.get('offset', 0))
+        name: HeaterState(name=name, target=float_or_none(v['target']),
+                          actual=float_or_none(v['actual']),
+                          offset=float_or_none(v.get('offset', 0)))
         for name, v in d.items()
     }
 

@@ -122,7 +122,7 @@ export default {
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
-        onisTrackMuted: () => this.isTrackMuted = true,
+        onTrackMuted: () => this.isTrackMuted = true,
         onTrackUnmuted: () => this.isTrackMuted = false,
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
       }

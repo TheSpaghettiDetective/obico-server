@@ -208,7 +208,7 @@ export default {
       return this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
     },
     isBasicStreamingReadyToPlay() {
-      return !this.isVideoVisible && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
+      return !this.isVideoVisible && !this.trackMuted && !this.videoLoading && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
     },
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible

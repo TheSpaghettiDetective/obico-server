@@ -389,6 +389,11 @@ export default {
         &:first-child
           margin-left: 0
 
+      .filename
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+
     .remove-button
       width: 30px
       height: 30px

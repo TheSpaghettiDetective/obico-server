@@ -12,8 +12,8 @@
         <i class="fas fa-exclamation"></i>
       </div>
       <div
-        class="text"
         ref="slowLinkText"
+        class="text"
         :class="{
           'show-and-hide': !slowLinkShowing && !slowLinkHiding,
           'showing': slowLinkShowing && !slowLinkHiding,
@@ -24,29 +24,33 @@
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
-    <b-button v-if="!autoplay && isVideoAvailable && !isVideoVisible && remainingSecondsUntilNextCycle <= 0" @click="onPlayBtnClicked" class="loading-icon">
-      <i class="far fa-play-circle"></i>
+    <b-button
+      v-if="isVideoAvailable && !isVideoVisible && (isBasicStreamingReady || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
+      class="centered-element p-0"
+      :disabled="isBasicStreamingFrozen"
+    >
+      <i class="fas fa-play ml-1" v-if="isBasicStreamingReady"></i>
+      <span class="medium text-bold" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
     </b-button>
-    <b-spinner v-if="trackMuted || videoLoading" class="loading-icon" label="Buffering..."></b-spinner>
+    <b-spinner v-if="trackMuted || videoLoading" class="centered-element" label="Buffering..."></b-spinner>
 
-    <div v-if="isVideoAvailable" class="streaming-info small" @click="onInfoClicked">
-      <div v-if="!autoplay">
-        <div v-if="remainingSecondsCurrentVideoCycle > 0" class="text-success">{{remainingSecondsCurrentVideoCycle}}s</div>
-        <div v-if="remainingSecondsCurrentVideoCycle <= 0 && remainingSecondsUntilNextCycle > 0" class="text-danger">{{remainingSecondsUntilNextCycle}}s</div>
+    <div v-if="isVideoAvailable">
+      <!-- show countdown and bitrate while streaming -->
+      <div v-if="isStreamingInProgress" class="streaming-info overlay-info small" :class="{'clickable': isBasicStreamingInProgress}" @click="onInfoClicked">
+        <div v-if="isBasicStreamingInProgress" class="text-success">{{remainingSecondsCurrentVideoCycle}}</div>
+        <div v-if="currentBitrate">{{currentBitrate}}</div>
       </div>
-      <div v-if="currentBitrate">{{currentBitrate}}</div>
+      <!-- show full-width info message -->
+      <div class="streaming-guide overlay-info" v-if="isBasicStreamingStopped" @click="onInfoClicked">
+        <div class="message" v-if="isBasicStreamingReady">Webcam streams up to 5 FPS for Free</div>
+        <div class="message text-warning" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s left in the cooldown period</div>
+        <div class="learn-more">Learn more...</div>
+      </div>
     </div>
 
-    <div
-      :class="webcamRotateClass"
-    >
-      <div
-        class="webcam_fixed_ratio"
-        :class="webcamRatioClass"
-      >
-        <div
-          class="webcam_fixed_ratio_inner full"
-        >
+    <div :class="webcamRotateClass">
+      <div class="webcam_fixed_ratio" :class="webcamRatioClass">
+        <div class="webcam_fixed_ratio_inner full" >
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
@@ -58,10 +62,7 @@
             <use :href="printerStockImgSrc" />
           </svg>
         </div>
-        <div
-          v-show="showVideo"
-          class="webcam_fixed_ratio_inner ontop full"
-        >
+        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop full">
           <video
             ref="video"
             class="remote-video"
@@ -192,6 +193,23 @@ export default {
     taggedSrc() {
       return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
     },
+
+    // streaming timeline
+    isStreamingInProgress() {
+      return (this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30) || this.currentBitrate
+    },
+    isBasicStreamingInProgress() {
+      return !this.autoplay && this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
+    },
+    isBasicStreamingStopped() {
+      return !this.autoplay && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle > 0)
+    },
+    isBasicStreamingReady() {
+      return !this.autoplay && this.remainingSecondsCurrentVideoCycle == 30
+    },
+    isBasicStreamingFrozen() {
+      return !this.autoplay && this.remainingSecondsUntilNextCycle > 0
+    },
   },
 
   methods: {
@@ -248,12 +266,19 @@ export default {
       }
 
       this.$swal.Prompt.fire({
-        title: 'Throttled streaming',
+        title: 'Upgrade for Better Streaming',
         html: `
-          <p>Since you are on the Obico Cloud Free plan, your webcam streaming is throttled for 30 seconds every minute.</p>
-          <p>When the 30 seconds viewing window is over, you will need to wait for another 30 seconds before you can resume the streaming.</p>
-          <p>For <span class="font-weight-bold">un-throttled, 25 FPS</span> webcam streaming, <a href="https://app.obico.io/ent_pub/pricing/">upgrade to the Pro plan for little more than 1 Starbucks a month.</a></p>
-          <p><a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/">More info.</a></p>
+          <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">Obico Cloud Free plan</a>:</p>
+          <ul>
+            <li>Streaming is limited to 5 FPS (frames per second).</li>
+            <li>After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.</li>
+          </ul>
+          <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan offers many perks, including the <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">Premium Streaming</a>:</p>
+          <ul>
+            <li>Smooth 25 FPS.</li>
+            <li>Unlimited streaming with no cooldowns.</li>
+          </ul>
+
         `,
         showCloseButton: true,
       })
@@ -321,7 +346,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.loading-icon
+.centered-element
   position: absolute
   width: 3rem
   height: 3rem
@@ -329,31 +354,27 @@ export default {
   left: calc(50% - 1.5rem)
   z-index: 99
 
-.streaming-info
+.overlay-info
   position: absolute
-  right: 0px
-  top: 0px
+  right: 0
+  top: 0
   z-index: 99
   background-color: rgb(0 0 0 / .5)
   padding: 4px 8px
-  cursor: pointer
 
-  .dropdown-item
-    .title.active
-      color: var(--color-primary)
-      i
-        margin-right: 2px
+.streaming-info
+  text-align: right
+  &.clickable
+    cursor: pointer
 
-    .description
-      font-size: 0.8em
-      opacity: .5
+.streaming-guide
+  left: 0
+  display: flex
+  justify-content: space-between
 
-  .btn
-    overflow: hidden
-    color: #fff !important
-    opacity: .8
-    &:hover, &:focus
-      opacity: 1
+  .learn-more
+    text-decoration: underline
+    cursor: pointer
 
 .slow-link-wrapper
   $height: 24px

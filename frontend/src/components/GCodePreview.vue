@@ -55,7 +55,7 @@ export default {
       this.layerCount = this.preview.layers.length;
     },
     async fetchGcode(url) {
-      const response = await fetch('/gcode-text/' + encodeURIComponent(url));
+      const response = await fetch(url);
       if (response.status !== 200) {
         throw new Error(`status code: ${response.status}`);
       }

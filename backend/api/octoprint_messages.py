@@ -56,6 +56,7 @@ def settings_dict(octoprint_settings):
     settings.update(
         dict(('agent_' + k, str(v)) for k, v in octoprint_settings.get('agent', {}).items())
     )
+    settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
     return settings
 
 

@@ -83,8 +83,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         template_path = 'email/FailureAlert.html'
         mailing_list: str = 'failure_alert'
 
-        ctx = context.extra_context or {}
-        ctx.update(
+        email_ctx = context.extra_context or {}
+        email_ctx.update(
             printer=context.printer,
             print_paused=context.print_paused,
             is_warning=context.is_warning,
@@ -103,7 +103,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             subject=subject,
             mailing_list=mailing_list,
             template_path=template_path,
-            ctx=ctx,
+            ctx=email_ctx,
             img_url=context.img_url,
         )
 
@@ -112,8 +112,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         subject = self.get_printer_notification_subject(context)
         mailing_list: str = context.feature.name.replace('notify_on_', '')
 
-        ctx = context.extra_context or {}
-        ctx.update(
+        email_ctx = context.extra_context or {}
+        email_ctx.update(
             printer=context.printer,
             print=context.print,
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
@@ -121,14 +121,14 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         )
 
         if context.print.ended_at and context.print.started_at:
-            ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
+            email_ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
 
         self.send_emails(
             user=context.user,
             subject=subject,
             mailing_list=mailing_list,
             template_path=template_path,
-            ctx=ctx,
+            ctx=email_ctx,
             img_url=context.img_url,
         )
 

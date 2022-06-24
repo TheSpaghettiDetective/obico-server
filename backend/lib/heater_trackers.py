@@ -194,11 +194,11 @@ def update_heater_trackers(printer: Printer,
             handler.queue_send_printer_notifications_task(
                 printer=printer,
                 notification_type=HeaterTargetReached if event.type == HeaterEventType.TARGET_REACHED else HeaterCooledDown,
-                notification_data={
-                    'name': event.state.name,
-                    'actual': event.state.actual,
-                    'target': event.state.target,
-                    'offset': event.state.offset,
+                extra_context={
+                    'heater_name': event.state.name,
+                    'heater_actual': event.state.actual,
+                    'heater_target': event.state.target,
+                    'heater_offset': event.state.offset,
                 },
                 print_=printer.current_print if printer.current_print_id else None,
             )

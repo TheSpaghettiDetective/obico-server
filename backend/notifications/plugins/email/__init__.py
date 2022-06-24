@@ -50,7 +50,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
     def get_printer_notification_subject(self, context: PrinterNotificationContext) -> str:
         notification_type = context.notification_type
-        notification_data = context.notification_data
+        extra_context = context.extra_context
 
         if notification_type == notification_types.PrintStarted:
             text = f"{context.print.filename} started"
@@ -66,13 +66,13 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             text = f"{context.print.filename} requires filament change"
         elif notification_type == notification_types.HeaterCooledDown:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')}"
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has cooled down to {self.b(str(extra_context['heater_actual']) + '℃')}"
             )
         elif notification_type == notification_types.HeaterTargetReached:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has reached target temperature {self.b(str(notification_data['actual']) + '℃')} "
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has reached target temperature {self.b(str(extra_context['heater_actual']) + '℃')} "
             )
         else:
             return ''
@@ -98,7 +98,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             context.printer.name,
             'smells fishy' if context.is_warning else 'is probably failing')
 
-        self._send_emails(
+        self.send_emails(
             user=context.user,
             subject=subject,
             mailing_list=mailing_list,
@@ -123,7 +123,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         if context.print.ended_at and context.print.started_at:
             ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
 
-        self._send_emails(
+        self.send_emails(
             user=context.user,
             subject=subject,
             mailing_list=mailing_list,
@@ -132,7 +132,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             img_url=context.img_url,
         )
 
-    def _send_emails(self,
+    def send_emails(self,
             user: UserContext,
             subject: str,
             mailing_list: str,

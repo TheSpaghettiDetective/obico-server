@@ -59,12 +59,31 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
 - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
 - If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
+- If you are on Mac: Go to Settings > Network. You will find your IPv4 value below the wifi status.
+- 
+The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server. 
 
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
+It is also reccomended that a static IP is set to avoid issues with chaning IP's. Please look up your WiFi routers guide on how to do this.
+
+### Alternatively, use a .local address (like octopi.local)
+
+Similarly to how one can connect to octopi with octopi.local instead of an IP address, we can do the same for our Obico server.
+**WARNING:** doing this on a device that is running software that already utilizes this may cause issues(ex. Homebridge). You are safe if you are already not able to connect to your device with a .local address. If you dont know what this means, you are most likely fine. 
+
+- If you are on Linux, run `sudo apt install avahi-daemon`
+- If you are on Windows, install [iTunes]([url](https://www.apple.com/itunes/)). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
+- If you are on Mac, you do not need to do anything. Mac already has this set up by default.
+
+You can now connect to your server with `your_host_name.local:3334`. You can find your hostname by doing the following:
+
+- If you are on Mac or Linux, run `hostname` in your terminal. The result is your hostname.
+- If you are on Windows, run `ipconfig /all`. Your hostname will be listed at the very top.
+
+To reiterate, you can connect to your server with either your IPv4 address or .local address. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address.
 
 ## Login as Django admin
 
-1. Open Django admin page at `http://your_server_ip:3334/admin/`.
+1. Open Django admin page at `http://your_server_ip:3334/admin/`. 
 
 *Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 

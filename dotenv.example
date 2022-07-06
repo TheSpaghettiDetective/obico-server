@@ -1,4 +1,4 @@
-# Note: Please don't place single quotes (') or double quote (") around the values.
+# Note: Please don't place single quotes (') or double quote (") around the values. Also it's case-sensitive
 
 # EMAIL_HOST=
 
@@ -12,19 +12,19 @@
 # Check with your email provider to make sure.
 
 # EMAIL_USE_TLS=True
-# Set it to 'False' if your email provider doesn't use TLS, which is uncommon
+# Set it to False if your email provider doesn't use TLS, which is uncommon
 
 # DEFAULT_FROM_EMAIL=changeme@example.com
 # The "FROM" email address in all emails sent by the system
 
 # SITE_USES_HTTPS=False
-# set it to 'True' if https is set up
+# set it to True if https is set up
 
 # SITE_IS_PUBLIC=False
-# set it to 'True' if the site configured in django admin is accessible from the internet
+# set it to True if the site configured in django admin is accessible from the internet
 
 # SOCIAL_LOGIN=False
-# Set it to 'True' to allow social account login. You will need to set "Provider" in Django admin (https://django-allauth.readthedocs.io/en/latest/providers.html)
+# Set it to True to allow social account login. You will need to set "Provider" in Django admin (https://django-allauth.readthedocs.io/en/latest/providers.html)
 
 # REDIS_URL=
 # Don't set it unless you know what you are doing.
@@ -33,10 +33,10 @@
 # Don't set it unless you know what you are doing.
 
 # ACCOUNT_ALLOW_SIGN_UP=False
-# Set to 'True' if you want to open sign up form
+# Set to True if you want to open sign up form
 
 # WEBPACK_LOADER_ENABLED=False
-# Don't set it to 'True' unless you want to develop the frontend
+# Don't set it to True unless you want to develop the frontend
 
 # OCTOPRINT_TUNNEL_PORT_RANGE=15853-15873
 # Port range reserved for tunnels. Default to 15853-15873. Each tunnel will be allocated a port.

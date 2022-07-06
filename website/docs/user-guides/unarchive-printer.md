@@ -26,6 +26,6 @@ There are a few things you can do to make sure your plan has enough number of pr
 
 * Delete the printers you no longer need. You can delete active printers or archived printers.
 * [Upgrade to the Pro plan](https://app.obico.io/ent_pub/pricing/) if you are currently on the Free plan.
-* If you are already on the Pro plan, you can change the number of printers on [your subscription page](https://app.obico.io/ent/subscription/).
+* If you are already on the Pro plan, you can change the number of printers on [your subscription page](https://app.obico.io/user_preferences/subscription/).
 
 Once your account is set up to allow for more printers, come back to the [printer archive page](https://app.obico.io/ent/printers/archived/) and un-archive the printers there.

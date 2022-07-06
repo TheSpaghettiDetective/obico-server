@@ -2,24 +2,24 @@
 
 {% block email_content %}
 
-<p>Hi {{ context.user.first_name|default:"" }},</p>
-<p>Obi The Owl has detected a possible failure on your printer <b>{{ context.printer.name }}</b>.</p>
+<p>Hi {{ user.first_name|default:"" }},</p>
+<p>Obi The Owl has detected a possible failure on your printer <b>{{ printer.name }}</b>.</p>
 
-{% if context.print_paused %}
+{% if print_paused %}
 <p>
   <strong>The print is paused.</strong> <span style="color:#888796;">Don't want your print to be paused next time? <a
-      href="https://app.obico.io/printers/{{ context.printer.id }}/">Change the settings.</a></span>
+      href="https://app.obico.io/printers/{{ printer.id }}/">Change the settings.</a></span>
 </p>
-{% elif context.printer.pause_on_failure and is_warning %}
+{% elif printer.pause_on_failure and is_warning %}
 <p>
   Printer was NOT paused because Obi wasn't very sure if it was a real failure.
 </p>
 {% endif %}
-{% if context.img_url %}
+{% if img_url %}
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-    <td><img style="width: 100%;" src="{{ context.img_url }}" alt="Print Snapshot" />
+    <td><img style="width: 100%;" src="{{ img_url }}" alt="Print Snapshot" />
     </td>
   </tr>
 </table>
@@ -38,7 +38,7 @@
   </tr>
 </table>
 
-{% if context.print_paused %}
+{% if print_paused %}
 <table class="mobile-cta-button-table" border="0" cellspacing="0" cellpadding="0"
   style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
@@ -99,7 +99,7 @@
       <ul>
         <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it
           failed. Cancel the print!" button above. You may be asked to sign into the Obico web app.</li>
-        {% if context.print_paused %}
+        {% if print_paused %}
         <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can
           click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you
           can suppress alerts for the
@@ -109,7 +109,7 @@
           "Go to the Obico app to take a closer look" to go to the real time webcam view. From there you can
           see the webcam in real time,
           and decide if you want to cancel the print.</li>
-        {% if context.print_paused %}
+        {% if print_paused %}
         <li>You can also resume the print in OctoPrint or Mainsail/Fluidd. Just remember
           that the Obico app has turned off the heaters for your safety. Remember to turn them back on before
           resuming the print.</li>

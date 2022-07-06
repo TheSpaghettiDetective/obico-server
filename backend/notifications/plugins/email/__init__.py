@@ -50,7 +50,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
 
     def get_printer_notification_subject(self, context: PrinterNotificationContext) -> str:
         notification_type = context.notification_type
-        notification_data = context.notification_data
+        extra_context = context.extra_context
 
         if notification_type == notification_types.PrintStarted:
             text = f"{context.print.filename} started"
@@ -66,13 +66,13 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             text = f"{context.print.filename} requires filament change"
         elif notification_type == notification_types.HeaterCooledDown:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')}"
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has cooled down to {self.b(str(extra_context['heater_actual']) + '℃')}"
             )
         elif notification_type == notification_types.HeaterTargetReached:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has reached target temperature {self.b(str(notification_data['actual']) + '℃')} "
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has reached target temperature {self.b(str(extra_context['heater_actual']) + '℃')} "
             )
         else:
             return ''
@@ -83,8 +83,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         template_path = 'email/FailureAlert.html'
         mailing_list: str = 'failure_alert'
 
-        ctx = context.extra_context or {}
-        ctx.update(
+        email_ctx = context.extra_context or {}
+        email_ctx.update(
             printer=context.printer,
             print_paused=context.print_paused,
             is_warning=context.is_warning,
@@ -98,12 +98,12 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             context.printer.name,
             'smells fishy' if context.is_warning else 'is probably failing')
 
-        self._send_emails(
+        self.send_emails(
             user=context.user,
             subject=subject,
             mailing_list=mailing_list,
             template_path=template_path,
-            ctx=ctx,
+            ctx=email_ctx,
             img_url=context.img_url,
         )
 
@@ -112,8 +112,8 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         subject = self.get_printer_notification_subject(context)
         mailing_list: str = context.feature.name.replace('notify_on_', '')
 
-        ctx = context.extra_context or {}
-        ctx.update(
+        email_ctx = context.extra_context or {}
+        email_ctx.update(
             printer=context.printer,
             print=context.print,
             timelapse_link=site.build_full_url(f'/prints/{context.print.id}/'),
@@ -121,18 +121,18 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         )
 
         if context.print.ended_at and context.print.started_at:
-            ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
+            email_ctx['print_time'] = str(context.print.ended_at - context.print.started_at).split('.')[0]
 
-        self._send_emails(
+        self.send_emails(
             user=context.user,
             subject=subject,
             mailing_list=mailing_list,
             template_path=template_path,
-            ctx=ctx,
+            ctx=email_ctx,
             img_url=context.img_url,
         )
 
-    def _send_emails(self,
+    def send_emails(self,
             user: UserContext,
             subject: str,
             mailing_list: str,

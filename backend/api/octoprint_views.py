@@ -84,6 +84,9 @@ class OctoPrintPicView(APIView):
 
         printer.refresh_from_db()  # Connection is keep-alive, which means printer object can be stale.
 
+        if not request.FILES.get('pic'):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         pic = request.FILES['pic']
         pic = cap_image_size(pic)
 

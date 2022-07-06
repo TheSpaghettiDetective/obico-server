@@ -193,7 +193,7 @@ class Handler(object):
                 else:
                     raise
 
-    def feature_for_notification_type(self, notification_type: str, notification_data: Dict) -> Optional[Feature]:
+    def feature_for_notification_type(self, notification_type: str) -> Optional[Feature]:
         if notification_type == notification_types.PrintDone:
             return Feature.notify_on_print_done
 
@@ -216,13 +216,12 @@ class Handler(object):
         plugin: BaseNotificationPlugin,
         nsetting: NotificationSetting,
         notification_type: str,
-        notification_data: Dict,
     ) -> bool:
         if not nsetting.enabled:
             LOGGER.debug(f'notifications are disabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
             return False
 
-        feature = self.feature_for_notification_type(notification_type, notification_data)
+        feature = self.feature_for_notification_type(notification_type)
 
         # is event is expected at all?
         if not feature:
@@ -246,14 +245,13 @@ class Handler(object):
     def send_printer_notifications(
         self,
         notification_type: str,
-        notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
         extra_context: Optional[Dict] = None,
         plugin_names: Tuple[str, ...] = (),
         fail_silently: bool = True,
     ) -> None:
-        feature = self.feature_for_notification_type(notification_type, notification_data)
+        feature = self.feature_for_notification_type(notification_type)
         if not feature:
             return
 
@@ -297,7 +295,6 @@ class Handler(object):
                     printer=printer_ctx,
                     print=print_ctx,
                     notification_type=notification_type,
-                    notification_data=notification_data,
                     extra_context=extra_context or {},
                     img_url=img_url,
                 )
@@ -339,7 +336,6 @@ class Handler(object):
             plugin.instance,
             nsetting,
             context.notification_type,
-            context.notification_data,
         ):
             return
 
@@ -359,13 +355,12 @@ class Handler(object):
     def queue_send_printer_notifications_task(
         self,
         notification_type: str,
-        notification_data: dict,
         printer: Printer,
         print_: Optional[Print],
         extra_context: Optional[Dict] = None,
         in_process: Optional[bool] = False,
     ) -> None:
-        feature = self.feature_for_notification_type(notification_type, notification_data)
+        feature = self.feature_for_notification_type(notification_type)
         if not feature or not printer.user.notification_enabled:
             return
 
@@ -382,7 +377,6 @@ class Handler(object):
         kwargs = {
                 'printer_id': printer.id,
                 'notification_type': notification_type,
-                'notification_data': notification_data,
                 'print_id': print_.id if print_ else None,
                 'extra_context': extra_context,
 

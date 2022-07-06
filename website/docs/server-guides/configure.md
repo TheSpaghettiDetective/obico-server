@@ -10,8 +10,31 @@ This is the bare minimum configuration required for the server to be reasonably 
 
 #### Obtain server's IP address
 
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be an private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
+This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
+- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
+- If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
+- If you are on Mac: Go to Settings > Network. You will find your IPv4 value below the wifi status.
 
+The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server. 
+
+It is also reccomended that a static IP is set to avoid issues with chaning IP's. Please look up your WiFi routers guide on how to do this.
+
+#### Creating and Obtaining your server's .local address
+
+Similarly to how one can connect to octopi with octopi.local instead of an IP address, we can do the same for our Obico server.
+:::caution
+Doing this on a device that is already running software with similar functionality(ex. Homebridge) **may** cause issues. If a conflict does occur, it will not be fatal to either program or computer. This warning can mostly be ignored if this tool is new to you.
+:::
+
+- If you are on Linux, run `sudo apt install avahi-daemon`
+- If you are on Windows, install [iTunes]([url](https://www.apple.com/itunes/)). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
+- If you are on Mac, you do not need to do anything. Mac already has this set up by default.
+
+You can find your hostname by typing `hostname` into your terminal, regardless of OS.
+
+You can now connect to your server with `your_host_name.local:3334`. Conveniently, your host name is not case sensitive. 
+
+To reiterate, you can connect to your server with either your IPv4 address or .local address. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address. You can use it not only as a URL, but also for SSH and any time you may need to connect directly to that device. 
 #### Login as Django admin
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`.
@@ -41,16 +64,24 @@ The following is using gmail as an example. Other web mail services may vary sli
 3. Find the following lines, and set them to the correct values of your email account:
 
 ```
-EMAIL_HOST="your_email_host_here"  # Such as "smtp.gmail.com"
-EMAIL_HOST_USER="your_email_user_here" # Such as your email address for a Gmail account
-EMAIL_HOST_PASSWORD="your_email_password_here" # Your email account password
-EMAIL_PORT=587   # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
-EMAIL_USE_TLS="True"  # Set it to 'False' if your email provider doesn't use TLS, which is uncommon
+EMAIL_HOST=your_email_host_here
+# Such as your email address for a Outlook account. Note: Gmail has disabled SMTP support and hence won't work
+
+EMAIL_HOST_USER=your_email_user_here
+# Your email account password
+
+EMAIL_HOST_PASSWORD=your_email_password_here
+
+EMAIL_PORT=587
+# Check with your email provider to make sure.
+
+EMAIL_USE_TLS=True
+# Set it to 'False' if your email provider doesn't use TLS, which is uncommon
 ```
 
 4. Restart the server `docker-compose up --build -d`.
 
-If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](email_guide.md).
+If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 
 
 ## Advanced server configuration

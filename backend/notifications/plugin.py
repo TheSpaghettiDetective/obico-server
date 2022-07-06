@@ -66,7 +66,6 @@ class FailureAlertContext(NotificationContext):
 class PrinterNotificationContext(NotificationContext):
     feature: Feature
     notification_type: str
-    notification_data: Dict
 
 
 @dataclasses.dataclass(frozen=True)
@@ -152,7 +151,7 @@ class BaseNotificationPlugin(object):
     def get_printer_notification_text(self, context: PrinterNotificationContext) -> str:
         text = f"Your print job {self.b(context.print.filename)} "
         notification_type = context.notification_type
-        notification_data = context.notification_data
+        extra_context = context.extra_context
 
         if notification_type == notification_types.PrintStarted:
             text += "has started "
@@ -168,13 +167,13 @@ class BaseNotificationPlugin(object):
             text += "requires filament change "
         elif notification_type == notification_types.HeaterCooledDown:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has cooled down to {self.b(str(notification_data['actual']) + '℃')} "
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has cooled down to {self.b(str(extra_context['heater_actual']) + '℃')} "
             )
         elif notification_type == notification_types.HeaterTargetReached:
             text = (
-                f"Heater {self.b(notification_data['name'])} "
-                f"has reached target temperature {self.b(str(notification_data['actual']) + '℃')} "
+                f"Heater {self.b(extra_context['heater_name'])} "
+                f"has reached target temperature {self.b(str(extra_context['heater_actual']) + '℃')} "
             )
         else:
             return ''

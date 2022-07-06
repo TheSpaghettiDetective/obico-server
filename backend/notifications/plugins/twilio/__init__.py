@@ -16,6 +16,7 @@ from lib import site as site
 
 LOGGER = logging.getLogger(__file__)
 
+TWILIO_ENABLED = os.environ.get('TWILIO_ACCOUNT_SID') and os.environ.get('TWILIO_AUTH_TOKEN') and os.environ.get('TWILIO_FROM_NUMBER')
 
 def int_with_default(v, default):
     try:
@@ -52,13 +53,13 @@ class TwillioNotificationPlugin(BaseNotificationPlugin):
         return (config.get('phone_country_code') or '') + (config.get('phone_number') or '')
 
     def send_sms(self, body: str, to_number: str):
-        twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-        from_number = settings.TWILIO_FROM_NUMBER
+        twilio_client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get('TWILIO_AUTH_TOKEN'))
+        from_number = os.environ.get('TWILIO_FROM_NUMBER')
 
         twilio_client.messages.create(body=body, to=to_number, from_=from_number)
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        if not settings.TWILIO_ENABLED:
+        if not TWILIO_ENABLED or not context.user.is_pro:
             LOGGER.warn("Twilio settings are missing. Ignored send requests")
             return
 

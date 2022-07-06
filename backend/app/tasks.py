@@ -66,7 +66,6 @@ def send_notification_for_print_event(_print, print_event, extra_context=None):
         handler.queue_send_printer_notifications_task(
             printer=_print.printer,
             notification_type=notification_type,
-            notification_data={},
             print_=_print,
             extra_context=extra_context,
             in_process=True,

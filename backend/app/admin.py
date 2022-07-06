@@ -11,7 +11,7 @@ from notifications.handlers import handler
 def send_test_email(modeladmin, request, queryset):
     for u in queryset.all():
         user_ctx = handler.get_user_context(u)
-        EmailNotificationPlugin()._send_emails(
+        EmailNotificationPlugin().send_emails(
             user=user_ctx,
             subject='Test email - it worked!',
             mailing_list='test',

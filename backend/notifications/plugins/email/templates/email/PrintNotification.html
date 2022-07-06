@@ -2,7 +2,7 @@
 
 {% block email_content %}
 
-<p>Hi {{ context.user.first_name|default:"" }},</p>
+<p>Hi {{ user.first_name|default:"" }},</p>
 
 <p>
 {% block subject %}
@@ -10,10 +10,10 @@
 {% endblock %}
 </p>
 
-  {% if context.img_url %}
+  {% if img_url %}
 <table border="0" cellspacing="0" cellpadding="0" style="margin:0 auto; padding-top:16px; width: 100%; ">
   <tr>
-    <td><img style="width: 100%;" alt="Print Snapshot" src="{{ context.img_url }}" /></td>
+    <td><img style="width: 100%;" alt="Print Snapshot" src="{{ img_url }}" /></td>
   </tr>
 </table>
 
@@ -37,8 +37,8 @@
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="padding: 18px 0px 18px 0px;width:100%;">
-      <div><b>File name:</b> {{ context.print.filename }}</div>
-      <div><b>Printer:</b> {{ context.printer.name }}</div>
+      <div><b>File name:</b> {{ print.filename }}</div>
+      <div><b>Printer:</b> {{ printer.name }}</div>
   </tr>
 </table>
 

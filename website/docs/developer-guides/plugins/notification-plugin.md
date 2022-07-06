@@ -246,7 +246,6 @@ The method the Obico server will call when the user press the "Test notification
 - `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty strong (not `None`).
 - `feature`: [`Feature`](#class-feature).
 - `notification_type`: [`str`](#module-notification_types). The type of this notification.
-- `notification_data`: `Dict`. Reserved for internal use.
 
 
 ### Class `UserContext`

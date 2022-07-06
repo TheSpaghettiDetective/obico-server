@@ -15,7 +15,6 @@ LOGGER = logging.getLogger(__name__)
 def send_printer_notifications(
     printer_id: int,
     notification_type: str,
-    notification_data: Dict,
     print_id: Optional[int],
     extra_context: Optional[Dict] = None,
     plugin_names: Tuple[str, ...] = (),
@@ -39,7 +38,6 @@ def send_printer_notifications(
 
     handler.send_printer_notifications(
         notification_type=notification_type,
-        notification_data=notification_data,
         printer=printer,
         print_=cur_print,
         extra_context=extra_context,

@@ -26,15 +26,21 @@ Similarly to how one can connect to octopi with octopi.local instead of an IP ad
 Doing this on a device that is already running software with similar functionality(ex. Homebridge) **may** cause issues. If a conflict does occur, it will not be fatal to either program or computer. This warning can mostly be ignored if this tool is new to you.
 :::
 
-- If you are on Linux, run `sudo apt install avahi-daemon`
-- If you are on Windows, install [iTunes](https://www.apple.com/itunes/). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
+- If you are on Windows, install [iTunes]([url](https://www.apple.com/itunes/)). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
 - If you are on Mac, you do not need to do anything. Mac already has this set up by default.
+- If you are on Linux, most distros come with `avahi-daemon` installed(ubuntu, debian, arch, redhat). Instructions on installation/update for `avahi-daemon` for your distro can be found online.
+  - To enable Avahi, run `sudo systemctl enable avahi-daemon && sudo systemctl start avahi-daemon`. You are now done.
+  - Although optional, we reccomend you change some settings in yoru config file. 
+    - Located in `/etc/avahi/avahi-daemon.conf`, uncomment(if needed, done by removing the `#`) and set `publish-addresses`, `publish-hinfo`, `publish-workstation`, `publish-domain` all equal to `yes`. Do **not** include spaces before and after the equal sign
+    - More optionally, you can change the hostname of the service by uncomenting and setting `hostname` to whatever you would like.
+    - you can now restart avahi by runnning `sudo systemctl restart avahi-daemon`
+    - More information on this can be found in the [docs](https://manpages.ubuntu.com/manpages/trusty/man5/avahi-daemon.conf.5.html).
 
 You can find your hostname by typing `hostname` into your terminal, regardless of OS.
 
 You can now connect to your server with `your_host_name.local:3334`. Conveniently, your host name is not case sensitive. 
 
-To reiterate, you can connect to your server with either your IPv4 address or .local address. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address. You can use it not only as a URL, but also for SSH and any time you may need to connect directly to that device. 
+To reiterate, you can connect to your server with either `your_server_ip:3334` or `your_host_name.local:3334`. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address. You can use it not only as a URL, but also for SSH and as a general replacement for the ip address. 
 #### Login as Django admin
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`.

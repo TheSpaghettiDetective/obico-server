@@ -21,3 +21,15 @@ EOT
 sudo docker-compose up -d
 
 sudo systemctl enable docker
+
+while true; do
+    printf "Would you like to change the address hostname it is accesible at obico.local?\nYes/No (yN)\tDetails (d) "
+	read -p " " ynd
+    
+    case $ynd in
+        [Yy]* ) sudo ./avahi_setup_jetson.sh; break;;
+        [Nn]* ) break;;
+        [Dd]* ) echo "Read More Here: https://www.obico.io/docs/server-guides/configure/";;
+        * ) echo "Please answer yes or no.";;
+    esac
+done

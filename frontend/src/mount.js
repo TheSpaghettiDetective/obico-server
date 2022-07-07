@@ -9,6 +9,7 @@ import setupSentry from '@src/lib/sentry'
 import { initTheme } from '@src/lib/color-scheme-controller'
 import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
+import LoadScript from "vue-plugin-load-script"
 
 export default (router, components) => {
   initTheme()
@@ -20,6 +21,7 @@ export default (router, components) => {
   Vue.use(VueMoment)
   Vue.use(VuePluralize)
   Vue.use(OnoffToggle)
+  Vue.use(LoadScript)
 
   if (document.getElementById('app')) {
     new Vue({

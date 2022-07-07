@@ -27,7 +27,7 @@ Doing this on a device that is already running software with similar functionali
 :::
 
 - If you are on Linux, run `sudo apt install avahi-daemon`
-- If you are on Windows, install [iTunes]([url](https://www.apple.com/itunes/)). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
+- If you are on Windows, install [iTunes](https://www.apple.com/itunes/). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
 - If you are on Mac, you do not need to do anything. Mac already has this set up by default.
 
 You can find your hostname by typing `hostname` into your terminal, regardless of OS.

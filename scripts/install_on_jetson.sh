@@ -24,7 +24,7 @@ sudo systemctl enable docker
 
 while true; do
     printf "Would you like to change the address hostname it is accesible at obico.local?\nYes/No (yN)\tDetails (d) "
-	read -p " " ynd
+    read -p " " ynd
     
     case $ynd in
         [Yy]* ) sudo ./avahi_setup_jetson.sh; break;;

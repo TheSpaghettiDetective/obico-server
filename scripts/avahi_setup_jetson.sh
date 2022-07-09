@@ -21,13 +21,11 @@ echo "Avahi Succesfully set up"
 echo -e "Your computer is accesible at ${hostname}.local"
 
 while true; do
-    printf "Would you like to change the address hostname it is accesible at obico.local?\nYes/No (yN)\tDetails (d) "
-    read -p " " ynd
-
+    read -p "Would you like to configure this Jetson Nano so it can be addressed by 'obico.local' on your local network? [N/y/d]: " -e -i "N" ynd
     case $ynd in
-        [Yy]* ) avahi_modify host-name obico; hostname="obico"; printf "\nHostname set to Obico.\n"; break;;
+        [Yy]* ) avahi_modify host-name obico; hostname="obico"; printf "\nHostname set to obico.\n"; break;;
         [Nn]* ) break;;
-        [Dd]* ) echo "Changing the Avahi hostname to Obico will change the address your server is currently accesible from. This will not have any other effect on your computer. This can easily be manually rverted or changed back later on if you choose.";;
+        [Dd]* ) echo "Change the Avahi hostname to 'obico' so that you can use 'obico.local' to access your server. This will not have any other effect on your computer. This can easily be manually rverted or changed back later on if you choose.";;
         * ) echo "Please answer yes for obico, or no to leave hostname as is";;
     esac
 done

@@ -23,13 +23,10 @@ sudo docker-compose up -d
 sudo systemctl enable docker
 
 while true; do
-    printf "Would you like to change the address hostname it is accesible at obico.local?\nYes/No (yN)\tDetails (d) "
-    read -p " " ynd
-    
-    case $ynd in
-        [Yy]* ) sudo ./avahi_setup_jetson.sh; break;;
-        [Nn]* ) break;;
-        [Dd]* ) echo "Read More Here: https://www.obico.io/docs/server-guides/configure/";;
-        * ) echo "Please answer yes or no.";;
-    esac
+  read -p "Would you like to configure this Jetson Nano so it can be addressed by 'obico.local' on your local network? [N/y/d]: " -e -i "N" ynd
+  case $ynd in
+    [Yy]* ) sudo $(dirname "$0")/avahi_setup_jetson.sh; break;;
+    [Nn]* ) break;;
+    [Dd]* ) echo "Read More Here: https://www.obico.io/docs/server-guides/configure/";;
+  esac
 done

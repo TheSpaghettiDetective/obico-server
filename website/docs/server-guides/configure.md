@@ -26,7 +26,7 @@ Similarly to how one can connect to octopi with octopi.local instead of an IP ad
 Doing this on a device that is already running software with similar functionality(ex. Homebridge) **may** cause issues. If a conflict does occur, it will not be fatal to either program or computer. This warning can mostly be ignored if this tool is new to you.
 :::
 
-- If you are on Windows, install [iTunes]([url](https://www.apple.com/itunes/)). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
+- If you are on Windows, install [iTunes](https://www.apple.com/itunes/). This may sound odd, but this is the best and safest way to do this on Windows. The reason this must be done is because the latest version of the software we need(Bonjour) can only downloaded bundled with iTunes.
 - If you are on Mac, you do not need to do anything. Mac already has this set up by default.
 - If you are on Linux, most distros come with `avahi-daemon` installed(ubuntu, debian, arch, redhat). Instructions on installation/update for `avahi-daemon` for your distro can be found online.
   - To enable Avahi, run `sudo systemctl enable avahi-daemon && sudo systemctl start avahi-daemon`. You are now done.

@@ -381,6 +381,8 @@ export default {
     .item-info
       display: flex
       width: 100%
+      overflow: hidden
+      flex: 1
 
       div
         flex: 1
@@ -393,6 +395,7 @@ export default {
         text-overflow: ellipsis
         overflow: hidden
         white-space: nowrap
+        width: 100%
 
     .remove-button
       width: 30px

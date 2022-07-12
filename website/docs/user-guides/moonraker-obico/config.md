@@ -25,6 +25,8 @@ port = 7125
 # api_key = <grab one or set trusted hosts in moonraker>
 
 [webcam]
+disable_video_streaming = False  # Change it to True to disable the premium streaming
+
 # CAUTION: Don't set this section unless you know what you are doing
 #   In most cases webcam configuration will be automatically retrived from moonraker
 #

@@ -167,7 +167,7 @@ def check_admin_ip_whitelist(get_response):
         raise MiddlewareNotUsed
 
     def middleware(request):
-        if request.path.startswith(prefix) and settings.ADMIN_IP_WHITELIST:
+        if request.path.startswith(prefix) and settings.ADMIN_IP_WHITELIST is not None:
             client_ip, is_routable = get_client_ip(request)
             if client_ip not in settings.ADMIN_IP_WHITELIST:
                 raise PermissionDenied()

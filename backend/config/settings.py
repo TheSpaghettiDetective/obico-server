@@ -416,4 +416,4 @@ NOTIFICATION_PLUGIN_DIRS = [
     os.path.join(BASE_DIR, 'notifications/plugins'),
 ]
 
-ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or '[]')
+ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or 'null')

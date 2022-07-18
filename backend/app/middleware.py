@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, MiddlewareNotUsed, PermissionDenied
 from django.contrib.sessions.backends.base import UpdateError
 
 from whitenoise.middleware import WhiteNoiseMiddleware
@@ -8,9 +8,14 @@ from django.utils.cache import patch_vary_headers
 from django.utils.http import cookie_date
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils.http import http_date
+from django.urls import reverse, NoReverseMatch
+
+from ipware import get_client_ip
 
 from .views import tunnelv2_views
 from lib.tunnelv2 import OctoprintTunnelV2Helper
+
+import logging
 
 
 class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
@@ -124,6 +129,7 @@ class SessionHostDomainMiddleware(SessionMiddleware):
 
 # TODO: To be removed when mobile apps older than 1.60 are not longer active.
 
+
 def rename_session_cookie(get_response):
 
     def middleware(request):
@@ -148,6 +154,25 @@ def rename_session_cookie(get_response):
                 samesite=settings.SESSION_COOKIE_SAMESITE,
             )
 
+        return response
+
+    return middleware
+
+
+def check_admin_ip_whitelist(get_response):
+    try:
+        prefix = reverse('admin:index')
+    except NoReverseMatch:
+        logging.error('admin site is not installed - ip whitelisting is disabled')
+        raise MiddlewareNotUsed
+
+    def middleware(request):
+        if request.path.startswith(prefix) and settings.ADMIN_IP_WHITELIST:
+            client_ip, is_routable = get_client_ip(request)
+            if client_ip not in settings.ADMIN_IP_WHITELIST:
+                raise PermissionDenied()
+
+        response = get_response(request)
         return response
 
     return middleware

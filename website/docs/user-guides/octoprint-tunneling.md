@@ -14,11 +14,17 @@ OctoPrint Tunneling not available for private server users outside of their home
 
 ## Is OctoPrint Tunneling secure?
 
-The answer to this question is a resounding **YES**!
+It is as long as you:
 
-We understand the security is you ultimate consideration. Therefore we have built Obico from ground up with the security as a cornerstone.
+* Don't share your Obico account with anyone.
+* Make sure you only authorize the app that you trust to access the tunnel. If you are not sure, you can see [the list of all apps you have authorized here](https://app.obico.io/user_preferences/authorized_apps/) and remove the ones you no longer want.
 
-Unlike port forwarding, your OctoPrint is never exposed to the wild internet when you access it via TSD's OctoPrint Tunneling. Instead, your OctoPrint page is loaded through an SSL-encrypted tunnel. Nobody can access that tunnel without your TSD account email and password (you didn't share them with anyone, right?).
+Unlike port forwarding, your OctoPrint is never exposed to the wild internet when you access it via the tunnel. Instead, your OctoPrint page is loaded through 2 connections tunnelled together:
+
+* The connection from OctoPrint to the Obico server. The connection is authenticated using your account credential. So it's secure as long as you don't share your Obico account with anyone.
+* The connection from your browser or your phone to the Obico server. This connection is authenticated using your account credential, or an access token if you have authorized any app to use the tunnel. Each app you authorized would receive their own access token.
+
+Both connections are protected by end-to-end SSL encryption.
 
 ## How do I access OctoPrint Tunneling?
 

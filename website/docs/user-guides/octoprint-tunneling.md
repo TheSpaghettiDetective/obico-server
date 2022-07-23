@@ -38,17 +38,17 @@ Easy.
 
 ## Is OctoPrint Tunneling free to all users?
 
-Yes and No. All users can use OctoPrint Tunneling function. However, if you have a Free account, you are limited to tunneling up to 50MB per month. Once you have reached your monthly limit, you won't be able to tunnel to OctoPrint any more until your usage is reset at the beginning of the next month.
+Yes and No. All users can use OctoPrint Tunneling function. However, if you have a Free account, you are limited to tunneling up to 100MB per month. Once you have reached your monthly limit, you won't be able to tunnel to OctoPrint any more until your usage is reset at the beginning of the next month.
 
 The Pro plan subscribers get unlimited tunneling.
 
-## Why is the limit on Free account only 50MB?
+## Why is the limit on Free account only 100MB?
 
-We know 50MB is not a lot. The reason why we can't make this cap very high is because we need to temporarily store these data in our high-speed server cache, which is very expensive. In addition, any OctoPrint data tunneled through the Obico Server has to be replicated 4 times. So 50MB data actually means we are charged for 200MB by our cloud provider.
+We know 100MB is not a lot. The reason why we can't make this cap very high is because we need to temporarily store these data in our high-speed server cache, which is very expensive. In addition, any OctoPrint data tunneled through the Obico Server has to be replicated 4 times. So 100MB data actually means we are charged for 200MB by our cloud provider.
 
-Another reason for this limit is that every time OctoPrint is being loaded via the tunnel, there is a big "spike" of server requests. Therefore, we have to "over-provision" TSD servers to be able to respond to these spikes if multiple users happen to be using OctoPrint Tunneling at the same time. Limiting the usage will help keep the server cost at a reasonable level while still providing a responsive experience anyone who wants to use OctoPrint Tunneling.
+Another reason for this limit is that every time OctoPrint is being loaded via the tunnel, there is a big "spike" of server requests. Therefore, we have to "over-provision" Obico servers to be able to respond to these spikes if multiple users happen to be using OctoPrint Tunneling at the same time. Limiting the usage will help keep the server cost at a reasonable level while still providing a responsive experience anyone who wants to use OctoPrint Tunneling.
 
-The good news is we have optimized our tunneling so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint for the first time, subsequent uses of the tunneling won't take nearly as much. 50MB is sufficient to load OctoPrint 10 to 20 times via the tunnel, which should be good enough for most users in a month. If you need to tunnel to OctoPrint frequently, your best option is to upgrade to the Obico Cloud Pro plan and enjoy unlimited tunneling.
+The good news is we have optimized our tunneling so that, for any file that has been downloaded to and cached in your browser, you won't need to download again. Therefore, although it'll cost a good chunk of your Free limit when you tunnel to your OctoPrint for the first time, subsequent uses of the tunneling won't take nearly as much. 100MB is sufficient to load OctoPrint 20 to 30 times via the tunnel, which should be good enough for most users in a month. If you need to tunnel to OctoPrint frequently, your best option is to upgrade to the Obico Cloud Pro plan and enjoy unlimited tunneling.
 
 ## Why does it take so long to load the OctoPrint page in the Tunnel?
 

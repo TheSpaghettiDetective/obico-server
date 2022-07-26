@@ -102,8 +102,12 @@ def tunnel(request, pk, template_dir=None):
 @login_required
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
-    pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
-    url = pt.get_internal_tunnel_url(request)
+    tunnel = OctoPrintTunnel.get_or_create_for_internal_use(printer)
+    if not tunnel:
+        resp = HttpResponse('Failed to create a new tunnel. Check https://obico.io/docs/server-guides/tunnel/ for details.')
+        resp.status_code = 428
+        return resp
+    url = tunnel.get_internal_tunnel_url(request)
     return HttpResponseRedirect(url)
 
 

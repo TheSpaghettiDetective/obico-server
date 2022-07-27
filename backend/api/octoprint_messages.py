@@ -69,7 +69,9 @@ def process_octoprint_status_with_ts(op_status, printer):
         op_data.get('job', {}).get('file', {}).get('name') or
         op_event.get('data', {}).get('name')
     )
-    if not current_filename:
+
+    has_print_but_no_ts_in_status = printer.current_print is not None and print_ts == -1
+    if not current_filename and not has_print_but_no_ts_in_status:
         return
     printer.update_current_print(current_filename, print_ts)
     if not printer.current_print:

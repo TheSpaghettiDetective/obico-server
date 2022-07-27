@@ -64,7 +64,11 @@ def process_octoprint_status_with_ts(op_status, printer):
     op_event = op_status.get('octoprint_event', {})
     op_data = op_status.get('octoprint_data', {})
     print_ts = op_status.get('current_print_ts')
-    current_filename = op_event.get('name') or op_data.get('job', {}).get('file', {}).get('name')
+    current_filename = (
+        op_event.get('name') or
+        op_data.get('job', {}).get('file', {}).get('name') or
+        op_event.get('data', {}).get('name')
+    )
     if not current_filename:
         return
     printer.update_current_print(current_filename, print_ts)

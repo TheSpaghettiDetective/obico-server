@@ -129,6 +129,7 @@ module.exports = {
             'server-guides/configure-mobile-app',
           ],
         },
+        'server-guides/tunnel',
         'server-guides/faqs',
         'server-guides/ops',
       ],

@@ -25,6 +25,8 @@ port = 7125
 # api_key = <grab one or set trusted hosts in moonraker>
 
 [webcam]
+disable_video_streaming = False
+
 # CAUTION: Don't set this section unless you know what you are doing
 #   In most cases webcam configuration will be automatically retrived from moonraker
 #
@@ -54,8 +56,10 @@ The configuration for connecting to the Obico Server.
 
 ## `[webcam]` section
 
+- `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
+
 :::caution
-Usually, you don't need to directly set anything in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain it from Moonraker.
+Usually, you don't need to configure the following settings in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain them from Moonraker.
 :::
 
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.

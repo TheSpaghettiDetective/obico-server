@@ -741,8 +741,11 @@ class OctoPrintTunnel(SafeDeleteModel):
                 plain_basicauth_password
             )
 
-        if settings.OCTOPRINT_TUNNEL_PORT_RANGE:
-            instance.port = OctoPrintTunnel.get_a_free_port()
+        if settings.OCTOPRINT_TUNNEL_PORT_RANGE is not None:
+            free_port = OctoPrintTunnel.get_a_free_port()
+            if not free_port:
+                return None
+            instance.port = free_port
         else:
             instance.subdomain_code = token_hex(8)
 
@@ -756,6 +759,8 @@ class OctoPrintTunnel(SafeDeleteModel):
         ).values_list('port', flat=True))
         possible = set(settings.OCTOPRINT_TUNNEL_PORT_RANGE)
         free = possible - occupied
+        if not free:
+            return None
         return free.pop()
 
     def get_host(self, request):

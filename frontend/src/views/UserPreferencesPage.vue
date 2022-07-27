@@ -28,6 +28,7 @@
                 </div>
                 <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
                   <component
+                    v-if="currentSection && (!currentSection.isNotificationChannel || availableNotificationPlugins)"
                     :is="currentRouteComponent"
                     :user="user"
                     :errorMessages="errorMessages"
@@ -67,6 +68,7 @@
                       {{ value.title }}
                     </template>
                     <component
+                      v-if="!value.isNotificationChannel || availableNotificationPlugins"
                       :is="name"
                       :user="user"
                       :errorMessages="errorMessages"

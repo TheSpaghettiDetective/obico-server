@@ -3,6 +3,7 @@ import dj_database_url
 import re
 import os
 import sentry_sdk
+import json
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -98,6 +99,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app.middleware.octoprint_tunnelv2',
+    'app.middleware.check_admin_ip_whitelist',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -413,3 +415,5 @@ WELL_KNOWN_PATH = None
 NOTIFICATION_PLUGIN_DIRS = [
     os.path.join(BASE_DIR, 'notifications/plugins'),
 ]
+
+ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or '[]')

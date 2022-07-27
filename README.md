@@ -56,7 +56,7 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 
 ## Obtain server's IP address
 
-[Recommended Read: Connecting to your server with a .local address](website\docs\server-guides\configure.md)
+[Recommended Read: Connecting to your server with a .local address](https://www.obico.io/docs/server-guides/configure/)
 
 This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
 - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 

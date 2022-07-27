@@ -74,7 +74,7 @@ NOT_CONNECTED_HTML = f"""
 NOT_CONNECTED_STATUS_CODE = 482
 TIMED_OUT_STATUS_CODE = 483
 OVER_FREE_LIMIT_STATUS_CODE = 481
-
+NOT_AVAILABLE_STATUS_CODE = 484
 
 def sanitize_app_name(app_name: str) -> str:
     return app_name.strip()[:64]
@@ -102,8 +102,18 @@ def tunnel(request, pk, template_dir=None):
 @login_required
 def redirect_to_tunnel_url(request, pk):
     printer = get_printer_or_404(pk, request)
-    pt = OctoPrintTunnel.get_or_create_for_internal_use(printer)
-    url = pt.get_internal_tunnel_url(request)
+    tunnel = OctoPrintTunnel.get_or_create_for_internal_use(printer)
+    if not tunnel:
+        return HttpResponse(f"""
+            <html>
+                <body>
+                    <center>
+                        <h3 style="color: red;">Failed to create a new tunnel. Check https://obico.io/docs/server-guides/tunnel/ for details.</h3>
+                    </center>
+                </body>
+            </html>
+            """, status=NOT_AVAILABLE_STATUS_CODE)
+    url = tunnel.get_internal_tunnel_url(request)
     return HttpResponseRedirect(url)
 
 

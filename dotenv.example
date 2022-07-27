@@ -38,8 +38,8 @@
 # WEBPACK_LOADER_ENABLED=False
 # Don't set it to True unless you want to develop the frontend
 
-# OCTOPRINT_TUNNEL_PORT_RANGE=15853-15873
-# Port range reserved for tunnels. Default to 15853-15873. Each tunnel will be allocated a port.
+# ADMIN_IP_WHITELIST=
+# IP whitelist for the /admin/ page. For example: ["1.2.3.4", "5.6.7.8"]. If not set, the whilelist will be disable and the /admin/ page will be open to all.
 
 # TELEGRAM_BOT_TOKEN=
 # https://core.telegram.org/bots#6-botfather for how to create a telegram bot and get its token

@@ -217,6 +217,11 @@ export default {
         this.updateSetting('last_name')
       }
     },
+    $route (to) {
+      if (window.FlutterWebView) {
+        window.FlutterWebView.postMessage(JSON.stringify({path: to.path}))
+      }
+    }
   },
 
   created() {

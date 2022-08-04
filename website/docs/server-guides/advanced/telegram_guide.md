@@ -1,4 +1,6 @@
-# Telegram Setup Guide
+---
+title: Telegram Setup Guide
+---
 
 My Base: Fresh Install Ubuntu 20.04.
 
@@ -8,47 +10,47 @@ You need to open a terminal with your device. I am doing this via SSH (I'm using
 ```sh
 sudo install npm
 ```
-![install nmp](img/telegram/installnpm.JPG)
+![install nmp](/img/server-guides/telegram/installnpm.JPG)
 
 2. Install looptools
 ```sh
 sudo install looptools
 ```
-![loop](img/telegram/installloop.JPG)
+![loop](/img/server-guides/telegram/installloop.JPG)
 
 
 3. Install localtunnel and run it
 ```sh
 npx localtunnel --port 3334
 ```
-![INSTALL tunnel](img/telegram/starttunnel.JPG)
-![RUNNING loop](img/telegram/localtunnelrun.JPG)
+![INSTALL tunnel](/img/server-guides/telegram/starttunnel.JPG)
+![RUNNING loop](/img/server-guides/telegram/localtunnelrun.JPG)
 
 4. Open telegram (I`m using windows telegram app) and find botfather
 
-![BOT FATHER](img/telegram/findbot.JPG)
+![BOT FATHER](/img/server-guides/telegram/findbot.JPG)
 
 5. Start conversation and open a menu
 ```
 /start
 ```
-![botcommands](img/telegram/botcommands.JPG)
+![botcommands](/img/server-guides/telegram/botcommands.JPG)
 
 6. Create your own bot and give him name
 ```
 /newbot
 ```
-![bot name](img/telegram/botname.JPG)
+![bot name](/img/server-guides/telegram/botname.JPG)
 
 7. Get BOT ID and TOKEN
 
-![token](img/telegram/id.JPG)
+![token](/img/server-guides/telegram/id.JPG)
 
 8. Set domain which was given by tunnel in Step 3
 ```
 /setdomain
 ```
-![set domain](img/telegram/domain.JPG)
+![set domain](/img/server-guides/telegram/domain.JPG)
 
 9. Add TOKEN with ID in docker-compose.yml
 
@@ -58,13 +60,13 @@ npx localtunnel --port 3334
         cd TheSpaghettiDetective
         sudo nano docker-compose.yml
         ```
-        ![find docker config](img/telegram/getconfig.JPG)
+        ![find docker config](/img/server-guides/telegram/getconfig.JPG)
         - Option 2: edit it directly
             - Find the folder called `TheSpaghettiDetective` in your home directory
             - Open it. Inside you should find a file called `docker-compose.yml`. Open it.
 
     - Edit the file to include your ID
-    ![config](img/telegram/config.JPG)
+    ![config](/img/server-guides/telegram/config.JPG)
 
   
 10. Reboot Docker
@@ -73,16 +75,16 @@ cd TheSpaghettiDetective
 sudo docker-compose down
 sudo docker-compose up -d
 ```
-![reboot](img/telegram/reboot.JPG)
+![reboot](/img/server-guides/telegram/reboot.JPG)
 
 11. Go on your TSD server VIA link connected to Telegram.
 
 Go in preferences and connect to Telegram.
 
-![linking](img/telegram/linkbot.JPG)
+![linking](/img/server-guides/telegram/linkbot.JPG)
 
 12. Push Test button after
 
 RESULTS
 
-![Results](img/telegram/result.JPG)
+![Results](/img/server-guides/telegram/result.JPG)

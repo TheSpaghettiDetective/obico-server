@@ -101,4 +101,4 @@ Feeling excited? Want to contribute? [Check out how.](https://www.obico.io/docs/
 Browse and search in the [Obico Server guide website](https://www.obico.io/docs/server-guides/). If you can't find the answer there, consult the [Discord](https://obico.io/discord) or [open an issue](https://github.com/TheSpaghettiDetective/obico-server/issues/new).
 
 # Thanks
-![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.
+![BrowserStack](docs/img/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.

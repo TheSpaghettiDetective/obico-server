@@ -11,9 +11,25 @@
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
-      <small class="form-text text-muted">
-        Login to be notified by our Telegram bot.
-      </small>
+      <div class="form-text">
+        <p>Login to be notified by our Telegram bot.</p>
+        <div class="text-warning small">
+          If you see "Bot domain invalid", please try the following steps:
+          <ul>
+            <li>If you are in a web browser, hard-refresh the browser.</li>
+            <li>If you are in the Obico mobile app, quit the app and try it again.</li>
+            <li>Try the above steps a few times. I know it's annoying. But Telegram API has a very high failure rate.</li>
+          </ul>
+        </div>
+        <div class="text-warning small">
+          If you press the "Test Telegram Notification" button and see an error, please try the following steps:
+          <ul>
+            <li>If you are in a web browser, hard-refresh the browser. Press the test button again.</li>
+            <li>If you are in the Obico mobile app, quit the app and try it again.</li>
+            <li>Try the above steps a few times.... :(</li>
+          </ul>
+        </div>
+      </div>
       <br>
       <div class="form-group row">
         <div v-if="notificationChannel.channelInfo && notificationChannel.channelInfo.config && notificationChannel.channelInfo.config.chat_id">

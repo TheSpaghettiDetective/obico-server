@@ -236,7 +236,8 @@ class Printer(SafeDeleteModel):
         # current_print_ts != -1 => Currently printing in OctoPrint
 
         if not self.current_print:
-            self.set_current_print(filename, current_print_ts)
+            if filename:  # Sometimes moonraker-obico sends current_print_ts without octoprint_data, which is a bug.
+                self.set_current_print(filename, current_print_ts)
             return
 
         # Current print in OctoPrint matches current_print in db. Nothing to update.

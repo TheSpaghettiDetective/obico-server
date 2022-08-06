@@ -229,7 +229,7 @@ The method the Obico server will call when the user press the "Test notification
 - `printer`: [`PrinterContext`](#class-printercontext).
 - `print`: [`PrintContext`](#class-printcontext).
 - `extra_context`: `Dict`. Reserved for internal use.
-- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty strong (not `None`).
+- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty string (not `None`).
 - `is_warning`: `bool`. If the detected failure is a "warning".
 - `print_paused`: `bool`. If the print was paused as the result of the detected failure.
 
@@ -243,7 +243,7 @@ The method the Obico server will call when the user press the "Test notification
 - `printer`: [`PrinterContext`](#class-printercontext).
 - `print`: [`PrintContext`](#class-printcontext).
 - `extra_context`: `Dict`. Reserved for internal use.
-- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty strong (not `None`).
+- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty string (not `None`).
 - `feature`: [`Feature`](#class-feature).
 - `notification_type`: [`str`](#module-notification_types). The type of this notification.
 

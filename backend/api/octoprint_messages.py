@@ -9,6 +9,7 @@ from lib import mobile_notifications
 from app.models import PrintEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
+LOGGER = logging.getLogger(__name__)
 STATUS_TTL_SECONDS = 240
 
 def process_octoprint_status(printer: Printer, status: Dict) -> None:

@@ -35,8 +35,7 @@ def process_octoprint_status(printer: Printer, status: Dict) -> None:
         set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'temperatures')
         cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
-    if status.get('current_print_ts'):
-        process_octoprint_status_with_ts(status, printer)
+    update_current_print_if_needed(status, printer)
 
     channels.send_status_to_web(printer.id)
 
@@ -60,14 +59,16 @@ def settings_dict(octoprint_settings):
     return settings
 
 
-def process_octoprint_status_with_ts(op_status, printer):
+def update_current_print_if_needed(op_status, printer):
+    if not op_status.get('current_print_ts'):  # Plugin versions 1.0 and later should all have current_print_ts in the payload
+        LOGGER.warn(f'current_print_ts not present. Received status: {op_status}')
+        return
+
     op_event = op_status.get('octoprint_event', {})
     op_data = op_status.get('octoprint_data', {})
     print_ts = op_status.get('current_print_ts')
     current_filename = op_event.get('name') or op_data.get('job', {}).get('file', {}).get('name')
-    if not current_filename:
-        return
-    printer.update_current_print(current_filename, print_ts)
+    printer.update_current_print(print_ts, current_filename)
     if not printer.current_print:
         return
 

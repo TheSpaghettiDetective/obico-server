@@ -229,31 +229,29 @@ class Printer(SafeDeleteModel):
 
         return printer_cur_state and printer_cur_state.get('flags', {}).get('printing', False)
 
-    def update_current_print(self, filename, current_print_ts):
-        if current_print_ts == -1:      # Not printing
-            if self.current_print:
-                if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
-                    self.unset_current_print()
-                else:
-                    LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
-
+    def update_current_print(self, current_print_ts, filename):
+        # current_print_ts == -1 => Not printing in OctoPrint
+        if current_print_ts == -1 and self.current_print:
+            LOGGER.warn(f'current_print_ts=-1 received when current print is still active. Force-closing print. print_id: {self.current_print_id} - printer_id: {self.id}')
+            self.unset_current_print()
             return
 
-        # currently printing
-
+        # currently printing in OctoPrint
         if self.current_print:
             if self.current_print.ext_id == current_print_ts:
                 return
-            # Unknown bug in plugin that causes current_print_ts not unique
 
+            # Unknown bug in plugin that causes current_print_ts to change by a few seconds. Suspected to be caused by two PrintStarted OctoPrint events in quick secession.
+            # So we assume it's the same printer if 2 current_print_ts are within range, and filenames are the same
             if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
                 LOGGER.warn(
                     f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
-
-                return
-            LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
-            self.unset_current_print()
-            self.set_current_print(filename, current_print_ts)
+                self.current_print.ext_id = current_print_ts
+                self.current_print.save()
+            else:
+                LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
+                self.unset_current_print()
+                self.set_current_print(filename, current_print_ts)
         else:
             self.set_current_print(filename, current_print_ts)
 
@@ -272,9 +270,6 @@ class Printer(SafeDeleteModel):
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
-        if not current_print_ts or current_print_ts == -1:
-            raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
-
         try:
             cur_print, _ = Print.objects.get_or_create(
                 user=self.user,

@@ -231,29 +231,34 @@ class Printer(SafeDeleteModel):
 
     def update_current_print(self, current_print_ts, filename):
         # current_print_ts == -1 => Not printing in OctoPrint
-        if current_print_ts == -1 and self.current_print:
-            LOGGER.warn(f'current_print_ts=-1 received when current print is still active. Force-closing print. print_id: {self.current_print_id} - printer_id: {self.id}')
-            self.unset_current_print()
+        if current_print_ts == -1:
+            if self.current_print:
+                LOGGER.warn(f'current_print_ts=-1 received when current print is still active. Force-closing print. print_id: {self.current_print_id} - printer_id: {self.id}')
+                self.unset_current_print()
             return
 
-        # currently printing in OctoPrint
-        if self.current_print:
-            if self.current_print.ext_id == current_print_ts:
-                return
+        # current_print_ts != -1 => Currently printing in OctoPrint
 
-            # Unknown bug in plugin that causes current_print_ts to change by a few seconds. Suspected to be caused by two PrintStarted OctoPrint events in quick secession.
-            # So we assume it's the same printer if 2 current_print_ts are within range, and filenames are the same
-            if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
-                LOGGER.warn(
-                    f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
-                self.current_print.ext_id = current_print_ts
-                self.current_print.save()
-            else:
-                LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
-                self.unset_current_print()
-                self.set_current_print(filename, current_print_ts)
-        else:
+        if not self.current_print:
             self.set_current_print(filename, current_print_ts)
+            return
+
+        # Current print in OctoPrint matches current_print in db. Nothing to update.
+        if self.current_print.ext_id == current_print_ts:
+            return
+
+        # Unknown bug in plugin that causes current_print_ts to change by a few seconds. Suspected to be caused by two PrintStarted OctoPrint events in quick secession.
+        # So we assume it's the same printer if 2 current_print_ts are within range, and filenames are the same
+        if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
+            LOGGER.warn(
+                f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
+            self.current_print.ext_id = current_print_ts
+            self.current_print.save()
+        else:
+            LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
+            self.unset_current_print()
+            self.set_current_print(filename, current_print_ts)
+
 
     def unset_current_print(self):
         print = self.current_print

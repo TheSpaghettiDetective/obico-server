@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict
 from allauth.account.admin import EmailAddress
 from datetime import datetime, timedelta
 import logging
@@ -29,10 +29,6 @@ from lib.utils import dict_or_none
 LOGGER = logging.getLogger(__name__)
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
-
-
-class ResurrectionError(Exception):
-    pass
 
 
 def dh_is_unlimited(dh):

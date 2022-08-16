@@ -11,7 +11,7 @@ This guide is for troubleshooting webcam streaming **in OctoPrint**.
 If the webcam works in OctoPrint but not in the Obico mobile app or mobile app, you need to check [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing).
 :::
 
-## 1. Check the current webcam streaming mode
+## 1. Check the current webcam streaming mode {#1-check-the-current-webcam-streaming-mode}
 
 Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out the current webcam streaming mode.
 
@@ -26,13 +26,13 @@ Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out t
 Learn more about [the advanced mode and the compatibility mode in the Premium Streaming](/docs/user-guides/streaming-compatibility-mode).
 :::
 
-## 2. Change settings to "Always stream in compatibility mode"
+## 2. Change settings to "Always stream in compatibility mode" {#2-change-settings-to-always-stream-in-compatibility-mode}
 
 1. Open the plugin's settings page and set the streaming mode to "**Always stream in compatibility mode**". Follow [this guide](/docs/user-guides/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting) if you are not sure how to do it.
 1.  **(Very important)** Restart the Raspberry Pi. Just restarting OctoPrint is NOT enough in this case.
 1. Check if the webcam streaming works now in OctoPrint. If it does, you can claim victory and open a champagne. Otherwise, continue to [the next step](#3-disable-the-premium-webcam-streaming).
 
-## 3. Check if the webcam is configured correctly in OctoPrint
+## 3. Check if the webcam is configured correctly in OctoPrint {#3-check-if-the-webcam-is-configured-correctly-in-octoprint}
 
 Before checking if the webcam is configured correctly in OctoPrint, let's disable the Obico plugin to be 100% sure it is not the source of the problem.
 

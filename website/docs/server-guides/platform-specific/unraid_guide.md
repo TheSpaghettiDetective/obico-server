@@ -3,11 +3,11 @@
 If video is your cup of tea, follow [this awesome video guide](https://www.youtube.com/watch?v=B2gjxL0MgEo) put together by Ricky at [SNR Tech Bytes](https://www.snrtechbytes.com/).Thank you Ricky!
 
 
-## Install docker-compose
+## Install docker-compose {#install-docker-compose}
 
 Since the original creation of this guide a great new tool to install Docker-Compose on unRAID has been released. It can be installed through the normal process of going to the Apps tab and doing a search for "Docker Compose Manager" and installing the plugin. The below instructions will still work if you'd like to do it manually, however, suggest using the Plug-In instead. Support can be found at the unRAID forums for the [Docker Compose Manager](https://forums.unraid.net/topic/114415-plugin-docker-compose-manager/).
 
-#### Old process to install Docer-Compose:
+#### Old process to install Docer-Compose: {#old-process-to-install-docer-compose}
 
 To run Obico on unRAID, you first must install Docker-Compose on the server. This can be done following the usual instructions found on the [Docker-Compose Install Guide](https://docs.docker.com/compose/install/#install-compose-on-linux-systems).
 
@@ -29,7 +29,7 @@ Just as a PSA, if this list of commands is incorrect in `/boot/config/go` unRAID
 
 This will install Docker-Compose permanently on your server.
 
-## Installing Obico
+## Installing Obico {#installing-obico}
 
 Obico can now be installed on your unRAID server the same way as the normal Linux method found on the [README.md]. However, I would recommend installing it in a directory other than the root home folder (`/root/`) as this data is not persistent between restarts. Either create a share specifically for Obico or install it in an existing share, I recommend `/mnt/user/appdata/Obico`. Here is the following command to do so.
 
@@ -48,7 +48,7 @@ git pull
 docker-compose up -d --force-recreate --build
 ```
 
-## Configuring Obico
+## Configuring Obico {#configuring-obico}
 Navigate to port 3334/admin on your server.  For the following steps we will use `tower.local` as the server address with the root IP address as `192.168.1.10`.  Navigate to `tower.local:3334/admin` and log in with `root@example.com` and password `supersecret`
 
 Go to Sites, click *example.com*, and change the Domain Name to your server IP address at port 3334, ex. `192.168.1.10:3334`.  Save the changes and exit out of the admin site. 
@@ -70,7 +70,7 @@ Rebuild the container (Note - if you are going to limit the CPU usage you can al
 docker-compose up -d --force-recreate --build
 ```
 
-## Updating to Obico
+## Updating to Obico {#updating-to-obico}
 
 Since Obico has been renamed to Obico, updates aren't pushed to the old Repository anymore, if you have previously installed Obico with the old repository, here are the steps to update.
 
@@ -83,11 +83,11 @@ git checkout release
 docker-compose up --build -d
 ```
 
-## Issues with the Installation
+## Issues with the Installation {#issues-with-the-installation}
 
 Unlike most containers that you install to unRAID, containers installed with Docker-Compose are limited in what you can do with them through the GUI. You cannot update them, change their logo, description, or do anything except for stop and restart them through the GUI. When you update the containers, you must remove the old and outdated ones manually from the command line using `docker image rm`.
 
-## Limit CPU Usage
+## Limit CPU Usage {#limit-cpu-usage}
 By default Obico will use all of the processing power available from your server just for approximately 1 second every 10 seconds for a typical quad-core or 6-core system.  You can use the following steps to limit Obico to only using a certain amount of CPU usage.  This method doesn't actually constrain it to certain cores, but it sets the maximum processing power it can use overall.  So if you have a 4 core / 8 thread system, as far as docker-compose is concerned you have 8 "cpus".  Setting it to use 4 cpus will result in Obico using 50% of your processing power for about 2 seconds, vs the original 100% power for 1 second.  If you have a 6-core/12-thread machine then `cpus: 6` would be using half of your machine power.  
 1. Use the Unraid GUI to Stop All running containers
 2. Open a terminal and navigate to the Obico install directory, then open the docker-compose.yml file:  

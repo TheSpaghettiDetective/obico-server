@@ -4,7 +4,7 @@ title: Download plugin log file for debugging
 sidebar_label: Download plugin log file for debugging
 ---
 
-## Turn on debug logging
+## Turn on debug logging {#turn-on-debug-logging}
 
 1. Go to "**Logging**" tab in OctoPrint Settings dialog box.
 1. In the "**Logging Levels**" section, find "**octoprint.plugin.thespaghettidetective**" entry.
@@ -13,7 +13,7 @@ sidebar_label: Download plugin log file for debugging
 
 ![turn on debug logging](/img/user-guides/helpdocs/tsd-plugin-debug-logging.gif)
 
-## Download "octoprint.log" file
+## Download "octoprint.log" file {#download-octoprintlog-file}
 
 **Very important: After you change the debug logging level, please reproduce the problem so that OctoPrint has the chance to log the relevant information in the log file.**
 

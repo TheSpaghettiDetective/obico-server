@@ -6,7 +6,7 @@ sidebar_label: Why are my printers archived and how to un-archive them
 
 If some of your printers have been archived, that's because you have more printers than your plan allows.
 
-## The number of printers your plan allows
+## The number of printers your plan allows {#the-number-of-printers-your-plan-allows}
 
 * If your account is on the Free plan, you can't have more than 1 printer.
 
@@ -16,7 +16,7 @@ If some of your printers have been archived, that's because you have more printe
 Learn more about the limits of the Free plan on [the pricing page](https://app.obico.io/ent_pub/pricing/).
 :::
 
-## How can I un-archive my printers?
+## How can I un-archive my printers? {#how-can-i-un-archive-my-printers}
 
 In order to un-archive your printers, you need to make sure your plan allows at least the combined number of the active printers and the printers you intend to un-archive.
 

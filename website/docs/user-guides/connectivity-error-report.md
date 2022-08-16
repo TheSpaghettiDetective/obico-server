@@ -5,7 +5,7 @@ title: Use the diagnostic page to help with troubleshooting
 
 Obico for OctoPrint plugin provides an advanced diagnostic page that can help you understand the severity of the connection issue that happen under the hood so that you can make informed decision if/how you should fix it.
 
-## Understand the Diagnostic Report
+## Understand the Diagnostic Report {#understand-the-diagnostic-report}
 
 The Diagnostic Report may looks like this:
 
@@ -16,19 +16,19 @@ Depending on whether or not there have been errors, there may be up to 2 parts i
 1. This part displays the issues related to the connection to the Obico Server. This part will be missing if there have been no server connection errors since the restart of OctoPrint.
 1. This part displays the issues related to the connection to your webcam. This part will be missing if there have been no webcam errors since the restart of OctoPrint.
 
-## How to assess the server connectivity issues
+## How to assess the server connectivity issues {#how-to-assess-the-server-connectivity-issues}
 
 The info you need to assess the server connectivity issues is highlighted in this screenshot.
 
 ![](/img/user-guides/helpdocs/tsd-plugin-diagnostic-page-server-connection.png)
 
-#### Error rate
+#### Error rate {#error-rate}
 
 When the error rate is smaller than 5%, it is usually not a problem as you can still use Obico mobile app or web app just fine, often without even noticing even the slightest glitches.
 
 However, if the error rate is higher than 20%, you may want to take action to figure out what is wrong.
 
-#### Occurrence of the first error and the most recent error
+#### Occurrence of the first error and the most recent error {#occurrence-of-the-first-error-and-the-most-recent-error}
 
 The timestamp when the first error and the most recent error happened, respectively.
 
@@ -42,7 +42,7 @@ From these diagnostic information, you can determine:
 Please note only the errors happened in the current OctoPrint session. Errors from all the previous OctoPrint sessions are erased.
 :::
 
-### 4.1 If the error rate is 100%:
+### 4.1 If the error rate is 100%: {#41-if-the-error-rate-is-100}
 
 This means your OctoPrint has no connection to the server at all.
 
@@ -61,7 +61,7 @@ If you are not running the OctoPrint on a Raspberry Pi, the commands may be slig
 
 The error you may see will probably be very hard to understand. Remember you can always [get help from a human](/docs/user-guides/contact-us-for-support).
 
-### 4.2 If the error rate is less than 100%:
+### 4.2 If the error rate is less than 100%: {#42-if-the-error-rate-is-less-than-100}
 
 This means your OctoPrint has intermittent connection problems to the server.
 
@@ -76,7 +76,7 @@ Below is a list of some quick things you can do to confirm a Wi-Fi problem and f
 * If it's not an option to relocate the Pi or the router to be closer to each other, Wi-Fi repeater is another option. You may want to temporarily move the Pi close to the router just to make sure the Wi-Fi signal strength is the cause of the problem because you shell out some $$$ for a Wi-Fi repeater.
 
 
-## How to assess the webcam connectivity issues
+## How to assess the webcam connectivity issues {#how-to-assess-the-webcam-connectivity-issues}
 
 In most case, your webcam is connected to the Raspberry Pi, or is on the same WiFi network. So it should rarely fail. If you are seeing any errors here, it's most likely caused by the misconfigured webcam settings in OctoPrint.
 

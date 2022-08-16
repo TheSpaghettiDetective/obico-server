@@ -16,7 +16,7 @@ What contribute to an optimal camera setup boil down to 3 things:
 
 Let's go through them one by one.
 
-## Good Angle
+## Good Angle {#good-angle}
 
 A good angle for your camera means:
 
@@ -26,7 +26,7 @@ A good angle for your camera means:
 
 Let's look at some good examples. *Click on the images to view them in full size.*
 
-### Good example: bed-mounted Logitech C270
+### Good example: bed-mounted Logitech C270 {#good-example-bed-mounted-logitech-c270}
 
 A bed mounted camera (C270) to get a view of the bed. This is particularly nice as it always follows the bed around and keeps the same perspective no matter where the bed moves.
 
@@ -41,7 +41,7 @@ Get [STL file for this camera mount](https://www.thingiverse.com/thing:3233086) 
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Luke's Laboratory. Click to enlarge.</div>
 </div>
 
-### Good example: Logitech C270 attached to the corner of printer frame
+### Good example: Logitech C270 attached to the corner of printer frame {#good-example-logitech-c270-attached-to-the-corner-of-printer-frame}
 
 This works well for printers with a rigid box frame around the print volume.
 
@@ -55,7 +55,7 @@ This works well for printers with a rigid box frame around the print volume.
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Luke's Laboratory. Click to enlarge.</div>
 </div>
 
-### Good example: Pi Camera attached to the corner of printer frame
+### Good example: Pi Camera attached to the corner of printer frame {#good-example-pi-camera-attached-to-the-corner-of-printer-frame}
 
 The camera mount also functions as a wire duct for the brittle ribbon cable.
 
@@ -70,7 +70,7 @@ The camera mount also functions as a wire duct for the brittle ribbon cable.
 </div>
 
 
-### Good example: Pi Camera attached to the side
+### Good example: Pi Camera attached to the side {#good-example-pi-camera-attached-to-the-side}
 
 A slight variation of the previous setup. Camera is moved from the corner to the side to miss the gantry. The camera view (2nd picture) shows that it has an un-obstructed view of the print bed.
 
@@ -84,7 +84,7 @@ A slight variation of the previous setup. Camera is moved from the corner to the
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Larry Jankauski. Click to enlarge.</div>
 </div>
 
-### Good example: Logitech C920 attached to the corner of printer frame
+### Good example: Logitech C920 attached to the corner of printer frame {#good-example-logitech-c920-attached-to-the-corner-of-printer-frame}
 
 <div>
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
@@ -96,7 +96,7 @@ A slight variation of the previous setup. Camera is moved from the corner to the
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Mitch Bardijn. Click to enlarge.</div>
 </div>
 
-### Bad example: Extruder blocking the camera from seeing most part of the print volume
+### Bad example: Extruder blocking the camera from seeing most part of the print volume {#bad-example-extruder-blocking-the-camera-from-seeing-most-part-of-the-print-volume}
 
 <div>
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
@@ -105,7 +105,7 @@ A slight variation of the previous setup. Camera is moved from the corner to the
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Kenneth Jiang. Click to enlarge.</div>
 </div>
 
-### Good example: bed-mounted Logitech C270
+### Good example: bed-mounted Logitech C270 {#good-example-bed-mounted-logitech-c270-1}
 
 This mount is close to print bed so may not cover the whole print volume. But it's good enough. Plus it takes smaller desktop space.
 
@@ -116,7 +116,7 @@ This mount is close to print bed so may not cover the whole print volume. But it
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of discord user @DutchOrange. Click to enlarge.</div>
 </div>
 
-### Good example: Extruder not blocking the camera
+### Good example: Extruder not blocking the camera {#good-example-extruder-not-blocking-the-camera}
 
 * This camera view includes most, but not all of the print volume. This is okay.
 * The background is very clean. There are very few things in the background that could confuse The Detective.
@@ -129,19 +129,19 @@ This mount is close to print bed so may not cover the whole print volume. But it
 </div>
 
 
-## Frequently-Asked-Questions about camera angle
+## Frequently-Asked-Questions about camera angle {#frequently-asked-questions-about-camera-angle}
 
-### Can The Detective work with the camera at the top and looking straight down?
+### Can The Detective work with the camera at the top and looking straight down? {#can-the-detective-work-with-the-camera-at-the-top-and-looking-straight-down}
 
 Yes. The Detective can work with almost any camera angle, because she has seen all kinds of different camera setup from thousands of the users.
 
 Having said that, The Detective does a slightly better job at detecting failures when the camera is mounted on the side, slightly looking down about 15 degrees angle.
 
-### Can The Detective work with extruder-mounted camera?
+### Can The Detective work with extruder-mounted camera? {#can-the-detective-work-with-extruder-mounted-camera}
 
 Barely. Users have reported some success stories in which The Detective did a decent job with extruder cameras. But it's a little hit or miss. Avoid extruder-mounted camera if you have a choice.
 
-## Good Lighting
+## Good Lighting {#good-lighting}
 
 Even if you are not a top photographer, you can get an optimal lighting condition by following a few simple rules:
 
@@ -149,7 +149,7 @@ Even if you are not a top photographer, you can get an optimal lighting conditio
 * Eliminate backlight. Backlight is arguably the most common adverse lighting problem for The Detective (and for human eyes too). We will talk about overcoming backlight later.
 * Minimize shadows. It's very hard to completely eliminate shadows from the entire print volume. But try your best to minimize them. Again doing so will help your own eyes see the prints better on the webcam feed.
 
-### Let's talk about backlight.
+### Let's talk about backlight. {#lets-talk-about-backlight}
 
 Backlight happens when the camera and light source are positioned on the opposite sides of the printer.
 
@@ -182,7 +182,7 @@ Here are a few examples of backlight. As you can see, backlight creates a "black
 
 Again we want to use some examples to explain these rules.
 
-### Good example: Just a lamp. Simple and effective
+### Good example: Just a lamp. Simple and effective {#good-example-just-a-lamp-simple-and-effective}
 
 * A small lamp makes big difference. Notice how well-lit the entire print volume is.
 * A good lighting solution doesn't have to be complicated or expensive. This solution will probably cost you $10 and 10 minutes.
@@ -195,7 +195,7 @@ Again we want to use some examples to explain these rules.
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Luke's Laboratory. Click to enlarge.</div>
 </div>
 
-### Good example: LED strip around the box frame
+### Good example: LED strip around the box frame {#good-example-led-strip-around-the-box-frame}
 
 LED strip is an ideal choice of lighting because:
 
@@ -212,7 +212,7 @@ LED strip is an ideal choice of lighting because:
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Luke's Laboratory. Click to enlarge.</div>
 </div>
 
-### Good example: LED strip around the box frame
+### Good example: LED strip around the box frame {#good-example-led-strip-around-the-box-frame-1}
 
 * LED strip all around the frame to create even light from all directions.
 * LED strip hidden behind the rail that helps diffuse the light and reduce glaring.
@@ -228,7 +228,7 @@ LED strip is an ideal choice of lighting because:
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of discord user @DutchOrange. Click to enlarge.</div>
 </div>
 
-### Good example: LED strip on only one side
+### Good example: LED strip on only one side {#good-example-led-strip-on-only-one-side}
 
 Notice that the LED strip is positioned on the same side as the camera. This eliminates backlight.
 
@@ -239,7 +239,7 @@ Notice that the LED strip is positioned on the same side as the camera. This eli
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Mitch Bardijn. Click to enlarge.</div>
 </div>
 
-### Good example: LED strip right next to the camera
+### Good example: LED strip right next to the camera {#good-example-led-strip-right-next-to-the-camera}
 
 <div>
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
@@ -248,7 +248,7 @@ Notice that the LED strip is positioned on the same side as the camera. This eli
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of <a href="https://www.thingiverse.com/thing:3233086">this awesome Thingiverse user</a>. Click to enlarge.</div>
 </div>
 
-### Good example: Camera at the front. LED strip next to it, hidden inside the frame
+### Good example: Camera at the front. LED strip next to it, hidden inside the frame {#good-example-camera-at-the-front-led-strip-next-to-it-hidden-inside-the-frame}
 
 <div>
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
@@ -260,7 +260,7 @@ Notice that the LED strip is positioned on the same side as the camera. This eli
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of discord user @catfishj. Click to enlarge.</div>
 </div>
 
-### Good example: LED strip attached vertically to the frame.
+### Good example: LED strip attached vertically to the frame. {#good-example-led-strip-attached-vertically-to-the-frame}
 
 <div>
 <Zoom overlayBgColorEnd="var(--ifm-background-surface-color)">
@@ -269,7 +269,7 @@ Notice that the LED strip is positioned on the same side as the camera. This eli
 <div style={{fontSize: "0.8em", fontStyle: "italic", color: "rgba(1,1,1,0.5)"}}>Photo curtesy of Larry Jankauski. Click to enlarge.</div>
 </div>
 
-## Good Focus
+## Good Focus {#good-focus}
 
 The Detective has 20/20 eyesight. But it doesn't help when she is presented with a blurry image to begin with.
 

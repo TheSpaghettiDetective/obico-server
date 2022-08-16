@@ -4,7 +4,7 @@ title: Hardware requirements
 
 The Obico Server runs a powerful Machine Learning model that requires a device powerful enough to run it. And by powerful, we mean most anything from the last decade.
 
-## Single Board Computers
+## Single Board Computers {#single-board-computers}
 
 :::info
 This is an incompletely list. Only tested / known devices are included.
@@ -17,7 +17,7 @@ Latte Panda | ❌
 Jetson Nano 2gb | ❌
 Jetson Nano 4gb | ✅
 
-## PC's (and laptops)
+## PC's (and laptops) {#pcs-and-laptops}
 
 If it has at least 4gb of RAM, it should run fine.
 

@@ -7,7 +7,7 @@ Please note that all webcams we have tested so far are compatible when it is str
 
 The list below only applies when you configured TSD plugin to "never stream in compatibility mode".
 
-## Webcams known to work with premium video streaming (advanced mode)
+## Webcams known to work with premium video streaming (advanced mode) {#webcams-known-to-work-with-premium-video-streaming-advanced-mode}
 
 | Webcam Model | comments |
 |------|-------|
@@ -25,7 +25,7 @@ The list below only applies when you configured TSD plugin to "never stream in c
 | Logitech QuickCam Pro 9000 ||
 | Logitech C525 ||
 
-## Webcams known to NOT work with premium video streaming  (advanced mode)
+## Webcams known to NOT work with premium video streaming  (advanced mode) {#webcams-known-to-not-work-with-premium-video-streaming--advanced-mode}
 
 | Webcam Model | comments |
 |------|-------|

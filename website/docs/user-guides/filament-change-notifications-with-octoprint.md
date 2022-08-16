@@ -8,7 +8,7 @@ Filament runout sensors are great, but many users have reported that their filam
 
 
 
-## Why Use A Filament Runout Sensor?
+## Why Use A Filament Runout Sensor? {#why-use-a-filament-runout-sensor}
 
 Without a filament runout sensor, using every last bit of filament is quite the challenge! If you test your luck and try to use up the last bit of a spool of filament, and you forget to swap to a new spool mid-print, you will end up printing a bunch of nothing! If you have a brittle filament and it snaps, your printer will end up air printing in a similar fashion. Filament runout sensors help you by stopping the print if either of the above happens.
 
@@ -26,7 +26,7 @@ This guide will show you how to enable HOST_ACTION_COMMANDS and M600 in your Mar
 
 
 
-## Enable HOST_ACTION_COMMANDS and M600
+## Enable HOST_ACTION_COMMANDS and M600 {#enable-host_action_commands-and-m600}
 
 More likely than not, your printer was not shipped with HOST_ACTION_COMMANDS and/or M600 enabled. So you will need to recompile the firmware to get them enabled.
 
@@ -39,7 +39,7 @@ The process to recompile the firmware can vary slightly depending on what printe
 If your printer is not listed above but has a 32-bit mainboard, follow [this general guide](/docs/user-guides/filament-change-notifications-with-octoprint-general-32bit). Once you figure out the process that is specific to your printer, please click "Edit this page" at the bottom of this guide to contribute it back to the community.
 
 
-## Enabling Filament Change Notifications for OctoPrint and The Spaghetti Detective
+## Enabling Filament Change Notifications for OctoPrint and The Spaghetti Detective {#enabling-filament-change-notifications-for-octoprint-and-the-spaghetti-detective}
 
 Now that you have updated your firmware, The Spaghetti Detective can notify you when a filament runout is detected or if a color change is prompted. If you don’t already have an account, sign up for free. The free plan allows unlimited printer notifications
 

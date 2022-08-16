@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::
 
-## Hardware requirements
+## Hardware requirements {#hardware-requirements}
 
 Before you start, make sure:
 
@@ -25,7 +25,7 @@ Before you start, make sure:
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
-## Step 1: Download Obico for Klipper and run `install.sh`
+## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
 
 1. SSH to the Raspberry Pi your Klipper runs on.
 2. Run:
@@ -43,7 +43,7 @@ Before you start, make sure:
     - A **6-digit verification code**. You will obtain this 6-digit verification code in the following steps.
 7. Leave the terminal open. We will come back to enter the 6-digit code once we obtain it from the Obico app.
 
-## Step 2: Sign up for an Obico account.
+## Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
 
 :::tip
 
@@ -98,7 +98,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**ðŸ
 
 <br />
 
-## Step 3: Launch the "Link Printer" wizard in the Obico app
+## Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
 
 <Tabs
   groupId="app"
@@ -123,7 +123,7 @@ On the welcome page, click the "**Link Printer**" button.
   </TabItem>
 </Tabs>
 
-## Step 4: Obtain the 6-digit verification code
+## Step 4: Obtain the 6-digit verification code {#step-4-obtain-the-6-digit-verification-code}
 
 <Tabs
   groupId="app"
@@ -158,7 +158,7 @@ On the welcome page, click the "**Link Printer**" button.
   </TabItem>
 </Tabs>
 
-## Step 5: Enter the 6-digit code
+## Step 5: Enter the 6-digit code {#step-5-enter-the-6-digit-code}
 
 1. Go back to terminal for your SSH session in Step 1.
 1. Enter the 6-digit code you obtained in the previous step.
@@ -169,21 +169,21 @@ On the welcome page, click the "**Link Printer**" button.
 
 Hooray! You are done! You can now close the terminal. Obico for Klipper is now running as a system service.
 
-## Step 6 (optional): Give your printer a shinny name!
+## Step 6 (optional): Give your printer a shinny name! {#step-6-optional-give-your-printer-a-shinny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
-## What's next?
+## What's next? {#whats-next}
 
-### Check out your printer feed!
+### Check out your printer feed! {#check-out-your-printer-feed}
 
 Press "Go Check Out Printer Feed!" to see everything you care about your printer: the webcam feed, heater temperature, time remaining on the print job, and more! Remember, you can see your printer feed anywhere you go, as long as you have an internet connection on your phone!
 
-### Test the magical failure detection!
+### Test the magical failure detection! {#test-the-magical-failure-detection}
 
 The Detective sounds too magical to be true? [See The Detective in action for yourself](/docs/user-guides/how-to-test-failure-detection).
 
-### Change printer settings.
+### Change printer settings. {#change-printer-settings}
 
 The default settings for your printer in The Spaghetti Detective are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
 

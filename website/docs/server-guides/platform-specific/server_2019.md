@@ -6,7 +6,7 @@ If you happen to have a Server 2019 box up and running, here are the instruction
 
 All commands are run from PowerShell.
 
-### Prerequisites
+### Prerequisites {#prerequisites}
 Need to have both Hyper-V and Containers features installed on the server.
 
 ```
@@ -18,7 +18,7 @@ Restart-Computer -Force
 ```
 
 
-### Install Docker Enterprise
+### Install Docker Enterprise {#install-docker-enterprise}
 ```
 Install-Module DockerMSFTProvider
 
@@ -28,13 +28,13 @@ Import-Packageprovider -Name DockerMSFTProvider -Force
 Install-Package -Name Docker -Source DockerDefault
 ```
 
-### Enable Linux Containers
+### Enable Linux Containers {#enable-linux-containers}
 ```
 [Environment]::SetEnvironmentVariable("LCOW_SUPPORTED", "1", "Machine")
 ```
 
 
-### Create Daemon Config File
+### Create Daemon Config File {#create-daemon-config-file}
 This creates a new daemon.json file.  If you already have one, then just edit it to add the ```"experimental": true``` value
 ```
 $configfile = @"
@@ -45,16 +45,16 @@ $configfile = @"
 $configfile | Out-File -FilePath C:\ProgramData\docker\config\daemon.json -Encoding ascii -Force
 ```
 
-### Install Linux Kernel
+### Install Linux Kernel {#install-linux-kernel}
 ```
 Invoke-WebRequest -Uri "https://github.com/linuxkit/lcow/releases/download/v4.14.35-v0.3.9/release.zip" -UseBasicParsing -OutFile release.zip
 Expand-Archive release.zip -DestinationPath "$Env:ProgramFiles\Linux Containers\."
 ```
 
-### Install Docker-compose
+### Install Docker-compose {#install-docker-compose}
 ```
 $dockerComposeVersion = "1.26.2"
 Invoke-WebRequest "https://github.com/docker/compose/releases/download/$dockerComposeVersion/docker-compose-Windows-x86_64.exe" -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
 ```
 
-### [Get the code and start the server](../../configure)
+### [Get the code and start the server](../../configure) {#get-the-code-and-start-the-server}

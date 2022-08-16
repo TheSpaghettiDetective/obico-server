@@ -2,57 +2,57 @@
 title: G-Code file API
 ---
 
-## GET `/api/v1/gcodes/`
+## GET `/api/v1/gcodes/` {#get-apiv1gcodes}
 
-### Request
+### Request {#request}
 
-#### Query parameters
+#### Query parameters {#query-parameters}
 
 - `page`: Which page of objects to return. For pagination.
 - `page_size`: The number of objects to return. For pagination.
 
-### Response
+### Response {#response}
 
-#### Success
+#### Success {#success}
 
 - Code: `200`
 - Body: A `List` of [`GCodeFile`](/docs/api/api-objects/#gcodefile) objects.
 
 
-## GET `/api/v1/gcodes/{:id}/`
+## GET `/api/v1/gcodes/{:id}/` {#get-apiv1gcodesid}
 
-### Request
+### Request {#request-1}
 
-#### Query parameters
+#### Query parameters {#query-parameters-1}
 
 None.
 
-### Response
+### Response {#response-1}
 
-#### Success
+#### Success {#success-1}
 
 - Code: `200`
 - Body: A [`GCodeFile`](/docs/api/api-objects/#gcodefile) objects.
 
-#### Not found
+#### Not found {#not-found}
 
 When the G-Code file specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 
 - Code: `404`
 
 
-## DELETE `/api/v1/gcodes/{:id}/`
+## DELETE `/api/v1/gcodes/{:id}/` {#delete-apiv1gcodesid}
 
 Delete the [`GCodeFile`](/docs/api/api-objects/#gcodefile) object specified by `{:id}`
 
-### Response
+### Response {#response-2}
 
-#### Success
+#### Success {#success-2}
 
 - Code: `200`
 - Body: Empty.
 
-#### Not found
+#### Not found {#not-found-1}
 
 When the G-Code file specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 

@@ -3,7 +3,7 @@ id: disable-25-fps-streaming
 title: Should I disable the webcam streaming? If so, how?
 ---
 
-## Should I disable the webcam streaming?
+## Should I disable the webcam streaming? {#should-i-disable-the-webcam-streaming}
 
 There are 2 reasons why you need to consider disabling the webcam streaming:
 
@@ -12,7 +12,7 @@ There are 2 reasons why you need to consider disabling the webcam streaming:
 2. **Webcam streaming not working in OctoPrint.** If, after installing `Obico for OctoPrint` plugin, you can no longer see webcam stream in OctoPrint, you should restart the Raspberry Pi and wait for a few minutes to see if the webcam stream will appear. If not, you should consider disabling the webcam streaming.
 
 
-## How can I do that?
+## How can I do that? {#how-can-i-do-that}
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 2. Scroll down the navigation bar on the left side.

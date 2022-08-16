@@ -62,7 +62,7 @@ def settings_dict(octoprint_settings):
 
 
 def update_current_print_if_needed(op_status, printer):
-    if not op_status.get('current_print_ts'):  # Plugin versions 1.0 and later should all have current_print_ts in the payload
+    if not op_status.get('current_print_ts'):  # Absence of current_print_ts means OctoPrint/Moonraker has lost the connection to the printer, and hence printing status unknown.
         LOGGER.warn(f'current_print_ts not present. Received status: {op_status}')
         return
 

@@ -116,7 +116,7 @@ module.exports = {
             },
             {
               label: 'Developer Tutorials',
-              to: '/docs/api/',
+              to: '/docs/tutorials/',
             },
           ],
         },
@@ -224,11 +224,11 @@ module.exports = {
             },
             {
               label: 'Developer Tutorials',
-              to: '/docs/api/',
+              to: '/docs/tutorials/',
             },
           ],
         },
-        
+
 
         {
           title: 'Company',

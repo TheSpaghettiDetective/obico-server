@@ -22,7 +22,9 @@ Because all the Pro features for the Obico Cloud are also available for the self
 
 ## Why doesn't the Premium Streaming work? {#why-doesnt-the-premium-streaming-work}
 
-The Premium Streaming is based on [the WebRTC protocol](https://webrtc.org/). WebRTC is an interesting network protocol is very susceptible to network configurations.
+The Premium Streaming is based on [the WebRTC protocol](https://webrtc.org/). WebRTC is an interesting network protocol that is very susceptible to network configurations.
+
+If you are not getting the Premium Streaming in your self-hosted server, the first step is to link your printer to [the Obico Cloud](https://app.obico.io) and test it there. If the streaming doesn't work in the cloud, you need to follow [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing/) to figure it out.
 
 If the Premium Streaming works in the Obico Cloud but not in your self-hosted server, chances are there are some problems with your server's network configurations.
 

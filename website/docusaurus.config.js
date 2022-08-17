@@ -14,6 +14,10 @@ module.exports = {
   onBrokenMarkdownLinks: 'throw',
   favicon: '/img/favicon.png',
   themeConfig: {
+    announcementBar: {
+      id: 'giveStarOnGitHubAnnouncement',
+      content: `⭐️ If you like Obico, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/TheSpaghettiDetective/obico-server">GitHub</a>`,
+    },
     colorMode: {
       // "light" | "dark"
       defaultMode: 'dark',

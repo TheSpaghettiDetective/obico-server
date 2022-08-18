@@ -1,5 +1,5 @@
 <template>
-  <layout ref="layout">
+  <layout>
     <template v-slot:content>
       <b-container>
         <b-row>
@@ -271,7 +271,7 @@ cd moonraker-obico
 import axios from 'axios'
 import moment from 'moment'
 import urls from '@config/server-urls'
-import {onPageMounted, onPrinterLinked} from '@config/event-tracker'
+import {onPrinterLinked} from '@config/event-handler'
 import routes from '@src/views/printer-wizard/wizard-routes'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
@@ -331,11 +331,6 @@ export default {
     // Start from platform selection after page refresh
     if (this.$route.path !== routes.printerWizard) {
       this.$router.push(routes.printerWizard + `?${window.location.search}`)
-    }
-  },
-  mounted() {
-    if (onPageMounted) {
-      onPageMounted(this.$refs.layout?.user?.id);
     }
   },
   computed: {

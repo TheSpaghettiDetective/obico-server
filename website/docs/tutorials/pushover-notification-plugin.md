@@ -42,7 +42,7 @@ The "API Token/Key" will be used to configure the Obico notification plugin we w
 3. Add a line that looks like this:
 ```
 ...
-PUSHOVER_APP_TOKEN="the-pushover-app-token-you-obtained-in-step-1"
+PUSHOVER_APP_TOKEN=the-pushover-app-token-you-obtained-in-step-1
 ...
 ```
 

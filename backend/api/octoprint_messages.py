@@ -75,7 +75,7 @@ def update_current_print_if_needed(msg, printer):
     op_event = msg.get('event') or msg.get('octoprint_event') or {}
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
     print_ts = msg.get('current_print_ts')
-    current_filename = op_event.get('name') or printer_status.get('job', {}).get('file', {}).get('name')
+    current_filename = op_event.get('data', {}).get('name') or printer_status.get('job', {}).get('file', {}).get('name')
     printer.update_current_print(print_ts, current_filename)
     if not printer.current_print:
         return

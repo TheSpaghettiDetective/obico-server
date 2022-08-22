@@ -2,7 +2,7 @@
 title: API Objects
 ---
 
-## `Printer`
+## `Printer` {#printer}
 
 An object that represents a printer.
 
@@ -31,14 +31,14 @@ An object that represents a printer.
 - `normalized_p`: A normalized *prediction score* for failure detection. It's a number between 0 and 1. 0 means no failure is detected. 1 means the maximum confidence on predicting a print failure.
 - `auth_token`: The token the printer can use to authenticate itself.
 
-## `PrinterStatus`
+## `PrinterStatus` {#printerstatus}
 
 - `state`: A [`State`](#state) object.
 - `job`: A [`Job`](#job) object.
 - `progress`: A [`JobProgress`](#jobprogress) object.
 - `temperatures`: A [`temperatures`](#temperatures) object.
 
-## `State`
+## `State` {#state}
 
 - `text`: A textual representation of the current state of the printer, e.g. “Operational” or “Printing”.
 - `flags`: Printer state flags
@@ -52,7 +52,7 @@ An object that represents a printer.
 - `flags.ready`: true if the printer is operational and no data is currently being streamed to SD, so ready to receive instructions
 - `flags.closedOrError`: true if the printer is disconnected (possibly due to an error), false otherwise
 
-## `Job`
+## `Job` {#job}
 
 - `estimatedPrintTime`: The estimated print time for the file, in seconds.
 - `lastPrintTime`: The print time of the last print of the file, in seconds.
@@ -60,7 +60,7 @@ An object that represents a printer.
 - `filament.length`: Length of filament used, in mm
 - `filament.volume`: Volume of filament used, in cm³
 
-## `JobProgress`
+## `JobProgress` {#jobprogress}
 
 - `completion`: Percentage of completion of the current print job
 - `filepos`: Current position in the file being printed, in bytes from the beginning
@@ -74,17 +74,17 @@ An object that represents a printer.
     - `mixed-analysis`: mixture of estimate and analysis
     - `mixed-average`: mixture of estimate and average
 
-## `Temperatures`
+## `Temperatures` {#temperatures}
 
 An `Map` object. The `key` of the map is the name of the heater, such as "tool0", "bed". The `value` of the map is an [`Temperature`](#temperature) object.
 
-## `Temperature`
+## `Temperature` {#temperature}
 
 - `actual`: Current temperature
 - `target`: Target temperature, may be null if no target temperature is set.
 - `offset`: Currently configured temperature offset to apply, will be left out for historic temperature information.
 
-## `PrinterSettings`
+## `PrinterSettings` {#printersettings}
 
 - `webcam_flipV`: `true` if the webcam is flipped vertically. Otherwise `false`.
 - `webcam_flipH`: `true` if the webcam is flipped horizontally. Otherwise `false`.
@@ -94,13 +94,13 @@ An `Map` object. The `key` of the map is the name of the heater, such as "tool0"
 - `agent_version`: The version of the agent.
 - `temp_profiles`: An `List` of `Map` objects. The `key` of the map is the name of the heater, such as "chamber", "bed". The `value` of the map is the preset temperature.
 
-## `TemperatureProfile`
+## `TemperatureProfile` {#temperatureprofile}
 
 - `actual`: Current temperature
 - `target`: Target temperature, may be null if no target temperature is set.
 - `offset`: Currently configured temperature offset to apply, will be left out for historic temperature information.
 
-## `Print`
+## `Print` {#print}
 
 An object that represents a specific print job. If a G-Code file is printed multiple times, multiple print objects will be generated for each of them.
 
@@ -126,7 +126,7 @@ A dummy print object will be created when a timelapse video is uploaded to the s
     - `NOT_FAILED`: There are no print failures.
 - `printshotfeedback_set`:
 
-## `PrintShotFeedback`
+## `PrintShotFeedback` {#printshotfeedback}
 
 An object that contains the info about a video frame (a snapshot) in a print timelapse video and the user input (feedback) to indicate if it contains any failure.
 
@@ -139,7 +139,7 @@ An object that contains the info about a video frame (a snapshot) in a print tim
     - `UNANSWERED`: It can be determined if it contains a failure.
 - `answered_at`: The timestamp when the user provides the feedback. Null if the user hasn't provided the feedback. In ISO-8601 format.
 
-## `GCodeFile`
+## `GCodeFile` {#gcodefile}
 
 An object that represents a G-Code file.
 
@@ -151,7 +151,7 @@ An object that represents a G-Code file.
 - `num_bytes`: The size of the GCodeFile in bytes.
 
 
-## `User`
+## `User` {#user}
 
 - `email`: Email.
 - `consented_at`: The timestamp when the user has consented to the terms and conditions. It should always be the time when the user signs up. In ISO-8601 format.

@@ -2,11 +2,11 @@
 title: Print API
 ---
 
-## GET `/api/v1/prints/`
+## GET `/api/v1/prints/` {#get-apiv1prints}
 
-### Request
+### Request {#request}
 
-#### Query parameters
+#### Query parameters {#query-parameters}
 
 - `filter`: An `Enum`.
     - `cancelled`: Return only the prints that are cancelled.
@@ -19,47 +19,47 @@ title: Print API
 - `start`: The number of objects at the beginning of the result to skip. Not valid if `sorting` is absent. For pagination.
 - `limit`: The number of objects to return. Not valid if `sorting` is absent. For pagination.
 
-### Response
+### Response {#response}
 
-#### Success
+#### Success {#success}
 
 - Code: `200`
 - Body: A `List` of [`Print`](/docs/api/api-objects/#print) objects.
 
 
-## GET `/api/v1/print/{:id}/`
+## GET `/api/v1/print/{:id}/` {#get-apiv1printid}
 
-### Request
+### Request {#request-1}
 
-#### Query parameters
+#### Query parameters {#query-parameters-1}
 
 None.
 
-### Response
+### Response {#response-1}
 
-#### Success
+#### Success {#success-1}
 
 - Code: `200`
 - Body: A [`Printer`](/docs/api/api-objects/#print) object.
 
-#### Not found
+#### Not found {#not-found}
 
 When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 
 - Code: `404`
 
 
-## PATCH `/api/v1/prints/{:id}/`
+## PATCH `/api/v1/prints/{:id}/` {#patch-apiv1printsid}
 
 Partial update of the [`Print`](/docs/api/api-objects/#print) object specified by `{:id}`
 
-### Request
+### Request {#request-2}
 
-#### Query parameters
+#### Query parameters {#query-parameters-2}
 
 None.
 
-#### Body
+#### Body {#body}
 
 JSON representation of the [`Print`](/docs/api/api-objects/#print) object, except the following read-only fields:
 
@@ -79,32 +79,32 @@ JSON representation of the [`Print`](/docs/api/api-objects/#print) object, excep
 - `poster_url`. Automatically generated when a time-lapse is generated and saved to the storage.
 - `prediction_json_url`. Automatically generated when a time-lapse is generated and saved to the storage.
 
-### Response
+### Response {#response-2}
 
-#### Success
+#### Success {#success-2}
 
 - Code: `200`
 - Body: A [`Print`](/docs/api/api-objects/#print) object.
 
-#### Not found
+#### Not found {#not-found-1}
 
 When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 
 - Code: `404`
 
 
-## DELETE `/api/v1/prints/{:id}/`
+## DELETE `/api/v1/prints/{:id}/` {#delete-apiv1printsid}
 
 Delete the [`Print`](/docs/api/api-objects/#print) object specified by `{:id}`
 
-### Response
+### Response {#response-3}
 
-#### Success
+#### Success {#success-3}
 
 - Code: `200`
 - Body: Empty.
 
-#### Not found
+#### Not found {#not-found-2}
 
 When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 
@@ -112,18 +112,18 @@ When the print specified by the `{:id}` doesn't exist, or the access is not auth
 
 
 
-## GET `/api/v1/prints/{:id}/prediction_json`
+## GET `/api/v1/prints/{:id}/prediction_json` {#get-apiv1printsidprediction_json}
 
 Retrieve the prediction (failure detection) json associated with the [`Print`](/docs/api/api-objects/#print) specified by `{:id}`
 
-### Response
+### Response {#response-4}
 
-#### Success
+#### Success {#success-4}
 
 - Code: `200`
 - Body: A JSON that represents the frame-by-frame predictions.
 
-#### Not found
+#### Not found {#not-found-3}
 
 When the print specified by the `{:id}` doesn't exist, or the access is not authorized by the authenticated user.
 

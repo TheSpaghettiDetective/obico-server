@@ -56,7 +56,7 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 
 ## Obtain server's IP address
 
-[Recommended Read: Connecting to your server with a .local address](website\docs\server-guides\configure.md)
+[Recommended Read: Connecting to your server with a .local address](https://www.obico.io/docs/server-guides/configure/)
 
 This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
 - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
@@ -101,4 +101,4 @@ Feeling excited? Want to contribute? [Check out how.](https://www.obico.io/docs/
 Browse and search in the [Obico Server guide website](https://www.obico.io/docs/server-guides/). If you can't find the answer there, consult the [Discord](https://obico.io/discord) or [open an issue](https://github.com/TheSpaghettiDetective/obico-server/issues/new).
 
 # Thanks
-![BrowserStack](docs/img/readme/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.
+![BrowserStack](docs/img/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.

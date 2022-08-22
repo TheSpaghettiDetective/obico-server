@@ -3,7 +3,7 @@ id: filament-change-notifications-with-octoprint-general-32bit
 title: "General instruction for recompiling the firmware to enable HOST_ACTION_COMMANDS for printers with a 32-bit mainboard"
 ---
 
-## Step 1: Install required software
+## Step 1: Install required software {#step-1-install-required-software}
 
 First,  lets install all of the necessary programs. All of these programs have Mac and Windows versions available.
 
@@ -20,7 +20,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 ![Open Platform.io](/img/user-guides/filament-change/home-button-vscode.PNG)
 
 
-## Step 2: Download the latest Marlin source code and configure it
+## Step 2: Download the latest Marlin source code and configure it {#step-2-download-the-latest-marlin-source-code-and-configure-it}
 
 1. Download [Marlin](https://marlinfw.org/meta/download/). Most likely, you will want the latest version, which is 2.0.9.3 at this time. Make sure you download the both “Marlin-2.0.x.zip” and “Configurations-release-2.0.x.x.zip”.
 
@@ -32,7 +32,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 
 1. When prompted, choose to overwrite the two files that are already there.
 
-## Step 3: Set the correct Environment
+## Step 3: Set the correct Environment {#step-3-set-the-correct-environment}
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
@@ -59,7 +59,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 1. Replace the default_envs with the environment you found in the previous step.
 
 
-## Step 4: Enable HOST_ACTION_COMMANDS and M600
+## Step 4: Enable HOST_ACTION_COMMANDS and M600 {#step-4-enable-host_action_commands-and-m600}
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
@@ -86,7 +86,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 9. Save the file
 
 
-## Step 5: Compile the firmware
+## Step 5: Compile the firmware {#step-5-compile-the-firmware}
 
 1.  Hover over the build section on the top left side of the screen and you will see a hammer icon. Click this icon and click Build on the right to start building the firmware.
 
@@ -98,7 +98,7 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 2.  At the end of the terminal, you should see a list of boards, with most of them saying Ignored, and your board listed as Success.
 
-## Step 6: Flash the new firmware
+## Step 6: Flash the new firmware {#step-6-flash-the-new-firmware}
 
 1.  Go to the folder where you extracted Marlin, and under, .\.pio\build\TheNameOfYourBoard. You should see a firmware.bin file. This is the file you will flash to your 3D printer.
 

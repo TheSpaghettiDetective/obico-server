@@ -11,13 +11,13 @@ To speed up the diagnosis and get the problem figured out and solved faster, ple
 * [Turn on debug logging and download "octoprint.log" file](/docs/user-guides/turn-on-debug-logging).
 :::
 
-## If you have the Pro plan
+## If you have the Pro plan {#if-you-have-the-pro-plan}
 
 The robot behind The Spaghetti Detective is extremely powerful. But there are humans in The Detective Team (what a shocker!) and  they are pretty helpful too.
 
 If you have the Pro plan, you can get a guaranteed technical support by [emailing us](mailto:support@obico.io). We will get back to you within 8 business hours **Mention in your email that you are a Pro subscriber.**
 
-## If you have the Free plan
+## If you have the Free plan {#if-you-have-the-free-plan}
 
 If you don't have the Pro plan, the fastest way to get help is to [join TSD discord forum](https://obico.io/discord) and ask your question there. Although there is no guarantee how quickly your question will be answered, there is a good chance that one of the very helpful TSD community members will jump in to help you.
 

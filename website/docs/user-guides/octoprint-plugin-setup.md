@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::
 
-## Hardware requirements
+## Hardware requirements {#hardware-requirements}
 
 Before you start, make sure:
 
@@ -21,7 +21,7 @@ Before you start, make sure:
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
-## Step 1: Install "Obico for OctoPrint" plugin.
+## Step 1: Install "Obico for OctoPrint" plugin. {#step-1-install-obico-for-octoprint-plugin}
 
 1. Open OctoPrint page in a browser.
 1. Open OctoPrint settings page by clicking the wrench icon (**ðŸ”§**).
@@ -32,7 +32,7 @@ Before you start, make sure:
 
 ![Install the Plugin](/img/user-guides/setupguide/install-plugin.png)
 
-## Step 2: Sign up for an Obico account.
+## Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
 
 :::tip
 
@@ -87,7 +87,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**ðŸ
 
 <br />
 
-## Step 3: Launch the "Link Printer" wizard in the Obico app
+## Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
 
 :::tip
 
@@ -137,17 +137,17 @@ If you are phone or computer is one the **the same local network** as your OctoP
 
 <b />
 
-## What's next?
+## What's next? {#whats-next}
 
-### Check out your printer feed!
+### Check out your printer feed! {#check-out-your-printer-feed}
 
 Press "Go Check Out Printer Feed!" to see everything you care about your printer: the webcam feed, heater temperature, time remaining on the print job, and more! Remember, you can see your printer feed anywhere you go, as long as you have an internet connection on your phone!
 
-### Test the magical failure detection!
+### Test the magical failure detection! {#test-the-magical-failure-detection}
 
 AI-powered failure detection sounds too magical to be true? [See the magic in action for yourself](/docs/user-guides/how-to-test-failure-detection).
 
-### Change printer settings.
+### Change printer settings. {#change-printer-settings}
 
 The default settings for your printer in Obico are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
 

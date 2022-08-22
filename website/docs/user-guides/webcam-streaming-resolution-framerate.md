@@ -11,7 +11,7 @@ Most of the time you can leave The Spaghetti Detective plugin to pick the approp
 If you are using a Raspberry Pi, please keep in mind that it has a weak CPU. If the resolution and/or frame rate is set to high, it may overwhelm the Pi's CPU and hence cause print quality issues.
 :::
 
-## Find out your webcam's streaming mode.
+## Find out your webcam's streaming mode. {#find-out-your-webcams-streaming-mode}
 
 The resolution and frame rate depends on the webcam's streaming mode.
 
@@ -25,11 +25,11 @@ Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam
 Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 :::
 
-## If the streaming mode is "**premium (advanced)**":
+## If the streaming mode is "**premium (advanced)**": {#if-the-streaming-mode-is-premium-advanced}
 
 This means the webcam is in the Premium Streaming (advanced mode). In this mode, there are only limited options for resolutions and frame rates.
 
-**If you want to set your own resolution and frame rate, you will need to [change the compatibility mode to "always"](/docs/user-guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode), then follow [the instructions for Premium Streaming (compatibility mode)](#if-the-streaming-mode-is-premium-compatibility-or-basic).**
+**If you want to set your own resolution and frame rate, you will need to [change the compatibility mode to "always"](/docs/user-guides/streaming-compatibility-mode#when-should-i-always-stream-in-the-compatibility-mode), then follow [the instructions for Premium Streaming (compatibility mode)](#if-the-streaming-mode-is-premium-compatibility-or-basic).**
 
 :::info
 The Premium Streaming (advanced mode) has to take total control of the webcam, such as the resolution, frame rate, auto-focus, etc., so that the stream can be encoded in highly-efficient H.264.
@@ -39,15 +39,15 @@ The Premium Streaming (advanced mode) has to take total control of the webcam, s
 If you have changed webcam settings in "octopi.txt", you may be surprised to see these settings are no longer effective in the Premium Streaming (advanced mode).
 :::
 
-### Frame rate
+### Frame rate {#frame-rate}
 
 In the Premium Streaming (advanced mode), the frame rate is always 25 FPS (frames-per-second).
 
-### Resolution
+### Resolution {#resolution}
 
 In the Premium Streaming (advanced mode), the webcam resolution depends on if you have a Pi Camera or a USB camera.
 
-#### If you have a Pi Camera:
+#### If you have a Pi Camera: {#if-you-have-a-pi-camera}
 
 :::info
 Learn more about the [Pi Camera](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera).
@@ -78,13 +78,13 @@ If you have changed the webcam aspect ratio setting in OctoPrint to 16:9:
 * High: 1640x922
 * Ultra high: 1920x1080
 
-#### If you have a USB camera:
+#### If you have a USB camera: {#if-you-have-a-usb-camera}
 
 When you have a USB camera and its streaming mode is "Premium (advanced)", the resolution is fixed at 640x480. This is due to some technical limitations on how the Premium streaming works in advanced mode. Your best option is to leave it as is.
 
 However, if you really want to change the resolution and/or the frame rate, follow these 2 steps:
 
-1. [Change the compatibility mode to "always"](/docs/user-guides/streaming-compatibility-mode#when-should-i-always-stream-in-compatibility-mode).
+1. [Change the compatibility mode to "always"](/docs/user-guides/streaming-compatibility-mode#when-should-i-always-stream-in-the-compatibility-mode).
 
 2. Change the resolution and/or frame rate as instructed in [this section](#if-the-streaming-mode-is-premium-compatibility-or-basic).
 
@@ -92,7 +92,7 @@ However, if you really want to change the resolution and/or the frame rate, foll
 There are simply too many USB camera models. 640x480 is the only resolution that all of them support. This is why the resolution is fixed at 640x480 in Premium Streaming (advanced mode).
 :::
 
-## If the streaming mode is "**Premium (compatibility)**" or "**Basic**":
+## If the streaming mode is "**Premium (compatibility)**" or "**Basic**": {#if-the-streaming-mode-is-premium-compatibility-or-basic}
 
 When the webcam streaming is in "**Basic**" mode, or "**Premium (compatibility)**" mode, The Spaghetti Detective plugin won't change the resolution or the frame rate. Instead, they are set by the OctoPrint's original streaming process before The Spaghetti Detective plugin was installed.
 

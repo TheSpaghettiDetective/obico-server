@@ -11,7 +11,7 @@ This is why we created the notification plugin structure in the Obico Server. It
 Following [this tutorial](/docs/tutorials/pushover-notification-plugin) is the quickest way to have a new notification plugin up and running in your self-hosted Obico Server.
 :::
 
-## The structure of a notification plugin
+## The structure of a notification plugin {#the-structure-of-a-notification-plugin}
 
 A notification plugin consists of 3 parts. 2 are required and 1 optional.
 
@@ -21,21 +21,21 @@ A notification plugin consists of 3 parts. 2 are required and 1 optional.
 
 A notification plugin should also have a unique ID so that the Obico Server can tell it apart from other plugins. In this document, this ID will be represented as `{plugin_id}`.
 
-## The plugin backend
+## The plugin backend {#the-plugin-backend}
 
-### Directory structure
+### Directory structure {#directory-structure}
 
 All plugin backend files should be located in the folder `backend/notifications/plugins/{plugin_id}`.
 
-#### `backend/notifications/plugins/{plugin_id}/__init__.py`
+#### `backend/notifications/plugins/{plugin_id}/__init__.py` {#backendnotificationspluginsplugin_id__init__py}
 
 Required. This is the entry point for the plugin backend.
 
-#### Other python files in `backend/notifications/plugins/{plugin_id}/`
+#### Other python files in `backend/notifications/plugins/{plugin_id}/` {#other-python-files-in-backendnotificationspluginsplugin_id}
 
 Optional. If present, they must be imported in the `__init__.py`. Otherwise they won't be loaded successfully.
 
-### Class `BaseNotificationPlugin`
+### Class `BaseNotificationPlugin` {#class-basenotificationplugin}
 
 The base class from which the plugin backend needs to extend from.
 
@@ -49,21 +49,21 @@ Example:
 `BaseNotificationPlugin` defines the following methods that can be overridden by the plugin class. Most of them have a reasonable default and hence they are not optional in the plugin class.
 
 
-#### `validate_config`
+#### `validate_config` {#validate_config}
 
 Validate the form data submitted by the user from the plugin's preference page.
 
 This method is optional if your plugin doesn't need any configuration. This is rare.
 
-##### Signature
+##### Signature {#signature}
 
     def validate_config(self, data: Dict) -> Dict:
 
-##### Parameters
+##### Parameters {#parameters}
 
 - `data`: A `Dict` that contains the form data submitted by the user from the plugin's preference page. For instance, the Pushover plugin's preference page asks the user for a *user_key*. In this case, `data` will look like `{'user_key': 'xxx-xxxx-xxxxx'}`.
 
-##### Return value
+##### Return value {#return-value}
 
 - A `Dict`: The form data that has been cleaned up. For instance, you may want to trim the leading/trailing white spaces. The return value will be saved to the database. It will be retrieved from the database and passed to the plugin when a notification needs to be sent.
 
@@ -71,26 +71,26 @@ This method is optional if your plugin doesn't need any configuration. This is r
 The Obico Server has already sanitized the form data against common attacks before passing it to this method.
 :::
 
-##### Exceptions
+##### Exceptions {#exceptions}
 
 - `rest_framework.serializers.ValidationError`: Throw this exception if `data` failed in validation.
 
 
-#### `env_vars`
+#### `env_vars` {#env_vars}
 
 The method that tells the Obico Server what environment variables this plugin needs.
 
 This method is optional if your plugin doesn't require any environment variables.
 
-##### Signature
+##### Signature {#signature-1}
 
     def env_vars(self) -> Dict:
 
-##### Parameters
+##### Parameters {#parameters-1}
 
 - None.
 
-##### Return value
+##### Return value {#return-value-1}
 
 - A `Dict`. This return value will also be passed to the plugin frontend in case the frontend needs some of them on the preference page.
 
@@ -114,60 +114,60 @@ Example:
 Never return the value of an environment variable that is supposed to be kept secret, such as `SLACK_CLIENT_SECRET`. Whatever returned from this call will be exposed to the app users.
 :::
 
-##### Exceptions
+##### Exceptions {#exceptions-1}
 
 - None.
 
 
-#### `supported_features`
+#### `supported_features` {#supported_features}
 
 The method that tells the Obico Server what features this plugin supports.
 
 This method is optional if your plugin supports all features.
 
-##### Signature
+##### Signature {#signature-2}
 
     def supported_features(self) -> Set[Feature]:
 
-##### Parameters
+##### Parameters {#parameters-2}
 
 - None.
 
 
-##### Return value
+##### Return value {#return-value-2}
 
 - A `Set` of [`Feature`](#class-feature)s.
 
-##### Exceptions
+##### Exceptions {#exceptions-2}
 
 - None.
 
 
-#### `send_failure_alert`
+#### `send_failure_alert` {#send_failure_alert}
 
 The method the Obico server will call when a possible failure is detected.
 
 This method is optional if your plugin doesn't support the `Feature.notify_on_failure_alert` feature.
 
-##### Signature
+##### Signature {#signature-3}
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
 
-##### Parameters
+##### Parameters {#parameters-3}
 
 - `context`: A [`FailureAlertContext`](#class-failurealertcontext) that contains the data for the detected failure.
 
 
-##### Return value
+##### Return value {#return-value-3}
 
 - None.
 
-##### Exceptions
+##### Exceptions {#exceptions-3}
 
 - None.
 
 
-#### `send_printer_notification`
+#### `send_printer_notification` {#send_printer_notification}
 
 The method the Obico server will call when a printer notification needs to be sent, in general but not always when a printer event happens.
 
@@ -180,77 +180,77 @@ This method is optional if your plugin doesn't support **any** of the following 
 - notify_on_heater_status
 
 
-##### Signature
+##### Signature {#signature-4}
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
 
-##### Parameters
+##### Parameters {#parameters-4}
 
 - `context`: A [`PrinterNotificationContext`](#class-printernotificationcontext) that contains the data for the notification
 
 
-##### Return value
+##### Return value {#return-value-4}
 
 - None.
 
-##### Exceptions
+##### Exceptions {#exceptions-4}
 
 - None.
 
 
-#### `send_test_message`
+#### `send_test_message` {#send_test_message}
 
 The method the Obico server will call when the user press the "Test notification" button on the plugin's preference page.
 
-##### Signature
+##### Signature {#signature-5}
 
     def send_test_message(self, context: TestMessageContext) -> None:
 
-##### Parameters
+##### Parameters {#parameters-5}
 
 - `context`: A [`TestMessageContext`](#class-testmessagecontext) that contains the data for the test notification.
 
 
-##### Return value
+##### Return value {#return-value-5}
 
 - None.
 
-##### Exceptions
+##### Exceptions {#exceptions-5}
 
 - None.
 
 
-### Class `FailureAlertContext`
+### Class `FailureAlertContext` {#class-failurealertcontext}
 
-#### Properties
+#### Properties {#properties}
 
 - `config`: `Dict`. The same as what was previously returned from [`validate_config`](#validate_config) and saved in the database.
 - `user`: [`UserContext`](#class-usercontext).
 - `printer`: [`PrinterContext`](#class-printercontext).
 - `print`: [`PrintContext`](#class-printcontext).
 - `extra_context`: `Dict`. Reserved for internal use.
-- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty strong (not `None`).
+- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty string (not `None`).
 - `is_warning`: `bool`. If the detected failure is a "warning".
 - `print_paused`: `bool`. If the print was paused as the result of the detected failure.
 
 
-### Class `PrinterNotificationContext`
+### Class `PrinterNotificationContext` {#class-printernotificationcontext}
 
-#### Properties
+#### Properties {#properties-1}
 
 - `config`: `Dict`. The same as what was previously returned from [`validate_config`](#validate_config) and saved in the database.
 - `user`: [`UserContext`](#class-usercontext).
 - `printer`: [`PrinterContext`](#class-printercontext).
 - `print`: [`PrintContext`](#class-printcontext).
 - `extra_context`: `Dict`. Reserved for internal use.
-- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty strong (not `None`).
+- `img_url`: `str`. The url for the webcam image. If no webcam image is available, this will be an empty string (not `None`).
 - `feature`: [`Feature`](#class-feature).
 - `notification_type`: [`str`](#module-notification_types). The type of this notification.
 
 
-### Class `UserContext`
+### Class `UserContext` {#class-usercontext}
 
-#### Properties
+#### Properties {#properties-2}
 
 - `id`: `int`
 - `email`: `str`
@@ -261,9 +261,9 @@ The method the Obico server will call when the user press the "Test notification
 - `is_pro`: `bool`
 
 
-### Class `PrinterContext`
+### Class `PrinterContext` {#class-printercontext}
 
-#### Properties
+#### Properties {#properties-3}
 
 - `id`: `int`
 - `name`: `str`
@@ -271,9 +271,9 @@ The method the Obico server will call when the user press the "Test notification
 - `watching_enabled`: `bool`
 
 
-### Class `PrintContext`
+### Class `PrintContext` {#class-printcontext}
 
-#### Properties
+#### Properties {#properties-4}
 
 - `id`: `int`
 - `filename`: `str`
@@ -283,22 +283,22 @@ The method the Obico server will call when the user press the "Test notification
 - `alert_overwrite`: `str`
 
 
-### Class `TestMessageContext`
+### Class `TestMessageContext` {#class-testmessagecontext}
 
-#### Properties
+#### Properties {#properties-5}
 
 - `config`: `Dict`
 - `user`: `UserContext`
 - `extra_context`: `Dict`
 
 
-### Class `Feature`
+### Class `Feature` {#class-feature}
 
 An Enum that tells what feature(s) a plugin supports.
 
 When a feature is declared supported by a plugin, a toggle will be shown on its preference page so that the user can toggle on/off that feature. Also the Obico Server will try to call a corresponding method of that plugin when there is a notification classified under that feature.
 
-#### List of `Feature`s
+#### List of `Feature`s {#list-of-features}
 
 - `notify_on_failure_alert`
 - `notify_on_print_done`
@@ -307,7 +307,7 @@ When a feature is declared supported by a plugin, a toggle will be shown on its 
 - `notify_on_other_print_events`
 - `notify_on_heater_status`
 
-### module `notification_types`
+### module `notification_types` {#module-notification_types}
 
 Example:
 
@@ -315,7 +315,7 @@ Example:
     ...
 
 
-#### list of `notification_types`
+#### list of `notification_types` {#list-of-notification_types}
 
 - `PrintStarted`
 - `PrintDone`
@@ -327,13 +327,13 @@ Example:
 - `HeaterTargetReached`
 
 
-## The plugin frontend
+## The plugin frontend {#the-plugin-frontend}
 
-### Directory structure
+### Directory structure {#directory-structure-1}
 
 All plugin frontend files should be located in the folder `frontend/src/notifications/`.
 
-#### `backend/notifications/plugins/{plugin_id}.vue`
+#### `backend/notifications/plugins/{plugin_id}.vue` {#backendnotificationspluginsplugin_idvue}
 
 Required. The Vue component that will be shown to the user. It should contain the following:
 
@@ -373,7 +373,7 @@ Required. The Vue component that will be shown to the user. It should contain th
 The `{plugin_id}` should match the value used in the [plugin backend](#the-plugin-backend). Otherwise the plugin's preference page can't be displayed correctly.
 :::
 
-#### Add a section to `frontend/src/notifications/plugins.js`
+#### Add a section to `frontend/src/notifications/plugins.js` {#add-a-section-to-frontendsrcnotificationspluginsjs}
 
     {plugin_id}: {
         displayName: 'Plugin name',
@@ -384,20 +384,20 @@ The `{plugin_id}` should match the value used in the [plugin backend](#the-plugi
 :::
 
 
-## The environment variables
+## The environment variables {#the-environment-variables}
 
 Skip this part if your plugin doesn't need any new environment variables.
 
-### Set up environment variables
+### Set up environment variables {#set-up-environment-variables}
 
 Follow [this guide](/docs/server-guides/configure/#if-you-need-to-add-a-new-environment-variable) to add new environment variables to the self-hosted Obico Server.
 
-### Declare the environment variable requirements in the plugin
+### Declare the environment variable requirements in the plugin {#declare-the-environment-variable-requirements-in-the-plugin}
 
 Add [`env_vars`](#env_vars) method to your plugin to declare  the environment variable requirements.
 
 
-## Compile the plugin and load it in your Obico Server
+## Compile the plugin and load it in your Obico Server {#compile-the-plugin-and-load-it-in-your-obico-server}
 
 Every time you make a change to the plugin frontend, you need to re-compile the plugin and restart your server to test the change.
 
@@ -408,7 +408,7 @@ Every time you make a change to the plugin frontend, you need to re-compile the 
     docker-compose restart
 
 
-## Contribute your plugin back to the Obico project
+## Contribute your plugin back to the Obico project {#contribute-your-plugin-back-to-the-obico-project}
 
 :::info
 This step is completely optional. You won't violate the Obico license if you just want to keep the plugin to yourself without contributing back.

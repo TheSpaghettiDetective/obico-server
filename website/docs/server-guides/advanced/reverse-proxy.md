@@ -10,7 +10,7 @@ You can set up a reverse proxy in front of your self-hosted Obico Server.
 
 Two configuration items need to be set differently if you are using a reverse proxy.
 
-## 1. "Domain name" in Django site configuration.
+## 1. "Domain name" in Django site configuration. {#1-domain-name-in-django-site-configuration}
 
 1. Open Django admin page at `http://tsd_server_ip:3334/admin/`.
 
@@ -25,13 +25,13 @@ Suppose:
 
 The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The `:reverse_proxy_port` part can be omitted if it is standard 80 or 443 port.
 
-## 2. If the reverse proxy is accessed through HTTPS:
+## 2. If the reverse proxy is accessed through HTTPS: {#2-if-the-reverse-proxy-is-accessed-through-https}
 
 1. Open `docker-compose.yml`, find `SITE_USES_HTTPS: 'False'` and replace it with `SITE_USES_HTTPS: 'True'`.
 
 2. Restart the server: `docker-compose restart`.
 
-## NGINX
+## NGINX {#nginx}
 
 For webcam feed to work, remember to activate Websockets support. Otherwise there will no webfeed when accessing through proxy.
 
@@ -88,7 +88,7 @@ server {
 }
 ```
 
-## Traefik
+## Traefik {#traefik}
 
 1. [Follow these instructions on how to setup Traefik (First two steps)](https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-debian-9)
 

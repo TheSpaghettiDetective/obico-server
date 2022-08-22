@@ -16,7 +16,7 @@ This is a general guide to install the Obico Server. For platform-specific guide
 Guides not directly maintained by the Obico Team and Contributors may be outdated, and should be used at user discretion. Always cross-check commands and instructions used with those located on the [official doc site](https://www.obico.io/docs/server-guides/).
 :::
 
-## Hardware Requirements
+## Hardware Requirements {#hardware-requirements}
 
 The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. A NVidia GPU is optional but can vastly reduce the power consumption and beef up the number of printers the server can handle.
 
@@ -28,7 +28,7 @@ Don't try to install the Obico Server on a Raspberry Pi. Pi's CPU is too weak to
 
 :::
 
-## 1. Install required softwares
+## 1. Install required softwares {#1-install-required-softwares}
 
 The following software is required before you start installing the server:
 
@@ -38,7 +38,7 @@ The following software is required before you start installing the server:
 - git ([how to install](https://git-scm.com/downloads)).
 
 
-## 2. Get the code and start the server.
+## 2. Get the code and start the server. {#2-get-the-code-and-start-the-server}
 
 1. Get the code:
 
@@ -55,12 +55,12 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 
 4. There is no step 4. This is how easy it is to get Obico Server up and running (thanks to Docker and Docker-compose).
 
-## 3. Test the server
+## 3. Test the server {#3-test-the-server}
 
 Open [http://localhost:3334](http://localhost:3334) on the same computer. If you see this page, the congratulations - your self-hosted Obico Server is now up and running!
 
 ![](/img/server-guides/login-page.png)
 
-## 4. Configure the server
+## 4. Configure the server {#4-configure-the-server}
 
 Your Obico Server will [need some basic configurations](configure.md) to work correctly with OctoPrint or Klipper, or to send emails and other notifications.

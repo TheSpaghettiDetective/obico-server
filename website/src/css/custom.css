@@ -160,3 +160,18 @@ html[data-theme=dark] .obico-button {
   vertical-align: super;
   font-size: 0.8em;
 }
+
+
+/* Announcement block */
+div[class^='announcementBar_'] {
+  --site-announcement-bar-stripe-color1: #bcf8f5;
+  --site-announcement-bar-stripe-color2: #e3fffe;
+  background: repeating-linear-gradient(
+    35deg,
+    var(--site-announcement-bar-stripe-color1),
+    var(--site-announcement-bar-stripe-color1) 20px,
+    var(--site-announcement-bar-stripe-color2) 10px,
+    var(--site-announcement-bar-stripe-color2) 40px
+  );
+  font-weight: bold;
+}

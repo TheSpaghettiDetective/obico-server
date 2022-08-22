@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__file__)
 
 
 def float_or_none(v):
-    if v == None:
+    if v is None or v == '':
         return None
     return float(v)
 

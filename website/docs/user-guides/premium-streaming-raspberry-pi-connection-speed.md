@@ -5,7 +5,7 @@ title: Test Raspberry Pi's connection speed
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
-## Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming
+## Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming {#test-if-the-raspberry-pis-internet-connection-is-fast-enough-for-the-premium-streaming}
 
 The Raspberry Pi needs to have fast and reliable Internet **upload speed** to be able to shovel all the video frames to your phone/computer without dropping too many of them.
 
@@ -23,7 +23,7 @@ Always follow the steps below to check the real connection speed you are getting
 Dropping a few video frames occasionally is fine. You may not even notice it in The Spaghetti Detective Premium Streaming. However, if the stream will become choppy/jerky if more than 10% of the frames are dropped.
 :::
 
-## If your Raspberry Pi is connected to Wi-Fi
+## If your Raspberry Pi is connected to Wi-Fi {#if-your-raspberry-pi-is-connected-to-wi-fi}
 
 More likely than not, when the Premium Stream is choppy or jerky, it's because the Raspberry Pi doesn't have a fast/reliable enough Wi-Fi connection.
 
@@ -40,13 +40,13 @@ If the webcam streaming becomes smooth after you take any one of the steps above
 
 If, however, the streaming problem persists even after you have tried as many of these measures as possible, you can [directly test the upload speed of the Raspberry Pi's Wi-Fi connection](#test-upload-speed-on-the-raspberry-pi).
 
-## If your Raspberry Pi is connected to Ethernet cable
+## If your Raspberry Pi is connected to Ethernet cable {#if-your-raspberry-pi-is-connected-to-ethernet-cable}
 
 If you are using an Ethernet cable that is Category 5 or below, and there is an option, replace it with a Category 5e or higher, preferably Category 6a or Category 7.
 
 If you don't have an Ethernet cable of higher categories, or changing to it doesn't solve the streaming problem, you can [directly test the upload speed of the Raspberry Pi's Wi-Fi connection](#test-upload-speed-on-the-raspberry-pi).
 
-## Test upload speed on the Raspberry Pi
+## Test upload speed on the Raspberry Pi {#test-upload-speed-on-the-raspberry-pi}
 
 :::caution
 Testing upload speed in the Raspberry Pi requires technical skills such as SSH and shell (Bash) commands.
@@ -71,7 +71,7 @@ speedtest-cli
 You want to make sure the measured upload speed is higher than the minimum speed with a comfortable margin. For instance, if the minimum speed is 10Mbps, you want to have at least 15Mbps download speed to be able to rule out the connection speed as the the problem.
 
 
-## The solutions if the connection speed on your Raspberry Pi is not fast enough
+## The solutions if the connection speed on your Raspberry Pi is not fast enough {#the-solutions-if-the-connection-speed-on-your-raspberry-pi-is-not-fast-enough}
 
 This won't be a comprehensive list for fixing Internet connection problems for your Raspberry Pi, as they are outside the scope of this guide.
 

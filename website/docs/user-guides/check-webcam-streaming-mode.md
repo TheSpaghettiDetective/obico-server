@@ -3,7 +3,7 @@ id: check-webcam-streaming-mode
 title: Check the webcam streaming mode
 ---
 
-## 1. Open the troubleshooting page.
+## 1. Open the troubleshooting page. {#1-open-the-troubleshooting-page}
 
 1. Open OctoPrint settings page by clicking the wrench icon (**🔧**).
 1. Scroll down the navigation bar on the left side.
@@ -12,7 +12,7 @@ title: Check the webcam streaming mode
 
 ![](/img/user-guides/helpdocs/open-troubleshooting-page.gif)
 
-## 2. Check "Webcam streaming" in the "Plugin Status" column
+## 2. Check "Webcam streaming" in the "Plugin Status" column {#2-check-webcam-streaming-in-the-plugin-status-column}
 
 ![](/img/user-guides/helpdocs/tsd-plugin-webcam-streaming-mode.png)
 

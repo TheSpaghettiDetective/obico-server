@@ -6,7 +6,7 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 
 
-## Test if your phone/computer's Internet connection is fast enough for the Premium Streaming
+## Test if your phone/computer's Internet connection is fast enough for the Premium Streaming {#test-if-your-phonecomputers-internet-connection-is-fast-enough-for-the-premium-streaming}
 
 If you are experiencing a choppy Premium Streaming, follow the instructions in this section to test if the Internet connection speed on your phone or computer is fast enough for the Premium Streaming.
 
@@ -22,7 +22,7 @@ Always follow the steps below to check the real connection speed you are getting
 It's a lot more likely to have connection/bandwidth problems on a phone than on a computer.
 :::
 
-## If you are using a phone:
+## If you are using a phone: {#if-you-are-using-a-phone}
 
 When the webcam stream is choppy/jerky on a phone, the most common cause of it is the slow/unreliable Internet connection.
 
@@ -30,7 +30,7 @@ Not only are phones often connected to cellular networks with weak reception, bu
 
 There are a few ways to quickly test if the phone's connection speed is what is causing the webcam streaming problem.
 
-### Switch phone's connection
+### Switch phone's connection {#switch-phones-connection}
 
 This is a quick but very effective way to test if the phone's connection is causing the streaming issue.
 
@@ -42,13 +42,13 @@ After the switch, refresh The Spaghetti Detective streaming page if you are usin
 
 If now you have a smooth webcam stream, it's confirmed that the phone's connection speed is the problem.
 
-### Test the Premium Streaming on a computer
+### Test the Premium Streaming on a computer {#test-the-premium-streaming-on-a-computer}
 
 Open [The Spaghetti Detective web app](https://app.obico.io/) on a computer. If possible, try to run an Internet speed testing on the computer to make sure it has a solid connection.
 
 If the webcam stream is smooth on the computer, it's confirmed that the phone's connection speed is the problem.
 
-### Test your phone's Internet download speed with an app
+### Test your phone's Internet download speed with an app {#test-your-phones-internet-download-speed-with-an-app}
 
 Run your favorite Internet speed testing app.
 
@@ -60,7 +60,7 @@ The number you need is the download speed in the test result. Compare this numbe
 
 You want to make sure the measured download speed is higher than the minimum speed with a comfortable margin. For instance, if the minimum speed is 10Mbps, you want to have at least 15Mbps download speed to be able to rule out the connection speed as the the problem.
 
-## If you are using a computer
+## If you are using a computer {#if-you-are-using-a-computer}
 
 Run your favorite Internet speed testing program.
 
@@ -72,7 +72,7 @@ The number you need is the download speed in the test result. Compare this numbe
 
 You want to make sure the measured download speed is higher than the minimum speed with a comfortable margin. For instance, if the minimum speed is 10Mbps, you want to have at least 15Mbps download speed to be able to rule out the connection speed as the the problem.
 
-## The solutions if the connection speed on your phone/computer is not fast enough
+## The solutions if the connection speed on your phone/computer is not fast enough {#the-solutions-if-the-connection-speed-on-your-phonecomputer-is-not-fast-enough}
 
 You have 2 options here:
 

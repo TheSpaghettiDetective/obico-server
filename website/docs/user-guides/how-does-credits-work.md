@@ -13,7 +13,7 @@ The most effective way to show The Detective the examples is the **Focused Feedb
 This is how Focused Feedback works - For the print in which The Detective found "interesting things", she takes snapshots. After the print is done, you can come back to review these snapshots and tell The Detective if what she found was real spaghetti, well, not real real spaghetti the food - but I'm sure you know what I mean.
 
 
-### "Cool! I want to give the Focused Feedback! Where can I find it?"
+### "Cool! I want to give the Focused Feedback! Where can I find it?" {#cool-i-want-to-give-the-focused-feedback-where-can-i-find-it}
 
 The Focused Feedback is available on the [TIME-LAPSE](https://app.obico.io/prints/) page. Look for the big "Focused Feedback" button as shown below:
 
@@ -27,7 +27,7 @@ Once you are in, the Focused Feedback will walk you through all the snapshots Th
 
 ![Focused Feedback options](/img/user-guides/focused-feedback.png)
 
-### You need to grant permission to TSD team to review your time-lapse
+### You need to grant permission to TSD team to review your time-lapse {#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse}
 
 Before you can start the Focused Feedback for a print, you will need to grant The Spaghetti Detective team the permission to review your time-lapse.
 
@@ -35,7 +35,7 @@ Once granted, The Spaghetti Detective team will have the option to review this p
 
 This is necessary because we want to ensure that all TSD users use consistent criteria in these Focused Feedbacks. The Focused Feedbacks users give us will serve as the most important input to train (teach) The Detective's AI. If The Detective receives inconsistent input from different users, she will be confused and make the wrong calls more often.
 
-### You earn AI Detection Hours for giving Focused Feedback
+### You earn AI Detection Hours for giving Focused Feedback {#you-earn-ai-detection-hours-for-giving-focused-feedback}
 
 Every time you finish a Focused Feedback, you will earn two **AI Detection Hours**. The reward is indicated by this icon:  <img src="/img/user-guides/detective-hour-2-primary.png" alt="AI Detection Hour" style={{height: "1em", display: "inline",  verticalAlign: "text-bottom"}}></img>.
 
@@ -49,9 +49,9 @@ Learn more about [how AI Detection Hour works](/docs/user-guides/how-does-detect
 
 The more Focused Feedback you give to The Detective, the more free AI Detection Hours you will get rewarded with, which can be used to get The Detective to watch more of your prints, which can then be turned into Focused Feedbacks and help The Detective get better. The power coming from infinite self-improving cycle is why The Spaghetti Detective has become one of the most vibrant 3D printing communities in the world!
 
-## FAQs
+## FAQs {#faqs}
 
-#### Why is the "Focused Feedback" button missing from some of my prints?
+#### Why is the "Focused Feedback" button missing from some of my prints? {#why-is-the-focused-feedback-button-missing-from-some-of-my-prints}
 
 It is because you can't give the Focused Feedback for that particular print. There are a few reasons why this is so:
 
@@ -59,12 +59,12 @@ It is because you can't give the Focused Feedback for that particular print. The
 * Sometimes The Detective simply didn't see anything "interesting" throughout the print (which, by the way, usually means it's an impeccable print and hence a good thing for you). Therefore there are nothing to give the Focused Feedback on.
 * The Focused Feedback is only available for 30 days. After 30 days, the snapshots will be removed from the system if you have not given feedback to them.
 
-#### Can I give the Focused Feedback for the time-lapse videos I uploaded?
+#### Can I give the Focused Feedback for the time-lapse videos I uploaded? {#can-i-give-the-focused-feedback-for-the-time-lapse-videos-i-uploaded}
 
 Yes, eventually. But we have not implemented the Focused Feedback for uploaded time-lapse videos. Please wait for a few more weeks and it'll be available to you.
 
 
-## Spaghetti examples
+## Spaghetti examples {#spaghetti-examples}
 
 We get it. Some times it can be tricky to make the call. Here are some examples for what should be considered as "spaghetti".
 

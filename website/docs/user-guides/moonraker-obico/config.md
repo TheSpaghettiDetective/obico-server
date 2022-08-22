@@ -25,6 +25,8 @@ port = 7125
 # api_key = <grab one or set trusted hosts in moonraker>
 
 [webcam]
+disable_video_streaming = False
+
 # CAUTION: Don't set this section unless you know what you are doing
 #   In most cases webcam configuration will be automatically retrived from moonraker
 #
@@ -40,22 +42,24 @@ path = /home/pi/klipper_logs/moonraker-obico.log
 level = INFO
 ```
 
-## `[server]` section
+## `[server]` section {#server-section}
 
 The configuration for connecting to the Obico Server.
 
 - `url`: The URL for the Obico Server. Such as "https://app.obico.io".
 - `auth_token`: The authentication token to authenticate Obico for Klipper client to the Obico Server. This is typically obtained by the `install.sh` from the server during the linking process. Don't directly set it.
 
-## `[moonraker]` section
+## `[moonraker]` section {#moonraker-section}
 
 - `host`: Moonraker host. Usually it's "127.0.0.1", namely the same host as **Obico for Klipper**.
 - `port`: The port Moonraker is listening on. The default port for Moonraker is 7125 but can be a different one, which is very typical on a system that runs multiple Moonraker instances.
 
-## `[webcam]` section
+## `[webcam]` section {#webcam-section}
+
+- `disable_video_streaming`: Default to `False`. Change it to `True` to disable the webcam streaming [in some rare cases](https://www.obico.io/docs/user-guides/disable-25-fps-streaming/).
 
 :::caution
-Usually, you don't need to directly set anything in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain it from Moonraker.
+Usually, you don't need to configure the following settings in the `[webcam]` section. In that case, **Obico for Klipper** will automatically obtain them from Moonraker.
 :::
 
 Set values in this section only when **Obico for Klipper** can't obtain these configurations, which is very rare.
@@ -67,7 +71,7 @@ Set values in this section only when **Obico for Klipper** can't obtain these co
 - `rotate_90`:
 - `aspect_ratio_169`:
 
-## `[logging]` section
+## `[logging]` section {#logging-section}
 
 - `path`: The path to the log file. Will be automatically rotated at 5MB size.
 - `level`: Default to `INFO`. Set to `DEBUG` to see *a lot* more details in the logs

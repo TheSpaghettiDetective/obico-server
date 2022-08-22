@@ -61,12 +61,12 @@
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 100MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
                 </div>
               </b-alert>
               <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-50mb" target="_blank">capped at 50MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 100MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
                 </div>
               </b-alert>
 

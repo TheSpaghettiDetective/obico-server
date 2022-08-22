@@ -16,7 +16,7 @@ import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
 <DocCardList items={useCurrentSidebarCategory().items}/>
 ```
 
-## Other resources
+## Other resources {#other-resources}
 
 :::caution
 The following resources were created by the Obico community members, but not directly maintained by the Obico Team and Contributors. They may be outdated, and should be used at user discretion. Always cross-check commands and instructions used with those located on this repo.*

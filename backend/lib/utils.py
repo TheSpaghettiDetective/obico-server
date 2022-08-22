@@ -56,6 +56,7 @@ def orientation_to_ffmpeg_options(printer_settings):
 def shortform_duration(total_seconds):
     if not total_seconds:
         return '--:--'
+    total_seconds = int(total_seconds)
     hours, remainder = divmod(total_seconds,60*60)
     minutes, seconds = divmod(remainder,60)
     return '{:02}:{:02}'.format(hours, minutes)

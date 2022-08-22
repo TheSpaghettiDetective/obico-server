@@ -14,17 +14,13 @@ LOGGER = logging.getLogger(__name__)
 STATUS_TTL_SECONDS = 240
 
 def process_octoprint_status(printer: Printer, msg: Dict) -> None:
-    #
+    # Backward compatibility: octoprint_settings is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     octoprint_settings = msg.get('settings') or msg.get('octoprint_settings')
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
+    # Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     printer_status = msg.get('status') or msg.get('octoprint_data')
-
-    # for backward compatibility
-    if printer_status:
-        if 'octoprint_temperatures' in msg:
-            printer_status['temperatures'] = msg['octoprint_temperatures']
 
     if not printer_status:
         cache.printer_status_delete(printer.id)
@@ -69,6 +65,7 @@ def update_current_print_if_needed(msg, printer):
         LOGGER.warn(f'current_print_ts not present. Received status: {msg}')
         return
 
+    # Backward compatibility: octoprint_event is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     op_event = msg.get('event') or msg.get('octoprint_event') or {}
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
     print_ts = msg.get('current_print_ts')

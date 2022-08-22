@@ -22,7 +22,7 @@ This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io)
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## Step 1: Launch the Setup Wizard in the plugin
+## Step 1: Launch the Setup Wizard in the plugin {#step-1-launch-the-setup-wizard-in-the-plugin}
 
 :::note
 
@@ -39,7 +39,7 @@ Most of the time the Setup Wizard will automatically launch when you open OctoPr
 
 ![Install the Plugin](/img/user-guides/setupguide/tsd-plugin-rerun-wizard.gif)
 
-## Step 2: Follow the Setup Wizard
+## Step 2: Follow the Setup Wizard {#step-2-follow-the-setup-wizard}
 
 :::note
 
@@ -82,7 +82,7 @@ Follow instructions in the "**📱  Mobile App**" tab if you are using The Spagh
   </TabItem>
 </Tabs>
 
-## Step 3: Launch the "Link Printer" wizard in the Obico app
+## Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
 
 :::note
 If you wan to re-link OctoPrint to an existing printer, you should do [step 3a](#step-3a-launch-the-re-link-printer-wizard-in-the-obico-app) instead.
@@ -111,7 +111,7 @@ Open the [Obico web app](https://app.obico.io/) in another browser tab. You shou
   </TabItem>
 </Tabs>
 
-## Step 3a: Launch the "Re-Link Printer" wizard in the Obico app
+## Step 3a: Launch the "Re-Link Printer" wizard in the Obico app {#step-3a-launch-the-re-link-printer-wizard-in-the-obico-app}
 
 :::note
 If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) instead.
@@ -144,7 +144,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
 </Tabs>
 
 
-## Step 4: Obtain the 6-digit code in The Spaghetti Detective app
+## Step 4: Obtain the 6-digit code in The Spaghetti Detective app {#step-4-obtain-the-6-digit-code-in-the-spaghetti-detective-app}
 
 <Tabs
   groupId="app"
@@ -175,7 +175,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
   </TabItem>
 </Tabs>
 
-## Step 5: Enter the 6-digit code in the plugin Setup Wizard
+## Step 5: Enter the 6-digit code in the plugin Setup Wizard {#step-5-enter-the-6-digit-code-in-the-plugin-setup-wizard}
 
 1. Go back to the browser tab in which your OctoPrint is open.
 1. Enter the 6-digit code you obtained in [the previous step](#step-3-link-octoprint-to-your-the-spaghetti-detective-account). You can press Ctrl-V (Windows) or Cmd-V (Mac) to paste the code if you have previously copied them in the clipboard.
@@ -186,7 +186,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
 
 **Hooray! You are done! You can close the Setup Wizard window now.**
 
-## Step 6 (optional): Give your printer a shinny name!
+## Step 6 (optional): Give your printer a shinny name! {#step-6-optional-give-your-printer-a-shinny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 

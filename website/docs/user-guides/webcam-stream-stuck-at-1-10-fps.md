@@ -13,7 +13,7 @@ Learn more about [Premium Streaming vs Basic Streaming](/docs/user-guides/webcam
 :::
 
 
-## 1. Is the webcam streaming disabled?
+## 1. Is the webcam streaming disabled? {#1-is-the-webcam-streaming-disabled}
 
 By default, the webcam streaming is enabled. Let's make sure it has not been disabled.
 
@@ -31,7 +31,7 @@ Uncheck the "Disable webcam streaming" if it's currently checked. Don't forget t
 There are [a few rare reasons](/docs/user-guides/disable-25-fps-streaming) why you may want to have the webcam streaming disabled.
 :::
 
-## 2. Is OctoPrint running on a Raspberry Pi?
+## 2. Is OctoPrint running on a Raspberry Pi? {#2-is-octoprint-running-on-a-raspberry-pi}
 
 The webcam streaming requires Raspberry Pi to work. It is well tested on **Raspberry Pi 4B, Raspberry Pi 3B/3B+, and Zero/Zero W**.
 
@@ -47,7 +47,7 @@ If you have installed docker on the Raspberry Pi, and are running OctoPrint insi
 The reason why Raspberry Pi is required for the webcam streaming is because it has a special hardware accelerator required to encode H.264 video efficiently.
 :::
 
-## 3. Try "always stream in compatibility mode"
+## 3. Try "always stream in compatibility mode" {#3-try-always-stream-in-compatibility-mode}
 
 In most cases, the webcam streaming will automatically switch between the compatibility mode the advanced mode. But there is a slight possibility it will get stuck in the "wrong" mode and hence fail.
 
@@ -57,7 +57,7 @@ Try to [set the compatibility mode set to "**always**"](/docs/user-guides/stream
 Learn more about [advanced mode and compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 :::
 
-## 4. Did you use the official OctoPi image to flash the SD card?
+## 4. Did you use the official OctoPi image to flash the SD card? {#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card}
 
 The webcam streaming may not work if you flashed your Pi with:
 
@@ -68,7 +68,7 @@ The webcam streaming may not work if you flashed your Pi with:
 
 If that's the case, grab a spare SD card, flash it with latest [official OctoPi image](https://octoprint.org/download/). Set up Obico on the new OctoPrint to see if the webcam streaming will work now.
 
-## 6. If none of the above worked
+## 6. If none of the above worked {#6-if-none-of-the-above-worked}
 
 [Get help from a human](/docs/user-guides/contact-us-for-support).
 

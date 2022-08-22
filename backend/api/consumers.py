@@ -1,8 +1,6 @@
-from typing import List, Dict, Tuple, Optional, Any
 import bson
 import time
 import json
-import datetime
 import functools
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
@@ -12,17 +10,14 @@ import logging
 from sentry_sdk import capture_exception, capture_message
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
-from django.forms import model_to_dict
 import newrelic.agent
 from channels_presence.models import Room
 from channels_presence.models import Presence
-from django.db.models import F
 
 from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
-from app.models import Print, Printer, ResurrectionError, SharedResource
 from lib.tunnelv2 import OctoprintTunnelV2Helper
 from lib.view_helpers import touch_user_last_active
 from .serializers import *
@@ -178,7 +173,6 @@ class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     @close_on_error('failed to connect')
     def connect(self):
-        self.anomaly_tracker = AnomalyTracker(now())
         self.printer = None
 
         self.printer = self.get_printer()
@@ -254,17 +248,8 @@ class OctoPrintConsumer(WebsocketConsumer):
             elif 'passthru' in data:
                 channels.send_message_to_web(self.printer.id, data)
             else:
-                printer = Printer.with_archived.annotate(
-                    ext_id=F('current_print__ext_id')
-                ).get(id=self.printer.id)
-
-                ex: Optional[Exception] = None
-                data['_now'] = now()
-                try:
-                    process_octoprint_status(printer, data)
-                    self.anomaly_tracker.track(printer, data)
-                except ResurrectionError as ex:
-                    self.anomaly_tracker.track(printer, data, ex)
+                self.printer.refresh_from_db()
+                process_octoprint_status(self.printer, data)
 
         except ObjectDoesNotExist:
             import traceback
@@ -520,74 +505,3 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             import traceback
             traceback.print_exc()
             capture_exception()
-
-
-class AnomalyTracker:
-
-    def __init__(self, connected_at: datetime) -> None:
-        self.connected_at = connected_at
-        self.transition_history: List[Tuple[int, Dict]] = []
-        self.last_ext_id: Optional[int] = None
-        self.last_failed = False
-
-    def track(self, printer: Printer, status: Dict[str, Any], ex: Optional[Exception] = None) -> None:
-        if len(self.transition_history) > 0:
-            idx = self.transition_history[-1][0] + 1
-        else:
-            idx = 0
-
-        comeback = False
-        ext_id = status.get('current_print_ts', None)
-        if self.last_ext_id != ext_id:
-            self.last_failed = False
-            self.transition_history.append((idx, status))
-            if ext_id != -1:
-                comeback = [
-                    _st.get('current_print_ts', None)
-                    for (_, _st) in self.transition_history
-                ].count(ext_id) > 1
-
-            if len(self.transition_history) > 10:
-                self.transition_history[-10:]
-
-        self.last_ext_id = ext_id
-
-        if (comeback or ex) and not self.last_failed:
-            self.report_resurrection(
-                comeback=comeback,
-                ex=ex is not None,
-                printer=printer,
-                transition_history=self.transition_history,
-            )
-
-        self.last_failed = comeback or (ex is not None)
-
-    def report_resurrection(self, comeback: bool, ex: bool, printer: 'Printer', transition_history: List[Tuple[int, Dict]]) -> None:
-        data: Dict[str, Any] = {
-            'connected_at': self.connected_at,
-            'comeback': comeback,
-            'ex': ex,
-        }
-
-        seen = set()
-        for (i, status) in transition_history:
-            data[f'status{str(i).zfill(4)}'] = status
-            ext_id = status.get('current_print_ts', None)
-            if ext_id not in seen:
-                print = Print.all_objects.filter(
-                    printer=printer,
-                    ext_id=ext_id
-                ).first()
-                if print:
-                    data[f'print.{ext_id}'] = model_to_dict(print)
-                    data[f'print.{ext_id}']['deleted'] = print.deleted
-                seen.add(ext_id)
-
-        data['printer.ext_id'] = printer.ext_id
-        data['print.current'] = model_to_dict(
-            printer.current_print) if printer.current_print else None
-
-        capture_message(
-            'Resurrected print',
-            extras=data,
-        )

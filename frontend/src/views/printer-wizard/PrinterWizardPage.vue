@@ -271,6 +271,7 @@ cd moonraker-obico
 import axios from 'axios'
 import moment from 'moment'
 import urls from '@config/server-urls'
+import {onPrinterLinked} from '@config/event-handler'
 import routes from '@src/views/printer-wizard/wizard-routes'
 import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
@@ -492,6 +493,9 @@ export default {
             this.verificationCode = resp.data
             if (this.verificationCode.verified_at) {
               this.verifiedPrinter = resp.data.printer
+              if (onPrinterLinked) {
+                onPrinterLinked();
+              }
             }
           }
         })

@@ -4,19 +4,19 @@ title: What is AI Detection Hour and how does it work?
 sidebar_label: AI Detection Hours
 ---
 
-## What is "AI Detection Hour"?
+## What is "AI Detection Hour"? {#what-is-ai-detection-hour}
 
 AI Detection Hour, or simply DH, is the unit used to measure the time the AI failure detection system spends on your prints.
 
 It is indicated by the symbol <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> in the system.
 
-## Why do I need AI Detection Hours?
+## Why do I need AI Detection Hours? {#why-do-i-need-ai-detection-hours}
 
 You need a positive balance of AI Detection Hours on your account to have the failure detection on. [Here is why.](#why-do-you-make-it-so-complicated)
 
 You do **NOT** need AI Detection Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
 å
-## How do I get AI Detection Hours?
+## How do I get AI Detection Hours? {#how-do-i-get-ai-detection-hours}
 
 There are several ways to get AI Detection Hours:
 
@@ -28,15 +28,15 @@ There are several ways to get AI Detection Hours:
 
 1. If you subscribe to [the Pro plan](/docs/user-guides/upgrade-to-pro), you will receive 50 DHs as part of your subscription **each month**. You can add one of the [Subscribe&Save AI Detection Hour packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a discounted rate.
 
-## FAQs
+## FAQs {#faqs}
 
-#### Where can I check the DH balance on my account?
+#### Where can I check the DH balance on my account? {#where-can-i-check-the-dh-balance-on-my-account}
 
 There is an icon <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> at the top of the page that shows the current DH balance on your account. You can click on that icon and see this balance broken down to the DHs included in your plan and the DHs you earned or bought.
 
 ![DH nav bar](/img/user-guides/helpdocs/dh-balance-navbar.png)
 
-#### What will happen if the DH balance on my account goes to 0?
+#### What will happen if the DH balance on my account goes to 0? {#what-will-happen-if-the-dh-balance-on-my-account-goes-to-0}
 
 When your AI Detection Hours run out, the failure detection will be paused, and you won't get alerted even if your prints start to fail. Everything else remains the same. You can still start, pause, or cancel your prints in OctoPrint or in Obico. Your webcam feed will stream as usual too.
 
@@ -44,35 +44,35 @@ When your AI Detection Hours run out, the failure detection will be paused, and 
 You can still watch your printer feed in the app even if your DH balance goes to 0.
 :::
 
-#### I heard I can buy more DHs. Is it true?
+#### I heard I can buy more DHs. Is it true? {#i-heard-i-can-buy-more-dhs-is-it-true}
 
 Yes. Additional DHs can be bought at $20 for 500 hours, or $0.04/hour. If you have subscribed to the Pro plan, you can also add one of the [Subscribe&Save DH packs](https://app.obico.io/ent_pub/pricing/#need-more) to your Pro plan at a much lower rate.
 
 Go to [your subscription page](https://app.obico.io/ent_pub/pricing/#need-more) to buy more DHs.
 
-#### 10 FREE DHs per month for free account is not enough!
+#### 10 FREE DHs per month for free account is not enough! {#10-free-dhs-per-month-for-free-account-is-not-enough}
 
 [It costs non-trivial amount to watch every hour of print](/docs/user-guides/how-does-detective-hour-work#why-do-you-make-it-so-complicated) and therefore we can't afford to give more to users on the free plan. :(
 
 Even if 10 DHs per month is not a lot, if you turn on detection only for your "risky prints", it can still significantly reduce your stress level, and sometimes save your printer from a jammed heater block or fan.
 
-#### Tell me more about the DHs that are included in the Pro plan.
+#### Tell me more about the DHs that are included in the Pro plan. {#tell-me-more-about-the-dhs-that-are-included-in-the-pro-plan}
 
 If you subscribe to the Pro plan, you will get 50 DHs **every month**. If not all 50 DHs are used when the month ends, the unused DHs [roll over into next month](#tell-me-exactly-how-dhs-roll-over-works), as long as you keep your subscription active. The same roll-over rule applies to the DHs that comes from the Subscribe&Save DH Packs.
 
-#### What happens to the balance of my DHs when I cancel my subscription plan?
+#### What happens to the balance of my DHs when I cancel my subscription plan? {#what-happens-to-the-balance-of-my-dhs-when-i-cancel-my-subscription-plan}
 
 If you cancel your subscription plan, the remaining DHs that originally came from the Pro plan or the Subscribe&Save DH pack will expire at the time when the plan ends.
 
 You will get to keep the DHs that you bought in a Pre-paid DH pack, or earned by providing Focused Feedback.
 
-#### Is there an easy way to tell turn off failure detection when I don't want to use DHs?
+#### Is there an easy way to tell turn off failure detection when I don't want to use DHs? {#is-there-an-easy-way-to-tell-turn-off-failure-detection-when-i-dont-want-to-use-dhs}
 
 Yes! We have redesigned our printer page to make it super easy! We have also added visual cue so that it's clear when you are not using your hard-earned DHs.
 
 ![How to disable AI failure detection](/img/user-guides/helpdocs/disable_watching.png)
 
-#### Why is my DH balance a negative number?
+#### Why is my DH balance a negative number? {#why-is-my-dh-balance-a-negative-number}
 
 If you have a positive DH balance when a print starts, the failure detection won't be turned off mid print just because your DH balance reaches 0. This is to make sure you wouldn't be surprised that you were not covered where you thought you were.
 
@@ -80,7 +80,7 @@ Suppose you only have 1 DH when you kick off a 10-hour print. The failure detect
 
 Your DH balance will be filled up to a positive number at the time when you [get more DHs](#how-do-i-get-detective-hours).
 
-#### Why do you make it so complicated?
+#### Why do you make it so complicated? {#why-do-you-make-it-so-complicated}
 
 The reason why we took the trouble to properly account for DHs is because every single <img src="/img/user-guides/detective-hour-primary.png" alt="AI Detection Hour" style={{height: "1.3em", display: "inline", verticalAlign: "text-bottom"}}></img> costs computational resources.
 
@@ -91,9 +91,9 @@ This is exactly why we took the trouble to program AI failure detection in a way
 Also by accounting for the usage of DHs, we want to motivate everyone to optimize how we use our DHs. Only by doing so can we provide this service to the entire 3D printing community at affordable cost.
 
 
-## Not-So-Frequently-Asked Questions
+## Not-So-Frequently-Asked Questions {#not-so-frequently-asked-questions}
 
-#### Tell me exactly how DHs are accounted for.
+#### Tell me exactly how DHs are accounted for. {#tell-me-exactly-how-dhs-are-accounted-for}
 
 *1 DH = 1 hour worth of time when your printer is printing AND the failure detection is on.*
 
@@ -111,7 +111,7 @@ Let's use an example to illustrate how AI Detection Hours are accounted for:
 
 In this example, only 0.75 DHs are accounted for, even if the print lasts 2.25 hours, and the printer is left on for 11 hours.
 
-#### Tell me exactly how DH's roll-over works.
+#### Tell me exactly how DH's roll-over works. {#tell-me-exactly-how-dhs-roll-over-works}
 
 First of all, there are 2 different kinds of DHs.
 
@@ -124,7 +124,7 @@ Here are the complete list of all roll-over rules on DHs:
 - The balance of *earned DH*s roll over infinitely. It doesn't matter if you have a subscription plan at all.
 - To minimize the amount of *included DH*s you would loose should you cancel the subscription plan, *included DH*s are always used before *earned DH*s.
 
-#### A complete example to show how AI Detection Hour works.
+#### A complete example to show how AI Detection Hour works. {#a-complete-example-to-show-how-ai-detection-hour-works}
 
 | Date      | Activity                                                                | Earned DHs | Included DHs | Total DH |
 |-----------|-------------------------------------------------------------------------|------------|--------------|----------|

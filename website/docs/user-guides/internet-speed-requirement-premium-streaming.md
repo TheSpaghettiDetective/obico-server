@@ -20,7 +20,7 @@ There are actually 2 kinds of connection speed:
 
 :::
 
-## If the streaming mode is "premium (advanced)",
+## If the streaming mode is "premium (advanced)", {#if-the-streaming-mode-is-premium-advanced}
 
 For every 100k pixels webcam resolution, you need 2Mbps Internet speed to have a solid Premium Stream.
 
@@ -38,7 +38,7 @@ For instance,
 The Premium Streaming is in advanced mode. In this mode, the frame rate is always 25 fps (frames-per-seconds).
 :::
 
-## If the streaming is in "Premium (compatibility)":
+## If the streaming is in "Premium (compatibility)": {#if-the-streaming-is-in-premium-compatibility}
 
 For every 100k pixels webcam resolution and 10 fps, you need 0.75Mbps Internet speed.
 
@@ -59,7 +59,7 @@ For instance,
 When the webcam streaming is in "Premium (compatibility)" mode, The Spaghetti Detective plugin doesn't control the webcam's resolution or frame rate. Instead, they are set by the OctoPrint's original streaming process.
 :::
 
-## If the streaming is in "Basic":
+## If the streaming is in "Basic": {#if-the-streaming-is-in-basic}
 
 Basic Streaming doesn't have any requirement on the Internet connection speed. Almost anywhere you have an Internet connection, the Basic Streaming will work.
 

@@ -24,7 +24,7 @@ Just like any other live video streaming or video conferencing, the Obico Premiu
 
 :::
 
-### Possible reasons why the Premium Streaming is choppy/jerky:
+### Possible reasons why the Premium Streaming is choppy/jerky: {#possible-reasons-why-the-premium-streaming-is-choppyjerky}
 
 * Your phone is connected to a cellular network that has a weak reception, low bandwidth, or high latency.
 * Your Raspberry Pi doesn't have a reliable Internet connection, especially if the Pi is connected via Wi-Fi.
@@ -33,19 +33,19 @@ Just like any other live video streaming or video conferencing, the Obico Premiu
 * The webcam streaming frame rate is set too high. This can happen only when the webcam is [streamed in compatibility mode](/docs/user-guides/streaming-compatibility-mode).
 
 
-## 1. Check the webcam streaming mode
+## 1. Check the webcam streaming mode {#1-check-the-webcam-streaming-mode}
 
 Follow [this guide](/docs/user-guides/check-webcam-streaming-mode) to find out your webcam's current streaming mode.
 
-### If the webcam streaming mode is "0.1 FPS":
+### If the webcam streaming mode is "0.1 FPS": {#if-the-webcam-streaming-mode-is-01-fps}
 
 This means the Premium Streaming process failed to start. Follow [this troubleshooting guide](/docs/user-guides/webcam-stream-stuck-at-1-10-fps/) to figure out why.
 
-### If the webcam streaming mode is "Premium (25ps)" or "Premium (compatibility)":
+### If the webcam streaming mode is "Premium (25ps)" or "Premium (compatibility)": {#if-the-webcam-streaming-mode-is-premium-25ps-or-premium-compatibility}
 
 Continue to the next troubleshooting step.
 
-## 2. Look for warning messages
+## 2. Look for warning messages {#2-look-for-warning-messages}
 
 Quite often, the Obico mobile app or web app can identify and diagnose the streaming issues when they happen. In that case, the app will show warning messages.
 
@@ -55,14 +55,14 @@ Depending on the nature of a streaming issue, the app may show one of both of th
 <img src="/img/user-guides/helpdocs/streaming-warnings.jpg" style={{maxWidth: "308px"}} alt=""></img>
 </Zoom>
 
-### "Video frames dropped"
+### "Video frames dropped" {#video-frames-dropped}
 
 This usually indicates a connection bandwidth bottleneck. The bottleneck can be anywhere, but often it's either your phone's cellular connection, or the Raspberry Pi's Wi-Fi connection.
 
 - [Test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/user-guides/premium-streaming-computer-phone-connection-speed).
 - [Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/user-guides/premium-streaming-raspberry-pi-connection-speed).
 
-### "Buffering..."
+### "Buffering..." {#buffering}
 
 This may indicate a similar connection issue as the one above. But it may also indicate a webcam configuration issue on the Raspberry Pi.
 
@@ -72,6 +72,6 @@ This may indicate a similar connection issue as the one above. But it may also i
 - If you are using the mobile app, check it in the web app to see if you have the same problem. If you are using the web app, check it in the mobile app, or check it in a different browser.
 - If everything is ruled out, try to [set the streaming to "**Always stream in compatibility mode**"](/docs/user-guides/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting). Restart OctoPrint and see if the "Buffering" warning goes away and the Premium Stream is smooth now.
 
-## 4. Get help from a human
+## 4. Get help from a human {#4-get-help-from-a-human}
 
 If none of the steps above helped you identify the problem, you can [get help from a human](/docs/user-guides/contact-us-for-support).

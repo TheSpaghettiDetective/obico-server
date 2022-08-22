@@ -2,7 +2,7 @@
 title: Common tasks for operating self-hosted server
 ---
 
-## Upgrade Obico Server
+## Upgrade Obico Server {#upgrade-obico-server}
 
 ```
     cd obico-server
@@ -12,11 +12,11 @@ title: Common tasks for operating self-hosted server
 ```
 *Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
 
-## Backup database
+## Backup database {#backup-database}
 
 Just make a copy of `obico-server/backend/db.sqlite3`
 
-## Access timelapses stored on your server
+## Access timelapses stored on your server {#access-timelapses-stored-on-your-server}
 
 Although you can simply download the timelapses from either the web interface or the mobile app, it may be important to know exactly where the timelapses are stored on your local machine.
 

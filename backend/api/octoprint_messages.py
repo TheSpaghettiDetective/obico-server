@@ -1,6 +1,7 @@
 from django.utils import timezone
 import json
 from typing import Dict
+import logging
 
 from lib import cache
 from lib import channels
@@ -9,38 +10,41 @@ from lib import mobile_notifications
 from app.models import PrintEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
+LOGGER = logging.getLogger(__name__)
 STATUS_TTL_SECONDS = 240
 
-def process_octoprint_status(printer: Printer, status: Dict) -> None:
-    octoprint_settings = status.get('octoprint_settings')
+def process_octoprint_status(printer: Printer, msg: Dict) -> None:
+    #
+    octoprint_settings = msg.get('settings') or msg.get('octoprint_settings')
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
-    # for backward compatibility
-    if status.get('octoprint_data'):
-        if 'octoprint_temperatures' in status:
-            status['octoprint_data']['temperatures'] = status['octoprint_temperatures']
+    printer_status = msg.get('status') or msg.get('octoprint_data')
 
-    if not status.get('octoprint_data'):
+    # for backward compatibility
+    if printer_status:
+        if 'octoprint_temperatures' in msg:
+            printer_status['temperatures'] = msg['octoprint_temperatures']
+
+    if not printer_status:
         cache.printer_status_delete(printer.id)
-    elif status.get('octoprint_data', {}).get('_ts'):   # data format for plugin 1.6.0 and higher
-        cache.printer_status_set(printer.id, json.dumps(status.get('octoprint_data', {})), ex=STATUS_TTL_SECONDS)
+    elif (printer_status or {}).get('_ts'):   # data format for plugin 1.6.0 and higher
+        cache.printer_status_set(printer.id, json.dumps((printer_status or {})), ex=STATUS_TTL_SECONDS)
     else:
         octoprint_data: Dict = dict()
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'state')
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'progress')
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'file_metadata')
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'currentZ')
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'job')
-        set_as_str_if_present(octoprint_data, status.get('octoprint_data', {}), 'temperatures')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'state')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'progress')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'file_metadata')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'currentZ')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'job')
+        set_as_str_if_present(octoprint_data, (printer_status or {}), 'temperatures')
         cache.printer_status_set(printer.id, octoprint_data, ex=STATUS_TTL_SECONDS)
 
-    if status.get('current_print_ts'):
-        process_octoprint_status_with_ts(status, printer)
+    update_current_print_if_needed(msg, printer)
 
     channels.send_status_to_web(printer.id)
 
-    temps = status.get('octoprint_data', {}).get('temperatures', None)
+    temps = (printer_status or {}).get('temperatures', None)
     if temps:
         process_heater_temps(printer, temps)
 
@@ -60,20 +64,22 @@ def settings_dict(octoprint_settings):
     return settings
 
 
-def process_octoprint_status_with_ts(op_status, printer):
-    op_event = op_status.get('octoprint_event', {})
-    op_data = op_status.get('octoprint_data', {})
-    print_ts = op_status.get('current_print_ts')
-    current_filename = op_event.get('name') or op_data.get('job', {}).get('file', {}).get('name')
-    if not current_filename:
+def update_current_print_if_needed(msg, printer):
+    if not msg.get('current_print_ts'):  # Absence of current_print_ts means OctoPrint/Moonraker has lost the connection to the printer, and hence printing status unknown.
+        LOGGER.warn(f'current_print_ts not present. Received status: {msg}')
         return
-    printer.update_current_print(current_filename, print_ts)
+
+    op_event = msg.get('event') or msg.get('octoprint_event') or {}
+    printer_status = msg.get('status') or msg.get('octoprint_data') or {}
+    print_ts = msg.get('current_print_ts')
+    current_filename = op_event.get('name') or printer_status.get('job', {}).get('file', {}).get('name')
+    printer.update_current_print(print_ts, current_filename)
     if not printer.current_print:
         return
 
     # Notification for mobile devices
     # This has to happen before event saving, as `current_print` may change after event saving.
-    mobile_notifications.send_if_needed(printer.current_print, op_event, op_data)
+    mobile_notifications.send_if_needed(printer.current_print, op_event, printer_status)
 
     if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled_at = timezone.now()

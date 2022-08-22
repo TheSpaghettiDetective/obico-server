@@ -2,13 +2,13 @@
 title: Configuration
 ---
 
-## Basic server configuration
+## Basic server configuration {#basic-server-configuration}
 
 This is the bare minimum configuration required for the server to be reasonably useful.
 
-### Django Site
+### Django Site {#django-site}
 
-#### Obtain server's IP address
+#### Obtain server's IP address {#obtain-servers-ip-address}
 
 This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
 - If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
@@ -19,7 +19,7 @@ The Obico Server needs to have an IP address that is accessible by OctoPrint or 
 
 It is also reccomended that a static IP is set to avoid issues with chaning IP's. Please look up your WiFi routers guide on how to do this.
 
-#### Creating and Obtaining your server's .local address
+#### Creating and Obtaining your server's .local address {#creating-and-obtaining-your-servers-local-address}
 
 Similarly to how one can connect to octopi with octopi.local instead of an IP address, we can do the same for our Obico server.
 :::caution
@@ -41,7 +41,7 @@ You can find your hostname by typing `hostname` into your terminal, regardless o
 You can now connect to your server with `your_host_name.local:3334`. Conveniently, your host name is not case sensitive. 
 
 To reiterate, you can connect to your server with either `your_server_ip:3334` or `your_host_name.local:3334`. If you choose to use a .local address, you may assume `your_server_ip` to be interchangeable with your .local address. You can use it not only as a URL, but also for SSH and as a general replacement for the ip address. 
-#### Login as Django admin
+#### Login as Django admin {#login-as-django-admin}
 
 1. Open Django admin page at `http://your_server_ip:3334/admin/`.
 
@@ -49,7 +49,7 @@ To reiterate, you can connect to your server with either `your_server_ip:3334` o
 
 2. Login with username `root@example.com`, password `supersecret`. Once logged in, you can optionally (but highly encouraged to) change the admin password using this link: `http://your_server_ip:3334/admin/app/user/1/password/`.
 
-#### Configure Django site
+#### Configure Django site {#configure-django-site}
 
 1. In the same browser window, go to the address `http://your_server_ip:3334/admin/sites/site/1/change/`. Change "Domain name" to `your_server_ip:3334`. No "http://", "https://" prefix or trailing "/", otherwise it will NOT work. *Note: Deleting the original site and adding a new one won't work, thanks to the quirkiness of Django site.*
 
@@ -59,7 +59,7 @@ To reiterate, you can connect to your server with either `your_server_ip:3334` o
 
 *Note: If you are using reverse proxy, "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. See [using a reverse proxy](advanced/reverse-proxy.md) for details.*
 
-### Email (SMTP)
+### Email (SMTP) {#email-smtp}
 
 The following is using gmail as an example. Other web mail services may vary slightly, such as EMAIL_PORT
 
@@ -90,14 +90,14 @@ EMAIL_USE_TLS=True
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 
 
-## Advanced server configuration
+## Advanced server configuration {#advanced-server-configuration}
 
 Ready for some advanced server chops? Feel free to dive into the [advanced server stuff](advanced/index.md).
 
-### If you don't need to add a new environment variable
+### If you don't need to add a new environment variable {#if-you-dont-need-to-add-a-new-environment-variable}
 
 TBD
 
-### If you need to add a new environment variable
+### If you need to add a new environment variable {#if-you-need-to-add-a-new-environment-variable}
 
 TBD

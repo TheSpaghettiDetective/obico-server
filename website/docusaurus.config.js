@@ -14,6 +14,10 @@ module.exports = {
   onBrokenMarkdownLinks: 'throw',
   favicon: '/img/favicon.png',
   themeConfig: {
+    announcementBar: {
+      id: 'giveStarOnGitHubAnnouncement',
+      content: `⭐️ If you like Obico, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/TheSpaghettiDetective/obico-server">GitHub</a>`,
+    },
     colorMode: {
       // "light" | "dark"
       defaultMode: 'dark',
@@ -116,7 +120,7 @@ module.exports = {
             },
             {
               label: 'Developer Tutorials',
-              to: '/docs/api/',
+              to: '/docs/tutorials/',
             },
           ],
         },
@@ -224,11 +228,11 @@ module.exports = {
             },
             {
               label: 'Developer Tutorials',
-              to: '/docs/api/',
+              to: '/docs/tutorials/',
             },
           ],
         },
-        
+
 
         {
           title: 'Company',

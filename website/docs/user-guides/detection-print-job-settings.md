@@ -13,7 +13,7 @@ To access these settings
 
 ![Printer Settings Menu](/img/user-guides/helpdocs/printer_settings_menu.png)
 
-## When potential failure is detected
+## When potential failure is detected {#when-potential-failure-is-detected}
 
 This part of the settings tells The Detective how to react when a potential failure is detected.
 
@@ -25,7 +25,7 @@ The Detective makes mistakes and some times sends out false alarms. [Learn more 
 
 - **Pause the print and notify me via email and text.** With this you are telling The Detective to be more proactive. When she thinks she sees a crime scene, she will pause your print to prevent further damage.
 
-## When print is paused
+## When print is paused {#when-print-is-paused}
 
 :::caution
 Advanced settings. If you are not sure how this setting may effect your printer, we recommend leaving it as is.
@@ -47,7 +47,7 @@ Please do NOT check this if you already have pause/resume GCode scripts in OctoP
 Similar to retraction, please do NOT check this if you already have pause/resume GCode scripts in OctoPrint, as it may cause unpredictable behavior at the moment of pause and resume.
 :::
 
-## How alerted do you want the Detective to be on this printer?
+## How alerted do you want the Detective to be on this printer? {#how-alerted-do-you-want-the-detective-to-be-on-this-printer}
 
 :::caution
 Advanced settings. If you are not sure how this setting may effect your printer, we recommend leaving it as is.

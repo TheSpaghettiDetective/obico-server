@@ -6,7 +6,7 @@ sidebar_label: See failure detection in action
 
 We know The Spaghetti Detective sounds like a magic. So we don't blame you if you want to see it to believe it!
 
-## Upload your previously recorded time-lapse videos
+## Upload your previously recorded time-lapse videos {#upload-your-previously-recorded-time-lapse-videos}
 
 If you've been using Octoprint for a while, chances are you might already have a folder of time 3D printing time-lapses laying around.
 
@@ -18,16 +18,16 @@ While she does sometimes make mistakes, she has successfully caught thousands of
 Upload your time-lapse videos [here](https://app.obico.io/prints/upload/).
 :::
 
-## FAQs
+## FAQs {#faqs}
 
-### I tried to test if The Detective is any good. I threw a ball of spaghetti on the print bed. But nothing happened. Was The Detective asleep?
+### I tried to test if The Detective is any good. I threw a ball of spaghetti on the print bed. But nothing happened. Was The Detective asleep? {#i-tried-to-test-if-the-detective-is-any-good-i-threw-a-ball-of-spaghetti-on-the-print-bed-but-nothing-happened-was-the-detective-asleep}
 
 Kudos to you for trying to spy on The Detective before putting the faith in her to save you from spaghetti monsters. A few reasons why The Detective is not responding to your delicious spaghetti ball:
 
 - When your printer is not printing, The Detective is off duty to catch some sleeps. So you need to start a print in OctoPrint to call her to duty.
 - The Detective tries to be adaptive in order to reduce the amount of false alarms. What it means is that during the first several minutes of a print, The Detective will only observe, rather than alarm. Therefore, when she sees a ball of spaghetti at the very first minutes of the print, she will think "No way! I must be wrong here. I will ignore this huge spaghetti ball for this print."
 
-### Gotcha! But then how do I test if The Detective actually does what she claims to?
+### Gotcha! But then how do I test if The Detective actually does what she claims to? {#gotcha-but-then-how-do-i-test-if-the-detective-actually-does-what-she-claims-to}
 
 Again the easiest way to test if The Detective is worth her while is to upload a time-lapse. However, if you want to see The Detective in action in real time:
 

@@ -4,14 +4,14 @@ title: "Recompile the firmware to enable HOST_ACTION_COMMANDS for Creality Ender
 
 ---
 
-## What you need
+## What you need {#what-you-need}
 
 Thanks to the new mainboard on the Ender 3 V2, you won’t need much to update its firmware:
 
 - A Micro SD card.
 - A laptop or a desktop computer. Either Mac or Windows will work.
 
-## Step 1: Install required software
+## Step 1: Install required software {#step-1-install-required-software}
 
 First,  lets install all of the necessary programs. All of these programs have Mac and Windows versions available.
 
@@ -28,7 +28,7 @@ First,  lets install all of the necessary programs. All of these programs have M
 ![Open Platform.io](/img/user-guides/filament-change/home-button-vscode.PNG)
 
 
-## Step 2: Download the latest Marlin source code and configure it
+## Step 2: Download the latest Marlin source code and configure it {#step-2-download-the-latest-marlin-source-code-and-configure-it}
 
 1. Download [Marlin](https://marlinfw.org/meta/download/). Most likely, you will want the latest version, which is 2.0.9.3 at this time. Make sure you download the both “Marlin-2.0.x.zip” and “Configurations-release-2.0.x.x.zip”.
 
@@ -48,7 +48,7 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 
 6. When prompted, choose to overwrite the two files that are already there.
 
-## Step 3: Set the correct Environment
+## Step 3: Set the correct Environment {#step-3-set-the-correct-environment}
 
 1.  Click the *home symbol* on the bottom left of the screen to open Platform.io.
 
@@ -78,7 +78,7 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 
 
 
-## Step 4: Enable HOST_ACTION_COMMANDS and M600
+## Step 4: Enable HOST_ACTION_COMMANDS and M600 {#step-4-enable-host_action_commands-and-m600}
 
 1. Click the *Explorer* button on the left side and edit the configuration_adv file in the Marlin folder.
 
@@ -97,7 +97,7 @@ If you don't have a Creality Ender 3V2, go to our general guide for 32 bit board
 1. Save the file
 
 
-## Step 5: Compile the firmware
+## Step 5: Compile the firmware {#step-5-compile-the-firmware}
 
 1.  Click the Marlin icon on the left side of the screen and hover over the build section on the top left side of the screen and you will see a hammer icon. Click this icon and click Build on the right to start building the firmware.
 
@@ -109,7 +109,7 @@ Be patient, compiling the firmware can take as long as ten minutes.
 
 2.  At the end of the terminal, you should see a list of boards, with most of them saying Ignored, and your board listed as "Success".
 
-## Step 6: Flash the new firmware
+## Step 6: Flash the new firmware {#step-6-flash-the-new-firmware}
 
 1. Go to your “Marlin-2.0.x” folder,
 

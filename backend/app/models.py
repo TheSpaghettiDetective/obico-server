@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict
 from allauth.account.admin import EmailAddress
 from datetime import datetime, timedelta
 import logging
@@ -29,10 +29,6 @@ from lib.utils import dict_or_none
 LOGGER = logging.getLogger(__name__)
 
 UNLIMITED_DH = 100000000    # A very big number to indicate this is unlimited DH
-
-
-class ResurrectionError(Exception):
-    pass
 
 
 def dh_is_unlimited(dh):
@@ -229,33 +225,37 @@ class Printer(SafeDeleteModel):
 
         return printer_cur_state and printer_cur_state.get('flags', {}).get('printing', False)
 
-    def update_current_print(self, filename, current_print_ts):
-        if current_print_ts == -1:      # Not printing
+    def update_current_print(self, current_print_ts, filename):
+        # current_print_ts == -1 => Not printing in OctoPrint
+        if current_print_ts == -1:
             if self.current_print:
-                if self.current_print.started_at < (timezone.now() - timedelta(hours=10)):
-                    self.unset_current_print()
-                else:
-                    LOGGER.warn(f'current_print_ts=-1 received when current print is still active. print_id: {self.current_print_id} - printer_id: {self.id}')
-
+                LOGGER.warn(f'current_print_ts=-1 received when current print is still active. Force-closing print. print_id: {self.current_print_id} - printer_id: {self.id}')
+                self.unset_current_print()
             return
 
-        # currently printing
+        # current_print_ts != -1 => Currently printing in OctoPrint
 
-        if self.current_print:
-            if self.current_print.ext_id == current_print_ts:
-                return
-            # Unknown bug in plugin that causes current_print_ts not unique
+        if not self.current_print:
+            if filename:  # Sometimes moonraker-obico sends current_print_ts without octoprint_data, which is a bug.
+                self.set_current_print(filename, current_print_ts)
+            return
 
-            if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
-                LOGGER.warn(
-                    f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
+        # Current print in OctoPrint matches current_print in db. Nothing to update.
+        if self.current_print.ext_id == current_print_ts:
+            return
 
-                return
+        # Unknown bug in plugin that causes current_print_ts to change by a few seconds. Suspected to be caused by two PrintStarted OctoPrint events in quick secession.
+        # So we assume it's the same printer if 2 current_print_ts are within range, and filenames are the same
+        if self.current_print.ext_id in range(current_print_ts - 20, current_print_ts + 20) and self.current_print.filename == filename:
+            LOGGER.warn(
+                f'Apparently skewed print_ts received. ts1: {self.current_print.ext_id} - ts2: {current_print_ts} - print_id: {self.current_print_id} - printer_id: {self.id}')
+            self.current_print.ext_id = current_print_ts
+            self.current_print.save()
+        else:
             LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
             self.unset_current_print()
             self.set_current_print(filename, current_print_ts)
-        else:
-            self.set_current_print(filename, current_print_ts)
+
 
     def unset_current_print(self):
         print = self.current_print
@@ -272,9 +272,6 @@ class Printer(SafeDeleteModel):
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
-        if not current_print_ts or current_print_ts == -1:
-            raise Exception(f'Invalid current_print_ts when trying to set current_print: {current_print_ts}')
-
         try:
             cur_print, _ = Print.objects.get_or_create(
                 user=self.user,
@@ -283,13 +280,13 @@ class Printer(SafeDeleteModel):
                 defaults={'filename': filename.strip(), 'started_at': timezone.now()},
             )
         except IntegrityError:
-            raise ResurrectionError('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
+            raise Exception('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         if cur_print.ended_at():
             if cur_print.ended_at() > (timezone.now() - timedelta(seconds=30)):  # Race condition. Some msg with valid print_ts arrived after msg with print_ts=-1
                 return
             else:
-                raise ResurrectionError('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
+                raise Exception('Ended print is re-surrected! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 
         self.current_print = cur_print
         self.save()

@@ -163,6 +163,8 @@ class Printer(SafeDeleteModel):
     detective_sensitivity = models.FloatField(null=False, default=1.0)
     min_timelapse_secs_on_finish = models.IntegerField(null=False, default=60*10)  # Default to 10 minutes. -1: timelapse disabled
     min_timelapse_secs_on_cancel = models.IntegerField(null=False, default=60*5)  # Default to 5 minutes. -1: timelapse disabled
+    agent_name = models.CharField(max_length=64, null=True, blank=True)
+    agent_version = models.CharField(max_length=64, null=True, blank=True)
 
     archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -191,6 +193,10 @@ class Printer(SafeDeleteModel):
 
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))
+
+        # Backward compatibility: for mobile app 1.66 or earlier
+        if self.agent_name and self.agent_version:
+            p_settings.update(dict(agent_name=self.agent_name, agent_version=self.agent_version))
 
         return p_settings
 

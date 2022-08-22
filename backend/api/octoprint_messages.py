@@ -19,6 +19,14 @@ def process_octoprint_status(printer: Printer, msg: Dict) -> None:
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
+        agent_name = octoprint_settings.get('agent', {}).get('name')
+        agent_version = octoprint_settings.get('agent', {}).get('version')
+        if agent_name != printer.agent_name or agent_version != printer.agent_version:
+            printer.agent_name = agent_name
+            printer.agent_version = agent_version
+            printer.save()
+
+
     # Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     printer_status = msg.get('status') or msg.get('octoprint_data')
 
@@ -53,10 +61,8 @@ def settings_dict(octoprint_settings):
         tsd_plugin_version=octoprint_settings.get('tsd_plugin_version', ''),
         octoprint_version=octoprint_settings.get('octoprint_version', ''),
     )
-    settings.update(
-        dict(('agent_' + k, str(v)) for k, v in octoprint_settings.get('agent', {}).items())
-    )
     settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
+
     return settings
 
 

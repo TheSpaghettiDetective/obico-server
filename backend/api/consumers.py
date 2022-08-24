@@ -173,6 +173,7 @@ class OctoPrintConsumer(WebsocketConsumer):
     @newrelic.agent.background_task()
     @close_on_error('failed to connect')
     def connect(self):
+        self.connected_at = time.time()
         self.printer = None
 
         self.printer = self.get_printer()
@@ -184,7 +185,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        self.last_touch = time.time()
+        self.last_touch = self.connected_at
 
         Room.objects.add(
             channels.octo_group_name(self.printer.id),
@@ -197,6 +198,15 @@ class OctoPrintConsumer(WebsocketConsumer):
                 channels.web_group_name(self.printer.id)) > 0,
             'should_watch': self.printer.should_watch(),
         }})
+
+        async_to_sync(self.channel_layer.group_send)(
+            channels.octo_group_name(self.printer.id),
+            {
+                'type': 'close.duplicates', 
+                'channel_name': self.channel_name, 
+                'connected_at': self.connected_at
+            }
+        )
 
         touch_user_last_active(self.printer.user)
 
@@ -274,6 +284,19 @@ class OctoPrintConsumer(WebsocketConsumer):
             traceback.print_exc()
             capture_exception()
 
+    @newrelic.agent.background_task()
+    def close_duplicates(self, data):
+        try:
+            channel_name = data['channel_name']
+            connected_at = data['connected_at']
+            if self.channel_name != channel_name and self.connected_at <= connected_at:
+                LOGGER.warning(f'closing possibly duplicate connection from printer pk:{self.printer.id}')
+                self.close(code=4321)
+        except Exception:  # sentry doesn't automatically capture consumer errors
+            LOGGER.error(data)
+            import traceback
+            traceback.print_exc()
+            capture_exception()
 
 class JanusWebConsumer(WebsocketConsumer):
 

@@ -39,7 +39,7 @@ But having all these firewall rules in place still doesn't guarantee the Premium
 
 ## I got an HTTP 500 error when I do "Sent test email". Why? {#i-got-an-http-500-error-when-i-do-sent-test-email-why}
 
-More likely than not, it's because your email configurations are set correctly.
+More likely than not, it's because your email configurations are set incorrectly.
 
 Check out [this help guide](/docs/server-guides/configure/#email-smtp) for how you can configure email (SMTP) for the Obico Server. There are also a few things you can do to troubleshoot:
 

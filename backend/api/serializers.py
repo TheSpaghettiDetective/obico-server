@@ -92,7 +92,7 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'lift_z_on_pause', 'detective_sensitivity',
                   'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
                   'pic', 'status', 'settings', 'current_print',
-                  'normalized_p', 'auth_token', 'archived_at',)
+                  'normalized_p', 'auth_token', 'archived_at', 'agent_name', 'agent_version',)
 
         read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status',
         'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at',)

@@ -37,7 +37,7 @@ export const normalizedPrinter = (newData, oldData) => {
     inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
-    isAgentMoonraker: function() { return get(this, 'settings.agent_name', '') === 'moonraker_obico'},
+    isAgentMoonraker: function() { return get(this, 'agent_name', '') === 'moonraker_obico'},
     basicStreamingInWebrtc: function() {
       return get(this, 'settings.agent_name', '') === 'octoprint_obico' && semverGte(get(this, 'settings.agent_version', '0.0.0'), '2.1.0') ||
         get(this, 'settings.agent_name', '') === 'moonraker_obico' && semverGte(get(this, 'settings.agent_version', '0.0.0'), '0.3.0')

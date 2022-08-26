@@ -219,7 +219,7 @@
                         Re-Link Printer
                   </a>
                   <div class="text-muted mt-1">
-                    <small>If your OctoPrint is always showing as "offline", and you have gone through <a href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">all the trouble-shooting steps</a>, you can try to re-link OctoPrint as the last resort.</small>
+                    <small>If your printer is always showing as "offline", and you have gone through <a href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">all the trouble-shooting steps</a>, you can try to re-link printer as the last resort.</small>
                   </div>
                 </div>
                 <div class="mt-4">

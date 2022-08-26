@@ -23,7 +23,7 @@
           <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
             <i class="fas fa-share-alt fa-lg"></i>Share
           </b-dropdown-item>
-          <b-dropdown-item :href="octoPrintTunnelUrl()">
+          <b-dropdown-item v-if="!printer.isAgentMoonraker()" :href="octoPrintTunnelUrl()">
             <svg class="menu-icon">
               <use href="#svg-octoprint-tunneling" />
             </svg>
@@ -681,8 +681,8 @@ export default {
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {
-            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
-                  '<p>It may take a while to be executed by OctoPrint.</p>'
+            toastHtml += `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+                  '<p>It may take a while to be executed.</p>'
           }
           if (toastHtml != '') {
             this.$swal.Toast.fire({

@@ -301,8 +301,7 @@ export default {
       (printerStatus) => {
         // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
         const status = printerStatus.status || printerStatus.octoprint_data
-        this.$emit('PrinterUpdated', this.updatedPrinter(
-          {status: printerStatus.octoprint_data}))
+        this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
       }
     )
     this.printerComm.connect()

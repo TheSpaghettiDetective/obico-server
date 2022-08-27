@@ -2,7 +2,7 @@
 <div>
   <div class="row my-2" v-if="!printer.isOffline() && printer.hasError()">
     <div class="col-12 bg-danger text-center">
-      <div>Error</div><div>{{ printer.status.state.text }}</div>
+      <div class="lead">{{ printer.agentDisplayName() }} Error</div><div>{{ printer.status.state.error }}</div>
     </div>
   </div>
   <div class="row my-2" v-if="printer.inUserInteractionRequired()">

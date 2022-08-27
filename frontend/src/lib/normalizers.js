@@ -31,11 +31,11 @@ export const normalizedPrinter = (newData, oldData) => {
     createdAt: function() { return toMomentOrNull(this.created_at) },
     isOffline: function() { return get(this, 'status', null) === null },
     isPaused: function() { return get(this, 'status.state.flags.paused', false) },
-    isIdle: function() { return get(this, 'status.state.text', '') === 'Operational' },
     isDisconnected: function() { return get(this, 'status.state.flags.closedOrError', true) },
     isActive: function() {
       const flags = get(this, 'status.state.flags')
-      return flags && flags.operational && !flags.ready
+      // https://discord.com/channels/704958479194128507/705047010641838211/1013193281280159875
+      return flags && flags.operational && (!flags.ready || flags.paused)
     },
     inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },

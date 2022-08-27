@@ -178,7 +178,7 @@ export default {
         printers = printers.filter((p) => !p.isDisconnected())
         break
       case 'active':
-        printers = printers.filter((p) => p.isPrinting())
+        printers = printers.filter((p) => p.isActive())
         break
       case 'all':
         break

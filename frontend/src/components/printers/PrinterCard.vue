@@ -315,7 +315,7 @@ export default {
     },
     timeRemaining() {
       return this.toDuration(
-        this.secondsLeft, this.printer.isPrinting())
+        this.secondsLeft, this.printer.isActive())
     },
     timeTotal() {
       let secs = null
@@ -324,7 +324,7 @@ export default {
       }
       return this.toDuration(
         secs,
-        this.printer.isPrinting())
+        this.printer.isActive())
     },
     secondsLeft() {
       return get(this.printer, 'status.progress.printTimeLeft')
@@ -700,11 +700,11 @@ export default {
       return !shouldBeThumb
     },
 
-    toDuration (seconds, isPrinting) {
+    toDuration (seconds, isActive) {
       if (seconds == null || seconds == 0) {
         return {
           valid: false,
-          printing: isPrinting,
+          printing: isActive,
         }
       } else {
         var d = moment.duration(seconds, 'seconds')
@@ -713,7 +713,7 @@ export default {
         var s = d.seconds()
         return {
           valid: true,
-          printing: isPrinting,
+          printing: isActive,
           hours: h,
           showHours: (h>0),
           minutes: m,

@@ -33,7 +33,10 @@ export const normalizedPrinter = (newData, oldData) => {
     isPaused: function() { return get(this, 'status.state.flags.paused', false) },
     isIdle: function() { return get(this, 'status.state.text', '') === 'Operational' },
     isDisconnected: function() { return get(this, 'status.state.flags.closedOrError', true) },
-    isPrinting: function() { return !this.isDisconnected() && get(this, 'status.state.text', '') !== 'Operational' },
+    isActive: function() {
+      const flags = get(this, 'status.state.flags')
+      return flags && flags.operational && !flags.ready
+    },
     inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },

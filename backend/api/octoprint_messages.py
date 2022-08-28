@@ -74,8 +74,9 @@ def update_current_print_if_needed(msg, printer):
     # Backward compatibility: octoprint_event is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     op_event = msg.get('event') or msg.get('octoprint_event') or {}
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
+
     print_ts = msg.get('current_print_ts')
-    current_filename = op_event.get('data', {}).get('name') or printer_status.get('job', {}).get('file', {}).get('name')
+    current_filename = (op_event.get('data') or {}).get('name') or ((printer_status.get('job') or {}).get('file') or {}).get('name')
     printer.update_current_print(print_ts, current_filename)
     if not printer.current_print:
         return

@@ -391,11 +391,13 @@ class MobileDeviceViewSet(
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        device, _ = MobileDevice.with_inactive.get_or_create(
+        device, created = MobileDevice.with_inactive.get_or_create(
             user=request.user,
             device_token=serializer.validated_data['device_token'],
             defaults=serializer.validated_data,
         )
+        if created:
+            device.save()
 
         if device.deactivated_at or device.app_version != request.data['app_version']:
             device.deactivated_at = None
@@ -460,7 +462,10 @@ class SharedResourceViewSet(mixins.ListModelMixin,
     def create(self, request):
         printer = get_printer_or_404(request.GET.get('printer_id'), request)
         # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
-        SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
+        obj, created = SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
+        # Weird bug that causes object not to be saved to db even if get_or_create return `True`
+        if created:
+            obj.save()
         return self.response_from_printer(request)
 
     def destroy(self, request, pk):

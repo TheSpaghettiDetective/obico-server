@@ -17,7 +17,7 @@ This refers to the LAN IP address that has been given to the computer that the O
 
 The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server. 
 
-It is also reccomended that a static IP is set to avoid issues with chaning IP's. Please look up your WiFi routers guide on how to do this.
+It is also recommended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
 
 #### Creating and Obtaining your server's .local address {#creating-and-obtaining-your-servers-local-address}
 

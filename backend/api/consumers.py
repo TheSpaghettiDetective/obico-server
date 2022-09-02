@@ -438,6 +438,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
     def connect(self):
         self.user, self.printer = None, None
         # Exception for un-authenticated or un-authorized access

@@ -157,11 +157,6 @@ class SharedWebConsumer(WebConsumer):
         ).printer
 
     @newrelic.agent.background_task()
-    @close_on_error
-    def connect(self):
-        pass
-
-    @newrelic.agent.background_task()
     @report_error
     def receive_json(self, data, **kwargs):
         # we don't expect frontend sending anything important,

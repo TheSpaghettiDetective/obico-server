@@ -157,11 +157,6 @@ class SharedWebConsumer(WebConsumer):
         ).printer
 
     @newrelic.agent.background_task()
-    @close_on_error
-    def connect(self):
-        pass
-
-    @newrelic.agent.background_task()
     @report_error
     def receive_json(self, data, **kwargs):
         # we don't expect frontend sending anything important,
@@ -201,6 +196,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
     def connect(self):
         self.connected_at = time.time()
         self.printer = None
@@ -442,6 +438,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
     def connect(self):
         self.user, self.printer = None, None
         # Exception for un-authenticated or un-authorized access

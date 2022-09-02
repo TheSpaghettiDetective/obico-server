@@ -36,14 +36,13 @@ def report_error(
     msg: str = '',
     sentry: bool = True,
     close: bool = False,
-    reraise: bool = False
 ) -> Callable:
     """Decorator for consumer message handlers. May close connections on error and reports causes to sentry."""
 
     # @decorator vs @partial_decorator
     # When decorator is a partial function, we need to handle it differently, as fn comes as an argument.
     if fn is not None:
-        return report_error(None, exc_class=exc_class, msg=msg, sentry=sentry, close=close, reraise=reraise)(fn)
+        return report_error(None, exc_class=exc_class, msg=msg, sentry=sentry, close=close)(fn)
 
     klass = Exception if exc_class is None else exc_class
     def outer(fn):
@@ -59,8 +58,6 @@ def report_error(
                     capture_exception()
                 if close:
                     self.close()
-                if reraise:
-                    raise
                 return
         return inner
     return outer
@@ -91,6 +88,7 @@ class WebConsumer(JsonWebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.printer = None
         self.printer = self.get_printer()
@@ -196,7 +194,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
-    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.connected_at = time.time()
         self.printer = None
@@ -257,7 +255,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @report_error
-    @close_on_error(exc_class=ObjectDoesNotExist, sentry=False)  # FIXME pls confirm that no need for sentry here
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         if time.time() - self.last_touch > TOUCH_MIN_SECS:
             self.last_touch = time.time()
@@ -321,6 +319,7 @@ class JanusWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.printer = None
         self.printer = self.get_printer()
@@ -438,7 +437,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
-    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.user, self.printer = None, None
         # Exception for un-authenticated or un-authorized access

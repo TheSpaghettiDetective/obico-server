@@ -196,6 +196,7 @@ class OctoPrintConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False)
     def connect(self):
         self.connected_at = time.time()
         self.printer = None

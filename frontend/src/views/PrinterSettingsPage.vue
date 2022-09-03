@@ -56,6 +56,57 @@
                     </saving-animation>
                   </div>
                 </div>
+                <!-- axis inversion setting section -->
+                <div class="axis">
+                  <div class="form-group mt-4 mb-4">
+                    <div class="form-label text-muted">Axis inversion:</div>
+                    <saving-animation :errors="errorMessages.x_inverted" :saving="saving.x_inverted">
+                        <div class="custom-control custom-checkbox mt-2 checkbox">
+                          <input
+                            type="checkbox"
+                            name="x_inverted"
+                            class="custom-control-input"
+                            id="id_x_inverted"
+                            v-model="printer.x_inverted"
+                            @change="updateSetting('x_inverted')"
+                          >
+                          <label class="custom-control-label" for="id_x_inverted">
+                            Invert X axis
+                          </label>
+                        </div>
+                      </saving-animation>
+                      <saving-animation :errors="errorMessages.y_inverted" :saving="saving.y_inverted">
+                        <div class="custom-control custom-checkbox mt-2 checkbox">
+                          <input
+                            type="checkbox"
+                            name="y_inverted"
+                            class="custom-control-input"
+                            id="id_y_inverted"
+                            v-model="printer.y_inverted"
+                            @change="updateSetting('y_inverted')"
+                          >
+                          <label class="custom-control-label" for="id_y_inverted">
+                            Invert Y axis
+                          </label>
+                        </div>
+                      </saving-animation>
+                      <saving-animation :errors="errorMessages.z_inverted" :saving="saving.z_inverted">
+                        <div class="custom-control custom-checkbox mt-2 checkbox">
+                          <input
+                            type="checkbox"
+                            name="z_inverted"
+                            class="custom-control-input"
+                            id="id_z_inverted"
+                            v-model="printer.z_inverted"
+                            @change="updateSetting('z_inverted')"
+                          >
+                          <label class="custom-control-label" for="id_z_inverted">
+                            Invert Z axis
+                          </label>
+                        </div>
+                      </saving-animation>
+                  </div>
+                </div>
               </section>
               <section class="mt-5">
                 <h2 class="section-title">Failure Detection</h2>

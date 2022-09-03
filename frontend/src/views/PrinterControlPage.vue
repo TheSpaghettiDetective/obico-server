@@ -158,6 +158,10 @@ export default {
         args.push(axis)
         func = 'home'
       } else {
+        // check for axis inversion. If inverted, invert the direction of motion
+        if (this.printer[axis.concat("_inverted")]) {
+          direction *= -1
+        }
         args.push({[axis]: direction * this.jogDistance})
       }
 

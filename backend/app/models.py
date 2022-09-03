@@ -163,6 +163,9 @@ class Printer(SafeDeleteModel):
     detective_sensitivity = models.FloatField(null=False, default=1.0)
     min_timelapse_secs_on_finish = models.IntegerField(null=False, default=60*10)  # Default to 10 minutes. -1: timelapse disabled
     min_timelapse_secs_on_cancel = models.IntegerField(null=False, default=60*5)  # Default to 5 minutes. -1: timelapse disabled
+    x_inverted = models.BooleanField(default=False)
+    y_inverted = models.BooleanField(default=False)
+    z_inverted = models.BooleanField(default=False)
 
     archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

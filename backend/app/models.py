@@ -127,9 +127,7 @@ def update_consented_at(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def init_email_notification_setting(sender, instance, created, **kwargs):
     if created:
-        obj, created = NotificationSetting.objects.get_or_create(user=instance, name='email')
-        if created:
-            obj.save()
+        NotificationSetting.objects.get_or_create(user=instance, name='email')
 
 
 class PrinterManager(SafeDeleteManager):
@@ -281,14 +279,12 @@ class Printer(SafeDeleteModel):
 
     def set_current_print(self, filename, current_print_ts):
         try:
-            cur_print, created = Print.objects.get_or_create(
+            cur_print, _ = Print.objects.get_or_create(
                 user=self.user,
                 printer=self,
                 ext_id=current_print_ts,
                 defaults={'filename': filename.strip(), 'started_at': timezone.now()},
             )
-            if created:
-                cur_print.save()
         except IntegrityError:
             raise Exception('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
 

@@ -119,9 +119,7 @@ class OctoPrintPicView(APIView):
         if not printer.should_watch() or not printer.actively_printing():
             return False
 
-        prediction, created = PrinterPrediction.objects.get_or_create(printer=printer)
-        if created:
-            prediction.save()
+        prediction, _ = PrinterPrediction.objects.get_or_create(printer=printer)
 
         if time.time() - prediction.updated_at.timestamp() < settings.MIN_DETECTION_INTERVAL:
             return False

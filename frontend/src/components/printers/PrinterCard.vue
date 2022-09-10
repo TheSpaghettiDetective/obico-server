@@ -356,9 +356,7 @@ export default {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
       let temperatures = []
-      const keys = ['bed', 'tool0', 'tool1']
-      keys.forEach((tempKey) => {
-        let temp = get(this.printer, 'status.temperatures.' + tempKey)
+      for (const [tempKey, temp] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
         if (temp) {
           temp.actual = parseFloat(temp.actual).toFixed(1)
           temp.target = Math.round(temp.target)
@@ -367,7 +365,7 @@ export default {
           temp.key = tempKey
           temperatures.push(temp)
         }
-      })
+      }
       return {
         temperatures: temperatures,
         show: temperatures.length > 0,
@@ -615,6 +613,11 @@ export default {
       if (item.key == 'bed') {
         presets = tempProfiles.map(
           (v) => {return {name: v.name, target: v['bed']}}
+        )
+        maxTemp = 140
+      } if (item.key == 'chamber') {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['chamber']}}
         )
         maxTemp = 140
       } else {

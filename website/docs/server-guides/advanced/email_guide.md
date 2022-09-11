@@ -25,9 +25,8 @@ For Outlook there are a few different SMTP settings, you can verify which are ne
       DEFAULT_FROM_EMAIL=changeme@example.com  # -> For Outlook set this to match EMAIL_HOST_USER: field, otherwise it is recommended not to change (Seems to work for Gmail without issue)
 
 ### Gmail {#gmail}
-Without using 2FA you will need to make sure that you enable: Less secure app access from Gmail -> Manage My Account -> Security.
 
-With 2FA enabled, create an App password in: Gmail -> Manage My Account -> Security -> Signing Into Google -> App Passwords. Then use this as your value for `EMAIL_HOST_PASSWORD`.
+You can follow [this guide](gmail_smtp_setup_guide.md) if you want to use a Gmail account to send emails.
 
 ### Outlook {#outlook}
 Without using 2FA you can just use your normal login credentials.

@@ -23,7 +23,7 @@
         {{parseFloat(item.actual).toFixed(1)}}<span class="text-subscript text-muted">°C</span>
       </div>
       <div
-        v-if="item.target !== null"
+        v-if="isEditable(item)"
         class="col-5 numbers"
         @click="onEditClicked(key, item)"
       >{{Math.round(item.target)}}<span class="text-subscript text-muted">°C</span>
@@ -31,6 +31,11 @@
           v-if="editable"
         >&nbsp;<i class="fas fa-pencil-alt" style="font-size: 0.6em;"></i></span>
       </div>
+      <div
+        v-else
+        class="col-5 numbers"
+      >-</div>
+
     </div>
   </div>
 </template>
@@ -55,6 +60,10 @@ export default {
       if (this.editable) {
         this.$emit('TempEditClicked', key, item)
       }
+    },
+    isEditable(temperature) {
+      // "target === null" means it's only a sensor, not a heater.
+      return temperature.target !== null
     },
     temperatureDisplayName: temperatureDisplayName,
   }

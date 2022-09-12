@@ -604,9 +604,16 @@ export default {
       if (key.search(/bed|chamber/) > -1) {
         maxTemp = 140
       }
-      presets = tempProfiles.map(
-        (v) => {return {name: v.name, target: v[key]}}
-      )
+      if (key.search(/tool/) > -1) {
+        // OctoPrint uses 'extruder' for toolx heaters
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v['extruder']}}
+        )
+      } else {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v[key]}}
+        )
+      }
 
       this.$swal.openModalWithComponent(
         TempTargetEditor,

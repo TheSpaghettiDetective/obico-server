@@ -4,11 +4,11 @@ title: Configure a Gmail account as SMTP server to send emails
 
 To use Gmail's SMTP server for sending email, follow the following simple steps.
 
-## 1. Make sure the 2-Step Verification is turned on for the Gmail account.
+## 1. Make sure the 2-Step Verification is turned on for the Gmail account. {#1-make-sure-the-2-step-verification-is-turned-on-for-the-gmail-account}
 
 Follow [this guide](https://support.google.com/accounts/answer/185839) to turn on 2-Step Verification.
 
-## 2. Add an "app password" for your self-hosted Obico server.
+## 2. Add an "app password" for your self-hosted Obico server. {#2-add-an-app-password-for-your-self-hosted-obico-server}
 
 1. Go to the account page for the Gmail account you intend to use.
 1. Select "Security".
@@ -29,7 +29,7 @@ Follow [this guide](https://support.google.com/accounts/answer/185839) to turn o
 
 If you run into issues creating an app password, you can check out [Google's guide](https://support.google.com/mail/answer/185833?hl=en).
 
-## 3. Configure `.env` with the correct email settings.
+## 3. Configure `.env` with the correct email settings. {#3-configure-env-with-the-correct-email-settings}
 
 ```
 EMAIL_HOST=smtp.gmail.com
@@ -43,10 +43,10 @@ EMAIL_USE_TLS=True
 If you can't find the `.env` file, check out [this guide](../configure.md/#email-smtp).
 :::
 
-## 4. Restart the server.
+## 4. Restart the server. {#4-restart-the-server}
 
 `docker-compose up --build -d`
 
-## 5. Send a test email
+## 5. Send a test email {#5-send-a-test-email}
 
 Follow [this guide](email_guide.md/#test-if-your-email-server-configuration-works) to send a test email.

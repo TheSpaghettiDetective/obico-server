@@ -234,6 +234,7 @@ import axios from 'axios'
 import urls from '@config/server-urls'
 import { normalizedPrinter, normalizedGcode } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
+import {temperatureDisplayName} from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import Gauge from '@src/components/Gauge'
 import StreamingBox from '@src/components/StreamingBox'
@@ -355,20 +356,10 @@ export default {
     tempProps() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
-      let temperatures = []
-      for (const [tempKey, temp] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
-        if (temp) {
-          temp.actual = parseFloat(temp.actual).toFixed(1)
-          temp.target = Math.round(temp.target)
-          Object.assign(temp, {toolName: capitalize(tempKey)})
-          temp.id = this.printer.id + '-' + tempKey
-          temp.key = tempKey
-          temperatures.push(temp)
-        }
-      }
+      let temperatures = get(this.printer, 'status.temperatures', {})
       return {
         temperatures: temperatures,
-        show: temperatures.length > 0,
+        show: Object.keys(temperatures).length > 0,
         editable: editable,
       }
     },
@@ -605,26 +596,17 @@ export default {
       window.location = urls.printerControl(this.printer.id)
     },
 
-    onTempEditClicked(item) {
+    onTempEditClicked(key, item) {
       let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
       let presets
       let maxTemp = 350
 
-      if (item.key == 'bed') {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['bed']}}
-        )
+      if (key.search(/bed|chamber/) > -1) {
         maxTemp = 140
-      } if (item.key == 'chamber') {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['chamber']}}
-        )
-        maxTemp = 140
-      } else {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['extruder']}}
-        )
       }
+      presets = tempProfiles.map(
+        (v) => {return {name: v.name, target: v[key]}}
+      )
 
       this.$swal.openModalWithComponent(
         TempTargetEditor,
@@ -634,7 +616,7 @@ export default {
           curTarget: item.target,
         },
         {
-          title: 'Set ' + item.toolName + ' Temperature',
+          title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
           confirmButtonText: 'Confirm',
           showCancelButton: true,
           preConfirm: () => {
@@ -649,7 +631,7 @@ export default {
             {
               func: 'set_temperature',
               target: '_printer',
-              args: [item.key, targetTemp]
+              args: [key, targetTemp]
             })
         }
       })

@@ -306,6 +306,7 @@ class AgentEventView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        Printer.objects.filter(id=request.auth.id).update(**request.data)
+        printer = request.auth
+
         return self.get_response(request.auth, request.user)
 

@@ -47,4 +47,14 @@ urlpatterns = [
     path('v1/octo/verify/',
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),
+
+    # V2 APIs
+    path('v2/', include(router.urls)),
+    path('v2/agent/pic/', octoprint_views.OctoPrintPicView.as_view()),
+    path('v2/agent/printer/', octoprint_views.OctoPrinterView.as_view()),
+    path('v2/agent/unlinked/', octoprint_views.OctoPrinterDiscoveryView.as_view()),
+    path('v2/agent/verify/',
+         octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
+    ),
+    path('v2/agent/event/', octoprint_views.OctoPrinterDiscoveryView.as_view()),
 ]

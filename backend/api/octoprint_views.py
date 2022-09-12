@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
 import time
-from rest_framework.views import APIView
+from rest_framework.views import APIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
@@ -300,3 +300,12 @@ class OneTimeVerificationCodeVerifyView(APIView):
             return Response(OneTimeVerificationCodeSerializer(code, many=False).data)
         else:
             raise Http404("Requested resource does not exist")
+
+class AgentEventView(CreateAPIView):
+    authentication_classes = (PrinterAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        Printer.objects.filter(id=request.auth.id).update(**request.data)
+        return self.get_response(request.auth, request.user)
+

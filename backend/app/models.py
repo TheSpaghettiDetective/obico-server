@@ -514,6 +514,7 @@ class Print(SafeDeleteModel):
         return self.tagged_video_url or self.uploaded_at
 
 
+# TODO: Rename to PrinterEvent after migrated
 class PrintEvent(models.Model):
     STARTED = 'STARTED'
     ENDED = 'ENDED'
@@ -533,20 +534,54 @@ class PrintEvent(models.Model):
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
     )
 
-    print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
+    ERROR = 'ERROR'
+    WARNING = 'WARNING'
+    SUCCESS = 'SUCCESS'
+    INFO = 'INFO'
+
+    EVENT_CLASS = (
+        (ERROR, ERROR),
+        (WARNING, WARNING),
+        (SUCCESS, SUCCESS),
+        (INFO, INFO),
+    )
+
+    print = models.ForeignKey(Print, on_delete=models.CASCADE, null=True)
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
     event_type = models.CharField(
         max_length=256,
         choices=EVENT_TYPE,
-        null=True
+        null=True,
     )
-    alert_muted = models.BooleanField(null=False)
+    event_class = models.CharField(
+        max_length=256,
+        choices=EVENT_CLASS,
+        null=True,
+        db_index=True,
+    )
+    event_title = models.TextField(
+        null=True,
+        blank=True,
+    )
+    event_text = models.TextField(
+        null=True,
+        blank=True,
+    )
+    image_url = models.TextField(
+        null=True,
+        blank=True,
+    )
+    help_url = models.TextField(
+        null=True,
+        blank=True,
+    )
+    visible = models.BooleanField(null=False, default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def create(print_, event_type):
         event = PrintEvent.objects.create(
             print=print_,
             event_type=event_type,
-            alert_muted=(print_.alert_muted_at is not None)
         )
         celery_app.send_task(
             settings.PRINT_EVENT_HANDLER,

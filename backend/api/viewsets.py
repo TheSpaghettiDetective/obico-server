@@ -29,7 +29,7 @@ from app.models import (
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer,
+    NotificationSettingSerializer, PrinterEventSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache
@@ -568,3 +568,22 @@ class NotificationSettingsViewSet(
             LOGGER.exception("cannot test message")
             return Response({"status": "error", "detail": str(e)}, status=418)
         return Response({"status": "sent"})
+
+
+class PrinterEventViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = PrinterEventSerializer
+
+    def create(self, request):
+        printer = get_printer_or_404(request.GET.get('printer_id'), request)
+        # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
+        SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
+        return self.response_from_printer(request)

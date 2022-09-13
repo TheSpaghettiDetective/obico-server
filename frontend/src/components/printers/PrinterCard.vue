@@ -356,7 +356,12 @@ export default {
     tempProps() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
-      let temperatures = get(this.printer, 'status.temperatures', {})
+      const temperatures = {}
+      for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
+        if ( Boolean(value.actual) && !isNaN(value.actual) ) {  // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
+          temperatures[key] = value
+        }
+      }
       return {
         temperatures: temperatures,
         show: Object.keys(temperatures).length > 0,

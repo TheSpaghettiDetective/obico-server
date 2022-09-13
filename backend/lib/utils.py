@@ -85,8 +85,14 @@ def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
-    tmp_img = Image.open(img_bytes)
+    save_pic(dest_jpg_path, img_bytes, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
+
+
+def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+    bytes_to_save = img_bytes
+
     if rotated:
+        tmp_img = Image.open(bytes_to_save)
         if printer_settings['webcam_flipH']:
             tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
         if printer_settings['webcam_flipV']:
@@ -94,10 +100,11 @@ def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to
         if printer_settings['webcam_rotate90']:
             tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
-    img_bytes = io.BytesIO()
-    tmp_img.save(img_bytes, "JPEG")
-    img_bytes.seek(0)
-    _, dest_jpg_url = save_file_obj(dest_jpg_path, img_bytes, to_container, long_term_storage=to_long_term_storage)
+        bytes_to_save = io.BytesIO()
+        tmp_img.save(bytes_to_save, "JPEG")
+        bytes_to_save.seek(0)
+
+    _, dest_jpg_url = save_file_obj(dest_jpg_path, bytes_to_save, to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
 

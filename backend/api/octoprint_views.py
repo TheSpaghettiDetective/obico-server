@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
 import time
-from rest_framework.views import APIView, CreateAPIView
+from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
@@ -31,8 +32,8 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from lib.utils import copy_pic, last_pic_of_print
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode
+from lib.utils import copy_pic, last_pic_of_print, save_pic
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrintEvent
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
@@ -308,5 +309,33 @@ class AgentEventView(CreateAPIView):
     def post(self, request):
         printer = request.auth
 
-        return self.get_response(request.auth, request.user)
+        # Dedup repeated errors
+        last_event = PrintEvent.objects.filter(printer=printer).order_by('id').last()
+        if last_event and last_event.event_title == request.data.get('event_title'):
+            return Response({'result': 'ok', 'details': 'Duplicate'})
 
+        rotated_jpg_url = None
+        if 'snapshot' in request.FILES:
+            pic = request.FILES['snapshot']
+            pic = cap_image_size(pic)
+            # Snapshots for event are short term by nature. Save them to short term storage
+            rotated_jpg_url = save_pic(
+                        f'snapshots/{printer.id}/{str(timezone.now().timestamp())}_rotated.jpg',
+                        pic,
+                        rotated=True,
+                        printer_settings=printer.settings,
+                        to_long_term_storage=False
+            )
+
+        print_event = PrintEvent.objects.create(
+            printer=printer,
+            print=printer.current_print,
+            event_type=request.data.get('event_type'),
+            event_class=request.data.get('event_class'),
+            event_title=request.data.get('event_title'),
+            event_text=request.data.get('event_text'),
+            help_url=request.data.get('help_url'),
+            image_url=rotated_jpg_url,
+            visible=True,
+        )
+        return Response({'result': 'ok'})

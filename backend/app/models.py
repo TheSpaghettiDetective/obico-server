@@ -523,6 +523,7 @@ class PrintEvent(models.Model):
     ALERT_MUTED = 'ALERT_MUTED'
     ALERT_UNMUTED = 'ALERT_UNMUTED'
     FILAMENT_CHANGE = 'FILAMENT_CHANGE'
+    PRINTER_ERROR = 'PRINTER_ERROR'
 
     EVENT_TYPE = (
         (STARTED, STARTED),
@@ -532,6 +533,7 @@ class PrintEvent(models.Model):
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
+        (PRINTER_ERROR, PRINTER_ERROR),
     )
 
     ERROR = 'ERROR'
@@ -551,12 +553,12 @@ class PrintEvent(models.Model):
     event_type = models.CharField(
         max_length=256,
         choices=EVENT_TYPE,
-        null=True,
+        null=False,
     )
     event_class = models.CharField(
         max_length=256,
         choices=EVENT_CLASS,
-        null=True,
+        null=False,
         db_index=True,
     )
     event_title = models.TextField(

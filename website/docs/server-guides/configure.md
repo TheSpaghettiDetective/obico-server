@@ -92,14 +92,20 @@ You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to u
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 
 
-## Advanced server configuration {#advanced-server-configuration}
+## What's next?
+
+### Advanced server configuration {#advanced-server-configuration}
 
 Ready for some advanced server chops? Feel free to dive into the [advanced server stuff](advanced/index.md).
 
-### If you don't need to add a new environment variable {#if-you-dont-need-to-add-a-new-environment-variable}
+### Keep your server up to date
 
-TBD
+The Obico Server is designed to be backward compatible, not forward compatible. This means the server can work with the old client versions released in the past, but not the client versions that will be released in the future.
 
-### If you need to add a new environment variable {#if-you-need-to-add-a-new-environment-variable}
+The clients here include the Obico mobile app, Obico for OctoPrint and Obico for Klipper
 
-TBD
+:::caution
+
+Always [upgrade your self-hosted Obico Server](ops.md/#upgrade-obico-server) before you upgrade the Obico mobile app, Obico for OctoPrint or Obico for Klipper to a new version.
+
+:::

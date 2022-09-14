@@ -306,7 +306,7 @@ export default {
     position: absolute
     left: 22px
     top: 8px
-    border-radius: 4px
+    border-radius: var(--border-radius-sm)
     background-color: var(--color-primary)
     height: auto
     font-size: .625rem

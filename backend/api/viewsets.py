@@ -25,7 +25,7 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrintEvent)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
@@ -572,18 +572,35 @@ class NotificationSettingsViewSet(
 
 class PrinterEventViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrinterEventSerializer
+    pagination_class = StandardResultsSetPagination
 
-    def create(self, request):
-        printer = get_printer_or_404(request.GET.get('printer_id'), request)
-        # When the GET API is slow, the user may try to turn on the sharing toggle when it's on already
-        SharedResource.objects.get_or_create(printer=printer, defaults={'share_token': hexlify(os.urandom(18)).decode()})
-        return self.response_from_printer(request)
+    def get_queryset(self):
+        return PrintEvent.objects.filter(printer__user=self.request.user, visible=True).order_by('-id')
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        filter = request.GET.get('filter', 'none')
+        # if filter == 'cancelled':
+        #     queryset = queryset.filter(cancelled_at__isnull=False)
+        # if filter == 'finished':
+        #     queryset = queryset.filter(finished_at__isnull=False)
+        # if filter == 'need_alert_overwrite':
+        #     queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
+        # if filter == 'need_print_shot_feedback':
+        #     queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        start = int(request.GET.get('start', '0'))
+        limit = int(request.GET.get('limit', '12'))
+        # The "right" way to do it is `queryset[start:start+limit]`. However, it slows down the query by 100x because of the "offset 12 limit 12" clause. Weird.
+        # Maybe related to https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1
+        results = list(queryset)[start:start + limit]
+
+        serializer = self.serializer_class(results, many=True)
+        return Response(serializer.data)

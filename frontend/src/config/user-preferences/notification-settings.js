@@ -5,8 +5,8 @@ export default [
     description: 'When possible failures are detected',
   },
   {
-    id: 'printer_status_change',
-    title: 'Printer status change',
+    id: 'print_job',
+    title: 'Print job events',
     description: 'Upon start/end/cancellation of a print job',
     subcategories: [
       {

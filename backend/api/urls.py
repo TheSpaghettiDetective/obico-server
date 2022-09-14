@@ -22,18 +22,18 @@ router.register(r'mobile_devices', viewsets.MobileDeviceViewSet, 'MobileDevice')
 router.register(
     r'onetimeverificationcodes',
     viewsets.OneTimeVerificationCodeViewSet,
-    'OneTimeVerificationCodeViewSet')
+    'OneTimeVerificationCode')
 router.register(
     r'sharedresources',
     viewsets.SharedResourceViewSet,
-    'SharedResourceViewSet')
+    'SharedResource')
 router.register(
     r'printer_discovery',
     viewsets.PrinterDiscoveryViewSet,
-    'PrinterDiscoveryViewSet')
+    'PrinterDiscovery')
 router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
-
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
+router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
 
 urlpatterns = [
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0
@@ -47,14 +47,5 @@ urlpatterns = [
     path('v1/octo/verify/',
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),
-
-    # V2 APIs
-    path('v2/', include(router.urls)),
-    path('v2/agent/snapshot/', octoprint_views.OctoPrintPicView.as_view()),
-    path('v2/agent/me/', octoprint_views.OctoPrinterView.as_view()),
-    path('v2/agent/announce/', octoprint_views.OctoPrinterDiscoveryView.as_view()),
-    path('v2/agent/verify/',
-         octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
-    ),
-    path('v2/agent/event/', octoprint_views.AgentEventView.as_view()),
+    path('v1/octo/event/', octoprint_views.AgentEventView.as_view()),
 ]

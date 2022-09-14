@@ -64,6 +64,5 @@ export default {
 }
 </script>
 
- <!-- Can not make the styles scoped, because otherwise filter-btn styles won't be apply -->
 <style lang="sass" scoped>
 </style>

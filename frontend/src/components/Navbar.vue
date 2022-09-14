@@ -36,10 +36,7 @@
             <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">SIGN UP</b-nav-item>
             <b-nav-item-dropdown v-if="user" ref="accountDropdown" right toggle-class="user-menu" :text="user.first_name || user.email">
               <b-dropdown-item href="/user_preferences/">
-                <i class="fas fa-sliders-h mr-2"></i>Preferences
-              </b-dropdown-item>
-              <b-dropdown-item v-if="isEnt" href="/user_preferences/subscription">
-                <i class="far fa-user-circle mr-2"></i>Account
+                <i class="fas fa-cog mr-2"></i>Preferences
               </b-dropdown-item>
               <b-dropdown-divider></b-dropdown-divider>
               <b-dropdown-item href="/accounts/logout/">

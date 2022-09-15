@@ -4,6 +4,10 @@
       <b-container>
         <b-row class="justify-content-center">
           <div class="col-sm-12 col-md-10 col-lg-8 main-content">
+            <div v-if="!loading && printerEvents.length === 0" class="text-center">
+              <img :src="require('@static/img/vacation.gif')" class="w-25 my-4" />
+              <h5 class="text-primary">Nothing to look here. Enjoy your vacation!</h5>
+            </div>
             <printer-event-card v-for="item in printerEvents" :key="item.id" :printer-event="item" />
           </div>
         </b-row>

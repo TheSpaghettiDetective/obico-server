@@ -302,7 +302,7 @@ class OneTimeVerificationCodeVerifyView(APIView):
         else:
             raise Http404("Requested resource does not exist")
 
-class AgentEventView(CreateAPIView):
+class PrinterEventView(CreateAPIView):
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
 

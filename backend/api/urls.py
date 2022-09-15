@@ -47,5 +47,5 @@ urlpatterns = [
     path('v1/octo/verify/',
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),
-    path('v1/octo/event/', octoprint_views.AgentEventView.as_view()),
+    path('v1/octo/printer_events/', octoprint_views.PrinterEventView.as_view()),
 ]

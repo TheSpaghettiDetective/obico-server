@@ -677,6 +677,7 @@ class OctoPrintTunnelManager(SafeDeleteManager):
     def get_queryset(self):
         return super(OctoPrintTunnelManager, self).get_queryset().filter(
             printer__user__is_active=True,
+            printer__deleted__isnull=True,
             printer__archived_at__isnull=True)
 
 

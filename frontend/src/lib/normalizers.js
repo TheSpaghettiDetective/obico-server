@@ -71,3 +71,8 @@ export const normalizedPrinter = (newData, oldData) => {
     }
   }
 }
+
+export const normalizedPrinterEvent = printerEvent => {
+  printerEvent.created_at = toMomentOrNull(printerEvent.created_at)
+  return printerEvent
+}

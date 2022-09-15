@@ -3,10 +3,8 @@
     <template v-slot:content>
       <b-container>
         <b-row class="justify-content-center">
-          <div class="col-sm-12 col-md-10 col-lg-8">
-            <div class="print-event-card">
-            asdasd
-            </div>
+          <div class="col-sm-12 col-md-10 col-lg-8 main-content">
+            <printer-event-card v-for="item in printerEvents" :key="item.id" :printer-event="item" />
           </div>
         </b-row>
       </b-container>
@@ -19,7 +17,9 @@ import axios from 'axios'
 
 import urls from '@config/server-urls'
 import Layout from '@src/components/Layout.vue'
+import PrinterEventCard from '@src/components/printer-events/PrinterEventCard.vue'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import { normalizedPrinterEvent } from '@src/lib/normalizers'
 
 const LOCAL_PREF_NAMES = {
   filtering: 'printer-events-filtering',
@@ -32,6 +32,7 @@ export default {
 
   components: {
     Layout,
+    PrinterEventCard,
   },
 
   props: {
@@ -84,7 +85,7 @@ export default {
         .then(response => {
           this.loading = false
           this.noMoreData = response.data.length < PAGE_SIZE
-          this.printerEvents.push(...response.data)
+          this.printerEvents.push(...response.data.map(data => normalizedPrinterEvent(data)))
         })
     },
     refetchData() {
@@ -97,8 +98,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.print-event-card
+.main-content
   margin-top: var(--gap-between-blocks)
-  background-color: var(--color-surface-secondary)
-
 </style>

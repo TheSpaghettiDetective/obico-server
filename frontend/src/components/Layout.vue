@@ -78,8 +78,13 @@
       <!-- Top-bar -->
       <b-navbar class="top-nav">
         <div class="d-flex">
-          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 toggle-sidebar">
+          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 position-relative toggle-sidebar">
             <i class="fas fa-bars"></i>
+            <div class="alert-dot">
+              <svg width="8px" height="8px">
+                <use href="#svg-circle-icon" />
+              </svg>
+            </div>
           </b-button>
           <slot name="topBarLeft"></slot>
         </div>
@@ -296,6 +301,13 @@ export default {
 ::v-deep .search-input input
   background-color: var(--color-surface-secondary)
   border-color: var(--color-surface-secondary)
+
+.alert-dot
+  height: 50%
+  left: 59%
+  position: absolute
+  top: 59%
+  width: 50%
 
 @media (min-width: 769px)
   .content-wrapper

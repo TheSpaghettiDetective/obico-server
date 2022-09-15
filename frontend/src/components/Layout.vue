@@ -103,6 +103,7 @@
 <script>
 import { inMobileWebView } from '@src/lib/page_context'
 import layoutSections from '@config/layout/sections'
+import { user, settings } from '@src/lib/page_context'
 
 export default {
   name: 'Layout',
@@ -131,10 +132,10 @@ export default {
   },
 
   created() {
-    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
+    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = settings()
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
-    this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.user = user()
   },
 
   mounted() {

@@ -101,7 +101,7 @@ import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import { user } from '@src/lib/page_context'
+import { user, settings } from '@src/lib/page_context'
 
 const SortIconClass = {
   asc: 'fas fa-long-arrow-alt-up',
@@ -121,7 +121,7 @@ export default {
     CascadedDropdown,
   },
   created() {
-    const {IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
+    const {IS_ENT} = settings()
     this.isEnt = !!IS_ENT
     this.user = user()
     this.fetchPrinters()

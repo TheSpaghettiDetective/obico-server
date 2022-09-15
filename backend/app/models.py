@@ -275,7 +275,7 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        PrintEvent.create(print, PrintEvent.ENDED)
+        PrintEvent.objects.create(print, PrintEvent.ENDED)
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
@@ -299,7 +299,7 @@ class Printer(SafeDeleteModel):
         self.save()
 
         self.printerprediction.reset_for_new_print()
-        PrintEvent.create(cur_print, PrintEvent.STARTED)
+        PrintEvent.objects.create(cur_print, PrintEvent.STARTED)
         self.send_should_watch_status()
 
     ## return: succeeded? ##
@@ -361,9 +361,9 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         if muted:
-            PrintEvent.create(self.current_print, PrintEvent.ALERT_MUTED)
+            PrintEvent.objects.create(self.current_print, PrintEvent.ALERT_MUTED)
         else:
-            PrintEvent.create(self.current_print, PrintEvent.ALERT_UNMUTED)
+            PrintEvent.objects.create(self.current_print, PrintEvent.ALERT_UNMUTED)
 
         self.send_should_watch_status()
 
@@ -516,6 +516,17 @@ class Print(SafeDeleteModel):
 
 
 # TODO: Rename to PrinterEvent after migrated
+
+class PrintEventManager(models.Manager):
+    def create(self, task_handler = False, *args, **kwargs):
+        event = PrintEvent.objects.create(*args, **kwargs)
+        if call_handler:
+            celery_app.send_task(
+                settings.PRINT_EVENT_HANDLER,
+                args=(event.id, ),
+            )
+
+
 class PrintEvent(models.Model):
     STARTED = 'STARTED'
     ENDED = 'ENDED'
@@ -580,16 +591,8 @@ class PrintEvent(models.Model):
     )
     visible = models.BooleanField(null=False, default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    objects = PrintEventManager()
 
-    def create(print_, event_type):
-        event = PrintEvent.objects.create(
-            print=print_,
-            event_type=event_type,
-        )
-        celery_app.send_task(
-            settings.PRINT_EVENT_HANDLER,
-            args=(event.id, ),
-        )
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)

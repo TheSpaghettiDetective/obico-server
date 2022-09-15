@@ -234,6 +234,9 @@ def upload_gcode_file(request):
 
 @login_required
 def printer_events(request):
+    user = request.user
+    user.unseen_printer_events = 0
+    user.save()
     return render(request, 'printer_events.html')
 
 

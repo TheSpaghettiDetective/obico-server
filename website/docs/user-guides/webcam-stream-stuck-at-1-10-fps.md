@@ -110,17 +110,18 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
 
 - All OctoPi release versions 0.15.0 or newer.
 
+#### OS images that will NOT support the webcam streaming
+
+- 64-bit Raspberry Pi OS. All versions.
+- 32-bit Raspberry Pi OS Bullseye.
+
 #### OS images that *may* support the webcam streaming
 
 - All OctoPi beta/RC versions.
 - All OctoPi release versions older than 0.15.0.
 - All 32-bit Raspberry Pi OS version Buster or earlier.
 - All Raspbian versions.
-
-#### OS images that will NOT support the webcam streaming
-
-- 64-bit Raspberry Pi OS. All versions.
-- 32-bit Raspberry Pi OS Bullseye.
+- All other Debian derivatives, such as DietPi.
 
 <p />
 
@@ -133,16 +134,17 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
 - FluiddPi version 1.17.0 or newer.
 - 32-bit Raspberry Pi OS veresion Buster or newer.
 
+#### OS images that will NOT support the webcam streaming
+
+- 64-bit Raspberry Pi OS. All versions.
+
 #### OS images that *may* support the webcam streaming
 
 - All MainsailOS versions older than 0.6.0.
 - All FluiddPi versions older than 1.17.0.
 - 32-bit Raspberry Pi OS versions older than Buster.
 - All Raspbian versions.
-
-#### OS images that will NOT support the webcam streaming
-
-- 64-bit Raspberry Pi OS. All versions.
+- All other Debian derivatives, such as DietPi.
 
 <p />
   </TabItem>

@@ -35,9 +35,6 @@ class PluginDesc:
     instance: BaseNotificationPlugin
 
 
-_PLUGINS: Optional[Dict[str, PluginDesc]] = None
-
-
 def _load_plugin(name: str, path: str) -> PluginDesc:
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)  # type: ignore
@@ -242,72 +239,6 @@ class Handler(object):
         LOGGER.debug(f'{feature.name} is not enabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
         return False
 
-    def handler_printer_notifications(
-        self,
-        notification_type: str,
-        printer: Printer,
-        print_: Optional[Print],
-        extra_context: Optional[Dict] = None,
-        plugin_names: Tuple[str, ...] = (),
-        fail_silently: bool = True,
-    ) -> None:
-        feature = self.feature_for_notification_type(notification_type)
-        if not feature:
-            return
-
-        if plugin_names:
-            names = list(set(self.notification_plugin_names()) & set(plugin_names))
-        else:
-            names = self.notification_plugin_names()
-
-        # select matching, enabled & configured
-        nsettings = list(NotificationSetting.objects.filter(
-            user_id=printer.user_id,
-            enabled=True,
-            name__in=names,
-            **{feature.name: True}
-        ))
-
-        if not nsettings:
-            LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
-            return
-
-        if print_ and print_.poster_url:
-            img_url = print_.poster_url
-        else:
-            img_url = get_rotated_pic_url(printer, force_snapshot=True)
-
-        user_ctx = self.get_user_context(printer.user)
-        printer_ctx = self.get_printer_context(printer)
-        print_ctx = self.get_print_context(print_)
-
-        for nsetting in nsettings:
-            LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
-            try:
-                plugin = self.notification_plugin_by_name(nsetting.name)
-                if not plugin:
-                    continue
-
-                context = PrinterNotificationContext(
-                    feature=feature,
-                    config=nsetting.config,
-                    user=user_ctx,
-                    printer=printer_ctx,
-                    print=print_ctx,
-                    notification_type=notification_type,
-                    extra_context=extra_context or {},
-                    img_url=img_url,
-                )
-
-                self._send_printer_notification(nsetting=nsetting, context=context)
-            except NotImplementedError:
-                pass
-            except Exception:
-                if fail_silently:
-                    LOGGER.exception('send_printer_notification plugin error')
-                    capture_exception()
-                else:
-                    raise
 
     def _send_failure_alert(
         self,
@@ -322,24 +253,6 @@ class Handler(object):
             return
 
         plugin.instance.send_failure_alert(context=context)
-
-    def _send_printer_notification(
-        self,
-        nsetting: NotificationSetting,
-        context: PrinterNotificationContext,
-    ) -> None:
-        plugin = self.notification_plugin_by_name(nsetting.name)
-        if not plugin:
-            return
-
-        if not self.should_plugin_handle_notification_type(
-            plugin.instance,
-            nsetting,
-            context.notification_type,
-        ):
-            return
-
-        plugin.instance.send_printer_notification(context=context)
 
     def send_test_message(self, nsetting: NotificationSetting, extra_context: Optional[Dict] = None) -> None:
         plugin = self.notification_plugin_by_name(nsetting.name)

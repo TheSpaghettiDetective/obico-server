@@ -242,7 +242,7 @@ class Handler(object):
         LOGGER.debug(f'{feature.name} is not enabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
         return False
 
-    def send_printer_notifications(
+    def handler_printer_notifications(
         self,
         notification_type: str,
         printer: Printer,

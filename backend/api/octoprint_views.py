@@ -63,12 +63,11 @@ def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -
                         to_long_term_storage=False
                     )
 
-    handler.send_failure_alerts(
-        printer=printer,
+    handler.queue_send_failure_alerts_task(
+        print_id=printer.current_print_id,
         is_warning=is_warning,
         print_paused=print_paused,
-        print_=printer.current_print,
-        img_url=rotated_jpg_url or ''
+        img_url=rotated_jpg_url or '',
     )
 
 

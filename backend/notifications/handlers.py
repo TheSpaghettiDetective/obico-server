@@ -125,71 +125,6 @@ class Handler(object):
             unsub_token=user.unsub_token,
         )
 
-    def send_failure_alerts(
-        self,
-        is_warning: bool,
-        print_paused: bool,
-        printer: Printer,
-        print_: Print,
-        img_url: str,
-        extra_context: Optional[Dict] = None,
-        plugin_names: Tuple[str, ...] = (),
-        fail_silently: bool = True,
-    ) -> None:
-        try:
-            mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
-        except Exception:
-            capture_exception()
-
-        if plugin_names:
-            names = list(set(self.notification_plugin_names()) & set(plugin_names))
-        else:
-            names = self.notification_plugin_names()
-
-        # select matching, enabled & configured
-        nsettings = list(NotificationSetting.objects.filter(
-            user_id=printer.user_id,
-            enabled=True,
-            name__in=names,
-            notify_on_failure_alert=True
-        ))
-
-        if not nsettings:
-            LOGGER.debug("no matching NotificationSetting objects, ignoring failure alert")
-            return
-
-        user_ctx = self.get_user_context(printer.user)
-        printer_ctx = self.get_printer_context(printer)
-        print_ctx = self.get_print_context(print_)
-
-        for nsetting in nsettings:
-            LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
-            try:
-                plugin = self.notification_plugin_by_name(nsetting.name)
-                if not plugin:
-                    continue
-
-                context = FailureAlertContext(
-                    config=nsetting.config,
-                    user=user_ctx,
-                    printer=printer_ctx,
-                    print=print_ctx,
-                    is_warning=is_warning,
-                    print_paused=print_paused,
-                    extra_context=extra_context,
-                    img_url=img_url,
-                )
-
-                self._send_failure_alert(nsetting=nsetting, context=context)
-            except NotImplementedError:
-                pass
-            except Exception:
-                if fail_silently:
-                    LOGGER.exception('send_failure_alert plugin error')
-                    capture_exception()
-                else:
-                    raise
-
     def feature_for_notification_type(self, notification_type: str) -> Optional[Feature]:
         if notification_type == notification_types.PrintDone:
             return Feature.notify_on_print_done
@@ -239,21 +174,6 @@ class Handler(object):
         LOGGER.debug(f'{feature.name} is not enabled for plugin "{nsetting.name}" (pk: {nsetting.pk}), ignoring event')
         return False
 
-
-    def _send_failure_alert(
-        self,
-        nsetting: NotificationSetting,
-        context: FailureAlertContext,
-    ) -> None:
-        if not nsetting.notify_on_failure_alert:
-            return
-
-        plugin = self.notification_plugin_by_name(nsetting.name)
-        if not plugin:
-            return
-
-        plugin.instance.send_failure_alert(context=context)
-
     def send_test_message(self, nsetting: NotificationSetting, extra_context: Optional[Dict] = None) -> None:
         plugin = self.notification_plugin_by_name(nsetting.name)
 
@@ -264,6 +184,17 @@ class Handler(object):
         )
 
         plugin.instance.send_test_message(context=context)
+
+    def queue_send_failure_alerts_task(
+        self,
+        in_process: Optional[bool] = False,
+        **kwargs,
+    ) -> None:
+        from . import tasks
+        if in_process:
+            tasks.send_failure_alerts(**kwargs)
+        else:
+            tasks.send_failure_alerts.apply_async(kwargs=kwargs)
 
     def queue_send_printer_notifications_task(
         self,

@@ -106,9 +106,60 @@ def send_printer_notifications(
 
         except NotImplementedError:
             pass
-        except Exception:
-            if fail_silently:
-                LOGGER.exception('send_printer_notification plugin error')
-                capture_exception()
-            else:
-                raise
+
+
+@shared_task
+def send_failure_alerts(
+    print_id: int,
+    is_warning: bool,
+    print_paused: bool,
+    img_url: str,
+) -> None:
+
+    print_ = Print.objects.all_with_deleted().select_related('printer', 'printer__user').filter(id=print_id).first()
+    if not print_: # Printer may be deleted or archived
+        return
+    printer = print_.printer
+
+    try:
+        mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
+    except Exception:
+        capture_exception()
+
+    # select matching, enabled & configured
+    nsettings = list(NotificationSetting.objects.filter(
+        user_id=printer.user_id,
+        enabled=True,
+        name__in=handler.notification_plugin_names(),
+        notify_on_failure_alert=True
+    ))
+
+    if not nsettings:
+        LOGGER.debug("no matching NotificationSetting objects, ignoring failure alert")
+        return
+
+    user_ctx = handler.get_user_context(printer.user)
+    printer_ctx = handler.get_printer_context(printer)
+    print_ctx = handler.get_print_context(print_)
+
+    for nsetting in nsettings:
+        LOGGER.debug(f'forwarding failure alert to plugin "{nsetting.name}" (pk: {nsetting.pk})')
+        try:
+            plugin = handler.notification_plugin_by_name(nsetting.name)
+            if not plugin:
+                continue
+
+            context = FailureAlertContext(
+                config=nsetting.config,
+                user=user_ctx,
+                printer=printer_ctx,
+                print=print_ctx,
+                is_warning=is_warning,
+                print_paused=print_paused,
+                extra_context={},
+                img_url=img_url,
+            )
+
+            plugin.instance.send_failure_alert(context=context)
+        except NotImplementedError:
+            pass

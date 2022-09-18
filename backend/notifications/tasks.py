@@ -2,11 +2,18 @@ from typing import Dict, Optional, Tuple
 import logging
 from sentry_sdk import set_user
 from celery import shared_task  # type: ignore
+from sentry_sdk import capture_exception
 
-from app.models import Printer, Print
+from app.models import Printer, Print, NotificationSetting, User
 from app.tasks import will_record_timelapse, compile_timelapse
 from .handlers import handler
-from . import notification_types
+from lib.utils import get_rotated_pic_url
+from .plugin import (
+    BaseNotificationPlugin,
+    PrinterNotificationContext, FailureAlertContext,
+    UserContext, PrintContext, PrinterContext, TestMessageContext,
+    Feature,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,23 +30,85 @@ def send_printer_notifications(
     extra_context = extra_context or {}
 
     if print_id:
-        cur_print = Print.objects.all_with_deleted().select_related('printer', 'printer__user').filter(
+        print_ = Print.objects.all_with_deleted().select_related('printer', 'printer__user').filter(
             id=print_id, printer_id=printer_id).first()
-        if not cur_print: # Printer may be deleted or archived
+        if not print_: # Printer may be deleted or archived
             return
-        printer = cur_print.printer
+        printer = print_.printer
     else:
-        cur_print = None
+        print_ = None
         printer = Printer.objects.select_related('user').filter(id=printer_id).first()
         if not printer: # Printer may be deleted or archived
             return
 
     set_user({"id": printer.user_id})
 
-    handler.handler_printer_notifications(
-        notification_type=notification_type,
-        printer=printer,
-        print_=cur_print,
-        extra_context=extra_context,
-        plugin_names=plugin_names,
-    )
+    feature = handler.feature_for_notification_type(notification_type)
+    if not feature:
+        return
+
+    if plugin_names:
+        names = list(set(handler.notification_plugin_names()) & set(plugin_names))
+    else:
+        names = handler.notification_plugin_names()
+
+    # select matching, enabled & configured
+    nsettings = list(NotificationSetting.objects.filter(
+        user_id=printer.user_id,
+        enabled=True,
+        name__in=names,
+        **{feature.name: True}
+    ))
+
+    if not nsettings:
+        LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
+        return
+
+    if print_ and print_.poster_url:
+        img_url = print_.poster_url
+    else:
+        img_url = get_rotated_pic_url(printer, force_snapshot=True)
+
+    user_ctx = handler.get_user_context(printer.user)
+    printer_ctx = handler.get_printer_context(printer)
+    print_ctx = handler.get_print_context(print_)
+
+    for nsetting in nsettings:
+        LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
+        try:
+            plugin = handler.notification_plugin_by_name(nsetting.name)
+            if not plugin:
+                continue
+
+            context = PrinterNotificationContext(
+                feature=feature,
+                config=nsetting.config,
+                user=user_ctx,
+                printer=printer_ctx,
+                print=print_ctx,
+                notification_type=notification_type,
+                extra_context=extra_context or {},
+                img_url=img_url,
+            )
+
+            plugin = handler.notification_plugin_by_name(nsetting.name)
+            if not plugin:
+                return
+
+            if not handler.should_plugin_handle_notification_type(
+                plugin.instance,
+                nsetting,
+                context.notification_type,
+            ):
+                return
+
+            plugin.instance.send_printer_notification(context=context)
+
+        except NotImplementedError:
+            pass
+        except Exception:
+            if fail_silently:
+                LOGGER.exception('send_printer_notification plugin error')
+                capture_exception()
+            else:
+                raise

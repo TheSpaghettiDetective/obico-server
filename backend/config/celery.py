@@ -15,7 +15,8 @@ celery_app.conf.task_routes = {
     'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},
     'app_ent.tasks.process_print_events_ent': {'queue': 'realtime'},
     'app_ent.tasks.setup_free_trial': {'queue': 'realtime'},
-    'notifications.tasks.send_print_notifications': {'queue': 'realtime'},
+    'notifications.tasks.send_printer_notifications': {'queue': 'realtime'},
+    'notifications.tasks.send_failure_alerts': {'queue': 'realtime'},
 }
 
 # Using a string here means the worker doesn't have to serialize

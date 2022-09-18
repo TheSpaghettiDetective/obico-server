@@ -36,7 +36,7 @@ def send_printer_notifications(
 
     set_user({"id": printer.user_id})
 
-    handler.send_printer_notifications(
+    handler.handler_printer_notifications(
         notification_type=notification_type,
         printer=printer,
         print_=cur_print,

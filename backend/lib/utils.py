@@ -85,7 +85,7 @@ def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
-    save_pic(dest_jpg_path, img_bytes, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
+    return save_pic(dest_jpg_path, img_bytes, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
 
 
 def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
@@ -119,9 +119,10 @@ def get_rotated_pic_url(printer, force_snapshot=False):
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    file_prefix = str(timezone.now().timestamp()) if force_snapshot else 'latest'
     return copy_pic(
                 jpg_path.group(1),
-                f'snapshots/{printer.id}/latest_rotated.jpg',
+                f'snapshots/{printer.id}/{file_prefix}_rotated.jpg',
                 rotated=not 'latest_rotated' in jpg_url,
                 printer_settings=printer.settings,
                 to_long_term_storage=False

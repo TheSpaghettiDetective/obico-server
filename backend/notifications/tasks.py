@@ -7,7 +7,6 @@ from sentry_sdk import capture_exception
 from app.models import Printer, Print, NotificationSetting, User
 from app.tasks import will_record_timelapse, compile_timelapse
 from .handlers import handler
-from lib.utils import get_rotated_pic_url
 from .plugin import (
     BaseNotificationPlugin,
     PrinterNotificationContext, FailureAlertContext,
@@ -23,8 +22,8 @@ def send_printer_notifications(
     printer_id: int,
     notification_type: str,
     print_id: Optional[int],
+    img_url: Optional[str],
     extra_context: Optional[Dict] = None,
-    plugin_names: Tuple[str, ...] = (),
     **kwargs
 ) -> None:
     extra_context = extra_context or {}
@@ -47,27 +46,17 @@ def send_printer_notifications(
     if not feature:
         return
 
-    if plugin_names:
-        names = list(set(handler.notification_plugin_names()) & set(plugin_names))
-    else:
-        names = handler.notification_plugin_names()
-
     # select matching, enabled & configured
     nsettings = list(NotificationSetting.objects.filter(
         user_id=printer.user_id,
         enabled=True,
-        name__in=names,
+        name__in=handler.notification_plugin_names(),
         **{feature.name: True}
     ))
 
     if not nsettings:
         LOGGER.debug("no matching NotificationSetting objects, ignoring printer notification")
         return
-
-    if print_ and print_.poster_url:
-        img_url = print_.poster_url
-    else:
-        img_url = get_rotated_pic_url(printer, force_snapshot=True)
 
     user_ctx = handler.get_user_context(printer.user)
     printer_ctx = handler.get_printer_context(printer)

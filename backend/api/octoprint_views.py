@@ -326,14 +326,14 @@ class PrinterEventView(CreateAPIView):
                         to_long_term_storage=False
             )
 
-        print_event = PrintEvent.objects.create(
+        print_event = PrintEvent.create(
             printer=printer,
             print=printer.current_print,
             event_type=request.data.get('event_type'),
             event_class=request.data.get('event_class'),
             event_title=request.data.get('event_title'),
             event_text=request.data.get('event_text'),
-            help_url=request.data.get('help_url'),
+            info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
             visible=True,
         )

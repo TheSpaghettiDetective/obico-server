@@ -63,10 +63,12 @@ def send_notification_for_print_event(_print, print_event, extra_context=None):
         notification_types.PrintDone,
         notification_types.PrintCancelled,
         ] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
+
         handler.queue_send_printer_notifications_task(
             printer=_print.printer,
             notification_type=notification_type,
             print_=_print,
+            img_url=print_event.image_url,
             extra_context=extra_context,
             in_process=True,
         )

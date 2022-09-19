@@ -50,10 +50,12 @@ ALERT_COOLDOWN_SECONDS = 120
 
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
-    LOGGER.info(f'Printer {printer.user.id} {"smells fishy" if is_warning else "is probably failing"}. Sending Alerts')
     if not printer.current_print:
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
+
+    # TODO: I am pretty sure this can be DRYed by consolidating FAILURE_ALERTED with how other printer events are handled.
+    PrintEvent.create(print=printer.current_print, event_type=PrintEvent.FAILURE_ALERTED, task_handler=False)
 
     rotated_jpg_url = get_rotated_pic_url(printer, img_url, force_snapshot=True)
 
@@ -330,5 +332,6 @@ class PrinterEventView(CreateAPIView):
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
             visible=True,
+            task_handler=False,
         )
         return Response({'result': 'ok'})

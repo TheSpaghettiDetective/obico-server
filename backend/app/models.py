@@ -276,7 +276,7 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        PrintEvent.create(print=print, event_type=PrintEvent.ENDED)
+        PrintEvent.create(print=print, event_type=PrintEvent.ENDED, task_handler=True)
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
@@ -300,7 +300,7 @@ class Printer(SafeDeleteModel):
         self.save()
 
         self.printerprediction.reset_for_new_print()
-        PrintEvent.create(print=cur_print, event_type=PrintEvent.STARTED)
+        PrintEvent.create(print=cur_print, event_type=PrintEvent.STARTED, task_handler=True)
         self.send_should_watch_status()
 
     ## return: succeeded? ##
@@ -362,9 +362,9 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         if muted:
-            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_MUTED)
+            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_MUTED, task_handler=True)
         else:
-            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_UNMUTED)
+            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_UNMUTED, task_handler=True)
 
         self.send_should_watch_status()
 
@@ -534,6 +534,7 @@ class PrintEvent(models.Model):
         (ENDED, ENDED),
         (PAUSED, PAUSED),
         (RESUMED, RESUMED),
+        (FAILURE_ALERTED, FAILURE_ALERTED),
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
         (FILAMENT_CHANGE, FILAMENT_CHANGE),

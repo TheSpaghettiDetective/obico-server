@@ -99,6 +99,10 @@ class User(AbstractUser):
         return self.phone_number and self.phone_country_code
 
     @property
+    def suppressed_printer_events(self):
+        return json.loads(self.suppressed_printer_event_json) if self.suppressed_printer_event_json else {}
+
+    @property
     def is_primary_email_verified(self):
         if EmailAddress.objects.filter(user=self, email=self.email, verified=True).exists():
             return True
@@ -900,10 +904,6 @@ class NotificationSetting(models.Model):
     @property
     def config(self) -> Dict:
         return json.loads(self.config_json) if self.config_json else {}
-
-    @config.setter
-    def config(self, data: Dict) -> None:
-        self.config_json = json.dumps(data)
 
     class Meta:
         unique_together = ('user', 'name')

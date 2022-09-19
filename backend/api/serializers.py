@@ -25,10 +25,11 @@ def int_with_default(v, default):
 class UserSerializer(serializers.ModelSerializer):
     is_primary_email_verified = serializers.ReadOnlyField()
     is_dh_unlimited = serializers.ReadOnlyField()
+    suppressed_printer_events = serializers.DictField(required=False)
 
     class Meta:
         model = User
-        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions',)
+        exclude = ('password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions','suppressed_printer_event_json')
         extra_kwargs = {
             'id': {'read_only': True},
             'email': {'read_only': True},
@@ -37,6 +38,11 @@ class UserSerializer(serializers.ModelSerializer):
             'dh_balance': {'read_only': True},
             'unsub_token': {'read_only': True},
         }
+
+    def save(self):
+        suppressed_printer_events = self.validated_data.pop('suppressed_printer_events', None)
+        if suppressed_printer_events:
+            self.validated_data['suppressed_printer_event_json'] = json.dumps(suppressed_printer_event)
 
 
 class PrintShotFeedbackSerializer(serializers.ModelSerializer):

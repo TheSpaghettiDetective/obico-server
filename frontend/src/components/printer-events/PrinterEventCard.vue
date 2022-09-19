@@ -71,12 +71,11 @@ export default {
       }
     },
     suppressPrinterEvent() {
-      this.$swal.Prompt.fire({
-        title: 'Test',
-        html: `
-          Are you sure?
-        `,
-        showCloseButton: true,
+      this.$swal.Confirm.fire({
+        title: 'Are you sure?',
+        html: `<p>All <b>"${this.printerEvent.event_title}"</b> events will be muted in the future. <span class="text-warning">This action can not be undone.</span></p><p>You will keep receiving notifications for this event.`,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
       })
     },
   }

@@ -1,24 +1,17 @@
 <template>
   <div class="printer-event-card my-3" :class="tintBorderClass">
-    <div class="d-flex pl-2">
-      <div class="printer-event-text" :class="{link: printerEvent.info_url}" @click="onTextClick">
-        <div class="title font-weight-bold my-2" :class="tintClass">
-          {{ eventTitle }}
-          <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
-        </div>
-        <div class="my-2 text-muted" v-html="printerEvent.event_text"></div>
+    <div class="printer-event-text" :class="{link: printerEvent.info_url}" v-on:click="onTextClick">
+      <div class="title font-weight-bold my-2" :class="tintClass">
+        {{ eventTitle }}
+        <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
       </div>
-      <div v-if="printerEvent.image_url" class="printer-event-snapshot">
-        <img :src="printerEvent.image_url" />
-      </div>
-    </div>
-    <div class="printer-event-footer d-flex w-100 justify-content-between align-items-center pl-2">
-      <div class="font-weight-light small">
+      <div v-html="printerEvent.event_text"></div>
+      <div class="my-2 text-muted font-weight-light small">
         {{ printerEvent.created_at.format('LLLL') }}
       </div>
-      <button class="btn" type="button" @click="suppressPrinterEvent">
-        <i class="fas fa-bell-slash"></i>
-      </button>
+    </div>
+    <div v-if="printerEvent.image_url" class="printer-event-snapshot">
+      <img :src="printerEvent.image_url" />
     </div>
   </div>
 </template>
@@ -70,14 +63,6 @@ export default {
         window.open(this.printerEvent.info_url, '_blank');
       }
     },
-    suppressPrinterEvent() {
-      this.$swal.Confirm.fire({
-        title: 'Are you sure?',
-        html: `<p>All <b>"${this.printerEvent.event_title}"</b> events will be muted in the future. <span class="text-warning">This action can not be undone.</span></p><p>You will keep receiving notifications for this event.`,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      })
-    },
   }
 }
 </script>
@@ -88,17 +73,16 @@ export default {
   align-items: start
   border-radius: var(--border-radius-sm)
   display: flex
-  flex-direction: column
-  background-color: var(--color-surface-primary)
+  background-color: var(--color-surface-secondary)
   border-left: solid thick
 
-  >:first-child
-    border-top-right-radius: inherit
   >:last-child
+    border-top-right-radius: inherit
     border-bottom-right-radius: inherit
 
 .printer-event-text
   flex: 1
+  padding: 0px 14px
 
   .title
     display: flex
@@ -111,13 +95,9 @@ export default {
 
 .printer-event-snapshot
   max-width: 25%
-  border-top-right-radius: inherit
 
   img
     object-fit: contain
     width: 100%
     border-radius: inherit
-
-.printer-event-footer
-  background-color: var(--color-surface-secondary)
 </style>

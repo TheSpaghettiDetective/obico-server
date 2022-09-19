@@ -88,7 +88,6 @@ class User(AbstractUser):
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
     unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)
-    suppressed_printer_event_json = models.CharField(max_length=2000, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -97,10 +96,6 @@ class User(AbstractUser):
 
     def sms_eligible(self):
         return self.phone_number and self.phone_country_code
-
-    @property
-    def suppressed_printer_events(self):
-        return json.loads(self.suppressed_printer_event_json) if self.suppressed_printer_event_json else {}
 
     @property
     def is_primary_email_verified(self):
@@ -563,6 +558,7 @@ class PrintEvent(models.Model):
         max_length=256,
         choices=EVENT_TYPE,
         null=False,
+        db_index=True,
     )
     event_class = models.CharField(
         max_length=256,

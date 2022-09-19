@@ -5,14 +5,8 @@ from celery import shared_task  # type: ignore
 from sentry_sdk import capture_exception
 
 from app.models import Printer, Print, NotificationSetting, User
-from app.tasks import will_record_timelapse, compile_timelapse
 from .handlers import handler
-from .plugin import (
-    BaseNotificationPlugin,
-    PrinterNotificationContext, FailureAlertContext,
-    UserContext, PrintContext, PrinterContext, TestMessageContext,
-    Feature,
-)
+from .plugin import (PrinterNotificationContext, FailureAlertContext)
 
 LOGGER = logging.getLogger(__name__)
 

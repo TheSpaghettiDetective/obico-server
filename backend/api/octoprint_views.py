@@ -32,7 +32,7 @@ from lib.file_storage import save_file_obj
 from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
-from lib.utils import copy_pic, last_pic_of_print, save_pic
+from lib.utils import save_pic, get_rotated_pic_url
 from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrintEvent
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -49,19 +49,13 @@ IMG_URL_TTL_SECONDS = 60 * 30
 ALERT_COOLDOWN_SECONDS = 120
 
 
-def send_failure_alert(printer: Printer, is_warning: bool, print_paused: bool) -> None:
+def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
     LOGGER.info(f'Printer {printer.user.id} {"smells fishy" if is_warning else "is probably failing"}. Sending Alerts')
     if not printer.current_print:
         LOGGER.warn(f'Trying to alert on printer without current print. printer_id: {printer.id}')
         return
 
-    rotated_jpg_url = copy_pic(
-                        last_pic_of_print(printer.current_print, 'tagged'),
-                        f'snapshots/{printer.id}/{printer.current_print.id}/{str(timezone.now().timestamp())}_rotated.jpg',
-                        rotated=True,
-                        printer_settings=printer.settings,
-                        to_long_term_storage=False
-                    )
+    rotated_jpg_url = get_rotated_pic_url(printer, img_url, force_snapshot=True)
 
     handler.queue_send_failure_alerts_task(
         print_id=printer.current_print_id,
@@ -153,9 +147,9 @@ class OctoPrintPicView(APIView):
         save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, long_term_storage=False)
 
         if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
-            pause_if_needed(printer)
+            pause_if_needed(printer, external_url)
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
-            alert_if_needed(printer)
+            alert_if_needed(printer, external_url)
 
         return True
 
@@ -193,7 +187,7 @@ def alert_suppressed(printer):
     return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
 
 
-def alert_if_needed(printer):
+def alert_if_needed(printer, img_url):
     if alert_suppressed(printer):
         return
 
@@ -203,10 +197,10 @@ def alert_if_needed(printer):
         return
 
     printer.set_alert()
-    send_failure_alert(printer, is_warning=True, print_paused=False)
+    send_failure_alert(printer, img_url, is_warning=True, print_paused=False)
 
 
-def pause_if_needed(printer):
+def pause_if_needed(printer, img_url):
     if alert_suppressed(printer):
         return
 
@@ -216,10 +210,10 @@ def pause_if_needed(printer):
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
         printer.pause_print(initiator='system')
         printer.set_alert()
-        send_failure_alert(printer, is_warning=False, print_paused=True)
+        send_failure_alert(printer, img_url, is_warning=False, print_paused=True)
     elif not last_alerted > last_acknowledged:
         printer.set_alert()
-        send_failure_alert(printer, is_warning=False, print_paused=False)
+        send_failure_alert(printer, img_url, is_warning=False, print_paused=False)
 
 
 def cap_image_size(pic):

@@ -108,10 +108,11 @@ def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_
     return dest_jpg_url
 
 
-def get_rotated_pic_url(printer, force_snapshot=False):
-    if not printer.pic or not printer.pic.get('img_url'):
-        return None
-    jpg_url = printer.pic.get('img_url')
+def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
+    if not jpg_url:
+        if not printer.pic or not printer.pic.get('img_url'):
+            return None
+        jpg_url = printer.pic.get('img_url')
 
     need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
 

@@ -51,6 +51,9 @@ def process_print_end_event(print_event):
     _print = Print.objects.select_related('printer__user').get(id=print_event.print_id)
 
     if will_record_timelapse(_print):
+        _print.poster_url = print_event.image_url
+        _print.save()
+
         select_print_shots_for_feedback(_print)
         send_notification_for_print_event(_print, print_event)
         compile_timelapse.delay(print_event.print_id)
@@ -289,18 +292,6 @@ def will_record_timelapse(_print):
         _print.delete()
         clean_up_print_pics(_print)
         return False
-
-    rotated_jpg_url = copy_pic(
-                        last_pic,
-                        f'private/{_print.id}_poster.jpg',
-                        to_container=settings.TIMELAPSE_CONTAINER,
-                        rotated=True,
-                        printer_settings=_print.printer.settings,
-                        to_long_term_storage=True
-                    )
-    if rotated_jpg_url:
-        _print.poster_url = rotated_jpg_url
-        _print.save(keep_deleted=True)
 
     return True
 

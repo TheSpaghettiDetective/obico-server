@@ -602,7 +602,10 @@ class PrintEvent(models.Model):
             else:
                 attrs = dict(event_class=PrintEvent.INFO, event_title='Print Job ' + event_type.capitalize())
 
-            attrs['event_text'] = f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>'
+            attrs.update(dict(
+                event_text=f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>',
+                visible=True
+            ))
             return attrs
 
         if kwargs.get('print') is not None:

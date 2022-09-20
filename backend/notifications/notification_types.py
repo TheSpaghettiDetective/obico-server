@@ -24,5 +24,5 @@ def from_print_event(print_event):
 
   if print_event.event_type == PrintEvent.FILAMENT_CHANGE:
     return FilamentChange
-  
+
   return OTHER_PRINT_EVENT_MAP.get(print_event.event_type)

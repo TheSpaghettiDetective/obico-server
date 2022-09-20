@@ -19,7 +19,6 @@ from .plugin import (
 )
 from app.models import Print, Printer, NotificationSetting, User
 from lib import mobile_notifications
-from lib.utils import get_rotated_pic_url
 
 from . import notification_types
 
@@ -201,6 +200,7 @@ class Handler(object):
         notification_type: str,
         printer: Printer,
         print_: Optional[Print],
+        img_url: Optional[str],
         extra_context: Optional[Dict] = None,
         in_process: Optional[bool] = False,
     ) -> None:
@@ -222,8 +222,8 @@ class Handler(object):
                 'printer_id': printer.id,
                 'notification_type': notification_type,
                 'print_id': print_.id if print_ else None,
+                'img_url': img_url,
                 'extra_context': extra_context,
-
             }
         from . import tasks
         if in_process:

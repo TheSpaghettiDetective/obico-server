@@ -59,6 +59,14 @@
           <li>
             <hr class="my-0 mx-2">
           </li>
+          <li v-if="user" :class="{'active': path === '/printer_events/'}">
+            <a href="/printer_events/">
+              <i class="fas fa-bell position-relative">
+                <span v-if="hasUnseenPrinterEvents" class='badge'>{{ unseenPrinterEventsDisplay }}</span>
+              </i>
+              <span class="trim-text">Notifications</span>
+            </a>
+          </li>
           <li v-if="user" :class="{'active': path === '/user_preferences/'}">
             <a href="/user_preferences/">
               <i class="fas fa-cog"></i>
@@ -78,8 +86,14 @@
       <!-- Top-bar -->
       <b-navbar class="top-nav">
         <div class="d-flex">
-          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 toggle-sidebar">
-            <i class="fas fa-bars"></i>
+          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 position-relative toggle-sidebar">
+            <i class="fas fa-bars position-relative">
+              <div v-if="hasUnseenPrinterEvents" class="notification-dot">
+                <svg width="8px" height="8px">
+                  <use href="#svg-circle-icon" />
+                </svg>
+              </div>
+            </i>
           </b-button>
           <slot name="topBarLeft"></slot>
         </div>
@@ -96,7 +110,8 @@
 </template>
 
 <script>
-import { inMobileWebView } from '@src/lib/page_context'
+import get from 'lodash/get'
+import { inMobileWebView, user, settings } from '@src/lib/page_context'
 import layoutSections from '@config/layout/sections'
 
 export default {
@@ -123,13 +138,20 @@ export default {
     inMobileWebView() {
       return inMobileWebView()
     },
+    hasUnseenPrinterEvents() {
+      return get(this.user, 'unseen_printer_events', 0) > 0
+    },
+    unseenPrinterEventsDisplay() {
+      const num = get(this.user, 'unseen_printer_events', 0)
+      return num > 99 ? '99+' : num
+    },
   },
 
   created() {
-    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = JSON.parse(document.querySelector('#settings-json').text)
+    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = settings()
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
-    this.user = JSON.parse(document.querySelector('#user-json').text)
+    this.user = user()
   },
 
   mounted() {
@@ -215,6 +237,17 @@ export default {
           display: block
           font-size: 1.4em
           margin-bottom: 5px
+        .badge
+          border-radius: 2em
+          position: absolute
+          top: -0.35em
+          right: 2em
+          padding: 0.25em 0.3em
+          font-family: var(--default-font-family)
+          font-size: 60%
+          font-weight: bold
+          color: var(--color-on-danger)
+          background-color: var(--color-danger)
       &.active > a
         background: var(--color-hover)
       &.glowing
@@ -296,6 +329,14 @@ export default {
 ::v-deep .search-input input
   background-color: var(--color-surface-secondary)
   border-color: var(--color-surface-secondary)
+
+.notification-dot
+  height: 50%
+  left: 59%
+  position: absolute
+  top: 10%
+  width: 50%
+  color: var(--color-danger)
 
 @media (min-width: 769px)
   .content-wrapper

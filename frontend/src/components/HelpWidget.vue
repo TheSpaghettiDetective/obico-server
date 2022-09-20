@@ -19,7 +19,7 @@
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
             <div class="close-button" @click="show = false">
-              <svg withd="16" height="16">
+              <svg width="16" height="16">
                 <use href="#svg-cross-icon" />
               </svg>
             </div>

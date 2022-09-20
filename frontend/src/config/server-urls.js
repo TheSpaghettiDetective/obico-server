@@ -22,6 +22,7 @@ export default {
     + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
   printerDiscovery: () => '/api/v1/printer_discovery/',
+  printerEvents: () => '/api/v1/printer_events/',
 
   // Notifications
   notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',

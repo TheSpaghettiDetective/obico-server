@@ -99,10 +99,10 @@ def update_current_print_if_needed(msg, printer):
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused_at = timezone.now()
         printer.current_print.save()
-        PrintEvent.create(printer.current_print, PrintEvent.PAUSED)
+        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.PAUSED, task_handler=True)
     elif op_event.get('event_type') == 'PrintResumed':
         printer.current_print.paused_at = None
         printer.current_print.save()
-        PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
+        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
-        PrintEvent.create(printer.current_print, PrintEvent.FILAMENT_CHANGE)
+        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.FILAMENT_CHANGE, task_handler=True)

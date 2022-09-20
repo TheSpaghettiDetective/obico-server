@@ -200,6 +200,7 @@ def update_heater_trackers(printer: Printer,
                     'heater_target': event.state.target,
                     'heater_offset': event.state.offset,
                 },
+                img_url=None,
                 print_=printer.current_print if printer.current_print_id else None,
             )
 

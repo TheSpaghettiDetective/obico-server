@@ -9,7 +9,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting,
+    NotificationSetting, PrintEvent,
 )
 
 from notifications.handlers import handler
@@ -153,20 +153,6 @@ class OctoPrintTunnelSerializer(serializers.ModelSerializer):
         )
 
 
-# For public APIs
-
-class PublicPrinterSerializer(serializers.ModelSerializer):
-    pic = serializers.DictField(read_only=True)
-
-    class Meta:
-        model = Printer
-        fields = ('name', 'pic', 'settings')
-
-
-class VerifyCodeInputSerializer(serializers.Serializer):
-    code = serializers.CharField(max_length=64, required=True)
-
-
 class NotificationSettingSerializer(serializers.ModelSerializer):
     config = serializers.DictField(required=False)
 
@@ -221,3 +207,26 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             return super().save(user=user, created_at=now(), updated_at=now())
 
         return super().save(user=user)
+
+
+class PrinterEventSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PrintEvent
+        fields = '__all__'
+        read_only_fields = ('printer', 'print')
+
+
+# For public APIs
+
+class PublicPrinterSerializer(serializers.ModelSerializer):
+    pic = serializers.DictField(read_only=True)
+
+    class Meta:
+        model = Printer
+        fields = ('name', 'pic', 'settings')
+
+
+class VerifyCodeInputSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=64, required=True)
+

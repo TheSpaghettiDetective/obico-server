@@ -72,10 +72,7 @@ export const normalizedPrinter = (newData, oldData) => {
   }
 }
 
-
-export const getNormalizedP = (predictions, currentPosition, isPublic) => {
-  const num = Math.round(predictions.length * currentPosition)
-  const propName = isPublic ? 'p' : 'fields.normalized_p'
-  return get(predictions[num], `${propName}`, 0)
+export const normalizedPrinterEvent = printerEvent => {
+  printerEvent.created_at = toMomentOrNull(printerEvent.created_at)
+  return printerEvent
 }
-

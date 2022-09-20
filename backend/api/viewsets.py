@@ -582,7 +582,7 @@ class PrinterEventViewSet(
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return PrintEvent.objects.filter(printer__user=self.request.user, visible=True).order_by('-id')
+        return PrintEvent.objects.filter(printer__user=self.request.user).order_by('-id')
 
     def list(self, request):
         queryset = self.get_queryset()

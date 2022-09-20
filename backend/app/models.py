@@ -583,7 +583,6 @@ class PrintEvent(models.Model):
         null=True,
         blank=True,
     )
-    visible = models.BooleanField(null=False, default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def create(task_handler=False, **kwargs):
@@ -605,7 +604,6 @@ class PrintEvent(models.Model):
 
             attrs.update(dict(
                 event_text=f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>',
-                visible=True
             ))
             return attrs
 
@@ -631,9 +629,8 @@ class PrintEvent(models.Model):
 
         printer_event = PrintEvent.objects.create(**kwargs)
 
-        if printer_event.visible:
-            printer_event.printer.user.unseen_printer_events += 1
-            printer_event.printer.user.save()
+        printer_event.printer.user.unseen_printer_events += 1
+        printer_event.printer.user.save()
 
         if task_handler:
             celery_app.send_task(

@@ -43,11 +43,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='app.Printer'),
         ),
         migrations.AddField(
-            model_name='printevent',
-            name='visible',
-            field=models.BooleanField(db_index=True, default=False),
-        ),
-        migrations.AddField(
             model_name='user',
             name='unseen_printer_events',
             field=models.IntegerField(default=0),

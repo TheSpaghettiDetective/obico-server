@@ -69,7 +69,7 @@
         </b-row>
 
         <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-          <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+          <div v-if="noMoreData" class="text-center p-2">No more time-lapses.</div>
           <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
         </mugen-scroll>
 

@@ -586,15 +586,19 @@ class PrinterEventViewSet(
 
     def list(self, request):
         queryset = self.get_queryset()
-        filter = request.GET.get('filter', 'none')
-        # if filter == 'cancelled':
-        #     queryset = queryset.filter(cancelled_at__isnull=False)
-        # if filter == 'finished':
-        #     queryset = queryset.filter(finished_at__isnull=False)
-        # if filter == 'need_alert_overwrite':
-        #     queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
-        # if filter == 'need_print_shot_feedback':
-        #     queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        filter_by_classes = request.GET.getlist('filter_by_classes[]', [])
+        queryset = queryset.filter(event_class__in=filter_by_classes)
+
+        filter_by_types = []
+        for type_filter in request.GET.getlist('filter_by_types[]', []):
+            if type_filter == 'ALERT':
+                filter_by_types += [PrintEvent.FAILURE_ALERTED, PrintEvent.ALERT_MUTED, PrintEvent.ALERT_UNMUTED,]
+            elif type_filter == 'PAUSE_RESUME':
+                filter_by_types += [PrintEvent.PAUSED, PrintEvent.RESUMED,]
+            else:
+                filter_by_types += [type_filter,]
+        queryset = queryset.filter(event_type__in=filter_by_types)
 
         start = int(request.GET.get('start', '0'))
         limit = int(request.GET.get('limit', '12'))

@@ -583,7 +583,6 @@ class PrintEvent(models.Model):
         null=True,
         blank=True,
     )
-    alert_muted = models.BooleanField(null=False)
     visible = models.BooleanField(null=False, default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -18,7 +18,6 @@ from .plugin import (
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
-from lib import mobile_notifications
 
 from . import notification_types
 

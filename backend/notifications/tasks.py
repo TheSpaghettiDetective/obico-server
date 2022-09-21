@@ -5,6 +5,7 @@ from celery import shared_task  # type: ignore
 from sentry_sdk import capture_exception
 
 from app.models import Printer, Print, NotificationSetting, User
+from lib import mobile_notifications
 from .handlers import handler
 from .plugin import (PrinterNotificationContext, FailureAlertContext)
 

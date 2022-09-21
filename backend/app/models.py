@@ -362,9 +362,9 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         if muted:
-            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_MUTED, task_handler=True)
+            PrintEvent.create(print=self.current_print, event_type=PrintEvent.ALERT_MUTED, task_handler=True)
         else:
-            PrintEvent.create(print=printer.current_print, event_type=PrintEvent.ALERT_UNMUTED, task_handler=True)
+            PrintEvent.create(print=self.current_print, event_type=PrintEvent.ALERT_UNMUTED, task_handler=True)
 
         self.send_should_watch_status()
 

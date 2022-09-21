@@ -36,7 +36,7 @@ services:
 
 ### 3. Restart the Obico Server {#3-restart-the-obico-server}
 
-Run `docker-compose stop && docker-compose up -d`
+Run `docker compose stop && docker compose up -d`
 
 ## Configure the reverse proxy to forward *all the ports* in the range {#configure-the-reverse-proxy-to-forward-all-the-ports-in-the-range}
 

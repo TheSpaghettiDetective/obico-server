@@ -85,7 +85,7 @@ The following is using gmail as an example. Other web mail services may vary sli
 # Set it to False if your email provider doesn't use TLS, which is uncommon
 ```
 
-4. Restart the server `docker-compose up --build -d`.
+4. Restart the server `docker compose up --build -d`.
 
 You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to use a Gmail account to send emails.
 

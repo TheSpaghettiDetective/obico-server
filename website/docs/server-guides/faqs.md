@@ -43,5 +43,5 @@ More likely than not, it's because your email configurations are set incorrectly
 
 Check out [this help guide](/docs/server-guides/configure/#email-smtp) for how you can configure email (SMTP) for the Obico Server. There are also a few things you can do to troubleshoot:
 
-1. Run `docker-compose exec web env | grep EMAIL` to confirm the email configurations have been correctly picked up by the Obico Server.
-1. Run `docker-compose logs -f web` when you press the "Sent test email" button and look for the specific error messages.
+1. Run `docker compose exec web env | grep EMAIL` to confirm the email configurations have been correctly picked up by the Obico Server.
+1. Run `docker compose logs -f web` when you press the "Sent test email" button and look for the specific error messages.

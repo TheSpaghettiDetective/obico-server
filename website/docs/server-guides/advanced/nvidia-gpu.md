@@ -18,4 +18,4 @@ services:
     runtime: nvidia
 EOF
 ```
-- Restart the docker cluster by running `docker-compose down && docker-compose up -d`
+- Restart the docker cluster by running `docker compose down && docker compose up -d`

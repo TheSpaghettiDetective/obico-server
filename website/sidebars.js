@@ -23,24 +23,13 @@ module.exports = {
     },
     {
       type: 'category',
-      label: 'Obico for OctoPrint',
-      items: ['user-guides/octoprint-plugin-setup-manual-link', 'user-guides/check-webcam-streaming-mode', 'user-guides/octoprint-webcam-not-streaming'],
-    },
-    {
-      type: 'category',
-      label: 'Obico for Klipper',
-      link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/moonraker-obico/config', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+      label: 'Obico App (Mobile & Web)',
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings'],
     },
     {
       type: 'category',
       label: 'Failure Detection',
       items: ['user-guides/how-to-test-failure-detection', 'user-guides/failure-detection-false-alarms', 'user-guides/optimal-camera-setup', 'user-guides/how-does-credits-work', 'user-guides/help-the-detective-improve', 'user-guides/detective-not-watching',],
-    },
-    {
-      type: 'category',
-      label: 'Use The App',
-      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/octoprint-tunneling', 'user-guides/notification-settings'],
     },
     {
       type: 'category',
@@ -88,6 +77,29 @@ module.exports = {
         'user-guides/turn-on-debug-logging',
         'user-guides/send-mobile-app-log-files',
       ],
+    },
+    {
+      type: 'category',
+      label: 'Obico for OctoPrint',
+      items: [
+        'user-guides/octoprint-plugin-setup-manual-link',
+        'user-guides/octoprint-tunneling',
+        {
+          type: 'category',
+          label: 'Webcam Settings',
+          items: [
+            'user-guides/webcam-streaming-resolution-framerate-octoprint',
+            'user-guides/check-webcam-streaming-mode',
+            'user-guides/octoprint-webcam-not-streaming',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Obico for Klipper',
+      link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
+      items: ['user-guides/moonraker-obico/config', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     'user-guides/contact-us-for-support',
   ],

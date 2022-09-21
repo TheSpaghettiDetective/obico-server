@@ -68,6 +68,7 @@ This may indicate a similar connection issue as the one above. But it may also i
 
 - [Test if your phone/computer's Internet connection is fast enough for the Premium Streaming](/docs/user-guides/premium-streaming-computer-phone-connection-speed).
 - [Test if the Raspberry Pi's Internet connection is fast enough for the Premium Streaming](/docs/user-guides/premium-streaming-raspberry-pi-connection-speed).
+- Make sure [the webcam resolution is not set too high](webcam-streaming-resolution-framerate-octoprint.md/#if-the-streaming-mode-is-premium-compatibility-or-basic).
 - Make sure your webcam is properly connected to the Raspberry Pi, and [is properly configured in OctoPrint](/docs/user-guides/octoprint-webcam-not-streaming/#3-check-if-the-webcam-is-configured-correctly-in-octoprint).
 - If you are using the mobile app, check it in the web app to see if you have the same problem. If you are using the web app, check it in the mobile app, or check it in a different browser.
 - If everything is ruled out, try to [set the streaming to "**Always stream in compatibility mode**"](/docs/user-guides/streaming-compatibility-mode/#how-to-change-the-compatibility-mode-setting). Restart OctoPrint and see if the "Buffering" warning goes away and the Premium Stream is smooth now.

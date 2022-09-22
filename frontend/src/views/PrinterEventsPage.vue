@@ -88,13 +88,13 @@ export default {
         { key: 'ERROR', title: 'Error', selected: localPref('eventClassFiltering', 'ERROR', true) },
         { key: 'WARNING', title: 'Warning', selected: localPref('eventClassFiltering', 'WARNING', true) },
         { key: 'SUCCESS', title: 'Successs', selected: localPref('eventClassFiltering', 'SUCCESS', true) },
-        { key: 'INFO', title: 'Other', selected: localPref('eventClassFiltering', 'INFO', 'false') },
+        { key: 'INFO', title: 'Other', selected: localPref('eventClassFiltering', 'INFO', true) },
       ],
       eventTypeFiltering: [
         { key: 'ALERT', title: 'Failure Detection', selected: localPref('eventTypeFiltering', 'ALERT', true) },
         { key: 'ENDED', title: 'Print Job Ended', selected: localPref('eventTypeFiltering', 'ENDED', true) },
-        { key: 'STARTED', title: 'Print Job Started', selected: localPref('eventTypeFiltering', 'STARTED', false) },
-        { key: 'PAUSE_RESUME', title: 'Print Job Paused/Resumed', selected: localPref('eventTypeFiltering', 'PAUSE_RESUME', false) },
+        { key: 'STARTED', title: 'Print Job Started', selected: localPref('eventTypeFiltering', 'STARTED', true) },
+        { key: 'PAUSE_RESUME', title: 'Print Job Paused/Resumed', selected: localPref('eventTypeFiltering', 'PAUSE_RESUME', true) },
         { key: 'FILAMENT_CHANGE', title: 'Filament Change', selected: localPref('eventTypeFiltering', 'FILAMENT_CHANGE', true) },
         { key: 'PRINTER_ERROR', title: 'Printer Error', selected: localPref('eventTypeFiltering', 'PRINTER_ERROR', true) },
       ]

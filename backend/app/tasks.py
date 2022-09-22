@@ -24,7 +24,7 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
-from .models import Print, PrintEvent
+from .models import Print, PrinterEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, copy_pic, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -40,8 +40,8 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(event_id):
-    print_event = PrintEvent.objects.select_related('print').get(id=event_id)
-    if print_event.event_type == PrintEvent.ENDED:
+    print_event = PrinterEvent.objects.select_related('print').get(id=event_id)
+    if print_event.event_type == PrinterEvent.ENDED:
         process_print_end_event(print_event)
     else:
         send_notification_for_print_event(print_event.print, print_event)

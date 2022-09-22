@@ -276,7 +276,7 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        PrintEvent.create(print=print, event_type=PrintEvent.ENDED, task_handler=True)
+        PrinterEvent.create(print=print, event_type=PrinterEvent.ENDED, task_handler=True)
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
@@ -300,7 +300,7 @@ class Printer(SafeDeleteModel):
         self.save()
 
         self.printerprediction.reset_for_new_print()
-        PrintEvent.create(print=cur_print, event_type=PrintEvent.STARTED, task_handler=True)
+        PrinterEvent.create(print=cur_print, event_type=PrinterEvent.STARTED, task_handler=True)
         self.send_should_watch_status()
 
     ## return: succeeded? ##
@@ -362,9 +362,9 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         if muted:
-            PrintEvent.create(print=self.current_print, event_type=PrintEvent.ALERT_MUTED, task_handler=True)
+            PrinterEvent.create(print=self.current_print, event_type=PrinterEvent.ALERT_MUTED, task_handler=True)
         else:
-            PrintEvent.create(print=self.current_print, event_type=PrintEvent.ALERT_UNMUTED, task_handler=True)
+            PrinterEvent.create(print=self.current_print, event_type=PrinterEvent.ALERT_UNMUTED, task_handler=True)
 
         self.send_should_watch_status()
 
@@ -518,7 +518,10 @@ class Print(SafeDeleteModel):
 
 # TODO: Rename to PrinterEvent after migrated
 
-class PrintEvent(models.Model):
+class PrinterEvent(models.Model):
+    # class Meta:
+    #     db_table = 'app_printevent'
+
     STARTED = 'STARTED'
     ENDED = 'ENDED'
     PAUSED = 'PAUSED'
@@ -588,19 +591,19 @@ class PrintEvent(models.Model):
     def create(task_handler=False, **kwargs):
 
         def default_printer_event_attrs(event_type, print_):
-            if event_type == PrintEvent.ENDED:
+            if event_type == PrinterEvent.ENDED:
                 if print_.is_canceled():
-                    attrs = dict(event_class=PrintEvent.WARNING, event_title='Print Job Canceled')
+                    attrs = dict(event_class=PrinterEvent.WARNING, event_title='Print Job Canceled')
                 else:
-                    attrs = dict(event_class=PrintEvent.SUCCESS, event_title='Print Job Finished')
-            elif event_type == PrintEvent.FAILURE_ALERTED:
-                attrs = dict(event_class=PrintEvent.ERROR, event_title='Possible Failure Detected')
-            elif event_type == PrintEvent.ALERT_MUTED:
-                attrs = dict(event_class=PrintEvent.WARNING, event_title='Watching Turned Off')
-            elif event_type == PrintEvent.FILAMENT_CHANGE:
-                attrs = dict(event_class=PrintEvent.WARNING, event_title='Filament Change Required')
+                    attrs = dict(event_class=PrinterEvent.SUCCESS, event_title='Print Job Finished')
+            elif event_type == PrinterEvent.FAILURE_ALERTED:
+                attrs = dict(event_class=PrinterEvent.ERROR, event_title='Possible Failure Detected')
+            elif event_type == PrinterEvent.ALERT_MUTED:
+                attrs = dict(event_class=PrinterEvent.WARNING, event_title='Watching Turned Off')
+            elif event_type == PrinterEvent.FILAMENT_CHANGE:
+                attrs = dict(event_class=PrinterEvent.WARNING, event_title='Filament Change Required')
             else:
-                attrs = dict(event_class=PrintEvent.INFO, event_title='Print Job ' + event_type.capitalize())
+                attrs = dict(event_class=PrinterEvent.INFO, event_title='Print Job ' + event_type.capitalize())
 
             attrs.update(dict(
                 event_text=f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>',
@@ -611,13 +614,13 @@ class PrintEvent(models.Model):
             kwargs['printer'] = kwargs.get('print').printer
 
             is_print_job_event = kwargs.get('event_type') in (
-                PrintEvent.STARTED,
-                PrintEvent.ENDED,
-                PrintEvent.PAUSED,
-                PrintEvent.RESUMED,
-                PrintEvent.FAILURE_ALERTED,
-                PrintEvent.ALERT_MUTED,
-                PrintEvent.FILAMENT_CHANGE,
+                PrinterEvent.STARTED,
+                PrinterEvent.ENDED,
+                PrinterEvent.PAUSED,
+                PrinterEvent.RESUMED,
+                PrinterEvent.FAILURE_ALERTED,
+                PrinterEvent.ALERT_MUTED,
+                PrinterEvent.FILAMENT_CHANGE,
             )
 
             if is_print_job_event and kwargs.get('event_title') is None and kwargs.get('event_class') is None:
@@ -627,7 +630,7 @@ class PrintEvent(models.Model):
             if kwargs.get('image_url') is None:
                 kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})
 
-        printer_event = PrintEvent.objects.create(**kwargs)
+        printer_event = PrinterEvent.objects.create(**kwargs)
 
         printer_event.printer.user.unseen_printer_events += 1
         printer_event.printer.user.save()

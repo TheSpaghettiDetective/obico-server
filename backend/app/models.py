@@ -554,7 +554,7 @@ class PrintEvent(models.Model):
     )
 
     print = models.ForeignKey(Print, on_delete=models.CASCADE, null=True)
-    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=256,
         choices=EVENT_TYPE,

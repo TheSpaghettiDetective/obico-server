@@ -25,7 +25,7 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrintEvent)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
@@ -582,7 +582,7 @@ class PrinterEventViewSet(
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return PrintEvent.objects.filter(printer__user=self.request.user).order_by('-id')
+        return PrinterEvent.objects.filter(printer__user=self.request.user).order_by('-id')
 
     def list(self, request):
         queryset = self.get_queryset()
@@ -593,9 +593,9 @@ class PrinterEventViewSet(
         filter_by_types = []
         for type_filter in request.GET.getlist('filter_by_types[]', []):
             if type_filter == 'ALERT':
-                filter_by_types += [PrintEvent.FAILURE_ALERTED, PrintEvent.ALERT_MUTED, PrintEvent.ALERT_UNMUTED,]
+                filter_by_types += [PrinterEvent.FAILURE_ALERTED, PrinterEvent.ALERT_MUTED, PrinterEvent.ALERT_UNMUTED,]
             elif type_filter == 'PAUSE_RESUME':
-                filter_by_types += [PrintEvent.PAUSED, PrintEvent.RESUMED,]
+                filter_by_types += [PrinterEvent.PAUSED, PrinterEvent.RESUMED,]
             else:
                 filter_by_types += [type_filter,]
         queryset = queryset.filter(event_type__in=filter_by_types)

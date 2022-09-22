@@ -9,7 +9,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrintEvent,
+    NotificationSetting, PrinterEvent,
 )
 
 from notifications.handlers import handler
@@ -212,7 +212,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 class PrinterEventSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = PrintEvent
+        model = PrinterEvent
         fields = '__all__'
         read_only_fields = ('printer', 'print')
 

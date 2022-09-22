@@ -7,7 +7,7 @@ from lib import cache
 from lib import channels
 from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
-from app.models import PrintEvent, Printer
+from app.models import PrinterEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
 LOGGER = logging.getLogger(__name__)
@@ -99,10 +99,10 @@ def update_current_print_if_needed(msg, printer):
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused_at = timezone.now()
         printer.current_print.save()
-        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.PAUSED, task_handler=True)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.PAUSED, task_handler=True)
     elif op_event.get('event_type') == 'PrintResumed':
         printer.current_print.paused_at = None
         printer.current_print.save()
-        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.RESUMED, task_handler=True)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
-        PrintEvent.create(print=printer.current_print, event_type=PrintEvent.FILAMENT_CHANGE, task_handler=True)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)

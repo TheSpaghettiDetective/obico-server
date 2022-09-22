@@ -33,7 +33,7 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrintEvent
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
@@ -55,7 +55,7 @@ def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused
         return
 
     # TODO: I am pretty sure this can be DRYed by consolidating FAILURE_ALERTED with how other printer events are handled.
-    PrintEvent.create(print=printer.current_print, event_type=PrintEvent.FAILURE_ALERTED, task_handler=False)
+    PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FAILURE_ALERTED, task_handler=False)
 
     rotated_jpg_url = get_rotated_pic_url(printer, img_url, force_snapshot=True)
 
@@ -305,7 +305,7 @@ class PrinterEventView(CreateAPIView):
         printer = request.auth
 
         # Dedup repeated errors
-        last_event = PrintEvent.objects.filter(printer=printer).order_by('id').last()
+        last_event = PrinterEvent.objects.filter(printer=printer).order_by('id').last()
         if last_event and last_event.event_title == request.data.get('event_title'):
             return Response({'result': 'ok', 'details': 'Duplicate'})
 
@@ -322,7 +322,7 @@ class PrinterEventView(CreateAPIView):
                         to_long_term_storage=False
             )
 
-        print_event = PrintEvent.create(
+        print_event = PrinterEvent.create(
             printer=printer,
             print=printer.current_print,
             event_type=request.data.get('event_type'),

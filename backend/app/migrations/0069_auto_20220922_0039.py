@@ -24,4 +24,8 @@ class Migration(migrations.Migration):
             name='printer',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.Printer'),
         ),
+        migrations.RenameModel(
+            old_name='PrintEvent',
+            new_name='PrinterEvent',
+        ),
     ]

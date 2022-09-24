@@ -3,6 +3,7 @@ import functools
 import re
 import json
 import packaging.version
+from types import MethodType
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -166,7 +167,6 @@ def tunnel_api(request, octoprinttunnel):
         )
 
     raise Http404
-
 # Helpers
 
 
@@ -213,6 +213,14 @@ def save_static_etag(func):
 
         return response
     return inner
+
+
+def _items(self):
+    items = list(self._headers.values())
+    if hasattr(self, "tunnel_cookies"):
+        for raw_cookie in self.tunnel_cookies:
+            items.append(('Set-Cookie', raw_cookie))
+    return items
 
 
 @save_static_etag
@@ -312,6 +320,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         'content-length',  # set by django
         'content-encoding',  # if its set, it is probably incorrect/unapplicable
         'x-frame-options',  # response must load in TSD's iframe
+        'set-cookie',
     )
     for k, v in data['response']['headers'].items():
         if k.lower() in to_ignore:
@@ -327,6 +336,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # but TSD needs cookies working over https.
     # without this, cookies set in response might not be used
     # in some browsers (FF gives wwarning)
+    tunnel_cookies = []
     for cookie in (data['response'].get('cookies', ()) or ()):
         if (
             request.is_secure() and
@@ -337,7 +347,18 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if 'Expires=' not in cookie and 'Max-Age=' not in cookie:
             cookie += '; Max-Age=7776000'  # 3 months
 
-        resp['Set-Cookie'] = cookie
+        if cookie.startswith("csrf_token_P"):
+            # looks like we need to add the tunnel port version and keep the original one as well (?)
+            cookie_port = octoprinttunnel.port
+            if not cookie_port:
+                cookie_port = 443 if request.is_secure() else 80
+            tunnel_cookies.append(f"csrf_token_P{cookie_port}" + cookie[cookie.find("="):])
+
+        tunnel_cookies.append(cookie)
+
+    if tunnel_cookies:
+        setattr(resp, 'tunnel_cookies', tunnel_cookies)
+        resp.items = MethodType(_items, resp)
 
     if data['response'].get('compressed', False):
         content = zlib.decompress(data['response']['content'])

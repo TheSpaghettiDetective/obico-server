@@ -103,16 +103,15 @@ def send_failure_alerts(
     print_ = Print.objects.all_with_deleted().select_related('printer', 'printer__user').filter(id=print_id).first()
     if not print_: # Printer may be deleted or archived
         return
-    printer = print_.printer
 
     try:
-        mobile_notifications.send_failure_alert(printer, img_url, is_warning, print_paused)
+        mobile_notifications.send_failure_alert(print_, img_url, is_warning, print_paused)
     except Exception:
         capture_exception()
 
     # select matching, enabled & configured
     nsettings = list(NotificationSetting.objects.filter(
-        user_id=printer.user_id,
+        user_id=print_.printer.user_id,
         enabled=True,
         name__in=handler.notification_plugin_names(),
         notify_on_failure_alert=True
@@ -122,7 +121,7 @@ def send_failure_alerts(
         LOGGER.debug("no matching NotificationSetting objects, ignoring failure alert")
         return
 
-    user_ctx = handler.get_user_context(printer.user)
+    user_ctx = handler.get_user_context(print_.printer.user)
     printer_ctx = handler.get_printer_context(printer)
     print_ctx = handler.get_print_context(print_)
 

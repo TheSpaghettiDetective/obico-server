@@ -32,6 +32,7 @@ DJANGO_COOKIE_RE = re.compile(
     fr'^{settings.LANGUAGE_COOKIE_NAME}='
 )
 
+OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+P(\d+)')
 
 OVER_FREE_LIMIT_HTML = """
 <html>
@@ -347,15 +348,15 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if 'Expires=' not in cookie and 'Max-Age=' not in cookie:
             cookie += '; Max-Age=7776000'  # 3 months
 
-        for cookie_prefix in ['csrf_token_P', 'session_P']:
-            if cookie.startswith(cookie_prefix) :
-                # OctoPrint JS needs the port in csrf_token_P{port} to be the one in browser. But the backend returns the port that plugins connects to.
-                # Hence we need to do this dance to duplicate the cookies between them.
-                # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
-                cookie_port = octoprinttunnel.port
-                if not cookie_port:
-                    cookie_port = 443 if request.is_secure() else 80
-                tunnel_cookies.append(f"{cookie_prefix}{cookie_port}" + cookie[cookie.find("="):])
+        m = OCTOPRINT_COOKIE_PORT_RE.match(cookie)
+        if m is not None:
+            # OctoPrint JS needs the port in csrf_token_P{port} to be the one in browser. But the backend returns the port that plugins connects to.
+            # Hence we need to do this dance to duplicate the cookies between them.
+            # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
+            cookie_port = octoprinttunnel.port
+            if not cookie_port:
+                cookie_port = 443 if request.is_secure() else 80
+            tunnel_cookies.append(cookie.replace(f"P{m.groups()[0]}", f"P{cookie_port}"))
 
         tunnel_cookies.append(cookie)
 

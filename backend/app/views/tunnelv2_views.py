@@ -215,7 +215,7 @@ def save_static_etag(func):
     return inner
 
 
-def _items(self):
+def set_response_items(self):
     items = list(self._headers.values())
     if hasattr(self, "tunnel_cookies"):
         for raw_cookie in self.tunnel_cookies:
@@ -347,18 +347,22 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if 'Expires=' not in cookie and 'Max-Age=' not in cookie:
             cookie += '; Max-Age=7776000'  # 3 months
 
-        if cookie.startswith("csrf_token_P"):
-            # looks like we need to add the tunnel port version and keep the original one as well (?)
-            cookie_port = octoprinttunnel.port
-            if not cookie_port:
-                cookie_port = 443 if request.is_secure() else 80
-            tunnel_cookies.append(f"csrf_token_P{cookie_port}" + cookie[cookie.find("="):])
+        for cookie_prefix in ['csrf_token_P', 'session_P']:
+            if cookie.startswith(cookie_prefix) :
+                # OctoPrint JS needs the port in csrf_token_P{port} to be the one in browser. But the backend returns the port that plugins connects to.
+                # Hence we need to do this dance to duplicate the cookies between them.
+                # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
+                cookie_port = octoprinttunnel.port
+                if not cookie_port:
+                    cookie_port = 443 if request.is_secure() else 80
+                tunnel_cookies.append(f"{cookie_prefix}{cookie_port}" + cookie[cookie.find("="):])
 
         tunnel_cookies.append(cookie)
 
     if tunnel_cookies:
         setattr(resp, 'tunnel_cookies', tunnel_cookies)
-        resp.items = MethodType(_items, resp)
+        # Unfortunately Django 2 still doesn't have a good way to set headers and hence we have to do this ugly trick
+        resp.items = MethodType(set_response_items, resp)
 
     if data['response'].get('compressed', False):
         content = zlib.decompress(data['response']['content'])

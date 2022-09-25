@@ -32,7 +32,7 @@ DJANGO_COOKIE_RE = re.compile(
     fr'^{settings.LANGUAGE_COOKIE_NAME}='
 )
 
-OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+P(\d+)')
+OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
 
 OVER_FREE_LIMIT_HTML = """
 <html>

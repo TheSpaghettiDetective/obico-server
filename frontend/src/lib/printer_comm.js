@@ -30,6 +30,17 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       const callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
       callback(null, msg.ret)
+    } else if ('printer_event' in msg) {
+      const printerEvent = msg.printer_event
+      Vue.swal.Toast.fire({
+        icon: printerEvent.event_class.toLowerCase(),
+        title: printerEvent.event_title,
+        html: printerEvent.event_text,
+      }).then(result => {
+        if (result.isDismissed && result.dismiss === 'close') { // SWAL returns 'close' as the reason when user clicks on the toast
+          window.location.href = '/printer_events/'
+        }
+      })
     }
   }
 
@@ -121,7 +132,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
         setTimeout(function() {
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
-              type: 'error',
+              icon: 'error',
               title: 'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
             })
           }

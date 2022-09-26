@@ -81,6 +81,9 @@ class WebConsumer(JsonWebsocketConsumer):
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
 
+        if not self.scope['user'].is_authenticated:
+            raise Printer.DoesNotExist('session is not authenticated')
+
         return Printer.objects.get(
             user=self.scope['user'],
             id=self.scope['url_route']['kwargs']['printer_id']
@@ -311,6 +314,9 @@ class JanusWebConsumer(WebsocketConsumer):
             return Printer.objects.get(
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
+
+        if not self.scope['user'].is_authenticated:
+            raise Printer.DoesNotExist('session is not authenticated')
 
         return Printer.objects.get(
             user=self.scope['user'],

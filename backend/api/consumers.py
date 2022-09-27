@@ -2,7 +2,7 @@ import bson
 import time
 import json
 import functools
-from typing import Callable, Optional
+from typing import Callable, Optional, Union, Tuple
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -19,7 +19,7 @@ from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
-from lib.tunnelv2 import OctoprintTunnelV2Helper
+from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from lib.view_helpers import touch_user_last_active
 from .serializers import *
 from .serializers import PublicPrinterSerializer, PrinterSerializer
@@ -32,7 +32,7 @@ TOUCH_MIN_SECS = 30
 def report_error(
     fn: Optional[Callable] = None,
     *,
-    exc_class: Optional[Exception] = None,
+    exc_class: Optional[Union[Exception, Tuple[Exception, ...]]] = None,
     msg: str = '',
     sentry: bool = True,
     close: bool = False,
@@ -50,10 +50,10 @@ def report_error(
         def inner(self, *args, **kwargs):
             try:
                 return fn(self, *args, **kwargs)
-            except klass:
+            except klass as exc:
                 import traceback
                 traceback.print_exc()
-                LOGGER.exception(msg or f'{klass.__name__} in {fn.__module__}.{fn.__qualname__}')
+                LOGGER.exception(msg or f'{exc.__class__.__name__} in {fn.__module__}.{fn.__qualname__}')
                 if sentry:
                     capture_exception()
                 if close:
@@ -437,7 +437,7 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
 
     @newrelic.agent.background_task()
     @close_on_error
-    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
+    @close_on_error(exc_class=(Printer.DoesNotExist, TunnelAuthenticationError), sentry=False) # TunnelAuthenticationError: auth error, Printer.DoesNotExist: missing printer/not authorized
     def connect(self):
         self.user, self.printer = None, None
         # Exception for un-authenticated or un-authorized access

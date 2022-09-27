@@ -20,26 +20,25 @@
               </b-col>
             </b-row>
             <b-row v-if="isEnt && trialDaysLeft > 0">
-              <h3 v-if="trialDaysLeft >= 29" class="mx-auto pt-3 text-center">Your 30-Day <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
-              <h3 v-else class="mx-auto pt-3 text-center">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
-              <div class="mt-3 col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+              <b-col>
+                <h3 v-if="trialDaysLeft >= 29" class="py-3">Your 30-Day <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan</a> Free Trial Has Started!</h3>
+                <h3 v-else class="py-3">{{trialDaysLeft}} Days Left on Your <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">Pro Plan </a>Free Trial!</h3>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Unlimited Secure Tunneling to your OctoPrint</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">Premium 25 FPS Webcam Streaming</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">250 AI Failure Detection Hours</span></div>
                 <div class="pb-1"><i class="feature-check fas fa-check-circle"></i><span class="feature-text">G-Code Remote Upload and Printing</span></div>
-              </div>
-            </b-row>
-            <b-row>
-              <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-                <p class="lead mt-5">OctoPrint has not been linked to your Obico account.</p>
-                <div>
-                  <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg">Link OctoPrint Now</a>
+                <div class="lead py-4">OctoPrint has not been linked to your Obico account.</div>
+                <div class="d-flex flex-column align-center justify-content-center">
+                  <div>
+                    <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg">Link OctoPrint Now</a>
+                  </div>
+                  <div>
+                    <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="text-muted mx-auto text-center font-weight-light">It's as easy as 1-2-3.</div>
-                </div>
-              </div>
+              </b-col>
             </b-row>
+            <div class="footer-note small">Not ready to start yet? <a href="mailto:support@obico.io?subject=Please%20pause%20my%20free%20trial">Email us</a> to pause your free trial.</div>
           </b-container>
         </div>
         <div v-else>
@@ -55,9 +54,9 @@
           </div>
           <div v-else>
             <div>
-              <h4 class="text-center my-5">OctoPrint Tunnel Access Authorization</h4>
-              <p class="lead"><span class="font-weight-bold">{{ appName }}</span> is requesting to access the OctoPrint Tunnel.</p>
-              <p class="text-muted"><a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by the Obico app to securely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
+              <div class="lead text-center mt-3 mb-5">Tunnel Access Authorization</div>
+              <h4 class="my-4"><span class="font-weight-bold">{{ appName }}</span> is requesting to access you OctoPrint Tunnel.</h4>
+              <p class="text-muted"><a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunnel</a> is a secure way provided by <a href="https://www.obico.io/" target="_blank">Obico</a> to remotely access your OctoPrint. With the OctoPrint Tunnel, you can use {{appName}} to access your OctoPrint from anywhere.</p>
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
@@ -113,22 +112,40 @@
       <b-col v-else class="mt-5">
         <div>
           <b-container>
-            <b-row>
-                <svg class="logo-img mx-auto">
-                  <use href="#svg-logo-full" />
+            <div class="d-flex justify-content-center align-items-center">
+                <img class="logo-icon"
+                  :src="appLogo" />
+                <h3>&#8644;</h3>
+                <svg class="logo-icon obico">
+                  <use href="#svg-logo-compact" />
                 </svg>
-            </b-row>
-            <b-row>
-              <h5 class="mx-auto">FOR</h5>
-            </b-row>
-            <b-row>
-              <h1 class="mx-auto">{{appName}}</h1>
-            </b-row>
-            <b-row class="justify-content-center">
-              <p class="text-muted mt-5">The Obico app provides <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">free and secure remote access to your OctoPrint</a>.</p>
-              <p class="text-muted">With the Obico app, you can now use {{appName}} to control and monitor your printer from anywhere.</p>
-            </b-row>
-            <b-row>
+                <h3>&#8644;</h3>
+                <img class="logo-icon"
+                  :src="require('@static/img/octoprint_logo.png')" />
+            </div>
+            <div class="my-4">
+              <div class="mx-auto text-center">
+                <h4>OctoPrint Tunnel</h4>
+                <div class="lead">Powered by Obico</div>
+              </div>
+            </div>
+            <div class="account-details">
+              <p>With the OctoPrint Tunnel by Obico, you can now use {{appName}} to <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">securely control and monitor your printer from anywhere</a>.</p>
+              <div class="text-muted">Obico Free Account:</div>
+              <ul class="text-muted">
+                <li>Unlimited realtime webcam at 0.1FPS.</li>
+                <li>Monthly tunnel data cap 100MB.</li>
+                <li>50 Hours/mo AI Failure Detection.</li>
+              </ul>
+              <div class="text-muted">Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank">from $4/mo</a>):</div>
+              <ul class="text-muted">
+                <li>Unlimited realtime webcam streaming.</li>
+                <li>Unlimited tunnel data usage.</li>
+                <li>50 Hours/mo AI Failure Detection.</li>
+                <li><a href="https://app.obico.io/ent_pub/pricing/" target="_blank">And much more...</a></li>
+              </ul>
+            </div>
+            <div>
               <div class="my-5 w-100">
                 <a class="btn btn-primary btn-block" :href="loginUrl">SIGN IN </a>
                 <div class="text-center pt-3 w-100">
@@ -136,7 +153,7 @@
                   <a class="btn" :href="signupUrl">SIGN UP</a>
                 </div>
               </div>
-            </b-row>
+            </div>
           </b-container>
         </div>
       </b-col>
@@ -150,6 +167,11 @@ import moment from 'moment'
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { user, settings} from '@src/lib/page_context'
+import octopodLogo from '@static/img/octopod.webp'
+import octoappLogo from '@static/img/octoapp.webp'
+import polymerLogo from '@static/img/polymer.webp'
+import printoidLogo from '@static/img/printoid.webp'
+import genericAppLogo from '@static/img/generic-app.png'
 
 export default {
   name: 'NewOctoPrintTunnelPage',
@@ -199,7 +221,21 @@ export default {
         return -1
       }
       return moment(this.user.subscription.expired_at).diff(moment(), 'days') + 1
-    }
+    },
+    appLogo() {
+      switch (this.appName.toLowerCase()) {
+        case 'octopod':
+          return octopodLogo
+        case 'printoid':
+          return printoidLogo
+        case 'polymer':
+          return polymerLogo
+        case 'octoapp':
+          return octoappLogo
+        default:
+          return genericAppLogo
+      }
+    },
   },
 
   methods: {
@@ -263,5 +299,26 @@ body
 .logo-img
   max-height: 4em
   margin-bottom: 2em
+
+.logo-icon
+  max-height: 50px
+  object-fit: contain
+  border-radius: 8px
+  margin: 0px 15px
+
+  &.obico
+    max-width: 50px
+    color: var(--color-primary)
+
+.account-details
+  background: var(--color-surface-secondary)
+  border-radius: var(--border-radius-sm)
+  padding: 15px
+  margin-left: -15px
+  margin-right: -15px
+
+.footer-note
+  margin: 3rem 0 -1.5rem
+  text-align: right
 </style>
 

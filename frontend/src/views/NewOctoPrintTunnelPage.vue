@@ -60,12 +60,12 @@
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 100MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> Tunnel usage of a free account is <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 500MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to enjoy unlimited tunnel usage.
                 </div>
               </b-alert>
               <b-alert v-if="user.is_pro && trialDaysLeft > 0" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 100MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
+                  <i class="fas fa-exclamation-triangle"></i> After the Free trial expires, tunnel data usage will be <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">capped at 500MB per month</a>. You can <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">upgrade to the Obico app Pro plan for 1 Starbucks a month</a> to continue enjoying unlimited tunnel usage.
                 </div>
               </b-alert>
 
@@ -134,14 +134,14 @@
               <div class="text-muted">Obico Free Account:</div>
               <ul class="text-muted">
                 <li>Unlimited realtime webcam at 0.1FPS.</li>
-                <li>Monthly tunnel data cap 100MB.</li>
-                <li>50 Hours/mo AI Failure Detection.</li>
+                <li>500MB monthly tunnel data cap (excluding webcam streaming).</li>
+                <li>10 hours/mo AI failure detection.</li>
               </ul>
               <div class="text-muted">Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank">from $4/mo</a>):</div>
               <ul class="text-muted">
                 <li>Unlimited realtime webcam streaming.</li>
                 <li>Unlimited tunnel data usage.</li>
-                <li>50 Hours/mo AI Failure Detection.</li>
+                <li>50 hours/mo AI failure detection.</li>
                 <li><a href="https://app.obico.io/ent_pub/pricing/" target="_blank">And much more...</a></li>
               </ul>
             </div>
@@ -307,7 +307,7 @@ body
   margin: 0px 15px
 
   &.obico
-    max-width: 50px
+    max-width: 46px
     color: var(--color-primary)
 
 .account-details

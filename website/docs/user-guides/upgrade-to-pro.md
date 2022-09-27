@@ -14,7 +14,7 @@ The Obico Cloud offers two plan options to our users:
 | Free [AI Detection Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
 | [Pre-paid AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
 | [Subscribe&Save AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |
-| [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 100MB/month |
+| [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 500MB/month |
 | Multiple printers | Each additional printer costs 50% of that of the 1st printer | Can have only 1 printer |
 
 #### Other perks included only in the Pro plan {#other-perks-included-only-in-the-pro-plan}

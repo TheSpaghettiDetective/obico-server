@@ -16,7 +16,7 @@ Example:
 ### Parameters {#parameters}
 
 * `app`: Required. The name of your app.
-* `printer_id`: Optional. If not provided, and the user has more than 1 printers in The Spaghetti Detective, the page will list all printers for the user to choose from.
+* `printer_id`: Optional. If not provided, and the user has more than 1 printers linked to his/her Obico account, the page will list all printers for the user to choose from.
 * `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
 
 ### Redirect on success {#redirect-on-success}
@@ -30,15 +30,15 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 ## Special HTTP status code for tunnelled API calls {#special-http-status-code-for-tunnelled-api-calls}
 
 * `481`: Over free tunneling monthly cap.
-* `482`: OctoPrint is not connected to The Spaghetti Detective server.
+* `482`: OctoPrint is not connected to the Obico server.
 * `483`: OctoPrint is connected but timed out (30s)
 
 ## Other HTTP status code {#other-http-status-code}
 
 * `401`: Unauthenticated request. This can be caused by:
     * User explicitly revoked the authorization.
-    * User deleted the printer in The Spaghetti Detective.
-    * User account is deleted or suspended in The Spaghetti Detective.
+    * User deleted the printer in Obico.
+    * User account is deleted or suspended in Obico.
 
 
 ## Tunnel APIs {#tunnel-apis}
@@ -52,7 +52,7 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 #### Response {#response}
 
 * `total`: Month-to-date usage. In bytes.
-* `monthly_cap`: In bytes. -1 when the cap is unlimited (for Pro users, inculding the free trial).
+* `monthly_cap`: In bytes. -1 when the cap is unlimited (for Pro users, including the free trial).
 * `reset_in_seconds`: Remaining time (in seconds) until the usage is reset.
 
 ### Webcam snapshot API {#webcam-snapshot-api}

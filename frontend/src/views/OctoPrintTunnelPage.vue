@@ -2,7 +2,7 @@
   <div>
     <div v-if="!isPro && usageFetched" class="floating-panel">
         <div v-if="showDetails" @click="showDetails = false" @mouseover="showDetails = true" @mouseleave="showDetails = false">
-          <div class="text-muted"><a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">Monthly data usage</a> (Resets in {{ daysUntilReset}} days)</div>
+          <div class="text-muted">Monthly data usage (<a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">Resets in {{ daysUntilReset}} days</a>)</div>
           <div :class="usageClass">Used {{ usageMTD }} of {{ humanizedUsageCap }}.</div>
           <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
         </div>

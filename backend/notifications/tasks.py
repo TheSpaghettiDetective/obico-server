@@ -122,7 +122,7 @@ def send_failure_alerts(
         return
 
     user_ctx = handler.get_user_context(print_.printer.user)
-    printer_ctx = handler.get_printer_context(printer)
+    printer_ctx = handler.get_printer_context(print_.printer)
     print_ctx = handler.get_print_context(print_)
 
     for nsetting in nsettings:

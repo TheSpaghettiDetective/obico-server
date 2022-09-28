@@ -613,7 +613,8 @@ class PrinterEvent(models.Model):
         if kwargs.get('print') is not None:
             kwargs['printer'] = kwargs.get('print').printer
 
-            is_print_job_event = kwargs.get('event_type') in (
+            event_type = kwargs.get('event_type')
+            is_print_job_event = event_type in (
                 PrinterEvent.STARTED,
                 PrinterEvent.ENDED,
                 PrinterEvent.PAUSED,
@@ -624,11 +625,15 @@ class PrinterEvent(models.Model):
             )
 
             if is_print_job_event and kwargs.get('event_title') is None and kwargs.get('event_class') is None:
-                attrs = default_printer_event_attrs(kwargs.get('event_type'), kwargs.get('print'))
+                attrs = default_printer_event_attrs(event_type, kwargs.get('print'))
                 kwargs.update(attrs)
 
             if kwargs.get('image_url') is None:
-                kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})
+                kwargs.update({
+                    'image_url': get_rotated_pic_url(
+                        kwargs.get('print').printer,
+                        force_snapshot=True,
+                        to_long_term_storage=(True if event_type == PrinterEvent.ENDED else False ))})
 
         printer_event = PrinterEvent.objects.create(**kwargs)
 

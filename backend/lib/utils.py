@@ -108,7 +108,7 @@ def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_
     return dest_jpg_url
 
 
-def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
+def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False, to_long_term_storage=False):
     if not jpg_url:
         if not printer.pic or not printer.pic.get('img_url'):
             return None
@@ -126,5 +126,5 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
                 f'snapshots/{printer.id}/{file_prefix}_rotated.jpg',
                 rotated=not 'latest_rotated' in jpg_url,
                 printer_settings=printer.settings,
-                to_long_term_storage=False
+                to_long_term_storage=to_long_term_storage,
             )

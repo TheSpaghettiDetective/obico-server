@@ -332,9 +332,9 @@ export default {
 
 .notification-dot
   height: 50%
-  left: 59%
+  top: -9px
+  right: -3px
   position: absolute
-  top: 10%
   width: 50%
   color: var(--color-danger)
 

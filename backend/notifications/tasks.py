@@ -58,7 +58,7 @@ def send_printer_notifications(
     print_ctx = handler.get_print_context(print_)
 
     for nsetting in nsettings:
-        LOGGER.debug(f'forwarding event {"notification_type"} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
+        LOGGER.debug(f'forwarding event {notification_type} to plugin "{nsetting.name}" (pk: {nsetting.pk})')
         try:
             plugin = handler.notification_plugin_by_name(nsetting.name)
             if not plugin:

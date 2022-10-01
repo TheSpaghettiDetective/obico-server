@@ -248,6 +248,7 @@ export default {
           font-weight: bold
           color: var(--color-on-danger)
           background-color: var(--color-danger)
+          min-width: 1.6em
       &.active > a
         background: var(--color-hover)
       &.glowing

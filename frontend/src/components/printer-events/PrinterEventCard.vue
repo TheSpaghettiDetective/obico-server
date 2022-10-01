@@ -5,13 +5,12 @@
         {{ eventTitle }}
         <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
       </div>
-      <div v-html="printerEvent.event_text"></div>
+      <div v-html="printerEvent.event_text" class="description"></div>
       <div class="my-2 text-muted font-weight-light small">
         {{ printerEvent.created_at.format('LLLL') }}
       </div>
     </div>
-    <div v-if="printerEvent.image_url" class="printer-event-snapshot">
-      <img :src="printerEvent.image_url" />
+    <div v-if="printerEvent.image_url" :style="{backgroundImage: `url(${printerEvent.image_url})`}" class="printer-event-snapshot">
     </div>
   </div>
 </template>
@@ -69,10 +68,9 @@ export default {
 
 <style lang="sass" scoped>
 .printer-event-card
-  justify-content: space-between
-  align-items: start
-  border-radius: var(--border-radius-sm)
   display: flex
+  justify-content: space-between
+  border-radius: var(--border-radius-sm)
   background-color: var(--color-surface-secondary)
   border-left: solid thick
 
@@ -83,6 +81,7 @@ export default {
 .printer-event-text
   flex: 1
   padding: 0px 14px
+  overflow: hidden
 
   .title
     display: flex
@@ -93,11 +92,14 @@ export default {
       cursor: pointer
       opacity: .9
 
-.printer-event-snapshot
-  max-width: 25%
+  .description ::v-deep div
+    text-overflow: ellipsis
+    overflow: hidden
+    white-space: nowrap
 
-  img
-    object-fit: contain
-    width: 100%
-    border-radius: inherit
+.printer-event-snapshot
+  flex: 0 0 120px
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: center center
 </style>

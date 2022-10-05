@@ -36,6 +36,12 @@
         </b-dropdown>
       </div>
       <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+
+
+          <img
+            class="tagged-jpg"
+            :src="jpgSrc"
+          />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -262,6 +268,36 @@ const LocalPrefNames = {
   StatusTemp: 'status_temp_block',
 }
 
+function Decoder(onFrame) {
+    this.onFrame = onFrame;
+    this.contentLength = NaN;
+    this.imageBuffer = '';
+    this.bytesRead = 0;
+}
+
+Decoder.prototype.onMessage = function (value) {
+
+    if (this.contentLength) {
+        this.imageBuffer += value;
+        this.bytesRead += value.length;
+
+        if (this.bytesRead >= this.contentLength) {
+            var jpg = this.imageBuffer;
+            var jpgLength = this.originalJpgLength;
+            this.contentLength = NaN;
+            this.imageBuffer = '';
+            this.bytesRead = 0;
+            this.onFrame(jpg, jpgLength);
+        }
+    } else {
+        if (value.slice(0, 2) === '\r\n' && value.slice(value.length - 2) === '\r\n') {
+            var lengthHeaders = value.slice(2, value.length - 2).split(':');
+            this.contentLength = parseInt(lengthHeaders[0]);
+            this.originalJpgLength = parseInt(lengthHeaders[1]);
+        }
+    }
+}
+
 export default {
   name: 'PrinterCard',
   components: {
@@ -290,9 +326,14 @@ export default {
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
       webrtc: WebRTCConnection(),
+      jpgSrc: null,
     }
   },
   created() {
+    this.mjpegStreamDecoder = new Decoder((jpg, l) => {
+      this.jpgSrc = 'data:image/jpg;base64, ' + jpg
+      })
+
     this.printerComm = PrinterComm(
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
@@ -303,6 +344,9 @@ export default {
         // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
         const status = printerStatus.status || printerStatus.octoprint_data
         this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
+      },
+      (data) => {
+        this.mjpegStreamDecoder.onMessage(data);
       }
     )
     this.printerComm.connect()

@@ -4,13 +4,14 @@ import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
 
-export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
+export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null, onDataReceived=null) {
   var self = {}
 
   self.printerId = printerId
   self.wsUri = wsUri
   self.onPrinterUpdateReceived = onPrinterUpdateReceived
   self.onStatusReceived = onStatusReceived
+  self.onDataReceived = onDataReceived
 
   self.ws = null
   self.webrtc = null
@@ -88,6 +89,8 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     }
 
     self.webrtc.callbacks.onData = (maybeBin) => {
+      self.onDataReceived(maybeBin)
+      return
       if (!maybeBin) {
         return
       }

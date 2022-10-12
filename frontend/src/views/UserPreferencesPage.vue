@@ -279,11 +279,12 @@ export default {
           }
         })
     },
-    createNotificationChannel(section, config) {
+    createNotificationChannel(section, config, opts={}) {
       const data = {
         user: this.user.id,
         name: section.channelName,
         config,
+        ...opts,
       }
 
       const key = getNotificationSettingKey(section, 'config')

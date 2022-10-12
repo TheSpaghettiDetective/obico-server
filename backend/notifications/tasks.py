@@ -75,21 +75,19 @@ def send_printer_notifications(
                 img_url=img_url,
             )
 
-            plugin = handler.notification_plugin_by_name(nsetting.name)
-            if not plugin:
-                return
-
             if not handler.should_plugin_handle_notification_type(
                 plugin.instance,
                 nsetting,
                 context.notification_type,
             ):
-                return
+                continue
 
             plugin.instance.send_printer_notification(context=context)
 
         except NotImplementedError:
             pass
+        except Exception:  # Notification plugins may throw exception. We shouldn't let it stop the program
+            capture_exception()
 
 
 @shared_task

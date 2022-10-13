@@ -18,7 +18,7 @@ from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
-from app.models import OctoPrintTunnel
+from app.models import OctoPrintTunnel, calc_normalized_p
 
 
 import logging
@@ -144,6 +144,7 @@ def octoprint_http_tunnel(request):
 
 
 def tunnel_api(request, octoprinttunnel):
+    printer = octoprinttunnel.printer
     if request.path.lower() == '/_tsd_/tunnelusage/':
         start_of_next_month = (
             datetime.now().replace(day=1) + timedelta(days=32)
@@ -151,8 +152,8 @@ def tunnel_api(request, octoprinttunnel):
 
         return HttpResponse(
             json.dumps({
-                'total': cache.octoprinttunnel_get_stats(octoprinttunnel.printer.user.id),
-                'monthly_cap': octoprinttunnel.printer.user.tunnel_cap(),
+                'total': cache.octoprinttunnel_get_stats(printer.user.id),
+                'monthly_cap': printer.user.tunnel_cap(),
                 'reset_in_seconds': (start_of_next_month - datetime.now()).total_seconds(),
             }),
             content_type='application/json'
@@ -160,10 +161,17 @@ def tunnel_api(request, octoprinttunnel):
 
     if request.path.lower() == '/_tsd_/webcam/0/':
         pic = (
-            cache.printer_pic_get(octoprinttunnel.printer.id) or {}
+            cache.printer_pic_get(printer.id) or {}
         ).get('img_url', None)
         return HttpResponse(
             json.dumps({'snapshot': pic}),
+            content_type='application/json',
+        )
+
+    if request.path.lower() == '/_tsd_/prediction/':
+        p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
+        return HttpResponse(
+            json.dumps({'normalized_p': p}),
             content_type='application/json',
         )
 

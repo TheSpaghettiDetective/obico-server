@@ -11,13 +11,13 @@ Raising resolution above 640x480 may cause potential issues:
 Most Raspberry Pi 4 users have reported they can set the resolution to 800x600 without any noticeable print quality or webcam streaming issues. Use caution when you go above 800x600.
 :::
 
-## Resolution
+## Resolution {#resolution}
 
 Obico for Klipper does webcam streaming at the same resolution as the configured webcam source configured in Mainsail/Fluidd.
 
 When you change the resolution in the configured webcam source, Obico will change accordingly after the Raspberry Pi is rebooted.
 
-## Framerate
+## Framerate {#framerate}
 
 The frame rate is up to 25FPS for the Premium Streaming, and up to 5FPS for the Basic Streaming. It is currently not configurable.
 

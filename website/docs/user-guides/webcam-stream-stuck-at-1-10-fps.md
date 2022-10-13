@@ -106,16 +106,16 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
   ]}>
   <TabItem value="octoprint">
 
-#### OS images that have been verified to support the webcam streaming
+#### OS images that have been verified to support the webcam streaming {#os-images-that-have-been-verified-to-support-the-webcam-streaming}
 
 - All OctoPi release versions 0.15.0 or newer.
 
-#### OS images that will NOT support the webcam streaming
+#### OS images that will NOT support the webcam streaming {#os-images-that-will-not-support-the-webcam-streaming}
 
 - 64-bit Raspberry Pi OS. All versions.
 - 32-bit Raspberry Pi OS Bullseye.
 
-#### OS images that *may* support the webcam streaming
+#### OS images that *may* support the webcam streaming {#os-images-that-may-support-the-webcam-streaming}
 
 - All OctoPi beta/RC versions.
 - All OctoPi release versions older than 0.15.0.
@@ -128,17 +128,17 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
   </TabItem>
   <TabItem value="klipper">
 
-#### OS images that have been verified to support the webcam streaming
+#### OS images that have been verified to support the webcam streaming {#os-images-that-have-been-verified-to-support-the-webcam-streaming-1}
 
 - MainsailOS version 0.6.0 or newer.
 - FluiddPi version 1.17.0 or newer.
 - 32-bit Raspberry Pi OS veresion Buster or newer.
 
-#### OS images that will NOT support the webcam streaming
+#### OS images that will NOT support the webcam streaming {#os-images-that-will-not-support-the-webcam-streaming-1}
 
 - 64-bit Raspberry Pi OS. All versions.
 
-#### OS images that *may* support the webcam streaming
+#### OS images that *may* support the webcam streaming {#os-images-that-may-support-the-webcam-streaming-1}
 
 - All MainsailOS versions older than 0.6.0.
 - All FluiddPi versions older than 1.17.0.

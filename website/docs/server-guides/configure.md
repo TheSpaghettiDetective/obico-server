@@ -92,13 +92,13 @@ You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to u
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 
 
-## What's next?
+## What's next? {#whats-next}
 
 ### Advanced server configuration {#advanced-server-configuration}
 
 Ready for some advanced server chops? Feel free to dive into the [advanced server stuff](advanced/index.md).
 
-### Keep your server up to date
+### Keep your server up to date {#keep-your-server-up-to-date}
 
 The Obico Server is designed to be backward compatible, not forward compatible. This means the server can work with the old client versions released in the past, but not the client versions that will be released in the future.
 

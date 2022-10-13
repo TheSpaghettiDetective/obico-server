@@ -64,3 +64,13 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 #### Response {#response-1}
 
 * `snapshot`: The url to fetch the most recent webcam snapshot (in JEPG). No authentication is required.
+
+### Failure prediction API {#failure-prediction-api}
+
+#### Endpoint {#endpoint-2}
+
+`{TUNNEL_ENDPOINT}/_tsd_/prediction/`
+
+#### Response {#response-2}
+
+* `normalized_p`: The prediction value in the range of [0,1). < 0.33: Low. 0.33 - 0.66: Medium. > 0.66: High.

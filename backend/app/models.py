@@ -516,11 +516,7 @@ class Print(SafeDeleteModel):
         return self.tagged_video_url or self.uploaded_at
 
 
-# TODO: Rename to PrinterEvent after migrated
-
 class PrinterEvent(models.Model):
-    # class Meta:
-    #     db_table = 'app_printevent'
 
     STARTED = 'STARTED'
     ENDED = 'ENDED'
@@ -590,7 +586,7 @@ class PrinterEvent(models.Model):
 
     def create(task_handler=False, **kwargs):
 
-        def default_printer_event_attrs(event_type, print_):
+        def printer_event_attrs_from_print(event_type, print_):
             if event_type == PrinterEvent.ENDED:
                 if print_.is_canceled():
                     attrs = dict(event_class=PrinterEvent.WARNING, event_title='Print Job Canceled')
@@ -610,6 +606,7 @@ class PrinterEvent(models.Model):
             ))
             return attrs
 
+        # When PrinterEvent is associated with a specific print, more data can be populated.
         if kwargs.get('print') is not None:
             kwargs['printer'] = kwargs.get('print').printer
 
@@ -624,7 +621,7 @@ class PrinterEvent(models.Model):
             )
 
             if is_print_job_event and kwargs.get('event_title') is None and kwargs.get('event_class') is None:
-                attrs = default_printer_event_attrs(kwargs.get('event_type'), kwargs.get('print'))
+                attrs = printer_event_attrs_from_print(kwargs.get('event_type'), kwargs.get('print'))
                 kwargs.update(attrs)
 
             if kwargs.get('image_url') is None:

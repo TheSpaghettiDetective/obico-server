@@ -30,7 +30,7 @@
       :disabled="isBasicStreamingFrozen"
     >
       <i class="fas fa-play ml-1" v-if="isBasicStreamingReadyToPlay"></i>
-      <span class="medium text-bold" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
+      <span class="medium" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
     </b-button>
     <b-spinner v-if="trackMuted || videoLoading" class="centered-element" label="Buffering..."></b-spinner>
 

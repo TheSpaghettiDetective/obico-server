@@ -78,8 +78,9 @@ export default {
       presets.push({value: -1, title: 'Manual'})
       presets.push({value: 0, title: 'OFF'})
       this.presets.forEach((pre) => {
-        presets.push(
-          {value: pre.target, title: `${pre.name} (${pre.target}°C)`})
+        if (pre.target) {
+          presets.push({value: pre.target, title: `${pre.name} (${pre.target}°C)`})
+        }
       })
       return presets
     }

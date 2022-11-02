@@ -8,8 +8,7 @@ from secrets import token_hex
 from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import UserManager as BaseUserManager
+from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -21,10 +20,12 @@ from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
 from django.contrib.auth.hashers import make_password
+from django.db.models import F
+
 
 from config.celery import celery_app
 from lib import cache, channels
-from lib.utils import dict_or_none
+from lib.utils import dict_or_none, get_rotated_pic_url
 
 LOGGER = logging.getLogger(__name__)
 
@@ -86,6 +87,7 @@ class User(AbstractUser):
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
+    unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -163,6 +165,8 @@ class Printer(SafeDeleteModel):
     detective_sensitivity = models.FloatField(null=False, default=1.0)
     min_timelapse_secs_on_finish = models.IntegerField(null=False, default=60*10)  # Default to 10 minutes. -1: timelapse disabled
     min_timelapse_secs_on_cancel = models.IntegerField(null=False, default=60*5)  # Default to 5 minutes. -1: timelapse disabled
+    agent_name = models.CharField(max_length=64, null=True, blank=True)
+    agent_version = models.CharField(max_length=64, null=True, blank=True)
 
     archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -192,11 +196,15 @@ class Printer(SafeDeleteModel):
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))
 
+        # Backward compatibility: for mobile app 1.66 or earlier
+        if self.agent_name and self.agent_version:
+            p_settings.update(dict(agent_name=self.agent_name, agent_version=self.agent_version))
+
         return p_settings
 
     # should_watch and not_watching_reason follow slightly different rules
     # should_watch is used by the plugin. Therefore printing status is not a factor, otherwise we may have a feedback cycle:
-    #    printer paused -> update server cache -> send should_watch to plugin -> udpate server
+    #    printer paused -> update server cache -> send should_watch to plugin -> update server
     # not_watching_reason is used by the web app and mobile app
 
     def should_watch(self):
@@ -268,7 +276,7 @@ class Printer(SafeDeleteModel):
             print.finished_at = timezone.now()
             print.save()
 
-        PrintEvent.create(print, PrintEvent.ENDED)
+        PrinterEvent.create(print=print, event_type=PrinterEvent.ENDED, task_handler=True)
         self.send_should_watch_status()
 
     def set_current_print(self, filename, current_print_ts):
@@ -292,7 +300,7 @@ class Printer(SafeDeleteModel):
         self.save()
 
         self.printerprediction.reset_for_new_print()
-        PrintEvent.create(cur_print, PrintEvent.STARTED)
+        PrinterEvent.create(print=cur_print, event_type=PrinterEvent.STARTED, task_handler=True)
         self.send_should_watch_status()
 
     ## return: succeeded? ##
@@ -354,9 +362,9 @@ class Printer(SafeDeleteModel):
         self.current_print.save()
 
         if muted:
-            PrintEvent.create(self.current_print, PrintEvent.ALERT_MUTED)
+            PrinterEvent.create(print=self.current_print, event_type=PrinterEvent.ALERT_MUTED, task_handler=True)
         else:
-            PrintEvent.create(self.current_print, PrintEvent.ALERT_UNMUTED)
+            PrinterEvent.create(print=self.current_print, event_type=PrinterEvent.ALERT_UNMUTED, task_handler=True)
 
         self.send_should_watch_status()
 
@@ -508,44 +516,128 @@ class Print(SafeDeleteModel):
         return self.tagged_video_url or self.uploaded_at
 
 
-class PrintEvent(models.Model):
+class PrinterEvent(models.Model):
+
     STARTED = 'STARTED'
     ENDED = 'ENDED'
     PAUSED = 'PAUSED'
     RESUMED = 'RESUMED'
+    FAILURE_ALERTED = 'FAILURE_ALERTED'
     ALERT_MUTED = 'ALERT_MUTED'
     ALERT_UNMUTED = 'ALERT_UNMUTED'
     FILAMENT_CHANGE = 'FILAMENT_CHANGE'
+    PRINTER_ERROR = 'PRINTER_ERROR'
 
     EVENT_TYPE = (
         (STARTED, STARTED),
         (ENDED, ENDED),
         (PAUSED, PAUSED),
         (RESUMED, RESUMED),
+        (FAILURE_ALERTED, FAILURE_ALERTED),
         (ALERT_MUTED, ALERT_MUTED),
         (ALERT_UNMUTED, ALERT_UNMUTED),
         (FILAMENT_CHANGE, FILAMENT_CHANGE),
+        (PRINTER_ERROR, PRINTER_ERROR),
     )
 
-    print = models.ForeignKey(Print, on_delete=models.CASCADE, null=False)
+    ERROR = 'ERROR'
+    WARNING = 'WARNING'
+    SUCCESS = 'SUCCESS'
+    INFO = 'INFO'
+
+    EVENT_CLASS = (
+        (ERROR, ERROR),
+        (WARNING, WARNING),
+        (SUCCESS, SUCCESS),
+        (INFO, INFO),
+    )
+
+    print = models.ForeignKey(Print, on_delete=models.CASCADE, null=True)
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     event_type = models.CharField(
         max_length=256,
         choices=EVENT_TYPE,
-        null=True
+        null=False,
+        db_index=True,
     )
-    alert_muted = models.BooleanField(null=False)
+    event_class = models.CharField(
+        max_length=256,
+        choices=EVENT_CLASS,
+        null=False,
+        db_index=True,
+    )
+    event_title = models.TextField(
+        null=True,
+        blank=True,
+    )
+    event_text = models.TextField(
+        null=True,
+        blank=True,
+    )
+    image_url = models.TextField(
+        null=True,
+        blank=True,
+    )
+    info_url = models.TextField(
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def create(print_, event_type):
-        event = PrintEvent.objects.create(
-            print=print_,
-            event_type=event_type,
-            alert_muted=(print_.alert_muted_at is not None)
-        )
-        celery_app.send_task(
-            settings.PRINT_EVENT_HANDLER,
-            args=(event.id, ),
-        )
+    def create(task_handler=False, **kwargs):
+
+        def printer_event_attrs_from_print(event_type, print_):
+            if event_type == PrinterEvent.ENDED:
+                if print_.is_canceled():
+                    attrs = dict(event_class=PrinterEvent.WARNING, event_title='Print Job Canceled')
+                else:
+                    attrs = dict(event_class=PrinterEvent.SUCCESS, event_title='Print Job Finished')
+            elif event_type == PrinterEvent.FAILURE_ALERTED:
+                attrs = dict(event_class=PrinterEvent.ERROR, event_title='Possible Failure Detected')
+            elif event_type == PrinterEvent.ALERT_MUTED:
+                attrs = dict(event_class=PrinterEvent.WARNING, event_title='Watching Turned Off')
+            elif event_type == PrinterEvent.FILAMENT_CHANGE:
+                attrs = dict(event_class=PrinterEvent.WARNING, event_title='Filament Change Required')
+            else:
+                attrs = dict(event_class=PrinterEvent.INFO, event_title='Print Job ' + event_type.capitalize())
+
+            attrs.update(dict(
+                event_text=f'<div><i>Printer:</i> {print_.printer.name}</div><div><i>G-Code:</i> {print_.filename}</div>',
+            ))
+            return attrs
+
+        # When PrinterEvent is associated with a specific print, more data can be populated.
+        if kwargs.get('print') is not None:
+            kwargs['printer'] = kwargs.get('print').printer
+
+            is_print_job_event = kwargs.get('event_type') in (
+                PrinterEvent.STARTED,
+                PrinterEvent.ENDED,
+                PrinterEvent.PAUSED,
+                PrinterEvent.RESUMED,
+                PrinterEvent.FAILURE_ALERTED,
+                PrinterEvent.ALERT_MUTED,
+                PrinterEvent.FILAMENT_CHANGE,
+            )
+
+            if is_print_job_event and kwargs.get('event_title') is None and kwargs.get('event_class') is None:
+                attrs = printer_event_attrs_from_print(kwargs.get('event_type'), kwargs.get('print'))
+                kwargs.update(attrs)
+
+            if kwargs.get('image_url') is None:
+                kwargs.update({'image_url': get_rotated_pic_url(kwargs.get('print').printer, force_snapshot=True)})
+
+        printer_event = PrinterEvent.objects.create(**kwargs)
+
+        printer_event.printer.user.unseen_printer_events += 1
+        printer_event.printer.user.save()
+
+        if task_handler:
+            celery_app.send_task(
+                settings.PRINT_EVENT_HANDLER,
+                args=(printer_event.id, ),
+            )
+
 
 class SharedResource(models.Model):
     printer = models.OneToOneField(Printer, on_delete=models.CASCADE, null=True)
@@ -671,6 +763,7 @@ class OctoPrintTunnelManager(SafeDeleteManager):
     def get_queryset(self):
         return super(OctoPrintTunnelManager, self).get_queryset().filter(
             printer__user__is_active=True,
+            printer__deleted__isnull=True,
             printer__archived_at__isnull=True)
 
 
@@ -805,10 +898,6 @@ class NotificationSetting(models.Model):
     @property
     def config(self) -> Dict:
         return json.loads(self.config_json) if self.config_json else {}
-
-    @config.setter
-    def config(self, data: Dict) -> None:
-        self.config_json = json.dumps(data)
 
     class Meta:
         unique_together = ('user', 'name')

@@ -24,7 +24,7 @@ Because all the Pro features for the Obico Cloud are also available for the self
 
 The Premium Streaming is based on [the WebRTC protocol](https://webrtc.org/). WebRTC is an interesting network protocol that is very susceptible to network configurations.
 
-If you are not getting the Premium Streaming in your self-hosted server, the first step is to link your printer to [the Obico Cloud](https://app.obico.io) and test it there. If the streaming doesn't work in the cloud, you need to follow [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing/) to figure it out.
+If you are not getting the Premium Streaming in your self-hosted server, the first step is to link your printer to [the Obico Cloud](https://app.obico.io) and test it there (your first month on the Obico Cloud is a free trial of Premium Streaming. No credit card required.). If the streaming doesn't work in the cloud, you need to follow [this troubleshooting guide](/docs/user-guides/webcam-feed-is-not-showing/) to figure it out.
 
 If the Premium Streaming works in the Obico Cloud but not in your self-hosted server, chances are there are some problems with your server's network configurations.
 
@@ -39,9 +39,9 @@ But having all these firewall rules in place still doesn't guarantee the Premium
 
 ## I got an HTTP 500 error when I do "Sent test email". Why? {#i-got-an-http-500-error-when-i-do-sent-test-email-why}
 
-More likely than not, it's because your email configurations are set correctly.
+More likely than not, it's because your email configurations are set incorrectly.
 
 Check out [this help guide](/docs/server-guides/configure/#email-smtp) for how you can configure email (SMTP) for the Obico Server. There are also a few things you can do to troubleshoot:
 
-1. Run `docker-compose exec web env | grep EMAIL` to confirm the email configurations have been correctly picked up by the Obico Server.
-1. Run `docker-compose logs -f web` when you press the "Sent test email" button and look for the specific error messages.
+1. Run `docker compose exec web env | grep EMAIL` to confirm the email configurations have been correctly picked up by the Obico Server.
+1. Run `docker compose logs -f web` when you press the "Sent test email" button and look for the specific error messages.

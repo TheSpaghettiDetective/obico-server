@@ -14,7 +14,7 @@ The Obico Cloud offers two plan options to our users:
 | Free [AI Detection Hours](/docs/user-guides/how-does-detective-hour-work) | 50 per month | 10 per month |
 | [Pre-paid AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Eligible |
 | [Subscribe&Save AI Detection Hour Packs](https://app.obico.io/ent_pub/pricing/#need-more) | Eligible | Not eligible |
-| [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 100MB/month |
+| [OctoPrint Tunneling](/docs/user-guides/octoprint-tunneling) | Unlimited | Limited to 500MB/month |
 | Multiple printers | Each additional printer costs 50% of that of the 1st printer | Can have only 1 printer |
 
 #### Other perks included only in the Pro plan {#other-perks-included-only-in-the-pro-plan}
@@ -45,6 +45,6 @@ However, we do have some limits on the Free plan. For instance, it doesn't have 
 
 Unfortunately the answer is "No" for 2 reasons:
 
-1. Obico is different from Simplify3D in that it incurs server cost in the cloud (unless you [run self-hosted server](/docs/server-guides/)). And this cost is re-curring. For every minute Obico server runs in the cloud, we need to pay for computation power, storage and bandwidth. If we charge users a flat fee, at some point the money will run out and we won't be able to pay the bills that our infrastructure provider sends us. It does nobody any good if The Detective has to surrender herself to the bankruptcy court.
+1. Obico is different from Simplify3D in that it incurs server cost in the cloud (unless you [run self-hosted server](/docs/server-guides/)). And this cost is re-curring. For every minute Obico server runs in the cloud, we need to pay for computation power, storage and bandwidth. If we charge users a flat fee, at some point the money will run out and we won't be able to pay the bills that our infrastructure provider sends us. It does nobody any good if Obi and her team has to surrender herself to the bankruptcy court.
 
 2. We believe in continuous improvement and accountability. Subscription gives all users the power to hold us accountable, since anyone can cancel their subscription at any time. You probably have heard of examples of early Simplify3D advocates who paid for the software growing unhappier for the lack of improvements. There aren't a lot of resorts when you have shelled out $150 upfront when the software or service gets worse.

@@ -23,7 +23,7 @@
           <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
             <i class="fas fa-share-alt fa-lg"></i>Share
           </b-dropdown-item>
-          <b-dropdown-item :href="octoPrintTunnelUrl()">
+          <b-dropdown-item v-if="!printer.isAgentMoonraker()" :href="octoPrintTunnelUrl()">
             <svg class="menu-icon">
               <use href="#svg-octoprint-tunneling" />
             </svg>
@@ -234,6 +234,7 @@ import axios from 'axios'
 import urls from '@config/server-urls'
 import { normalizedPrinter, normalizedGcode } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
+import {temperatureDisplayName} from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import Gauge from '@src/components/Gauge'
 import StreamingBox from '@src/components/StreamingBox'
@@ -299,8 +300,9 @@ export default {
         this.$emit('PrinterUpdated', this.updatedPrinter(data))
       },
       (printerStatus) => {
-        this.$emit('PrinterUpdated', this.updatedPrinter(
-          {status: printerStatus.octoprint_data}))
+        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+        const status = printerStatus.status || printerStatus.octoprint_data
+        this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
       }
     )
     this.printerComm.connect()
@@ -314,7 +316,7 @@ export default {
     },
     timeRemaining() {
       return this.toDuration(
-        this.secondsLeft, this.printer.isPrinting())
+        this.secondsLeft, this.printer.isActive())
     },
     timeTotal() {
       let secs = null
@@ -323,7 +325,7 @@ export default {
       }
       return this.toDuration(
         secs,
-        this.printer.isPrinting())
+        this.printer.isActive())
     },
     secondsLeft() {
       return get(this.printer, 'status.progress.printTimeLeft')
@@ -354,22 +356,15 @@ export default {
     tempProps() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
-      let temperatures = []
-      const keys = ['bed', 'tool0', 'tool1']
-      keys.forEach((tempKey) => {
-        let temp = get(this.printer, 'status.temperatures.' + tempKey)
-        if (temp) {
-          temp.actual = parseFloat(temp.actual).toFixed(1)
-          temp.target = Math.round(temp.target)
-          Object.assign(temp, {toolName: capitalize(tempKey)})
-          temp.id = this.printer.id + '-' + tempKey
-          temp.key = tempKey
-          temperatures.push(temp)
+      const temperatures = {}
+      for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
+        if ( Boolean(value.actual) && !isNaN(value.actual) ) {  // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
+          temperatures[key] = value
         }
-      })
+      }
       return {
         temperatures: temperatures,
-        show: temperatures.length > 0,
+        show: Object.keys(temperatures).length > 0,
         editable: editable,
       }
     },
@@ -606,19 +601,22 @@ export default {
       window.location = urls.printerControl(this.printer.id)
     },
 
-    onTempEditClicked(item) {
+    onTempEditClicked(key, item) {
       let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
       let presets
       let maxTemp = 350
 
-      if (item.key == 'bed') {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['bed']}}
-        )
+      if (key.search(/bed|chamber/) > -1) {
         maxTemp = 140
-      } else {
+      }
+      if (key.search(/tool/) > -1) {
+        // OctoPrint uses 'extruder' for toolx heaters
         presets = tempProfiles.map(
           (v) => {return {name: v.name, target: v['extruder']}}
+        )
+      } else {
+        presets = tempProfiles.map(
+          (v) => {return {name: v.name, target: v[key]}}
         )
       }
 
@@ -630,7 +628,7 @@ export default {
           curTarget: item.target,
         },
         {
-          title: 'Set ' + item.toolName + ' Temperature',
+          title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
           confirmButtonText: 'Confirm',
           showCancelButton: true,
           preConfirm: () => {
@@ -645,7 +643,7 @@ export default {
             {
               func: 'set_temperature',
               target: '_printer',
-              args: [item.key, targetTemp]
+              args: [key, targetTemp]
             })
         }
       })
@@ -681,8 +679,8 @@ export default {
         .then(() => {
           let toastHtml = ''
           if (isOctoPrintCommand) {
-            toastHtml += '<h6>Successfully sent command to OctoPrint!</h6>' +
-                  '<p>It may take a while to be executed by OctoPrint.</p>'
+            toastHtml += `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+                  '<p>It may take a while to be executed.</p>'
           }
           if (toastHtml != '') {
             this.$swal.Toast.fire({
@@ -699,11 +697,11 @@ export default {
       return !shouldBeThumb
     },
 
-    toDuration (seconds, isPrinting) {
+    toDuration (seconds, isActive) {
       if (seconds == null || seconds == 0) {
         return {
           valid: false,
-          printing: isPrinting,
+          printing: isActive,
         }
       } else {
         var d = moment.duration(seconds, 'seconds')
@@ -712,7 +710,7 @@ export default {
         var s = d.seconds()
         return {
           valid: true,
-          printing: isPrinting,
+          printing: isActive,
           hours: h,
           showHours: (h>0),
           minutes: m,

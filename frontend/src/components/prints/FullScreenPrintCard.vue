@@ -21,7 +21,7 @@
 
 <script>
 import axios from 'axios'
-import {getNormalizedP} from '@src/lib/normalizers'
+import {getNormalizedP} from '@src/lib/utils'
 import VideoBox from '@src/components/VideoBox'
 import Gauge from '@src/components/Gauge'
 

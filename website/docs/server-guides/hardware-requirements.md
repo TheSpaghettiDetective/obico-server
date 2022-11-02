@@ -7,7 +7,7 @@ The Obico Server runs a powerful Machine Learning model that requires a device p
 ## Single Board Computers {#single-board-computers}
 
 :::info
-This is an incompletely list. Only tested / known devices are included.
+This is an incomplete list. Only tested / known devices are included.
 :::
 
 Device | Can run TSD

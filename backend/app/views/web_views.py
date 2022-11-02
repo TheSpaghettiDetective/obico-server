@@ -202,7 +202,6 @@ def print_shot_feedback(request, pk):
 
 ### GCode File page ###
 
-
 @login_required
 def gcodes(request, template_dir=None):
     return render(request, get_template_path('gcode_files', template_dir))
@@ -229,6 +228,17 @@ def upload_gcode_file(request):
         return JsonResponse(dict(status='Ok'))
     else:
         return render(request, 'upload_print.html')
+
+
+## Notifications page
+
+@login_required
+def printer_events(request):
+    user = request.user
+    user.unseen_printer_events = 0
+    user.save()
+    return render(request, 'printer_events.html')
+
 
 ### Misc ####
 

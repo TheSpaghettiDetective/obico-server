@@ -26,14 +26,14 @@ def send_if_needed(_print, op_event, op_data):
     send_print_progress(_print, op_data, rotated_jpg_url)
 
 
-def send_failure_alert(printer, rotated_jpg_url, is_warning, print_paused):
-    for mobile_device in MobileDevice.objects.filter(user=printer.user):
+def send_failure_alert(_print, rotated_jpg_url, is_warning, print_paused):
+    for mobile_device in MobileDevice.objects.filter(user=_print.printer.user):
         data = dict(
             type='failureAlert',
             title=f'{"🟠 Print is fishy." if is_warning else "🔴 Failure is detected."} Printer {"" if print_paused else "not"} paused.',
-            body=printer.current_print.filename,
+            body=_print.filename,
             picUrl=rotated_jpg_url,
-            printerId=str(printer.id),
+            printerId=str(_print.printer.id),
         )
 
         send_to_device(data, mobile_device)

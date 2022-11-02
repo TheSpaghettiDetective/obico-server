@@ -217,11 +217,6 @@ export default {
         this.updateSetting('last_name')
       }
     },
-    $route (to) {
-      if (window.FlutterWebView) {
-        window.FlutterWebView.postMessage(JSON.stringify({path: to.path}))
-      }
-    }
   },
 
   created() {
@@ -284,11 +279,12 @@ export default {
           }
         })
     },
-    createNotificationChannel(section, config) {
+    createNotificationChannel(section, config, opts={}) {
       const data = {
         user: this.user.id,
         name: section.channelName,
         config,
+        ...opts,
       }
 
       const key = getNotificationSettingKey(section, 'config')
@@ -488,8 +484,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-$container-border-radius: 16px
-
 .flex-full-size
   display: flex
   flex-direction: column
@@ -497,7 +491,7 @@ $container-border-radius: 16px
 .desktop-settings-wrapper
   margin: 0
   background-color: var(--color-surface-secondary)
-  border-radius: $container-border-radius
+  border-radius: var(--border-radius-lg)
   ::v-deep .desktop-settings-content
     padding: 2rem
     padding-right: 3rem
@@ -538,7 +532,7 @@ $container-border-radius: 16px
   background-color: var(--color-surface-primary)
   min-height: 80vh
   padding: 1.5rem 1rem
-  border-radius: $container-border-radius 0 0 $container-border-radius
+  border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg)
   .subcategory
     a
       padding-left: 3.125em

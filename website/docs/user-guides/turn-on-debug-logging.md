@@ -7,7 +7,7 @@ sidebar_label: Download plugin log file for debugging
 ## Turn on debug logging {#turn-on-debug-logging}
 
 1. Go to "**Logging**" tab in OctoPrint Settings dialog box.
-1. In the "**Logging Levels**" section, find "**octoprint.plugin.thespaghettidetective**" entry.
+1. In the "**Logging Levels**" section, find "**octoprint.plugin.obico**" entry.
 1. Make sure the "**Level**" is set to "**DEBUG**".
 1. **Now don't forget to click "Save".**
 

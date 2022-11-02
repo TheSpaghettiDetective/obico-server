@@ -25,11 +25,11 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer,
+    NotificationSettingSerializer, PrinterEventSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache
@@ -568,3 +568,43 @@ class NotificationSettingsViewSet(
             LOGGER.exception("cannot test message")
             return Response({"status": "error", "detail": str(e)}, status=418)
         return Response({"status": "sent"})
+
+
+class PrinterEventViewSet(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = PrinterEventSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return PrinterEvent.objects.filter(printer__user=self.request.user).order_by('-id')
+
+    def list(self, request):
+        queryset = self.get_queryset()
+
+        filter_by_classes = request.GET.getlist('filter_by_classes[]', [])
+        queryset = queryset.filter(event_class__in=filter_by_classes)
+
+        filter_by_types = []
+        for type_filter in request.GET.getlist('filter_by_types[]', []):
+            if type_filter == 'ALERT':
+                filter_by_types += [PrinterEvent.FAILURE_ALERTED, PrinterEvent.ALERT_MUTED, PrinterEvent.ALERT_UNMUTED,]
+            elif type_filter == 'PAUSE_RESUME':
+                filter_by_types += [PrinterEvent.PAUSED, PrinterEvent.RESUMED,]
+            else:
+                filter_by_types += [type_filter,]
+        queryset = queryset.filter(event_type__in=filter_by_types)
+
+        start = int(request.GET.get('start', '0'))
+        limit = int(request.GET.get('limit', '12'))
+        # The "right" way to do it is `queryset[start:start+limit]`. However, it slows down the query by 100x because of the "offset 12 limit 12" clause. Weird.
+        # Maybe related to https://stackoverflow.com/questions/21385555/postgresql-query-very-slow-with-limit-1
+        results = list(queryset)[start:start + limit]
+
+        serializer = self.serializer_class(results, many=True)
+        return Response(serializer.data)

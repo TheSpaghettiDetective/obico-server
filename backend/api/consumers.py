@@ -2,6 +2,7 @@ import bson
 import time
 import json
 import functools
+from typing import Callable, Optional, Union, Tuple
 
 from channels.generic.websocket import JsonWebsocketConsumer, WebsocketConsumer
 from django.conf import settings
@@ -18,7 +19,7 @@ from lib import cache
 from lib import channels
 from .octoprint_messages import process_octoprint_status
 from app.models import *
-from lib.tunnelv2 import OctoprintTunnelV2Helper
+from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
 from lib.view_helpers import touch_user_last_active
 from .serializers import *
 from .serializers import PublicPrinterSerializer, PrinterSerializer
@@ -27,27 +28,43 @@ LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
 
 
-def close_on_error(msg):
-    """
-    Method for auth&auth checking.
-        - All consumers need to have `connect` method decorated by this method
-        - When `connect` method needs to throw an exception when the authenticated subject is not authorized to access the requested resource
 
-    """
+def report_error(
+    fn: Optional[Callable] = None,
+    *,
+    exc_class: Optional[Union[Exception, Tuple[Exception, ...]]] = None,
+    msg: str = '',
+    sentry: bool = True,
+    close: bool = False,
+) -> Callable:
+    """Decorator for consumer message handlers. May close connections on error and reports causes to sentry."""
 
-    def outer(f):
-        @functools.wraps(f)
+    # @decorator vs @partial_decorator
+    # When decorator is a partial function, we need to handle it differently, as fn comes as an argument.
+    if fn is not None:
+        return report_error(None, exc_class=exc_class, msg=msg, sentry=sentry, close=close)(fn)
+
+    klass = Exception if exc_class is None else exc_class
+    def outer(fn):
+        @functools.wraps(fn)
         def inner(self, *args, **kwargs):
             try:
-                return f(self, *args, **kwargs)
-            except Exception:
+                return fn(self, *args, **kwargs)
+            except klass as exc:
                 import traceback
                 traceback.print_exc()
-                LOGGER.exception(msg)
-                self.close()
+                LOGGER.exception(msg or f'{exc.__class__.__name__} in {fn.__module__}.{fn.__qualname__}')
+                if sentry:
+                    capture_exception()
+                if close:
+                    self.close()
                 return
         return inner
     return outer
+
+
+close_on_error = functools.partial(report_error, close=True)
+close_on_error.__doc__ = """Reports error and closes consumer connection when specified exception raised"""
 
 
 class WebConsumer(JsonWebsocketConsumer):
@@ -64,13 +81,17 @@ class WebConsumer(JsonWebsocketConsumer):
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
 
+        if not self.scope['user'].is_authenticated:
+            raise Printer.DoesNotExist('session is not authenticated')
+
         return Printer.objects.get(
             user=self.scope['user'],
             id=self.scope['url_route']['kwargs']['printer_id']
         )
 
     @newrelic.agent.background_task()
-    @close_on_error('failed to connect')
+    @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.printer = None
         self.printer = self.get_printer()
@@ -107,6 +128,7 @@ class WebConsumer(JsonWebsocketConsumer):
             )
 
     @newrelic.agent.background_task()
+    @report_error
     def receive_json(self, data, **kwargs):
         if time.time() - self.last_touch > TOUCH_MIN_SECS:
             self.last_touch = time.time()
@@ -116,13 +138,14 @@ class WebConsumer(JsonWebsocketConsumer):
             channels.send_msg_to_printer(self.printer.id, data)
 
     @newrelic.agent.background_task()
-    @close_on_error('failed to send')
+    @close_on_error
     def printer_status(self, data):
         serializer = PrinterSerializer(
             Printer.with_archived.get(id=self.printer.id))
         self.send_json(serializer.data)
 
     @newrelic.agent.background_task()
+    @report_error
     def web_message(self, msg):
         self.send_json(msg)
 
@@ -135,6 +158,7 @@ class SharedWebConsumer(WebConsumer):
         ).printer
 
     @newrelic.agent.background_task()
+    @report_error
     def receive_json(self, data, **kwargs):
         # we don't expect frontend sending anything important,
         # this conn is only for status updates from server
@@ -143,7 +167,7 @@ class SharedWebConsumer(WebConsumer):
             Presence.objects.touch(self.channel_name)
 
     @newrelic.agent.background_task()
-    @close_on_error('failed to send')
+    @close_on_error
     def printer_status(self, data):
         serializer = PublicPrinterSerializer(
             Printer.with_archived.get(id=self.printer.id)
@@ -151,6 +175,7 @@ class SharedWebConsumer(WebConsumer):
         self.send_json(serializer.data)
 
     @newrelic.agent.background_task()
+    @report_error
     def web_message(self, msg):
         # frontend (should be) interested only in printer_status messages
         pass
@@ -171,8 +196,10 @@ class OctoPrintConsumer(WebsocketConsumer):
         raise Exception('missing auth header')
 
     @newrelic.agent.background_task()
-    @close_on_error('failed to connect')
+    @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
+        self.connected_at = time.time()
         self.printer = None
 
         self.printer = self.get_printer()
@@ -184,7 +211,7 @@ class OctoPrintConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        self.last_touch = time.time()
+        self.last_touch = self.connected_at
 
         Room.objects.add(
             channels.octo_group_name(self.printer.id),
@@ -197,6 +224,15 @@ class OctoPrintConsumer(WebsocketConsumer):
                 channels.web_group_name(self.printer.id)) > 0,
             'should_watch': self.printer.should_watch(),
         }})
+
+        async_to_sync(self.channel_layer.group_send)(
+            channels.octo_group_name(self.printer.id),
+            {
+                'type': 'close.duplicates',
+                'channel_name': self.channel_name,
+                'connected_at': self.connected_at
+            }
+        )
 
         touch_user_last_active(self.printer.user)
 
@@ -221,58 +257,54 @@ class OctoPrintConsumer(WebsocketConsumer):
             )
 
     @newrelic.agent.background_task()
+    @report_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         if time.time() - self.last_touch > TOUCH_MIN_SECS:
             self.last_touch = time.time()
             Presence.objects.touch(self.channel_name)
 
-        try:
-            if text_data:
-                data = json.loads(text_data)
-            else:
-                data = bson.loads(bytes_data)
+        if text_data:
+            data = json.loads(text_data)
+        else:
+            data = bson.loads(bytes_data)
 
-            if 'janus' in data:
-                channels.send_janus_to_web(
-                    self.printer.id, data.get('janus'))
-            elif 'http.tunnelv2' in data:
-                cache.octoprinttunnel_http_response_set(
-                    data['http.tunnelv2']['ref'],
-                    data['http.tunnelv2']
-                )
-            elif 'ws.tunnel' in data:
-                channels.send_message_to_octoprinttunnel(
-                    channels.octoprinttunnel_group_name(self.printer.id),
-                    data['ws.tunnel'],
-                )
-            elif 'passthru' in data:
-                channels.send_message_to_web(self.printer.id, data)
-            else:
-                self.printer.refresh_from_db()
-                process_octoprint_status(self.printer, data)
-
-        except ObjectDoesNotExist:
-            import traceback
-            traceback.print_exc()
-            self.close()
-        except Exception:  # sentry doesn't automatically capture consumer errors
-            import traceback
-            traceback.print_exc()
-            capture_exception()
+        if 'janus' in data:
+            channels.send_janus_to_web(
+                self.printer.id, data.get('janus'))
+        elif 'http.tunnelv2' in data:
+            cache.octoprinttunnel_http_response_set(
+                data['http.tunnelv2']['ref'],
+                data['http.tunnelv2']
+            )
+        elif 'ws.tunnel' in data:
+            channels.send_message_to_octoprinttunnel(
+                channels.octoprinttunnel_group_name(self.printer.id),
+                data['ws.tunnel'],
+            )
+        elif 'passthru' in data:
+            channels.send_message_to_web(self.printer.id, data)
+        else:
+            self.printer.refresh_from_db()
+            process_octoprint_status(self.printer, data)
 
     @newrelic.agent.background_task()
+    @report_error
     def printer_message(self, data):
-        try:
-            as_binary = data.get('as_binary', False)
-            if as_binary:
-                self.send(text_data=None, bytes_data=bson.dumps(data))
-            else:
-                self.send(text_data=json.dumps(data))
-        except Exception:  # sentry doesn't automatically capture consumer errors
-            LOGGER.error(data)
-            import traceback
-            traceback.print_exc()
-            capture_exception()
+        as_binary = data.get('as_binary', False)
+        if as_binary:
+            self.send(text_data=None, bytes_data=bson.dumps(data))
+        else:
+            self.send(text_data=json.dumps(data))
+
+    @newrelic.agent.background_task()
+    @report_error
+    def close_duplicates(self, data):
+        channel_name = data['channel_name']
+        connected_at = data['connected_at']
+        if self.channel_name != channel_name and self.connected_at <= connected_at:
+            LOGGER.warning(f'closing possibly duplicate connection from printer pk:{self.printer.id}')
+            self.close(code=4321)
 
 
 class JanusWebConsumer(WebsocketConsumer):
@@ -283,13 +315,17 @@ class JanusWebConsumer(WebsocketConsumer):
                 auth_token=self.scope['url_route']['kwargs']['token'],
             )
 
+        if not self.scope['user'].is_authenticated:
+            raise Printer.DoesNotExist('session is not authenticated')
+
         return Printer.objects.get(
             user=self.scope['user'],
             id=self.scope['url_route']['kwargs']['printer_id']
         )
 
     @newrelic.agent.background_task()
-    @close_on_error('failed to connect')
+    @close_on_error
+    @close_on_error(exc_class=Printer.DoesNotExist, sentry=False) # Printer.DoesNotExist means auth failure and hence is expected
     def connect(self):
         self.printer = None
         self.printer = self.get_printer()
@@ -310,10 +346,12 @@ class JanusWebConsumer(WebsocketConsumer):
             )
 
     @newrelic.agent.background_task()
+    @report_error
     def receive(self, text_data=None, bytes_data=None):
         channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
     @newrelic.agent.background_task()
+    @report_error
     def janus_message(self, msg):
         self.send(text_data=msg.get('msg'))
 
@@ -326,6 +364,7 @@ class JanusSharedWebConsumer(JanusWebConsumer):
         ).printer
 
     @newrelic.agent.background_task()
+    @report_error
     def receive(self, text_data=None, bytes_data=None):
         # we are going to disable datachannel for shared printer connections
         # by tampering janus offer/answer messages
@@ -347,6 +386,7 @@ class JanusSharedWebConsumer(JanusWebConsumer):
         channels.send_msg_to_printer(self.printer.id, {'janus': text_data})
 
     @newrelic.agent.background_task()
+    @report_error
     def janus_message(self, message):
         # we are going to disable datachannel for shared printer connections
         # by tampering janus offer/answer messages
@@ -402,39 +442,37 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
         return (None, None)
 
     @newrelic.agent.background_task()
+    @close_on_error
+    @close_on_error(exc_class=(Printer.DoesNotExist, TunnelAuthenticationError), sentry=False) # TunnelAuthenticationError: auth error, Printer.DoesNotExist: missing printer/not authorized
     def connect(self):
         self.user, self.printer = None, None
-        try:
-            # Exception for un-authenticated or un-authorized access
-            self.user, self.printer = self.get_user_and_printer()
-            if self.printer is None:
-                self.close()
-                return
-
-            self.accept()
-
-            self.path = self.scope['path']
-
-            self.ref = str(time.time())
-
-            async_to_sync(self.channel_layer.group_add)(
-                channels.octoprinttunnel_group_name(self.printer.id),
-                self.channel_name,
-            )
-            channels.send_msg_to_printer(
-                self.printer.id,
-                {
-                    'ws.tunnel': {
-                        'ref': self.ref,
-                        'data': None,
-                        'path': self.path,
-                        'type': 'connect',
-                    },
-                    'as_binary': True,
-                })
-        except Exception:
-            LOGGER.exception("Websocket failed to connect")
+        # Exception for un-authenticated or un-authorized access
+        self.user, self.printer = self.get_user_and_printer()
+        if self.printer is None:
             self.close()
+            return
+
+        self.accept()
+
+        self.path = self.scope['path']
+
+        self.ref = str(time.time())
+
+        async_to_sync(self.channel_layer.group_add)(
+            channels.octoprinttunnel_group_name(self.printer.id),
+            self.channel_name,
+        )
+        channels.send_msg_to_printer(
+            self.printer.id,
+            {
+                'ws.tunnel': {
+                    'ref': self.ref,
+                    'data': None,
+                    'path': self.path,
+                    'type': 'connect',
+                },
+                'as_binary': True,
+            })
 
     def disconnect(self, close_code):
         LOGGER.warn(
@@ -461,47 +499,39 @@ class OctoprintTunnelWebConsumer(WebsocketConsumer):
             })
 
     @newrelic.agent.background_task()
+    @report_error
     def receive(self, text_data=None, bytes_data=None, **kwargs):
         if self.printer.user.tunnel_usage_over_cap():
             return
 
-        try:
-            channels.send_msg_to_printer(
-                self.printer.id,
-                {
-                    'ws.tunnel': {
-                        'ref': self.ref,
-                        'data': text_data or bytes_data,
-                        'path': self.path,
-                        'type': 'tunnel_message',
-                    },
-                    'as_binary': True
-                })
-        except Exception:  # sentry doesn't automatically capture consumer errors
-            import traceback
-            traceback.print_exc()
-            capture_exception()
+        channels.send_msg_to_printer(
+            self.printer.id,
+            {
+                'ws.tunnel': {
+                    'ref': self.ref,
+                    'data': text_data or bytes_data,
+                    'path': self.path,
+                    'type': 'tunnel_message',
+                },
+                'as_binary': True
+            })
 
     @newrelic.agent.background_task()
+    @report_error
     def octoprinttunnel_message(self, msg, **kwargs):
-        try:
-            # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}
-            payload = msg['data']
+        # msg == {'data': {'type': ..., 'data': ..., 'ref': ...}, ...}
+        payload = msg['data']
 
-            if payload['ref'] != self.ref and payload['ref'] != 'ALL':
-                return
+        if payload['ref'] != self.ref and payload['ref'] != 'ALL':
+            return
 
-            if payload['type'] == 'octoprint_close':
-                self.close(self.OCTO_WS_ERROR_CODE)
-                return
+        if payload['type'] == 'octoprint_close':
+            self.close(self.OCTO_WS_ERROR_CODE)
+            return
 
-            if isinstance(payload['data'], bytes):
-                self.send(bytes_data=payload['data'])
-            else:
-                self.send(text_data=payload['data'])
+        if isinstance(payload['data'], bytes):
+            self.send(bytes_data=payload['data'])
+        else:
+            self.send(text_data=payload['data'])
 
-            cache.octoprinttunnel_update_stats(self.printer.user_id, len(payload['data']))
-        except Exception:  # sentry doesn't automatically capture consumer errors
-            import traceback
-            traceback.print_exc()
-            capture_exception()
+        cache.octoprinttunnel_update_stats(self.printer.user_id, len(payload['data']))

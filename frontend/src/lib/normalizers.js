@@ -31,13 +31,17 @@ export const normalizedPrinter = (newData, oldData) => {
     createdAt: function() { return toMomentOrNull(this.created_at) },
     isOffline: function() { return get(this, 'status', null) === null },
     isPaused: function() { return get(this, 'status.state.flags.paused', false) },
-    isIdle: function() { return get(this, 'status.state.text', '') === 'Operational' },
     isDisconnected: function() { return get(this, 'status.state.flags.closedOrError', true) },
-    isPrinting: function() { return !this.isDisconnected() && get(this, 'status.state.text', '') !== 'Operational' },
+    isActive: function() {
+      const flags = get(this, 'status.state.flags')
+      // https://discord.com/channels/704958479194128507/705047010641838211/1013193281280159875
+      return Boolean(flags && flags.operational && (!flags.ready || flags.paused))
+    },
     inTransientState: function() { return !this.hasError() && get(this, 'status.state.text', '').includes('ing') && !get(this, 'status.state.text', '').includes('Printing') },
     inUserInteractionRequired: function() { return get(this, 'status.user_interaction_required', false) },
     hasError: function() { return get(this, 'status.state.flags.error') || get(this, 'status.state.text', '').toLowerCase().includes('error') },
-    isAgentMoonraker: function() { return get(this, 'settings.agent_name', '') === 'moonraker_obico'},
+    isAgentMoonraker: function() { return get(this, 'agent_name', '') === 'moonraker_obico'},
+    agentDisplayName: function() { return this.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' },
     basicStreamingInWebrtc: function() {
       return get(this, 'settings.agent_name', '') === 'octoprint_obico' && semverGte(get(this, 'settings.agent_version', '0.0.0'), '2.1.0') ||
         get(this, 'settings.agent_name', '') === 'moonraker_obico' && semverGte(get(this, 'settings.agent_version', '0.0.0'), '0.3.0')
@@ -68,10 +72,7 @@ export const normalizedPrinter = (newData, oldData) => {
   }
 }
 
-
-export const getNormalizedP = (predictions, currentPosition, isPublic) => {
-  const num = Math.round(predictions.length * currentPosition)
-  const propName = isPublic ? 'p' : 'fields.normalized_p'
-  return get(predictions[num], `${propName}`, 0)
+export const normalizedPrinterEvent = printerEvent => {
+  printerEvent.created_at = toMomentOrNull(printerEvent.created_at)
+  return printerEvent
 }
-

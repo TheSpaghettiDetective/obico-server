@@ -25,9 +25,8 @@ For Outlook there are a few different SMTP settings, you can verify which are ne
       DEFAULT_FROM_EMAIL=changeme@example.com  # -> For Outlook set this to match EMAIL_HOST_USER: field, otherwise it is recommended not to change (Seems to work for Gmail without issue)
 
 ### Gmail {#gmail}
-Without using 2FA you will need to make sure that you enable: Less secure app access from Gmail -> Manage My Account -> Security.
 
-With 2FA enabled, create an App password in: Gmail -> Manage My Account -> Security -> Signing Into Google -> App Passwords. Then use this as your value for `EMAIL_HOST_PASSWORD`.
+You can follow [this guide](gmail_smtp_setup_guide.md) if you want to use a Gmail account to send emails.
 
 ### Outlook {#outlook}
 Without using 2FA you can just use your normal login credentials.
@@ -47,7 +46,7 @@ With 2FA enabled, you can create an App password under: My Microsoft Account -> 
 ![Send test email](/img/server-guides/send_test_email.png)
 
 ## Troubleshooting with the test email {#troubleshooting-with-the-test-email}
-Ensure you are correctly re-building your Docker container with the command ```docker-compose up --build -d``` (use sudo in front for Linux) when making changes during troubleshooting to the `docker-compose.yml` file otherwise your changes may not take effect!
+Ensure you are correctly re-building your Docker container with the command ```docker compose up --build -d``` (use sudo in front for Linux) when making changes during troubleshooting to the `docker-compose.yml` file otherwise your changes may not take effect!
 
 1. If you get a Server Error (500) it is likely that something is wrong with the configuration such as incorrect credentials, port, etc. Check the logs on your web container to see what may have been rejected.
 

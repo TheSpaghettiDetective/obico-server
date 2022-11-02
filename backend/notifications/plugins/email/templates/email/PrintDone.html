@@ -88,12 +88,12 @@
       <div><b>File name:</b> {{ print.filename }}</div>
       <div><b>Printer:</b> {{ printer.name }}</div>
       {% if print_time %}
-      <div><b>Print time:</b> {{ print_time }}</div>
+      <div><b>Total print duration:</b> {{ print_time }}</div>
       {% endif %}
       {% if dh_consumed and not unlimited_dh %}
-      <div><b>AI failure detection time:</b> {{ dh_consumed }}</div>
+      <div><b>Consumed AI detection hours:</b> {{ dh_consumed }}</div>
       {% endif %}
-      {% if dh_consumed and not unlimited_dh %} <div><b>DH balance (<a
+      {% if dh_consumed and not unlimited_dh %} <div><b>Remaining AI detection hours (<a
             href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/">?</a>):</b>
         {{ user.dh_balance|floatformat:1 }} hour(s)</div>{% endif %}
     </td>

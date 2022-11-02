@@ -2,7 +2,7 @@
 <div>
   <div class="row my-2" v-if="!printer.isOffline() && printer.hasError()">
     <div class="col-12 bg-danger text-center">
-      <div>OctoPrint Error</div><div>{{ printer.status.state.text }}</div>
+      <div class="lead">{{ printer.agentDisplayName() }} Error</div><div>{{ printer.status.state.error }}</div>
     </div>
   </div>
   <div class="row my-2" v-if="printer.inUserInteractionRequired()">
@@ -18,7 +18,7 @@
   </div>
   <div class="row my-2" v-else>
     <div
-      v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isIdle()"
+      v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()"
       class="col-sm-6"
     >
       <button
@@ -40,7 +40,7 @@
     </div>
 
     <div
-      v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isIdle()"
+      v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()"
       class="col-sm-6"
     >
       <button
@@ -55,7 +55,7 @@
 
 
     <div
-      v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isIdle()"
+      v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isActive()"
       class="col-sm-6"
     >
       <button
@@ -69,7 +69,7 @@
     </div>
 
     <div
-      v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isIdle()"
+      v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isActive()"
       class="col-sm-6"
     >
       <button

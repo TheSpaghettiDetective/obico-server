@@ -15,6 +15,7 @@ import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodesPage from '@src/views/GCodesPage.vue'
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
+import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
 
 const router = new VueRouter({
   mode: 'history',
@@ -49,6 +50,7 @@ const components = {
   PrintPage,
   UploadPrintPage,
   UserPreferencesPage,
+  PrinterEventsPage,
 }
 
 export {

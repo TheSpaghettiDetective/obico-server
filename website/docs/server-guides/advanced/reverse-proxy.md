@@ -29,7 +29,7 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 
 1. Open `docker-compose.yml`, find `SITE_USES_HTTPS: 'False'` and replace it with `SITE_USES_HTTPS: 'True'`.
 
-2. Restart the server: `docker-compose restart`.
+2. Restart the server: `docker compose restart`.
 
 ## NGINX {#nginx}
 
@@ -125,6 +125,6 @@ server {
             external: true
       ```
 
-1. Retart the Obico Server with `docker-compose restart`
+1. Retart the Obico Server with `docker compose restart`
 
 1. You should now be able to browse to `spaghetti.your.domain`

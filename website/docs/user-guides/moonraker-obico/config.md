@@ -1,6 +1,6 @@
 ---
 id: config
-title: moonraker-obico.cfg
+title: Configurations
 ---
 
 Following Klipper toolchain's convention, the configuration file for **Obico for Klipper** is typically located at `~/klipper_config/moonraker-obico.cfg`

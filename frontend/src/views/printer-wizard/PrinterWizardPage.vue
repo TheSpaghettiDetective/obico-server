@@ -600,11 +600,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-$container-border-radius: 16px
 
 .wizard-card
   background-color: var(--color-surface-primary)
-  border-radius: $container-border-radius
+  border-radius: var(--border-radius-lg)
   padding: 1em
   display: flex
   flex-direction: column
@@ -644,7 +643,7 @@ img
 .spacer
  width: 200px
 .code-btn
-  border-radius: 10px
+  border-radius: var(--border-radius-sm)
   text-align: center
   width: 21rem
   height: 60px

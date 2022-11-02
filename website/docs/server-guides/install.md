@@ -47,9 +47,13 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it! Do **either** one of these based on what OS you are using:
-    - If you are on Linux: `cd obico-server && sudo docker-compose up -d`
-    - If you are on Mac: `cd obico-server && docker-compose up -d`
-    - If you are on Windows: `cd obico-server; docker-compose up -d`
+    - If you are on Linux: `cd obico-server && sudo docker compose up -d`
+    - If you are on Mac: `cd obico-server && docker compose up -d`
+    - If you are on Windows: `cd obico-server; docker compose up -d`
+
+:::tip
+You need to use `docker-compose` instead of `docker compose` on older Docker versions.
+:::
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
@@ -57,7 +61,7 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 
 ## 3. Test the server {#3-test-the-server}
 
-Open [http://localhost:3334](http://localhost:3334) on the same computer. If you see this page, the congratulations - your self-hosted Obico Server is now up and running!
+Open [http://localhost:3334](http://localhost:3334) on the same computer. If you see this page, then congratulations - your self-hosted Obico Server is now up and running!
 
 ![](/img/server-guides/login-page.png)
 

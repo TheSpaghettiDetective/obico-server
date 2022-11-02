@@ -56,6 +56,7 @@ def orientation_to_ffmpeg_options(printer_settings):
 def shortform_duration(total_seconds):
     if not total_seconds:
         return '--:--'
+    total_seconds = int(total_seconds)
     hours, remainder = divmod(total_seconds,60*60)
     minutes, seconds = divmod(remainder,60)
     return '{:02}:{:02}'.format(hours, minutes)
@@ -84,8 +85,14 @@ def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to
     img_bytes = io.BytesIO()
     retrieve_to_file_obj(input_path, img_bytes, settings.PICS_CONTAINER, long_term_storage=False)
     img_bytes.seek(0)
-    tmp_img = Image.open(img_bytes)
+    return save_pic(dest_jpg_path, img_bytes, rotated=rotated, printer_settings=printer_settings, to_container=to_container, to_long_term_storage=to_long_term_storage)
+
+
+def save_pic(dest_jpg_path, img_bytes, rotated=False, printer_settings=None, to_container=settings.PICS_CONTAINER, to_long_term_storage=True):
+    bytes_to_save = img_bytes
+
     if rotated:
+        tmp_img = Image.open(bytes_to_save)
         if printer_settings['webcam_flipH']:
             tmp_img = tmp_img.transpose(Image.FLIP_LEFT_RIGHT)
         if printer_settings['webcam_flipV']:
@@ -93,17 +100,19 @@ def copy_pic(input_path, dest_jpg_path, rotated=False, printer_settings=None, to
         if printer_settings['webcam_rotate90']:
             tmp_img = tmp_img.transpose(Image.ROTATE_90)
 
-    img_bytes = io.BytesIO()
-    tmp_img.save(img_bytes, "JPEG")
-    img_bytes.seek(0)
-    _, dest_jpg_url = save_file_obj(dest_jpg_path, img_bytes, to_container, long_term_storage=to_long_term_storage)
+        bytes_to_save = io.BytesIO()
+        tmp_img.save(bytes_to_save, "JPEG")
+        bytes_to_save.seek(0)
+
+    _, dest_jpg_url = save_file_obj(dest_jpg_path, bytes_to_save, to_container, long_term_storage=to_long_term_storage)
     return dest_jpg_url
 
 
-def get_rotated_pic_url(printer, force_snapshot=False):
-    if not printer.pic or not printer.pic.get('img_url'):
-        return None
-    jpg_url = printer.pic.get('img_url')
+def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
+    if not jpg_url:
+        if not printer.pic or not printer.pic.get('img_url'):
+            return None
+        jpg_url = printer.pic.get('img_url')
 
     need_rotation = printer.settings['webcam_flipV'] or printer.settings['webcam_flipH'] or printer.settings['webcam_rotate90']
 
@@ -111,9 +120,10 @@ def get_rotated_pic_url(printer, force_snapshot=False):
         return jpg_url
 
     jpg_path = re.search('tsd-pics/(raw/\d+/[\d\.\/]+.jpg|tagged/\d+/[\d\.\/]+.jpg|snapshots/\d+/\w+.jpg)', jpg_url)
+    file_prefix = str(timezone.now().timestamp()) if force_snapshot else 'latest'
     return copy_pic(
                 jpg_path.group(1),
-                f'snapshots/{printer.id}/latest_rotated.jpg',
+                f'snapshots/{printer.id}/{file_prefix}_rotated.jpg',
                 rotated=not 'latest_rotated' in jpg_url,
                 printer_settings=printer.settings,
                 to_long_term_storage=False

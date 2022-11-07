@@ -201,12 +201,6 @@ export default {
   },
 
   watch: {
-    // FIXME: delete when android fix will be released
-    currentRouteComponent() {
-      if (mobilePlatform() === 'android') {
-        this.$router.go()
-      }
-    },
     firstName: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('first_name')

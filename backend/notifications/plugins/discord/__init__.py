@@ -43,9 +43,9 @@ class DiscordNotificationPlugin(BaseNotificationPlugin):
             embed.set_image(url=image_url)
 
         embed.set_author(
-            name="Printer Notification",
+            name="Obico Printer Notification",
             url=site.build_full_url('/printers/'),
-            icon_url="https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/raw/master/frontend/static/img/logo-compact.png"
+            icon_url="https://obico.io/img/favicon.png"
         )
         embed.set_timestamp()
         embed.set_footer(text="The Obico app")

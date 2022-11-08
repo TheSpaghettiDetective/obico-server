@@ -27,9 +27,10 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 
 ## 2. If the reverse proxy is accessed through HTTPS: {#2-if-the-reverse-proxy-is-accessed-through-https}
 
-1. Open `docker-compose.yml`, find `SITE_USES_HTTPS: 'False'` and replace it with `SITE_USES_HTTPS: 'True'`.
-
-2. Restart the server: `docker compose restart`.
+1. If you haven't already, make a copy of `dotenv.example` and rename it as `.env` in the `obico-server` directory.
+2. Open `.env` using your favorite editor.
+3. Find `SITE_USES_HTTPS=False` and replace it with `SITE_USES_HTTPS=True`.
+4. Restart the server: `docker-compose restart`.
 
 ## NGINX {#nginx}
 

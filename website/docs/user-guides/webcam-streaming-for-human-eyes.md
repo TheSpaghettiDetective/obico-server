@@ -21,5 +21,5 @@ Whereas the streaming in OctoPrint is based on M-JPEG encoding, which uses 5x mo
 :::
 
 :::info
-The Premium Streaming uses a great amount of resources on the Obico Sever, such as the cloud storage and the network bandwidth. This is why we can make it available only to the Pro subscribers.
+The Premium Streaming uses a great amount of resources on the Obico Server, such as the cloud storage and the network bandwidth. This is why we can make it available only to the Pro subscribers.
 :::

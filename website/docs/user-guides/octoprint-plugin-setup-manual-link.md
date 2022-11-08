@@ -186,7 +186,7 @@ If you want to link OctoPrint to a new printer, you should do [step 3](#step-3-l
 
 **Hooray! You are done! You can close the Setup Wizard window now.**
 
-## Step 6 (optional): Give your printer a shinny name! {#step-6-optional-give-your-printer-a-shinny-name}
+## Step 6 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 

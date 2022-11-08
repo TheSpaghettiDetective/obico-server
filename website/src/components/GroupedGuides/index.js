@@ -10,10 +10,25 @@ const GroupedGuides = [
     Svg: require('../../../static/img/user-guides/home/getting-started.svg').default,
     links: [
       {
-        title: 'Set up the Obico app in 56 seconds',
-        route: '/docs/user-guides/octoprint-plugin-setup',
+        title: 'Set up Obico for OctoPrint',
+        route: '/docs/user-guides/octoprint-plugin-setup/',
+      },
+      {
+        title: 'Set up Obico for Klipper',
+        route: '/docs/user-guides/klipper-setup/',
+      },
+      {
+        title: 'Self-hosted Obico Server Guides',
+        route: '/docs/server-guides/',
       },
     ]
+  },
+  {
+    groupTitle: 'Obico App (Mobile & Web)',
+    Svg: require('../../../static/img/user-guides/home/use-the-app.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Obico App (Mobile & Web)',
   },
   {
     groupTitle: 'Failure Detection',
@@ -21,13 +36,6 @@ const GroupedGuides = [
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Failure Detection',
-  },
-  {
-    groupTitle: 'Use The App',
-    Svg: require('../../../static/img/user-guides/home/use-the-app.svg').default,
-    links: [],
-    loadFromSidebar: true,
-    labelInSidebar: 'Use The App',
   },
   {
     groupTitle: 'Webcam Streaming',
@@ -49,6 +57,20 @@ const GroupedGuides = [
     links: [],
     loadFromSidebar: true,
     labelInSidebar: 'Troubleshooting Guides',
+  },
+  {
+    groupTitle: 'Obico for OctoPrint',
+    Svg: require('../../../static/img/user-guides/home/use-the-app.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Obico for OctoPrint',
+  },
+  {
+    groupTitle: 'Obico for Klipper',
+    Svg: require('../../../static/img/user-guides/home/use-the-app.svg').default,
+    links: [],
+    loadFromSidebar: true,
+    labelInSidebar: 'Obico for Klipper',
   },
   {
     groupTitle: 'Get Help',

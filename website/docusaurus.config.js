@@ -52,6 +52,7 @@ module.exports = {
     },
     navbar: {
       title: '',
+      hideOnScroll: true,
       logo: {
         alt: 'Obico logo',
         src: 'img/logo.svg',
@@ -94,25 +95,19 @@ module.exports = {
           ],
         },
         {
-          label: 'Pricing',
-          to: 'https://app.obico.io/ent_pub/pricing/',
-          target: '_self',
-        },
-        {
-          label: 'Community',
-          to: 'https://obico.io/discord',
-          target: '_self',
-        },
-        {
           label: 'Docs',
           items: [
             {
-              label: 'Self-hosting',
-              to: '/docs/server-guides/install/',
+              label: 'Set up Obico for OctoPrint',
+              to: '/docs/user-guides/octoprint-plugin-setup/',
             },
             {
-              label: 'Obico Server Plugin',
-              to: '/docs/developer-guides/plugins/',
+              label: 'Set up Obico for Klipper',
+              to: '/docs/user-guides/klipper-setup/',
+            },
+            {
+              label: 'Self-hosting',
+              to: '/docs/server-guides/',
             },
             {
               label: 'Client APIs',
@@ -125,16 +120,22 @@ module.exports = {
           ],
         },
         {
-          label: 'Help',
-          to: '/help',
-        },
-        {
           label: 'Contribute',
           to: '/docs/developer-guides/contribute/',
         },
         {
+          label: 'Community',
+          to: 'https://obico.io/discord',
+          target: '_self',
+        },
+        {
           label: 'Blog',
           to: '/blog',
+        },
+        {
+          label: 'Pricing',
+          to: 'https://app.obico.io/ent_pub/pricing/',
+          target: '_self',
         },
         {
           label: 'About',

@@ -19,7 +19,7 @@
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
             <div class="close-button" @click="show = false">
-              <svg withd="16" height="16">
+              <svg width="16" height="16">
                 <use href="#svg-cross-icon" />
               </svg>
             </div>
@@ -91,7 +91,7 @@
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
               <p>Securely tunnel to your OctoPrint from anywhere.</p>
-              <p>Free plan is subject to 100MB/month data cap. Data usage is reset on the 1st day of each month.</p>
+              <p>Free plan is subject to 500MB/month data cap. Data usage is reset on the 1st day of each month.</p>
               <p>
                 Learn more about
                 <div>

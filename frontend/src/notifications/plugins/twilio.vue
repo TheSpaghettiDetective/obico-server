@@ -5,7 +5,6 @@
     :notificationChannel="notificationChannel"
     :notificationSettings="notificationSettings"
 
-    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
     @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
@@ -170,7 +169,19 @@ export default {
           this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
         }, 1000)
       } else {
-        this.configUpdateTimeout = setTimeout(() => this.$emit('createNotificationChannel', this.notificationChannel, config), 1000)
+        this.configUpdateTimeout = setTimeout(() => {
+          this.$emit(
+            'createNotificationChannel',
+            this.notificationChannel,
+            config,
+            {
+              notify_on_print_done: 'f',
+              notify_on_print_cancelled: 'f',
+              notify_on_filament_change: 'f',
+              notify_on_other_print_events: 'f',
+              notify_on_heater_status: 'f',
+            })
+        }, 1000)
       }
     }
   },

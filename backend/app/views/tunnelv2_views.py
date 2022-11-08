@@ -3,6 +3,7 @@ import functools
 import re
 import json
 import packaging.version
+from types import MethodType
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -17,7 +18,7 @@ from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
 from lib import channels
 from lib.tunnelv2 import OctoprintTunnelV2Helper, TunnelAuthenticationError
-from app.models import OctoPrintTunnel
+from app.models import OctoPrintTunnel, calc_normalized_p
 
 
 import logging
@@ -31,6 +32,7 @@ DJANGO_COOKIE_RE = re.compile(
     fr'^{settings.LANGUAGE_COOKIE_NAME}='
 )
 
+OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
 
 OVER_FREE_LIMIT_HTML = """
 <html>
@@ -142,6 +144,7 @@ def octoprint_http_tunnel(request):
 
 
 def tunnel_api(request, octoprinttunnel):
+    printer = octoprinttunnel.printer
     if request.path.lower() == '/_tsd_/tunnelusage/':
         start_of_next_month = (
             datetime.now().replace(day=1) + timedelta(days=32)
@@ -149,8 +152,8 @@ def tunnel_api(request, octoprinttunnel):
 
         return HttpResponse(
             json.dumps({
-                'total': cache.octoprinttunnel_get_stats(octoprinttunnel.printer.user.id),
-                'monthly_cap': octoprinttunnel.printer.user.tunnel_cap(),
+                'total': cache.octoprinttunnel_get_stats(printer.user.id),
+                'monthly_cap': printer.user.tunnel_cap(),
                 'reset_in_seconds': (start_of_next_month - datetime.now()).total_seconds(),
             }),
             content_type='application/json'
@@ -158,15 +161,21 @@ def tunnel_api(request, octoprinttunnel):
 
     if request.path.lower() == '/_tsd_/webcam/0/':
         pic = (
-            cache.printer_pic_get(octoprinttunnel.printer.id) or {}
+            cache.printer_pic_get(printer.id) or {}
         ).get('img_url', None)
         return HttpResponse(
             json.dumps({'snapshot': pic}),
             content_type='application/json',
         )
 
-    raise Http404
+    if request.path.lower() == '/_tsd_/prediction/':
+        p = calc_normalized_p(printer.detective_sensitivity, printer.printerprediction)
+        return HttpResponse(
+            json.dumps({'normalized_p': p}),
+            content_type='application/json',
+        )
 
+    raise Http404
 # Helpers
 
 
@@ -213,6 +222,14 @@ def save_static_etag(func):
 
         return response
     return inner
+
+
+def set_response_items(self):
+    items = list(self._headers.values())
+    if hasattr(self, "tunnel_cookies"):
+        for raw_cookie in self.tunnel_cookies:
+            items.append(('Set-Cookie', raw_cookie))
+    return items
 
 
 @save_static_etag
@@ -312,6 +329,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         'content-length',  # set by django
         'content-encoding',  # if its set, it is probably incorrect/unapplicable
         'x-frame-options',  # response must load in TSD's iframe
+        'set-cookie',
     )
     for k, v in data['response']['headers'].items():
         if k.lower() in to_ignore:
@@ -327,6 +345,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # but TSD needs cookies working over https.
     # without this, cookies set in response might not be used
     # in some browsers (FF gives wwarning)
+    tunnel_cookies = []
     for cookie in (data['response'].get('cookies', ()) or ()):
         if (
             request.is_secure() and
@@ -337,7 +356,22 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if 'Expires=' not in cookie and 'Max-Age=' not in cookie:
             cookie += '; Max-Age=7776000'  # 3 months
 
-        resp['Set-Cookie'] = cookie
+        m = OCTOPRINT_COOKIE_PORT_RE.match(cookie)
+        if m is not None:
+            # OctoPrint JS needs the port in csrf_token_P{port} to be the one in browser. But the backend returns the port that plugins connects to.
+            # Hence we need to do this dance to duplicate the cookies between them.
+            # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
+            cookie_port = octoprinttunnel.port
+            if not cookie_port:
+                cookie_port = 443 if request.is_secure() else 80
+            tunnel_cookies.append(cookie.replace(f"P{m.groups()[0]}", f"P{cookie_port}"))
+
+        tunnel_cookies.append(cookie)
+
+    if tunnel_cookies:
+        setattr(resp, 'tunnel_cookies', tunnel_cookies)
+        # Unfortunately Django 2 still doesn't have a good way to set headers and hence we have to do this ugly trick
+        resp.items = MethodType(set_response_items, resp)
 
     if data['response'].get('compressed', False):
         content = zlib.decompress(data['response']['content'])

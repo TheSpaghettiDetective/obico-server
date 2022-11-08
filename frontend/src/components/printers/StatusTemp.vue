@@ -12,35 +12,42 @@
         </small>
       </div>
     <div
-      v-for="item in temperatures"
-      :key="item.id"
+      v-for="(item, key) in temperatures"
+      :key="key"
       class="row"
     >
       <div class="col-2 numbers">
-        <span class="text-subscript text-muted">{{item.toolName}}</span>
+        <span class="text-subscript text-muted">{{temperatureDisplayName(key)}}</span>
       </div>
       <div class="col-5 numbers">
-        {{item.actual}}<span class="text-subscript text-muted">°C</span>
+        {{parseFloat(item.actual).toFixed(1)}}<span class="text-subscript text-muted">°C</span>
       </div>
       <div
-        :id="item.id"
+        v-if="isEditable(item)"
         class="col-5 numbers"
-        @click="onEditClicked(item)"
-      >{{item.target}}<span class="text-subscript text-muted">°C</span>
+        @click="onEditClicked(key, item)"
+      >{{Math.round(item.target)}}<span class="text-subscript text-muted">°C</span>
         <span
           v-if="editable"
         >&nbsp;<i class="fas fa-pencil-alt" style="font-size: 0.6em;"></i></span>
       </div>
+      <div
+        v-else
+        class="col-5 numbers"
+      >-</div>
+
     </div>
   </div>
 </template>
 
 <script>
+import {temperatureDisplayName} from '@src/lib/utils'
+
 export default {
   name: 'StatusTemp',
   props: {
     temperatures: {
-      type: Array,
+      type: Object,
       required: true
     },
     editable: {
@@ -49,11 +56,16 @@ export default {
     }
   },
   methods: {
-    onEditClicked(item) {
+    onEditClicked(key, item) {
       if (this.editable) {
-        this.$emit('TempEditClicked', item)
+        this.$emit('TempEditClicked', key, item)
       }
-    }
+    },
+    isEditable(temperature) {
+      // "target === null" means it's only a sensor, not a heater.
+      return temperature.target !== null
+    },
+    temperatureDisplayName: temperatureDisplayName,
   }
 }
 </script>

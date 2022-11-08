@@ -39,7 +39,7 @@
             v-for="setting in notificationSettings"
             :key="setting.id"
           >
-            <template v-if="setting.id === 'printer_status_change'">
+            <template v-if="setting.id === 'print_job'">
               <!-- FIXME: reuse NotificationSettingSwitch -->
               <div v-if="theme === 'web'" class="row">
                 <div class="col-12 col-form-label">
@@ -205,7 +205,7 @@ export default {
         if (!this.notificationChannel.channelInfo) {
           return null
         }
-        const subcategories = this.notificationSettings.filter(setting => setting.id === 'printer_status_change')[0].subcategories
+        const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
         for (const subcategory of subcategories) {
           if (this.notificationChannel.channelInfo[subcategory.id]) {
             return true
@@ -215,7 +215,7 @@ export default {
       },
       set: function(newValue) {
         if (newValue) {
-          const subcategories = this.notificationSettings.filter(setting => setting.id === 'printer_status_change')[0].subcategories
+          const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
           let changedProps = []
           for (const subcategory of subcategories) {
             if (subcategory.enabledByDefault) {
@@ -227,7 +227,7 @@ export default {
             this.$emit('updateNotificationChannel', this.notificationChannel, changedProps)
           }
         } else {
-          const subcategories = this.notificationSettings.filter(setting => setting.id === 'printer_status_change')[0].subcategories
+          const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
           let changedProps = []
           for (const subcategory of subcategories) {
             if (this.notificationChannel.channelInfo[subcategory.id]) {

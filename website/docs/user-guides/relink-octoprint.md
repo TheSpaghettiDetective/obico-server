@@ -5,8 +5,9 @@ title: Re-link OctoPrint
 
 ## Why would you re-link OctoPrint? {#why-would-you-re-link-octoprint}
 
-Consider re-linking OctoPrint in one of the following cases:
+You need to re-link OctoPrint in one of the following cases:
 
+* [The authentication token is being used by multiple printers](/docs/user-guides/warnings/shared-auth-token-error/).
 * You accidentally deleted a printer in The Spaghetti Detective app.
 * Your printer is always showing "**offline**" in The Spaghetti Detective app, and you have gone through [all the trouble-shooting steps](/docs/user-guides/troubleshoot-server-connection-issues).
 * You don't remember the password of your old The Spaghetti Detective account so you have to sign up for a new account. Now you want to re-link your OctoPrint to the new account.

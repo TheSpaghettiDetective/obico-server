@@ -8,7 +8,7 @@ title: Common tasks for operating self-hosted server
     cd obico-server
     git checkout release
     git pull
-    docker-compose up --build -d
+    docker compose up --build -d
 ```
 *Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
 

@@ -21,7 +21,7 @@
             </a>
             <hr />
             <br /><br />
-            <a class="btn btn-block btn-primary" href="/accounts/signup/">Get OctoPrint remote monitoring/access for FREE</a>
+            <p class="text-center">Obico let you monitor and control your printer from anywhere, on your phone.</p><a class="btn btn-block btn-primary" href="/accounts/signup/">Sign up for a free Obico account</a>
           </div>
         </div>
       </div>

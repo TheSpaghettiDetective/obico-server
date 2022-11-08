@@ -68,12 +68,12 @@ npx localtunnel --port 3334
     - Edit the file to include your ID
     ![config](/img/server-guides/telegram/config.JPG)
 
-  
+
 10. Reboot Docker
 ```sh
 cd TheSpaghettiDetective
-sudo docker-compose down
-sudo docker-compose up -d
+sudo docker compose down
+sudo docker compose up -d
 ```
 ![reboot](/img/server-guides/telegram/reboot.JPG)
 

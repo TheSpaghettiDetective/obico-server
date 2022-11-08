@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div v-if="!isPro && usageFetched" class="floating-panel text-center pb-2">
-      <div class="text-muted">Month-To-Date Usage/Free Limit(<a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">?</a>)</div>
-      <div :class="usageClass">{{ usageMTD }}/{{ humanizedUsageCap }}</div>
-      <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
+    <div v-if="!isPro && usageFetched" class="floating-panel">
+        <div v-if="showDetails" @click="showDetails = false" @mouseover="showDetails = true" @mouseleave="showDetails = false">
+          <div class="text-muted">Monthly data usage (<a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">Resets in {{ daysUntilReset}} days</a>)</div>
+          <div :class="usageClass">Used {{ usageMTD }} of {{ humanizedUsageCap }}.</div>
+          <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
+        </div>
+        <div v-else @click="showDetails = true" @mouseover="showDetails = true" @mouseleave="showDetails = false" :class="usageClass">{{percentage}}%</div>
     </div>
     <div>
       <iframe v-if="printerId" :src="iframeUrl() + '#temp'" class="tunnel-iframe"></iframe>
@@ -13,6 +16,7 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 import split from 'lodash/split'
 import filesize from 'filesize'
 import urls from '@config/server-urls'
@@ -33,6 +37,7 @@ export default {
       usageFetched: false,
       isPro: true,
       printerId: null,
+      showDetails: false,
     }
   },
 
@@ -53,6 +58,13 @@ export default {
     overage() {
       return this.bytesMTD >= this.usageCap
     },
+    percentage() {
+      return Math.round(this.bytesMTD/this.usageCap*100)
+    },
+    daysUntilReset() {
+      const endOfMonth = moment().endOf('month')
+      return endOfMonth.diff(moment(), 'days') + 1
+    }
   },
 
   created() {
@@ -133,13 +145,16 @@ export default {
 
 .floating-panel
   position: fixed
-  bottom: 15px
-  right: 15px
+  bottom: 0px
+  right: 0px
   box-shadow: 2px 2px 10px rgba(0,0,0,.3)
   background-color: var(--color-surface-primary)
   padding: 10px
   max-width: 300px
   z-index: 10
+  display: flex
+  align-items: center
+
 </style>
 
 <style lang="sass">

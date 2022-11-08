@@ -7,24 +7,28 @@ from lib import cache
 from lib import channels
 from lib.utils import set_as_str_if_present
 from lib import mobile_notifications
-from app.models import PrintEvent, Printer
+from app.models import PrinterEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
 LOGGER = logging.getLogger(__name__)
 STATUS_TTL_SECONDS = 240
 
 def process_octoprint_status(printer: Printer, msg: Dict) -> None:
-    #
+    # Backward compatibility: octoprint_settings is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     octoprint_settings = msg.get('settings') or msg.get('octoprint_settings')
     if octoprint_settings:
         cache.printer_settings_set(printer.id, settings_dict(octoprint_settings))
 
-    printer_status = msg.get('status') or msg.get('octoprint_data')
+        agent_name = octoprint_settings.get('agent', {}).get('name')
+        agent_version = octoprint_settings.get('agent', {}).get('version')
+        if agent_name != printer.agent_name or agent_version != printer.agent_version:
+            printer.agent_name = agent_name
+            printer.agent_version = agent_version
+            printer.save()
 
-    # for backward compatibility
-    if printer_status:
-        if 'octoprint_temperatures' in msg:
-            printer_status['temperatures'] = msg['octoprint_temperatures']
+
+    # Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+    printer_status = msg.get('status') or msg.get('octoprint_data')
 
     if not printer_status:
         cache.printer_status_delete(printer.id)
@@ -57,10 +61,8 @@ def settings_dict(octoprint_settings):
         tsd_plugin_version=octoprint_settings.get('tsd_plugin_version', ''),
         octoprint_version=octoprint_settings.get('octoprint_version', ''),
     )
-    settings.update(
-        dict(('agent_' + k, str(v)) for k, v in octoprint_settings.get('agent', {}).items())
-    )
     settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
+
     return settings
 
 
@@ -69,10 +71,12 @@ def update_current_print_if_needed(msg, printer):
         LOGGER.warn(f'current_print_ts not present. Received status: {msg}')
         return
 
+    # Backward compatibility: octoprint_event is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
     op_event = msg.get('event') or msg.get('octoprint_event') or {}
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
+
     print_ts = msg.get('current_print_ts')
-    current_filename = op_event.get('name') or printer_status.get('job', {}).get('file', {}).get('name')
+    current_filename = (op_event.get('data') or {}).get('name') or ((printer_status.get('job') or {}).get('file') or {}).get('name')
     printer.update_current_print(print_ts, current_filename)
     if not printer.current_print:
         return
@@ -95,10 +99,10 @@ def update_current_print_if_needed(msg, printer):
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused_at = timezone.now()
         printer.current_print.save()
-        PrintEvent.create(printer.current_print, PrintEvent.PAUSED)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.PAUSED, task_handler=True)
     elif op_event.get('event_type') == 'PrintResumed':
         printer.current_print.paused_at = None
         printer.current_print.save()
-        PrintEvent.create(printer.current_print, PrintEvent.RESUMED)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
-        PrintEvent.create(printer.current_print, PrintEvent.FILAMENT_CHANGE)
+        PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)

@@ -10,12 +10,14 @@ In addition to the steps in [the basic installation steps](../install.md), you w
 - [Install nvidia-docker](https://github.com/NVIDIA/nvidia-docker).
 - Run this command in `obico-server` directory:
 ```
-cat >docker-compose.override.yml <<EOF
+cat <<EOT >docker-compose.override.yml
 version: '2.4'
 
 services:
   ml_api:
     runtime: nvidia
-EOF
+    environment:
+        HAS_GPU: 'True'
+EOT
 ```
-- Restart the docker cluster by running `docker-compose down && docker-compose up -d`
+- Restart the docker cluster by running `docker compose down && docker compose up -d`

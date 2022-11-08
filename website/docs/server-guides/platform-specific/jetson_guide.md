@@ -32,19 +32,19 @@ should also work but we haven't tried them.
 1. Get the code:
 
 ```
-git clone -b release https://github.com/TheSpaghettiDetective/TheSpaghettiDetective.git
+git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it!
 
 ```
-cd TheSpaghettiDetective
+cd obico-server
 ./scripts/install_on_jetson.sh
 ```
 
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
-4. There is no step 4. This is how easy it is to get The Spaghetti Detective up and running (thanks to Docker and Docker-compose).
+4. There is no step 4. This is how easy it is to get the Obico server up and running (thanks to Docker and Docker-compose).
 
 ## Continue to [server configuration the main documentation](../../configure) {#continue-to-server-configuration-the-main-documentation}
 

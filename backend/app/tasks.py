@@ -24,7 +24,7 @@ from django.core.mail import EmailMessage
 from channels_presence.models import Room
 
 from .models import *
-from .models import Print, PrintEvent
+from .models import Print, PrinterEvent
 from lib.file_storage import list_dir, retrieve_to_file_obj, save_file_obj, delete_dir
 from lib.utils import ml_api_auth_headers, orientation_to_ffmpeg_options, copy_pic, last_pic_of_print
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
@@ -40,8 +40,8 @@ LOGGER = logging.getLogger(__name__)
 
 @shared_task
 def process_print_events(event_id):
-    print_event = PrintEvent.objects.select_related('print').get(id=event_id)
-    if print_event.event_type == PrintEvent.ENDED:
+    print_event = PrinterEvent.objects.select_related('print').get(id=event_id)
+    if print_event.event_type == PrinterEvent.ENDED:
         process_print_end_event(print_event)
     else:
         send_notification_for_print_event(print_event.print, print_event)
@@ -51,6 +51,9 @@ def process_print_end_event(print_event):
     _print = Print.objects.select_related('printer__user').get(id=print_event.print_id)
 
     if will_record_timelapse(_print):
+        _print.poster_url = print_event.image_url
+        _print.save()
+
         select_print_shots_for_feedback(_print)
         send_notification_for_print_event(_print, print_event)
         compile_timelapse.delay(print_event.print_id)
@@ -63,10 +66,12 @@ def send_notification_for_print_event(_print, print_event, extra_context=None):
         notification_types.PrintDone,
         notification_types.PrintCancelled,
         ] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
+
         handler.queue_send_printer_notifications_task(
             printer=_print.printer,
             notification_type=notification_type,
             print_=_print,
+            img_url=print_event.image_url,
             extra_context=extra_context,
             in_process=True,
         )
@@ -287,18 +292,6 @@ def will_record_timelapse(_print):
         _print.delete()
         clean_up_print_pics(_print)
         return False
-
-    rotated_jpg_url = copy_pic(
-                        last_pic,
-                        f'private/{_print.id}_poster.jpg',
-                        to_container=settings.TIMELAPSE_CONTAINER,
-                        rotated=True,
-                        printer_settings=_print.printer.settings,
-                        to_long_term_storage=True
-                    )
-    if rotated_jpg_url:
-        _print.poster_url = rotated_jpg_url
-        _print.save(keep_deleted=True)
 
     return True
 

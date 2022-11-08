@@ -169,7 +169,7 @@ On the welcome page, click the "**Link Printer**" button.
 
 Hooray! You are done! You can now close the terminal. Obico for Klipper is now running as a system service.
 
-## Step 6 (optional): Give your printer a shinny name! {#step-6-optional-give-your-printer-a-shinny-name}
+## Step 6 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 

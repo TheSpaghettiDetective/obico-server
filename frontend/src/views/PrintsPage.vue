@@ -69,7 +69,7 @@
         </b-row>
 
         <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-          <div v-if="noMoreData" class="text-center p-2">End of your time-lapse list.</div>
+          <div v-if="noMoreData" class="text-center p-2">No more time-lapses.</div>
           <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
         </mugen-scroll>
 
@@ -105,10 +105,11 @@ import FullScreenPrintCard from '@src/components/prints/FullScreenPrintCard.vue'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 
-const LocalPrefNames = {
+const LOCAL_PREF_NAMES = {
   filtering: 'prints-filtering',
   sorting: 'prints-sorting',
 }
+const PAGE_SIZE = 6
 
 export default {
   name: 'PrintsPage',
@@ -129,10 +130,10 @@ export default {
       fullScreenPrintVideoUrl: null,
       menuSelections: {
         'Sort By': getLocalPref(
-          LocalPrefNames.sorting,
+          LOCAL_PREF_NAMES.sorting,
           'date_desc'),
         'Filter By': getLocalPref(
-          LocalPrefNames.filtering,
+          LOCAL_PREF_NAMES.filtering,
           'none'),
       },
       menuOptions: {
@@ -193,14 +194,14 @@ export default {
         .get(urls.prints(), {
           params: {
             start: this.prints.length,
-            limit: 6,
+            limit: PAGE_SIZE,
             filter: this.menuSelections['Filter By'],
             sorting: this.menuSelections['Sort By'],
           }
         })
         .then(response => {
           this.loading = false
-          this.noMoreData = response.data.length < 6
+          this.noMoreData = response.data.length < PAGE_SIZE
           this.prints.push(...response.data.map(data => normalizedPrint(data)))
         })
     },
@@ -224,7 +225,7 @@ export default {
 
     menuSelectionChanged(menu, selectedOption) {
       this.$set(this.menuSelections, menu, selectedOption.value)
-      const prefName = menu === 'Sort By' ? LocalPrefNames.sorting : LocalPrefNames.filtering
+      const prefName = menu === 'Sort By' ? LOCAL_PREF_NAMES.sorting : LOCAL_PREF_NAMES.filtering
       setLocalPref(prefName, selectedOption.value)
       this.refetchData()
     },
@@ -280,7 +281,7 @@ export default {
     onShowAllClicked(){
       this.$set(this.menuSelections, 'Filter By', 'none')
       setLocalPref(
-        LocalPrefNames.filtering,
+        LOCAL_PREF_NAMES.filtering,
         'none'
       )
       this.refetchData()

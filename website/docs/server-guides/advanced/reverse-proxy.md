@@ -126,6 +126,6 @@ server {
             external: true
       ```
 
-1. Retart the Obico Server with `docker-compose restart`
+1. Retart the Obico Server with `docker compose restart`
 
 1. You should now be able to browse to `spaghetti.your.domain`

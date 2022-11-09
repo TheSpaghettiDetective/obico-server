@@ -289,7 +289,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(),
+      webrtc: WebRTCConnection({data: true}),
     }
   },
   created() {

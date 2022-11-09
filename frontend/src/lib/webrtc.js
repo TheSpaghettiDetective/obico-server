@@ -5,13 +5,17 @@ import Janus from '@src/lib/janus'
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
-export default function WebRTCConnection() {
+export default function WebRTCConnection(opts) {
   let self = {
     callbacks: {},
     initialized: false,
     streamId: undefined,
     streaming: undefined,
     bitrateInterval: null,
+    dataStreamId: undefined,
+    dataStreaming: undefined,
+
+    needDatachannel: opts?.data === true,
 
     openForShareToken(shareToken) {
       self.connect(
@@ -129,6 +133,47 @@ export default function WebRTCConnection() {
                 }
               }
             })
+
+          if (self.needDatachannel) {
+            janus.attach(
+              {
+                plugin: 'janus.plugin.streaming',
+                opaqueId: opaqueId,
+                success: function (pluginHandle) {
+                  Janus.log('Plugin attached! (' + pluginHandle.getPlugin() + ', id=' + pluginHandle.getId() + ')')
+
+                  const body = { 'request': 'info', id: 1 }
+                  Janus.log('Sending message (' + JSON.stringify(body) + ')')
+                  pluginHandle.send({
+                    'message': body, success: function (result) {
+                      let stream = get(result, 'info')
+                      if (stream) {
+                        self.dataStreamId = stream.id
+                        self.dataStreaming = pluginHandle
+
+                        if ('onDataStreamAvailable' in self.callbacks) {
+                          self.callbacks.onDataStreamAvailable()
+                        }
+                      }
+                    }
+                  })
+                },
+                error: function (error) {
+                  Janus.error('  -- Error attaching plugin... ', error)
+                  janus.destroy()
+                },
+                onmessage: function(msg, jsep) {
+                  self.onDataStreamMessage(msg, jsep)
+                },
+                ondataopen: function() {
+                },
+                ondata: function(rawData) {
+                  if ('onData' in self.callbacks) {
+                    self.callbacks.onData(rawData)
+                  }
+                },
+              })
+          }
         },
         error(e) {
           Janus.error('  -- Error -- ', e)
@@ -138,6 +183,8 @@ export default function WebRTCConnection() {
           self.streaming = undefined
           self.streamId = undefined
           self.clearBitrateInterval()
+          self.dataStreaming = undefined
+          self.dataStreamId = undefined
         }
       })
     },
@@ -168,7 +215,7 @@ export default function WebRTCConnection() {
           {
             jsep: jsep,
             // We want recvonly audio/video and, if negotiated, datachannels
-            media: { audioSend: false, videoSend: false, data: true },
+            media: { audioSend: false, videoSend: false, data: self.needDatachannel },
             success: function (jsep) {
               Janus.debug('Got SDP!')
               Janus.debug(jsep)
@@ -181,14 +228,55 @@ export default function WebRTCConnection() {
           })
       }
     },
+    onDataStreamMessage(msg, jsep) {
+      let self = this
+      Janus.debug(' ::: Got a data message :::', msg)
+      let result = msg['result']
+      if (result !== null && result !== undefined) {
+        if (result['status'] !== undefined && result['status'] !== null) {
+          var status = result['status']
+          if (status === 'starting')
+            console.log('Data Starting')
+          else if (status === 'started')
+            console.log('Data Started')
+          else if (status === 'stopped') {
+            self.stopDataStream()
+          }
+        }
+      } else if (msg['error'] !== undefined && msg['error'] !== null) {
+        Janus.error(msg)
+        self.stopDataStream()
+        return
+      }
+      if (jsep !== undefined && jsep !== null) {
+        // Offer from the plugin, let's answer
+        self.dataStreaming?.createAnswer(
+          {
+            jsep: jsep,
+            // We want recvonly audio/video and, if negotiated, datachannels
+            media: { audioSend: false, videoSend: false, data: true, videoRecv: false, audioRecv: false},
+            success: function (jsep) {
+              Janus.debug('Got Data SDP!')
+              Janus.debug(jsep)
+              var body = { 'request': 'start' }
+              self.dataStreaming?.send({ 'message': body, 'jsep': jsep })
+            },
+            error: function (error) {
+              Janus.error('WebRTC error:', error)
+            }
+          })
+      }
+    },
+
     channelOpen() {
       return !(self.streamId === undefined || self.streaming === undefined)
     },
+
     startStream() {
       if (!self.channelOpen()) {
         return
       }
-      const body = { 'request': 'watch', offer_video: true, id: parseInt(self.streamId) }
+      const body = { 'request': 'watch', offer_video: true, offer_audio: false, offer_data: self.needDatachannel, id: parseInt(self.streamId) }
       self.streaming?.send({ 'message': body })
 
       self.clearBitrateInterval()
@@ -205,6 +293,7 @@ export default function WebRTCConnection() {
         }
       }, 5000)
     },
+
     stopStream() {
       self.clearBitrateInterval()
       if (!self.channelOpen()) {
@@ -215,8 +304,31 @@ export default function WebRTCConnection() {
       self.streaming?.hangup()
     },
 
+    dataChannelOpen() {
+      return !(self.dataStreamId === undefined || self.dataStreaming === undefined)
+    },
+
+    startDataStream() {
+      if (!self.dataChannelOpen()) {
+        return
+      }
+      const body = { 'request': 'watch', offer_data: true, id: parseInt(self.dataStreamId) }
+      self.dataStreaming?.send({ 'message': body })
+    },
+
+    stopDataStream() {
+      if (!self.dataChannelOpen()) {
+        return
+      }
+      const body = { 'request': 'stop' }
+      self.dataStreaming?.send({ 'message': body })
+      self.dataStreaming?.hangup()
+    },
+
     sendData(data) {
-      if (self.channelOpen()) {
+      if (self.dataChannelOpen()) {
+        self.dataStreaming?.data({text: data, success: () => {}})
+      } else if (self.channelOpen()) {
         self.streaming?.data({text: data, success: () => {}})
       }
     },

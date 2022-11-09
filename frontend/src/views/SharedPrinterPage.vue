@@ -62,7 +62,7 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
-      webrtc: WebRTCConnection(),
+      webrtc: WebRTCConnection({data: false}),
     }
   },
 }

@@ -109,6 +109,7 @@ export default {
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
+        onDataStreamAvailable: this.onDataStreamAvailable,
       }
 
       if (!this.autoplay) {
@@ -118,12 +119,17 @@ export default {
       ifvisible.on('blur', () => {
         if (this.webrtc) {
           this.webrtc.stopStream()
+          this.webrtc.stopDataStream()
         }
       })
 
       ifvisible.on('focus', () => {
         if (this.webrtc && this.autoplay) {
           this.webrtc.startStream()
+        }
+
+        if (this.webrtc) {
+          this.webrtc.startDataStream()
         }
       })
     }
@@ -240,6 +246,11 @@ export default {
       }
       this.isVideoAvailable = true
     },
+
+    onDataStreamAvailable() {
+      this.webrtc.startDataStream()
+    },
+
     onWebRTCRemoteStream(stream) {
       Janus.attachMediaStream(this.$refs.video, stream)
 

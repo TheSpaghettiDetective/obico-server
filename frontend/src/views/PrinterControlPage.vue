@@ -132,7 +132,7 @@ export default {
     const storageValue = isLocalStorageSupported() ? localStorage.getItem(`mm-per-step-${this.printerId}`) : null
     this.jogDistance = storageValue ? storageValue : this.jogDistance
 
-    this.webrtc = WebRTCConnection()
+    this.webrtc = WebRTCConnection({data: true})
 
     this.printerComm = PrinterComm(
       this.printerId,

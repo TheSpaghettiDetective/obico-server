@@ -103,6 +103,7 @@ export default {
       this.webrtc.callbacks = {
         ...this.webrtc.callbacks,
         onStreamAvailable: this.onStreamAvailable,
+        onJanusStreamStarted: this.onJanusStreamStarted,
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
         onSlowLink: this.onSlowLink,
@@ -252,6 +253,13 @@ export default {
       }
     },
 
+    onJanusStreamStarted() {
+      this.isVideoVisible = true
+      if (!this.autoplay) {
+        this.videoLimit.startOrResumeVideoCycle()
+      }
+    },
+
     onWebRTCCleanup() {
       this.isVideoVisible = false
     },
@@ -260,7 +268,8 @@ export default {
 
     countDownCallback(remainingSecondsCurrentVideoCycle, remainingSecondsUntilNextCycle) {
       if (this.remainingSecondsCurrentVideoCycle > 0 && remainingSecondsCurrentVideoCycle <= 0) {
-        this.webrtc.stopStream()
+        this.webrtc.pauseStream()
+        this.isVideoVisible = false
       }
       this.remainingSecondsCurrentVideoCycle = remainingSecondsCurrentVideoCycle
       this.remainingSecondsUntilNextCycle = remainingSecondsUntilNextCycle

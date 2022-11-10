@@ -151,8 +151,10 @@ export default function WebRTCConnection() {
           var status = result['status']
           if (status === 'starting')
             console.log('Starting')
-          else if (status === 'started')
+          else if (status === 'started') {
             console.log('Started')
+            self.callbacks.onJanusStreamStarted()
+          }
           else if (status === 'stopped') {
             self.stopStream()
           }
@@ -188,8 +190,12 @@ export default function WebRTCConnection() {
       if (!self.channelOpen()) {
         return
       }
-      const body = { 'request': 'watch', offer_video: true, id: parseInt(self.streamId) }
-      self.streaming?.send({ 'message': body })
+      if (self.streaming?.webrtcStuff?.remoteStream)
+        self.streaming?.send({ 'message': { 'request': 'start'}})
+      else {
+        const body = { 'request': 'watch', offer_video: true, offer_audio: false, offer_data: self.needDatachannel, id: parseInt(self.streamId) }
+        self.streaming?.send({ 'message': body })
+      }
 
       self.clearBitrateInterval()
       self.bitrateInterval = setInterval(function() {
@@ -205,6 +211,16 @@ export default function WebRTCConnection() {
         }
       }, 5000)
     },
+
+    pauseStream() {
+      self.clearBitrateInterval()
+      if (!self.channelOpen()) {
+        return
+      }
+      const body = { 'request': 'pause' }
+      self.streaming?.send({ 'message': body })
+    },
+
     stopStream() {
       self.clearBitrateInterval()
       if (!self.channelOpen()) {

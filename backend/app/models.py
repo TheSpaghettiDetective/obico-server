@@ -307,22 +307,16 @@ class Printer(SafeDeleteModel):
     def resume_print(self, mute_alert=False, initiator=None):
         if self.current_print is None:  # when a link on an old email is clicked
             return False
+        self.current_print.alert_acknowledged(Print.NOT_FAILED)
 
-        self.current_print.paused_at = None
-        self.current_print.save()
-
-        self.acknowledge_alert(Print.NOT_FAILED)
         self.send_octoprint_command('resume', initiator=initiator)
-
         return True
 
     ## return: succeeded? ##
     def pause_print(self, initiator=None):
         if self.current_print is None:
             return False
-
-        self.current_print.paused_at = timezone.now()
-        self.current_print.save()
+        self.current_print.paused() # Hack: print.paused_at is used to prevent pausing multiple times in case of detected failure. Set it right away to prevent it.
 
         args = {'retract': self.retract_on_pause, 'lift_z': self.lift_z_on_pause}
 
@@ -339,22 +333,13 @@ class Printer(SafeDeleteModel):
     def cancel_print(self, initiator=None):
         if self.current_print is None:  # when a link on an old email is clicked
             return False
-
-        self.acknowledge_alert(Print.FAILED)
+        self.current_print.alert_acknowledged(Print.FAILED)
         self.send_octoprint_command('cancel', initiator=initiator)
 
         return True
 
     def set_alert(self):
         self.current_print.alerted_at = timezone.now()
-        self.current_print.save()
-
-    def acknowledge_alert(self, alert_overwrite):
-        if not self.current_print or not self.current_print.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
-            return
-
-        self.current_print.alert_acknowledged_at = timezone.now()
-        self.current_print.alert_overwrite = alert_overwrite
         self.current_print.save()
 
     def mute_current_print(self, muted):
@@ -498,6 +483,28 @@ class Print(SafeDeleteModel):
     video_archived_at = models.DateTimeField(null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def paused(self):
+        self.paused_at = timezone.now()
+        self.save()
+
+    def resumed(self):
+        self.paused_at = None
+        self.save()
+        self.alert_acknowledged(Print.NOT_FAILED)
+
+    def cancelled(self):
+        self.cancelled_at = None
+        self.save()
+        self.alert_acknowledged(Print.FAILED)
+
+    def alert_acknowledged(self, alert_overwrite):
+        if not self.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?
+            return
+
+        self.alert_acknowledged_at = timezone.now()
+        self.alert_overwrite = alert_overwrite
+        self.save()
 
     def ended_at(self):
         return self.cancelled_at or self.finished_at

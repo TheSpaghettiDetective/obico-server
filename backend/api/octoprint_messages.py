@@ -86,23 +86,19 @@ def update_current_print_if_needed(msg, printer):
     mobile_notifications.send_if_needed(printer.current_print, op_event, printer_status)
 
     if op_event.get('event_type') == 'PrintCancelled':
-        printer.current_print.cancelled_at = timezone.now()
-        printer.current_print.save()
+        printer.current_print.cancelled()
     elif op_event.get('event_type') == 'PrintFailed':
         # setting cancelled_at here, original commit:
         # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/commit/86d1a18d34a9d895e9d9284d5048e45afa1e56a1
-        printer.current_print.cancelled_at = timezone.now()
-        printer.current_print.save()
+        printer.current_print.cancelled()
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintDone':
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
-        printer.current_print.paused_at = timezone.now()
-        printer.current_print.save()
+        printer.current_print.paused()
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.PAUSED, task_handler=True)
     elif op_event.get('event_type') == 'PrintResumed':
-        printer.current_print.paused_at = None
-        printer.current_print.save()
+        printer.current_print.resumed()
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)

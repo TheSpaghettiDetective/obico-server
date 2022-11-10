@@ -46,7 +46,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 LOGGER = logging.getLogger(__name__)
 
 IMG_URL_TTL_SECONDS = 60 * 30
-ALERT_COOLDOWN_SECONDS = 120
+ALERT_COOLDOWN_SECONDS = 300
 
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
@@ -149,6 +149,7 @@ class OctoPrintPicView(APIView):
         save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, long_term_storage=False)
 
         if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
+            # The prediction is high enough to match the "escalated" level and hence print needs to be paused
             pause_if_needed(printer, external_url)
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer, external_url)
@@ -181,39 +182,37 @@ class OctoPrinterView(APIView):
 
 # Helper methods
 
-def alert_suppressed(printer):
-    if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
+def is_alert_cooldown_period(current_print):
+    if not current_print:
         return True
 
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
+    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    last_activity = max(last_acknowledged, last_alerted)
+    return (timezone.now() - last_activity).total_seconds() < ALERT_COOLDOWN_SECONDS
 
 
 def alert_if_needed(printer, img_url):
-    if alert_suppressed(printer):
+    if not printer.should_watch() or is_alert_cooldown_period(printer.current_print):
         return
-
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-    if last_alerted > last_acknowledged:
-        return
-
     printer.set_alert()
     send_failure_alert(printer, img_url, is_warning=True, print_paused=False)
 
 
 def pause_if_needed(printer, img_url):
-    if alert_suppressed(printer):
+    if not printer.should_watch():
         return
 
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
+        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+        if (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS: # If user has acknowledged a previous alert, and it's in cooldown period, don't pause otherwise it can be annoying
+            return
         printer.pause_print(initiator='system')
         printer.set_alert()
         send_failure_alert(printer, img_url, is_warning=False, print_paused=True)
-    elif not last_alerted > last_acknowledged:
+    else:
+        if is_alert_cooldown_period(printer.current_print):
+            return
         printer.set_alert()
         send_failure_alert(printer, img_url, is_warning=False, print_paused=False)
 

@@ -133,16 +133,12 @@ class PrinterViewSet(
     @action(detail=True, methods=['post', 'get'])
     def acknowledge_alert(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
-        printer.acknowledge_alert(request.GET.get('alert_overwrite'))
+        if not printer.current_print:
+            raise Http404('Not currently printing')
 
+        printer.current_print.alert_acknowledged(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer, True)
 
-    @action(detail=True, methods=['post'])
-    def send_command(self, request, pk=None):
-        printer = get_printer_or_404(pk, request)
-        printer.send_octoprint_command(request.data['cmd'], request.data['args'])
-
-        return self.send_command_response(printer, True)
 
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)

@@ -47,7 +47,8 @@
               <h3>Yup! Even Free account gets 10 AI Detection Hours for FREE each month.</h3>
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
+                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
+                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
               </ul>
               <p>
                 Learn more about
@@ -61,7 +62,8 @@
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
                 <li>AI Detection Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
+                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
+                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
               </ul>
               <p>
                 Learn more about
@@ -91,7 +93,7 @@
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
               <p>Securely tunnel to your OctoPrint from anywhere.</p>
-              <p>Free plan is subject to 500MB/month data cap. Data usage is reset on the 1st day of each month.</p>
+              <p>Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of each month.</p>
               <p>
                 Learn more about
                 <div>

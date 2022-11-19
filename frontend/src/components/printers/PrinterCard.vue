@@ -519,17 +519,6 @@ export default {
       )
     },
     onPrinterActionStartClicked() {
-      if (!this.isProAccount) {
-        this.$swal.Reject.fire({
-          html: `
-              <h5 class="mb-3">You need to <a href="/ent_pub/pricing/">upgrade to Pro plan</a> to start a remote print job. </h5>
-              <p>Remote G-Code upload and print start is a Pro feature.</p>
-              <p>With <a href="/ent_pub/pricing/">little more than 1 Starbucks per month</a>, you can upgrade to a Pro account.</p>
-            `
-        })
-        return
-      }
-
       axios
         .get(
           urls.gcodes(1, 1000),

@@ -2,7 +2,7 @@
 title: G-Code file API
 ---
 
-## GET `/api/v1/gcodes/` {#get-apiv1gcodes}
+## GET `/api/v1/g_codes/` {#get-apiv1gcodes}
 
 ### Request {#request}
 
@@ -19,7 +19,7 @@ title: G-Code file API
 - Body: A `List` of [`GCodeFile`](/docs/api/api-objects/#gcodefile) objects.
 
 
-## GET `/api/v1/gcodes/{:id}/` {#get-apiv1gcodesid}
+## GET `/api/v1/g_codes/{:id}/` {#get-apiv1gcodesid}
 
 ### Request {#request-1}
 
@@ -41,7 +41,7 @@ When the G-Code file specified by the `{:id}` doesn't exist, or the access is no
 - Code: `404`
 
 
-## DELETE `/api/v1/gcodes/{:id}/` {#delete-apiv1gcodesid}
+## DELETE `/api/v1/g_codes/{:id}/` {#delete-apiv1gcodesid}
 
 Delete the [`GCodeFile`](/docs/api/api-objects/#gcodefile) object specified by `{:id}`
 

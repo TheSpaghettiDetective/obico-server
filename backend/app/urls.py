@@ -49,10 +49,4 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
-    path('mobile/user_preferences/', web_views.user_preferences),
-    path('mobile/prints/', web_views.prints),
-    path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
-    path('mobile/gcodes/upload/', web_views.upload_gcode_file),
-    path('mobile/printers/<pk>/', web_views.edit_printer),
-    path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

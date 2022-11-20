@@ -203,8 +203,8 @@ def print_shot_feedback(request, pk):
 ### GCode File page ###
 
 @login_required
-def gcodes(request, template_dir=None):
-    return render(request, get_template_path('gcode_files', template_dir))
+def g_codes(request, template_dir=None):
+    return render(request, get_template_path('g_code_files', template_dir))
 
 
 @login_required

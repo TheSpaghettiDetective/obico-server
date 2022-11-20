@@ -494,7 +494,7 @@ class Print(SafeDeleteModel):
         self.alert_acknowledged(Print.NOT_FAILED)
 
     def cancelled(self):
-        self.cancelled_at = None
+        self.cancelled_at = timezone.now()
         self.save()
         self.alert_acknowledged(Print.FAILED)
 

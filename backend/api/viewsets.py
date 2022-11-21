@@ -568,7 +568,6 @@ class NotificationSettingsViewSet(
 
 class PrinterEventViewSet(
     mixins.ListModelMixin,
-    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):

@@ -19,8 +19,8 @@
             >
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br>
-                Drop files here or click to upload.<br>
-                G-Code files only. Up to {{maxFilesize}} MB each.
+                <div>G-Code file (*.gcode, *.gco, or *.g) only.</div>
+                <div>Up to {{maxFilesize}} MB each file, {{maxTotalFilesize}} GB total.</div>
               </div>
             </vue-dropzone>
 
@@ -150,7 +150,11 @@ export default {
 
   computed: {
     maxFilesize() {
-      return this.user.is_pro ? 500 : 100 // MB
+      return this.user.is_pro ? 500 : 50 // MB
+    },
+
+    maxTotalFilesize() {
+      return this.user.is_pro ? 50 : 1 // GB
     },
 
     dropzoneOptions() {

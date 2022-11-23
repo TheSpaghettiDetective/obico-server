@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.db.models import Q
 import time
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -8,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework import viewsets, mixins
 from rest_framework import status
 from django.conf import settings
 from django.core import serializers
@@ -33,12 +35,12 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer
+from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -296,15 +298,22 @@ class OneTimeVerificationCodeVerifyView(APIView):
         else:
             raise Http404("Requested resource does not exist")
 
-class PrinterEventView(CreateAPIView):
+
+class PrinterEventView(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return PrinterEvent.objects.filter(printer=self.request.auth)
 
     def post(self, request):
         printer = request.auth
 
         # Dedup repeated errors
-        last_event = PrinterEvent.objects.filter(printer=printer).order_by('id').last()
+        last_event = self.get_queryset().order_by('id').last()
         if last_event and last_event.event_title == request.data.get('event_title'):
             return Response({'result': 'ok', 'details': 'Duplicate'})
 
@@ -333,3 +342,47 @@ class PrinterEventView(CreateAPIView):
             task_handler=False,
         )
         return Response({'result': 'ok'})
+
+class GCodeFileView(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
+    authentication_classes = (PrinterAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = GCodeFileSerializer
+
+    def get_queryset(self):
+        return GCodeFile.objects.filter(user=self.request.user)
+
+    # Post to this endpoint is considered an upsert, identified by resident_printer + agent_signature + safe_filename
+    # Agent is required to upsert a GCodeFile before or during a print so that the Print can be linked to a GCodeFile
+    def post(self, request):
+        printer = request.auth
+
+        serializer = self.get_serializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        input_data = dict(serializer.data)
+
+        # Overwrite the foreign keys as they are not supposed to be set by the agent.
+        input_data['resident_printer_id'] = printer.id
+        input_data['user_id'] = request.user.id
+
+        (g_code_file, created) = self.get_queryset().filter(
+            Q(resident_printer=printer) | Q(resident_printer__isnull=True), # Matching g-code can either reside in the requesting agent, or in the cloud.
+            ).get_or_create(
+                agent_signature=input_data['agent_signature'],
+                safe_filename=input_data['safe_filename'],
+                defaults=input_data,
+            )
+        return Response(
+            self.get_serializer(g_code_file).data,
+            status=(status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            )
+
+    def partial_update(self, request, pk=None):
+        instance = self.get_queryset().filter(pk=pk).first()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

@@ -36,6 +36,9 @@ router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
 router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
 
+router.register(r'octo/g_codes', octoprint_views.GCodeFileView, 'AgentGCodeFile')
+router.register(r'octo/printer_events', octoprint_views.PrinterEventView, 'AgentPrinterEvent')
+
 urlpatterns = [
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
@@ -48,5 +51,4 @@ urlpatterns = [
     path('v1/octo/verify/',
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),
-    path('v1/octo/printer_events/', octoprint_views.PrinterEventView.as_view()),
 ]

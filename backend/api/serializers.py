@@ -106,7 +106,7 @@ class GCodeFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', )
+        read_only_fields = ('user', 'resident_printer')
 
     def save(self):
         user = self.context['request'].user

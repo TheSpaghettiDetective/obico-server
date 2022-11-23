@@ -467,7 +467,7 @@ class Print(SafeDeleteModel):
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
-    g_code_file = models.ForeignKey('GCodeFile', on_delete=models.CASCADE, null=True)
+    g_code_file = models.ForeignKey('GCodeFile', on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
@@ -664,14 +664,19 @@ class SharedResource(models.Model):
 
 
 class GCodeFile(SafeDeleteModel):
+    class Meta:
+        indexes = [
+            models.Index(fields=['agent_signature'])
+        ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     filename = models.CharField(max_length=1000, null=False, blank=False)
-    safe_filename = models.CharField(max_length=1000, null=False, blank=False)
+    safe_filename = models.CharField(max_length=1000, null=False, blank=False, db_index=True)
     url = models.CharField(max_length=2000, null=True, blank=False)
-    num_bytes = models.BigIntegerField(null=True, blank=True)
-    resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True, db_index=True)  # null for gcode files on the server
+    num_bytes = models.BigIntegerField(null=True, blank=True, db_index=True)
+    resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)  # null for gcode files on the server
     # A value the agent can independently derive to match with the server. Format: scheme:value
-    agent_signature = models.CharField(max_length=256, null=True, blank=False, db_index=True)
+    agent_signature = models.CharField(max_length=256, null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -260,8 +260,9 @@ class PrintViewSet(
 
 
 class GCodeFileViewSet(
-    # no create, no update
+    # no create
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet
@@ -272,25 +273,11 @@ class GCodeFileViewSet(
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')
-
-    # TODO: remove this override and go back to DRF's standard pagination impl when we no longer need to support the legacy format.
-    def list(self, request, *args, **kwargs):
-        page_num = request.GET.get('page')
-        if page_num:
-            queryset = self.filter_queryset(self.get_queryset())
-
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        else:
-            results = self.get_queryset()
-            return Response(self.serializer_class(results, many=True).data)
-
+        qs = GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(safe_filename__icontains=q)
+        return qs
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin,

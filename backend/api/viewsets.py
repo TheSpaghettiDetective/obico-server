@@ -25,11 +25,11 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache
@@ -259,6 +259,22 @@ class PrintViewSet(
         )
 
 
+class GCodeFolderViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    serializer_class = GCodeFolderSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        qs = GCodeFolder.objects.filter(user=self.request.user,)
+        parent_folder = self.request.GET.get('parent_folder')
+        if parent_folder:
+            qs = qs.filter(parent_folder_id=int(parent_folder))
+        else:
+            qs = qs.filter(parent_folder__isnull=True)
+        return qs
+
+
 class GCodeFileViewSet(
     # no create
     mixins.RetrieveModelMixin,
@@ -277,9 +293,17 @@ class GCodeFileViewSet(
             user=self.request.user,
             resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
             ).order_by('-created_at')
+
         q = self.request.GET.get('q')
         if q:
             qs = qs.filter(safe_filename__icontains=q)
+
+        parent_folder = self.request.GET.get('parent_folder')
+        if parent_folder:
+            qs = qs.filter(parent_folder_id=int(parent_folder))
+        else:
+            qs = qs.filter(parent_folder__isnull=True)
+
         return qs
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,

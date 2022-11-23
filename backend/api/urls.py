@@ -9,7 +9,8 @@ router = DefaultRouter()
 router.register(r'users', viewsets.UserViewSet, 'User')
 router.register(r'printers', viewsets.PrinterViewSet, 'Printer')
 router.register(r'prints', viewsets.PrintViewSet, 'Print')
-router.register(r'g_codes', viewsets.GCodeFileViewSet, 'GCodeFile')
+router.register(r'g_code_files', viewsets.GCodeFileViewSet, 'GCodeFile')
+router.register(r'g_code_folders', viewsets.GCodeFolderViewSet, 'GCodeFolder')
 router.register(r'gcodes', viewsets.GCodeFileViewSet, 'GCodeFile') # Compatible with mobile app versions <= 1.73
 router.register(
     r'printshotfeedbacks',
@@ -36,7 +37,7 @@ router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
 router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
 
-router.register(r'octo/g_codes', octoprint_views.GCodeFileView, 'AgentGCodeFile')
+router.register(r'octo/g_code_files', octoprint_views.GCodeFileView, 'AgentGCodeFile')
 router.register(r'octo/printer_events', octoprint_views.PrinterEventView, 'AgentPrinterEvent')
 
 urlpatterns = [

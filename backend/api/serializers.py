@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.conf import settings
+import re
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -9,7 +10,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent,
+    NotificationSetting, PrinterEvent, GCodeFolder
 )
 
 from notifications.handlers import handler
@@ -107,6 +108,32 @@ class GCodeFileSerializer(serializers.ModelSerializer):
         model = GCodeFile
         fields = '__all__'
         read_only_fields = ('user', 'resident_printer')
+
+
+class GCodeFolderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GCodeFolder
+        fields = '__all__'
+        read_only_fields = ('user', 'safe_name')
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        user = self.context['request'].user
+        name = attrs['name']
+        safe_name = re.sub(r'[^\w\.]', '_', name)
+        parent_folder = attrs.get('parent_folder')
+        if parent_folder:
+            count_identical_name = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).count()
+        else:
+            count_identical_name = GCodeFolder.objects.filter(user=user, parent_folder__isnull=True, safe_name=safe_name).count()
+
+        if count_identical_name > 0:
+            raise serializers.ValidationError({'name': f'{name} already existed.'})
+
+        attrs['safe_name'] = safe_name
+        return attrs
 
     def save(self):
         user = self.context['request'].user

@@ -362,18 +362,18 @@ class GCodeFileView(
 
         serializer = self.get_serializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        input_data = dict(serializer.data)
+        validated_data = serializer.validated_data
 
         # Overwrite the foreign keys as they are not supposed to be set by the agent.
-        input_data['resident_printer_id'] = printer.id
-        input_data['user_id'] = request.user.id
+        validated_data['resident_printer_id'] = printer.id
+        validated_data['user_id'] = request.user.id
 
         (g_code_file, created) = self.get_queryset().filter(
             Q(resident_printer=printer) | Q(resident_printer__isnull=True), # Matching g-code can either reside in the requesting agent, or in the cloud.
             ).get_or_create(
-                agent_signature=input_data['agent_signature'],
-                safe_filename=input_data['safe_filename'],
-                defaults=input_data,
+                agent_signature=validated_data['agent_signature'],
+                safe_filename=validated_data['safe_filename'],
+                defaults=validated_data,
             )
         return Response(
             self.get_serializer(g_code_file).data,

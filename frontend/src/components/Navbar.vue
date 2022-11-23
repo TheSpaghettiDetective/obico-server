@@ -24,7 +24,7 @@
           <b-navbar-nav>
             <b-nav-item v-if="user" href="/printers/" :class="{'active': viewName.includes('printers')}">Printer</b-nav-item>
             <b-nav-item v-if="user" href="/prints/" :class="{'active': viewName.includes('prints')}">Time-lapse</b-nav-item>
-            <b-nav-item v-if="user" href="/g_codes/" :class="{'active': viewName.includes('gcodes')}">G-Code</b-nav-item>
+            <b-nav-item v-if="user" href="/g_code_files/" :class="{'active': viewName.includes('gcodes')}">G-Code</b-nav-item>
             <b-nav-item v-if="isEnt && !user" href="/ent_pub/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
             <b-nav-item v-if="isEnt" href="/ent_pub/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
             <b-nav-item href="https://www.obico.io/help/">Help</b-nav-item>

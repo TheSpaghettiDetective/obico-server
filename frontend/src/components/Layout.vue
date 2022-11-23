@@ -29,8 +29,8 @@
             Time-Lapses
           </a>
         </li>
-        <li v-if="user" :class="{'active': path === '/g_codes/'}">
-          <a href="/g_codes/">
+        <li v-if="user" :class="{'active': path === '/g_code_files/'}">
+          <a href="/g_code_files/">
             <i class="fas fa-file-code"></i>
             G-Codes
           </a>

@@ -20,7 +20,9 @@ from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
 from django.contrib.auth.hashers import make_password
-from django.db.models import F
+from django.db.models import F, Q
+from django.db.models.constraints import UniqueConstraint
+
 
 
 from config.celery import celery_app
@@ -663,31 +665,44 @@ class SharedResource(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class GCodeFile(SafeDeleteModel):
+class GCodeFolder(models.Model):
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['user', 'parent_folder', 'safe_name'],
+                             name='unique_with_parent_folder'),
+            UniqueConstraint(fields=['user', 'safe_name'],
+                             condition=Q(parent_folder=None),
+                             name='unique_without_parent_folder'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    parent_folder = models.ForeignKey('GCodeFolder', on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=1000, null=False, blank=False)
+    safe_name = models.CharField(max_length=1000, null=False, blank=False, db_index=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class GCodeFile(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['agent_signature'])
         ]
-        # resident_printer is null means it's on the server, hence url shouldn't be null
-        constraints = [
-            models.CheckConstraint(
-                name="%(app_label)s_%(class)s_url_notnull_when_resident_printer_isnull",
-                check=(
-                    models.Q(
-                        resident_printer__isnull=False,
-                        url__isnull=True,
-                    )
-                    | models.Q(
-                        resident_printer__isnull=True,
-                        url__isnull=False,
-                    )
-                ),
-            )
-        ]
+        # TODO: we will need to come back to turn on the unique constraints once we combine the same file names to versions
+        # constraints = [
+        #     UniqueConstraint(fields=['user', 'parent_folder', 'safe_filename'],
+        #                      name='unique_with_parent_folder'),
+        #     UniqueConstraint(fields=['user', 'safe_filename'],
+        #                      condition=Q(parent_folder=None),
+        #                      name='unique_without_parent_folder'),
+        # ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     filename = models.CharField(max_length=1000, null=False, blank=False)
     safe_filename = models.CharField(max_length=1000, null=False, blank=False, db_index=True)
+    parent_folder = models.ForeignKey(GCodeFolder, on_delete=models.CASCADE, null=True)
     url = models.CharField(max_length=2000, null=True, blank=False)
     num_bytes = models.BigIntegerField(null=True, blank=True, db_index=True)
     resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)  # null for gcode files on the server

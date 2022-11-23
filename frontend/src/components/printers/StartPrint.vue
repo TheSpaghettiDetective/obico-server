@@ -2,7 +2,7 @@
   <div>
     <div class="control-panel">
       <search-input v-model="searchText" class="search-input"></search-input>
-      <a role="button" class="btn btn-outline-primary" href="/g_codes/" title="Upload more G-Code">
+      <a role="button" class="btn btn-outline-primary" href="/g_code_files/" title="Upload more G-Code">
         <i class="fas fa-upload fa-lg mx-2"></i>
       </a>
     </div>
@@ -36,7 +36,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-center font-weight-bold my-3">No G-Codes yet. You can upload them <a href="/g_codes/">here</a>.</p>
+      <p class="text-center font-weight-bold my-3">No G-Codes yet. You can upload them <a href="/g_code_files/">here</a>.</p>
     </div>
   </div>
 </template>

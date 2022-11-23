@@ -668,6 +668,22 @@ class GCodeFile(SafeDeleteModel):
         indexes = [
             models.Index(fields=['agent_signature'])
         ]
+        # resident_printer is null means it's on the server, hence url shouldn't be null
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_url_notnull_when_resident_printer_isnull",
+                check=(
+                    models.Q(
+                        resident_printer__isnull=False,
+                        url__isnull=True,
+                    )
+                    | models.Q(
+                        resident_printer__isnull=True,
+                        url__isnull=False,
+                    )
+                ),
+            )
+        ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     filename = models.CharField(max_length=1000, null=False, blank=False)

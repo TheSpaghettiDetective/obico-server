@@ -9,9 +9,8 @@ export default function WebRTCConnection() {
   let self = {
     callbacks: {},
     initialized: false,
-    streamId: undefined,
-    streaming: undefined,
-    bitrateInterval: null,
+    defaultWebRTCConn: DefaultWebRTCConnection(),
+    mjpegWebRTCConn: DefaultWebRTCConnection(),
 
     openForShareToken(shareToken) {
       self.connect(
@@ -26,12 +25,46 @@ export default function WebRTCConnection() {
         authToken
       )
     },
+    connect(wsUri, token) {
+      self.initialized = true
+      self.defaultWebRTCConn.connect(wsUri, token)
+      self.mjpegWebRTCConn.connect(wsUri, token)
+    },
+    stopStream() {
+      self.defaultWebRTCConn.stopStream()
+      self.mjpegWebRTCConn.stopStream()
+    },
+    sendData(data) {
+      self.defaultWebRTCConn.sendData(data)
+    },
+    startStream() {
+      self.defaultWebRTCConn.stopStream()
+      self.mjpegWebRTCConn.stopStream()
+    },
+    setCallbacks(callbacks) {
+      self.callbacks = {...self.callbacks, ...callbacks}
+      self.defaultWebRTCConn.setCallbacks(self.callbacks)
+      self.mjpegWebRTCConn.setCallbacks(self.callbacks)
+    }
+  }
+  return self
+}
+
+function DefaultWebRTCConnection() {
+  let self = {
+    callbacks: {},
+    streamId: undefined,
+    streaming: undefined,
+    bitrateInterval: null,
+
+    setCallbacks(callbacks) {
+      self.callbacks = callbacks
+    },
 
     connect(wsUri, token) {
       Janus.init({
         debug: 'all',
         callback: () => {
-          self.initialized = true
           if (!Janus.isWebrtcSupported()) {
             return
           }

@@ -100,8 +100,7 @@ export default {
   name: 'StreamingBox',
   created() {
     if (this.webrtc) {
-      this.webrtc.callbacks = {
-        ...this.webrtc.callbacks,
+      this.webrtc.setCallbacks({
         onStreamAvailable: this.onStreamAvailable,
         onRemoteStream: this.onWebRTCRemoteStream,
         onCleanup: this.onWebRTCCleanup,
@@ -109,7 +108,7 @@ export default {
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
-      }
+      })
 
       if (!this.autoplay) {
         this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)

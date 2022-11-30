@@ -88,42 +88,44 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       }
     }
 
-    self.webrtc.callbacks.onData = (maybeBin) => {
-      self.onDataReceived(maybeBin)
-      return
-      if (!maybeBin) {
+    self.webrtc.setCallbacks({
+      onData: (maybeBin) => {
+        self.onDataReceived(maybeBin)
         return
-      }
-
-      if (maybeBin instanceof ArrayBuffer) {
-        try {
-          const jsonData = pako.ungzip(new Uint8Array(maybeBin), {'to': 'string'})
-          parseJsonData(jsonData)
-        } catch {
-          console.error('could not decompress datachannel arraybuffer')
+        if (!maybeBin) {
+          return
         }
 
-      } else if (maybeBin instanceof Blob) {
-        const reader = new FileReader()
-        reader.addEventListener('loadend', (e) => {
-          if (!e.srcElement) {
-            return
-          }
-
-          const arrayBuffer = e.srcElement.result
-
+        if (maybeBin instanceof ArrayBuffer) {
           try {
-            const jsonData = pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'})
+            const jsonData = pako.ungzip(new Uint8Array(maybeBin), {'to': 'string'})
             parseJsonData(jsonData)
           } catch {
-            console.error('could not decompress datachannel blob')
+            console.error('could not decompress datachannel arraybuffer')
           }
-        })
-        reader.readAsArrayBuffer(maybeBin)
-      } else {
-        parseJsonData(maybeBin)
-      }
-    }
+
+        } else if (maybeBin instanceof Blob) {
+          const reader = new FileReader()
+          reader.addEventListener('loadend', (e) => {
+            if (!e.srcElement) {
+              return
+            }
+
+            const arrayBuffer = e.srcElement.result
+
+            try {
+              const jsonData = pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'})
+              parseJsonData(jsonData)
+            } catch {
+              console.error('could not decompress datachannel blob')
+            }
+          })
+          reader.readAsArrayBuffer(maybeBin)
+        } else {
+          parseJsonData(maybeBin)
+        }
+      },
+    })
   }
 
   self.passThruToPrinter = function(msg, callback) {

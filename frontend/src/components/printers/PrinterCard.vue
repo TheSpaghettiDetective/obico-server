@@ -275,7 +275,7 @@ function Decoder(onFrame) {
     this.bytesRead = 0;
 }
 
-Decoder.prototype.onMessage = function (value) {
+Decoder.prototype.onMjpegChunk = function (value) {
 
     if (this.contentLength) {
         this.imageBuffer += value;
@@ -346,7 +346,7 @@ export default {
         this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
       },
       (data) => {
-        this.mjpegStreamDecoder.onMessage(data);
+        this.mjpegStreamDecoder.onMjpegChunk(data);
       }
     )
     this.printerComm.connect()

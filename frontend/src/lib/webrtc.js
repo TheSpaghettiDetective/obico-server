@@ -1,4 +1,5 @@
 import get from 'lodash/get'
+import find from 'lodash/find'
 
 import Janus from '@src/lib/janus'
 
@@ -35,7 +36,7 @@ export default function WebRTCConnection() {
       self.mjpegWebRTCConn.stopStream()
     },
     sendData(data) {
-      self.defaultWebRTCConn.sendData(data)
+      self.defaultWebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
     },
     startStream() {
       self.defaultWebRTCConn.startStream()
@@ -284,7 +285,11 @@ function DefaultWebRTCConnection() {
                       if (stream) {
                         self.streamId = stream.id
                         self.streaming = pluginHandle
-                        if (get(stream, 'video')) {
+
+                        const videoStreamExisting = get(stream, 'video') // Janus 0.x format
+                            || find(get(stream, 'media', []), {type: 'video'})  // Janus 1.x format
+
+                        if (videoStreamExisting) {
                           self.callbacks.onStreamAvailable()
                         }
                       }

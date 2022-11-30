@@ -103,7 +103,7 @@ export default {
       this.webrtc.setCallbacks({
         onStreamAvailable: this.onStreamAvailable,
         onRemoteStream: this.onWebRTCRemoteStream,
-        onCleanup: this.onWebRTCCleanup,
+        onDefaultStreamCleanup: () => this.isVideoVisible = false,
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
@@ -249,10 +249,6 @@ export default {
       } else {
         this.isVideoVisible = true
       }
-    },
-
-    onWebRTCCleanup() {
-      this.isVideoVisible = false
     },
 
     /** Free user streaming **/

@@ -38,8 +38,8 @@ export default function WebRTCConnection() {
       self.defaultWebRTCConn.sendData(data)
     },
     startStream() {
-      self.defaultWebRTCConn.stopStream()
-      self.mjpegWebRTCConn.stopStream()
+      self.defaultWebRTCConn.startStream()
+      self.mjpegWebRTCConn.startStream()
     },
     setCallbacks(callbacks) {
       self.callbacks = {...self.callbacks, ...callbacks}

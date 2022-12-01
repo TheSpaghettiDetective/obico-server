@@ -71,6 +71,9 @@
             <use :href="printerStockImgSrc" />
           </svg>
         </div>
+        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner full" >
+          <img class="tagged-jpg" :src="mjpgSrc" />
+        </div>
         <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop full">
           <video
             ref="video"
@@ -91,14 +94,63 @@
 
 <script>
 import get from 'lodash/get'
+import isEqual from 'lodash/isEqual'
 import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
+import {toArrayBuffer} from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing_throttle'
+
+function MJpegStreamDecoder(onFrame) {
+
+  const self = {
+    onFrame,
+    contentLength: NaN,
+    imageBuffer: '',
+    bytesRead: 0,
+    originalJpgLength: 0,
+  }
+
+  self.onMJpegChunk = function (maybeBin) {
+    toArrayBuffer(maybeBin, (arrayBuffer) => {
+      const value = (new TextDecoder("utf-8")).decode(new Uint8Array(arrayBuffer))
+      if (self.contentLength) {
+          self.imageBuffer += value;
+          self.bytesRead += value.length;
+
+          if (self.bytesRead >= self.contentLength) {
+              const jpg = self.imageBuffer;
+              const jpgLength = self.originalJpgLength;
+              self.contentLength = NaN;
+              self.imageBuffer = '';
+              self.bytesRead = 0;
+              self.originalJpgLength = 0;
+              self.onFrame(jpg, jpgLength);
+          }
+      } else {
+        if ( value.slice(0, 2) == '\r\n' && value.slice(value.length-2) == '\r\n' ) {
+        // if (isEqual(value.slice(0, 2), crlf) && isEqual(value.slice(value.byteLength-2), crlf) ) {
+        // const lengthHeaders = (new TextDecoder("utf-8")).decode( value.slice(2, value.byteLength - 2) ).split(':');
+          const lengthHeaders = value.slice(2, value.length - 2).split(':');
+          self.contentLength = parseInt(lengthHeaders[0]);
+          self.originalJpgLength = parseInt(lengthHeaders[1]);
+        }
+      }
+    })
+  }
+
+  return self
+}
 
 export default {
   name: 'StreamingBox',
   created() {
+
+    this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
+      this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
+      this.onCanPlay()
+      })
+
     if (this.webrtc) {
       this.webrtc.setCallbacks({
         onStreamAvailable: this.onStreamAvailable,
@@ -108,6 +160,7 @@ export default {
         onTrackMuted: () => this.trackMuted = true,
         onTrackUnmuted: () => this.trackMuted = false,
         onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
+        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
       })
 
       if (!this.autoplay) {
@@ -126,7 +179,6 @@ export default {
         }
       })
     }
-
   },
 
   props: {
@@ -157,7 +209,8 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      printerStockImgSrc: '#svg-3d-printer'
+      printerStockImgSrc: '#svg-3d-printer',
+      mjpgSrc: null,
     }
   },
 
@@ -167,6 +220,9 @@ export default {
     },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
+    },
+    showMJpeg() {
+      return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {

@@ -36,12 +36,6 @@
         </b-dropdown>
       </div>
       <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
-
-
-          <img
-            class="tagged-jpg"
-            :src="jpgSrc"
-          />
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -235,6 +229,7 @@ import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
 import moment from 'moment'
 import filter from 'lodash/filter'
+import isEqual from 'lodash/isEqual'
 import axios from 'axios'
 
 import urls from '@config/server-urls'
@@ -268,36 +263,6 @@ const LocalPrefNames = {
   StatusTemp: 'status_temp_block',
 }
 
-function Decoder(onFrame) {
-    this.onFrame = onFrame;
-    this.contentLength = NaN;
-    this.imageBuffer = '';
-    this.bytesRead = 0;
-}
-
-Decoder.prototype.onMjpegChunk = function (value) {
-
-    if (this.contentLength) {
-        this.imageBuffer += value;
-        this.bytesRead += value.length;
-
-        if (this.bytesRead >= this.contentLength) {
-            var jpg = this.imageBuffer;
-            var jpgLength = this.originalJpgLength;
-            this.contentLength = NaN;
-            this.imageBuffer = '';
-            this.bytesRead = 0;
-            this.onFrame(jpg, jpgLength);
-        }
-    } else {
-        if (value.slice(0, 2) === '\r\n' && value.slice(value.length - 2) === '\r\n') {
-            var lengthHeaders = value.slice(2, value.length - 2).split(':');
-            this.contentLength = parseInt(lengthHeaders[0]);
-            this.originalJpgLength = parseInt(lengthHeaders[1]);
-        }
-    }
-}
-
 export default {
   name: 'PrinterCard',
   components: {
@@ -326,14 +291,9 @@ export default {
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
       webrtc: WebRTCConnection(),
-      jpgSrc: null,
     }
   },
   created() {
-    this.mjpegStreamDecoder = new Decoder((jpg, l) => {
-      this.jpgSrc = 'data:image/jpg;base64, ' + jpg
-      })
-
     this.printerComm = PrinterComm(
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
@@ -345,9 +305,6 @@ export default {
         const status = printerStatus.status || printerStatus.octoprint_data
         this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
       },
-      (data) => {
-        this.mjpegStreamDecoder.onMjpegChunk(data);
-      }
     )
     this.printerComm.connect()
 

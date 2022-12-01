@@ -114,7 +114,7 @@ function MJpegtWebRTCConnection() {
                     if (stream) {
                       self.streamId = stream.id
                       self.streaming = pluginHandle
-                      if (get(stream, 'video')) {
+                      if (get(stream, 'media[0].type') === 'data') {
                         self.callbacks.onStreamAvailable()
                       }
                     } else {
@@ -140,8 +140,8 @@ function MJpegtWebRTCConnection() {
               ondataopen: function() {
               },
               ondata: function(rawData) {
-                if ('onData' in self.callbacks) {
-                  self.callbacks.onData(rawData)
+                if ('onMJpegData' in self.callbacks) {
+                  self.callbacks.onMJpegData(rawData)
                 }
               },
               oncleanup: function() {

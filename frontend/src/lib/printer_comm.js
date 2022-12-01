@@ -3,15 +3,15 @@ import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
+import {toArrayBuffer} from '@src/lib/utils'
 
-export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null, onDataReceived=null) {
+export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
   var self = {}
 
   self.printerId = printerId
   self.wsUri = wsUri
   self.onPrinterUpdateReceived = onPrinterUpdateReceived
   self.onStatusReceived = onStatusReceived
-  self.onDataReceived = onDataReceived
 
   self.ws = null
   self.webrtc = null
@@ -90,39 +90,12 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
     self.webrtc.setCallbacks({
       onData: (maybeBin) => {
-        self.onDataReceived(maybeBin)
-        return
-        if (!maybeBin) {
-          return
-        }
-
-        if (maybeBin instanceof ArrayBuffer) {
-          try {
-            const jsonData = pako.ungzip(new Uint8Array(maybeBin), {'to': 'string'})
-            parseJsonData(jsonData)
-          } catch {
-            console.error('could not decompress datachannel arraybuffer')
-          }
-
-        } else if (maybeBin instanceof Blob) {
-          const reader = new FileReader()
-          reader.addEventListener('loadend', (e) => {
-            if (!e.srcElement) {
-              return
-            }
-
-            const arrayBuffer = e.srcElement.result
-
-            try {
-              const jsonData = pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'})
-              parseJsonData(jsonData)
-            } catch {
-              console.error('could not decompress datachannel blob')
-            }
-          })
-          reader.readAsArrayBuffer(maybeBin)
-        } else {
+        if (typeof maybeBin === 'string' || maybeBin instanceof String) {
           parseJsonData(maybeBin)
+        } else {
+          toArrayBuffer(maybeBin, (arrayBuffer) => {
+            parseJsonData(pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'}))
+          })
         }
       },
     })

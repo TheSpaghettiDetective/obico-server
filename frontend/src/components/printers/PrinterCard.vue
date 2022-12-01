@@ -229,7 +229,6 @@ import get from 'lodash/get'
 import capitalize from 'lodash/capitalize'
 import moment from 'moment'
 import filter from 'lodash/filter'
-import isEqual from 'lodash/isEqual'
 import axios from 'axios'
 
 import urls from '@config/server-urls'
@@ -304,7 +303,7 @@ export default {
         // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
         const status = printerStatus.status || printerStatus.octoprint_data
         this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
-      },
+      }
     )
     this.printerComm.connect()
 

@@ -2,7 +2,6 @@ import startCase from 'lodash/startCase'
 import toLower from 'lodash/toLower'
 import replace from 'lodash/replace'
 import get from 'lodash/get'
-import pako from 'pako'
 
 export function getNotificationSettingKey(notificationChannel, key) {
   return `${notificationChannel.channelName}_${key}`

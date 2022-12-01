@@ -268,10 +268,11 @@
       color: var(--color-primary);
       border-color: var(--color-primary);
       padding: 5em 3em;
+      border-radius: var(--border-radius-lg);
 
       &:hover {
-        color: var(--color-primary-hover);
         text-decoration: none;
+        background-color: var(--color-hover);
       }
     }
   }
@@ -462,6 +463,7 @@ form#printer_form {
   &.dropzone {
     border: thin dashed;
     border-color: var(--color-primary);
+    border-radius: var(--border-radius-lg);
     color: var(--color-primary);
     background: none;
     margin: auto;
@@ -469,8 +471,7 @@ form#printer_form {
     padding: 20px 16px;
 
     &:hover {
-      color: var(--color-primary-hover);
-      background: none;
+      background: var(--color-hover);
     }
 
     a {

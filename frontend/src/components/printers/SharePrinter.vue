@@ -178,6 +178,7 @@ hr
 .copy-button
   color: var(--color-primary)
   border: 2px solid var(--color-primary)
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0
   background-color: transparent
   display: inline-flex
   align-items: center

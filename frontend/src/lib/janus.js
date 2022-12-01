@@ -1551,7 +1551,6 @@ function Janus(gatewayCallbacks) {
       return
     }
     var onDataChannelMessage = function(event) {
-      Janus.debug('Received message on data channel:', event)
       var label = event.target.label
       pluginHandle.ondata(event.data, label)
     }

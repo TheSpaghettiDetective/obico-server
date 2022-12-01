@@ -3,6 +3,7 @@ import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
+import {toArrayBuffer} from '@src/lib/utils'
 
 export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
   var self = {}
@@ -87,40 +88,17 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       }
     }
 
-    self.webrtc.callbacks.onData = (maybeBin) => {
-      if (!maybeBin) {
-        return
-      }
-
-      if (maybeBin instanceof ArrayBuffer) {
-        try {
-          const jsonData = pako.ungzip(new Uint8Array(maybeBin), {'to': 'string'})
-          parseJsonData(jsonData)
-        } catch {
-          console.error('could not decompress datachannel arraybuffer')
+    self.webrtc.setCallbacks({
+      onData: (maybeBin) => {
+        if (typeof maybeBin === 'string' || maybeBin instanceof String) {
+          parseJsonData(maybeBin)
+        } else {
+          toArrayBuffer(maybeBin, (arrayBuffer) => {
+            parseJsonData(pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'}))
+          })
         }
-
-      } else if (maybeBin instanceof Blob) {
-        const reader = new FileReader()
-        reader.addEventListener('loadend', (e) => {
-          if (!e.srcElement) {
-            return
-          }
-
-          const arrayBuffer = e.srcElement.result
-
-          try {
-            const jsonData = pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'})
-            parseJsonData(jsonData)
-          } catch {
-            console.error('could not decompress datachannel blob')
-          }
-        })
-        reader.readAsArrayBuffer(maybeBin)
-      } else {
-        parseJsonData(maybeBin)
-      }
-    }
+      },
+    })
   }
 
   self.passThruToPrinter = function(msg, callback) {

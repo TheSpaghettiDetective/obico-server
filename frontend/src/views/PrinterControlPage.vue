@@ -191,4 +191,7 @@ export default {
   color: var(--color-primary)
   &.active span
     color: var(--color-on-primary)
+
+.card
+  border-radius: var(--border-radius-lg)
 </style>

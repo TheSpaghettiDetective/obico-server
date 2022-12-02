@@ -221,6 +221,8 @@ export default {
         display: block
         color: var(--color-text-primary)
         padding: 10px 5px
+        margin: 4px
+        border-radius: var(--border-radius-sm)
         text-align: center
         font-size: 0.85em
         &:hover, &[aria-expanded="true"]

@@ -72,25 +72,30 @@ export default {
 
 <style lang="sass" scoped>
   .input-group.input-wrapper
+    border-radius: var(--border-radius-sm)
+    overflow: hidden
+    border: 1px solid var(--color-divider)
+
     .control-button
-      border-width: 1px
+      border: none
 
     .btn-outline-secondary
-      border-color: var(--color-divider)
       background-color: var(--color-input-background)
 
-      &:hover, &:focus
+      &:hover, &:focus, &:active
         color: var(--color-text-primary)
         background-color: var(--color-input-background)
         opacity: .8
         outline: none
-        box-shadow: none
+        box-shadow: none !important
+        border: none
 
 
-    input
+    input.form-control
       background-color: var(--color-input-background)
-      border-top-color: var(--color-divider)
-      border-bottom-color: var(--color-divider)
       color: var(--color-text-primary)
-      width: 5rem
+      width: 6rem
+      border: none
+      border-left: 2px solid var(--color-divider)
+      border-right: 2px solid var(--color-divider)
 </style>

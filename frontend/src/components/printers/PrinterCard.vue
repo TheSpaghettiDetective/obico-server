@@ -738,6 +738,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.card
+  border-radius: var(--border-radius-lg)
+  overflow: hidden
+
 .menu-icon
   width: 20px
   height: 20px

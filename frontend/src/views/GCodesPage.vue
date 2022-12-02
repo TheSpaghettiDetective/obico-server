@@ -326,6 +326,7 @@ export default {
 .gcodes-wrapper
   background-color: var(--color-surface-secondary)
   padding: 2em
+  border-radius: var(--border-radius-lg)
 
 .control-panel
   border-bottom: 1px solid var(--color-divider)

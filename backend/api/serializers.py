@@ -103,6 +103,7 @@ class PrinterSerializer(serializers.ModelSerializer):
 
 
 class GCodeFileSerializer(serializers.ModelSerializer):
+    print_set = PrintSerializer(many=True, read_only=True)
 
     class Meta:
         model = GCodeFile

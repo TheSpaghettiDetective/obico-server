@@ -94,7 +94,6 @@
 
 <script>
 import get from 'lodash/get'
-import isEqual from 'lodash/isEqual'
 import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'

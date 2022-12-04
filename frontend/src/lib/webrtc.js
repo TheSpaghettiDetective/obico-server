@@ -44,8 +44,8 @@ export default function WebRTCConnection() {
     },
     setCallbacks(callbacks) {
       self.callbacks = {...self.callbacks, ...callbacks}
-      self.defaultWebRTCConn.setCallbacks(self.callbacks)
-      self.mjpegWebRTCConn.setCallbacks(self.callbacks)
+      self.defaultWebRTCConn.callbacks = self.callbacks
+      self.mjpegWebRTCConn.callbacks = self.callbacks
     }
   }
   return self
@@ -58,10 +58,6 @@ function MJpegtWebRTCConnection() {
     streamId: undefined,
     streaming: undefined,
     bitrateInterval: null,
-
-    setCallbacks(callbacks) {
-      self.callbacks = callbacks
-    },
 
     connect(wsUri, token) {
       Janus.init({
@@ -131,11 +127,6 @@ function MJpegtWebRTCConnection() {
                 self.onMessage(msg, jsep)
               },
               onremotestream: function(stream) {
-                // Janus.debug(' ::: Got a remote stream :::')
-                // Janus.debug(stream)
-                // if ('onRemoteStream' in self.callbacks) {
-                //   self.callbacks.onRemoteStream(stream)
-                // }
               },
               ondataopen: function() {
               },
@@ -225,10 +216,6 @@ function DefaultWebRTCConnection() {
     streamId: undefined,
     streaming: undefined,
     bitrateInterval: null,
-
-    setCallbacks(callbacks) {
-      self.callbacks = callbacks
-    },
 
     connect(wsUri, token) {
       Janus.init({

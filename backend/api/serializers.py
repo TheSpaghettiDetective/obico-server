@@ -123,6 +123,7 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
+        user = self.context['request'].user
         name = attrs['name']
         safe_name = re.sub(r'[^\w\.]', '_', name)
         parent_folder = attrs.get('parent_folder')

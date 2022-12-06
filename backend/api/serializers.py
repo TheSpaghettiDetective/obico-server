@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
 import re
 from django.utils.timezone import now
@@ -102,21 +103,22 @@ class PrinterSerializer(serializers.ModelSerializer):
         return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
 
 
-class GCodeFileSerializer(serializers.ModelSerializer):
-    print_set = PrintSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = GCodeFile
-        fields = '__all__'
-        read_only_fields = ('user', 'resident_printer')
-
-
-class GCodeFolderSerializer(serializers.ModelSerializer):
+class BaseGCodeFolderSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GCodeFolder
         fields = '__all__'
         read_only_fields = ('user', 'safe_name')
+
+
+class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects.select_related('user').all(), allow_null=True, required=False)
+
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -136,10 +138,33 @@ class GCodeFolderSerializer(serializers.ModelSerializer):
         attrs['safe_name'] = safe_name
         return attrs
 
-    def save(self):
-        user = self.context['request'].user
-        return super().save(user=user)
+class GCodeFolderSerializer(BaseGCodeFolderSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
 
+
+class GCodeFileDeSerializer(serializers.ModelSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects.select_related('user').all(), allow_null=True, required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
+
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
+
+
+class GCodeFileSerializer(serializers.ModelSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
+    print_set = PrintSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
 

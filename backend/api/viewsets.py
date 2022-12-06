@@ -27,9 +27,9 @@ from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
 from .serializers import (
-    UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
+    UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache
@@ -262,16 +262,23 @@ class PrintViewSet(
 class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    serializer_class = GCodeFolderSerializer
     pagination_class = StandardResultsSetPagination
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return GCodeFolderSerializer
+        else:
+            return GCodeFolderDeSerializer
 
     def get_queryset(self):
         qs = GCodeFolder.objects.filter(user=self.request.user,)
-        parent_folder = self.request.GET.get('parent_folder')
-        if parent_folder:
-            qs = qs.filter(parent_folder_id=int(parent_folder))
-        else:
-            qs = qs.filter(parent_folder__isnull=True)
+        if 'parent_folder' in self.request.GET:
+            parent_folder = self.request.GET.get('parent_folder')
+            if parent_folder == 'null':
+                qs = qs.filter(parent_folder__isnull=True)
+            else:
+                qs = qs.filter(parent_folder_id=int(parent_folder))
+
         return qs
 
 
@@ -285,8 +292,13 @@ class GCodeFileViewSet(
 ):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    serializer_class = GCodeFileSerializer
     pagination_class = StandardResultsSetPagination
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return GCodeFileSerializer
+        else:
+            return GCodeFileDeSerializer
 
     def get_queryset(self):
         qs = GCodeFile.objects.filter(
@@ -298,13 +310,15 @@ class GCodeFileViewSet(
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
-        parent_folder = self.request.GET.get('parent_folder')
-        if parent_folder:
-            qs = qs.filter(parent_folder_id=int(parent_folder))
-        else:
-            qs = qs.filter(parent_folder__isnull=True)
+        if 'parent_folder' in self.request.GET:
+            parent_folder = self.request.GET.get('parent_folder')
+            if parent_folder == 'null':
+                qs = qs.filter(parent_folder__isnull=True)
+            else:
+                qs = qs.filter(parent_folder_id=int(parent_folder))
 
         return qs
+
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin,

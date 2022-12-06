@@ -113,7 +113,7 @@ class BaseGCodeFolderSerializer(serializers.ModelSerializer):
 
 
 class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
-    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects.select_related('user').all(), allow_null=True, required=False)
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
 
     def validate_parent_folder(self, parent_folder):
         if parent_folder is not None and self.context['request'].user != parent_folder.user:
@@ -123,7 +123,6 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
-        user = self.context['request'].user
         name = attrs['name']
         safe_name = re.sub(r'[^\w\.]', '_', name)
         parent_folder = attrs.get('parent_folder')
@@ -143,19 +142,27 @@ class GCodeFolderSerializer(BaseGCodeFolderSerializer):
 
 
 class GCodeFileDeSerializer(serializers.ModelSerializer):
-    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects.select_related('user').all(), allow_null=True, required=False)
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', 'resident_printer')
+        read_only_fields = ('user', 'resident_printer', 'safe_filename')
 
     def validate_parent_folder(self, parent_folder):
         if parent_folder is not None and self.context['request'].user != parent_folder.user:
             raise serializers.ValidationError('Parent folder does not exist')
         return parent_folder
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        filename = attrs['filename']
+        safe_filename = re.sub(r'[^\w\.]', '_', filename)
+
+        attrs['safe_filename'] = safe_filename
+        return attrs
 
 class GCodeFileSerializer(serializers.ModelSerializer):
     parent_folder = BaseGCodeFolderSerializer()

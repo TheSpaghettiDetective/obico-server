@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
@@ -35,6 +36,7 @@ from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
+from lib.file_storage import save_file_obj
 from .printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
@@ -282,14 +284,8 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class GCodeFileViewSet(
-    # no create
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class GCodeFileViewSet(viewsets.ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     pagination_class = StandardResultsSetPagination
@@ -318,6 +314,24 @@ class GCodeFileViewSet(
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
         return qs
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        gcode_file = GCodeFile.objects.create(**validated_data)
+
+        if 'file' in request.FILES:
+            file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
+            if request.FILES['file'].size > file_size_limit:
+                return Response({'error': 'File size too large'}, status=413)
+
+            _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
+            gcode_file.url = ext_url
+            gcode_file.save()
+
+        return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)
 
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,

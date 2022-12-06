@@ -10,7 +10,7 @@ export default function WebRTCConnection() {
   let self = {
     callbacks: {},
     initialized: false,
-    defaultWebRTCConn: DefaultWebRTCConnection(),
+    mainWebRTCConn: MainWebRTCConnection(),
     mjpegWebRTCConn: MJpegtWebRTCConnection(),
 
     openForShareToken(shareToken) {
@@ -28,23 +28,23 @@ export default function WebRTCConnection() {
     },
     connect(wsUri, token) {
       self.initialized = true
-      self.defaultWebRTCConn.connect(wsUri, token)
+      self.mainWebRTCConn.connect(wsUri, token)
       self.mjpegWebRTCConn.connect(wsUri, token)
     },
     stopStream() {
-      self.defaultWebRTCConn.stopStream()
+      self.mainWebRTCConn.stopStream()
       self.mjpegWebRTCConn.stopStream()
     },
     sendData(data) {
-      self.defaultWebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
+      self.mainWebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
     },
     startStream() {
-      self.defaultWebRTCConn.startStream()
+      self.mainWebRTCConn.startStream()
       self.mjpegWebRTCConn.startStream()
     },
     setCallbacks(callbacks) {
       self.callbacks = {...self.callbacks, ...callbacks}
-      self.defaultWebRTCConn.callbacks = self.callbacks
+      self.mainWebRTCConn.callbacks = self.callbacks
       self.mjpegWebRTCConn.callbacks = self.callbacks
     }
   }
@@ -210,7 +210,7 @@ function MJpegtWebRTCConnection() {
 }
 
 
-function DefaultWebRTCConnection() {
+function MainWebRTCConnection() {
   let self = {
     callbacks: {},
     streamId: undefined,

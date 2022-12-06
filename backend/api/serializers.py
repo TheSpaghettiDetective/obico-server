@@ -208,6 +208,7 @@ class OctoPrintTunnelSerializer(serializers.ModelSerializer):
 
 class NotificationSettingSerializer(serializers.ModelSerializer):
     config = serializers.DictField(required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = NotificationSetting
@@ -250,7 +251,6 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         return data
 
     def save(self):
-        user = self.context['request'].user
         config = self.validated_data.pop('config', None)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
@@ -259,7 +259,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
             return super().save(user=user, created_at=now(), updated_at=now())
 
-        return super().save(user=user)
+        return super().save()
 
 
 class PrinterEventSerializer(serializers.ModelSerializer):

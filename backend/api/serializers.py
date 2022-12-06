@@ -124,18 +124,22 @@ class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
         attrs = super().validate(attrs)
 
         user = self.context['request'].user
-        name = attrs['name']
-        safe_name = re.sub(r'[^\w\.]', '_', name)
-        parent_folder = attrs.get('parent_folder')
-        if parent_folder:
-            count_identical_name = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).count()
-        else:
-            count_identical_name = GCodeFolder.objects.filter(user=user, parent_folder__isnull=True, safe_name=safe_name).count()
+        if 'name' in attrs:   # safe_name should always be updated when name is
+            safe_name = re.sub(r'[^\w\.]', '_', attrs['name'])
+            attrs['safe_name'] = safe_name
+        elif self.instance:
+            safe_name = self.instance.safe_name
 
-        if count_identical_name > 0:
-            raise serializers.ValidationError({'name': f'{name} already existed.'})
+        if 'parent_folder' in attrs:
+            parent_folder = attrs.get('parent_folder')
+            if parent_folder is None: # '?parent_folder='
+                existing = GCodeFolder.objects.filter(user=user, parent_folder__isnull=True, safe_name=safe_name).first()
+            else:
+                existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
 
-        attrs['safe_name'] = safe_name
+            if existing and self.instance and existing.id != self.instance.id:
+                raise serializers.ValidationError({'name': f'Already existed.'})
+
         return attrs
 
 class GCodeFolderSerializer(BaseGCodeFolderSerializer):
@@ -159,10 +163,10 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
-        filename = attrs['filename']
-        safe_filename = re.sub(r'[^\w\.]', '_', filename)
+        if 'filename' in attrs: # safe_filename should always be updated when filename is
+            safe_filename = re.sub(r'[^\w\.]', '_', attrs['filename'])
+            attrs['safe_filename'] = safe_filename
 
-        attrs['safe_filename'] = safe_filename
         return attrs
 
 class GCodeFileSerializer(serializers.ModelSerializer):

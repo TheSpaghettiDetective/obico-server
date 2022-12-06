@@ -20,7 +20,9 @@ from safedelete.managers import SafeDeleteManager
 from pushbullet import Pushbullet, errors
 from django.utils.html import mark_safe
 from django.contrib.auth.hashers import make_password
-from django.db.models import F
+from django.db.models import F, Q
+from django.db.models.constraints import UniqueConstraint
+
 
 
 from config.celery import celery_app
@@ -233,20 +235,27 @@ class Printer(SafeDeleteModel):
 
         return printer_cur_state and printer_cur_state.get('flags', {}).get('printing', False)
 
-    def update_current_print(self, current_print_ts, filename):
-        # current_print_ts == -1 => Not printing in OctoPrint
+    def update_current_print(self, current_print_ts, g_code_file_id, filename):
+        # current_print_ts == -1 => Not printing in OctoPrint or Moonraker
         if current_print_ts == -1:
             if self.current_print:
                 LOGGER.warn(f'current_print_ts=-1 received when current print is still active. Force-closing print. print_id: {self.current_print_id} - printer_id: {self.id}')
                 self.unset_current_print()
             return
 
-        # current_print_ts != -1 => Currently printing in OctoPrint
+        # current_print_ts != -1 => Currently printing in OctoPrint or Moonraker
 
         if not self.current_print:
-            if filename:  # Sometimes moonraker-obico sends current_print_ts without octoprint_data, which is a bug.
-                self.set_current_print(filename, current_print_ts)
+            if filename:
+                self.set_current_print(filename, g_code_file_id, current_print_ts)
+            else:
+                # Sometimes moonraker-obico sends current_print_ts without octoprint_data, which is a bug.
+                LOGGER.warn(f'Active current_print_ts but filename is None in the status. current_print_ts: {current_print_ts} - printer_id: {self.id}')
             return
+
+        if self.current_print.g_code_file_id != g_code_file_id:
+            self.current_print.g_code_file_id = g_code_file_id
+            self.current_print.save()
 
         # Current print in OctoPrint matches current_print in db. Nothing to update.
         if self.current_print.ext_id == current_print_ts:
@@ -262,7 +271,7 @@ class Printer(SafeDeleteModel):
         else:
             LOGGER.warn(f'Print not properly ended before next start. Stale print_id: {self.current_print_id} - printer_id: {self.id}')
             self.unset_current_print()
-            self.set_current_print(filename, current_print_ts)
+            self.set_current_print(filename, g_code_file_id, current_print_ts)
 
 
     def unset_current_print(self):
@@ -279,13 +288,14 @@ class Printer(SafeDeleteModel):
         PrinterEvent.create(print=print, event_type=PrinterEvent.ENDED, task_handler=True)
         self.send_should_watch_status()
 
-    def set_current_print(self, filename, current_print_ts):
+    def set_current_print(self, filename, g_code_file_id, current_print_ts):
+        filename = filename.strip()
         try:
             cur_print, _ = Print.objects.get_or_create(
                 user=self.user,
                 printer=self,
                 ext_id=current_print_ts,
-                defaults={'filename': filename.strip(), 'started_at': timezone.now()},
+                defaults={'filename': filename, 'g_code_file_id': g_code_file_id, 'started_at': timezone.now()},
             )
         except IntegrityError:
             raise Exception('Current print is deleted! printer_id: {} | print_ts: {} | filename: {}'.format(self.id, current_print_ts, filename))
@@ -459,6 +469,7 @@ class Print(SafeDeleteModel):
     )
 
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)
+    g_code_file = models.ForeignKey('GCodeFile', on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
@@ -654,12 +665,49 @@ class SharedResource(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class GCodeFile(SafeDeleteModel):
+class GCodeFolder(models.Model):
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['user', 'parent_folder', 'safe_name'],
+                             name='unique_with_parent_folder'),
+            UniqueConstraint(fields=['user', 'safe_name'],
+                             condition=Q(parent_folder=None),
+                             name='unique_without_parent_folder'),
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    parent_folder = models.ForeignKey('GCodeFolder', on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=1000, null=False, blank=False)
+    safe_name = models.CharField(max_length=1000, null=False, blank=False, db_index=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class GCodeFile(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['agent_signature'])
+        ]
+        # TODO: we will need to come back to turn on the unique constraints once we combine the same file names to versions
+        # constraints = [
+        #     UniqueConstraint(fields=['user', 'parent_folder', 'safe_filename'],
+        #                      name='unique_with_parent_folder'),
+        #     UniqueConstraint(fields=['user', 'safe_filename'],
+        #                      condition=Q(parent_folder=None),
+        #                      name='unique_without_parent_folder'),
+        # ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     filename = models.CharField(max_length=1000, null=False, blank=False)
-    safe_filename = models.CharField(max_length=1000, null=False, blank=False)
-    url = models.CharField(max_length=2000, null=False, blank=False)
-    num_bytes = models.BigIntegerField(null=True, blank=True)
+    safe_filename = models.CharField(max_length=1000, null=False, blank=False, db_index=True)
+    parent_folder = models.ForeignKey(GCodeFolder, on_delete=models.CASCADE, null=True)
+    url = models.CharField(max_length=2000, null=True, blank=False)
+    num_bytes = models.BigIntegerField(null=True, blank=True, db_index=True)
+    resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)  # null for gcode files on the server
+    # A value the agent can independently derive to match with the server. Format: scheme:value
+    agent_signature = models.CharField(max_length=256, null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

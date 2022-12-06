@@ -47,7 +47,8 @@
               <h3>Yup! Even Free account gets 10 AI Detection Hours for FREE each month.</h3>
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
+                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
+                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
               </ul>
               <p>
                 Learn more about
@@ -61,13 +62,12 @@
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
                 <li>AI Detection Hours expire when subscription ends.</li>
-                <li>You can also <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
+                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
+                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
               </ul>
               <p>
                 Learn more about
-                <div>
                   <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
-                </div>
               </p>
             </template>
 
@@ -82,21 +82,17 @@
               </div>
               <p>
                 Learn more about
-                <div>
                   <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
-                </div>
               </p>
             </template>
 
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
               <p>Securely tunnel to your OctoPrint from anywhere.</p>
-              <p>Free plan is subject to 500MB/month data cap. Data usage is reset on the 1st day of each month.</p>
+              <p>Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of each month.</p>
               <p>
                 Learn more about
-                <div>
                   <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
-                </div>
               </p>
             </template>
 
@@ -105,10 +101,43 @@
               <div>Securely tunnel to your OctoPrint from anywhere. Unlimited.</div>
               <p>
                 Learn more about
-                <div>
                   <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
-                </div>
               </p>
+            </template>
+
+            <!-- 3rd-party-app-integration-free-on-pricing-page -->
+            <template v-if="id === '3rd-party-app-integration-free-on-pricing-page'">
+              <div>
+                <div>The monthly cap is shared between 3rd-party app and OctoPrint tunnel:</div>
+                <ul>
+                  <li>The combined usage can't exceed 300MB per month.</li>
+                  <li>Data usage is reset on the 1st day of each month.</li>
+                </ul>
+                <p>Supported 3rd-party mobile apps:</p>
+                <img class="logo-icon"
+                  :src="require('@static/img/octoapp.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/printoid.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/octopod.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/polymer.webp')" />
+              </div>
+            </template>
+
+            <!-- 3rd-party-app-integration-pro-on-pricing-page -->
+            <template v-if="id === '3rd-party-app-integration-pro-on-pricing-page'">
+              <div>
+                <p>Supported 3rd-party mobile apps:</p>
+                <img class="logo-icon"
+                  :src="require('@static/img/octoapp.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/printoid.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/octopod.webp')" />
+                <img class="logo-icon"
+                  :src="require('@static/img/polymer.webp')" />
+              </div>
             </template>
 
             <!-- filament-change-on-notification-preferences -->
@@ -257,6 +286,12 @@ export default {
     display: flex
     flex-direction: column
     color: var(--color-text-primary)
+
+    .logo-icon
+      max-height: 50px
+      object-fit: contain
+      border-radius: 8px
+      margin: 0px 15px
 
     @media (min-width: $x-breakpoint-2)
       &.left

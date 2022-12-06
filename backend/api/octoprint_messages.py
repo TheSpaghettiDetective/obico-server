@@ -76,8 +76,10 @@ def update_current_print_if_needed(msg, printer):
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
 
     print_ts = msg.get('current_print_ts')
+    g_code_file_id = printer_status.get('job', {}).get('file', {}).get('obico_g_code_file_id') \
+        or msg.get('tsd_gcode_file_id')  # tsd_gcode_file_id to be compatible with version 2.2.x and earlier
     current_filename = (op_event.get('data') or {}).get('name') or ((printer_status.get('job') or {}).get('file') or {}).get('name')
-    printer.update_current_print(print_ts, current_filename)
+    printer.update_current_print(print_ts, g_code_file_id, current_filename)
     if not printer.current_print:
         return
 

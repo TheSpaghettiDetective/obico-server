@@ -77,16 +77,10 @@ table.pricing {
 
             .features {
                 &.keyfeatures {
-                    font-weight: bolder;
+                    color: var(--color-primary)
                 }
-
-                &.essentials {
-                    font-weight: lighter;
-                }
-
                 &.dh-pack {
                     height: 14rem;
-                    font-weight: lighter;
                 }
 
                 >div {
@@ -97,7 +91,6 @@ table.pricing {
                 i.fa-check {
                     padding-right: 0.7rem;
                     padding-top: 0.35rem;
-                    color: var(--color-primary);
                 }
             }
         }

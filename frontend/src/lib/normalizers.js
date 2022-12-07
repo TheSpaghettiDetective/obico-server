@@ -26,6 +26,12 @@ export const normalizedGcode = gcode => {
   return gcode
 }
 
+export const normalizedGcodeFolder = folder => {
+  folder.created_at = toMomentOrNull(folder.created_at)
+  folder.updated_at = toMomentOrNull(folder.updated_at)
+  return folder
+}
+
 export const normalizedPrinter = (newData, oldData) => {
   const printerMixin = {
     createdAt: function() { return toMomentOrNull(this.created_at) },

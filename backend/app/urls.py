@@ -24,10 +24,11 @@ urlpatterns = [
     path('prints/upload/', web_views.upload_print),
     path('prints/<int:pk>/', web_views.print),
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
-    re_path('^g_code_files/(?P<route>([^/]+/)*)$', web_views.g_codes),
+    re_path('^g_code_folders/(?P<route>([^/]+/)*)$', web_views.g_code_folders),
+    re_path('^g_code_files/(?P<route>([^/]+/)*)$', web_views.g_code_files),
     path('g_code_files/upload/', web_views.upload_gcode_file,),
     # Compatible with mobile app versions <= 1.73
-    path('gcodes/', web_views.g_codes),
+    path('gcodes/', web_views.g_code_files),
     path('gcodes/upload/', web_views.upload_gcode_file,),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),

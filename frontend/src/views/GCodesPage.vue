@@ -137,9 +137,9 @@
                         <b-dropdown-item @click="renameItem(item.id, item.name, 'folder')">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
-                        <b-dropdown-item>
+                        <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
-                        </b-dropdown-item>
+                        </b-dropdown-item> -->
                         <b-dropdown-item @click="deleteItem(item.id, 'folder')">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
@@ -181,9 +181,9 @@
                       <b-dropdown-item @click="renameItem(item.id, item.filename, 'file')">
                         <i class="fas fa-edit"></i>Rename
                       </b-dropdown-item>
-                      <b-dropdown-item>
+                      <!-- <b-dropdown-item>
                         <i class="fas fa-arrows-alt"></i>Move
-                      </b-dropdown-item>
+                      </b-dropdown-item> -->
                       <b-dropdown-item @click="deleteItem(item.id, 'file')">
                         <span class="text-danger">
                           <i class="fas fa-trash-alt"></i>Delete

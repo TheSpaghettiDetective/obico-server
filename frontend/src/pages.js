@@ -14,6 +14,7 @@ import PrinterSettingsPage from '@src/views/PrinterSettingsPage.vue'
 import PrinterWizardPage from '@src/views/printer-wizard/PrinterWizardPage.vue'
 import PrinterControlPage from '@src/views/PrinterControlPage.vue'
 import GCodesPage from '@src/views/GCodesPage.vue'
+import GCodeDetailsPage from '@src/views/GCodeDetailsPage.vue'
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
 
@@ -23,6 +24,10 @@ const router = new VueRouter({
     {
       path: '/g_code_files/:parentFolder',
       component: GCodesPage,
+    },
+    {
+      path: '/g_code/:id',
+      component: GCodeDetailsPage,
     },
     {
       path: '/user_preferences',

@@ -151,7 +151,7 @@
                 </div>
 
                 <!-- Gcodes -->
-                <div v-for="item in gcodesToShow" :key="`gcode_${item.id}`" class="item">
+                <div v-for="item in gcodesToShow" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
                   <div class="item-info">
                     <div class="filename">
                       <i class="fas fa-file-code mr-1"></i>
@@ -636,7 +636,14 @@ export default {
       if (document.querySelector('.swal2-container')) {
         return false
       }
-      this.$router.push('/g_code_files/' + folder.id + '/')
+      this.$router.push('/g_code_files/' + folder.id)
+    },
+    openFile(file) {
+      // Prevent navigation if main user action was to click dropdown item
+      if (document.querySelector('.swal2-container')) {
+        return false
+      }
+      window.location.replace('/g_code/' + file.id)
     },
   },
 }

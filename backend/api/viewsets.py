@@ -324,11 +324,13 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         if 'file' in request.FILES:
             file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
-            if request.FILES['file'].size > file_size_limit:
+            num_bytes=request.FILES['file'].size
+            if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
             _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
             gcode_file.url = ext_url
+            gcode_file.num_bytes = num_bytes
             gcode_file.save()
 
         return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)

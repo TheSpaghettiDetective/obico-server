@@ -21,6 +21,10 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     {
+      path: '/g_code_files/:parentFolder',
+      component: GCodesPage,
+    },
+    {
       path: '/user_preferences',
       component: UserPreferencesPage,
     },

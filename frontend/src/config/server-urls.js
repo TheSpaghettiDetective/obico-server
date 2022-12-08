@@ -12,10 +12,12 @@ export default {
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   pubPrinter: () => '/api/v1p/printer/',
 
+  // Gcodes
+  gcodeFile: (id) => `/api/v1/g_code_files/${id}/`,
   gcodeFiles: ({page, pageSize, parentFolder} = {page: 1, pageSize: 9999, parentFolder: null}) => `/api/v1/g_code_files/?parent_folder=${parentFolder || null}&page=${page || 1}&page_size=${pageSize || 9999}`,
+  searchGcodeFiles: (query) => `/api/v1/g_code_files/?q=${query}`,
+  gcodeFolder: (id) => `/api/v1/g_code_folders/${id}/`,
   gcodeFolders: ({page, pageSize, parentFolder} = {page: 1, pageSize: 9999, parentFolder: null}) => `/api/v1/g_code_folders/?parent_folder=${parentFolder || null}&page=${page || 1}&page_size=${pageSize || 9999}`,
-  gcodeFolder: (id) => `/api/v1/g_code_folders/${id}`,
-  gcodeFile: (id) => `/api/v1/g_code_files/${id}`,
 
   gcode: gcodeId => `/api/v1/g_code_files/${gcodeId}/`,
 

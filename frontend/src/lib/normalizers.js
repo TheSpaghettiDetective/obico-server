@@ -23,6 +23,12 @@ export const normalizedGcode = gcode => {
   gcode.updated_at = toMomentOrNull(gcode.updated_at)
   gcode.deleted = toMomentOrNull(gcode.deleted)
   gcode.filesize = filesize(gcode.num_bytes)
+  gcode.last_printed_at = toMomentOrNull(gcode.print_set[0]?.started_at)
+  if (gcode.print_set[0]?.cancelled_at) {
+    gcode.last_print_result = 'cancelled'
+  } else if (gcode.print_set[0]?.finished_at) {
+    gcode.last_print_result = 'finished'
+  }
   return gcode
 }
 

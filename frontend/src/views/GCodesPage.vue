@@ -5,9 +5,9 @@
     </template>
     <template v-slot:topBarRight>
       <div>
-        <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
+        <!-- <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
           <i class="fas fa-file-upload"></i>
-        </a>
+        </a> -->
         <a @click.prevent="createFolder" href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Create folder">
           <i class="fas fa-folder-plus"></i>
         </a>
@@ -15,41 +15,47 @@
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item href="#" class="d-md-none">
+          <!-- <b-dropdown-item href="#" class="d-md-none">
             <i class="fas fa-file-upload"></i>Upload G-Code
-          </b-dropdown-item>
-          <b-dropdown-item href="#" class="d-md-none">
+          </b-dropdown-item> -->
+          <b-dropdown-item class="d-md-none" @click="createFolder">
             <i class="fas fa-folder-plus"></i>Create Folder
           </b-dropdown-item>
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-          <b-dropdown-text class="small">ORDER</b-dropdown-text>
-          <b-dropdown-item v-for="sortingOption in sortingOptions" :key="`s_${sortingOption}`">
-            <div @click="() => activeSorting = sortingOption" class="clickable-area">
-              <i class="fas fa-check text-primary" :style="{visibility: activeSorting === sortingOption ? 'visible' : 'hidden'}"></i>
-              {{ sortingTitle[sortingOption] }}
-            </div>
+          <b-dropdown-text class="small text-secondary">ORDER</b-dropdown-text>
+          <b-dropdown-item
+            v-for="sortingOption in sortingOptions"
+            :key="`s_${sortingOption}`"
+            @click="() => activeSorting = sortingOption"
+          >
+            <i class="fas fa-check text-primary" :style="{visibility: activeSorting === sortingOption ? 'visible' : 'hidden'}"></i>
+            {{ sortingTitle[sortingOption] }}
           </b-dropdown-item>
           <b-dropdown-divider />
-          <b-dropdown-item v-for="sortingDirection in sortingDirections" :key="`d_${sortingDirection}`">
-            <div @click="() => activeSortingDirection = sortingDirection" class="clickable-area">
-              <i class="fas fa-check text-primary" :style="{visibility: activeSortingDirection === sortingDirection ? 'visible' : 'hidden'}"></i>
-              {{ sortingDirectionTitle[sortingDirection] }}
-            </div>
+          <b-dropdown-item
+            v-for="sortingDirection in sortingDirections"
+            :key="`d_${sortingDirection}`"
+            @click="() => activeSortingDirection = sortingDirection"
+          >
+            <i class="fas fa-check text-primary" :style="{visibility: activeSortingDirection === sortingDirection ? 'visible' : 'hidden'}"></i>
+            {{ sortingDirectionTitle[sortingDirection] }}
           </b-dropdown-item>
         </b-dropdown>
       </div>
     </template>
+
     <template v-slot:content>
       <b-container>
         <b-row>
           <b-col>
-            <!-- <vue-dropzone
+            <vue-dropzone
               class="upload-box"
               id="dropzone"
               :options="dropzoneOptions"
               :useCustomSlot="true"
               @vdropzone-queue-complete="gcodeUploadSuccess"
               @vdropzone-error="gcodeUploadError"
+              @vdropzone-sending="addParentFolderParam"
               ref="gcodesDropzone"
             >
               <div class="dz-message needsclick">
@@ -57,14 +63,10 @@
                 <div>G-Code file (*.gcode, *.gco, or *.g) only.</div>
                 <div>Up to {{maxFilesize}} MB each file, {{maxTotalFilesize}} GB total.</div>
               </div>
-            </vue-dropzone> -->
+            </vue-dropzone>
 
             <!-- GCodes list -->
             <div class="gcodes-wrapper">
-              <div class="control-panel">
-                <!-- <search-input v-model="searchText" class="search-input"></search-input> -->
-              </div>
-
               <div class="sorting-panel">
                 <div
                   class="sorting-option"
@@ -112,36 +114,36 @@
                 </div>
               </div>
 
-              <div class="gcode-items-wrapper">
-                <div v-for="item in folders" :key="`folder_${item.id}`" class="item">
-                  <div class="item-info">
-                    <div class="filename">
-                      <i class="fas fa-folder mr-1"></i>
-                      {{ item.name }}
+              <div class="gcode-items-wrapper" v-if="!loading">
+                <div v-if="!searchStateIsActive">
+                  <div v-for="item in foldersToShow" :key="`folder_${item.id}`" class="item folder" @click="openFolder(item)">
+                    <div class="item-info">
+                      <div class="filename">
+                        <i class="fas fa-folder mr-1"></i>
+                        {{ item.name }}
+                      </div>
+                      <div class="size">{{ item.numItems }} item(s)</div>
+                      <div class="created">{{ item.created_at.fromNow() }}</div>
+                      <div></div>
                     </div>
-                    <div class="filesize">{{ item.numItems }} item(s)</div>
-                    <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                    <div class="last-printed"></div>
-                  </div>
-                  <div>
-                    <b-dropdown right no-caret toggle-class="icon-btn">
-                      <template #button-content>
-                        <i class="fas fa-ellipsis-v"></i>
-                      </template>
-                      <b-dropdown-item>
-                        <i class="fas fa-edit"></i>Rename
-                      </b-dropdown-item>
-                      <b-dropdown-item>
-                        <i class="fas fa-arrows-alt"></i>Move
-                      </b-dropdown-item>
-                      <b-dropdown-item>
-                        <div @click="deleteItem(item.id, 'folder')" class="clickable-area">
+                    <div>
+                      <b-dropdown right no-caret toggle-class="icon-btn">
+                        <template #button-content>
+                          <i class="fas fa-ellipsis-v"></i>
+                        </template>
+                        <b-dropdown-item @click="renameItem(item.id, item.name, 'folder')">
+                          <i class="fas fa-edit"></i>Rename
+                        </b-dropdown-item>
+                        <b-dropdown-item>
+                          <i class="fas fa-arrows-alt"></i>Move
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="deleteItem(item.id, 'folder')">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
-                        </div>
-                      </b-dropdown-item>
-                    </b-dropdown>
+                        </b-dropdown-item>
+                      </b-dropdown>
+                    </div>
                   </div>
                 </div>
 
@@ -151,35 +153,52 @@
                       <i class="fas fa-file-code mr-1"></i>
                       {{ item.filename }}
                     </div>
-                    <div class="filesize">{{ item.filesize }}</div>
+                    <div class="size">{{ item.filesize }}</div>
                     <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                    <div class="last-printed">{{ item.created_at.fromNow() }}</div>
+                    <div class="last-printed">
+                      <span>{{ item.last_printed_at ? item.last_printed_at.fromNow() : 'No prints yet' }}</span>
+                      <div
+                        v-if="item.last_printed_at"
+                        class="circle-indicator"
+                        :class="item.last_print_result || 'in-progress'"
+                      ></div>
+                    </div>
                   </div>
                   <div>
                     <b-dropdown right no-caret toggle-class="icon-btn">
                       <template #button-content>
                         <i class="fas fa-ellipsis-v"></i>
                       </template>
-                      <b-dropdown-item>
+                      <!-- <b-dropdown-item>
                         <span class="text-primary">
                           <i class="fas fa-play-circle"></i>Print
                         </span>
-                      </b-dropdown-item>
-                      <b-dropdown-item>
+                      </b-dropdown-item> -->
+                      <b-dropdown-item @click="renameItem(item.id, item.filename, 'file')">
                         <i class="fas fa-edit"></i>Rename
                       </b-dropdown-item>
                       <b-dropdown-item>
                         <i class="fas fa-arrows-alt"></i>Move
                       </b-dropdown-item>
-                      <b-dropdown-item>
-                        <div @click="deleteItem(item.id, 'file')" class="clickable-area">
-                          <span class="text-danger">
-                            <i class="fas fa-trash-alt"></i>Delete
-                          </span>
-                        </div>
+                      <b-dropdown-item @click="deleteItem(item.id, 'file')">
+                        <span class="text-danger">
+                          <i class="fas fa-trash-alt"></i>Delete
+                        </span>
                       </b-dropdown-item>
                     </b-dropdown>
                   </div>
+                </div>
+
+                <div v-if="!searchStateIsActive && !gcodesToShow.length && !foldersToShow.length" class="placeholder text-secondary">
+                  <span>Nothing here yet</span>
+                </div>
+
+                <div v-if="searchStateIsActive && searchTimeoutId" class="placeholder">
+                  <b-spinner />
+                </div>
+
+                <div v-if="searchStateIsActive && !searchTimeoutId && !gcodesToShow.length" class="placeholder text-secondary">
+                  <span>Nothing found</span>
                 </div>
               </div>
             </div>
@@ -199,6 +218,8 @@ import axios from 'axios'
 import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
+
+const SEARCH_API_CALL_DELAY = 1000 // waiting time (ms) before asking server for search results
 
 const SORTING_OPTIONS = {
   NAME: 1,
@@ -243,7 +264,9 @@ export default {
   data() {
     return {
       user: null,
-      searchText: '',
+      searchStateIsActive: false,
+      searchResultGcodes: [],
+      searchTimeoutId: null,
       activeSorting: SORTING_OPTIONS.CREATED,
       activeSortingDirection: SORTING_DIRECTIONS.DESC,
       sortingOptions: SORTING_OPTIONS,
@@ -252,8 +275,8 @@ export default {
       sortingDirections: SORTING_DIRECTIONS,
       gcodes: [],
       folders: [],
-      currentPage: 1,
       loading: false,
+      parentFolder: null,
     }
   },
 
@@ -272,7 +295,7 @@ export default {
         maxFilesize: this.maxFilesize,
         timeout: 60 * 60 * 1000, // For large files
         acceptedFiles: '.g,.gcode,.gco',
-        url: 'upload/',
+        url: urls.gcodeFiles(),
         headers: { 'X-CSRFToken': this.csrf },
       }
     },
@@ -280,67 +303,188 @@ export default {
     gcodesToShow() {
       let gcodes = this.gcodes
 
-      if (!gcodes) {
-        return []
+      if (this.searchStateIsActive) {
+        gcodes = this.searchResultGcodes
       }
 
-      const query = this.searchText.toLowerCase()
-      gcodes = gcodes.filter((gcf) => gcf.filename.toLowerCase().indexOf(query) > -1)
+      if (!gcodes || this.searchTimeoutId) {
+        return []
+      }
 
       const sortDirection = this.activeSortingDirection
 
       switch (this.activeSorting) {
-      case SORTING_OPTIONS.NAME:
-        gcodes.sort(function(a, b) {
-          var filenameA = a.filename.toUpperCase() // ignore upper and lowercase
-          var filenameB = b.filename.toUpperCase() // ignore upper and lowercase
+        case SORTING_OPTIONS.NAME:
+          gcodes.sort(function(a, b) {
+            var filenameA = a.filename.toUpperCase() // ignore upper and lowercase
+            var filenameB = b.filename.toUpperCase() // ignore upper and lowercase
 
-          if (filenameA < filenameB) {
-            return sortDirection === SORTING_DIRECTIONS.ASC ? -1 : 1
-          }
-          if (filenameA > filenameB) {
-            return sortDirection === SORTING_DIRECTIONS.ASC ? 1 : -1
-          }
+            if (filenameA < filenameB) {
+              return sortDirection === SORTING_DIRECTIONS.ASC ? -1 : 1
+            }
+            if (filenameA > filenameB) {
+              return sortDirection === SORTING_DIRECTIONS.ASC ? 1 : -1
+            }
 
-          return 0
-        })
-        break
+            return 0
+          })
+          break
 
-      case SORTING_OPTIONS.SIZE:
-        gcodes.sort(function(a, b) {
-          if (sortDirection === SORTING_DIRECTIONS.ASC) {
-            return a.num_bytes - b.num_bytes
-          } else {
-            return b.num_bytes - a.num_bytes
-          }
-        })
-        break
+        case SORTING_OPTIONS.SIZE:
+          gcodes.sort(function(a, b) {
+            if (sortDirection === SORTING_DIRECTIONS.ASC) {
+              return a.num_bytes - b.num_bytes
+            } else {
+              return b.num_bytes - a.num_bytes
+            }
+          })
+          break
 
-      case SORTING_OPTIONS.CREATED:
-        gcodes.sort(function(a, b) {
-          const uploadedA = a.created_at.unix()
-          const uploadedB = b.created_at.unix()
+        case SORTING_OPTIONS.CREATED:
+          gcodes.sort(function(a, b) {
+            const uploadedA = a.created_at.unix()
+            const uploadedB = b.created_at.unix()
 
-          if (sortDirection === SORTING_DIRECTIONS.ASC) {
-            return uploadedA - uploadedB
-          } else {
-            return uploadedB - uploadedA
-          }
-        })
-        break
+            if (sortDirection === SORTING_DIRECTIONS.ASC) {
+              return uploadedA - uploadedB
+            } else {
+              return uploadedB - uploadedA
+            }
+          })
+          break
+
+        case SORTING_OPTIONS.LAST_PRINTED:
+          gcodes.sort(function(a, b) {
+            const printedA = a.last_printed_at?.unix() || 0
+            const printedB = b.last_printed_at?.unix() || 0
+
+            if (sortDirection === SORTING_DIRECTIONS.ASC) {
+              return printedA - printedB
+            } else {
+              return printedB - printedA
+            }
+          })
+          break
       }
 
       return gcodes
+    },
+
+    foldersToShow() {
+      let folders = this.folders
+
+      if (!folders) {
+        return []
+      }
+
+      const sortDirection = this.activeSortingDirection
+
+      switch (this.activeSorting) {
+        case SORTING_OPTIONS.NAME:
+          folders.sort(function(a, b) {
+            var nameA = a.name.toUpperCase() // ignore upper and lowercase
+            var nameB = b.name.toUpperCase() // ignore upper and lowercase
+
+            if (nameA < nameB) {
+              return sortDirection === SORTING_DIRECTIONS.ASC ? -1 : 1
+            }
+            if (nameA > nameB) {
+              return sortDirection === SORTING_DIRECTIONS.ASC ? 1 : -1
+            }
+
+            return 0
+          })
+          break
+
+        case SORTING_OPTIONS.SIZE:
+          folders.sort(function(a, b) {
+            if (sortDirection === SORTING_DIRECTIONS.ASC) {
+              return a.numItems - b.numItems
+            } else {
+              return b.numItems - a.numItems
+            }
+          })
+          break
+
+        case SORTING_OPTIONS.CREATED:
+          folders.sort(function(a, b) {
+            const createdA = a.created_at.unix()
+            const createdB = b.created_at.unix()
+
+            if (sortDirection === SORTING_DIRECTIONS.ASC) {
+              return createdA - createdB
+            } else {
+              return createdB - createdA
+            }
+          })
+          break
+      }
+
+      return folders
     },
   },
 
   created() {
     this.user = user()
+    this.parentFolder = this.$route.params.parentFolder || null
     this.fetchGCodes()
-    // this.createGcodeFolder()
+
+    this.$watch(
+      () => this.$route.params,
+      (toParams, previousParams) => {
+        this.parentFolder = toParams.parentFolder || null
+        this.fetchGCodes()
+      }
+    )
   },
 
   methods: {
+    updateSearch(search) {
+      clearTimeout(this.searchTimeoutId)
+      this.searchTimeoutId = null
+
+      this.searchStateIsActive = !!search
+      if (!this.searchStateIsActive) {
+        this.searchResultGcodes = []
+        return
+      }
+
+      this.searchTimeoutId = setTimeout(async () => {
+        this.loading = true
+        this.searchResultGcodes = []
+        let files
+
+        try {
+          files = await axios.get(urls.searchGcodeFiles(search))
+        } catch (e) {
+          this.loading = false
+          console.error(e)
+        }
+
+        files = files?.data
+        if (files?.count) {
+          this.searchResultGcodes = files.results.map(data => normalizedGcode(data))
+        }
+
+        this.loading = false
+        this.searchTimeoutId = null
+      }, SEARCH_API_CALL_DELAY);
+    },
+
+
+    addParentFolderParam(file, xhr, formData) {
+      formData.append('filename', file.name)
+      if (this.parentFolder !== null) {
+        formData.append('parent_folder', this.parentFolder)
+      }
+    },
+    openFolder(folder) {
+      // Prevent navigation if main user action was to click dropdown menu item
+      if (document.querySelector('.swal2-container')) {
+        return false
+      }
+      this.$router.push('/g_code_files/' + folder.id + '/')
+    },
     createFolder() {
       this.$swal.fire({
         title: 'Create folder',
@@ -362,7 +506,7 @@ export default {
           try {
             await axios.post(urls.gcodeFolders(), {
               name: folderName,
-              parent_folder: null,
+              parent_folder: this.parentFolder
             })
           } catch (e) {
             this.$swal.showValidationMessage('Server error')
@@ -374,7 +518,38 @@ export default {
         },
       })
     },
-    deleteItem(id, type = 'file') {
+    renameItem(id, oldName, itemType = 'file') {
+      this.$swal.fire({
+        title: 'New name',
+        input: 'text',
+        inputValue: oldName,
+        inputPlaceholder: 'New name',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        backdrop: 'rgba(0,0,0,0.5)',
+        preConfirm: async (newName) => {
+          if (!newName) {
+            this.$swal.showValidationMessage('Name is required')
+            return false;
+          }
+          // if (this.folders.find(item => item.name === folderName)) {
+          //   this.$swal.showValidationMessage('Folder with this name already exists')
+          //   return false;
+          // }
+          try {
+            const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
+            await axios.patch(url, `${itemType === 'file' ? 'filename' : 'name'}=${newName}`)
+          } catch (e) {
+            this.$swal.showValidationMessage('Server error')
+            console.log(e);
+            return false;
+          }
+          this.fetchGCodes();
+          return true;
+        },
+      })
+    },
+    deleteItem(id, itemType = 'file') {
       this.$swal.Prompt.fire({
         title: 'Are you sure?',
         showCancelButton: true,
@@ -383,7 +558,7 @@ export default {
       }).then(async userAction => {
         if (userAction.isConfirmed) {
           try {
-            const url = type === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
+            const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
             await axios.delete(url)
             this.fetchGCodes()
           } catch (e) {
@@ -396,27 +571,16 @@ export default {
         }
       })
     },
-    updateSearch(search) {
-      this.searchText = search
-    },
     gcodeUploadSuccess() {
       this.$refs.gcodesDropzone.removeAllFiles()
 
       this.gcodes = []
-      this.currentPage = 1
       this.fetchGCodes()
     },
 
     gcodeUploadError(file, message) {
       this.$swal.Reject.fire({
         html: `<p class="text-center">${message}</p>`})
-    },
-
-    async createGcodeFolder() {
-      await axios.post('/api/v1/g_code_folders/', {
-        name: 'test name',
-        parent_folder: null,
-      })
     },
 
     async fetchGCodes() {
@@ -429,8 +593,8 @@ export default {
       let folders
 
       try {
-        files = await axios.get(urls.gcodeFiles())
-        folders = await axios.get(urls.gcodeFolders())
+        files = await axios.get(urls.gcodeFiles({parentFolder: this.parentFolder}))
+        folders = await axios.get(urls.gcodeFolders({parentFolder: this.parentFolder}))
       } catch (e) {
         this.loading = false
         console.error(e)
@@ -464,25 +628,6 @@ export default {
 
       this.loading = false
     },
-
-    // fetchGCodeFolders() {
-    //   this.loading = true
-
-    //   return axios
-    //     .get(urls.gcodeFiles(this.currentPage))
-    //     .then(response => {
-    //       this.loading = false
-
-    //       let gcodeFiles = response.data.results
-
-    //       if (gcodeFiles) {
-    //         this.gcodes.push(...gcodeFiles.map(data => normalizedGcode(data)))
-    //         this.currentPage += 1
-    //       }
-    //     }).catch(err => {
-    //       console.log(err)
-    //     })
-    // },
 
     updateSorting(sortOption) {
       if (this.activeSorting === sortOption) {
@@ -531,18 +676,14 @@ export default {
 
 .gcodes-wrapper
   background-color: var(--color-surface-secondary)
-  padding: 2em
+  padding: 1em 2em
   border-radius: var(--border-radius-lg)
-  min-height: 70vh
-
-.control-panel
-  border-bottom: 1px solid var(--color-divider)
-  padding-bottom: 16px
 
 .sorting-panel
   display: flex
   padding: 1em calc(1em + 30px) 1em 1em
   border-bottom: 1px solid var(--color-divider)
+  font-weight: bold
 
   .sorting-option
     flex: 1
@@ -557,6 +698,7 @@ export default {
 
     &:first-child
       margin-left: 0
+      flex: 3
 
     .direction
       font-size: .8rem
@@ -567,12 +709,7 @@ export default {
 
   @media (max-width: 768px)
     &
-      flex-direction: column
-      padding: 1em 0
-
-    .sorting-option
-      margin-left: 0
-      margin-bottom: 4px
+      display: none
 
     .remove-button-placeholder
       display: none
@@ -582,21 +719,34 @@ export default {
     display: flex
     align-items: center
     padding: .6em 1em
+    border-bottom: 1px solid var(--color-divider-muted)
 
-    &:nth-child(2n)
-      background-color: var(--color-table-accent)
+    &:not(.folder)
+      &:last-child
+        border-bottom: none
+
+    &:hover
+      cursor: pointer
+      background-color: var(--color-hover)
+
+    // &:nth-child(2n)
+    //   background-color: var(--color-table-accent)
 
     .item-info
       display: flex
       width: 100%
       overflow: hidden
       flex: 1
+      font-size: 0.875rem
+      color: var(--color-text-secondary)
 
-      div
+      & > div
         flex: 1
         margin-left: 30px
 
         &:first-child
+          font-size: 1rem
+          color: var(--color-text-primary)
           margin-left: 0
 
       .filename
@@ -604,6 +754,7 @@ export default {
         overflow: hidden
         white-space: nowrap
         width: 100%
+        flex: 3
 
     .remove-button
       width: 30px
@@ -620,16 +771,42 @@ export default {
 
     @media (max-width: 768px)
       &
-        padding: .6em 0
-
-      &:nth-child(2n)
-        margin: 0 -.6em
-        padding: .6em
+        margin: 0 -16px
 
       .item-info
         flex-direction: column
         align-items: flex-start
 
-        div
+        & > div
           margin-left: 0
+
+        .size::before
+          content: "Size: "
+        .uploaded::before
+          content: "Uploaded: "
+        .created::before
+          content: "Created: "
+        .last-printed::before
+          content: "Last print: "
+
+.circle-indicator
+  --size: 6px
+  width: var(--size)
+  height: var(--size)
+  border-radius: var(--size)
+  display: inline-block
+  margin-left: 5px
+  position: relative
+  bottom: 1px
+  background: var(--color-text-secondary)
+  &.cancelled
+    background: var(--color-danger)
+  &.finished
+    background: var(--color-success)
+
+.placeholder
+  margin: 5rem 0
+  text-align: center
+  &.text-secondary *
+    color: var(--color-text-secondary)
 </style>

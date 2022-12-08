@@ -26,6 +26,7 @@
   --color-overlay: #000000CC;
   --color-hover: #FFFFFF13;
   --color-divider: #6A7B8A;
+  --color-divider-muted: #6A7B8A66;
   --color-text-primary: #EBEBEB;
   --color-text-secondary: #AAACB0;
   --color-text-help: #4C9BE8;
@@ -864,4 +865,8 @@ a.text-warning {
 .vue-form-wizard .wizard-nav-pills>li.active>a:focus .wizard-icon,
 .vue-form-wizard .wizard-nav-pills>li.active>a:hover .wizard-icon {
   color: var(--color-on-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary) !important;
 }

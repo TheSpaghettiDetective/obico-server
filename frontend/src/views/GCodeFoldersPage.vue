@@ -116,9 +116,9 @@
                 </div>
               </div>
 
-              <div class="gcode-items-wrapper" v-if="!loading">
+              <div class="gcode-items-wrapper">
                 <!-- Folders -->
-                <div v-if="!searchStateIsActive">
+                <div v-if="!searchStateIsActive && !loading">
                   <div v-for="item in foldersToShow" :key="`folder_${item.id}`" class="item folder" @click="openFolder(item)">
                     <div class="item-info">
                       <div class="filename">
@@ -151,56 +151,58 @@
                 </div>
 
                 <!-- Gcodes -->
-                <div v-for="item in gcodesToShow" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
-                  <div class="item-info">
-                    <div class="filename">
-                      <i class="fas fa-file-code mr-1"></i>
-                      {{ item.filename }}
+                <div  v-if="!loading">
+                  <div v-for="item in gcodesToShow" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
+                    <div class="item-info">
+                      <div class="filename">
+                        <i class="fas fa-file-code mr-1"></i>
+                        {{ item.filename }}
+                      </div>
+                      <div class="size">{{ item.filesize }}</div>
+                      <div class="uploaded">{{ item.created_at.fromNow() }}</div>
+                      <div class="last-printed">
+                        <span>{{ item.last_printed_at ? item.last_printed_at.fromNow() : 'No prints yet' }}</span>
+                        <div
+                          v-if="item.last_printed_at"
+                          class="circle-indicator"
+                          :class="item.last_print_result || 'in-progress'"
+                        ></div>
+                      </div>
                     </div>
-                    <div class="size">{{ item.filesize }}</div>
-                    <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                    <div class="last-printed">
-                      <span>{{ item.last_printed_at ? item.last_printed_at.fromNow() : 'No prints yet' }}</span>
-                      <div
-                        v-if="item.last_printed_at"
-                        class="circle-indicator"
-                        :class="item.last_print_result || 'in-progress'"
-                      ></div>
+                    <div>
+                      <b-dropdown right no-caret toggle-class="icon-btn">
+                        <template #button-content>
+                          <i class="fas fa-ellipsis-v"></i>
+                        </template>
+                        <!-- <b-dropdown-item>
+                          <span class="text-primary">
+                            <i class="fas fa-play-circle"></i>Print
+                          </span>
+                        </b-dropdown-item> -->
+                        <b-dropdown-item @click="renameItem(item.id, item.filename, 'file')">
+                          <i class="fas fa-edit"></i>Rename
+                        </b-dropdown-item>
+                        <!-- <b-dropdown-item>
+                          <i class="fas fa-arrows-alt"></i>Move
+                        </b-dropdown-item> -->
+                        <b-dropdown-item @click="deleteItem(item.id, 'file')">
+                          <span class="text-danger">
+                            <i class="fas fa-trash-alt"></i>Delete
+                          </span>
+                        </b-dropdown-item>
+                      </b-dropdown>
                     </div>
-                  </div>
-                  <div>
-                    <b-dropdown right no-caret toggle-class="icon-btn">
-                      <template #button-content>
-                        <i class="fas fa-ellipsis-v"></i>
-                      </template>
-                      <!-- <b-dropdown-item>
-                        <span class="text-primary">
-                          <i class="fas fa-play-circle"></i>Print
-                        </span>
-                      </b-dropdown-item> -->
-                      <b-dropdown-item @click="renameItem(item.id, item.filename, 'file')">
-                        <i class="fas fa-edit"></i>Rename
-                      </b-dropdown-item>
-                      <!-- <b-dropdown-item>
-                        <i class="fas fa-arrows-alt"></i>Move
-                      </b-dropdown-item> -->
-                      <b-dropdown-item @click="deleteItem(item.id, 'file')">
-                        <span class="text-danger">
-                          <i class="fas fa-trash-alt"></i>Delete
-                        </span>
-                      </b-dropdown-item>
-                    </b-dropdown>
                   </div>
                 </div>
 
                 <!-- Placeholders -->
-                <div v-if="!searchStateIsActive && !gcodesToShow.length && !foldersToShow.length" class="placeholder text-secondary">
-                  <span>Nothing here yet</span>
-                </div>
-                <div v-if="searchStateIsActive && searchTimeoutId" class="placeholder">
+                <div v-if="loading || (searchStateIsActive && searchTimeoutId)" class="placeholder">
                   <b-spinner />
                 </div>
-                <div v-if="searchStateIsActive && !searchTimeoutId && !gcodesToShow.length" class="placeholder text-secondary">
+                <div v-else-if="!searchStateIsActive && !gcodesToShow.length && !foldersToShow.length" class="placeholder text-secondary">
+                  <span>Nothing here yet</span>
+                </div>
+                <div v-else-if="searchStateIsActive && !searchTimeoutId && !gcodesToShow.length" class="placeholder text-secondary">
                   <span>Nothing found</span>
                 </div>
               </div>
@@ -292,6 +294,11 @@ export default {
     this.$watch(
       () => this.$route.params,
       (toParams, previousParams) => {
+        if (toParams.gcodeId) {
+          this.$router.go()
+          return
+        }
+
         this.parentFolder = toParams.parentFolder || null
         this.fetchFilesAndFolders()
       }
@@ -461,7 +468,6 @@ export default {
             const numFolders = (await axios.get(urls.gcodeFolders({parentFolder: folders[folder].id}))).data.count || 0
             folders[folder].numItems = numFiles + numFolders
           } catch (e) {
-            this.loading = false
             console.error(e)
           }
         }
@@ -636,14 +642,14 @@ export default {
       if (document.querySelector('.swal2-container')) {
         return false
       }
-      this.$router.push('/g_code_files/' + folder.id)
+      this.$router.push(`/g_code_folders/${folder.id}/`)
     },
     openFile(file) {
       // Prevent navigation if main user action was to click dropdown item
       if (document.querySelector('.swal2-container')) {
         return false
       }
-      window.location.replace('/g_code/' + file.id)
+      this.$router.push(`/g_code_files/${file.id}/`)
     },
   },
 }

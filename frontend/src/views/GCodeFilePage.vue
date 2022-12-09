@@ -50,6 +50,20 @@ export default {
 
   created() {
     this.user = user()
+
+    this.$watch(
+      () => this.$route.params,
+      (toParams, previousParams) => {
+        // this.parentFolder = toParams.parentFolder || null
+        // this.fetchFilesAndFolders()
+
+        // debugger
+
+        if (!Object.values(toParams).length || toParams.parentFolder) {
+          this.$router.go()
+        }
+      }
+    )
   },
 }
 </script>

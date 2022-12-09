@@ -61,14 +61,14 @@ class PrintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at',
+        fields = ('id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',
                   'cancelled_at', 'uploaded_at', 'alerted_at',
                   'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
                   'video_url', 'tagged_video_url', 'poster_url',
                   'prediction_json_url', 'alert_overwrite',
                   'access_consented_at', 'printshotfeedback_set', 'video_archived_at')
         read_only_fields = (
-            'id', 'printer', 'filename', 'started_at', 'finished_at',
+            'id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',
             'cancelled_at', 'uploaded_at', 'alerted_at',
             'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
             'video_url', 'tagged_video_url', 'poster_url',

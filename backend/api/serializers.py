@@ -55,7 +55,22 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class BasePrinterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Printer
+        fields = ('id', 'name', 'created_at', 'action_on_failure',
+                  'watching_enabled', 'not_watching_reason',
+                  'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
+                  'lift_z_on_pause', 'detective_sensitivity',
+                  'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
+                  'auth_token', 'archived_at', 'agent_name', 'agent_version',)
+
+        read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
+
+
 class PrintSerializer(serializers.ModelSerializer):
+    printer = BasePrinterSerializer(many=False, read_only=True)
     printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
     prediction_json_url = serializers.SerializerMethodField()
 
@@ -79,7 +94,7 @@ class PrintSerializer(serializers.ModelSerializer):
         return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
 
 
-class PrinterSerializer(serializers.ModelSerializer):
+class PrinterSerializer(BasePrinterSerializer):
     pic = serializers.DictField(read_only=True)
     status = serializers.DictField(read_only=True)
     settings = serializers.DictField(read_only=True)
@@ -88,16 +103,8 @@ class PrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
-        fields = ('id', 'name', 'created_at', 'action_on_failure',
-                  'watching_enabled', 'not_watching_reason',
-                  'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
-                  'lift_z_on_pause', 'detective_sensitivity',
-                  'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
-                  'pic', 'status', 'settings', 'current_print',
-                  'normalized_p', 'auth_token', 'archived_at', 'agent_name', 'agent_version',)
-
-        read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status',
-        'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at',)
+        fields = BasePrinterSerializer.Meta.fields + ('pic', 'status', 'settings', 'current_print','normalized_p',)
+        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 
     def get_normalized_p(self, obj: Printer) -> float:
         return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None

@@ -28,7 +28,7 @@ urlpatterns = [
     re_path('^g_code_files/(?P<route>([^/]+/)*)$', web_views.g_code_files),
     path('g_code_files/upload/', web_views.upload_gcode_file,),
     # Compatible with mobile app versions <= 1.73
-    path('gcodes/', web_views.g_code_files),
+    path('gcodes/', web_views.g_code_folders),
     path('gcodes/upload/', web_views.upload_gcode_file,),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),

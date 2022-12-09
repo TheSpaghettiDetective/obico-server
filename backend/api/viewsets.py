@@ -299,7 +299,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = GCodeFile.objects.select_related(
             'parent_folder').prefetch_related(
-                'print_set__printshotfeedback_set').filter(
+                'print_set').filter(
                 user=self.request.user,
                 resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
                 ).order_by('-created_at')

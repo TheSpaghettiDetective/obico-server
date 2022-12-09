@@ -55,25 +55,48 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class PrintSerializer(serializers.ModelSerializer):
+class BasePrinterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Printer
+        fields = ('id', 'name', 'created_at', 'action_on_failure',
+                  'watching_enabled', 'not_watching_reason',
+                  'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
+                  'lift_z_on_pause', 'detective_sensitivity',
+                  'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
+                  'auth_token', 'archived_at', 'agent_name', 'agent_version',)
+
+        read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
+
+
+class BasePrintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Print
+        fields = ('id', 'filename', 'started_at', 'ended_at', 'finished_at',
+                  'cancelled_at', 'uploaded_at', 'alerted_at',
+                  'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
+                  'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
+                  'access_consented_at', 'video_archived_at')
+        read_only_fields = (
+            'id', 'filename', 'started_at', 'ended_at', 'finished_at',
+            'cancelled_at', 'uploaded_at', 'alerted_at',
+            'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
+            'video_url', 'tagged_video_url', 'poster_url',
+            'video_archived_at')
+
+    def get_prediction_json_url(self, obj: Print) -> str:
+        return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
+
+
+class PrintSerializer(BasePrintSerializer):
+    printer = BasePrinterSerializer(many=False, read_only=True)
     printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
     prediction_json_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at',
-                  'cancelled_at', 'uploaded_at', 'alerted_at',
-                  'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
-                  'video_url', 'tagged_video_url', 'poster_url',
-                  'prediction_json_url', 'alert_overwrite',
-                  'access_consented_at', 'printshotfeedback_set', 'video_archived_at')
-        read_only_fields = (
-            'id', 'printer', 'filename', 'started_at', 'finished_at',
-            'cancelled_at', 'uploaded_at', 'alerted_at',
-            'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
-            'video_url', 'tagged_video_url', 'poster_url',
-            'prediction_json_url',
-            'printshotfeedback_set', 'video_archived_at')
+        fields = BasePrintSerializer.Meta.fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
+        read_only_fields = BasePrintSerializer.Meta.read_only_fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
 
     def get_prediction_json_url(self, obj: Print) -> str:
         return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
@@ -84,7 +107,7 @@ class PrinterSerializer(serializers.ModelSerializer):
     status = serializers.DictField(read_only=True)
     settings = serializers.DictField(read_only=True)
     normalized_p = serializers.SerializerMethodField()
-    current_print = PrintSerializer(read_only=True)
+    current_print = BasePrintSerializer(read_only=True)
 
     class Meta:
         model = Printer
@@ -171,7 +194,7 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 
 class GCodeFileSerializer(serializers.ModelSerializer):
     parent_folder = BaseGCodeFolderSerializer()
-    print_set = PrintSerializer(many=True, read_only=True)
+    print_set = BasePrintSerializer(many=True, read_only=True)
 
     class Meta:
         model = GCodeFile

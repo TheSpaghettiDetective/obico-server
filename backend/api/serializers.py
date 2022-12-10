@@ -70,9 +70,10 @@ class BasePrinterSerializer(serializers.ModelSerializer):
 
 
 class BasePrintSerializer(serializers.ModelSerializer):
+    printer = BasePrinterSerializer(many=False, read_only=True)
     class Meta:
         model = Print
-        fields = ('id', 'filename', 'started_at', 'ended_at', 'finished_at',
+        fields = ('id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',
                   'cancelled_at', 'uploaded_at', 'alerted_at',
                   'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
                   'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
@@ -89,7 +90,6 @@ class BasePrintSerializer(serializers.ModelSerializer):
 
 
 class PrintSerializer(BasePrintSerializer):
-    printer = BasePrinterSerializer(many=False, read_only=True)
     printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
     prediction_json_url = serializers.SerializerMethodField()
 

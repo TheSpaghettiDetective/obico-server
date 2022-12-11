@@ -299,10 +299,7 @@ class OneTimeVerificationCodeVerifyView(APIView):
             raise Http404("Requested resource does not exist")
 
 
-class PrinterEventView(
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet
-):
+class PrinterEventView(CreateAPIView):
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
 

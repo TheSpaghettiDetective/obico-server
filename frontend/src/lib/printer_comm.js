@@ -45,7 +45,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     }
   }
 
-  self.connect = function() {
+  self.connect = function(onOpenCallback = null) {
     self.ws = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri)
     self.ws.onmessage = function (e) {
       let msg = {}
@@ -60,6 +60,10 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
       } else {
         onPrinterUpdateReceived(msg)
       }
+    }
+
+    if (onOpenCallback) {
+      self.ws.onopen = onOpenCallback;
     }
 
     self.ensureWebsocketClosed()

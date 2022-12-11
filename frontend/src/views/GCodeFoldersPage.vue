@@ -161,11 +161,16 @@
                       <div class="size">{{ item.filesize }}</div>
                       <div class="uploaded">{{ item.created_at.fromNow() }}</div>
                       <div class="last-printed">
-                        <span>{{ item.last_printed_at ? item.last_printed_at.fromNow() : 'No prints yet' }}</span>
+                        <span v-if="!item.print_set.length">No prints yet</span>
+                        <span v-else-if="item.last_printed_at">{{ item.last_printed_at.fromNow() }}</span>
+                        <div v-else>
+                          <span>Printing...</span>
+                          <!-- <b-spinner small class="ml-1" /> -->
+                        </div>
                         <div
                           v-if="item.last_printed_at"
                           class="circle-indicator"
-                          :class="item.last_print_result || 'in-progress'"
+                          :class="item.last_print_result"
                         ></div>
                       </div>
                     </div>
@@ -294,11 +299,6 @@ export default {
     this.$watch(
       () => this.$route.params,
       (toParams, previousParams) => {
-        if (toParams.gcodeId) {
-          this.$router.go()
-          return
-        }
-
         this.parentFolder = toParams.parentFolder || null
         this.fetchFilesAndFolders()
       }
@@ -446,8 +446,14 @@ export default {
       let folders
 
       try {
-        files = await axios.get(urls.gcodeFiles({parentFolder: this.parentFolder}))
-        folders = await axios.get(urls.gcodeFolders({parentFolder: this.parentFolder}))
+        files = await axios.get(
+          urls.gcodeFiles({parentFolder: this.parentFolder}), {
+            // If cache is enabled, after renaming item on gcode page
+            // and going back to files - gcode will have old name
+            headers: {'Cache-Control': 'no-cache'}
+          })
+        folders = await axios.get(
+          urls.gcodeFolders({parentFolder: this.parentFolder}))
       } catch (e) {
         this.loading = false
         console.error(e)
@@ -491,7 +497,7 @@ export default {
         let files
 
         try {
-          files = await axios.get(urls.searchGcodeFiles(search))
+          files = await axios.get(urls.gcodeFiles({query: search}))
         } catch (e) {
           this.loading = false
           console.error(e)
@@ -552,43 +558,37 @@ export default {
         })
     },
     renameItem(id, oldName, itemType = 'file') {
-      this.$swal.fire({
+      this.$swal.Prompt.fire({
         title: 'New name',
         input: 'text',
         inputValue: oldName,
         inputPlaceholder: 'New name',
         showCancelButton: true,
         confirmButtonText: 'Save',
-        backdrop: 'rgba(0,0,0,0.5)',
         preConfirm: async (newName) => {
           if (!newName) {
             this.$swal.showValidationMessage('Name is required')
-            return false;
+            return false
           }
           if (itemType === 'folder' && this.folders.find(item => item.name === newName)) {
             this.$swal.showValidationMessage('Folder with this name already exists')
-            return false;
+            return false
           }
           try {
             const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
             await axios.patch(url, `${itemType === 'file' ? 'filename' : 'name'}=${newName}`)
           } catch (e) {
             this.$swal.showValidationMessage('Server error')
-            console.log(e);
-            return false;
+            console.log(e)
+            return false
           }
           this.fetchFilesAndFolders()
-          return true;
+          return true
         },
       })
     },
     deleteItem(id, itemType = 'file') {
-      this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-      }).then(async userAction => {
+      this.$swal.Confirm.fire().then(async userAction => {
         if (userAction.isConfirmed) {
           try {
             const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
@@ -612,7 +612,6 @@ export default {
         inputPlaceholder: 'Folder name',
         showCancelButton: true,
         confirmButtonText: 'Create',
-        backdrop: 'rgba(0,0,0,0.5)',
         preConfirm: async (folderName) => {
           if (!folderName) {
             this.$swal.showValidationMessage('Folder name is required')
@@ -649,7 +648,7 @@ export default {
       if (document.querySelector('.swal2-container')) {
         return false
       }
-      this.$router.push(`/g_code_files/${file.id}/`)
+      window.location.assign(`/g_code_files/${file.id}/`)
     },
   },
 }

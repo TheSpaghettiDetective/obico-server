@@ -23,12 +23,24 @@ export const normalizedGcode = gcode => {
   gcode.updated_at = toMomentOrNull(gcode.updated_at)
   gcode.deleted = toMomentOrNull(gcode.deleted)
   gcode.filesize = filesize(gcode.num_bytes)
-  gcode.last_printed_at = toMomentOrNull(gcode.print_set[0]?.started_at)
-  if (gcode.print_set[0]?.cancelled_at) {
+
+  for (const i in gcode.print_set) {
+    gcode.print_set[i].started_at = toMomentOrNull(gcode.print_set[i].started_at)
+    gcode.print_set[i].finished_at = toMomentOrNull(gcode.print_set[i].finished_at)
+    gcode.print_set[i].cancelled_at = toMomentOrNull(gcode.print_set[i].cancelled_at)
+    gcode.print_set[i].ended_at = toMomentOrNull(gcode.print_set[i].ended_at)
+  }
+
+  gcode.last_printed_at = gcode.print_set.at(-1)?.ended_at
+  if (gcode.print_set.at(-1)?.cancelled_at) {
     gcode.last_print_result = 'cancelled'
-  } else if (gcode.print_set[0]?.finished_at) {
+  } else if (gcode.print_set.at(-1)?.finished_at) {
     gcode.last_print_result = 'finished'
   }
+
+  gcode.failedPrints = gcode.print_set.filter(p => p.cancelled_at).length
+  gcode.successPrints = gcode.print_set.filter(p => p.finished_at).length
+  gcode.totalPrints = gcode.print_set.length
   return gcode
 }
 

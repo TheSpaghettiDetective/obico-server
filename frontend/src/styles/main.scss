@@ -870,3 +870,15 @@ a.text-warning {
 .text-secondary {
   color: var(--color-text-secondary) !important;
 }
+
+
+.card-container {
+  background: var(--color-surface-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5em;
+}
+
+.btn {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

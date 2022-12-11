@@ -521,7 +521,7 @@ export default {
     onPrinterActionStartClicked() {
       axios
         .get(
-          urls.gcodeFiles(),
+          urls.gcodeFiles({query: ''}),
         ).then((response) => {
           let gcodeFiles = [...response.data.results.map(gcode => normalizedGcode(gcode))]
 

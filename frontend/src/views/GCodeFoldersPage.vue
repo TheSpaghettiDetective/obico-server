@@ -461,23 +461,11 @@ export default {
 
       files = files?.data
       folders = folders?.data
-
       if (files?.count) {
         this.gcodes = files.results.map(data => normalizedGcode(data))
       }
-
       if (folders?.count) {
-        folders = folders.results.map(data => normalizedGcodeFolder(data))
-        for (let folder in folders) {
-          try {
-            const numFiles = (await axios.get(urls.gcodeFiles({parentFolder: folders[folder].id}))).data.count || 0
-            const numFolders = (await axios.get(urls.gcodeFolders({parentFolder: folders[folder].id}))).data.count || 0
-            folders[folder].numItems = numFiles + numFolders
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        this.folders = folders
+        this.folders = folders.results.map(data => normalizedGcodeFolder(data))
       }
       this.loading = false
     },

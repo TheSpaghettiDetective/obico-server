@@ -47,6 +47,7 @@ export const normalizedGcode = gcode => {
 export const normalizedGcodeFolder = folder => {
   folder.created_at = toMomentOrNull(folder.created_at)
   folder.updated_at = toMomentOrNull(folder.updated_at)
+  folder.numItems = folder.g_code_file_count + folder.g_code_folder_count
   return folder
 }
 

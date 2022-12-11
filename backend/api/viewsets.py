@@ -273,7 +273,22 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
             return GCodeFolderDeSerializer
 
     def get_queryset(self):
-        qs = GCodeFolder.objects.filter(user=self.request.user,)
+        return GCodeFolder.objects.filter(user=self.request.user,)
+
+    def list(self, request):
+        qs = self.get_queryset().select_related(
+            'parent_folder')
+
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+        elif sorting == 'name_asc':
+            qs = qs.order_by('ename')
+        elif sorting == 'name_desc':
+            qs = qs.order_by('-name')
+
         if 'parent_folder' in self.request.GET:
             parent_folder = self.request.GET.get('parent_folder')
             if parent_folder == 'null':
@@ -281,7 +296,14 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
-        return qs
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
 
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
@@ -302,15 +324,23 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     def list(self, request):
         qs = self.get_queryset().select_related(
             'parent_folder').prefetch_related(
-                'print_set__printer').filter(
+            'print_set__printer').filter(
                 resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
-                ).order_by('-created_at')
+            )
 
         sorting = request.GET.get('sorting', 'created_at_desc')
         if sorting == 'created_at_asc':
             qs = qs.order_by('id')
         elif sorting == 'created_at_desc':
             qs = qs.order_by('-id')
+        elif sorting == 'num_bytes_asc':
+            qs = qs.order_by('num_bytes')
+        elif sorting == 'num_bytes_desc':
+            qs = qs.order_by('-num_bytes')
+        elif sorting == 'filename_asc':
+            qs = qs.order_by('filename')
+        elif sorting == 'filename_desc':
+            qs = qs.order_by('-filename')
 
         q = request.GET.get('q')
         if q:

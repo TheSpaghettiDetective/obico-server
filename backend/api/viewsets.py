@@ -297,14 +297,22 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             return GCodeFileDeSerializer
 
     def get_queryset(self):
-        qs = GCodeFile.objects.select_related(
+        return GCodeFile.objects.filter(user=self.request.user)
+
+    def list(self, request):
+        qs = self.get_queryset().select_related(
             'parent_folder').prefetch_related(
                 'print_set__printer').filter(
-                user=self.request.user,
                 resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
                 ).order_by('-created_at')
 
-        q = self.request.GET.get('q')
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+
+        q = request.GET.get('q')
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
@@ -315,7 +323,13 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
-        return qs
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)

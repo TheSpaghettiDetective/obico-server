@@ -120,6 +120,8 @@ class PrinterSerializer(BasePrinterSerializer):
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    g_code_folder_count = serializers.IntegerField(read_only=True)
+    g_code_file_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = GCodeFolder

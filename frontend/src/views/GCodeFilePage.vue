@@ -70,30 +70,8 @@
                 </b-row>
               </b-container>
             </div>
-            <div class="mt-5">
-              <h2 class="section-title">{{ gcode.print_set.length ? 'Print history' : 'This file doesn\'t have any prints yet' }}</h2>
-              <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
-                <div class="print-info">
-
-                  <div class="result text-success font-weight-bold" v-if="print.finished_at">Succeeded</div>
-                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">Cancelled / Failed</div>
-                  <div class="result font-weight-bold" v-else>Printing...</div>
-
-                  <div class="printer truncate-overflow-text">Printer: {{ print.printer.name }}</div>
-                  <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
-
-                  <div class="date">
-                    Ended:
-                    <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
-                    <span v-else>-</span>
-                  </div>
-                </div>
-                <div class="poster" v-if="gcode.poster_url">
-                  <div class="img" :style="{backgroundImage: `url(${gcode.poster_url})`}">No image</div>
-                </div>
-              </div>
-            </div>
           </b-col>
+
           <b-col lg="4" v-if="!printersLoading">
             <div class="card-container mt-4 mt-lg-0">
               <div
@@ -118,6 +96,32 @@
                   <div class="truncate-overflow-text" v-else>Print</div>
                 </div>
               </button>
+            </div>
+          </b-col>
+
+          <b-col lg="8">
+            <div class="mt-5">
+              <h2 class="section-title">{{ gcode.print_set.length ? 'Print history' : 'This file doesn\'t have any prints yet' }}</h2>
+              <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
+                <div class="print-info">
+
+                  <div class="result text-success font-weight-bold" v-if="print.finished_at">Succeeded</div>
+                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">Cancelled / Failed</div>
+                  <div class="result font-weight-bold" v-else>Printing...</div>
+
+                  <div class="printer truncate-overflow-text">Printer: {{ print.printer.name }}</div>
+                  <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
+
+                  <div class="date">
+                    Ended:
+                    <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
+                    <span v-else>-</span>
+                  </div>
+                </div>
+                <div class="poster" v-if="gcode.poster_url">
+                  <div class="img" :style="{backgroundImage: `url(${gcode.poster_url})`}">No image</div>
+                </div>
+              </div>
             </div>
           </b-col>
         </b-row>

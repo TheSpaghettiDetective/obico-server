@@ -289,8 +289,8 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         elif sorting == 'name_desc':
             qs = qs.order_by('-name')
 
-        if 'parent_folder' in self.request.GET:
-            parent_folder = self.request.GET.get('parent_folder')
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
             if parent_folder == 'null':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
@@ -346,8 +346,8 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
-        if 'parent_folder' in self.request.GET:
-            parent_folder = self.request.GET.get('parent_folder')
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
             if parent_folder == 'null':
                 qs = qs.filter(parent_folder__isnull=True)
             else:

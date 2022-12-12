@@ -177,7 +177,7 @@ NPLUSONE_LOG_LEVEL = logging.WARN
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'console': {
             'format': '%(name)-12s %(levelname)-8s %(message)s'
@@ -207,8 +207,6 @@ LOGGING = {
             'formatter': 'console_debug'
         },
         'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'console'
         },

@@ -368,7 +368,7 @@ export default {
               title: 'Error',
               text: e.message,
             })
-            console.log(e);
+            console.log(e)
           }
         }
       })

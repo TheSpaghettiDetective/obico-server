@@ -26,21 +26,21 @@
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
           <b-dropdown-text class="small text-secondary">ORDER</b-dropdown-text>
           <b-dropdown-item
-            v-for="sortingOption in sortingOptions"
-            :key="`s_${sortingOption}`"
-            @click="() => activeSorting = sortingOption"
+            v-for="sortingOption in sorting.options"
+            :key="`s_${sortingOption.id}`"
+            @click="() => updateSorting(sortingOption)"
           >
-            <i class="fas fa-check text-primary" :style="{visibility: activeSorting === sortingOption ? 'visible' : 'hidden'}"></i>
-            {{ sortingTitle[sortingOption] }}
+            <i class="fas fa-check text-primary" :style="{visibility: activeSorting.id === sortingOption.id ? 'visible' : 'hidden'}"></i>
+            {{ sortingOption.title }}
           </b-dropdown-item>
           <b-dropdown-divider />
           <b-dropdown-item
-            v-for="sortingDirection in sortingDirections"
-            :key="`d_${sortingDirection}`"
-            @click="() => activeSortingDirection = sortingDirection"
+            v-for="sortingDirection in sorting.directions"
+            :key="`d_${sortingDirection.id}`"
+            @click="() => updateSorting(activeSorting, sortingDirection)"
           >
-            <i class="fas fa-check text-primary" :style="{visibility: activeSortingDirection === sortingDirection ? 'visible' : 'hidden'}"></i>
-            {{ sortingDirectionTitle[sortingDirection] }}
+            <i class="fas fa-check text-primary" :style="{visibility: activeSortingDirection.id === sortingDirection.id ? 'visible' : 'hidden'}"></i>
+            {{ sortingDirection.title }}
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -69,57 +69,17 @@
             </vue-dropzone>
 
             <div class="gcodes-wrapper">
-              <div class="sorting-panel">
-                <div
-                  class="sorting-option"
-                  :class="{'active': activeSorting === sortingOptions.NAME}"
-                  @click="updateSorting(sortingOptions.NAME)"
-                >
-                  <span class="text">Name</span>
-                  <div class="direction">
-                    <i class="fas fa-arrow-down" v-if="activeSorting === sortingOptions.NAME && activeSortingDirection === sortingDirections.DESC"></i>
-                    <i class="fas fa-arrow-up" v-else></i>
-                  </div>
-                </div>
-                <div
-                  class="sorting-option"
-                  :class="{'active': activeSorting === sortingOptions.SIZE}"
-                  @click="updateSorting(sortingOptions.SIZE)"
-                >
-                  <span class="text">Size</span>
-                  <div class="direction">
-                    <i class="fas fa-arrow-down" v-if="activeSorting === sortingOptions.SIZE && activeSortingDirection === sortingDirections.DESC"></i>
-                    <i class="fas fa-arrow-up" v-else></i>
-                  </div>
-                </div>
-                <div
-                  class="sorting-option"
-                  :class="{'active': activeSorting === sortingOptions.CREATED}"
-                  @click="updateSorting(sortingOptions.CREATED)"
-                >
-                  <span class="text">Created</span>
-                  <div class="direction">
-                    <i class="fas fa-arrow-down" v-if="activeSorting === sortingOptions.CREATED && activeSortingDirection === sortingDirections.DESC"></i>
-                    <i class="fas fa-arrow-up" v-else></i>
-                  </div>
-                </div>
-                <div
-                  class="sorting-option"
-                  :class="{'active': activeSorting === sortingOptions.LAST_PRINTED}"
-                  @click="updateSorting(sortingOptions.LAST_PRINTED)"
-                >
-                  <span class="text">Last printed</span>
-                  <div class="direction">
-                    <i class="fas fa-arrow-down" v-if="activeSorting === sortingOptions.LAST_PRINTED && activeSortingDirection === sortingDirections.DESC"></i>
-                    <i class="fas fa-arrow-up" v-else></i>
-                  </div>
-                </div>
+              <div class="header-panel">
+                <div class="text">Name</div>
+                <div class="text">Size</div>
+                <div class="text">Created</div>
+                <div class="text">Last printed</div>
               </div>
 
               <div class="gcode-items-wrapper">
                 <!-- Folders -->
-                <div v-if="!searchStateIsActive && !loading">
-                  <div v-for="item in foldersToShow" :key="`folder_${item.id}`" class="item folder" @click="openFolder(item)">
+                <div v-if="!searchStateIsActive">
+                  <div v-for="item in folders" :key="`folder_${item.id}`" class="item folder" @click="openFolder(item)">
                     <div class="item-info">
                       <div class="filename">
                         <i class="fas fa-folder mr-1"></i>
@@ -150,9 +110,9 @@
                   </div>
                 </div>
 
-                <!-- Gcodes -->
-                <div  v-if="!loading">
-                  <div v-for="item in gcodesToShow" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
+                <!-- Files -->
+                <div v-if="!searchInProgress">
+                  <div v-for="item in files" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
                     <div class="item-info">
                       <div class="filename">
                         <i class="fas fa-file-code mr-1"></i>
@@ -200,14 +160,18 @@
                   </div>
                 </div>
 
+                <!-- Pagination -->
+                <mugen-scroll :v-show="!isFolderEmpty" :handler="fetchFilesAndFolders" :should-handle="!loading" class="text-center">
+                  <div v-if="!noMoreFolders || !noMoreFiles || searchInProgress" class="py-5">
+                    <b-spinner label="Loading..." />
+                  </div>
+                </mugen-scroll>
+
                 <!-- Placeholders -->
-                <div v-if="loading || (searchStateIsActive && searchTimeoutId)" class="placeholder">
-                  <b-spinner />
-                </div>
-                <div v-else-if="!searchStateIsActive && !gcodesToShow.length && !foldersToShow.length" class="placeholder text-secondary">
+                <div v-if="isFolderEmpty" class="placeholder text-secondary">
                   <span>Nothing here yet</span>
                 </div>
-                <div v-else-if="searchStateIsActive && !searchTimeoutId && !gcodesToShow.length" class="placeholder text-secondary">
+                <div v-else-if="nothingFound" class="placeholder text-secondary">
                   <span>Nothing found</span>
                 </div>
               </div>
@@ -228,30 +192,45 @@ import axios from 'axios'
 import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
+import MugenScroll from 'vue-mugen-scroll'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
 
-// Sorting consts
-const SORTING_OPTIONS = {
-  NAME: 1,
-  SIZE: 2,
-  CREATED: 3,
-  LAST_PRINTED: 4,
-}
-const SORTING_OPTIONS_TITLE = {
-  [SORTING_OPTIONS.NAME]: 'Name',
-  [SORTING_OPTIONS.SIZE]: 'Size',
-  [SORTING_OPTIONS.CREATED]: 'Created',
-  [SORTING_OPTIONS.LAST_PRINTED]: 'Last Printed',
-}
-const SORTING_DIRECTIONS = {
-  ASC: 1,
-  DESC: -1,
-}
-const SORTING_DIRECTION_TITLE = {
-  [SORTING_DIRECTIONS.ASC]: 'Ascending',
-  [SORTING_DIRECTIONS.DESC]: 'Descending',
+const PAGE_SIZE = 24
+
+const Sorting = {
+  options: {
+    name: {
+      id: 1,
+      title: 'Name',
+      file_query: 'filename',
+      folder_query: 'name',
+    },
+    size: {
+      id: 2,
+      title: 'Size',
+      file_query: 'num_bytes',
+    },
+    created_at: {
+      id: 3,
+      title: 'Created',
+      file_query: 'created_at',
+      folder_query: 'created_at',
+    },
+  },
+  directions: {
+    asc: {
+      id: 1,
+      title: 'Ascending',
+      query: 'asc',
+    },
+    desc: {
+      id: 2,
+      title: 'Descending',
+      query: 'desc',
+    },
+  },
 }
 
 export default {
@@ -261,6 +240,7 @@ export default {
     Layout,
     SearchInput,
     vueDropzone: vue2Dropzone,
+    MugenScroll,
   },
 
   props: {
@@ -275,18 +255,19 @@ export default {
       user: null,
       loading: false,
       parentFolder: null,
-      gcodes: [],
+      files: [],
       folders: [],
+      noMoreFolders: false,
+      noMoreFiles: false,
+      currentFoldersPage: 1,
+      currentFilesPage: 1,
 
-      activeSorting: SORTING_OPTIONS.CREATED,
-      activeSortingDirection: SORTING_DIRECTIONS.DESC,
-      sortingOptions: SORTING_OPTIONS,
-      sortingTitle: SORTING_OPTIONS_TITLE,
-      sortingDirectionTitle: SORTING_DIRECTION_TITLE,
-      sortingDirections: SORTING_DIRECTIONS,
+      sorting: Sorting,
+      activeSorting: Sorting.options.created_at,
+      activeSortingDirection: Sorting.directions.desc,
 
+      searchQuery: null,
       searchStateIsActive: false,
-      searchResultGcodes: [],
       searchTimeoutId: null,
     }
   },
@@ -294,18 +275,27 @@ export default {
   created() {
     this.user = user()
     this.parentFolder = this.$route.params.parentFolder || null
-    this.fetchFilesAndFolders()
+    this.fetchFilesAndFolders(true)
 
     this.$watch(
       () => this.$route.params,
       (toParams, previousParams) => {
         this.parentFolder = toParams.parentFolder || null
-        this.fetchFilesAndFolders()
+        this.fetchFilesAndFolders(true)
       }
     )
   },
 
   computed: {
+    isFolderEmpty() {
+      return !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
+    },
+    nothingFound() {
+      return this.searchStateIsActive && !this.searchTimeoutId && !this.files.length
+    },
+    searchInProgress() {
+      return this.searchStateIsActive && !!this.searchTimeoutId
+    },
     maxFilesize() {
       return this.user.is_pro ? 500 : 50 // MB
     },
@@ -322,151 +312,89 @@ export default {
         headers: { 'X-CSRFToken': this.csrf },
       }
     },
-    gcodesToShow() {
-      let gcodes = this.gcodes
-
-      if (this.searchStateIsActive) {
-        gcodes = this.searchResultGcodes
-      }
-
-      if (!gcodes || this.searchTimeoutId) {
-        return []
-      }
-
-      const sortDirection = this.activeSortingDirection
-
-      switch (this.activeSorting) {
-        case SORTING_OPTIONS.NAME:
-          gcodes.sort(function(a, b) {
-            var filenameA = a.filename.toUpperCase() // ignore upper and lowercase
-            var filenameB = b.filename.toUpperCase() // ignore upper and lowercase
-            if (filenameA < filenameB) {
-              return sortDirection === SORTING_DIRECTIONS.ASC ? -1 : 1
-            }
-            if (filenameA > filenameB) {
-              return sortDirection === SORTING_DIRECTIONS.ASC ? 1 : -1
-            }
-            return 0
-          })
-          break
-
-        case SORTING_OPTIONS.SIZE:
-          gcodes.sort(function(a, b) {
-            if (sortDirection === SORTING_DIRECTIONS.ASC) {
-              return a.num_bytes - b.num_bytes
-            } else {
-              return b.num_bytes - a.num_bytes
-            }
-          })
-          break
-
-        case SORTING_OPTIONS.CREATED:
-          gcodes.sort(function(a, b) {
-            const uploadedA = a.created_at.unix()
-            const uploadedB = b.created_at.unix()
-            if (sortDirection === SORTING_DIRECTIONS.ASC) {
-              return uploadedA - uploadedB
-            } else {
-              return uploadedB - uploadedA
-            }
-          })
-          break
-
-        case SORTING_OPTIONS.LAST_PRINTED:
-          gcodes.sort(function(a, b) {
-            const printedA = a.last_printed_at?.unix() || 0
-            const printedB = b.last_printed_at?.unix() || 0
-            if (sortDirection === SORTING_DIRECTIONS.ASC) {
-              return printedA - printedB
-            } else {
-              return printedB - printedA
-            }
-          })
-          break
-      }
-
-      return gcodes
-    },
-    foldersToShow() {
-      let folders = this.folders
-
-      if (!folders) {
-        return []
-      }
-
-      const sortDirection = this.activeSortingDirection
-
-      switch (this.activeSorting) {
-        case SORTING_OPTIONS.NAME:
-          folders.sort(function(a, b) {
-            var nameA = a.name.toUpperCase() // ignore upper and lowercase
-            var nameB = b.name.toUpperCase() // ignore upper and lowercase
-            if (nameA < nameB) {
-              return sortDirection === SORTING_DIRECTIONS.ASC ? -1 : 1
-            }
-            if (nameA > nameB) {
-              return sortDirection === SORTING_DIRECTIONS.ASC ? 1 : -1
-            }
-            return 0
-          })
-          break
-
-        case SORTING_OPTIONS.SIZE:
-          folders.sort(function(a, b) {
-            if (sortDirection === SORTING_DIRECTIONS.ASC) {
-              return a.numItems - b.numItems
-            } else {
-              return b.numItems - a.numItems
-            }
-          })
-          break
-
-        case SORTING_OPTIONS.CREATED:
-          folders.sort(function(a, b) {
-            const createdA = a.created_at.unix()
-            const createdB = b.created_at.unix()
-            if (sortDirection === SORTING_DIRECTIONS.ASC) {
-              return createdA - createdB
-            } else {
-              return createdB - createdA
-            }
-          })
-          break
-      }
-      return folders
-    },
   },
 
   methods: {
-    async fetchFilesAndFolders() {
+    async fetchFilesAndFolders(reset = false) {
+      if (reset) {
+        this.folders = []
+        this.files = []
+        this.noMoreFolders = false
+        this.noMoreFiles = false
+        this.currentFoldersPage = 1
+        this.currentFilesPage = 1
+      }
+
+      if (this.searchQuery) {
+        this.noMoreFolders = true
+      }
+
+      if (this.noMoreFolders && this.noMoreFiles) return
+
       this.loading = true
-      this.gcodes = []
-      this.folders = []
-      let files
-      let folders
 
-      try {
-        files = await axios.get(
-          urls.gcodeFiles({parentFolder: this.parentFolder}), {
-            // If cache is enabled, after renaming item on gcode page
-            // and going back to files - gcode will have old name
-            headers: {'Cache-Control': 'no-cache'}
+      let folders = []
+      let files = []
+
+      if (!this.noMoreFolders) {
+        try {
+          let response = await axios.get(urls.gcodeFolders({
+            parentFolder: this.parentFolder,
+            page: this.currentFoldersPage,
+            pageSize: PAGE_SIZE,
+            sortingOption: this.activeSorting.folder_query,
+            sortingDirection: this.activeSortingDirection.query,
+          }))
+          response = response.data
+          this.noMoreFolders = response?.next === null
+          folders = response?.results || []
+        } catch (e) {
+          this.loading = false
+          this.$swal.Reject.fire({
+            title: 'Error',
+            text: e.message,
           })
-        folders = await axios.get(
-          urls.gcodeFolders({parentFolder: this.parentFolder}))
-      } catch (e) {
-        this.loading = false
-        console.error(e)
+          console.error(e)
+        }
+
+        this.folders.push(...folders.map(data => normalizedGcodeFolder(data)))
+        this.currentFoldersPage += 1
       }
 
-      files = files?.data
-      folders = folders?.data
-      if (files?.count) {
-        this.gcodes = files.results.map(data => normalizedGcode(data))
+      if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
+        try {
+          let response = await axios.get(urls.gcodeFiles({
+              parentFolder: this.parentFolder,
+              page: this.currentFilesPage,
+              pageSize: PAGE_SIZE,
+              sortingOption: this.activeSorting.file_query,
+              sortingDirection: this.activeSortingDirection.query,
+              query: this.searchQuery,
+            }),
+            {
+              // If cache is enabled, after renaming item on gcode page
+              // and going back to files - gcode will have old name
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
+            }
+          )
+          response = response.data
+          this.noMoreFiles = response?.next === null
+          files = response?.results || []
+        } catch (e) {
+          this.loading = false
+          this.$swal.Reject.fire({
+            title: 'Error',
+            text: e.message,
+          })
+          console.error(e)
+        }
+
+        this.files.push(...files.map(data => normalizedGcode(data)))
+        this.currentFilesPage += 1
       }
-      if (folders?.count) {
-        this.folders = folders.results.map(data => normalizedGcodeFolder(data))
-      }
+
       this.loading = false
     },
     updateSearch(search) {
@@ -475,37 +403,32 @@ export default {
 
       this.searchStateIsActive = !!search
       if (!this.searchStateIsActive) {
-        this.searchResultGcodes = []
+        this.searchQuery = null
+        this.fetchFilesAndFolders(true)
         return
       }
 
       this.searchTimeoutId = setTimeout(async () => {
-        this.loading = true
-        this.searchResultGcodes = []
-        let files
-
-        try {
-          files = await axios.get(urls.gcodeFiles({query: search}))
-        } catch (e) {
-          this.loading = false
-          console.error(e)
-        }
-
-        files = files?.data
-        if (files?.count) {
-          this.searchResultGcodes = files.results.map(data => normalizedGcode(data))
-        }
-
-        this.loading = false
+        this.searchQuery = search
+        this.fetchFilesAndFolders(true)
         this.searchTimeoutId = null
-      }, SEARCH_API_CALL_DELAY);
+      }, SEARCH_API_CALL_DELAY)
     },
-    updateSorting(sortOption) {
-      if (this.activeSorting === sortOption) {
-        this.activeSortingDirection = -this.activeSortingDirection
-      } else {
-        this.activeSorting = sortOption
-        this.activeSortingDirection = SORTING_DIRECTIONS.ASC
+    updateSorting(newSortingOption, newSortingDirection = this.activeSortingDirection) {
+      let sortingChanged = false
+
+      if (this.activeSorting.id !== newSortingOption.id) {
+        this.activeSorting = newSortingOption
+        sortingChanged = true
+      }
+
+      if (this.activeSortingDirection.id !== newSortingDirection.id) {
+        this.activeSortingDirection = newSortingDirection
+        sortingChanged = true
+      }
+
+      if (sortingChanged) {
+        this.fetchFilesAndFolders(true)
       }
     },
     addParentFolderParam(file, xhr, formData) {
@@ -516,34 +439,12 @@ export default {
     },
     gcodeUploadSuccess() {
       this.$refs.gcodesDropzone.removeAllFiles()
-      this.gcodes = []
-      this.fetchFilesAndFolders()
+      this.files = []
+      this.fetchFilesAndFolders(true)
     },
     gcodeUploadError(file, message) {
       this.$swal.Reject.fire({
         html: `<p class="text-center">${message}</p>`})
-    },
-    removeItem(id) {
-      axios
-        .delete(urls.gcode(id), )
-        .then(() => {
-          for (let i = 0; i < this.gcodes.length; i++) {
-            const deleted = this.gcodes[i]
-
-            if (deleted.id === id) {
-              this.gcodes.splice(i, 1)
-
-              // Toast for user
-              let toastHtml = ''
-              toastHtml += `<h6 class="text-danger">${deleted.filename} successfully deleted!</h6>`
-
-              this.$swal.Toast.fire({
-                // icon: 'success',
-                html: toastHtml,
-              })
-            }
-          }
-        })
     },
     renameItem(id, oldName, itemType = 'file') {
       this.$swal.Prompt.fire({
@@ -570,7 +471,19 @@ export default {
             console.log(e)
             return false
           }
-          this.fetchFilesAndFolders()
+
+          const targetArr = itemType === 'file' ? this.files : this.folders
+          for (let i in targetArr) {
+            if (targetArr[i].id !== id) {
+              continue
+            } else if (itemType === 'file') {
+              this.files[i].filename = newName
+              break
+            } else {
+              this.folders[i].name = newName
+              break
+            }
+          }
           return true
         },
       })
@@ -581,13 +494,26 @@ export default {
           try {
             const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
             await axios.delete(url)
-            this.fetchFilesAndFolders()
           } catch (e) {
             this.$swal.Reject.fire({
               title: 'Error',
               text: e.message,
             })
-            console.log(e);
+            console.log(e)
+            return
+          }
+
+          const targetArr = itemType === 'file' ? this.files : this.folders
+          for (let i in targetArr) {
+            if (targetArr[i].id !== id) {
+              continue
+            } else if (itemType === 'file') {
+              this.files.splice(i, 1)
+              break
+            } else {
+              this.folders.splice(i, 1)
+              break
+            }
           }
         }
       })
@@ -603,11 +529,11 @@ export default {
         preConfirm: async (folderName) => {
           if (!folderName) {
             this.$swal.showValidationMessage('Folder name is required')
-            return false;
+            return false
           }
           if (this.folders.find(item => item.name === folderName)) {
             this.$swal.showValidationMessage('Folder with this name already exists')
-            return false;
+            return false
           }
           try {
             await axios.post(urls.gcodeFolders(), {
@@ -616,11 +542,11 @@ export default {
             })
           } catch (e) {
             this.$swal.showValidationMessage('Server error')
-            console.log(e);
-            return false;
+            console.log(e)
+            return false
           }
-          this.fetchFilesAndFolders();
-          return true;
+          this.fetchFilesAndFolders(true)
+          return true
         },
       })
     },
@@ -656,40 +582,28 @@ export default {
   background-color: var(--color-surface-secondary)
   padding: 1em 2em
   border-radius: var(--border-radius-lg)
+  margin-top: 2rem
 
-.sorting-panel
+.header-panel
   display: flex
   padding: 1em calc(1em + 30px) 1em 1em
   border-bottom: 1px solid var(--color-divider)
   font-weight: bold
 
-  .sorting-option
+  & > div
     flex: 1
     display: flex
     justify-content: space-between
     margin-left: 30px
     align-items: center
-    font-size: .9rem
-
-    &:hover
-      cursor: pointer
+    font-size: 1rem
 
     &:first-child
       margin-left: 0
       flex: 3
 
-    .direction
-      font-size: .8rem
-      opacity: .3
-
-  .sorting-option.active .direction
-    opacity: 1
-
   @media (max-width: 768px)
     &
-      display: none
-
-    .remove-button-placeholder
       display: none
 
 .gcode-items-wrapper

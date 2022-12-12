@@ -177,20 +177,37 @@ NPLUSONE_LOG_LEVEL = logging.WARN
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'console': {
             'format': '%(name)-12s %(levelname)-8s %(message)s'
         },
     },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
     'handlers': {
+        'console_debug': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
         'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'console'
         },
     },
     'loggers': {
-        '': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console_debug'],
+        },
+        'root': {
             'level': 'INFO',
             'handlers': ['console']
         }

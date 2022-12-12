@@ -285,7 +285,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         elif sorting == 'created_at_desc':
             qs = qs.order_by('-id')
         elif sorting == 'name_asc':
-            qs = qs.order_by('ename')
+            qs = qs.order_by('name')
         elif sorting == 'name_desc':
             qs = qs.order_by('-name')
 

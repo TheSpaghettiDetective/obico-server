@@ -94,6 +94,7 @@ class PrintSerializer(BasePrintSerializer):
     prediction_json_url = serializers.SerializerMethodField()
 
     class Meta:
+        model = Print
         fields = BasePrintSerializer.Meta.fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
         read_only_fields = BasePrintSerializer.Meta.read_only_fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
 
@@ -109,6 +110,7 @@ class PrinterSerializer(BasePrinterSerializer):
     current_print = BasePrintSerializer(read_only=True)
 
     class Meta:
+        model = Printer
         fields = BasePrinterSerializer.Meta.fields + ('pic', 'status', 'settings', 'current_print','normalized_p',)
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 

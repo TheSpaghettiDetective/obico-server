@@ -182,6 +182,17 @@ LOGGING = {
         'console': {
             'format': '%(name)-12s %(levelname)-8s %(message)s'
         },
+        'console_debug': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s%(name)-12s %(levelname)-8s %(message)s',
+            'log_colors': {
+                'DEBUG':    'bold_black',
+                'INFO':     'white',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            },
+        },
     },
     'filters': {
         'require_debug_true': {
@@ -193,7 +204,7 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'console'
+            'formatter': 'console_debug'
         },
         'console': {
             'level': 'DEBUG',

@@ -118,8 +118,8 @@
                     <span v-else>-</span>
                   </div>
                 </div>
-                <div class="poster" v-if="gcode.poster_url">
-                  <div class="img" :style="{backgroundImage: `url(${gcode.poster_url})`}">No image</div>
+                <div class="poster" v-if="print.poster_url">
+                  <div class="img" :style="{backgroundImage: `url(${print.poster_url})`}"></div>
                 </div>
               </div>
             </div>

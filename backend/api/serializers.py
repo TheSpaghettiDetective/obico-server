@@ -70,7 +70,9 @@ class BasePrinterSerializer(serializers.ModelSerializer):
 
 
 class BasePrintSerializer(serializers.ModelSerializer):
+    ended_at = serializers.DateTimeField(read_only=True)
     printer = BasePrinterSerializer(many=False, read_only=True)
+
     class Meta:
         model = Print
         fields = ('id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',

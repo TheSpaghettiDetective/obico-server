@@ -121,8 +121,8 @@ import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import { user, settings } from '@src/lib/page_context'
-import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
-import GCodeFilePage from '@src/views/GCodeFilePage.vue'
+import GCodeFoldersPage from '@src/views/gcodes/GCodeFoldersPage.vue'
+import GCodeFilePage from '@src/views/gcodes/GCodeFilePage.vue'
 
 const SortIconClass = {
   asc: 'fas fa-long-arrow-alt-up',

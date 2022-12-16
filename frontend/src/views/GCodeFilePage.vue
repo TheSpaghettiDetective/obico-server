@@ -1,21 +1,31 @@
 <template>
-  <layout>
+  <layout :isPopup="isPopup">
 
     <!-- Tob bar -->
+    <template v-slot:topBarLeft>
+      <a v-if="isPopup" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+    </template>
     <template v-slot:topBarRight>
-      <b-dropdown right no-caret toggle-class="icon-btn">
-        <template #button-content>
-          <i class="fas fa-ellipsis-v"></i>
-        </template>
-        <b-dropdown-item @click="renameFile">
-          <i class="fas fa-edit"></i>Rename
-        </b-dropdown-item>
-        <b-dropdown-item @click="deleteFile">
-          <span class="text-danger">
-            <i class="fas fa-trash-alt"></i>Delete
-          </span>
-        </b-dropdown-item>
-      </b-dropdown>
+      <div>
+        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <b-dropdown-item @click="renameFile">
+            <i class="fas fa-edit"></i>Rename
+          </b-dropdown-item>
+          <b-dropdown-item @click="deleteFile">
+            <span class="text-danger">
+              <i class="fas fa-trash-alt"></i>Delete
+            </span>
+          </b-dropdown-item>
+        </b-dropdown>
+        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline" title="Close">
+          <i class="fas fa-times text-danger"></i>
+        </a>
+      </div>
     </template>
 
     <!-- Page content -->
@@ -34,7 +44,7 @@
       </b-container>
       <b-container v-else>
         <b-row>
-          <b-col lg=8>
+          <b-col :lg="isPopup ? 12 : 8">
             <div class="card-container">
               <b-container fluid>
                 <b-row>
@@ -72,8 +82,8 @@
             </div>
           </b-col>
 
-          <b-col lg="4" v-if="!printersLoading">
-            <div class="card-container mt-4 mt-lg-0">
+          <b-col :lg="isPopup ? 12 : 4" v-if="!printersLoading">
+            <div class="card-container mt-4" :class="{'mt-lg-0': !isPopup}">
               <div
                 class="printer-item"
                 :class="{active: printer.id === selectedPrinter.id}"
@@ -87,7 +97,7 @@
               </div>
 
               <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !availablePrinters.length">No available printers</p>
-              <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum">{{unavailablePrintersNum}} printer(s) unavailable</p>
+              <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum && !isPopup">{{unavailablePrintersNum}} printer(s) unavailable</p>
 
               <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
                 <b-spinner small v-if="isSending" />
@@ -99,7 +109,7 @@
             </div>
           </b-col>
 
-          <b-col lg="8">
+          <b-col :lg="isPopup ? 12 : 8">
             <div class="mt-5">
               <h2 class="section-title">{{ gcode.print_set.length ? 'Print history' : 'This file doesn\'t have any prints yet' }}</h2>
               <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
@@ -126,6 +136,16 @@
           </b-col>
         </b-row>
       </b-container>
+      <rename-modal
+        :item="gcode"
+        @renamed="onItemRenamed"
+        ref="renameModal"
+      />
+      <delete-confirmation-modal
+        :item="gcode"
+        @deleted="onItemDeleted"
+        ref="deleteConfirmationModal"
+      />
     </template>
   </layout>
 </template>
@@ -137,6 +157,9 @@ import axios from 'axios'
 import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
 import get from 'lodash/get'
+import RenameModal from './RenameModal.vue'
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
+import { sendToPrint } from './sendToPrint'
 
 const REDIRECT_TIMER = 3000
 
@@ -145,6 +168,27 @@ export default {
 
   components: {
     Layout,
+    RenameModal,
+    DeleteConfirmationModal,
+  },
+
+  props: {
+    isPopup: {
+      type: Boolean,
+      default: false,
+    },
+    fileId: {
+      type: Number,
+      default: null,
+    },
+    targetPrinter: {
+      type: Object,
+      required: false,
+    },
+    onClose: {
+      type: Function,
+      required: false,
+    },
   },
 
   data() {
@@ -166,6 +210,9 @@ export default {
 
   computed: {
     availablePrinters() {
+      if (this.targetPrinter) {
+        return this.selectedPrinter ? [this.selectedPrinter] : []
+      }
       return this.printers.filter(p => p.status?.state?.text === 'Operational')
     },
     unavailablePrintersNum() {
@@ -174,6 +221,9 @@ export default {
   },
 
   methods: {
+    goBack() {
+      this.$emit('goBack')
+    },
     async fetchPrinters() {
       this.printersLoading = true
 
@@ -192,16 +242,25 @@ export default {
 
       printers = printers?.data
       this.printers = printers.map(p => normalizedPrinter(p))
-      // this.printers.push({...normalizedPrinter(printers[0]), id: 123, name: 'another one'})
-      this.selectedPrinter = this.availablePrinters[0]
+      if (this.targetPrinter) {
+        this.selectedPrinter = this.printers.find(p => p.id === this.targetPrinter.id)
+      } else {
+        this.selectedPrinter = this.availablePrinters[0]
+      }
 
       this.printersLoading = false
     },
     async fetchGcode() {
       this.loading = true
       let file
+
+      let fileId = this.fileId
+      if (!this.isPopup) {
+        fileId = this.$route.params.gcodeId
+      }
+
       try {
-        file = await axios.get(urls.gcodeFile(this.$route.params.gcodeId))
+        file = await axios.get(urls.gcodeFile(fileId))
       } catch (e) {
         this.loading = false
         console.error(e)
@@ -232,67 +291,21 @@ export default {
       if (!this.selectedPrinter.id) return
       this.isSending = true
 
-      const printerComm = PrinterComm(
-        this.selectedPrinter.id,
-        urls.printerWebSocket(this.selectedPrinter.id),
-        (data) => {},
-        (printerStatus) => {}
-      )
-      printerComm.connect(() => {
-        printerComm.passThruToPrinter(
-          {
-            func: 'download',
-            target: 'file_downloader',
-            args: [this.gcode]
-          },
-          (err, ret) => {
-            if (err || ret.error) {
-              this.$swal.Toast.fire({
-                icon: 'error',
-                title: err ? err : ret.error,
-              })
-              return
-            }
-
-            this.showUploadingModal(ret)
+      sendToPrint(this.selectedPrinter.id, this.selectedPrinter.name, this.gcode, this.$swal, {
+        onCommandSent: () => {
+          if (this.isPopup) {
+            this.$bvModal.hide('b-modal-gcodes')
           }
-        )
-      })
-    },
-    showUploadingModal(ret) {
-      let targetPath = ret.target_path
-      const printer = this.selectedPrinter
+        },
+        onPrinterStatusChanged: () => {
+          if (!this.isPopup) {
+            this.showRedirectModal()
+          }
 
-      this.$swal.Prompt.fire({
-        html: `
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-            <h5 class="py-3">
-              Uploading G-Code to ${printer.name} ...
-            </h5>
-            <p>
-              ${targetPath}
-            </p>
-          </div>
-        `,
-        showConfirmButton: false,
-      })
-
-      let checkPrinterStatus = async () => {
-        await this.fetchPrinters()
-        const targetPrinter = this.printers.find(p => p.id === printer.id)
-
-        if (get(targetPrinter, 'status.state.text') === 'Operational') {
-          setTimeout(checkPrinterStatus, 1000)
-        } else {
-          this.$swal.close()
           this.isSending = false
-
-          this.showRedirectModal()
+          this.fetchPrinters()
         }
-      }
-
-      checkPrinterStatus()
+      })
     },
     showRedirectModal() {
       let timerInterval
@@ -331,47 +344,20 @@ export default {
       })
     },
     renameFile() {
-      this.$swal.Prompt.fire({
-        title: 'New name',
-        input: 'text',
-        inputValue: this.gcode.filename,
-        inputPlaceholder: 'New name',
-        showCancelButton: true,
-        confirmButtonText: 'Save',
-        preConfirm: async (newName) => {
-          if (!newName) {
-            this.$swal.showValidationMessage('Name is required')
-            return false
-          }
-          try {
-            const url = urls.gcodeFile(this.gcode.id)
-            await axios.patch(url, `filename=${newName}`)
-          } catch (e) {
-            this.$swal.showValidationMessage('Server error')
-            console.log(e)
-            return false
-          }
-          this.fetchGcode()
-          return true
-        },
-      })
+      this.$refs.renameModal.show()
+    },
+    onItemRenamed(newName) {
+      this.gcode.filename = newName
     },
     deleteFile() {
-      this.$swal.Confirm.fire().then(async userAction => {
-        if (userAction.isConfirmed) {
-          try {
-            const url = urls.gcodeFile(this.gcode.id)
-            await axios.delete(url)
-            window.location.replace('/g_code_folders/')
-          } catch (e) {
-            this.$swal.Reject.fire({
-              title: 'Error',
-              text: e.message,
-            })
-            console.log(e)
-          }
-        }
-      })
+      this.$refs.deleteConfirmationModal.show()
+    },
+    onItemDeleted() {
+      if (!this.isPopup) {
+        window.location.replace('/g_code_folders/')
+      } else {
+        this.$emit('goBack')
+      }
     },
   },
 }

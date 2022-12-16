@@ -38,6 +38,7 @@
   --url-loader: url(/static/img/loader/loader_dark-scheme.svg);
   --shadow-top-nav: 0px 2px 10px rgb(0 0 0 / 0.3);
   --border-radius-lg: 16px;
+  --border-radius-md: 10px;
   --border-radius-sm: 6px;
 }
 
@@ -119,7 +120,7 @@ button, .btn {
   display: none;
 }
 
-footer {
+#global-footer {
   padding: 23px 0;
   text-align: center;
   color: var(--color-text-primary);
@@ -342,10 +343,12 @@ a.link {
 .swal2-popup {
   background-color: var(--color-surface-secondary) !important;
   border-radius: var(--border-radius-lg);
+  overflow: hidden;
 
   .swal2-title, .swal2-content, #swal2-content {
     color: var(--color-text-primary) !important;
     text-align: left !important;
+    font-weight: normal;
   }
 
   &.swal2-modal {
@@ -882,4 +885,12 @@ a.text-warning {
 .btn {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+div[id^="b-modal-"] {
+  .modal-content {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
 }

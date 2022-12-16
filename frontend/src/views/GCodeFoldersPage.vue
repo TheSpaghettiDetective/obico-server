@@ -1,8 +1,11 @@
 <template>
-  <layout>
+  <layout :isPopup="isPopup">
 
     <!-- Tob bar -->
     <template v-slot:topBarLeft>
+      <a v-if="isPopup && parentFolder !== null" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+        <i class="fas fa-chevron-left"></i>
+      </a>
       <search-input @input="updateSearch" class="search-input mr-3"></search-input>
     </template>
     <template v-slot:topBarRight>
@@ -43,6 +46,9 @@
             {{ sortingDirection.title }}
           </b-dropdown-item>
         </b-dropdown>
+        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline" title="Close">
+          <i class="fas fa-times text-danger"></i>
+        </a>
       </div>
     </template>
 
@@ -79,7 +85,7 @@
               <div class="gcode-items-wrapper">
                 <!-- Folders -->
                 <div v-if="!searchStateIsActive">
-                  <div v-for="item in folders" :key="`folder_${item.id}`" class="item folder" @click="openFolder(item)">
+                  <div v-for="item in folders" :key="`folder_${item.id}`" class="item folder" @click="(event) => openFolder(event, item)">
                     <div class="item-info">
                       <div class="filename">
                         <i class="fas fa-folder mr-1"></i>
@@ -94,13 +100,13 @@
                         <template #button-content>
                           <i class="fas fa-ellipsis-v"></i>
                         </template>
-                        <b-dropdown-item @click="renameItem(item.id, item.name, 'folder')">
+                        <b-dropdown-item @click="renameItem(item)">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
                         <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
                         </b-dropdown-item> -->
-                        <b-dropdown-item @click="deleteItem(item.id, 'folder')">
+                        <b-dropdown-item @click="deleteItem(item)">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
@@ -112,7 +118,7 @@
 
                 <!-- Files -->
                 <div v-if="!searchInProgress">
-                  <div v-for="item in files" :key="`gcode_${item.id}`" class="item" @click="openFile(item)">
+                  <div v-for="item in files" :key="`gcode_${item.id}`" class="item" @click="(event) => openFile(event, item)">
                     <div class="item-info">
                       <div class="filename">
                         <i class="fas fa-file-code mr-1"></i>
@@ -139,18 +145,18 @@
                         <template #button-content>
                           <i class="fas fa-ellipsis-v"></i>
                         </template>
-                        <!-- <b-dropdown-item>
+                        <b-dropdown-item v-if="targetPrinter" @click="(event) => onPrintClicked(event, item)">
                           <span class="text-primary">
-                            <i class="fas fa-play-circle"></i>Print
+                            <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
                           </span>
-                        </b-dropdown-item> -->
-                        <b-dropdown-item @click="renameItem(item.id, item.filename, 'file')">
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="renameItem(item)">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
                         <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
                         </b-dropdown-item> -->
-                        <b-dropdown-item @click="deleteItem(item.id, 'file')">
+                        <b-dropdown-item @click="deleteItem(item)">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
@@ -161,7 +167,13 @@
                 </div>
 
                 <!-- Pagination -->
-                <mugen-scroll :v-show="!isFolderEmpty" :handler="fetchFilesAndFolders" :should-handle="!loading" class="text-center">
+                <mugen-scroll
+                  :v-show="!isFolderEmpty"
+                  :handler="fetchFilesAndFolders"
+                  :should-handle="!loading"
+                  class="text-center"
+                  :scroll-container="scrollContainerId"
+                >
                   <div v-if="!noMoreFolders || !noMoreFiles || searchInProgress" class="py-5">
                     <b-spinner label="Loading..." />
                   </div>
@@ -179,6 +191,23 @@
           </b-col>
         </b-row>
       </b-container>
+      <rename-modal
+        :item="activeItem"
+        @renamed="onItemRenamed"
+        :preConfirm="verifyItemRename"
+        ref="renameModal"
+      />
+      <delete-confirmation-modal
+        :item="activeItem"
+        @deleted="onItemDeleted"
+        ref="deleteConfirmationModal"
+      />
+      <new-folder-modal
+        @created="onFolderCreated"
+        :preConfirm="verifyNewFolder"
+        :parentFolderId="parentFolder ? parentFolder.id : null"
+        ref="newFolderModal"
+      />
     </template>
   </layout>
 </template>
@@ -193,6 +222,11 @@ import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import MugenScroll from 'vue-mugen-scroll'
+import { getCsrfFromDocument, wasElementClicked } from '@src/lib/utils'
+import NewFolderModal from './NewFolderModal.vue'
+import RenameModal from './RenameModal.vue'
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
+import { sendToPrint } from './sendToPrint'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -234,27 +268,44 @@ const Sorting = {
 }
 
 export default {
-  name: 'GCodesPage',
+  name: 'GCodeFoldersPage',
 
   components: {
     Layout,
     SearchInput,
     vueDropzone: vue2Dropzone,
     MugenScroll,
+    RenameModal,
+    DeleteConfirmationModal,
+    NewFolderModal,
   },
 
   props: {
-    csrf: {
+    isPopup: {
+      type: Boolean,
+      default: false,
+    },
+    onClose: {
+      type: Function,
+      required: false,
+    },
+    scrollContainerId: {
       type: String,
-      requeired: true,
+      default: null,
+    },
+    targetPrinter: {
+      type: Object,
+      required: false,
     },
   },
 
   data() {
     return {
+      csrf: null,
       user: null,
       loading: false,
       parentFolder: null,
+      path: [],
       files: [],
       folders: [],
       noMoreFolders: false,
@@ -269,21 +320,29 @@ export default {
       searchQuery: null,
       searchStateIsActive: false,
       searchTimeoutId: null,
+
+      activeItem: null,
     }
   },
 
   created() {
+    this.csrf = getCsrfFromDocument()
     this.user = user()
-    this.parentFolder = this.$route.params.parentFolder || null
-    this.fetchFilesAndFolders(true)
 
-    this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => {
-        this.parentFolder = toParams.parentFolder || null
-        this.fetchFilesAndFolders(true)
-      }
-    )
+    if (!this.isPopup) {
+      this.parentFolder = this.$route.params.parentFolder || null
+      this.$watch(
+        () => this.$route.params,
+        (toParams, previousParams) => {
+          this.parentFolder = toParams.parentFolder || null
+          this.fetchFilesAndFolders(true)
+        }
+      )
+    } else {
+      this.parentFolder = null
+    }
+
+    this.fetchFilesAndFolders(true)
   },
 
   computed: {
@@ -315,6 +374,13 @@ export default {
   },
 
   methods: {
+    goBack() {
+      if (!this.path.length) {
+        return
+      }
+      this.parentFolder = this.path.pop()
+      this.fetchFilesAndFolders(true)
+    },
     async fetchFilesAndFolders(reset = false) {
       if (reset) {
         this.folders = []
@@ -446,123 +512,93 @@ export default {
       this.$swal.Reject.fire({
         html: `<p class="text-center">${message}</p>`})
     },
-    renameItem(id, oldName, itemType = 'file') {
-      this.$swal.Prompt.fire({
-        title: 'New name',
-        input: 'text',
-        inputValue: oldName,
-        inputPlaceholder: 'New name',
-        showCancelButton: true,
-        confirmButtonText: 'Save',
-        preConfirm: async (newName) => {
-          if (!newName) {
-            this.$swal.showValidationMessage('Name is required')
-            return false
-          }
-          if (itemType === 'folder' && this.folders.find(item => item.name === newName)) {
-            this.$swal.showValidationMessage('Folder with this name already exists')
-            return false
-          }
-          try {
-            const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
-            await axios.patch(url, `${itemType === 'file' ? 'filename' : 'name'}=${newName}`)
-          } catch (e) {
-            this.$swal.showValidationMessage('Server error')
-            console.log(e)
-            return false
-          }
-
-          const targetArr = itemType === 'file' ? this.files : this.folders
-          for (let i in targetArr) {
-            if (targetArr[i].id !== id) {
-              continue
-            } else if (itemType === 'file') {
-              this.files[i].filename = newName
-              break
-            } else {
-              this.folders[i].name = newName
-              break
-            }
-          }
-          return true
-        },
-      })
+    renameItem(item) {
+      this.activeItem = item
+      this.$refs.renameModal.show()
     },
-    deleteItem(id, itemType = 'file') {
-      this.$swal.Confirm.fire().then(async userAction => {
-        if (userAction.isConfirmed) {
-          try {
-            const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
-            await axios.delete(url)
-          } catch (e) {
-            this.$swal.Reject.fire({
-              title: 'Error',
-              text: e.message,
-            })
-            console.log(e)
-            return
-          }
-
-          const targetArr = itemType === 'file' ? this.files : this.folders
-          for (let i in targetArr) {
-            if (targetArr[i].id !== id) {
-              continue
-            } else if (itemType === 'file') {
-              this.files.splice(i, 1)
-              break
-            } else {
-              this.folders.splice(i, 1)
-              break
-            }
-          }
+    verifyItemRename(newName) {
+      if (!this.activeItem.filename && this.folders.find(item => item.name === newName)) {
+        return 'Folder with this name already exists'
+      }
+      return true
+    },
+    onItemRenamed(newName) {
+      if (!this.activeItem) return
+      const targetArr = this.activeItem.filename ? this.files : this.folders
+      for (let i in targetArr) {
+        if (targetArr[i].id !== this.activeItem.id) {
+          continue
+        } else if (this.activeItem.filename) {
+          this.files[i].filename = newName
+          break
+        } else {
+          this.folders[i].name = newName
+          break
         }
-      })
+      }
+      this.activeItem = null
+    },
+    deleteItem(item) {
+      this.activeItem = item
+      this.$refs.deleteConfirmationModal.show()
+    },
+    onItemDeleted() {
+      if (!this.activeItem) return
+      const targetArr = this.activeItem.filename ? this.files : this.folders
+      for (let i in targetArr) {
+        if (targetArr[i].id !== this.activeItem.id) {
+          continue
+        } else if (this.activeItem.filename) {
+          this.files.splice(i, 1)
+          break
+        } else {
+          this.folders.splice(i, 1)
+          break
+        }
+      }
+      this.activeItem = null
     },
     createFolder() {
-      this.$swal.fire({
-        title: 'Create folder',
-        input: 'text',
-        inputLabel: 'Folder name',
-        inputPlaceholder: 'Folder name',
-        showCancelButton: true,
-        confirmButtonText: 'Create',
-        preConfirm: async (folderName) => {
-          if (!folderName) {
-            this.$swal.showValidationMessage('Folder name is required')
-            return false
+      this.$refs.newFolderModal.show()
+    },
+    verifyNewFolder(newFolderName) {
+      if (this.folders.find(item => item.name === newFolderName)) {
+        return 'Folder with this name already exists'
+      }
+      return true
+    },
+    onFolderCreated(newFolderId) {
+      // this.openFolder({id: newFolderId})
+      this.fetchFilesAndFolders(true)
+    },
+    openFolder(event, folder) {
+      if (wasElementClicked(event, 'dropdown-item')) return
+
+      if (!this.isPopup) {
+        this.$router.push(`/g_code_folders/${folder.id}/`)
+      } else {
+        this.path.push(this.parentFolder)
+        this.parentFolder = folder.id
+        this.fetchFilesAndFolders(true)
+      }
+    },
+    openFile(event, file) {
+      if (wasElementClicked(event, 'dropdown-item')) return
+
+      if (!this.isPopup) {
+        window.location.assign(`/g_code_files/${file.id}/`)
+      } else {
+        this.$emit('openFile', file.id)
+      }
+    },
+    onPrintClicked(event, gcode) {
+      sendToPrint(this.targetPrinter.id, this.targetPrinter.name, gcode, this.$swal, {
+        onCommandSent: () => {
+          if (this.isPopup) {
+            this.$bvModal.hide('b-modal-gcodes')
           }
-          if (this.folders.find(item => item.name === folderName)) {
-            this.$swal.showValidationMessage('Folder with this name already exists')
-            return false
-          }
-          try {
-            await axios.post(urls.gcodeFolders(), {
-              name: folderName,
-              parent_folder: this.parentFolder
-            })
-          } catch (e) {
-            this.$swal.showValidationMessage('Server error')
-            console.log(e)
-            return false
-          }
-          this.fetchFilesAndFolders(true)
-          return true
         },
       })
-    },
-    openFolder(folder) {
-      // Prevent navigation if main user action was to click dropdown item
-      if (document.querySelector('.swal2-container')) {
-        return false
-      }
-      this.$router.push(`/g_code_folders/${folder.id}/`)
-    },
-    openFile(file) {
-      // Prevent navigation if main user action was to click dropdown item
-      if (document.querySelector('.swal2-container')) {
-        return false
-      }
-      window.location.assign(`/g_code_files/${file.id}/`)
     },
   },
 }

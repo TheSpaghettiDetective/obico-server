@@ -35,3 +35,20 @@ export const toArrayBuffer = (maybeBin, onData) => {
     onData(maybeBin)
   }
 }
+
+export const getCsrfFromDocument = () => {
+  return document.getElementsByName('csrfmiddlewaretoken')[0]?.value
+}
+
+export const wasElementClicked = (event, className) => {
+  let clicked = false
+
+  for (const node of event.path) {
+    if (node.className && node.className.includes(className)) {
+      clicked = true
+      break
+    }
+  }
+
+  return clicked
+}

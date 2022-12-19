@@ -1,4 +1,4 @@
-#/bin/sh
+#/usr/bin/bash
 ### Variables to edit if needed (Defaults should be fine) ###
 OBICO=~/obico-server
 BACKUP_DIR=backup

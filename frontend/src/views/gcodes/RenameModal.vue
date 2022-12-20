@@ -51,9 +51,40 @@ export default {
   data() {
     return {
       newItemName: '',
-      itemType: '',
       errorMessage: '',
       isOpen: false,
+    }
+  },
+
+  computed: {
+    itemType() {
+      return this.item.filename ? 'file' : 'folder'
+    },
+    fullName() {
+      if (this.itemType === 'file') {
+        return `${this.newItemName}.${this.fileExt}`
+      } else {
+        return this.newItemName
+      }
+    },
+    fileExt() {
+      if (this.itemType === 'folder') return null
+      return this.item.filename.split('.').at(-1)
+    },
+    nameWithoutExt() {
+      if (this.itemType === 'folder') {
+        return this.item.name
+      } else {
+        const filename = this.item.filename
+        return filename.slice(0, filename.length - this.fileExt.length - 1)
+      }
+    },
+    newNameWithExt() {
+      if (this.itemType === 'folder') {
+        return this.newItemName
+      } else {
+        return `${this.newItemName}.${this.fileExt}`
+      }
     }
   },
 
@@ -66,8 +97,7 @@ export default {
           this.isOpen = false
           return
         }
-        this.newItemName = this.item.filename || this.item.name
-        this.itemType = this.item.filename ? 'file' : 'folder'
+        this.newItemName = this.nameWithoutExt
         this.$bvModal.show('b-modal-rename')
       }, 100)
     },
@@ -81,28 +111,31 @@ export default {
     resetModal() {
       this.isOpen = false
       this.newItemName = ''
-      this.itemType = ''
       this.errorMessage = ''
     },
     handleOk(bvModalEvent) {
+      if (this.newNameWithExt === (this.item.filename || this.item.name)) {
+        this.close()
+        return
+      }
+
       bvModalEvent.preventDefault()
       this.handleSubmit()
     },
     async handleSubmit() {
-      const itemType = this.itemType
       const id = this.item.id
 
       if (!this.newItemName) {
         return
       }
 
-      if (this.newItemName === (this.item.filename || this.item.name)) {
-        this.$bvModal.hide('b-modal-rename')
+      if (this.newNameWithExt === (this.item.filename || this.item.name)) {
+        this.close()
         return
       }
 
       if (this.preConfirm) {
-        const result = this.preConfirm(this.newItemName)
+        const result = this.preConfirm(this.newNameWithExt)
         if (result !== true) {
           this.errorMessage = result
           return
@@ -110,16 +143,16 @@ export default {
       }
 
       try {
-        const url = itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
-        await axios.patch(url, `${itemType === 'file' ? 'filename' : 'name'}=${this.newItemName}`)
+        const url = this.itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
+        await axios.patch(url, `${this.itemType === 'file' ? 'filename' : 'name'}=${this.newNameWithExt}`)
       } catch (e) {
         this.errorMessage = 'Server error'
         console.log(e)
         return
       }
 
-      this.$emit('renamed', this.newItemName)
-      this.$bvModal.hide('b-modal-rename')
+      this.$emit('renamed', this.newNameWithExt)
+      this.close()
     },
   },
 }

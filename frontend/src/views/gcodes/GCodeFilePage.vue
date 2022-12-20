@@ -80,38 +80,18 @@
                 </b-row>
               </b-container>
             </div>
-          </b-col>
 
-          <b-col :lg="isPopup ? 12 : 4" v-if="!printersLoading">
-            <div class="card-container mt-4" :class="{'mt-lg-0': !isPopup}">
-              <div
-                class="printer-item"
-                :class="{active: printer.id === selectedPrinter.id}"
-                v-for="printer in availablePrinters"
-                :key="`printer_${printer.id}`"
-                @click="() => selectedPrinter = printer"
-              >
-                <div class="selected-indicator"></div>
-                <div class="printer-name">{{ printer.name }}</div>
-                <div class="printer-status text-success">Operational</div>
-              </div>
+            <available-printers
+              class="card-container mt-4"
+              :class="[isPopup ? 'd-lg-block' : 'd-lg-none']"
+              :isPopup="isPopup"
+              :targetPrinter="targetPrinter"
+              :gcode="gcode"
+              @refresh="onRefresh"
+            />
 
-              <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !availablePrinters.length">No available printers</p>
-              <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum && !isPopup">{{unavailablePrintersNum}} printer(s) unavailable</p>
-
-              <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
-                <b-spinner small v-if="isSending" />
-                <div v-else>
-                  <div class="truncate-overflow-text" v-if="selectedPrinter">Print on {{ selectedPrinter.name }}</div>
-                  <div class="truncate-overflow-text" v-else>Print</div>
-                </div>
-              </button>
-            </div>
-          </b-col>
-
-          <b-col :lg="isPopup ? 12 : 8">
             <div class="mt-5">
-              <h2 class="section-title">{{ gcode.print_set.length ? 'Print history' : 'This file doesn\'t have any prints yet' }}</h2>
+              <h2 class="section-title">Print history</h2>
               <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
                 <div class="print-info">
 
@@ -132,7 +112,23 @@
                   <div class="img" :style="{backgroundImage: `url(${print.poster_url})`}"></div>
                 </div>
               </div>
+              <div v-if="!gcode.print_set.length">
+                <div class="print-history-card p-4 justify-content-center text-secondary">
+                  This file doesn't have any prints yet
+                </div>
+              </div>
             </div>
+          </b-col>
+
+          <b-col :lg="isPopup ? 12 : 4">
+            <available-printers
+              class="card-container d-none"
+              :class="[isPopup ? 'd-lg-none' : 'd-lg-block']"
+              :isPopup="isPopup"
+              :targetPrinter="targetPrinter"
+              :gcode="gcode"
+              @refresh="onRefresh"
+            />
           </b-col>
         </b-row>
       </b-container>
@@ -154,14 +150,11 @@
 import Layout from '@src/components/Layout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
-import PrinterComm from '@src/lib/printer_comm'
-import get from 'lodash/get'
+import { normalizedGcode } from '@src/lib/normalizers'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint } from './sendToPrint'
+import availablePrinters from './AvailablePrinters.vue'
 
-const REDIRECT_TIMER = 3000
 
 export default {
   name: 'GCodeDetailsPage',
@@ -170,6 +163,7 @@ export default {
     Layout,
     RenameModal,
     DeleteConfirmationModal,
+    availablePrinters,
   },
 
   props: {
@@ -193,62 +187,19 @@ export default {
 
   data() {
     return {
-      printers: [],
-      selectedPrinter: null,
       gcode: null,
       loading: true,
-      printersLoading: true,
       gcodeNotFound: false,
-      isSending: false,
     }
   },
 
   created() {
     this.fetchGcode()
-    this.fetchPrinters()
-  },
-
-  computed: {
-    availablePrinters() {
-      if (this.targetPrinter) {
-        return this.selectedPrinter ? [this.selectedPrinter] : []
-      }
-      return this.printers.filter(p => p.status?.state?.text === 'Operational')
-    },
-    unavailablePrintersNum() {
-      return this.printers.filter(p => p.status?.state?.text !== 'Operational').length
-    },
   },
 
   methods: {
     goBack() {
       this.$emit('goBack')
-    },
-    async fetchPrinters() {
-      this.printersLoading = true
-
-      let printers
-      try {
-        printers = await axios.get(urls.printers())
-      } catch (e) {
-        this.printersLoading = false
-        console.error(e)
-      }
-
-      if (!printers?.data) {
-        this.printersLoading = false
-        return
-      }
-
-      printers = printers?.data
-      this.printers = printers.map(p => normalizedPrinter(p))
-      if (this.targetPrinter) {
-        this.selectedPrinter = this.printers.find(p => p.id === this.targetPrinter.id)
-      } else {
-        this.selectedPrinter = this.availablePrinters[0]
-      }
-
-      this.printersLoading = false
     },
     async fetchGcode() {
       this.loading = true
@@ -287,62 +238,6 @@ export default {
 
       this.loading = false
     },
-    onPrintClicked() {
-      if (!this.selectedPrinter.id) return
-      this.isSending = true
-
-      sendToPrint(this.selectedPrinter.id, this.selectedPrinter.name, this.gcode, this.$swal, {
-        onCommandSent: () => {
-          if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes')
-          }
-        },
-        onPrinterStatusChanged: () => {
-          if (!this.isPopup) {
-            this.showRedirectModal()
-          }
-
-          this.isSending = false
-          this.fetchPrinters()
-        }
-      })
-    },
-    showRedirectModal() {
-      let timerInterval
-      this.$swal.Prompt.fire({
-        html: `
-          <div class="text-center">
-            <h5 class="py-3">
-              You'll be redirected to printers page in <strong>${Math.round(REDIRECT_TIMER / 1000)}</strong> seconds
-            </h5>
-          </div>
-        `,
-        timer: REDIRECT_TIMER,
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Go now',
-        onOpen: () => {
-          const content = this.$swal.getHtmlContainer()
-          const $ = content.querySelector.bind(content)
-
-          timerInterval = setInterval(() => {
-            this.$swal.getHtmlContainer().querySelector('strong')
-              .textContent = (this.$swal.getTimerLeft() / 1000)
-                .toFixed(0)
-          }, 1000)
-        },
-        onClose: () => {
-          clearInterval(timerInterval)
-          timerInterval = null
-        }
-      }).then(result => {
-        if (result.isConfirmed || result.dismiss === 'timer') {
-          window.location.assign('/printers/')
-        } else {
-          this.fetchGcode()
-        }
-      })
-    },
     renameFile() {
       this.$refs.renameModal.show()
     },
@@ -358,6 +253,9 @@ export default {
       } else {
         this.$emit('goBack')
       }
+    },
+    onRefresh() {
+      this.$router.go()
     },
   },
 }
@@ -424,39 +322,4 @@ export default {
     align-items: center
     color: var(--color-text-secondary)
     font-size: 0.875rem
-
-.printer-item
-  display: flex
-  align-items: center
-  border-radius: var(--border-radius-sm)
-  border: 1px solid var(--color-divider)
-  margin-bottom: 0.5rem
-  padding: 0.75rem
-  &:hover
-    background-color: var(--color-hover)
-    cursor: pointer
-
-.selected-indicator
-  --size: 0.875rem
-  width: var(--size)
-  height: var(--size)
-  border-radius: var(--size)
-  border: 1px solid var(--color-text-secondary)
-  margin-right: 0.5rem
-
-.printer-item.active
-  background-color: var(--color-hover)
-  .selected-indicator
-    border-color: var(--color-text-primary)
-    border-width: 3px
-
-.printer-name
-  flex: 1
-
-.printer-status
-  font-size: 0.875rem
-
-.btn
-  width: 100%
-
 </style>

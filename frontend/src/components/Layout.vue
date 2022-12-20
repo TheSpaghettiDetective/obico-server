@@ -214,6 +214,7 @@ export default {
       padding: 0 15px
     .page-content
       padding: 15px 0
+      min-height: unset
 
 .side-nav
   min-width: 100px

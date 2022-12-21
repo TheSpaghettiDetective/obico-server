@@ -199,7 +199,7 @@
                   </div>
                 </mugen-scroll>
 
-                <div v-if="localFilesLoading || searchInProgress" class="text-center py-5">
+                <div v-if="!isCloud && (localFilesLoading || searchInProgress)" class="text-center py-5">
                   <b-spinner label="Loading..." />
                 </div>
                 <div v-else>

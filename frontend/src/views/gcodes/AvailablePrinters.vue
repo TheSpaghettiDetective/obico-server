@@ -42,7 +42,7 @@ import { sendToPrint } from './sendToPrint'
 const REDIRECT_TIMER = 3000
 
 export default {
-  name: 'GCodeDetailsPage',
+  name: 'AvailablePrinters',
 
   components: {
     Layout,
@@ -113,16 +113,18 @@ export default {
 
       printers = printers?.data
       this.printers = printers.map(p => normalizedPrinter(p))
+      const operationalPrinters = this.printers.filter(p => p.status?.state?.text === 'Operational')
+
       if (this.targetPrinterId) {
-        this.selectedPrinter = this.printers.find(p => p.id === this.targetPrinterId)
+        this.selectedPrinter = operationalPrinters.find(p => p.id === this.targetPrinterId)
       } else {
-        this.selectedPrinter = this.availablePrinters[0]
+        this.selectedPrinter = operationalPrinters[0]
       }
 
       this.printersLoading = false
     },
     onPrintClicked() {
-      if (!this.selectedPrinter.id) return
+      if (!this.selectedPrinter?.id) return
       this.isSending = true
 
       sendToPrint({

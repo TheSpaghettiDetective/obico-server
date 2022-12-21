@@ -22,11 +22,19 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     {
-      path: '/g_code_folders/:parentFolder',
+      path: '/g_code_folders/cloud/:parentFolder',
       component: GCodeFoldersPage,
     },
     {
-      path: '/g_code_files/:gcodeId',
+      path: '/g_code_folders/local/:printerId/:parentFolder?',
+      component: GCodeFoldersPage,
+    },
+    {
+      path: '/g_code_files/cloud/:fileId',
+      component: GCodeFilePage,
+    },
+    {
+      path: '/g_code_files/local/:printerId/:fileId',
       component: GCodeFilePage,
     },
     {

@@ -396,6 +396,10 @@ a.link {
 }
 }
 
+.swal2-container.error-alert #swal2-content {
+  text-align: center !important;
+}
+
 .swal2-container {
   z-index: 1070 !important;
 }

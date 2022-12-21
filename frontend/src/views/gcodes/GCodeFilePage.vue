@@ -9,7 +9,7 @@
     </template>
     <template v-slot:topBarRight>
       <div>
-        <b-dropdown right no-caret toggle-class="icon-btn">
+        <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
@@ -53,7 +53,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col sm="6">
+                  <b-col :sm="isCloud ? 6 : 12">
                     <div class="file-info-line">
                       <div><i class="fas fa-history"></i>Uploaded</div>
                       <div class="value">{{ gcode.created_at.fromNow() }}</div>
@@ -63,7 +63,7 @@
                       <div class="value">{{ gcode.filesize }}</div>
                     </div>
                   </b-col>
-                  <b-col sm="6">
+                  <b-col sm="6" v-show="isCloud">
                     <div class="file-info-line">
                       <div><i class="fas fa-circle"></i>Times printed</div>
                       <div class="value">{{ gcode.totalPrints }}</div>
@@ -85,12 +85,13 @@
               class="card-container mt-4"
               :class="[isPopup ? 'd-lg-block' : 'd-lg-none']"
               :isPopup="isPopup"
-              :targetPrinter="targetPrinter"
+              :targetPrinterId="targetPrinterId || selectedPrinterId"
               :gcode="gcode"
+              :isCloud="isCloud"
               @refresh="onRefresh"
             />
 
-            <div class="mt-5">
+            <div class="mt-5" v-if="isCloud">
               <h2 class="section-title">Print history</h2>
               <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
                 <div class="print-info">
@@ -125,8 +126,9 @@
               class="card-container d-none"
               :class="[isPopup ? 'd-lg-none' : 'd-lg-block']"
               :isPopup="isPopup"
-              :targetPrinter="targetPrinter"
+              :targetPrinterId="targetPrinterId || Number(selectedPrinterId)"
               :gcode="gcode"
+              :isCloud="isCloud"
               @refresh="onRefresh"
             />
           </b-col>
@@ -154,6 +156,8 @@ import { normalizedGcode } from '@src/lib/normalizers'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import availablePrinters from './AvailablePrinters.vue'
+import PrinterComm from '@src/lib/printer_comm'
+import { listFiles } from './localFiles'
 
 
 export default {
@@ -171,18 +175,23 @@ export default {
       type: Boolean,
       default: false,
     },
-    fileId: {
+    targetPrinterId: {
       type: Number,
-      default: null,
-    },
-    targetPrinter: {
-      type: Object,
       required: false,
     },
     onClose: {
       type: Function,
       required: false,
     },
+    routeParams: {
+      type: Object,
+      default: () => {
+        return {
+          fileId: null,
+          printerId: null,
+        }
+      }
+    }
   },
 
   data() {
@@ -194,21 +203,70 @@ export default {
   },
 
   created() {
+    this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+    this.gcodeId = this.getRouteParam('fileId')
     this.fetchGcode()
   },
 
+  computed: {
+    isCloud() {
+      return !Boolean(this.selectedPrinterId)
+    },
+  },
+
   methods: {
+    getRouteParam(name) {
+      return this.isPopup ? this.routeParams[name] : this.$route.params[name]
+    },
     goBack() {
       this.$emit('goBack')
     },
-    async fetchGcode() {
-      this.loading = true
-      let file
-
-      let fileId = this.fileId
-      if (!this.isPopup) {
-        fileId = this.$route.params.gcodeId
+    async fetchLocalFile() {
+      if (!this.printerComm) {
+        return
       }
+      this.loading = true
+
+      const decodedPath = decodeURIComponent(this.gcodeId)
+      const filename = decodedPath.split('/').at(-1)
+      const path = filename === decodedPath ? '' : decodedPath.slice(0, decodedPath.length - filename.length - 1)
+
+      listFiles(this.printerComm, {
+        query: filename,
+        path,
+        onRequestEnd: (result) => {
+          this.loading = false
+          if (result?.files?.length) {
+            const file = result.files.filter(f => f.path === decodedPath)[0]
+            if (!file) {
+              this.gcodeNotFound = true
+              return
+            }
+            this.gcode = {
+              ...file,
+              print_set: [],
+            }
+          } else {
+            this.gcodeNotFound = true
+          }
+        },
+      })
+    },
+    async fetchGcode() {
+      if (this.selectedPrinterId) {
+        this.printerComm = PrinterComm(
+          this.selectedPrinterId,
+          urls.printerWebSocket(this.selectedPrinterId),
+          (data) => {},
+          (printerStatus) => {}
+        )
+        this.printerComm.connect(this.fetchLocalFile)
+        return
+      }
+
+      this.loading = true
+      const fileId = this.getRouteParam('fileId')
+      let file
 
       try {
         file = await axios.get(urls.gcodeFile(fileId))
@@ -249,7 +307,7 @@ export default {
     },
     onItemDeleted() {
       if (!this.isPopup) {
-        window.location.replace('/g_code_folders/')
+        window.location.replace('/g_code_folders/cloud/')
       } else {
         this.$emit('goBack')
       }

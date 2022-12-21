@@ -30,7 +30,7 @@
           </a>
         </li>
         <li v-if="user" :class="{'active': path.includes('/g_code_')}">
-          <a href="/g_code_folders/">
+          <a href="/g_code_folders/cloud/">
             <i class="fas fa-file-code"></i>
             G-Codes
           </a>

@@ -3,7 +3,16 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import get from 'lodash/get'
 
-export const sendToPrint = (printerId, printerName, gcode, Swal, {onCommandSent, onPrinterStatusChanged}) => {
+export const sendToPrint = (args) => {
+  const {
+    printerId,
+    gcode,
+    isCloud,
+    Swal,
+    onCommandSent,
+    onPrinterStatusChanged
+  } = args
+
   const printerComm = PrinterComm(
     printerId,
     urls.printerWebSocket(printerId),
@@ -12,14 +21,26 @@ export const sendToPrint = (printerId, printerName, gcode, Swal, {onCommandSent,
   )
 
   printerComm.connect(() => {
-    printerComm.passThruToPrinter(
-      {
+    let passThruProps
+    if (isCloud) {
+      passThruProps = {
         func: 'download',
         target: 'file_downloader',
         args: [gcode]
-      },
+      }
+    } else {
+      passThruProps = {
+        func: 'select_file',
+        target: '_printer',
+        args: [ `${gcode.path}`, null ],
+        kwargs: { printAfterSelect: 'true' }
+      }
+    }
+
+    printerComm.passThruToPrinter(
+      passThruProps,
       (err, ret) => {
-        if (err || ret.error) {
+        if (err || ret?.error) {
           Swal.Toast.fire({
             icon: 'error',
             title: err ? err : ret.error,
@@ -33,18 +54,15 @@ export const sendToPrint = (printerId, printerName, gcode, Swal, {onCommandSent,
           html: `
             <div class="text-center">
               <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-              <h5 class="py-3">
-                Uploading G-Code to ${printerName} ...
+              <h5 class="pt-3">
+                Starting the print...
               </h5>
-              <p>
-                ${ret.target_path}
-              </p>
             </div>
           `,
           showConfirmButton: false,
         })
 
-        let checkPrinterStatus = async () => {
+        const checkPrinterStatus = async () => {
           let printer
           try {
             printer = await axios.get(urls.printer(printerId))
@@ -58,7 +76,6 @@ export const sendToPrint = (printerId, printerName, gcode, Swal, {onCommandSent,
             setTimeout(checkPrinterStatus, 1000)
           } else {
             Swal.close()
-
             onPrinterStatusChanged && onPrinterStatusChanged()
           }
         }

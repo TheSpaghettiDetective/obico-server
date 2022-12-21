@@ -203,11 +203,11 @@ def print_shot_feedback(request, pk):
 ### GCode File page ###
 
 @login_required
-def g_code_folders(request, route=None, template_dir=None):
+def g_code_folders(request, template_dir=None):
     return render(request, get_template_path('g_code_folders', template_dir))
 
 @login_required
-def g_code_files(request, route=None, template_dir=None):
+def g_code_files(request, template_dir=None):
     return render(request, get_template_path('g_code_files', template_dir))
 
 

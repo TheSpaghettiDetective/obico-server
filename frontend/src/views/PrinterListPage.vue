@@ -90,17 +90,33 @@
         <g-code-file-page
           v-if="selectedGcodeId"
           :isPopup="true"
-          :fileId="selectedGcodeId"
-          :targetPrinter="targetPrinter"
+          :targetPrinterId="targetPrinter.id"
+          :routeParams="{
+            fileId: selectedGcodeId,
+            printerId: selectedPrinterId
+          }"
           :onClose="() => $bvModal.hide('b-modal-gcodes')"
-          @goBack="() => {selectedGcodeId = null; scrollToTop();}"
+          @goBack="() => {
+            selectedGcodeId = null
+            scrollToTop()
+          }"
         />
         <g-code-folders-page
           v-else
           :isPopup="true"
           :targetPrinter="targetPrinter"
+          :routeParams="{
+            printerId: selectedPrinterId,
+            parentFolder: null
+          }"
           :onClose="() => $bvModal.hide('b-modal-gcodes')"
-          @openFile="(id) => {selectedGcodeId = id; scrollToTop();}"
+          :savedPath="savedPath"
+          @openFile="(fileId, printerId, path) => {
+            selectedGcodeId = fileId
+            selectedPrinterId = printerId
+            savedPath = path
+            scrollToTop()
+          }"
           scrollContainerId="b-modal-gcodes"
         />
       </b-modal>
@@ -184,8 +200,12 @@ export default {
       },
       dontShowFilterWarning: false,
       archivedPrinterNum: 0,
+
+      // gcodes browse modal
       selectedGcodeId: null,
+      selectedPrinterId: null,
       targetPrinter: null,
+      savedPath: [null],
     }
   },
   computed: {

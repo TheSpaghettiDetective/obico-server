@@ -9,16 +9,33 @@
       <search-input @input="updateSearch" class="search-input mr-3"></search-input>
     </template>
     <template v-slot:topBarRight>
-      <div>
+      <div class="d-flex">
         <!-- <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
           <i class="fas fa-file-upload"></i>
         </a> -->
-        <a @click.prevent="createFolder" href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Create folder">
+        <a v-if="isCloud" @click.prevent="createFolder" href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Create folder">
           <i class="fas fa-folder-plus"></i>
         </a>
-        <b-dropdown right no-caret toggle-class="icon-btn">
+        <!-- Storage dropdown -->
+        <b-dropdown right no-caret toggle-class="icon-btn" class="order-md-2">
           <template #button-content>
-            <i class="fas fa-ellipsis-v"></i>
+            <i class="fas fa-server"></i>
+          </template>
+          <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
+          <b-dropdown-item @click="switchToCloudStorage">
+            <i class="fas fa-check text-primary" :style="{visibility: isCloud ? 'visible' : 'hidden'}"></i>
+            Obico Cloud
+          </b-dropdown-item>
+          <b-dropdown-item v-for="printer in availablePrinters" :key="printer.id" @click="() => switchToPrinterStorage(printer.id)">
+            <i class="fas fa-check text-primary" :style="{visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden'}"></i>
+            {{ printer.name }} ({{ printer.agentDisplayName() }})
+          </b-dropdown-item>
+        </b-dropdown>
+        <!-- Sorting / all actions for mobile -->
+        <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn" class="order-md-1">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v d-md-none"></i>
+            <i class="fas fa-sort-amount-down d-none d-md-block"></i>
           </template>
           <!-- <b-dropdown-item href="#" class="d-md-none">
             <i class="fas fa-file-upload"></i>Upload G-Code
@@ -46,7 +63,7 @@
             {{ sortingDirection.title }}
           </b-dropdown-item>
         </b-dropdown>
-        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline" title="Close">
+        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline order-4" title="Close">
           <i class="fas fa-times text-danger"></i>
         </a>
       </div>
@@ -58,6 +75,7 @@
         <b-row>
           <b-col>
             <vue-dropzone
+              v-if="isCloud"
               class="upload-box"
               id="dropzone"
               :options="dropzoneOptions"
@@ -75,11 +93,11 @@
             </vue-dropzone>
 
             <div class="gcodes-wrapper">
-              <div class="header-panel">
+              <div class="header-panel" :class="{'without-action-buttons': !isCloud && !targetPrinter}">
                 <div class="text">Name</div>
                 <div class="text">Size</div>
                 <div class="text">Created</div>
-                <div class="text">Last printed</div>
+                <div class="text" v-if="isCloud">Last printed</div>
               </div>
 
               <div class="gcode-items-wrapper">
@@ -92,11 +110,11 @@
                         {{ item.name }}
                       </div>
                       <div class="size">{{ item.numItems }} item(s)</div>
-                      <div class="created">{{ item.created_at.fromNow() }}</div>
-                      <div></div>
+                      <div class="created">{{ item.created_at ? item.created_at.fromNow() : '-' }}</div>
+                      <div class="d-none d-md-block" v-if="isCloud">-</div>
                     </div>
-                    <div>
-                      <b-dropdown right no-caret toggle-class="icon-btn">
+                    <div v-if="isCloud">
+                      <b-dropdown right no-caret toggle-class="icon-btn py-0">
                         <template #button-content>
                           <i class="fas fa-ellipsis-v"></i>
                         </template>
@@ -118,17 +136,18 @@
 
                 <!-- Files -->
                 <div v-if="!searchInProgress">
-                  <div v-for="item in files" :key="`gcode_${item.id}`" class="item" @click="(event) => openFile(event, item)">
+                  <div v-for="(item, key) in files" :key="`gcode_${key}`" class="item" @click="(event) => openFile(event, item)">
                     <div class="item-info">
                       <div class="filename">
                         <i class="fas fa-file-code mr-1"></i>
                         {{ item.filename }}
                       </div>
                       <div class="size">{{ item.filesize }}</div>
-                      <div class="uploaded">{{ item.created_at.fromNow() }}</div>
-                      <div class="last-printed">
-                        <span v-if="!item.print_set.length">No prints yet</span>
-                        <span v-else-if="item.last_printed_at">{{ item.last_printed_at.fromNow() }}</span>
+                      <div class="uploaded">{{ item.created_at ? item.created_at.fromNow() : '-' }}</div>
+                      <div class="last-printed" v-if="isCloud">
+                        <span v-if="!item.print_set">-</span>
+                        <span v-else-if="!item.print_set.length">No prints yet</span>
+                        <span v-else-if="item.last_printed_at">{{ item.last_printed_at ? item.last_printed_at.fromNow() : '-' }}</span>
                         <div v-else>
                           <span>Printing...</span>
                           <!-- <b-spinner small class="ml-1" /> -->
@@ -140,8 +159,8 @@
                         ></div>
                       </div>
                     </div>
-                    <div>
-                      <b-dropdown right no-caret toggle-class="icon-btn">
+                    <div v-if="isCloud || targetPrinter">
+                      <b-dropdown right no-caret toggle-class="icon-btn py-0">
                         <template #button-content>
                           <i class="fas fa-ellipsis-v"></i>
                         </template>
@@ -150,13 +169,13 @@
                             <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
                           </span>
                         </b-dropdown-item>
-                        <b-dropdown-item @click="renameItem(item)">
+                        <b-dropdown-item v-if="isCloud" @click="renameItem(item)">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
                         <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
                         </b-dropdown-item> -->
-                        <b-dropdown-item @click="deleteItem(item)">
+                        <b-dropdown-item v-if="isCloud" @click="deleteItem(item)">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
@@ -168,6 +187,7 @@
 
                 <!-- Pagination -->
                 <mugen-scroll
+                  v-if="isCloud"
                   :v-show="!isFolderEmpty"
                   :handler="fetchFilesAndFolders"
                   :should-handle="!loading"
@@ -179,12 +199,17 @@
                   </div>
                 </mugen-scroll>
 
-                <!-- Placeholders -->
-                <div v-if="isFolderEmpty" class="placeholder text-secondary">
-                  <span>Nothing here yet</span>
+                <div v-if="localFilesLoading || searchInProgress" class="text-center py-5">
+                  <b-spinner label="Loading..." />
                 </div>
-                <div v-else-if="nothingFound" class="placeholder text-secondary">
-                  <span>Nothing found</span>
+                <div v-else>
+                  <!-- Placeholders -->
+                  <div v-if="isFolderEmpty" class="placeholder text-secondary">
+                    <span>Nothing here yet</span>
+                  </div>
+                  <div v-else-if="nothingFound" class="placeholder text-secondary">
+                    <span>Nothing found</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -218,7 +243,7 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
+import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import MugenScroll from 'vue-mugen-scroll'
@@ -227,6 +252,8 @@ import NewFolderModal from './NewFolderModal.vue'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import { sendToPrint } from './sendToPrint'
+import PrinterComm from '@src/lib/printer_comm'
+import { listFiles, isPrinterAvailable } from './localFiles'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -297,6 +324,19 @@ export default {
       type: Object,
       required: false,
     },
+    savedPath: {
+      type: Array,
+      required: false,
+    },
+    routeParams: {
+      type: Object,
+      default: () => {
+        return {
+          printerId: null,
+          parentFolder: null,
+        }
+      }
+    }
   },
 
   data() {
@@ -322,30 +362,47 @@ export default {
       searchTimeoutId: null,
 
       activeItem: null,
+
+      // local storage:
+      availablePrinters: [],
+      selectedPrinterId: undefined,
+      selectedPrinterComm: undefined,
+      localFilesLoading: false,
     }
   },
 
-  created() {
+  async created() {
     this.csrf = getCsrfFromDocument()
     this.user = user()
 
+    if (this.savedPath && this.savedPath.length >= 1) {
+      this.parentFolder = this.savedPath.at(-1)
+      this.path = this.savedPath.slice(0, this.savedPath.length - 1)
+    } else {
+      this.parentFolder = this.getRouteParam('parentFolder') || null
+    }
+
+    this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+
     if (!this.isPopup) {
-      this.parentFolder = this.$route.params.parentFolder || null
       this.$watch(
         () => this.$route.params,
         (toParams, previousParams) => {
           this.parentFolder = toParams.parentFolder || null
+          this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
           this.fetchFilesAndFolders(true)
         }
       )
-    } else {
-      this.parentFolder = null
     }
 
+    await this.fetchPrinters()
     this.fetchFilesAndFolders(true)
   },
 
   computed: {
+    isCloud() {
+      return !this.selectedPrinterId
+    },
     isFolderEmpty() {
       return !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
     },
@@ -374,6 +431,35 @@ export default {
   },
 
   methods: {
+    switchToCloudStorage() {
+      this.parentFolder = null
+      this.path = []
+      this.selectedPrinterId = null
+      this.selectedPrinterComm = null
+      if (this.isPopup) {
+        this.fetchFilesAndFolders(true)
+      } else {
+        if (this.$route.path !== '/g_code_folders/cloud/') {
+          this.$router.replace(`/g_code_folders/cloud/`)
+        }
+      }
+    },
+    switchToPrinterStorage(printerId) {
+      this.parentFolder = null
+      this.path = []
+      this.selectedPrinterId = printerId
+      this.selectedPrinterComm = null
+      if (this.isPopup) {
+        this.fetchFilesAndFolders(true)
+      } else {
+        if (Number(this.getRouteParam('printerId')) !== printerId) {
+          this.$router.replace(`/g_code_folders/local/${printerId}/`)
+        }
+      }
+    },
+    getRouteParam(name) {
+      return this.isPopup ? this.routeParams[name] : this.$route.params[name]
+    },
     goBack() {
       if (!this.path.length) {
         return
@@ -381,24 +467,90 @@ export default {
       this.parentFolder = this.path.pop()
       this.fetchFilesAndFolders(true)
     },
+    resetFiles() {
+      this.folders = []
+      this.files = []
+      this.noMoreFolders = false
+      this.noMoreFiles = false
+      this.currentFoldersPage = 1
+      this.currentFilesPage = 1
+    },
+    async fetchPrinters() {
+      let printers
+      try {
+        printers = await axios.get(urls.printers())
+        printers = printers.data
+      } catch (e) {
+        console.error(e)
+      }
+      if (!printers) {
+        return
+      }
+      printers = printers.map(p => normalizedPrinter(p))
+      printers = printers.filter(p => isPrinterAvailable(p))
+      this.availablePrinters = this.targetPrinter ? printers.filter(p => p.id === this.targetPrinter.id) : printers
+    },
+    async fetchLocalFiles() {
+      if (!this.selectedPrinterComm) {
+        return
+      }
+      this.localFilesLoading = true
+      listFiles(this.selectedPrinterComm, {
+        query: this.searchQuery,
+        path: this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
+        onRequestEnd: (result) => {
+          this.localFilesLoading = false
+          if (result) {
+            const { folders, files } = result
+            this.folders = folders
+            this.files = files
+          }
+        },
+      })
+    },
     async fetchFilesAndFolders(reset = false) {
+      if (this.loading) {
+        return
+      }
+
       if (reset) {
-        this.folders = []
-        this.files = []
-        this.noMoreFolders = false
-        this.noMoreFiles = false
-        this.currentFoldersPage = 1
-        this.currentFilesPage = 1
+        this.resetFiles()
+      }
+
+      if (this.selectedPrinterId) {
+        if (!this.availablePrinters.find(p => p.id === this.selectedPrinterId)) {
+          this.$swal.Reject.fire({
+            title: 'Error',
+            text: `Printer not found or unavailable`,
+          })
+          .then(() => window.location.assign(`/g_code_folders/cloud/`))
+        }
+
+        this.localFilesLoading = true
+
+        if (!this.selectedPrinterComm) {
+          this.selectedPrinterComm = PrinterComm(
+            this.selectedPrinterId,
+            urls.printerWebSocket(this.selectedPrinterId),
+            (data) => {},
+            (printerStatus) => {}
+          )
+          this.selectedPrinterComm.connect(this.fetchLocalFiles)
+        } else {
+          this.fetchLocalFiles()
+        }
+        return
       }
 
       if (this.searchQuery) {
         this.noMoreFolders = true
       }
 
-      if (this.noMoreFolders && this.noMoreFiles) return
+      if (this.noMoreFolders && this.noMoreFiles) {
+        return
+      }
 
       this.loading = true
-
       let folders = []
       let files = []
 
@@ -523,7 +675,9 @@ export default {
       return true
     },
     onItemRenamed(newName) {
-      if (!this.activeItem) return
+      if (!this.activeItem) {
+        return
+      }
       const targetArr = this.activeItem.filename ? this.files : this.folders
       for (let i in targetArr) {
         if (targetArr[i].id !== this.activeItem.id) {
@@ -543,7 +697,9 @@ export default {
       this.$refs.deleteConfirmationModal.show()
     },
     onItemDeleted() {
-      if (!this.activeItem) return
+      if (!this.activeItem) {
+        return
+      }
       const targetArr = this.activeItem.filename ? this.files : this.folders
       for (let i in targetArr) {
         if (targetArr[i].id !== this.activeItem.id) {
@@ -572,10 +728,16 @@ export default {
       this.fetchFilesAndFolders(true)
     },
     openFolder(event, folder) {
-      if (wasElementClicked(event, 'dropdown-item')) return
+      if (wasElementClicked(event, 'dropdown-item')) {
+        return
+      }
 
       if (!this.isPopup) {
-        this.$router.push(`/g_code_folders/${folder.id}/`)
+        if (this.selectedPrinterId) {
+          this.$router.push(`/g_code_folders/local/${this.selectedPrinterId}/${encodeURIComponent(folder.path)}/`)
+        } else {
+          this.$router.push(`/g_code_folders/cloud/${folder.id}/`)
+        }
       } else {
         this.path.push(this.parentFolder)
         this.parentFolder = folder.id
@@ -583,16 +745,25 @@ export default {
       }
     },
     openFile(event, file) {
-      if (wasElementClicked(event, 'dropdown-item')) return
-
+      if (wasElementClicked(event, 'dropdown-item')) {
+        return
+      }
       if (!this.isPopup) {
-        window.location.assign(`/g_code_files/${file.id}/`)
+        if (this.selectedPrinterId) {
+          window.location.assign(`/g_code_files/local/${this.selectedPrinterId}/${encodeURIComponent(file.path)}/`)
+        } else {
+          window.location.assign(`/g_code_files/cloud/${file.id}/`)
+        }
       } else {
-        this.$emit('openFile', file.id)
+        this.$emit('openFile', this.selectedPrinterId ? encodeURIComponent(file.path) : file.id, this.selectedPrinterId, [...this.path, this.parentFolder])
       }
     },
     onPrintClicked(event, gcode) {
-      sendToPrint(this.targetPrinter.id, this.targetPrinter.name, gcode, this.$swal, {
+      sendToPrint({
+        printerId: this.targetPrinter.id,
+        gcode: gcode,
+        isCloud: this.isCloud,
+        Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {
             this.$bvModal.hide('b-modal-gcodes')
@@ -606,7 +777,7 @@ export default {
 
 <style lang="sass" scoped>
 .upload-box
-  margin-bottom: var(--gap-between-blocks)
+  margin-bottom: var(--gap-between-blocks) !important
 
 .search-input
   height: 30px
@@ -618,13 +789,14 @@ export default {
   background-color: var(--color-surface-secondary)
   padding: 1em 2em
   border-radius: var(--border-radius-lg)
-  margin-top: 2rem
 
 .header-panel
   display: flex
   padding: 1em calc(1em + 30px) 1em 1em
   border-bottom: 1px solid var(--color-divider)
   font-weight: bold
+  &.without-action-buttons
+    padding-right: 1em
 
   & > div
     flex: 1

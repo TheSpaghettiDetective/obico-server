@@ -3,7 +3,7 @@
     <div v-if="printersLoading || !gcode" class="my-5 text-center">
       <b-spinner />
     </div>
-    <div v-else class="container">
+    <div v-else>
       <div
         class="printer-item"
         v-for="printer in availablePrinters"
@@ -17,7 +17,7 @@
       </div>
 
       <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !availablePrinters.length">No available printers</p>
-      <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum && !isPopup">{{unavailablePrintersNum}} printer(s) unavailable</p>
+      <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum && !targetPrinterId">{{unavailablePrintersNum}} printer(s) unavailable</p>
 
       <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
         <b-spinner small v-if="isSending" />
@@ -55,13 +55,17 @@ export default {
       type: Boolean,
       default: false,
     },
-    targetPrinter: {
-      type: Object,
+    targetPrinterId: {
+      type: Number,
       required: false,
     },
     gcode: {
       type: Object,
       default: null,
+    },
+    isCloud: {
+      type: Boolean,
+      default: true,
     }
   },
 
@@ -80,7 +84,7 @@ export default {
 
   computed: {
     availablePrinters() {
-      if (this.targetPrinter) {
+      if (this.targetPrinterId) {
         return this.selectedPrinter ? [this.selectedPrinter] : []
       }
       return this.printers.filter(p => p.status?.state?.text === 'Operational')
@@ -109,8 +113,8 @@ export default {
 
       printers = printers?.data
       this.printers = printers.map(p => normalizedPrinter(p))
-      if (this.targetPrinter) {
-        this.selectedPrinter = this.printers.find(p => p.id === this.targetPrinter.id)
+      if (this.targetPrinterId) {
+        this.selectedPrinter = this.printers.find(p => p.id === this.targetPrinterId)
       } else {
         this.selectedPrinter = this.availablePrinters[0]
       }
@@ -121,7 +125,11 @@ export default {
       if (!this.selectedPrinter.id) return
       this.isSending = true
 
-      sendToPrint(this.selectedPrinter.id, this.selectedPrinter.name, this.gcode, this.$swal, {
+      sendToPrint({
+        printerId: this.selectedPrinter.id,
+        gcode: this.gcode,
+        isCloud: this.isCloud,
+        Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {
             this.$bvModal.hide('b-modal-gcodes')

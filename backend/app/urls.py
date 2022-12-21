@@ -24,8 +24,8 @@ urlpatterns = [
     path('prints/upload/', web_views.upload_print),
     path('prints/<int:pk>/', web_views.print),
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
-    re_path('^g_code_folders/(?P<route>([^/]+/)*)$', web_views.g_code_folders),
-    re_path('^g_code_files/(?P<route>([^/]+/)*)$', web_views.g_code_files),
+    re_path('^g_code_folders/', web_views.g_code_folders),
+    re_path('^g_code_files/', web_views.g_code_files),
     # Compatible with mobile app versions <= 1.73
     path('gcodes/', web_views.g_code_folders),
     path('hc/', web_views.health_check,),

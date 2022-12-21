@@ -231,6 +231,10 @@ module.exports = {
               label: 'Developer Tutorials',
               to: '/docs/tutorials/',
             },
+            {
+              label: 'Orange Pi Zero 2 OctoPrint Kit',
+              to: '/docs/user-guides/install-octoprint-orange-pi-zero-2-kit/',
+            },
           ],
         },
 

@@ -651,6 +651,6 @@ section.danger
 
 .form-inline
   .wrappable-field
-    padding-left: 1.5rem
+    margin-left: 1.5rem
 
 </style>

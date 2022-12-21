@@ -29,8 +29,8 @@
             Time-Lapses
           </a>
         </li>
-        <li v-if="user" :class="{'active': path === '/gcodes/'}">
-          <a href="/gcodes/">
+        <li v-if="user" :class="{'active': path === '/g_code_files/'}">
+          <a href="/g_code_files/">
             <i class="fas fa-file-code"></i>
             G-Codes
           </a>
@@ -221,6 +221,8 @@ export default {
         display: block
         color: var(--color-text-primary)
         padding: 10px 5px
+        margin: 4px
+        border-radius: var(--border-radius-sm)
         text-align: center
         font-size: 0.85em
         &:hover, &[aria-expanded="true"]

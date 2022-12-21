@@ -24,7 +24,10 @@ urlpatterns = [
     path('prints/upload/', web_views.upload_print),
     path('prints/<int:pk>/', web_views.print),
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
-    path('gcodes/', web_views.gcodes),
+    path('g_code_files/', web_views.g_codes),
+    path('g_code_files/upload/', web_views.upload_gcode_file,),
+    # Compatible with mobile app versions <= 1.73
+    path('gcodes/', web_views.g_codes),
     path('gcodes/upload/', web_views.upload_gcode_file,),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
@@ -49,10 +52,4 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
-    path('mobile/user_preferences/', web_views.user_preferences),
-    path('mobile/prints/', web_views.prints),
-    path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
-    path('mobile/gcodes/upload/', web_views.upload_gcode_file),
-    path('mobile/printers/<pk>/', web_views.edit_printer),
-    path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

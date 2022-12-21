@@ -288,8 +288,9 @@ a.link {
 .surface {
   background: var(--color-surface-secondary);
   padding: 2rem 2.5rem;
+  border-radius: var(--border-radius-lg);
 
-  @media (max-width: 786px) {
+  @media (max-width: 768px) {
     padding: 1.5rem;
 
     &.with-loading-animation {
@@ -300,8 +301,9 @@ a.link {
 
 .full-on-mobile {
   margin: 0;
-  @media (max-width: 786px) {
+  @media (max-width: 768px) {
     margin: -15px;
+    border-radius: 0;
   }
 }
 
@@ -337,7 +339,8 @@ a.link {
 
 .swal2-popup {
   background-color: var(--color-surface-secondary) !important;
-  border-radius: unset !important;
+  border-radius: var(--border-radius-lg);
+
   .swal2-title, .swal2-content, #swal2-content {
     color: var(--color-text-primary) !important;
     text-align: left !important;
@@ -364,8 +367,14 @@ a.link {
         color: var(--color-on-primary) !important;
 
         &:focus {
-          box-shadow: 0 0 0 2px var(--color-on-primary), 0 0 0 4px rgb(50 100 150 / 40%);
+          box-shadow: none;
+          background-image: none;
         }
+      }
+
+      &.swal2-styled {
+        box-shadow: none;
+        background-image: none;
       }
     }
     .bootstrap-select {
@@ -538,6 +547,7 @@ a.link {
 
 .dropdown-menu {
   background-color: var(--color-surface-primary);
+  border-radius: var(--border-radius-sm);
 
   .dropdown-item {
     color: var(--color-text-primary);
@@ -598,6 +608,7 @@ a {
 input, input.form-control {
   background-color: var(--color-input-background);
   border: 1px solid var(--color-input-background);
+  border-radius: var(--border-radius-sm);
   color: var(--color-text-primary);
   outline: none;
 

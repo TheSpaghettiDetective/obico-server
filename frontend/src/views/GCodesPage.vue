@@ -6,17 +6,7 @@
     </template>
     <template v-slot:content>
       <b-container>
-        <b-row v-if="!user.is_pro" class="justify-content-center">
-          <b-col sm="11" md="10" lg="8">
-            <div class="form-container m-0 printer-settings">
-            <h5 class="mb-5">Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to upload G-Code files or start prints remotely. </h5>
-              <p>G-Code remote upload and printing is a Pro feature.</p>
-              <p><a href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running the Obico app incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the Obico app smoothly.</p>
-              <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
-            </div>
-          </b-col>
-        </b-row>
-        <b-row v-else>
+        <b-row>
           <b-col>
             <vue-dropzone
               class="upload-box"
@@ -29,8 +19,8 @@
             >
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br>
-                Drop files here or click to upload.<br>
-                G-Code files only. Up to {{maxFilesize}} MB each.
+                <div>G-Code file (*.gcode, *.gco, or *.g) only.</div>
+                <div>Up to {{maxFilesize}} MB each file, {{maxTotalFilesize}} GB total.</div>
               </div>
             </vue-dropzone>
 
@@ -160,7 +150,11 @@ export default {
 
   computed: {
     maxFilesize() {
-      return this.user.is_pro ? 500 : 100 // MB
+      return this.user.is_pro ? 500 : 50 // MB
+    },
+
+    maxTotalFilesize() {
+      return this.user.is_pro ? 50 : 1 // GB
     },
 
     dropzoneOptions() {
@@ -326,6 +320,7 @@ export default {
 .gcodes-wrapper
   background-color: var(--color-surface-secondary)
   padding: 2em
+  border-radius: var(--border-radius-lg)
 
 .control-panel
   border-bottom: 1px solid var(--color-divider)

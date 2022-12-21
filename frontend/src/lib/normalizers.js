@@ -31,10 +31,34 @@ export const normalizedGcode = gcode => {
     gcode.print_set[i].ended_at = toMomentOrNull(gcode.print_set[i].ended_at)
   }
 
-  gcode.last_printed_at = gcode.print_set.at(-1)?.ended_at
-  if (gcode.print_set.at(-1)?.cancelled_at) {
+  gcode.print_set.sort((a, b) => {
+    if (!a.ended_at && !b.ended_at) { // both in progress, sort by started_at
+      if (a.started_at > b.started_at) {
+        return -1
+      } else if (a.started_at < b.started_at) {
+        return 1
+      } else {
+        return 0
+      }
+    } else if (!a.ended_at) {
+      return -1
+    } else if (!b.ended_at) {
+      return 1
+    } else {
+      if (a.ended_at > b.ended_at) {
+        return -1
+      } else if (a.ended_at < b.ended_at) {
+        return 1
+      } else {
+        return 0
+      }
+    }
+  })
+
+  gcode.last_print = gcode.print_set[0]
+  if (gcode.last_print?.cancelled_at) {
     gcode.last_print_result = 'cancelled'
-  } else if (gcode.print_set.at(-1)?.finished_at) {
+  } else if (gcode.last_print?.finished_at) {
     gcode.last_print_result = 'finished'
   }
 

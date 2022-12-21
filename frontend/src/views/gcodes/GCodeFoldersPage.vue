@@ -147,13 +147,9 @@
                       <div class="last-printed" v-if="isCloud">
                         <span v-if="!item.print_set">-</span>
                         <span v-else-if="!item.print_set.length">No prints yet</span>
-                        <span v-else-if="item.last_printed_at">{{ item.last_printed_at ? item.last_printed_at.fromNow() : '-' }}</span>
-                        <div v-else>
-                          <span>Printing...</span>
-                          <!-- <b-spinner small class="ml-1" /> -->
-                        </div>
+                        <span v-else-if="item.last_print">{{ item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...' }}</span>
                         <div
-                          v-if="item.last_printed_at"
+                          v-if="item.last_print_result"
                           class="circle-indicator"
                           :class="item.last_print_result"
                         ></div>

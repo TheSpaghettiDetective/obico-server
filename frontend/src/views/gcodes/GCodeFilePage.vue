@@ -283,17 +283,6 @@ export default {
 
       file = file?.data
       this.gcode = normalizedGcode(file)
-
-      this.gcode.print_set.sort((a, b) => {
-        if (a.started_at > b.started_at) {
-          return -1
-        }
-        if (a.started_at < b.started_at) {
-          return 1
-        }
-        return 0
-      })
-
       this.loading = false
     },
     renameFile() {

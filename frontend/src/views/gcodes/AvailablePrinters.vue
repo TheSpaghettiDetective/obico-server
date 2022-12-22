@@ -6,18 +6,23 @@
     <div v-else>
       <div
         class="printer-item"
-        v-for="printer in availablePrinters"
+        v-for="printer in printers"
         :key="`printer_${printer.id}`"
-        :class="{active: printer.id === selectedPrinter.id}"
-        @click="selectedPrinter = printer"
+        :class="{active: selectedPrinter && printer.id === selectedPrinter.id}"
+        @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
         <div class="printer-name">{{ printer.name }}</div>
-        <div class="printer-status text-success">Operational</div>
+        <div
+          class="printer-status"
+          :class="{
+            'text-success': printer.printAvailability.key === 'ready',
+            'text-warning': printer.printAvailability.key === 'unavailable'
+          }"
+        >{{ printer.printAvailability.text }}</div>
       </div>
 
-      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !availablePrinters.length">No available printers</p>
-      <p class="text-center text-secondary mt-3 mb-3" v-else-if="unavailablePrintersNum && !targetPrinterId">{{unavailablePrintersNum}} printer(s) unavailable</p>
+      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">No available printers</p>
 
       <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
         <b-spinner small v-if="isSending" />
@@ -37,7 +42,7 @@ import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint } from './sendToPrint'
+import { sendToPrint, getPrinterPrintAvailability } from './sendToPrint'
 
 const REDIRECT_TIMER = 3000
 
@@ -82,18 +87,6 @@ export default {
     this.fetchPrinters()
   },
 
-  computed: {
-    availablePrinters() {
-      if (this.targetPrinterId) {
-        return this.selectedPrinter ? [this.selectedPrinter] : []
-      }
-      return this.printers.filter(p => p.status?.state?.text === 'Operational')
-    },
-    unavailablePrintersNum() {
-      return this.printers.filter(p => p.status?.state?.text !== 'Operational').length
-    },
-  },
-
   methods: {
     async fetchPrinters() {
       this.printersLoading = true
@@ -112,16 +105,35 @@ export default {
       }
 
       printers = printers?.data
-      this.printers = printers.map(p => normalizedPrinter(p))
-      const operationalPrinters = this.printers.filter(p => p.status?.state?.text === 'Operational')
+      printers = printers.map(p => normalizedPrinter(p))
+      printers = printers.map(p => ({...p, printAvailability: getPrinterPrintAvailability(p)}))
+      this.printers = printers
 
       if (this.targetPrinterId) {
-        this.selectedPrinter = operationalPrinters.find(p => p.id === this.targetPrinterId)
+        const selectedPrinter = printers.find(p => p.id === this.targetPrinterId)
+        if (selectedPrinter.printAvailability.key === 'ready') {
+          this.selectedPrinter = selectedPrinter
+        }
       } else {
-        this.selectedPrinter = operationalPrinters[0]
+        this.selectedPrinter = printers.filter(p => p.printAvailability.key === 'ready')[0]
       }
 
       this.printersLoading = false
+    },
+    selectPrinter(printer) {
+      if (printer.printAvailability.key !== 'ready') {
+        this.$swal.Reject.fire({
+          title: `${printer.name} isn't ready for print for one of the following reasons:`,
+          html: `<ul style="text-align: left">
+            <li>${printer.agentDisplayName()} is powered off or not connected to the Inernet</li>
+            <li>Printer is not connected to ${printer.agentDisplayName()}</li>
+            <li>Printer is currently busy</li>
+          </ul>`
+        })
+        return
+      }
+
+      this.selectedPrinter = printer
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return

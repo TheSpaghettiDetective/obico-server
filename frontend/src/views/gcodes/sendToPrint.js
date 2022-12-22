@@ -85,3 +85,17 @@ export const sendToPrint = (args) => {
     )
   })
 }
+
+export const getPrinterPrintAvailability = (normalizedPrinter) => {
+  if (!normalizedPrinter.isOffline() && !normalizedPrinter.isDisconnected() && !normalizedPrinter.isActive()) {
+    return {
+      key: 'ready',
+      text: 'Ready',
+    }
+  } else {
+    return {
+      key: 'unavailable',
+      text: 'Unavailable',
+    }
+  }
+}

@@ -81,19 +81,37 @@ const listRecoursively = (fileObj) => {
   return fileList
 }
 
-export const isPrinterAvailable = (normalizedPrinter) => {
-  if (normalizedPrinter.status === null) {
-    return false
+export const getPrinterStorageAvailability = (normalizedPrinter) => {
+  const agentName = normalizedPrinter.agentDisplayName()
+  const MIN_OCTOPRINT_PLUGIN_VERSION = '2.3.0'
+  const MIN_MOONRAKER_PLUGIN_VERSION = '1.2.0'
+
+  if (normalizedPrinter.isOffline()) {
+    return {
+      key: 'offline',
+      text: `${agentName} is offline`,
+      rejectMessage: `${agentName} is offline. You can't browse the files on the ${agentName} when it's offline.`,
+    }
   }
 
-  if (normalizedPrinter.isAgentMoonraker()) {
-    return false
+  if (!normalizedPrinter.isAgentMoonraker() && !semverGte(get(normalizedPrinter, 'settings.agent_version', '0.0.0'), MIN_OCTOPRINT_PLUGIN_VERSION)) {
+    return {
+      key: 'plugin_outdated',
+      text: `Obico plugin outdated`,
+      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_OCTOPRINT_PLUGIN_VERSION} or later`
+    }
   }
 
-  // Temporary comment this to test earlier dev version of plugin
-  if (!semverGte(get(normalizedPrinter, 'settings.agent_version', '0.0.0'), '2.3.0')) {
-    return false
+  if (normalizedPrinter.isAgentMoonraker() && !semverGte(get(normalizedPrinter, 'settings.agent_version', '0.0.0'), MIN_MOONRAKER_PLUGIN_VERSION)) {
+    return {
+      key: 'plugin_outdated',
+      text: `Obico plugin outdated`,
+      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_MOONRAKER_PLUGIN_VERSION} or later`
+    }
   }
 
-  return true
+  return {
+    key: 'online',
+    text: `${normalizedPrinter.agentDisplayName()} is online`,
+  }
 }

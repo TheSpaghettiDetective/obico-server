@@ -23,12 +23,30 @@
           </template>
           <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
           <b-dropdown-item @click="switchToCloudStorage">
-            <i class="fas fa-check text-primary" :style="{visibility: isCloud ? 'visible' : 'hidden'}"></i>
-            Obico Cloud
+            <div class="dropdown-group">
+              <i class="fas fa-check text-primary" :style="{visibility: isCloud ? 'visible' : 'hidden'}"></i>
+              <div class="text">
+                <div class="title">Obico Cloud</div>
+              </div>
+            </div>
           </b-dropdown-item>
-          <b-dropdown-item v-for="printer in availablePrinters" :key="printer.id" @click="() => switchToPrinterStorage(printer.id)">
-            <i class="fas fa-check text-primary" :style="{visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden'}"></i>
-            {{ printer.name }} ({{ printer.agentDisplayName() }})
+          <b-dropdown-item v-for="printer in printers" :key="printer.id" @click="() => switchToPrinterStorage(printer)">
+            <div class="dropdown-group">
+              <i class="fas fa-check text-primary" :style="{visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden'}"></i>
+              <div class="text">
+                <div class="title">{{ printer.name }}</div>
+                <div
+                  class="subtitle"
+                  :class="{
+                    'text-secondary': printer.storageAvailability.key === 'offline',
+                    'text-success': printer.storageAvailability.key === 'online',
+                    'text-warning': printer.storageAvailability.key === 'plugin_outdated',
+                  }"
+                >
+                  {{ printer.storageAvailability.text }}
+                </div>
+              </div>
+            </div>
           </b-dropdown-item>
         </b-dropdown>
         <!-- Sorting / all actions for mobile -->
@@ -249,7 +267,7 @@ import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import { sendToPrint } from './sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles, isPrinterAvailable } from './localFiles'
+import { listFiles, getPrinterStorageAvailability } from './localFiles'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -360,7 +378,7 @@ export default {
       activeItem: null,
 
       // local storage:
-      availablePrinters: [],
+      printers: [],
       selectedPrinterId: undefined,
       selectedPrinterComm: undefined,
       localFilesLoading: false,
@@ -440,16 +458,23 @@ export default {
         }
       }
     },
-    switchToPrinterStorage(printerId) {
+    switchToPrinterStorage(printer) {
+      if (printer.storageAvailability.rejectMessage) {
+        this.$swal.Reject.fire({
+          text: printer.storageAvailability.rejectMessage
+        })
+        return
+      }
+
       this.parentFolder = null
       this.path = []
-      this.selectedPrinterId = printerId
+      this.selectedPrinterId = printer.id
       this.selectedPrinterComm = null
       if (this.isPopup) {
         this.fetchFilesAndFolders(true)
       } else {
-        if (Number(this.getRouteParam('printerId')) !== printerId) {
-          this.$router.replace(`/g_code_folders/local/${printerId}/`)
+        if (Number(this.getRouteParam('printerId')) !== printer.id) {
+          this.$router.replace(`/g_code_folders/local/${printer.id}/`)
         }
       }
     },
@@ -483,8 +508,8 @@ export default {
         return
       }
       printers = printers.map(p => normalizedPrinter(p))
-      printers = printers.filter(p => isPrinterAvailable(p))
-      this.availablePrinters = this.targetPrinter ? printers.filter(p => p.id === this.targetPrinter.id) : printers
+      printers = printers.map(p => ({...p, storageAvailability: getPrinterStorageAvailability(p)}))
+      this.printers = this.targetPrinter ? printers.filter(p => p.id === this.targetPrinter.id) : printers
     },
     async fetchLocalFiles() {
       if (!this.selectedPrinterComm) {
@@ -514,7 +539,7 @@ export default {
       }
 
       if (this.selectedPrinterId) {
-        if (!this.availablePrinters.find(p => p.id === this.selectedPrinterId)) {
+        if (!this.printers.find(p => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
             title: 'Error',
             text: `Printer not found or unavailable`,
@@ -902,4 +927,13 @@ export default {
   text-align: center
   &.text-secondary *
     color: var(--color-text-secondary)
+
+.dropdown-group
+  display: flex
+  align-items: center
+  .text
+    display: flex
+    flex-direction: column
+    .subtitle
+      font-size: 0.75rem
 </style>

@@ -34,7 +34,7 @@
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item v-if="this.print.video_url && !print.video_archived_at" :href="this.print.video_url" target="_blank">
+          <b-dropdown-item v-if="this.print.video_url && !print.video_archived_at" @click.prevent="downloadOriginalVideo" target="_blank">
             <i class="fas fa-download"></i>Download Original Time-lapse
           </b-dropdown-item>
           <b-dropdown-item
@@ -325,6 +325,20 @@ export default {
   },
 
   methods: {
+    downloadOriginalVideo() {
+      fetch(this.print.video_url)
+        .then(res => res.blob())
+        .then(res => {
+          const aElement = document.createElement('a')
+          aElement.setAttribute('download', `${this.print.id}.mp4`)
+          const href = URL.createObjectURL(res)
+          aElement.href = href
+          aElement.setAttribute('target', '_blank')
+          aElement.click()
+          URL.revokeObjectURL(href)
+        })
+    },
+
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
     },

@@ -107,14 +107,15 @@ export default {
       printers = printers?.data
       printers = printers.map(p => normalizedPrinter(p))
       printers = printers.map(p => ({...p, printAvailability: getPrinterPrintAvailability(p)}))
-      this.printers = printers
 
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find(p => p.id === this.targetPrinterId)
+        this.printers = [selectedPrinter]
         if (selectedPrinter.printAvailability.key === 'ready') {
           this.selectedPrinter = selectedPrinter
         }
       } else {
+        this.printers = printers
         this.selectedPrinter = printers.filter(p => p.printAvailability.key === 'ready')[0]
       }
 

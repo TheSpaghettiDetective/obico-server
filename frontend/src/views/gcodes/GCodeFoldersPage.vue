@@ -544,7 +544,13 @@ export default {
             title: 'Error',
             text: `Printer not found or unavailable`,
           })
-          .then(() => window.location.assign(`/g_code_folders/cloud/`))
+          .then(() => {
+            if (this.isPopup && this.onClose) {
+              this.onClose()
+            } else {
+              window.location.assign(`/g_code_folders/cloud/`)
+            }
+          })
         }
 
         this.localFilesLoading = true

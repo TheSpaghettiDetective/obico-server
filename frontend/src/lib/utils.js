@@ -42,8 +42,9 @@ export const getCsrfFromDocument = () => {
 
 export const wasElementClicked = (event, className) => {
   let clicked = false
-
-  for (const node of event.path) {
+  const path = event.path || (event.composedPath && event.composedPath())
+  
+  for (const node of path) {
     if (node.className && node.className.includes(className)) {
       clicked = true
       break

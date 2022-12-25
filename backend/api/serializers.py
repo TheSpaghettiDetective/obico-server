@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
+import re
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -9,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent,
+    NotificationSetting, PrinterEvent, GCodeFolder
 )
 
 from notifications.handlers import handler
@@ -101,17 +103,80 @@ class PrinterSerializer(serializers.ModelSerializer):
         return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
 
 
-class GCodeFileSerializer(serializers.ModelSerializer):
+class BaseGCodeFolderSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = GCodeFolder
+        fields = '__all__'
+        read_only_fields = ('user', 'safe_name')
+
+
+class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
+
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        user = self.context['request'].user
+        if 'name' in attrs:   # safe_name should always be updated when name is
+            safe_name = re.sub(r'[^\w\.]', '_', attrs['name'])
+            attrs['safe_name'] = safe_name
+        elif self.instance:
+            safe_name = self.instance.safe_name
+
+        if 'parent_folder' in attrs:
+            parent_folder = attrs.get('parent_folder')
+            if parent_folder is None: # '?parent_folder='
+                existing = GCodeFolder.objects.filter(user=user, parent_folder__isnull=True, safe_name=safe_name).first()
+            else:
+                existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
+
+            if existing and self.instance and existing.id != self.instance.id:
+                raise serializers.ValidationError({'name': f'Already existed.'})
+
+        return attrs
+
+class GCodeFolderSerializer(BaseGCodeFolderSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
+
+
+class GCodeFileDeSerializer(serializers.ModelSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', )
+        read_only_fields = ('user', 'resident_printer', 'safe_filename')
 
-    def save(self):
-        user = self.context['request'].user
-        return super().save(user=user)
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        if 'filename' in attrs: # safe_filename should always be updated when filename is
+            safe_filename = re.sub(r'[^\w\.]', '_', attrs['filename'])
+            attrs['safe_filename'] = safe_filename
+
+        return attrs
+
+class GCodeFileSerializer(serializers.ModelSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
+    print_set = PrintSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
 
@@ -155,6 +220,7 @@ class OctoPrintTunnelSerializer(serializers.ModelSerializer):
 
 class NotificationSettingSerializer(serializers.ModelSerializer):
     config = serializers.DictField(required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = NotificationSetting
@@ -197,7 +263,6 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         return data
 
     def save(self):
-        user = self.context['request'].user
         config = self.validated_data.pop('config', None)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
@@ -206,7 +271,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
             return super().save(user=user, created_at=now(), updated_at=now())
 
-        return super().save(user=user)
+        return super().save()
 
 
 class PrinterEventSerializer(serializers.ModelSerializer):

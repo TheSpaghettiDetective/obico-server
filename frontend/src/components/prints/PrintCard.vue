@@ -410,6 +410,10 @@ export default {
 .print-card
   margin-top: var(--gap-between-blocks)
 
+  .card
+    border-radius: var(--border-radius-lg)
+    overflow: hidden
+
 .card-header
   display: flex
   flex-flow: row nowrap

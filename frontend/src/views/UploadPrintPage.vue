@@ -21,7 +21,7 @@
             </vue-dropzone>
             <div v-show="uploaded" class="pt-5">
               <div id="tl-uploaded">
-                <img style="height: auto; width: 12rem;" :src="require('@static/img/detective-working.gif')" />
+                <img class="detective-working" :src="require('@static/img/detective-working.gif')" />
                 <div class="py-2 text-center">
                   <div class="py-2">The Obico Server is running failure detection on the time-lapse video(s) you
                     uploaded.</div>
@@ -78,3 +78,10 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+img.detective-working
+  height: auto
+  width: 12rem
+  border-radius: var(--border-radius-sm)
+</style>

@@ -172,7 +172,9 @@ class PrintViewSet(
         return Print.objects.filter(user=self.request.user)
 
     def list(self, request):
-        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
+            ).select_related('printer', 'g_code_file',
+            ).filter(uploaded_at__isnull=True)
         filter = request.GET.get('filter', 'none')
         if filter == 'cancelled':
             queryset = queryset.filter(cancelled_at__isnull=False)

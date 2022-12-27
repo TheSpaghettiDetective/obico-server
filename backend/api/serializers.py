@@ -69,19 +69,27 @@ class BasePrinterSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
 
 
+class BaseGCodeFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
+
+
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
     printer = BasePrinterSerializer(many=False, read_only=True)
+    g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
 
     class Meta:
         model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',
+        fields = ('id', 'printer', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
                   'cancelled_at', 'uploaded_at', 'alerted_at',
                   'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
                   'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
                   'access_consented_at', 'video_archived_at')
         read_only_fields = (
-            'id', 'filename', 'started_at', 'ended_at', 'finished_at',
+            'id', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
             'cancelled_at', 'uploaded_at', 'alerted_at',
             'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
             'video_url', 'tagged_video_url', 'poster_url',
@@ -188,14 +196,11 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 
         return attrs
 
-class GCodeFileSerializer(serializers.ModelSerializer):
+
+class GCodeFileSerializer(BaseGCodeFileSerializer):
     parent_folder = BaseGCodeFolderSerializer()
     print_set = BasePrintSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = GCodeFile
-        fields = '__all__'
-        read_only_fields = ('user', 'resident_printer')
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
 

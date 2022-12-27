@@ -42,9 +42,7 @@ import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint } from './sendToPrint'
-
-const REDIRECT_TIMER = 3000
+import { sendToPrint, showRedirectModal } from './sendToPrint'
 
 export default {
   name: 'AvailablePrinters',
@@ -151,47 +149,11 @@ export default {
         },
         onPrinterStatusChanged: () => {
           if (!this.isPopup) {
-            this.showRedirectModal()
+            showRedirectModal(this.$swal, () => this.$emit('refresh'))
           }
 
           this.isSending = false
           this.fetchPrinters()
-        }
-      })
-    },
-    showRedirectModal() {
-      let timerInterval
-      this.$swal.Prompt.fire({
-        html: `
-          <div class="text-center">
-            <h5 class="py-3">
-              You'll be redirected to printers page in <strong>${Math.round(REDIRECT_TIMER / 1000)}</strong> seconds
-            </h5>
-          </div>
-        `,
-        timer: REDIRECT_TIMER,
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Go now',
-        onOpen: () => {
-          const content = this.$swal.getHtmlContainer()
-          const $ = content.querySelector.bind(content)
-
-          timerInterval = setInterval(() => {
-            this.$swal.getHtmlContainer().querySelector('strong')
-              .textContent = (this.$swal.getTimerLeft() / 1000)
-                .toFixed(0)
-          }, 1000)
-        },
-        onClose: () => {
-          clearInterval(timerInterval)
-          timerInterval = null
-        }
-      }).then(result => {
-        if (result.isConfirmed || result.dismiss === 'timer') {
-          window.location.assign('/printers/')
-        } else {
-          this.$emit('refresh')
         }
       })
     },

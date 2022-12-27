@@ -29,13 +29,19 @@ export const normalizedPrint = print => {
   print.uploaded_at = toMomentOrNull(print.uploaded_at)
   print.finished_at = toMomentOrNull(print.finished_at)
   print.cancelled_at = toMomentOrNull(print.cancelled_at)
-  print.ended_at = toMomentOrNull(print.ended_at) 
+  print.ended_at = toMomentOrNull(print.ended_at)
+  if (print.ended_at) {
+    print.duration = moment.duration(print.ended_at.diff(print.started_at))
+  }
   print.has_alerts = Boolean(print.alerted_at)
   print.reviewNeeded = print.alert_overwrite === null && print.tagged_video_url !== null
   print.focusedFeedbackNeeded = print.printshotfeedback_set && print.printshotfeedback_set.find(shot => shot.answered_at === null)
   print.status = print.ended_at ? (print.cancelled_at ? PrintStatus.Failed : PrintStatus.Finished) : PrintStatus.Printing
   if (print.printer) {
     print.printer = normalizedPrinter(print.printer)
+  }
+  if (print.g_code_file) {
+    print.g_code_file = normalizedGcode(print.g_code_file)
   }
   return print
 }
@@ -46,35 +52,38 @@ export const normalizedGcode = gcode => {
   gcode.deleted = toMomentOrNull(gcode.deleted)
   gcode.filesize = filesize(gcode.num_bytes)
 
-  gcode.print_set.map(p => normalizedPrint(p))
-  gcode.print_set.sort((a, b) => {
-    if (!a.ended_at && !b.ended_at) { // both in progress, sort by started_at
-      if (a.started_at > b.started_at) {
+  if (gcode.print_set) {
+    gcode.print_set.map(p => normalizedPrint(p))
+    gcode.print_set.sort((a, b) => {
+      if (!a.ended_at && !b.ended_at) { // both in progress, sort by started_at
+        if (a.started_at > b.started_at) {
+          return -1
+        } else if (a.started_at < b.started_at) {
+          return 1
+        } else {
+          return 0
+        }
+      } else if (!a.ended_at) {
         return -1
-      } else if (a.started_at < b.started_at) {
+      } else if (!b.ended_at) {
         return 1
       } else {
-        return 0
+        if (a.ended_at > b.ended_at) {
+          return -1
+        } else if (a.ended_at < b.ended_at) {
+          return 1
+        } else {
+          return 0
+        }
       }
-    } else if (!a.ended_at) {
-      return -1
-    } else if (!b.ended_at) {
-      return 1
-    } else {
-      if (a.ended_at > b.ended_at) {
-        return -1
-      } else if (a.ended_at < b.ended_at) {
-        return 1
-      } else {
-        return 0
-      }
-    }
-  })
-  gcode.last_print = gcode.print_set[0]
+    })
+    gcode.last_print = gcode.print_set[0]
 
-  gcode.failedPrints = gcode.print_set.filter(p => p.cancelled_at).length
-  gcode.successPrints = gcode.print_set.filter(p => p.finished_at).length
-  gcode.totalPrints = gcode.print_set.length
+    gcode.failedPrints = gcode.print_set.filter(p => p.cancelled_at).length
+    gcode.successPrints = gcode.print_set.filter(p => p.finished_at).length
+    gcode.totalPrints = gcode.print_set.length
+  }
+
   return gcode
 }
 

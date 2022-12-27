@@ -194,9 +194,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import filter from 'lodash/filter'
-// import get from 'lodash/get'
-
-import {getNormalizedP} from '@src/lib/utils'
+import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
 import Gauge from '@src/components/Gauge'
@@ -328,19 +326,7 @@ export default {
   },
 
   methods: {
-    downloadFile(url, filename) {
-      fetch(url)
-        .then(res => res.blob())
-        .then(res => {
-          const aElement = document.createElement('a')
-          aElement.setAttribute('download', filename)
-          const href = URL.createObjectURL(res)
-          aElement.href = href
-          aElement.setAttribute('target', '_blank')
-          aElement.click()
-          URL.revokeObjectURL(href)
-        })
-    },
+    downloadFile,
 
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition

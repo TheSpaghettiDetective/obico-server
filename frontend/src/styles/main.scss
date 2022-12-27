@@ -799,10 +799,12 @@ a.text-warning {
 .nav-pills .nav-link,
 .nav-pills .nav-link:hover {
   color: var(--color-text-primary);
+  border-radius: var(--border-radius-xs);
 }
 
 .nav-tabs .nav-link.active,
-.nav-tabs .nav-item.show .nav-link {
+.nav-tabs .nav-item.show .nav-link,
+.nav-pills .nav-link.active {
   background-color: var(--color-surface-secondary);
   border-color: var(--color-divider);
   color: var(--color-text-primary);

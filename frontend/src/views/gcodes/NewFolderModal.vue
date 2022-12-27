@@ -41,7 +41,7 @@ export default {
       default: null,
     },
     parentFolderId: {
-      type: Number,
+      type: String,
       default: null,
     },
     targetPrinterId: {
@@ -89,7 +89,7 @@ export default {
       try {
         const newFolder = await axios.post(urls.gcodeFolders(), {
           name: this.newFolderName,
-          parent_folder: this.parentFolder
+          parent_folder: this.parentFolderId,
         })
 
         this.$emit('created', newFolder.data.id)

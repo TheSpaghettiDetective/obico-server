@@ -244,7 +244,7 @@
       <new-folder-modal
         @created="onFolderCreated"
         :preConfirm="verifyNewFolder"
-        :parentFolderId="parentFolder ? parentFolder.id : null"
+        :parentFolderId="parentFolder"
         ref="newFolderModal"
       />
     </template>
@@ -594,13 +594,14 @@ export default {
 
       if (!this.noMoreFolders) {
         try {
-          let response = await axios.get(urls.gcodeFolders({
-            parentFolder: this.parentFolder,
-            page: this.currentFoldersPage,
-            pageSize: PAGE_SIZE,
-            sortingOption: this.activeSorting.folder_query,
-            sortingDirection: this.activeSortingDirection.query,
-          }))
+          let response = await axios.get(urls.gcodeFolders(), {
+            params: {
+              parent_folder: this.parentFolder || 'null',
+              page: this.currentFoldersPage,
+              page_size: PAGE_SIZE,
+              sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
+            }
+          })
           response = response.data
           this.noMoreFolders = response?.next === null
           folders = response?.results || []
@@ -619,19 +620,19 @@ export default {
 
       if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
         try {
-          let response = await axios.get(urls.gcodeFiles({
-              parentFolder: this.parentFolder,
-              page: this.currentFilesPage,
-              pageSize: PAGE_SIZE,
-              sortingOption: this.activeSorting.file_query,
-              sortingDirection: this.activeSortingDirection.query,
-              query: this.searchQuery,
-            }),
+          let response = await axios.get(urls.gcodeFiles(),
             {
               // If cache is enabled, after renaming item on gcode page
               // and going back to files - gcode will have old name
               headers: {
                 'Cache-Control': 'no-cache',
+              },
+              params: {
+                parent_folder: this.parentFolder || 'null',
+                page: this.currentFilesPage,
+                page_size: PAGE_SIZE,
+                sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+                q: this.searchQuery,
               }
             }
           )

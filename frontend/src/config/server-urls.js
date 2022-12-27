@@ -37,47 +37,8 @@ export default {
 
   // Gcodes
   gcodeFile: (id) => `/api/v1/g_code_files/${id}/`,
-  gcodeFiles: ({query, parentFolder, page, pageSize, sortingOption, sortingDirection} = {}) => {
-    sortingOption = sortingOption || 'created_at'
-    sortingDirection = sortingDirection || 'desc'
-
-    const params = {
-      sorting: `sorting=${sortingOption}_${sortingDirection}`,
-      // query: '' = all files; 'str' = filtered; null/undefined = don't include query param
-      query: typeof query === 'string' ? 'q=' + query : '',
-      // parentFolder: null = root; number = folderId; undefined = don't include parentFolder param
-      parentFolder: (parentFolder || parentFolder === null) ? `parent_folder=${parentFolder}` : '',
-      // pagination: if not provided, disable pagination
-      page: `page=${page || 1}`,
-      pageSize: `page_size=${pageSize || 24}`,
-    }
-
-    let url = '/api/v1/g_code_files/?'
-    for (const param of Object.values(params)) {
-      url += param ? `${param}&` : ''
-    }
-    return url
-  },
+  gcodeFiles: () => '/api/v1/g_code_files/',
   gcodeFolder: (id) => `/api/v1/g_code_folders/${id}/`,
-  gcodeFolders: ({parentFolder, page, pageSize, sortingOption, sortingDirection} = {}) => {
-    sortingOption = sortingOption || 'created_at'
-    sortingDirection = sortingDirection || 'desc'
-
-    const params = {
-      sorting: `sorting=${sortingOption}_${sortingDirection}`,
-      // parentFolder: null = root; number = folderId; undefined = don't include parentFolder param
-      parentFolder: (parentFolder || parentFolder === null) ? `parent_folder=${parentFolder}` : '',
-      // pagination: if not provided, disable pagination
-      page: `page=${page || 1}`,
-      pageSize: `page_size=${pageSize || 24}`,
-    }
-
-    let url = '/api/v1/g_code_folders/?'
-    for (const param of Object.values(params)) {
-      url += param ? `${param}&` : ''
-    }
-    return url
-  },
-
+  gcodeFolders: () => '/api/v1/g_code_folders/',
   gcode: gcodeId => `/api/v1/g_code_files/${gcodeId}/`,
 }

@@ -167,9 +167,9 @@
                         <span v-else-if="!item.print_set.length">No prints yet</span>
                         <span v-else-if="item.last_print">{{ item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...' }}</span>
                         <div
-                          v-if="item.last_print_result"
+                          v-if="item.last_print && item.last_print.status.key !== PrintStatus.Printing.key"
                           class="circle-indicator"
-                          :class="item.last_print_result"
+                          :class="item.last_print.status.key"
                         ></div>
                       </div>
                     </div>
@@ -257,7 +257,7 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/lib/normalizers'
+import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter, PrintStatus } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import MugenScroll from 'vue-mugen-scroll'
@@ -355,6 +355,7 @@ export default {
 
   data() {
     return {
+      PrintStatus,
       csrf: null,
       user: null,
       loading: false,
@@ -923,7 +924,7 @@ export default {
   position: relative
   bottom: 1px
   background: var(--color-text-secondary)
-  &.cancelled
+  &.failed
     background: var(--color-danger)
   &.finished
     background: var(--color-success)

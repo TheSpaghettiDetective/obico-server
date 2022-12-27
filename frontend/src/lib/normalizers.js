@@ -3,6 +3,7 @@ import get from 'lodash/get'
 import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
 
+
 export const toMomentOrNull = datetimeStr => {
   if (!datetimeStr) {
     return null
@@ -10,11 +11,32 @@ export const toMomentOrNull = datetimeStr => {
   return moment(datetimeStr)
 }
 
+export const PrintStatus = {
+  Printing: { key: 'printing', title: 'Printing...' },
+  Finished: { key: 'finished', title: 'Finished' },
+  Failed: { key: 'failed', title: 'Failed / Cancelled' },
+}
+
+export const PrinterStatus = {
+  Ready: { key: 'ready', title: 'Ready' },
+  Unavailable: { key: 'unavailable', title: 'Unavailable' },
+}
+
+// ––––––––––––––––––––––
+
 export const normalizedPrint = print => {
-  print.ended_at = toMomentOrNull(print.cancelled_at || print.finished_at)
   print.started_at = toMomentOrNull(print.started_at)
   print.uploaded_at = toMomentOrNull(print.uploaded_at)
+  print.finished_at = toMomentOrNull(print.finished_at)
+  print.cancelled_at = toMomentOrNull(print.cancelled_at)
+  print.ended_at = toMomentOrNull(print.ended_at) 
   print.has_alerts = Boolean(print.alerted_at)
+  print.reviewNeeded = print.alert_overwrite === null && print.tagged_video_url !== null
+  print.focusedFeedbackNeeded = print.printshotfeedback_set && print.printshotfeedback_set.find(shot => shot.answered_at === null)
+  print.status = print.ended_at ? (print.cancelled_at ? PrintStatus.Failed : PrintStatus.Finished) : PrintStatus.Printing
+  if (print.printer) {
+    print.printer = normalizedPrinter(print.printer)
+  }
   return print
 }
 
@@ -24,13 +46,7 @@ export const normalizedGcode = gcode => {
   gcode.deleted = toMomentOrNull(gcode.deleted)
   gcode.filesize = filesize(gcode.num_bytes)
 
-  for (const i in gcode.print_set) {
-    gcode.print_set[i].started_at = toMomentOrNull(gcode.print_set[i].started_at)
-    gcode.print_set[i].finished_at = toMomentOrNull(gcode.print_set[i].finished_at)
-    gcode.print_set[i].cancelled_at = toMomentOrNull(gcode.print_set[i].cancelled_at)
-    gcode.print_set[i].ended_at = toMomentOrNull(gcode.print_set[i].ended_at)
-  }
-
+  gcode.print_set.map(p => normalizedPrint(p))
   gcode.print_set.sort((a, b) => {
     if (!a.ended_at && !b.ended_at) { // both in progress, sort by started_at
       if (a.started_at > b.started_at) {
@@ -54,13 +70,7 @@ export const normalizedGcode = gcode => {
       }
     }
   })
-
   gcode.last_print = gcode.print_set[0]
-  if (gcode.last_print?.cancelled_at) {
-    gcode.last_print_result = 'cancelled'
-  } else if (gcode.last_print?.finished_at) {
-    gcode.last_print_result = 'finished'
-  }
 
   gcode.failedPrints = gcode.print_set.filter(p => p.cancelled_at).length
   gcode.successPrints = gcode.print_set.filter(p => p.finished_at).length
@@ -103,8 +113,11 @@ export const normalizedPrinter = (newData, oldData) => {
                   moment(get(this, 'current_print.alert_acknowledged_at') || 0)
                 )
     },
+    availabilityStatus: function() {
+      return !this.isOffline() && !this.isDisconnected() && !this.isActive() ? PrinterStatus.Ready : PrinterStatus.Unavailable
+    }
   }
-  if (oldData){
+  if (oldData) {
     if (get(oldData, 'status._ts', -1) > get(newData, 'status._ts', get(oldData, 'status._ts', 0))) {
       delete newData.status
     }

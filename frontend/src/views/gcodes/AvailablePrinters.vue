@@ -12,14 +12,14 @@
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
-        <div class="printer-name">{{ printer.name }}</div>
+        <div class="printer-name overflow-truncated">{{ printer.name }}</div>
         <div
           class="printer-status"
           :class="{
-            'text-success': printer.printAvailability.key === 'ready',
-            'text-warning': printer.printAvailability.key === 'unavailable'
+            'text-success': printer.availabilityStatus().key === 'ready',
+            'text-warning': printer.availabilityStatus().key === 'unavailable'
           }"
-        >{{ printer.printAvailability.text }}</div>
+        >{{ printer.availabilityStatus().title }}</div>
       </div>
 
       <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">No available printers</p>
@@ -42,7 +42,7 @@ import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint, getPrinterPrintAvailability } from './sendToPrint'
+import { sendToPrint } from './sendToPrint'
 
 const REDIRECT_TIMER = 3000
 
@@ -106,23 +106,22 @@ export default {
 
       printers = printers?.data
       printers = printers.map(p => normalizedPrinter(p))
-      printers = printers.map(p => ({...p, printAvailability: getPrinterPrintAvailability(p)}))
 
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find(p => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
-        if (selectedPrinter.printAvailability.key === 'ready') {
+        if (selectedPrinter.availabilityStatus().key === 'ready') {
           this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.filter(p => p.printAvailability.key === 'ready')[0]
+        this.selectedPrinter = printers.filter(p => p.availabilityStatus().key === 'ready')[0]
       }
 
       this.printersLoading = false
     },
     selectPrinter(printer) {
-      if (printer.printAvailability.key !== 'ready') {
+      if (printer.availabilityStatus().key !== 'ready') {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't ready for print for one of the following reasons:`,
           html: `<ul style="text-align: left">

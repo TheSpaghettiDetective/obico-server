@@ -93,28 +93,14 @@
 
             <div class="mt-5" v-if="isCloud">
               <h2 class="section-title">Print history</h2>
-              <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
-                <div class="print-info">
-
-                  <div class="result text-success font-weight-bold" v-if="print.finished_at">Succeeded</div>
-                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">Cancelled / Failed</div>
-                  <div class="result font-weight-bold" v-else>Printing...</div>
-
-                  <div class="printer truncate-overflow-text">Printer: {{ print.printer.name }}</div>
-                  <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
-
-                  <div class="date">
-                    Ended:
-                    <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
-                    <span v-else>-</span>
-                  </div>
-                </div>
-                <div class="poster" v-if="print.poster_url">
-                  <div class="img" :style="{backgroundImage: `url(${print.poster_url})`}"></div>
-                </div>
-              </div>
+              <print-item
+                v-for="print of gcode.print_set"
+                :key="`print_${print.id}`"
+                :print="print"
+                class="print-item"
+              ></print-item>
               <div v-if="!gcode.print_set.length">
-                <div class="print-history-card p-4 justify-content-center text-secondary">
+                <div class="card-container p-4 justify-content-center text-secondary">
                   This file doesn't have any prints yet
                 </div>
               </div>
@@ -158,7 +144,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import availablePrinters from './AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
 import { listFiles } from './localFiles'
-
+import PrintItem from '@src/components/prints/PrintItem.vue'
 
 export default {
   name: 'GCodeDetailsPage',
@@ -168,6 +154,7 @@ export default {
     RenameModal,
     DeleteConfirmationModal,
     availablePrinters,
+    PrintItem,
   },
 
   props: {
@@ -330,43 +317,6 @@ export default {
   font-size: 1.25rem
   margin-bottom: 0.5rem
 
-.print-history-card
-  display: flex
-  justify-content: space-between
-  align-items: stretch
-  background-color: var(--color-surface-secondary)
-  border-radius: var(--border-radius-lg)
-  margin-bottom: 1rem
-
-.print-info
-  flex: 1
-  padding: 1rem
-  overflow: hidden
-
-  & > div
-    margin-bottom: 0.25rem
-
-.truncate-overflow-text
-  width: 100%
-  text-overflow: ellipsis
-  overflow: hidden
-  white-space: nowrap
-
-.date
-  color: var(--color-text-secondary)
-
-.poster
-  padding: .875rem
-  .img
-    border-radius: var(--border-radius-sm)
-    background-size: cover
-    background-position: center
-    height: 100%
-    width: 150px
-    background-color: var(--color-hover)
-    display: flex
-    justify-content: center
-    align-items: center
-    color: var(--color-text-secondary)
-    font-size: 0.875rem
+.print-item
+  margin-bottom: 10px
 </style>

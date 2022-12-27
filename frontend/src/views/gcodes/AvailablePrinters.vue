@@ -126,7 +126,7 @@ export default {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't ready for print for one of the following reasons:`,
           html: `<ul style="text-align: left">
-            <li>${printer.agentDisplayName()} is powered off or not connected to the Inernet</li>
+            <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
             <li>Printer is not connected to ${printer.agentDisplayName()}</li>
             <li>Printer is currently busy</li>
           </ul>`

@@ -36,13 +36,10 @@
               :print="print"
               class="print-item"
             ></print-item>
-          </b-col>
-          <b-col v-else-if="loading">
-            Loading...
-
-            <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-              <div v-if="noMoreData" class="text-center p-2">No more time-lapses.</div>
-              <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+            <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
+              <div class="text-center p-4" v-if="!noMoreData">
+                <b-spinner label="Loading..."></b-spinner>
+              </div>
             </mugen-scroll>
           </b-col>
           <b-col v-else>

@@ -257,6 +257,7 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
@@ -306,6 +307,16 @@ const Sorting = {
       query: 'desc',
     },
   },
+}
+const LOCAL_PREF_NAMES = {
+  sorting: 'gcode-folders-sorting-id',
+  sortingDirection: 'gcode-folders-sorting-direction-id',
+}
+const getSortingById = (id) => {
+  return Object.values(Sorting.options).find(s => s.id === id)
+}
+const getSortingDirectionById = (id) => {
+  return Object.values(Sorting.directions).find(s => s.id === id)
 }
 
 export default {
@@ -368,8 +379,8 @@ export default {
       currentFilesPage: 1,
 
       sorting: Sorting,
-      activeSorting: Sorting.options.created_at,
-      activeSortingDirection: Sorting.directions.desc,
+      activeSorting: getSortingById(getLocalPref(LOCAL_PREF_NAMES.sorting, Sorting.options.created_at.id)),
+      activeSortingDirection: getSortingDirectionById(getLocalPref(LOCAL_PREF_NAMES.sortingDirection, Sorting.directions.desc.id)),
 
       searchQuery: null,
       searchStateIsActive: false,
@@ -664,11 +675,13 @@ export default {
 
       if (this.activeSorting.id !== newSortingOption.id) {
         this.activeSorting = newSortingOption
+        setLocalPref(LOCAL_PREF_NAMES.sorting, newSortingOption.id)
         sortingChanged = true
       }
 
       if (this.activeSortingDirection.id !== newSortingDirection.id) {
         this.activeSortingDirection = newSortingDirection
+        setLocalPref(LOCAL_PREF_NAMES.sortingDirection, newSortingDirection.id)
         sortingChanged = true
       }
 

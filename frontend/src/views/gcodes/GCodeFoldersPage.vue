@@ -136,13 +136,13 @@
                         <template #button-content>
                           <i class="fas fa-ellipsis-v"></i>
                         </template>
-                        <b-dropdown-item @click="renameItem(item)">
+                        <b-dropdown-item @click.stop="renameItem(item)">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
                         <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
                         </b-dropdown-item> -->
-                        <b-dropdown-item @click="deleteItem(item)">
+                        <b-dropdown-item @click.stop="deleteItem(item)">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
@@ -183,13 +183,13 @@
                             <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
                           </span>
                         </b-dropdown-item>
-                        <b-dropdown-item v-if="isCloud" @click="renameItem(item)">
+                        <b-dropdown-item v-if="isCloud" @click.stop="renameItem(item)">
                           <i class="fas fa-edit"></i>Rename
                         </b-dropdown-item>
                         <!-- <b-dropdown-item>
                           <i class="fas fa-arrows-alt"></i>Move
                         </b-dropdown-item> -->
-                        <b-dropdown-item v-if="isCloud" @click="deleteItem(item)">
+                        <b-dropdown-item v-if="isCloud" @click.stop="deleteItem(item)">
                           <span class="text-danger">
                             <i class="fas fa-trash-alt"></i>Delete
                           </span>
@@ -262,7 +262,7 @@ import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import MugenScroll from 'vue-mugen-scroll'
-import { getCsrfFromDocument, wasElementClicked } from '@src/lib/utils'
+import { getCsrfFromDocument } from '@src/lib/utils'
 import NewFolderModal from './NewFolderModal.vue'
 import RenameModal from './RenameModal.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
@@ -769,10 +769,6 @@ export default {
       this.fetchFilesAndFolders(true)
     },
     openFolder(event, folder) {
-      if (wasElementClicked(event, 'dropdown-item')) {
-        return
-      }
-
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
           this.$router.push(`/g_code_folders/local/${this.selectedPrinterId}/${encodeURIComponent(folder.path)}/`)
@@ -786,9 +782,6 @@ export default {
       }
     },
     openFile(event, file) {
-      if (wasElementClicked(event, 'dropdown-item')) {
-        return
-      }
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
           window.location.assign(`/g_code_files/local/${this.selectedPrinterId}/${encodeURIComponent(file.path)}/`)

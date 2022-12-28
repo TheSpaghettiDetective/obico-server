@@ -150,6 +150,12 @@ export default {
           this.noMoreData = response.data.length < PAGE_SIZE
           this.prints.push(...response.data.map(data => normalizedPrint(data)))
         })
+        .catch(error => {
+          this.$swal.Reject.fire({
+            title: 'Error',
+            text: error.message,
+          })
+        })
     },
 
     refetchData() {

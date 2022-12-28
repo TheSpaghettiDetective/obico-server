@@ -314,6 +314,12 @@ export default {
           this.loading = false
         }
       })
+      .catch(error => {
+        this.$swal.Reject.fire({
+          title: 'Error',
+          text: error.message,
+        })
+      })
     },
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition

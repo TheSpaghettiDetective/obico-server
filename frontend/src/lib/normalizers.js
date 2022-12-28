@@ -31,7 +31,9 @@ export const normalizedPrint = print => {
   print.cancelled_at = toMomentOrNull(print.cancelled_at)
   print.ended_at = toMomentOrNull(print.ended_at)
   if (print.ended_at) {
-    print.duration = moment.duration(print.ended_at.diff(print.started_at))
+    const duration = moment.duration(print.ended_at.diff(print.started_at))
+    print.duration = duration.hours() ? `${duration.hours()}h ` : ''
+    print.duration += `${duration.minutes()}m`
   }
   print.has_alerts = Boolean(print.alerted_at)
   print.reviewNeeded = print.alert_overwrite === null && print.tagged_video_url !== null

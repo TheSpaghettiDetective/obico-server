@@ -60,7 +60,7 @@
                 </div>
                 <div class="info-line">
                   <div class="title">Duration</div>
-                  <div class="value">{{ print.duration ? print.duration.humanize() : '-' }}</div>
+                  <div class="value">{{ print.duration ? print.duration : '-' }}</div>
                 </div>
               </div>
             </div>

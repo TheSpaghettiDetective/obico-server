@@ -77,15 +77,20 @@
                   <b-tabs pills card>
                     <b-tab title="Detective Time-Lapse" :disabled="!canShowDetectiveView">
                       <b-card-text>
-                        <div v-if="print.tagged_video_url">
+                        <div
+                          v-if="print.tagged_video_url"
+                          :class="{'is-fullscreen': !!fullscreenUrl && fullscreenUrl === print.tagged_video_url}"
+                        >
                           <div class="video-wrapper">
                             <video-box
                               :videoUrl="print.tagged_video_url"
                               :posterUrl="print.poster_url"
                               :fluid="false"
                               @timeupdate="onTimeUpdate"
-                              :fullscreenBtn="false"
-                              :defaultFullScreenToggle="true"
+                              :fullscreenBtn="fullscreenUrl === null"
+                              @fullscreen="() => enterFullscreen(print.tagged_video_url)"
+                              :exitFullscreenBtn="fullscreenUrl !== null"
+                              @exitFullscreen="exitFullscreen"
                               :downloadBtn="true"
                               @download="() => downloadFile(print.tagged_video_url, `${print.id}_tagged.mp4`)"
                             />
@@ -155,18 +160,22 @@
                       </b-card-text>
                     </b-tab>
                     <b-tab v-if="print.video_url" :active="!print.tagged_video_url" title="Original Time-Lapse">
-                      <b-card-text> 
-                        <div class="video-wrapper">
-                          <video-box
-                            :videoUrl="print.video_url"
-                            :posterUrl="print.poster_url"
-                            :fluid="false"
-                            @timeupdate="onTimeUpdate"
-                            :fullscreenBtn="false"
-                            :defaultFullScreenToggle="true"
-                            :downloadBtn="true"
-                            @download="() => downloadFile(print.video_url, `${print.id}.mp4`)"
-                          />
+                      <b-card-text>
+                        <div :class="{'is-fullscreen original': !!fullscreenUrl && fullscreenUrl === print.video_url}">
+                          <div class="video-wrapper">
+                            <video-box
+                              :videoUrl="print.video_url"
+                              :posterUrl="print.poster_url"
+                              :fluid="false"
+                              @timeupdate="onTimeUpdate"
+                              :fullscreenBtn="fullscreenUrl === null"
+                              @fullscreen="() => enterFullscreen(print.video_url)"
+                              :exitFullscreenBtn="fullscreenUrl !== null"
+                              @exitFullscreen="exitFullscreen"
+                              :downloadBtn="true"
+                              @download="() => downloadFile(print.video_url, `${print.id}.mp4`)"
+                            />
+                          </div>
                         </div>
                       </b-card-text>
                     </b-tab>
@@ -223,12 +232,21 @@ export default {
       predictions: [],
       currentPosition: 0,
       inflightAlertOverwrite: null,
-      // fullscreenVideoUrl: null,
+      fullscreenUrl: null,
     }
   },
 
   created() {
     this.fetchData()
+  },
+
+  mounted() {
+    const exitFullscreen = this.exitFullscreen
+    document.addEventListener('keydown', (event) => {
+      if(event.key === "Escape") {
+        exitFullscreen()
+      }
+    })
   },
 
   computed: {
@@ -278,8 +296,10 @@ export default {
 
   methods: {
     downloadFile,
-    fetchData() {
-      this.loading = true
+    fetchData(showLoading = true) {
+      if (showLoading) {
+        this.loading = true
+      }
       axios.get(urls.print(this.config.printId)).then(response => {
         this.print = normalizedPrint(response.data)
         return axios.get(urls.printer(this.print.printer.id))
@@ -290,24 +310,22 @@ export default {
       })
       .then((response) => {
         this.predictions = response.data
-        this.loading = false
+        if (showLoading) {
+          this.loading = false
+        }
       })
     },
-
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
     },
-
     onThumbUpClick() {
       this.inflightAlertOverwrite = this.print.has_alerts ? 'FAILED' : 'NOT_FAILED'
       this.alertOverwrite(this.inflightAlertOverwrite)
     },
-
     onThumbDownClick() {
       this.inflightAlertOverwrite = this.print.has_alerts ? 'NOT_FAILED' : 'FAILED'
       this.alertOverwrite(this.inflightAlertOverwrite)
     },
-
     alertOverwrite(value) {
       axios.patch(
         urls.print(this.print.id), {
@@ -315,10 +333,9 @@ export default {
         })
         .then(response => {
           this.inflightAlertOverwrite = null
-          this.fetchData()
+          this.fetchData(false)
         })
     },
-
     onRepeatPrintClicked() {
       this.isSending = true
 
@@ -332,7 +349,13 @@ export default {
           showRedirectModal(this.$swal, () => this.fetchData())
         }
       })
-    }
+    },
+    enterFullscreen(url) {
+      this.fullscreenUrl = url
+    },
+    exitFullscreen() {
+      this.fullscreenUrl = null
+    },
   }
 }
 </script>
@@ -407,6 +430,11 @@ export default {
 
   ::v-deep .video-js
     height: 500px !important
+    
+  ::v-deep video:focus-visible
+    outline: none !important
+    box-shadow: none !important
+    border: none !important
 
 .detective-footer
   margin-top: 30px
@@ -423,4 +451,52 @@ export default {
 .detective-placeholder
   border-radius: var(--border-radius-md)
   overflow: hidden
+
+.is-fullscreen
+  position: fixed
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+  z-index: 9999
+  background-color: var(--color-background)
+  padding: 1rem
+  display: flex
+
+  .video-wrapper
+    flex: 1
+    order: 1
+    ::v-deep .video-js
+      height: calc(100vh - 2rem) !important
+
+  .detective-footer
+    flex: 0 0 200px
+    padding: 0 1rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    position: relative
+
+  @media (max-width: 996px)
+    flex-direction: column
+
+    .video-wrapper
+      order: 0
+      flex: 0 0 400px
+      ::v-deep .video-js
+        height: 400px !important
+
+    .detective-footer
+      flex: 1
+      .feedback-section
+        display: none
+  
+  &.original
+    padding: 0
+
+    .video-wrapper
+      flex: 1 !important
+      border-radius: 0
+      ::v-deep .video-js
+        height: 100vh !important
 </style>

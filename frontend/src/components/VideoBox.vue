@@ -8,11 +8,14 @@
       @timeupdate="onTimeUpdate"
     />
     <div class="buttons-container">
-      <a v-if="downloadBtn" class="download-btn" role="button" @click="$emit('download')" title="Download">
+      <a v-if="downloadBtn" class="action-btn" role="button" @click="$emit('download')" title="Download">
         <i class="fas fa-download" aria-hidden="true"></i>
       </a>
-      <a v-if="fullscreenBtn" class="fullscreen-btn" role="button" @click="$emit('fullscreen')" title="Full screen">
+      <a v-if="fullscreenBtn" class="action-btn" role="button" @click="$emit('fullscreen')" title="Full screen">
         <i class="fa fa-expand" aria-hidden="true"></i>
+      </a>
+      <a v-if="exitFullscreenBtn" class="action-btn" role="button" @click="$emit('exitFullscreen')" title="Exit full screen">
+        <i class="fa fa-times" aria-hidden="true"></i>
       </a>
     </div>
   </div>
@@ -33,6 +36,10 @@ export default {
     fullscreenBtn: {
       type: Boolean,
       default: true,
+    },
+    exitFullscreenBtn: {
+      type: Boolean,
+      default: false,
     },
     downloadBtn: {
       type: Boolean,
@@ -93,7 +100,7 @@ export default {
     padding: 0.5rem
     background-color: rgba(0,0,0,0.7)
 
-  a.fullscreen-btn, a.download-btn
+  a.action-btn
     padding: 0.5rem
     color: rgba(255,255,255,0.5)
     font-size: 1.5rem

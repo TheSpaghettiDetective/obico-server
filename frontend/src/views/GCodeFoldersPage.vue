@@ -263,12 +263,12 @@ import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import MugenScroll from 'vue-mugen-scroll'
 import { getCsrfFromDocument } from '@src/lib/utils'
-import NewFolderModal from './NewFolderModal.vue'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint } from './sendToPrint'
+import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
+import RenameModal from '@src/components/g-codes/RenameModal.vue'
+import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
+import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles, getPrinterStorageAvailability } from './localFiles'
+import { listFiles, getPrinterStorageAvailability } from '@src/components/g-codes/localFiles'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000

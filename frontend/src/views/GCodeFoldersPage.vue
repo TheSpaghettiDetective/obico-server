@@ -117,7 +117,6 @@
               :folders="folders"
               :files="files"
               :targetPrinter="targetPrinter"
-              :isFolderEmpty="isFolderEmpty"
               :nothingFound="nothingFound"
               :loading="loading"
               :scrollContainerId="scrollContainerId"
@@ -127,7 +126,7 @@
               @openFolder="openFolder"
               @openFile="openFile"
               @renameItem="renameItem"
-              @moveItem="() => {}"
+              @moveItem="moveItem"
               @deleteItem="deleteItem"
               @print="onPrintClicked"
               @fetchMore="fetchFilesAndFolders"
@@ -140,6 +139,15 @@
         @renamed="onItemRenamed"
         :preConfirm="verifyItemRename"
         ref="renameModal"
+      />
+      <move-modal
+        :item="activeItem"
+        :targetPrinter="targetPrinter"
+        :scrollContainerId="scrollContainerId"
+        :activeSorting="activeSorting"
+        :activeSortingDirection="activeSortingDirection"
+        @moved="onItemMoved"
+        ref="moveModal"
       />
       <delete-confirmation-modal
         :item="activeItem"
@@ -169,6 +177,7 @@ import SearchInput from '@src/components/SearchInput.vue'
 import { getCsrfFromDocument } from '@src/lib/utils'
 import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
+import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
@@ -233,6 +242,7 @@ export default {
     vueDropzone: vue2Dropzone,
     GCodeFileStructure,
     RenameModal,
+    MoveModal,
     DeleteConfirmationModal,
     NewFolderModal,
   },
@@ -332,9 +342,6 @@ export default {
   computed: {
     isCloud() {
       return !this.selectedPrinterId
-    },
-    isFolderEmpty() {
-      return !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
     },
     nothingFound() {
       return this.searchStateIsActive && !this.searchTimeoutId && !this.files.length
@@ -637,6 +644,17 @@ export default {
         }
       }
       this.activeItem = null
+    },
+    moveItem(item) {
+      this.activeItem = item
+      this.$refs.moveModal.show()
+    },
+    onItemMoved() {
+      if (!this.activeItem) {
+        return
+      }
+      this.activeItem = null
+      this.fetchFilesAndFolders(true)
     },
     deleteItem(item) {
       this.activeItem = item

@@ -153,11 +153,11 @@ import Layout from '@src/components/Layout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedGcode } from '@src/lib/normalizers'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import availablePrinters from './AvailablePrinters.vue'
+import RenameModal from '@src/components/g-codes/RenameModal.vue'
+import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
+import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from './localFiles'
+import { listFiles } from '@src/components/g-codes/localFiles'
 
 
 export default {

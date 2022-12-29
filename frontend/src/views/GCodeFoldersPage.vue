@@ -110,123 +110,27 @@
               </div>
             </vue-dropzone>
 
-            <div class="gcodes-wrapper">
-              <div class="header-panel" :class="{'without-action-buttons': !isCloud && !targetPrinter}">
-                <div class="text">Name</div>
-                <div class="text">Size</div>
-                <div class="text">Created</div>
-                <div class="text" v-if="isCloud">Last printed</div>
-              </div>
-
-              <div class="gcode-items-wrapper">
-                <!-- Folders -->
-                <div v-if="!searchStateIsActive">
-                  <div v-for="item in folders" :key="`folder_${item.id}`" class="item folder" @click="(event) => openFolder(event, item)">
-                    <div class="item-info">
-                      <div class="filename">
-                        <i class="fas fa-folder mr-1"></i>
-                        {{ item.name }}
-                      </div>
-                      <div class="size">{{ item.numItems }} item(s)</div>
-                      <div class="created">{{ item.created_at ? item.created_at.fromNow() : '-' }}</div>
-                      <div class="d-none d-md-block" v-if="isCloud">-</div>
-                    </div>
-                    <div v-if="isCloud">
-                      <b-dropdown right no-caret toggle-class="icon-btn py-0">
-                        <template #button-content>
-                          <i class="fas fa-ellipsis-v"></i>
-                        </template>
-                        <b-dropdown-item @click.stop="renameItem(item)">
-                          <i class="fas fa-edit"></i>Rename
-                        </b-dropdown-item>
-                        <!-- <b-dropdown-item>
-                          <i class="fas fa-arrows-alt"></i>Move
-                        </b-dropdown-item> -->
-                        <b-dropdown-item @click.stop="deleteItem(item)">
-                          <span class="text-danger">
-                            <i class="fas fa-trash-alt"></i>Delete
-                          </span>
-                        </b-dropdown-item>
-                      </b-dropdown>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Files -->
-                <div v-if="!searchInProgress">
-                  <div v-for="(item, key) in files" :key="`gcode_${key}`" class="item" @click="(event) => openFile(event, item)">
-                    <div class="item-info">
-                      <div class="filename">
-                        <i class="fas fa-file-code mr-1"></i>
-                        {{ item.filename }}
-                      </div>
-                      <div class="size">{{ item.filesize }}</div>
-                      <div class="uploaded">{{ item.created_at ? item.created_at.fromNow() : '-' }}</div>
-                      <div class="last-printed" v-if="isCloud">
-                        <span v-if="!item.print_set">-</span>
-                        <span v-else-if="!item.print_set.length">No prints yet</span>
-                        <span v-else-if="item.last_print">{{ item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...' }}</span>
-                        <div
-                          v-if="item.last_print_result"
-                          class="circle-indicator"
-                          :class="item.last_print_result"
-                        ></div>
-                      </div>
-                    </div>
-                    <div v-if="isCloud || targetPrinter">
-                      <b-dropdown right no-caret toggle-class="icon-btn py-0">
-                        <template #button-content>
-                          <i class="fas fa-ellipsis-v"></i>
-                        </template>
-                        <b-dropdown-item v-if="targetPrinter" @click="(event) => onPrintClicked(event, item)">
-                          <span class="text-primary">
-                            <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
-                          </span>
-                        </b-dropdown-item>
-                        <b-dropdown-item v-if="isCloud" @click.stop="renameItem(item)">
-                          <i class="fas fa-edit"></i>Rename
-                        </b-dropdown-item>
-                        <!-- <b-dropdown-item>
-                          <i class="fas fa-arrows-alt"></i>Move
-                        </b-dropdown-item> -->
-                        <b-dropdown-item v-if="isCloud" @click.stop="deleteItem(item)">
-                          <span class="text-danger">
-                            <i class="fas fa-trash-alt"></i>Delete
-                          </span>
-                        </b-dropdown-item>
-                      </b-dropdown>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Pagination -->
-                <mugen-scroll
-                  v-if="isCloud"
-                  :v-show="!isFolderEmpty"
-                  :handler="fetchFilesAndFolders"
-                  :should-handle="!loading"
-                  class="text-center"
-                  :scroll-container="scrollContainerId"
-                >
-                  <div v-if="!noMoreFolders || !noMoreFiles || searchInProgress" class="py-5">
-                    <b-spinner label="Loading..." />
-                  </div>
-                </mugen-scroll>
-
-                <div v-if="!isCloud && (localFilesLoading || searchInProgress)" class="text-center py-5">
-                  <b-spinner label="Loading..." />
-                </div>
-                <div v-else>
-                  <!-- Placeholders -->
-                  <div v-if="isFolderEmpty" class="placeholder text-secondary">
-                    <span>Nothing here yet</span>
-                  </div>
-                  <div v-else-if="nothingFound" class="placeholder text-secondary">
-                    <span>Nothing found</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <g-code-file-structure
+              :isCloud="isCloud"
+              :searchStateIsActive="searchStateIsActive"
+              :searchInProgress="searchInProgress"
+              :folders="folders"
+              :files="files"
+              :targetPrinter="targetPrinter"
+              :nothingFound="nothingFound"
+              :loading="loading"
+              :scrollContainerId="scrollContainerId"
+              :noMoreFolders="noMoreFolders"
+              :noMoreFiles="noMoreFiles"
+              :localFilesLoading="localFilesLoading"
+              @openFolder="openFolder"
+              @openFile="openFile"
+              @renameItem="renameItem"
+              @moveItem="moveItem"
+              @deleteItem="deleteItem"
+              @print="onPrintClicked"
+              @fetchMore="fetchFilesAndFolders"
+            />
           </b-col>
         </b-row>
       </b-container>
@@ -235,6 +139,15 @@
         @renamed="onItemRenamed"
         :preConfirm="verifyItemRename"
         ref="renameModal"
+      />
+      <move-modal
+        :item="activeItem"
+        :targetPrinter="targetPrinter"
+        :scrollContainerId="scrollContainerId"
+        :activeSorting="activeSorting"
+        :activeSortingDirection="activeSortingDirection"
+        @moved="onItemMoved"
+        ref="moveModal"
       />
       <delete-confirmation-modal
         :item="activeItem"
@@ -261,14 +174,15 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
-import MugenScroll from 'vue-mugen-scroll'
 import { getCsrfFromDocument } from '@src/lib/utils'
-import NewFolderModal from './NewFolderModal.vue'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint } from './sendToPrint'
+import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
+import RenameModal from '@src/components/g-codes/RenameModal.vue'
+import MoveModal from '@src/components/g-codes/MoveModal.vue'
+import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
+import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles, getPrinterStorageAvailability } from './localFiles'
+import { listFiles, getPrinterStorageAvailability } from '@src/components/g-codes/localFiles'
+import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -326,8 +240,9 @@ export default {
     Layout,
     SearchInput,
     vueDropzone: vue2Dropzone,
-    MugenScroll,
+    GCodeFileStructure,
     RenameModal,
+    MoveModal,
     DeleteConfirmationModal,
     NewFolderModal,
   },
@@ -427,9 +342,6 @@ export default {
   computed: {
     isCloud() {
       return !this.selectedPrinterId
-    },
-    isFolderEmpty() {
-      return !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
     },
     nothingFound() {
       return this.searchStateIsActive && !this.searchTimeoutId && !this.files.length
@@ -733,6 +645,17 @@ export default {
       }
       this.activeItem = null
     },
+    moveItem(item) {
+      this.activeItem = item
+      this.$refs.moveModal.show()
+    },
+    onItemMoved() {
+      if (!this.activeItem) {
+        return
+      }
+      this.activeItem = null
+      this.fetchFilesAndFolders(true)
+    },
     deleteItem(item) {
       this.activeItem = item
       this.$refs.deleteConfirmationModal.show()
@@ -768,7 +691,7 @@ export default {
       // this.openFolder({id: newFolderId})
       this.fetchFilesAndFolders(true)
     },
-    openFolder(event, folder) {
+    openFolder(folder) {
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
           this.$router.push(`/g_code_folders/local/${this.selectedPrinterId}/${encodeURIComponent(folder.path)}/`)
@@ -777,11 +700,11 @@ export default {
         }
       } else {
         this.path.push(this.parentFolder)
-        this.parentFolder = folder.id
+        this.parentFolder = String(folder.id)
         this.fetchFilesAndFolders(true)
       }
     },
-    openFile(event, file) {
+    openFile(file) {
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
           window.location.assign(`/g_code_files/local/${this.selectedPrinterId}/${encodeURIComponent(file.path)}/`)
@@ -792,7 +715,7 @@ export default {
         this.$emit('openFile', this.selectedPrinterId ? encodeURIComponent(file.path) : file.id, this.selectedPrinterId, [...this.path, this.parentFolder])
       }
     },
-    onPrintClicked(event, gcode) {
+    onPrintClicked(gcode) {
       sendToPrint({
         printerId: this.targetPrinter.id,
         gcode: gcode,
@@ -818,128 +741,6 @@ export default {
   input
     background-color: var(--color-surface-secondary)
     border: var(--color-surface-secondary)
-
-.gcodes-wrapper
-  background-color: var(--color-surface-secondary)
-  padding: 1em 2em
-  border-radius: var(--border-radius-lg)
-
-.header-panel
-  display: flex
-  padding: 1em calc(1em + 30px) 1em 1em
-  border-bottom: 1px solid var(--color-divider)
-  font-weight: bold
-  &.without-action-buttons
-    padding-right: 1em
-
-  & > div
-    flex: 1
-    display: flex
-    justify-content: space-between
-    margin-left: 30px
-    align-items: center
-    font-size: 1rem
-
-    &:first-child
-      margin-left: 0
-      flex: 3
-
-  @media (max-width: 768px)
-    &
-      display: none
-
-.gcode-items-wrapper
-  .item
-    display: flex
-    align-items: center
-    padding: .6em 1em
-    border-bottom: 1px solid var(--color-divider-muted)
-
-    &:not(.folder)
-      &:last-child
-        border-bottom: none
-
-    &:hover
-      cursor: pointer
-      background-color: var(--color-hover)
-
-    .item-info
-      display: flex
-      width: 100%
-      overflow: hidden
-      flex: 1
-      font-size: 0.875rem
-      color: var(--color-text-secondary)
-
-      & > div
-        flex: 1
-        margin-left: 30px
-
-        &:first-child
-          font-size: 1rem
-          color: var(--color-text-primary)
-          margin-left: 0
-
-      .filename
-        text-overflow: ellipsis
-        overflow: hidden
-        white-space: nowrap
-        width: 100%
-        flex: 3
-
-    .remove-button
-      width: 30px
-      height: 30px
-      text-align: center
-      line-height: 30px
-      border-radius: 50%
-      transition: background-color .2s ease-out
-
-      &:hover
-        background-color: var(--color-danger)
-        color: var(--color-on-primary)
-        cursor: pointer
-
-    @media (max-width: 768px)
-      &
-        margin: 0 -16px
-
-      .item-info
-        flex-direction: column
-        align-items: flex-start
-
-        & > div
-          margin-left: 0
-
-        .size::before
-          content: "Size: "
-        .uploaded::before
-          content: "Uploaded: "
-        .created::before
-          content: "Created: "
-        .last-printed::before
-          content: "Last print: "
-
-.circle-indicator
-  --size: 6px
-  width: var(--size)
-  height: var(--size)
-  border-radius: var(--size)
-  display: inline-block
-  margin-left: 5px
-  position: relative
-  bottom: 1px
-  background: var(--color-text-secondary)
-  &.cancelled
-    background: var(--color-danger)
-  &.finished
-    background: var(--color-success)
-
-.placeholder
-  margin: 5rem 0
-  text-align: center
-  &.text-secondary *
-    color: var(--color-text-secondary)
 
 .dropdown-group
   display: flex

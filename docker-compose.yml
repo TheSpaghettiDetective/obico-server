@@ -59,7 +59,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
+    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne --bind 0.0.0.0 --port 3334 config.asgi:application'
 
   tasks:
     <<: *web-defaults

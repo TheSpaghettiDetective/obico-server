@@ -242,7 +242,6 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import DurationBlock from './DurationBlock.vue'
 import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
-import StartPrint from './StartPrint.vue'
 import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import SharePrinter from './SharePrinter.vue'
@@ -519,71 +518,8 @@ export default {
       )
     },
     onPrinterActionStartClicked() {
-      axios
-        .get(
-          urls.gcodes(1, 1000),
-        ).then((response) => {
-          let gcodeFiles = [...response.data.results.map(gcode => normalizedGcode(gcode))]
-
-          this.$swal.openModalWithComponent(
-            StartPrint,
-            {
-              gcodeFiles: gcodeFiles,
-              onGcodeFileSelected: this.onGcodeFileSelected,
-            },
-            {
-              title: 'Start print on "' + this.printer.name + '"',
-              showConfirmButton: false,
-              showCloseButton: true,
-            }
-          )
-        })
-    },
-    onGcodeFileSelected(gcodeFiles, gcodeFileId) {
-      // actionsDiv.find('button').attr('disabled', true) // TODO
-
-      this.printerComm.passThruToPrinter(
-        { func: 'download',
-          target: 'file_downloader',
-          args: filter(gcodeFiles, { id: gcodeFileId })
-        },
-        (err, ret) => {
-          if (err || ret.error) {
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: err ? err : ret.error,
-            })
-            return
-          }
-
-          let targetPath = ret.target_path
-
-          let html =`
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-            <h5 class="py-3">
-              Uploading G-Code to ${this.printer.name} ...
-            </h5>
-            <p>
-              ${targetPath}
-            </p>
-          </div>`
-
-          this.$swal.Prompt.fire({
-            html: html,
-            showConfirmButton: false
-          })
-
-          let checkPrinterStatus = () => {
-            if (get(this.printer, 'status.state.text') == 'Operational') {
-              setTimeout(checkPrinterStatus, 1000)
-            } else {
-              this.$swal.close()
-            }
-          }
-          checkPrinterStatus()
-        }
-      )
+      this.$emit('printModalOpened')
+      this.$bvModal.show('b-modal-gcodes')
     },
 
     onPrinterActionControlClicked() {

@@ -6,7 +6,6 @@ dj-database-url==0.5.0
 
 # don't upgrade if django<=2.2.x
 psycopg2-binary==2.8.6
-
 django-allauth==0.44.0
 django-widget-tweaks==1.4.3
 djangorestframework==3.9.1
@@ -47,3 +46,4 @@ django-ipware==3.0.2
 django-redis==5.0.0
 sentry-sdk==1.5.10
 nplusone==1.0.0
+colorlog==6.7.0

@@ -684,6 +684,12 @@ class GCodeFolder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def g_code_folder_count(self):
+        return self.gcodefolder_set.count()
+
+    def g_code_file_count(self):
+        return self.gcodefile_set.count()
+
 
 class GCodeFile(models.Model):
     class Meta:

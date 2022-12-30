@@ -62,7 +62,7 @@ const install = (Vue, options) => {
   const Reject = Vue.swal.mixin({
     icon: 'error',
     customClass: {
-      container: 'dark-backdrop',
+      container: 'dark-backdrop error-alert',
     },
   })
 

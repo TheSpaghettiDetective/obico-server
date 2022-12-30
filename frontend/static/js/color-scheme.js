@@ -106,6 +106,10 @@ const colors = [
     values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'},
   },
   {
+    name: 'divider-muted',
+    values: {[Themes.Light]: '#ABB6C266', [Themes.Dark]: '#6A7B8A66'},
+  },
+  {
     name: 'text-primary',
     values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
   },

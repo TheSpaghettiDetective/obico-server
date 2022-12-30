@@ -11,8 +11,7 @@ export default {
   printer: printerId => `/api/v1/printers/${printerId}/`,
   printerAction: (printerId, path) => `/api/v1/printers/${printerId}${path}`,
   pubPrinter: () => '/api/v1p/printer/',
-  gcodes: (page, page_size) => `/api/v1/g_code_files/?page=${page}&page_size=${page_size ? page_size : 24}`,
-  gcode: gcodeId => `/api/v1/g_code_files/${gcodeId}/`,
+
   tunnels: () => '/api/v1/tunnels/',
   tunnel: (id) => `/api/v1/tunnels/${id}/`,
   tunnelUsage: () => '/api/v1/tunnelusage/',
@@ -34,5 +33,12 @@ export default {
   printerControl: printerId => `/printers/${printerId}/control/`,
   printerWebSocket: printerId => `/ws/web/${printerId}/`,
   printerSharedWebSocket: token => `/ws/share_token/web/${token}/`,
-  printerWizard: printerId => `/printers/wizard/?printerId=${printerId}`
+  printerWizard: printerId => `/printers/wizard/?printerId=${printerId}`,
+
+  // Gcodes
+  gcodeFile: (id) => `/api/v1/g_code_files/${id}/`,
+  gcodeFiles: () => '/api/v1/g_code_files/',
+  gcodeFolder: (id) => `/api/v1/g_code_folders/${id}/`,
+  gcodeFolders: () => '/api/v1/g_code_folders/',
+  gcode: gcodeId => `/api/v1/g_code_files/${gcodeId}/`,
 }

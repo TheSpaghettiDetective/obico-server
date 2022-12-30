@@ -6,6 +6,26 @@ import Janus from '@src/lib/janus'
 let printerWebRTCUrl = printerId => `/ws/janus/${printerId}/`
 let printerSharedWebRTCUrl = token => `/ws/share_token/janus/${token}/`
 
+function iceServers(authToken) {
+  const turnServer = window.location.hostname.replace('app', 'turn')
+
+  return [
+    {
+      urls: ['stun:stun.l.google.com:19302'],
+    },
+    {
+      urls: `turn:${turnServer}:80?transport=udp`,
+      credential: authToken,
+      username: authToken,
+    },
+    {
+      urls: `turn:${turnServer}:80?transport=tcp`,
+      credential: authToken,
+      username: authToken,
+    },
+  ]
+}
+
 export default function WebRTCConnection() {
   let self = {
     callbacks: {},
@@ -72,34 +92,15 @@ function MJpegtWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      const opaqueId = 'streamingtest-' + Janus.randomString(12)
-
-      var iceServers = [{urls:['stun:stun.l.google.com:19302']}]
-      if (token) {
-        var turnServer = window.location.hostname.replace('app', 'turn')
-        iceServers.push(
-          {
-            urls:'turn:' + turnServer + ':80?transport=udp',
-            credential: token,
-            username: token
-          })
-        iceServers.push(
-          {
-            urls:'turn:' + turnServer + ':80?transport=tcp',
-            credential: token,
-            username: token
-          })
-      }
-
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
-        iceServers: iceServers,
+        iceServers: iceServers(token),
         ipv6: true,
         success: () => {
           janus.attach(
             {
               plugin: 'janus.plugin.streaming',
-              opaqueId: opaqueId,
+              opaqueId: 'streamingtest-' + Janus.randomString(12),
               success: function (pluginHandle) {
                 Janus.log('Plugin attached! (' + pluginHandle.getPlugin() + ', id=' + pluginHandle.getId() + ')')
                 const body = { 'request': 'info', id: 2 } // id=2 is for mjpeg stream. This stream may not exist in the agent.
@@ -230,34 +231,15 @@ function MainWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      const opaqueId = 'streamingtest-' + Janus.randomString(12)
-
-      var iceServers = [{urls:['stun:stun.l.google.com:19302']}]
-      if (token) {
-        var turnServer = window.location.hostname.replace('app', 'turn')
-        iceServers.push(
-          {
-            urls:'turn:' + turnServer + ':80?transport=udp',
-            credential: token,
-            username: token
-          })
-        iceServers.push(
-          {
-            urls:'turn:' + turnServer + ':80?transport=tcp',
-            credential: token,
-            username: token
-          })
-      }
-
       var janus = new Janus({
         server: window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
-        iceServers: iceServers,
+        iceServers: iceServers(token),
         ipv6: true,
         success: () => {
           janus.attach(
             {
               plugin: 'janus.plugin.streaming',
-              opaqueId: opaqueId,
+              opaqueId: 'streamingtest-' + Janus.randomString(12),
               success: function (pluginHandle) {
                 // Janus.log('Plugin attached! (' + pluginHandle.getPlugin() + ', id=' + pluginHandle.getId() + ')')
 

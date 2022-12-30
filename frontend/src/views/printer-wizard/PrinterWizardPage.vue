@@ -627,6 +627,7 @@ export default {
   -webkit-box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.3) !important
   border: none !important
+  border-radius: var(--border-radius-lg)
 .btn-back
   color: var(--color-text-primary)
   min-width: auto

@@ -36,13 +36,15 @@
           </template>
           <b-dropdown-item
             v-if="this.print.video_url && !print.video_archived_at"
-            @click.prevent="() => downloadFile(print.video_url, `${print.id}.mp4`)"
+            :href="this.print.video_url"
+            target="_blank"
           >
             <i class="fas fa-download"></i>Download Original Time-lapse
           </b-dropdown-item>
           <b-dropdown-item
             v-if="this.print.tagged_video_url && !print.video_archived_at"
-            @click.prevent="() => downloadFile(print.tagged_video_url, `${print.id}_tagged.mp4`)"
+            :href="this.print.tagged_video_url"
+            target="_blank"
           >
             <i class="fas fa-download"></i>Download Detective Time-lapse
           </b-dropdown-item>
@@ -328,20 +330,6 @@ export default {
   },
 
   methods: {
-    downloadFile(url, filename) {
-      fetch(url)
-        .then(res => res.blob())
-        .then(res => {
-          const aElement = document.createElement('a')
-          aElement.setAttribute('download', filename)
-          const href = URL.createObjectURL(res)
-          aElement.href = href
-          aElement.setAttribute('target', '_blank')
-          aElement.click()
-          URL.revokeObjectURL(href)
-        })
-    },
-
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
     },

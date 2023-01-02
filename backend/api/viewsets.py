@@ -355,6 +355,16 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
+        if 'safe_filename' in request.GET and 'agent_signature' in request.GET:
+            qs = qs.filter(agent_signature=request.GET.get('agent_signature'),
+                           safe_filename=request.GET.get('safe_filename'))
+
+        resident_printer = request.GET.get('resident_printer')
+        if resident_printer:
+            qs = qs.filter(resident_printer=resident_printer)
+        else:
+            qs = qs.filter(resident_printer__isnull=True)
+
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

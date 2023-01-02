@@ -135,6 +135,7 @@
 </template>
 
 <script>
+import get from 'lodash/get'
 import Layout from '@src/components/Layout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
@@ -221,7 +222,7 @@ export default {
       listFiles(this.printerComm, {
         query: filename,
         path,
-        onRequestEnd: (result) => {
+        onRequestEnd: async (result) => {
           this.loading = false
           if (result?.files?.length) {
             const file = result.files.filter(f => f.path === decodedPath)[0]
@@ -232,6 +233,22 @@ export default {
             this.gcode = {
               ...file,
               print_set: [],
+            }
+            if (file.path && file.hash && this.routeParams['printerId']) { // Not sure why this.routeParams['printerId'] is null here
+              const safeFilename = file.path.replace(/^.*[\\\/]/, '');
+              try {
+                let response = await axios.get(urls.gcodeFiles({
+                    resident_printer: this.routeParams['printerId'],
+                    safe_filename: safeFilename,
+                    agent_signature: `md5:${file.hash}`,
+                  }))
+                const gcodeFileOnServer = get(response, 'data.result[0]')
+                if (gcodeFileOnServer) {
+                  this.gcode = normalizedGcode(gcodeFileOnServer)
+                }
+              } catch (e) {
+                console.error(e)
+              }
             }
           } else {
             this.gcodeNotFound = true

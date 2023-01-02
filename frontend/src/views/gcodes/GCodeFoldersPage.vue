@@ -585,11 +585,10 @@ export default {
       if (!this.noMoreFolders) {
         try {
           let response = await axios.get(urls.gcodeFolders({
-            parentFolder: this.parentFolder,
+            parent_folder: this.parentFolder, // parent_folder: null = root; number = folderId;  undefined = don't include parentFolder param
             page: this.currentFoldersPage,
-            pageSize: PAGE_SIZE,
-            sortingOption: this.activeSorting.folder_query,
-            sortingDirection: this.activeSortingDirection.query,
+            page_size: PAGE_SIZE,
+            sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
           }))
           response = response.data
           this.noMoreFolders = response?.next === null
@@ -610,12 +609,11 @@ export default {
       if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
         try {
           let response = await axios.get(urls.gcodeFiles({
-              parentFolder: this.parentFolder,
+              parent_folder: this.parentFolder,  // parent_folder: null = root; number = folderId;  undefined = don't include parentFolder param
               page: this.currentFilesPage,
-              pageSize: PAGE_SIZE,
-              sortingOption: this.activeSorting.file_query,
-              sortingDirection: this.activeSortingDirection.query,
-              query: this.searchQuery,
+              page_size: PAGE_SIZE,
+              sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+              query: this.searchQuery,  // query: null/'' = all files; 'str' = filtered; undefined = don't include query param
             }),
             {
               // If cache is enabled, after renaming item on gcode page

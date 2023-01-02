@@ -147,7 +147,7 @@ import { listFiles } from './localFiles'
 import PrintItem from '@src/components/prints/PrintItem.vue'
 
 export default {
-  name: 'GCodeDetailsPage',
+  name: 'GCodeFilePage',
 
   components: {
     Layout,

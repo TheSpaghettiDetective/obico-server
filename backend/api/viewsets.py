@@ -293,7 +293,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 
         if 'parent_folder' in request.GET:
             parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null':
+            if parent_folder == 'null' or parent_folder == '':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
@@ -350,7 +350,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         if 'parent_folder' in request.GET:
             parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null':
+            if parent_folder == 'null' or parent_folder == '':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))

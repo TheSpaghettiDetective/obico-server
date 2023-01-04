@@ -20,7 +20,7 @@ import { videoPlayer } from 'vue-video-player'
 export default {
   name: 'VideoBox',
   components: {
-    videoPlayer
+    videoPlayer,
   },
   props: {
     videoUrl: String,
@@ -29,20 +29,20 @@ export default {
       default() {
         return true
       },
-      type: Boolean
+      type: Boolean,
     },
     fluid: {
       type: Boolean,
       default() {
         return true
-      }
+      },
     },
     autoplay: {
       type: Boolean,
       default() {
         return false
-      }
-    }
+      },
+    },
   },
   computed: {
     playerOptions() {
@@ -58,19 +58,19 @@ export default {
         sources: [
           {
             type: 'video/mp4',
-            src: this.videoUrl
-          }
+            src: this.videoUrl,
+          },
         ],
         controlBar: { fullscreenToggle: false },
-        poster: this.posterUrl
+        poster: this.posterUrl,
       }
-    }
+    },
   },
   methods: {
     onTimeUpdate(event) {
       this.$emit('timeupdate', event.currentTime() / event.duration())
-    }
-  }
+    },
+  },
 }
 </script>
 

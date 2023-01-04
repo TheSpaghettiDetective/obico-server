@@ -1,9 +1,14 @@
 <template>
   <layout :isPopup="isPopup">
-
     <!-- Tob bar -->
     <template v-slot:topBarLeft>
-      <a v-if="isPopup && parentFolder !== null" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+      <a
+        v-if="isPopup && parentFolder !== null"
+        @click.prevent="goBack"
+        href="#"
+        class="btn shadow-none icon-btn d-inline"
+        title="Go Back"
+      >
         <i class="fas fa-chevron-left"></i>
       </a>
       <search-input @input="updateSearch" class="search-input mr-3"></search-input>
@@ -13,7 +18,13 @@
         <!-- <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
           <i class="fas fa-file-upload"></i>
         </a> -->
-        <a v-if="isCloud" @click.prevent="createFolder" href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Create folder">
+        <a
+          v-if="isCloud"
+          @click.prevent="createFolder"
+          href="#"
+          class="btn shadow-none icon-btn d-none d-md-inline"
+          title="Create folder"
+        >
           <i class="fas fa-folder-plus"></i>
         </a>
         <!-- Storage dropdown -->
@@ -24,15 +35,25 @@
           <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
           <b-dropdown-item @click="switchToCloudStorage">
             <div class="dropdown-group">
-              <i class="fas fa-check text-primary" :style="{visibility: isCloud ? 'visible' : 'hidden'}"></i>
+              <i
+                class="fas fa-check text-primary"
+                :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
+              ></i>
               <div class="text">
                 <div class="title">Obico Cloud</div>
               </div>
             </div>
           </b-dropdown-item>
-          <b-dropdown-item v-for="printer in printers" :key="printer.id" @click="() => switchToPrinterStorage(printer)">
+          <b-dropdown-item
+            v-for="printer in printers"
+            :key="printer.id"
+            @click="() => switchToPrinterStorage(printer)"
+          >
             <div class="dropdown-group">
-              <i class="fas fa-check text-primary" :style="{visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden'}"></i>
+              <i
+                class="fas fa-check text-primary"
+                :style="{ visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden' }"
+              ></i>
               <div class="text">
                 <div class="title">{{ printer.name }}</div>
                 <div
@@ -68,7 +89,10 @@
             :key="`s_${sortingOption.id}`"
             @click="() => updateSorting(sortingOption)"
           >
-            <i class="fas fa-check text-primary" :style="{visibility: activeSorting.id === sortingOption.id ? 'visible' : 'hidden'}"></i>
+            <i
+              class="fas fa-check text-primary"
+              :style="{ visibility: activeSorting.id === sortingOption.id ? 'visible' : 'hidden' }"
+            ></i>
             {{ sortingOption.title }}
           </b-dropdown-item>
           <b-dropdown-divider />
@@ -77,11 +101,23 @@
             :key="`d_${sortingDirection.id}`"
             @click="() => updateSorting(activeSorting, sortingDirection)"
           >
-            <i class="fas fa-check text-primary" :style="{visibility: activeSortingDirection.id === sortingDirection.id ? 'visible' : 'hidden'}"></i>
+            <i
+              class="fas fa-check text-primary"
+              :style="{
+                visibility:
+                  activeSortingDirection.id === sortingDirection.id ? 'visible' : 'hidden',
+              }"
+            ></i>
             {{ sortingDirection.title }}
           </b-dropdown-item>
         </b-dropdown>
-        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline order-4" title="Close">
+        <a
+          v-if="onClose"
+          @click.prevent="onClose"
+          href="#"
+          class="btn shadow-none icon-btn d-inline order-4"
+          title="Close"
+        >
           <i class="fas fa-times text-danger"></i>
         </a>
       </div>
@@ -104,9 +140,9 @@
               ref="gcodesDropzone"
             >
               <div class="dz-message needsclick">
-                <i class="fas fa-upload fa-2x"></i> <br>
+                <i class="fas fa-upload fa-2x"></i> <br />
                 <div>G-Code file (*.gcode, *.gco, or *.g) only.</div>
-                <div>Up to {{maxFilesize}} MB each file, {{maxTotalFilesize}} GB total.</div>
+                <div>Up to {{ maxFilesize }} MB each file, {{ maxTotalFilesize }} GB total.</div>
               </div>
             </vue-dropzone>
 
@@ -227,10 +263,10 @@ const LOCAL_PREF_NAMES = {
   sortingDirection: 'gcode-folders-sorting-direction-id',
 }
 const getSortingById = (id) => {
-  return Object.values(Sorting.options).find(s => s.id === id)
+  return Object.values(Sorting.options).find((s) => s.id === id)
 }
 const getSortingDirectionById = (id) => {
-  return Object.values(Sorting.directions).find(s => s.id === id)
+  return Object.values(Sorting.directions).find((s) => s.id === id)
 }
 
 export default {
@@ -275,8 +311,8 @@ export default {
           printerId: null,
           parentFolder: null,
         }
-      }
-    }
+      },
+    },
   },
 
   data() {
@@ -294,8 +330,12 @@ export default {
       currentFilesPage: 1,
 
       sorting: Sorting,
-      activeSorting: getSortingById(getLocalPref(LOCAL_PREF_NAMES.sorting, Sorting.options.created_at.id)),
-      activeSortingDirection: getSortingDirectionById(getLocalPref(LOCAL_PREF_NAMES.sortingDirection, Sorting.directions.desc.id)),
+      activeSorting: getSortingById(
+        getLocalPref(LOCAL_PREF_NAMES.sorting, Sorting.options.created_at.id)
+      ),
+      activeSortingDirection: getSortingDirectionById(
+        getLocalPref(LOCAL_PREF_NAMES.sortingDirection, Sorting.directions.desc.id)
+      ),
 
       searchQuery: null,
       searchStateIsActive: false,
@@ -384,7 +424,7 @@ export default {
     switchToPrinterStorage(printer) {
       if (printer.storageAvailability.rejectMessage) {
         this.$swal.Reject.fire({
-          text: printer.storageAvailability.rejectMessage
+          text: printer.storageAvailability.rejectMessage,
         })
         return
       }
@@ -430,9 +470,14 @@ export default {
       if (!printers) {
         return
       }
-      printers = printers.map(p => normalizedPrinter(p))
-      printers = printers.map(p => ({...p, storageAvailability: getPrinterStorageAvailability(p)}))
-      this.printers = this.targetPrinter ? printers.filter(p => p.id === this.targetPrinter.id) : printers
+      printers = printers.map((p) => normalizedPrinter(p))
+      printers = printers.map((p) => ({
+        ...p,
+        storageAvailability: getPrinterStorageAvailability(p),
+      }))
+      this.printers = this.targetPrinter
+        ? printers.filter((p) => p.id === this.targetPrinter.id)
+        : printers
     },
     async fetchLocalFiles() {
       if (!this.selectedPrinterComm) {
@@ -462,12 +507,11 @@ export default {
       }
 
       if (this.selectedPrinterId) {
-        if (!this.printers.find(p => p.id === this.selectedPrinterId)) {
+        if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
             title: 'Error',
             text: `Printer not found or unavailable`,
-          })
-          .then(() => {
+          }).then(() => {
             if (this.isPopup && this.onClose) {
               this.onClose()
             } else {
@@ -512,7 +556,7 @@ export default {
               page: this.currentFoldersPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
-            }
+            },
           })
           response = response.data
           this.noMoreFolders = response?.next === null
@@ -526,28 +570,26 @@ export default {
           console.error(e)
         }
 
-        this.folders.push(...folders.map(data => normalizedGcodeFolder(data)))
+        this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
         this.currentFoldersPage += 1
       }
 
       if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
         try {
-          let response = await axios.get(urls.gcodeFiles(),
-            {
-              // If cache is enabled, after renaming item on gcode page
-              // and going back to files - gcode will have old name
-              headers: {
-                'Cache-Control': 'no-cache',
-              },
-              params: {
-                parent_folder: this.parentFolder || 'null',
-                page: this.currentFilesPage,
-                page_size: PAGE_SIZE,
-                sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
-                q: this.searchQuery,
-              }
-            }
-          )
+          let response = await axios.get(urls.gcodeFiles(), {
+            // If cache is enabled, after renaming item on gcode page
+            // and going back to files - gcode will have old name
+            headers: {
+              'Cache-Control': 'no-cache',
+            },
+            params: {
+              parent_folder: this.parentFolder || 'null',
+              page: this.currentFilesPage,
+              page_size: PAGE_SIZE,
+              sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+              q: this.searchQuery,
+            },
+          })
           response = response.data
           this.noMoreFiles = response?.next === null
           files = response?.results || []
@@ -560,7 +602,7 @@ export default {
           console.error(e)
         }
 
-        this.files.push(...files.map(data => normalizedGcode(data)))
+        this.files.push(...files.map((data) => normalizedGcode(data)))
         this.currentFilesPage += 1
       }
 
@@ -615,14 +657,15 @@ export default {
     },
     gcodeUploadError(file, message) {
       this.$swal.Reject.fire({
-        html: `<p class="text-center">${message}</p>`})
+        html: `<p class="text-center">${message}</p>`,
+      })
     },
     renameItem(item) {
       this.activeItem = item
       this.$refs.renameModal.show()
     },
     verifyItemRename(newName) {
-      if (!this.activeItem.filename && this.folders.find(item => item.name === newName)) {
+      if (!this.activeItem.filename && this.folders.find((item) => item.name === newName)) {
         return 'Folder with this name already exists'
       }
       return true
@@ -682,7 +725,7 @@ export default {
       this.$refs.newFolderModal.show()
     },
     verifyNewFolder(newFolderName) {
-      if (this.folders.find(item => item.name === newFolderName)) {
+      if (this.folders.find((item) => item.name === newFolderName)) {
         return 'Folder with this name already exists'
       }
       return true
@@ -694,7 +737,9 @@ export default {
     openFolder(folder) {
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
-          this.$router.push(`/g_code_folders/local/${this.selectedPrinterId}/${encodeURIComponent(folder.path)}/`)
+          this.$router.push(
+            `/g_code_folders/local/${this.selectedPrinterId}/${encodeURIComponent(folder.path)}/`
+          )
         } else {
           this.$router.push(`/g_code_folders/cloud/${folder.id}/`)
         }
@@ -707,12 +752,19 @@ export default {
     openFile(file) {
       if (!this.isPopup) {
         if (this.selectedPrinterId) {
-          window.location.assign(`/g_code_files/local/${this.selectedPrinterId}/${encodeURIComponent(file.path)}/`)
+          window.location.assign(
+            `/g_code_files/local/${this.selectedPrinterId}/${encodeURIComponent(file.path)}/`
+          )
         } else {
           window.location.assign(`/g_code_files/cloud/${file.id}/`)
         }
       } else {
-        this.$emit('openFile', this.selectedPrinterId ? encodeURIComponent(file.path) : file.id, this.selectedPrinterId, [...this.path, this.parentFolder])
+        this.$emit(
+          'openFile',
+          this.selectedPrinterId ? encodeURIComponent(file.path) : file.id,
+          this.selectedPrinterId,
+          [...this.path, this.parentFolder]
+        )
       }
     },
     onPrintClicked(gcode) {

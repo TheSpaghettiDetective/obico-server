@@ -1,12 +1,36 @@
 <template>
   <div>
     <div v-if="!isPro && usageFetched" class="floating-panel">
-        <div v-if="showDetails" @click="showDetails = false" @mouseover="showDetails = true" @mouseleave="showDetails = false">
-          <div class="text-muted">Monthly data usage (<a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">Resets in {{ daysUntilReset}} days</a>)</div>
-          <div :class="usageClass">Used {{ usageMTD }} of {{ humanizedUsageCap }}.</div>
-          <div v-if="overage">Your month-to-date tunneling usage is over the Free plan limit. <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/">Get Unlimited Tunneling</a></div>
+      <div
+        v-if="showDetails"
+        @click="showDetails = false"
+        @mouseover="showDetails = true"
+        @mouseleave="showDetails = false"
+      >
+        <div class="text-muted">
+          Monthly data usage (<a
+            href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users"
+            target="_blank"
+            >Resets in {{ daysUntilReset }} days</a
+          >)
         </div>
-        <div v-else @click="showDetails = true" @mouseover="showDetails = true" @mouseleave="showDetails = false" :class="usageClass">{{percentage}}%</div>
+        <div :class="usageClass">Used {{ usageMTD }} of {{ humanizedUsageCap }}.</div>
+        <div v-if="overage">
+          Your month-to-date tunneling usage is over the Free plan limit.
+          <a type="button" class="btn btn-sm btn-primary" href="/ent_pub/pricing/"
+            >Get Unlimited Tunneling</a
+          >
+        </div>
+      </div>
+      <div
+        v-else
+        @click="showDetails = true"
+        @mouseover="showDetails = true"
+        @mouseleave="showDetails = false"
+        :class="usageClass"
+      >
+        {{ percentage }}%
+      </div>
     </div>
     <div>
       <iframe v-if="printerId" :src="iframeUrl() + '#temp'" class="tunnel-iframe"></iframe>
@@ -28,9 +52,8 @@ export default {
 
   components: {},
 
-  props: {
-  },
-  data: function() {
+  props: {},
+  data: function () {
     return {
       bytesMTD: null,
       usageCap: null,
@@ -46,7 +69,7 @@ export default {
       return {
         'text-success': this.bytesMTD < this.usageCap * 0.8,
         'text-warning': this.bytesMTD >= this.usageCap * 0.8 && this.bytesMTD < this.usageCap,
-        'text-danger': this.bytesMTD >= this.usageCap
+        'text-danger': this.bytesMTD >= this.usageCap,
       }
     },
     usageMTD() {
@@ -59,12 +82,12 @@ export default {
       return this.bytesMTD >= this.usageCap
     },
     percentage() {
-      return Math.round(this.bytesMTD/this.usageCap*100)
+      return Math.round((this.bytesMTD / this.usageCap) * 100)
     },
     daysUntilReset() {
       const endOfMonth = moment().endOf('month')
       return endOfMonth.diff(moment(), 'days') + 1
-    }
+    },
   },
 
   created() {
@@ -73,10 +96,13 @@ export default {
   },
 
   mounted() {
-    const skipWarning = isLocalStorageSupported() ? localStorage.getItem('skip-tunneling-warning') : null
+    const skipWarning = isLocalStorageSupported()
+      ? localStorage.getItem('skip-tunneling-warning')
+      : null
     if (skipWarning !== 'yes') {
-      this.$swal.Prompt.fire({
-        html: `
+      this.$swal.Prompt.fire(
+        {
+          html: `
           <h4 class="text-center p-2">
             <svg class="menu-icon" style="height: 1.1em; width: 1em; margin-right: 0.75em;">
               <use href="#svg-octoprint-tunneling" />
@@ -93,10 +119,11 @@ export default {
           </a>
         </div>
         `,
-        input: 'checkbox',
-        inputPlaceholder: 'Don\'t show again',
-      },
-      'octoprint-tunnel.warning').then((result) => {
+          input: 'checkbox',
+          inputPlaceholder: "Don't show again",
+        },
+        'octoprint-tunnel.warning'
+      ).then((result) => {
         if (result.isConfirmed) {
           if (result.value && isLocalStorageSupported()) {
             localStorage.setItem('skip-tunneling-warning', 'yes')
@@ -112,25 +139,25 @@ export default {
 
     const self = this
     const fetchUsage = (firstFetch = false) => {
-      axios
-        .get(urls.tunnelUsage())
-        .then((resp) => {
-          self.bytesMTD = resp.data.total
-          self.usageCap = resp.data.monthly_cap
-          if (firstFetch) {
-            self.usageFetched = true
-          }
-        })
+      axios.get(urls.tunnelUsage()).then((resp) => {
+        self.bytesMTD = resp.data.total
+        self.usageCap = resp.data.monthly_cap
+        if (firstFetch) {
+          self.usageFetched = true
+        }
+      })
     }
-    setInterval(fetchUsage, 15*1000)
-    setTimeout(() => { fetchUsage(true) }, 4000)
+    setInterval(fetchUsage, 15 * 1000)
+    setTimeout(() => {
+      fetchUsage(true)
+    }, 4000)
   },
 
   methods: {
     iframeUrl() {
       return `/octoprint/${this.printerId}/`
     },
-  }
+  },
 }
 </script>
 
@@ -154,7 +181,6 @@ export default {
   z-index: 10
   display: flex
   align-items: center
-
 </style>
 
 <style lang="sass">

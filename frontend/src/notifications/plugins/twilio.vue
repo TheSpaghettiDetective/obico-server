@@ -4,8 +4,9 @@
     :saving="saving"
     :notificationChannel="notificationChannel"
     :notificationSettings="notificationSettings"
-
-    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @updateNotificationChannel="
+      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
+    "
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
@@ -13,7 +14,10 @@
       <div class="form-group row">
         <label for="id_email" class="col-12 col-form-label">Phone Number</label>
         <div class="col-12 col-form-label">
-          <saving-animation :errors="errorMessages[settingKey('config')]" :saving="saving[settingKey('config')]">
+          <saving-animation
+            :errors="errorMessages[settingKey('config')]"
+            :saving="saving[settingKey('config')]"
+          >
             <div class="form-group form-row">
               <div class="col-sm-6 col-md-4 mb-2 mb-sm-0">
                 <input
@@ -22,7 +26,7 @@
                   id="id_phone_code"
                   placeholder="Country Code"
                   v-model="phoneCountryCode"
-                >
+                />
               </div>
               <div class="col-sm-6 col-md-8">
                 <input
@@ -31,7 +35,7 @@
                   id="id_phone_number"
                   placeholder="Phone Number"
                   v-model="phoneNumber"
-                >
+                />
               </div>
             </div>
           </saving-animation>
@@ -72,7 +76,9 @@ export default {
       required: true,
     },
     config: {
-      default() {return {}},
+      default() {
+        return {}
+      },
       type: Object,
     },
   },
@@ -120,8 +126,16 @@ export default {
         return
       }
 
-      if (this.config.twilioCountryCodes && (this.config.twilioCountryCodes.length !== 0) && !this.config.twilioCountryCodes.includes(codeNumber)) {
-        this.$emit('addErrorMessage', this.settingKey('config'), 'Oops, we don\'t send SMS to this country code')
+      if (
+        this.config.twilioCountryCodes &&
+        this.config.twilioCountryCodes.length !== 0 &&
+        !this.config.twilioCountryCodes.includes(codeNumber)
+      ) {
+        this.$emit(
+          'addErrorMessage',
+          this.settingKey('config'),
+          "Oops, we don't send SMS to this country code"
+        )
       } else {
         if (this.phoneNumber) {
           this.updateConfig()
@@ -170,20 +184,16 @@ export default {
         }, 1000)
       } else {
         this.configUpdateTimeout = setTimeout(() => {
-          this.$emit(
-            'createNotificationChannel',
-            this.notificationChannel,
-            config,
-            {
-              notify_on_print_done: 'f',
-              notify_on_print_cancelled: 'f',
-              notify_on_filament_change: 'f',
-              notify_on_other_print_events: 'f',
-              notify_on_heater_status: 'f',
-            })
+          this.$emit('createNotificationChannel', this.notificationChannel, config, {
+            notify_on_print_done: 'f',
+            notify_on_print_cancelled: 'f',
+            notify_on_filament_change: 'f',
+            notify_on_other_print_events: 'f',
+            notify_on_heater_status: 'f',
+          })
         }, 1000)
       }
-    }
+    },
   },
 }
 </script>

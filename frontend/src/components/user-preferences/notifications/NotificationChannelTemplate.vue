@@ -7,16 +7,21 @@
 
       <slot name="configuration">
         <div v-if="configVariableName" class="form-group row my-4">
-          <label :for="`id_${settingKey(configVariableName)}`" class="col-12 col-form-label">{{ configVariableTitle }}</label>
+          <label :for="`id_${settingKey(configVariableName)}`" class="col-12 col-form-label">{{
+            configVariableTitle
+          }}</label>
           <div class="col-12 col-form-label">
-            <saving-animation :errors="errorMessages[settingKey('config')]" :saving="saving[settingKey('config')]">
+            <saving-animation
+              :errors="errorMessages[settingKey('config')]"
+              :saving="saving[settingKey('config')]"
+            >
               <input
                 type="text"
                 :placeholder="configVariablePlaceholder"
                 class="form-control"
                 :id="`id_${settingKey(configVariableName)}`"
                 v-model="configVariable"
-              >
+              />
             </saving-animation>
           </div>
         </div>
@@ -31,14 +36,14 @@
           :saving="saving"
           :notificationChannel="notificationChannel"
           :bottomDivider="true"
-          @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
+          @updateNotificationChannel="
+            (notificationChannel, settingIds) =>
+              $emit('updateNotificationChannel', notificationChannel, settingIds)
+          "
         />
-        <div :class="{'inactive': !notificationsEnabled}">
+        <div :class="{ inactive: !notificationsEnabled }">
           <slot name="custom-settings"></slot>
-          <div
-            v-for="setting in notificationSettings"
-            :key="setting.id"
-          >
+          <div v-for="setting in notificationSettings" :key="setting.id">
             <template v-if="setting.id === 'print_job'">
               <!-- FIXME: reuse NotificationSettingSwitch -->
               <div v-if="theme === 'web'" class="row">
@@ -51,10 +56,12 @@
                         :id="`id_${settingKey(setting.id)}`"
                         :disabled="!notificationsEnabled"
                         v-model="printerStatusChangeNotifications"
-                      >
+                      />
                       <label class="custom-control-label" :for="`id_${settingKey(setting.id)}`">
                         {{ setting.title }}
-                        <span  v-if="setting.description" class="text-muted setting-description"><br>{{ setting.description }}</span>
+                        <span v-if="setting.description" class="text-muted setting-description"
+                          ><br />{{ setting.description }}</span
+                        >
                       </label>
                     </div>
                   </saving-animation>
@@ -66,7 +73,9 @@
                     <div class="setting-item-text">
                       <label :for="`id_${settingKey(setting.id)}`">
                         {{ setting.title }}
-                        <span v-if="setting.description" class="text-muted setting-description"><br>{{ setting.description }}</span>
+                        <span v-if="setting.description" class="text-muted setting-description"
+                          ><br />{{ setting.description }}</span
+                        >
                       </label>
                     </div>
                     <div class="setting-item-switch">
@@ -74,7 +83,9 @@
                         :theme="theme"
                         :width="theme === 'ios' ? 48 : 30"
                         :height="theme === 'ios' ? 24 : 12"
-                        :onColor="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
+                        :onColor="
+                          theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'
+                        "
                         offColor="var(--color-divider)"
                         borderColor="var(--color-divider)"
                         :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
@@ -96,7 +107,10 @@
                 :errorMessages="errorMessages"
                 :saving="saving"
                 :notificationChannel="notificationChannel"
-                @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
+                @updateNotificationChannel="
+                  (notificationChannel, settingIds) =>
+                    $emit('updateNotificationChannel', notificationChannel, settingIds)
+                "
               />
             </template>
             <div v-if="setting.subcategories">
@@ -111,7 +125,10 @@
                 :errorMessages="errorMessages"
                 :saving="saving"
                 :notificationChannel="notificationChannel"
-                @updateNotificationChannel="(notificationChannel, settingIds) => $emit('updateNotificationChannel', notificationChannel, settingIds)"
+                @updateNotificationChannel="
+                  (notificationChannel, settingIds) =>
+                    $emit('updateNotificationChannel', notificationChannel, settingIds)
+                "
               />
             </div>
           </div>
@@ -173,7 +190,7 @@ export default {
     },
     configVariableName: {
       type: String,
-    }
+    },
   },
 
   data() {
@@ -188,7 +205,9 @@ export default {
       return !!this.notificationChannel.channelInfo
     },
     notificationsEnabled() {
-      return this.notificationChannel.channelInfo ? this.notificationChannel.channelInfo.enabled : false
+      return this.notificationChannel.channelInfo
+        ? this.notificationChannel.channelInfo.enabled
+        : false
     },
     envVarsToSet() {
       const envVars = this.notificationChannel.pluginInfo?.env_vars || {}
@@ -201,11 +220,13 @@ export default {
       return missedEnvVars
     },
     printerStatusChangeNotifications: {
-      get: function() {
+      get: function () {
         if (!this.notificationChannel.channelInfo) {
           return null
         }
-        const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
+        const subcategories = this.notificationSettings.filter(
+          (setting) => setting.id === 'print_job'
+        )[0].subcategories
         for (const subcategory of subcategories) {
           if (this.notificationChannel.channelInfo[subcategory.id]) {
             return true
@@ -213,9 +234,11 @@ export default {
         }
         return false
       },
-      set: function(newValue) {
+      set: function (newValue) {
         if (newValue) {
-          const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
+          const subcategories = this.notificationSettings.filter(
+            (setting) => setting.id === 'print_job'
+          )[0].subcategories
           let changedProps = []
           for (const subcategory of subcategories) {
             if (subcategory.enabledByDefault) {
@@ -227,7 +250,9 @@ export default {
             this.$emit('updateNotificationChannel', this.notificationChannel, changedProps)
           }
         } else {
-          const subcategories = this.notificationSettings.filter(setting => setting.id === 'print_job')[0].subcategories
+          const subcategories = this.notificationSettings.filter(
+            (setting) => setting.id === 'print_job'
+          )[0].subcategories
           let changedProps = []
           for (const subcategory of subcategories) {
             if (this.notificationChannel.channelInfo[subcategory.id]) {
@@ -239,7 +264,7 @@ export default {
             this.$emit('updateNotificationChannel', this.notificationChannel, changedProps)
           }
         }
-      }
+      },
     },
     // FIXME: remove after NotificationSettingSwitch reuse
     theme() {
@@ -253,7 +278,11 @@ export default {
   },
 
   created() {
-    if (this.notificationChannel.channelInfo && this.notificationChannel.channelInfo.config && this.configVariableName) {
+    if (
+      this.notificationChannel.channelInfo &&
+      this.notificationChannel.channelInfo.config &&
+      this.configVariableName
+    ) {
       this.configVariable = this.notificationChannel.channelInfo.config[this.configVariableName]
     } else {
       this.configVariable = ''
@@ -293,10 +322,13 @@ export default {
           }
         }, 1000)
       } else if (this.configVariable) {
-        this.configUpdateTimeout = setTimeout(() => this.$emit('createNotificationChannel', this.notificationChannel, config), 1000)
+        this.configUpdateTimeout = setTimeout(
+          () => this.$emit('createNotificationChannel', this.notificationChannel, config),
+          1000
+        )
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

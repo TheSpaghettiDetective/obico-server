@@ -10,7 +10,13 @@
   >
     <template #modal-title>
       <div class="title">
-        <a v-if="parentFolder !== null" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+        <a
+          v-if="parentFolder !== null"
+          @click.prevent="goBack"
+          href="#"
+          class="btn shadow-none icon-btn d-inline"
+          title="Go Back"
+        >
           <i class="fas fa-chevron-left"></i>
         </a>
         <h5 class="modal-title">Move item</h5>
@@ -41,14 +47,13 @@ import axios from 'axios'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
 
-
 const PAGE_SIZE = 24
 
 export default {
   name: 'MoveModal',
 
   components: {
-    GCodeFileStructure
+    GCodeFileStructure,
   },
 
   props: {
@@ -94,7 +99,7 @@ export default {
       return this.item.filename ? 'file' : 'folder'
     },
     parentFolder() {
-      return (this.path && this.path.length > 0) ? this.path.at(-1) : null
+      return this.path && this.path.length > 0 ? this.path.at(-1) : null
     },
     isSameDir() {
       if (this.parentFolder === null && !this.item?.parent_folder) {
@@ -103,7 +108,7 @@ export default {
         return true
       }
       return false
-    }
+    },
   },
 
   methods: {
@@ -148,7 +153,7 @@ export default {
               page: this.currentFoldersPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
-            }
+            },
           })
           response = response.data
           this.noMoreFolders = response?.next === null
@@ -162,22 +167,20 @@ export default {
           console.error(e)
         }
 
-        this.folders.push(...folders.map(data => normalizedGcodeFolder(data)))
+        this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
         this.currentFoldersPage += 1
       }
 
       if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
         try {
-          let response = await axios.get(urls.gcodeFiles(),
-            {
-              params: {
-                parent_folder: this.parentFolder || 'null',
-                page: this.currentFilesPage,
-                page_size: PAGE_SIZE,
-                sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
-              }
-            }
-          )
+          let response = await axios.get(urls.gcodeFiles(), {
+            params: {
+              parent_folder: this.parentFolder || 'null',
+              page: this.currentFilesPage,
+              page_size: PAGE_SIZE,
+              sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+            },
+          })
           response = response.data
           this.noMoreFiles = response?.next === null
           files = response?.results || []
@@ -190,7 +193,7 @@ export default {
           console.error(e)
         }
 
-        this.files.push(...files.map(data => normalizedGcode(data)))
+        this.files.push(...files.map((data) => normalizedGcode(data)))
         this.currentFilesPage += 1
       }
 
@@ -236,7 +239,7 @@ export default {
           text: error.message,
         })
       }
-      
+
       this.patchLoading = false
       this.$emit('moved')
       this.close()

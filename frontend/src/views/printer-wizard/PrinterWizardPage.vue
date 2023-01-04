@@ -10,8 +10,13 @@
                   <use href="#svg-success-checkmark" />
                 </svg>
                 <h3 class="pb-4">Successfully linked to your account!</h3>
-                <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
-                  <saving-animation :errors="errorMessages.printer_name" :saving="saving.printer_name">
+                <div
+                  class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center"
+                >
+                  <saving-animation
+                    :errors="errorMessages.printer_name"
+                    :saving="saving.printer_name"
+                  >
                     <div class="printer-name-input">
                       <div class="edit-icon">
                         <i class="fas fa-pen"></i>
@@ -22,33 +27,53 @@
                         placeholder="Printer name"
                         v-model="verifiedPrinter.name"
                         @input="updatePrinterName"
-                      >
+                      />
                     </div>
                   </saving-animation>
                   <div>
-                    <div class="text-muted mx-auto text-center font-weight-light">Give your printer a shiny name.</div>
+                    <div class="text-muted mx-auto text-center font-weight-light">
+                      Give your printer a shiny name.
+                    </div>
                   </div>
                 </div>
                 <br /><br />
-                <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center">
+                <div
+                  class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center"
+                >
                   <div v-if="redirectToTunnelCreation" class="mt-4">
-                    <a :href="redirectToTunnelCreation" class="btn btn-primary btn-block mx-auto btn-lg">Authorize App Access</a>
+                    <a
+                      :href="redirectToTunnelCreation"
+                      class="btn btn-primary btn-block mx-auto btn-lg"
+                      >Authorize App Access</a
+                    >
                   </div>
                   <div v-else>
                     <div class="mt-4">
-                      <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg">Go Check Out Printer Feed!</a>
+                      <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg"
+                        >Go Check Out Printer Feed!</a
+                      >
                     </div>
                     <div class="mt-5">
-                      <a href="/user_preferences/notification_twilio/" class="btn btn-outline-secondary btn-block mx-auto">Add Phone Number</a>
+                      <a
+                        href="/user_preferences/notification_twilio/"
+                        class="btn btn-outline-secondary btn-block mx-auto"
+                        >Add Phone Number</a
+                      >
                     </div>
                     <div>
-                      <div class="text-muted mx-auto text-center font-weight-light">Receive text (SMS) in case of print failures.</div>
+                      <div class="text-muted mx-auto text-center font-weight-light">
+                        Receive text (SMS) in case of print failures.
+                      </div>
                     </div>
                     <div class="mt-4">
-                      <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto">Change Printer Settings</a>
+                      <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto"
+                        >Change Printer Settings</a
+                      >
                     </div>
                     <div>
-                      <div class="text-muted mx-auto text-center font-weight-light">You can always change it later.</div>
+                      <div class="text-muted mx-auto text-center font-weight-light">
+                        You can always change it later.
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -56,12 +81,9 @@
 
               <div v-else>
                 <div v-if="$route.path === routes.printerWizardSetup">
-                  <form-wizard
-                    color="var(--color-primary)"
-                    step-size="sm"
-                  >
+                  <form-wizard color="var(--color-primary)" step-size="sm">
                     <h3 slot="title">
-                      {{title}}
+                      {{ title }}
                     </h3>
 
                     <tab-content v-if="targetMoonraker" title="Install Obico for Klipper">
@@ -70,38 +92,54 @@
                           <div class="col-sm-12 col-lg-8">
                             <ol>
                               <li>SSH to the Raspberry Pi your Klipper runs on.</li>
-                              <li><div>Run:</div>
+                              <li>
+                                <div>Run:</div>
                                 <pre class="mt-2">
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
 cd moonraker-obico
 ./install.sh
-                              </pre>
+                              </pre
+                                >
                               </li>
                               <li>Follow the installation steps.</li>
-                              <li>At the end, you will be asked to enter a 6-digit verification code.</li>
+                              <li>
+                                At the end, you will be asked to enter a 6-digit verification code.
+                              </li>
                             </ol>
                           </div>
                         </div>
                       </div>
                     </tab-content>
-                    <tab-content v-if="printerIdToLink && targetOctoPrint" title="Open Plugin Settings">
+                    <tab-content
+                      v-if="printerIdToLink && targetOctoPrint"
+                      title="Open Plugin Settings"
+                    >
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <div class="text-warning">
-                              Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on <a href="https://www.obico.io/help/">Obico's help website</a>.
+                              Warning: Re-Linking OctoPrint should be your last resort to solve
+                              issues. Please make sure you have exhausted all options on
+                              <a href="https://www.obico.io/help/">Obico's help website</a>.
                             </div>
                             <ol>
-                              <li>Open OctoPrint in another browser tab. </li>
-                              <li>Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.</li>
+                              <li>Open OctoPrint in another browser tab.</li>
+                              <li>
+                                Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.
+                              </li>
                               <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                             </ol>
                           </div>
                         </div>
                         <div class="row justify-content-center">
                           <div class="col-sm-12 col-lg-8 img-container">
-                            <img class="mx-auto" :src="require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')">
+                            <img
+                              class="mx-auto"
+                              :src="
+                                require('@static/img/octoprint-plugin-guide/plugin_rerun_setup.png')
+                              "
+                            />
                           </div>
                         </div>
                       </div>
@@ -111,8 +149,11 @@ cd moonraker-obico
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <ol>
-                              <li>Open OctoPrint in another browser tab. </li>
-                              <li>Select <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.</li>
+                              <li>Open OctoPrint in another browser tab.</li>
+                              <li>
+                                Select
+                                <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.
+                              </li>
                               <li>Enter "Obico" to locate the plugin. Click <em>"Install"</em>.</li>
                               <li>Restart OctoPrint when prompted.</li>
                             </ol>
@@ -122,44 +163,55 @@ cd moonraker-obico
                           <div class="col-sm-12 col-lg-8 img-container">
                             <img
                               class="mx-auto screenshot"
-                              :src="require('@static/img/octoprint-plugin-guide/install_plugin.png')"
-                              @click="zoomIn($event)">
+                              :src="
+                                require('@static/img/octoprint-plugin-guide/install_plugin.png')
+                              "
+                              @click="zoomIn($event)"
+                            />
                           </div>
                         </div>
                       </div>
                     </tab-content>
                     <template v-if="discoveryEnabled">
                       <tab-content v-if="targetOctoPrint" title="Link It!">
-                        <loading :active="chosenDeviceId != null"
-                          :can-cancel="false"
-                        >
-                        </loading>
+                        <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
                           <div class="discover-body">
-                            <div v-if="!canStartLinking" style="text-align: center;">
+                            <div v-if="!canStartLinking" style="text-align: center">
                               <div class="spinner-border big" role="status">
                                 <span class="sr-only"></span>
                               </div>
-                              <div class="lead">
-                              Scanning...
-                              </div>
+                              <div class="lead">Scanning...</div>
                             </div>
                             <div v-else>
                               <div class="lead my-3">
                                 <div class="spinner-border" role="status">
-                                <span class="sr-only"></span>
-                              </div><span class="sr-only"></span>Scanning..., {{discoveredPrinters.length}} OctoPrint(s) found on your local network:</div>
-                              <discovered-printer v-for="discoveredPrinter in discoveredPrinters" :key="discoveredPrinter.device_id" :discoveredPrinter="discoveredPrinter" @auto-link-printer="autoLinkPrinter" />
+                                  <span class="sr-only"></span>
+                                </div>
+                                <span class="sr-only"></span>Scanning...,
+                                {{ discoveredPrinters.length }} OctoPrint(s) found on your local
+                                network:
+                              </div>
+                              <discovered-printer
+                                v-for="discoveredPrinter in discoveredPrinters"
+                                :key="discoveredPrinter.device_id"
+                                :discoveredPrinter="discoveredPrinter"
+                                @auto-link-printer="autoLinkPrinter"
+                              />
                             </div>
                             <div class="mt-5 mb-3">
-                              Can't find the OctoPrint you want to link?
-                              Switch to <a class="link" @click="discoveryEnabled=false">Manual Setup</a> instead.
+                              Can't find the OctoPrint you want to link? Switch to
+                              <a class="link" @click="discoveryEnabled = false">Manual Setup</a>
+                              instead.
                             </div>
-                            <div v-if="discoveryCount>=2" class="text-muted">
+                            <div v-if="discoveryCount >= 2" class="text-muted">
                               <div>To link your OctoPrint, please make sure:</div>
                               <ul>
                                 <li>The Raspberry Pi is powered on.</li>
-                                <li>The Raspberry Pi is connected to the same local network as your phone/computer.</li>
+                                <li>
+                                  The Raspberry Pi is connected to the same local network as your
+                                  phone/computer.
+                                </li>
                                 <li>The Obico plugin version is 1.8.0 or above.</li>
                               </ul>
                             </div>
@@ -183,8 +235,11 @@ cd moonraker-obico
                             <div class="col-sm-12 col-lg-8 img-container">
                               <img
                                 class="mx-auto screenshot"
-                                :src="require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')"
-                                @click="zoomIn($event)">
+                                :src="
+                                  require('@static/img/octoprint-plugin-guide/plugin_wizard_websetup.png')
+                                "
+                                @click="zoomIn($event)"
+                              />
                             </div>
                           </div>
                         </div>
@@ -192,24 +247,52 @@ cd moonraker-obico
                       <tab-content title="Enter Code">
                         <div class="container">
                           <div class="row justify-content-center pb-3">
-                            <div class="col-sm-12 col-lg-8  d-flex flex-column align-items-center">
-                                <input disabled ref="code" class="code-btn" :value="`${verificationCode && verificationCode.code}`"/>
-                                <small class="mx-auto py-1" :class="{'text-muted': !copied}">{{ copied ? 'Code copied to system clipboard' : 'Ctrl-C/Cmd-C to copy the code'}}</small>
-                                <div class="mx-auto pt-1 pb-4"><span class="text-muted">Code will expire in </span>{{timeToExpire}}</div>
-                              <div class="lead">Enter the <strong>6-digit verification code</strong></div>
+                            <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                              <input
+                                disabled
+                                ref="code"
+                                class="code-btn"
+                                :value="`${verificationCode && verificationCode.code}`"
+                              />
+                              <small class="mx-auto py-1" :class="{ 'text-muted': !copied }">{{
+                                copied
+                                  ? 'Code copied to system clipboard'
+                                  : 'Ctrl-C/Cmd-C to copy the code'
+                              }}</small>
+                              <div class="mx-auto pt-1 pb-4">
+                                <span class="text-muted">Code will expire in </span
+                                >{{ timeToExpire }}
+                              </div>
+                              <div class="lead">
+                                Enter the <strong>6-digit verification code</strong>
+                              </div>
                             </div>
                           </div>
                           <div class="row justify-content-center">
                             <div class="col-sm-12 col-lg-8 img-container">
-                              <img v-if="targetOctoPrint"
+                              <img
+                                v-if="targetOctoPrint"
                                 class="screenshot"
-                                :src="require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')"
-                                @click="zoomIn($event)">
-                              <img v-if="targetMoonraker"
+                                :src="
+                                  require('@static/img/octoprint-plugin-guide/plugin_verification_code.png')
+                                "
+                                @click="zoomIn($event)"
+                              />
+                              <img
+                                v-if="targetMoonraker"
                                 class="screenshot"
-                                :src="require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')"
-                                @click="zoomIn($event)">
-                              <div class="helper mx-auto py-2"><a class="link font-weight-bold" @click="showVerificationCodeHelpModal">Can't find the page to enter the 6-digit code?</a></div>
+                                :src="
+                                  require('@static/img/octoprint-plugin-guide/moonraker_verification_code.png')
+                                "
+                                @click="zoomIn($event)"
+                              />
+                              <div class="helper mx-auto py-2">
+                                <a
+                                  class="link font-weight-bold"
+                                  @click="showVerificationCodeHelpModal"
+                                  >Can't find the page to enter the 6-digit code?</a
+                                >
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -218,15 +301,43 @@ cd moonraker-obico
 
                     <template slot="footer" slot-scope="props">
                       <div class="wizard-footer-left">
-                        <wizard-button v-if="props.activeTabIndex > 0" @click.native="props.prevTab(); prevTab(props.activeTabIndex);" class="btn btn-link btn-back">&lt; Back</wizard-button>
+                        <wizard-button
+                          v-if="props.activeTabIndex > 0"
+                          @click.native="
+                            props.prevTab()
+                            prevTab(props.activeTabIndex)
+                          "
+                          class="btn btn-link btn-back"
+                          >&lt; Back</wizard-button
+                        >
                       </div>
                       <div class="wizard-footer-right">
-                        <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab(); nextTab(props.activeTabIndex);" class="wizard-footer-right wizard-btn" :style="{...props.fillButtonStyle, color: 'var(--color-on-primary)'}">Next &gt;</wizard-button>
+                        <wizard-button
+                          v-if="!props.isLastStep"
+                          @click.native="
+                            props.nextTab()
+                            nextTab(props.activeTabIndex)
+                          "
+                          class="wizard-footer-right wizard-btn"
+                          :style="{ ...props.fillButtonStyle, color: 'var(--color-on-primary)' }"
+                          >Next &gt;</wizard-button
+                        >
                       </div>
                     </template>
                   </form-wizard>
                   <div class="row">
-                    <div class="helper col-sm-12">Need help? Check out the <a target="_blank" :href="targetMoonraker ? 'https://www.obico.io/docs/user-guides/klipper-setup/' : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">step-by-step set up guide.</a></div>
+                    <div class="helper col-sm-12">
+                      Need help? Check out the
+                      <a
+                        target="_blank"
+                        :href="
+                          targetMoonraker
+                            ? 'https://www.obico.io/docs/user-guides/klipper-setup/'
+                            : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'
+                        "
+                        >step-by-step set up guide.</a
+                      >
+                    </div>
                   </div>
                 </div>
                 <div v-else class="container">
@@ -236,21 +347,17 @@ cd moonraker-obico
                   <div class="row">
                     <div class="col-sm-12 col-lg-6 p-4">
                       <div class="wizard-card" @click="setTargetPlatform('octoprint')">
-                      <img
-                        :src="require('@static/img/octoprint_logo.png')" />
-                        <h3  class="mt-4">OctoPrint</h3>
+                        <img :src="require('@static/img/octoprint_logo.png')" />
+                        <h3 class="mt-4">OctoPrint</h3>
                         <div>Including OctoPrint for Klipper such as OctoKlipper.</div>
                       </div>
                     </div>
                     <div class="col-sm-12 col-lg-6 p-4">
                       <div class="wizard-card" @click="setTargetPlatform('moonraker')">
-                      <div>
-                        <img
-                          :src="require('@static/img/klipper_logo.jpg')" />
-                        <img
-                          :src="require('@static/img/mainsail_logo.png')" />
-                        <img
-                          :src="require('@static/img/fluidd_logo.png')" />
+                        <div>
+                          <img :src="require('@static/img/klipper_logo.jpg')" />
+                          <img :src="require('@static/img/mainsail_logo.png')" />
+                          <img :src="require('@static/img/fluidd_logo.png')" />
                         </div>
                         <h3 class="mt-4">Klipper</h3>
                         <h5>with Mainsail/Fluidd/Moonraker</h5>
@@ -271,9 +378,9 @@ cd moonraker-obico
 import axios from 'axios'
 import moment from 'moment'
 import urls from '@config/server-urls'
-import {onPrinterLinked} from '@config/event-handler'
+import { onPrinterLinked } from '@config/event-handler'
 import routes from '@src/views/printer-wizard/wizard-routes'
-import {WizardButton, FormWizard, TabContent} from 'vue-form-wizard'
+import { WizardButton, FormWizard, TabContent } from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from 'vue-loading-overlay'
@@ -305,10 +412,11 @@ export default {
       copied: false,
       saving: {},
       errorMessages: {},
-      delayedSubmit: { // Make pause before sending new value to API
-        'printer_name': {
-          'delay': 1000,
-          'timeoutId': null
+      delayedSubmit: {
+        // Make pause before sending new value to API
+        printer_name: {
+          delay: 1000,
+          timeoutId: null,
         },
       },
       discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
@@ -323,7 +431,8 @@ export default {
     }
   },
   created() {
-    if (this.printerIdToLink) { // Re-link currently doesn't support auto-discovery on the plugin side
+    if (this.printerIdToLink) {
+      // Re-link currently doesn't support auto-discovery on the plugin side
       this.discoveryEnabled = false
     }
     this.getVerificationCode()
@@ -396,9 +505,9 @@ export default {
           // Make request to API
           return axios
             .patch(urls.printer(this.verifiedPrinter.id), {
-              'name': this.verifiedPrinter.name
+              name: this.verifiedPrinter.name,
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err)
             })
             .then(() => {
@@ -419,26 +528,33 @@ export default {
      * button, which causes showiing logo inside furter steps, not only completed ones).
      */
     prevTab() {
-      document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.remove('checked')
+      document
+        .querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle')
+        .classList.remove('checked')
       this.onVerificationStep = false
     },
     nextTab(activeStep) {
-      document.querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle').classList.add('checked')
+      document
+        .querySelector('.wizard-nav.wizard-nav-pills li.active .wizard-icon-circle')
+        .classList.add('checked')
       this.onVerificationStep = activeStep == 1 // nextTab is called before activeStep changes
       if (activeStep == 0 && this.discoveryEnabled && this.discoveryCount == 0) {
         this.discoverPrinter()
       }
       if (this.onVerificationStep) {
         const copyFunc = this.copyCode
-        let ctrlDown = false, ctrlKey = 17, cmdKey = 91, cKey = 67
-        document.addEventListener('keydown', function(e) {
+        let ctrlDown = false,
+          ctrlKey = 17,
+          cmdKey = 91,
+          cKey = 67
+        document.addEventListener('keydown', function (e) {
           if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true
         })
-        document.addEventListener('keyup', function(e) {
+        document.addEventListener('keyup', function (e) {
           if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false
         })
-        document.addEventListener('keydown', function(e) {
-          if (ctrlDown && (e.keyCode == cKey)) {
+        document.addEventListener('keydown', function (e) {
+          if (ctrlDown && e.keyCode == cKey) {
             copyFunc()
           }
         })
@@ -446,17 +562,20 @@ export default {
     },
     verificationCodeUrl() {
       const baseUrl = urls.verificationCode()
-      if (!this.verificationCode){ // Never retrieved veification code. Get one.
+      if (!this.verificationCode) {
+        // Never retrieved veification code. Get one.
         if (this.printerIdToLink) {
           return `${baseUrl}?printer_id=${this.printerIdToLink}`
         } else {
           return baseUrl
         }
       }
-      if (this.verificationCode.verified_at) { // Code is verified successfully, keep on polling to get update on the printer name if any
+      if (this.verificationCode.verified_at) {
+        // Code is verified successfully, keep on polling to get update on the printer name if any
         return `${baseUrl}${this.verificationCode.id}/`
       }
-      if (moment().isBefore(this.expiryMoment)) { // Not verified, and not expired
+      if (moment().isBefore(this.expiryMoment)) {
+        // Not verified, and not expired
         return `${baseUrl}${this.verificationCode.id}/`
       }
       // Not verified, but expired.
@@ -486,19 +605,17 @@ export default {
       }
     },
     callVerificationCodeApi() {
-      axios
-        .get(this.verificationCodeUrl())
-        .then((resp) => {
-          if (resp.data) {
-            this.verificationCode = resp.data
-            if (this.verificationCode.verified_at) {
-              this.verifiedPrinter = resp.data.printer
-              if (onPrinterLinked) {
-                onPrinterLinked();
-              }
+      axios.get(this.verificationCodeUrl()).then((resp) => {
+        if (resp.data) {
+          this.verificationCode = resp.data
+          if (this.verificationCode.verified_at) {
+            this.verifiedPrinter = resp.data.printer
+            if (onPrinterLinked) {
+              onPrinterLinked()
             }
           }
-        })
+        }
+      })
     },
     getVerificationCode() {
       this.callVerificationCodeApi()
@@ -524,7 +641,7 @@ export default {
       }
 
       this.$swal.fire({
-        title: 'Can\'t find the page to enter the 6-digit code?',
+        title: "Can't find the page to enter the 6-digit code?",
         html,
         customClass: {
           container: 'dark-backdrop',
@@ -545,11 +662,9 @@ export default {
         })
       }
       this.discoveryCount += 1
-      axios
-        .get(urls.printerDiscovery())
-        .then((resp) => {
-          this.discoveredPrinters = sortBy(resp.data, (p) => p.device_id)
-        })
+      axios.get(urls.printerDiscovery()).then((resp) => {
+        this.discoveredPrinters = sortBy(resp.data, (p) => p.device_id)
+      })
     },
     discoverPrinter() {
       if (!this.discoveryEnabled || this.verifiedPrinter) {
@@ -565,7 +680,7 @@ export default {
         AutoLinkPopup,
         {
           discoveredPrinter,
-          switchToManualLinking: () => this.discoveryEnabled=false,
+          switchToManualLinking: () => (this.discoveryEnabled = false),
           secretObtained: (chosenDeviceId, secret) => this.secretObtained(chosenDeviceId, secret),
         },
         {

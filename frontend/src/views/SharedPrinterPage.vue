@@ -4,16 +4,16 @@
 
     <div class="row justify-content-center">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
-      <div v-if="printer"
-        class="col-sm-12 col-lg-6 printer-card"
-      >
+      <div v-if="printer" class="col-sm-12 col-lg-6 printer-card">
         <div class="card">
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
           <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
           <div class="p-3 p-md-5">
-            <p class="text-center">You are viewing an awesome 3D print your friend shared specifically with you on</p>
+            <p class="text-center">
+              You are viewing an awesome 3D print your friend shared specifically with you on
+            </p>
             <a href="https://www.obico.io/">
               <svg width="100%" class="logo-img">
                 <use href="#svg-logo-full" />
@@ -21,7 +21,12 @@
             </a>
             <hr />
             <br /><br />
-            <p class="text-center">Obico let you monitor and control your printer from anywhere, on your phone.</p><a class="btn btn-block btn-primary" href="/accounts/signup/">Sign up for a free Obico account</a>
+            <p class="text-center">
+              Obico let you monitor and control your printer from anywhere, on your phone.
+            </p>
+            <a class="btn btn-block btn-primary" href="/accounts/signup/"
+              >Sign up for a free Obico account</a
+            >
           </div>
         </div>
       </div>
@@ -43,7 +48,7 @@ export default {
     StreamingBox,
     Navbar,
   },
-  created(){
+  created() {
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
     this.printerComm = PrinterComm(
       this.shareToken,
@@ -56,7 +61,7 @@ export default {
     this.printerComm.connect()
     this.webrtc.openForShareToken(this.shareToken)
   },
-  data: function() {
+  data: function () {
     return {
       printer: null,
       shareToken: null,

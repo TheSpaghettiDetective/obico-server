@@ -37,9 +37,7 @@
                   </div>
                   <br />
                   <div class="card-body p-3">
-                    <a href="/prints/">
-                      <i class="fas fa-chevron-left"></i> Time-lapse
-                    </a>
+                    <a href="/prints/"> <i class="fas fa-chevron-left"></i> Time-lapse </a>
                   </div>
                 </div>
               </div>
@@ -82,14 +80,14 @@ export default {
   props: {
     config: {
       default: () => {},
-      type: Object
-    }
+      type: Object,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       shots: [],
       currentShot: 0,
-      print: null
+      print: null,
     }
   },
   computed: {},
@@ -100,7 +98,7 @@ export default {
 
   methods: {
     fetchData() {
-      axios.get(urls.print(this.config.printId)).then(response => {
+      axios.get(urls.print(this.config.printId)).then((response) => {
         this.print = normalizedPrint(response.data)
         this.shots = sortBy(this.print.printshotfeedback_set, 'id')
       })
@@ -110,7 +108,7 @@ export default {
       axios
         .patch(urls.print(this.print.id), data)
 
-        .then(response => (this.print = response.data))
+        .then((response) => (this.print = response.data))
     },
 
     consentBtnPressed() {
@@ -118,7 +116,7 @@ export default {
     },
 
     onShotChanged(data) {
-      const i = findIndex(this.shots, shot => shot.id == data.id)
+      const i = findIndex(this.shots, (shot) => shot.id == data.id)
       this.$set(this.shots, i, data)
       this.$refs.carousel.next()
     },
@@ -132,8 +130,8 @@ export default {
         return 'page-visiting'
       }
       return this.shots[page].answered_at ? 'text-success' : 'page-unvisited'
-    }
-  }
+    },
+  },
 }
 </script>
 

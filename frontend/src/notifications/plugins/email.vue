@@ -3,12 +3,14 @@
     :errorMessages="errorMessages"
     :saving="saving"
     :notificationChannel="notificationChannel"
-
-    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
-    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @createNotificationChannel="
+      (channel, config) => $emit('createNotificationChannel', channel, config)
+    "
+    @updateNotificationChannel="
+      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
+    "
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
-
     ref="notificationChannelTemplate"
   >
     <template #header>
@@ -30,13 +32,19 @@
                 type="checkbox"
                 class="custom-control-input"
                 id="id_account_notification_by_email"
-                :disabled="$refs.notificationChannelTemplate ? !$refs.notificationChannelTemplate.notificationsEnabled : false"
+                :disabled="
+                  $refs.notificationChannelTemplate
+                    ? !$refs.notificationChannelTemplate.notificationsEnabled
+                    : false
+                "
                 v-model="user.account_notification_by_email"
                 @change="$emit('updateSetting', 'account_notification_by_email')"
-              >
+              />
               <label class="custom-control-label" for="id_account_notification_by_email">
                 Account events
-                <span class="text-muted setting-description"><br>Plan changed; AI Detection Hours running low; etc.</span>
+                <span class="text-muted setting-description"
+                  ><br />Plan changed; AI Detection Hours running low; etc.</span
+                >
               </label>
             </div>
           </saving-animation>
@@ -48,7 +56,9 @@
             <div class="setting-item-text">
               <label for="id_account_notification_by_email">
                 Account events
-                <span class="text-muted setting-description"><br>Plan changed; AI Detection Hours running low; etc.</span>
+                <span class="text-muted setting-description"
+                  ><br />Plan changed; AI Detection Hours running low; etc.</span
+                >
               </label>
             </div>
             <div class="setting-item-switch">
@@ -62,7 +72,11 @@
                 :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
                 v-model="user.account_notification_by_email"
                 @input="$emit('updateSetting', 'account_notification_by_email')"
-                :disabled="$refs.notificationChannelTemplate ? !$refs.notificationChannelTemplate.notificationsEnabled : false"
+                :disabled="
+                  $refs.notificationChannelTemplate
+                    ? !$refs.notificationChannelTemplate.notificationsEnabled
+                    : false
+                "
                 class="mb-0"
               />
             </div>

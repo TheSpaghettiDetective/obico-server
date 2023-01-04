@@ -5,13 +5,13 @@
       :src="require(`@static/img/${path}/${filename}_light-scheme.${format}`)"
       draggable="false"
       :alt="alt"
-    >
+    />
     <img
       v-show="theme === themes.Dark"
       :src="require(`@static/img/${path}/${filename}_dark-scheme.${format}`)"
       draggable="false"
       :alt="alt"
-    >
+    />
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
 
   data() {
     return {
-      themes: Themes
+      themes: Themes,
     }
   },
 

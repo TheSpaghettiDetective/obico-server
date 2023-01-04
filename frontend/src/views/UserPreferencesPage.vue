@@ -1,18 +1,29 @@
 <template>
   <layout>
     <template v-slot:content>
-      <b-container fluid="xl" :class="{'is-in-mobile': useMobileLayout}" class="flex-full-size">
+      <b-container fluid="xl" :class="{ 'is-in-mobile': useMobileLayout }" class="flex-full-size">
         <b-row class="flex-full-size">
           <b-col class="flex-full-size">
             <div v-if="user" class="flex-full-size">
               <!-- Mobile (web / app) -->
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/user_preferences/'" class="mobile-settings-categories">
-                  <h2 v-show="!onlyNotifications()" class="categories-title section-title">Account</h2>
+                  <h2 v-show="!onlyNotifications()" class="categories-title section-title">
+                    Account
+                  </h2>
                   <template v-for="(value, name) in sections">
-                    <router-link v-if="!value.isHidden" :key="name" :to="value.route" :class="value.isSubcategory ? 'subcategory' : ''">
+                    <router-link
+                      v-if="!value.isHidden"
+                      :key="name"
+                      :to="value.route"
+                      :class="value.isSubcategory ? 'subcategory' : ''"
+                    >
                       <span>
-                        <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']" style="font-size: 1.125rem"></i>
+                        <i
+                          v-if="value.faIcon"
+                          :class="[value.faIcon, 'mr-2']"
+                          style="font-size: 1.125rem"
+                        ></i>
                         <span>{{ value.title }}</span>
                       </span>
                       <i class="fas fa-arrow-right"></i>
@@ -26,15 +37,24 @@
                     </span>
                   </a>
                 </div>
-                <div v-else class="mobile-settings-content" :class="{'is-in-mobile': useMobileLayout}">
+                <div
+                  v-else
+                  class="mobile-settings-content"
+                  :class="{ 'is-in-mobile': useMobileLayout }"
+                >
                   <component
-                    v-if="currentSection && (!currentSection.isNotificationChannel || availableNotificationPlugins)"
+                    v-if="
+                      currentSection &&
+                      (!currentSection.isNotificationChannel || availableNotificationPlugins)
+                    "
                     :is="currentRouteComponent"
                     :user="user"
                     :errorMessages="errorMessages"
                     :saving="saving"
                     :config="config"
-                    :notificationChannel="(currentSection && currentSection.isNotificationChannel) ? currentSection : {}"
+                    :notificationChannel="
+                      currentSection && currentSection.isNotificationChannel ? currentSection : {}
+                    "
                     @createNotificationChannel="createNotificationChannel"
                     @updateNotificationChannel="patchNotificationChannel"
                     @deleteNotificationChannel="deleteNotificationChannel"
@@ -120,7 +140,9 @@ export default {
 
   props: {
     config: {
-      default() {return {}},
+      default() {
+        return {}
+      },
       type: Object,
     },
   },
@@ -141,14 +163,15 @@ export default {
       user: null,
       saving: {},
       errorMessages: {},
-      delayedSubmit: { // Make pause before sending new value to API
-        'first_name': {
-          'delay': 1000,
-          'timeoutId': null
+      delayedSubmit: {
+        // Make pause before sending new value to API
+        first_name: {
+          delay: 1000,
+          timeoutId: null,
         },
-        'last_name': {
-          'delay': 1000,
-          'timeoutId': null
+        last_name: {
+          delay: 1000,
+          timeoutId: null,
         },
       },
       combinedInputs: {}, // Send changes to API only if all the other values in the array have data
@@ -158,7 +181,7 @@ export default {
 
   computed: {
     visibleSections() {
-      return Object.values(sections).filter(item => !item.isHidden)
+      return Object.values(sections).filter((item) => !item.isHidden)
     },
     currentRouteComponent() {
       for (const [component, route] of Object.entries(routes)) {
@@ -180,23 +203,26 @@ export default {
       return inMobileWebView()
     },
     clientIsThemeable() {
-      return !inMobileWebView() || (new URLSearchParams(window.location.search).get('themeable') === 'true')
+      return (
+        !inMobileWebView() ||
+        new URLSearchParams(window.location.search).get('themeable') === 'true'
+      )
     },
     firstName: {
-      get: function() {
+      get: function () {
         return this.user ? this.user.first_name : undefined
       },
-      set: function(newValue) {
+      set: function (newValue) {
         this.user.first_name = newValue
-      }
+      },
     },
     lastName: {
-      get: function() {
+      get: function () {
         return this.user ? this.user.last_name : undefined
       },
-      set: function(newValue) {
+      set: function (newValue) {
         this.user.last_name = newValue
-      }
+      },
     },
   },
 
@@ -231,7 +257,7 @@ export default {
         confirmButtonText: 'Logout',
         cancelButtonText: 'Cancel',
       }).then((result) => {
-        if(result.isConfirmed) {
+        if (result.isConfirmed) {
           window.location.replace('/accounts/logout/')
         }
       })
@@ -241,39 +267,35 @@ export default {
       this.useMobileLayout = inMobileWebView() || vw < 1140
     },
     fetchUser() {
-      return axios
-        .get(urls.user())
-        .then(response => {
-          this.user = response.data
-        })
+      return axios.get(urls.user()).then((response) => {
+        this.user = response.data
+      })
     },
     fetchNotificationPlugins() {
-      return axios
-        .get(urls.notificationPlugins())
-        .then(response => {
-          const plugins = response.data.plugins || {}
-          this.availableNotificationPlugins = plugins
-          for (const [key, val] of Object.entries(this.sections)) {
-            if (val.isNotificationChannel) {
-              this.sections[key].pluginInfo = plugins[val.channelName]
-            }
+      return axios.get(urls.notificationPlugins()).then((response) => {
+        const plugins = response.data.plugins || {}
+        this.availableNotificationPlugins = plugins
+        for (const [key, val] of Object.entries(this.sections)) {
+          if (val.isNotificationChannel) {
+            this.sections[key].pluginInfo = plugins[val.channelName]
           }
-        })
+        }
+      })
     },
     fetchNotificationChannels() {
-      return axios
-        .get(urls.notificationChannels())
-        .then(response => {
-          const channels = response.data
-          this.configuredNotificationChannels = channels
-          for (const [key, val] of Object.entries(this.sections)) {
-            if (val.isNotificationChannel) {
-              this.sections[key].channelInfo = channels.filter(channel => channel.name === val.channelName)[0]
-            }
+      return axios.get(urls.notificationChannels()).then((response) => {
+        const channels = response.data
+        this.configuredNotificationChannels = channels
+        for (const [key, val] of Object.entries(this.sections)) {
+          if (val.isNotificationChannel) {
+            this.sections[key].channelInfo = channels.filter(
+              (channel) => channel.name === val.channelName
+            )[0]
           }
-        })
+        }
+      })
     },
-    createNotificationChannel(section, config, opts={}) {
+    createNotificationChannel(section, config, opts = {}) {
       const data = {
         user: this.user.id,
         name: section.channelName,
@@ -290,7 +312,7 @@ export default {
           this.setSavingStatus(key, false)
           this.$router.go()
         })
-        .catch(err => {
+        .catch((err) => {
           this.setSavingStatus(key, false)
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             let errors = []
@@ -316,7 +338,7 @@ export default {
     },
     patchNotificationChannel(section, propNames) {
       let data = {
-        name: section.channelName
+        name: section.channelName,
       }
 
       for (const prop of propNames) {
@@ -336,7 +358,7 @@ export default {
             this.setSavingStatus(key, false)
           }
         })
-        .catch(err => {
+        .catch((err) => {
           for (const prop of propNames) {
             const key = getNotificationSettingKey(section, prop)
             this.setSavingStatus(key, false)
@@ -371,7 +393,7 @@ export default {
         .then(() => {
           this.$router.go()
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.response)
           this.errorAlert()
         })
@@ -380,7 +402,9 @@ export default {
       this.errorMessages[propName] = []
     },
     addErrorMessage(propName, message) {
-      this.errorMessages[propName] ? this.errorMessages[propName].push(message) : this.errorMessages[propName] = [message]
+      this.errorMessages[propName]
+        ? this.errorMessages[propName].push(message)
+        : (this.errorMessages[propName] = [message])
     },
     patchUser(propName, propValue) {
       let data = {}
@@ -396,18 +420,18 @@ export default {
         }
         // Allow either completely empty or completely filled data
         const values = Object.values(data)
-        const emptyValues = values.filter(val => !val)
-        if ((emptyValues.length !== values.length) && (emptyValues.length !== 0)) {
+        const emptyValues = values.filter((val) => !val)
+        if (emptyValues.length !== values.length && emptyValues.length !== 0) {
           return
         }
       } else {
-        data = {[propName]: propValue}
+        data = { [propName]: propValue }
       }
       this.setSavingStatus(key, true)
       // Make request to API
       return axios
         .patch(urls.user(), data)
-        .catch(err => {
+        .catch((err) => {
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             if (err.response.data.non_field_errors) {
               this.errorAlert(err.response.data.non_field_errors)
@@ -423,9 +447,9 @@ export default {
         .then(() => {
           if (window.ReactNativeWebView) {
             if (key === 'first_name') {
-              window.ReactNativeWebView.postMessage(JSON.stringify({firstName: this.firstName}))
+              window.ReactNativeWebView.postMessage(JSON.stringify({ firstName: this.firstName }))
             } else if (key === 'last_name') {
-              window.ReactNativeWebView.postMessage(JSON.stringify({lastName: this.lastName}))
+              window.ReactNativeWebView.postMessage(JSON.stringify({ lastName: this.lastName }))
             }
           }
 
@@ -435,7 +459,7 @@ export default {
     checkForCombinedValues(propName) {
       for (const [key, inputs] of Object.entries(this.combinedInputs)) {
         if (inputs.includes(propName)) {
-          return {inputs, key}
+          return { inputs, key }
         }
       }
       return null
@@ -446,10 +470,12 @@ export default {
       }
       this.$set(this.saving, propName, status)
     },
-    errorAlert(text=null) {
+    errorAlert(text = null) {
       this.$swal({
         icon: 'error',
-        html: `<p>${text ? text : 'Can not update your preferences.'}</p><p>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</p>`,
+        html: `<p>${
+          text ? text : 'Can not update your preferences.'
+        }</p><p>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</p>`,
       })
     },
     updateSetting(settingsItem) {

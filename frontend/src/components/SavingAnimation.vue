@@ -1,9 +1,16 @@
 <template>
   <div>
-    <div :class="{'saving-in-progress': savingClass, 'successfully-saved': savingDoneClass, 'failed-to-save': savingFailedClass, 'small-height': smallHeightClass}">
+    <div
+      :class="{
+        'saving-in-progress': savingClass,
+        'successfully-saved': savingDoneClass,
+        'failed-to-save': savingFailedClass,
+        'small-height': smallHeightClass,
+      }"
+    >
       <slot></slot>
     </div>
-    <small v-if="errors && errors.length > 0" class="text-danger">{{errorMsg}}</small>
+    <small v-if="errors && errors.length > 0" class="text-danger">{{ errorMsg }}</small>
   </div>
 </template>
 
@@ -20,29 +27,34 @@ export default {
 
   props: {
     saving: {
-      default() {return false},
+      default() {
+        return false
+      },
       type: Boolean,
     },
     errors: {
       type: Array,
     },
     height: {
-      default() {return 'normal'}, // normal, small
-      type: String
-    }
+      default() {
+        return 'normal'
+      }, // normal, small
+      type: String,
+    },
   },
 
   watch: {
-    saving: function(nowSaving, prevSaving) { // watch it
+    saving: function (nowSaving, prevSaving) {
+      // watch it
       if (!prevSaving && nowSaving) {
         this.clearSavingTimeout()
-        this.savingTimeout = setTimeout(this.clearSavingTimeout, 15*1000)
+        this.savingTimeout = setTimeout(this.clearSavingTimeout, 15 * 1000)
       } else if (prevSaving && !nowSaving) {
         this.clearSavingTimeout()
         this.savingDoneTimeout = setTimeout(() => {
           clearTimeout(this.savingDoneTimeout)
           this.savingDoneTimeout = null
-        }, 2*1000)
+        }, 2 * 1000)
       }
     },
   },
@@ -62,7 +74,7 @@ export default {
     },
     errorMsg() {
       return this.errors ? this.errors.join(' ') : ''
-    }
+    },
   },
 
   methods: {

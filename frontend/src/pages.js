@@ -41,16 +41,16 @@ const router = new VueRouter({
       path: '/user_preferences',
       component: UserPreferencesPage,
     },
-    ...Object.values(routes).map(route => ({
+    ...Object.values(routes).map((route) => ({
       path: route,
       component: UserPreferencesPage,
     })),
 
-    ...Object.values(wizardRoutes).map(route => ({
+    ...Object.values(wizardRoutes).map((route) => ({
       path: route,
       component: PrinterWizardPage,
     })),
-  ]
+  ],
 })
 
 const components = {
@@ -71,7 +71,4 @@ const components = {
   PrinterEventsPage,
 }
 
-export {
-  router,
-  components,
-}
+export { router, components }

@@ -20,52 +20,53 @@ export const listFiles = (printerComm, options) => {
     }
   }
 
-  printerComm.passThruToPrinter({
-    func: 'list_files',
-    target: '_file_manager',
-    kwargs,
-  },
-  (err, ret) => {
-    if (err) {
-      onRequestEnd()
-    } else if (ret) {
-      let folders = []
-      let files = []
-
-      if (!ret?.local || !Object.keys(ret.local).length) {
+  printerComm.passThruToPrinter(
+    {
+      func: 'list_files',
+      target: '_file_manager',
+      kwargs,
+    },
+    (err, ret) => {
+      if (err) {
         onRequestEnd()
-        return
-      }
+      } else if (ret) {
+        let folders = []
+        let files = []
 
-      // ObicoUpload is used to cache Obico Cloud files and should be hidden from the users
-      delete ret.local.ObicoUpload
-
-      const items = Boolean(query) ? listRecoursively(ret.local) : Object.values(ret.local)
-      for (const item of items) {
-        if (item.type === 'folder') {
-          folders.push({
-            id: item.path,
-            path: item.path,
-            name: item.display,
-            numItems: Object.keys(item.children).length,
-          })
-        } else {
-          files.push({
-            id: item.path,
-            path: item.path,
-            filename: item.name,
-            num_bytes: item.size,
-            filesize: filesize(item.size),
-            created_at: toMomentOrNull(new Date(item.date * 1000)),
-          })
+        if (!ret?.local || !Object.keys(ret.local).length) {
+          onRequestEnd()
+          return
         }
-      }
 
-      onRequestEnd({ folders, files })
-    } else {
-      onRequestEnd()
+        // ObicoUpload is used to cache Obico Cloud files and should be hidden from the users
+        delete ret.local.ObicoUpload
+
+        const items = Boolean(query) ? listRecoursively(ret.local) : Object.values(ret.local)
+        for (const item of items) {
+          if (item.type === 'folder') {
+            folders.push({
+              id: item.path,
+              path: item.path,
+              name: item.display,
+              numItems: Object.keys(item.children).length,
+            })
+          } else {
+            files.push({
+              id: item.path,
+              path: item.path,
+              filename: item.name,
+              num_bytes: item.size,
+              filesize: filesize(item.size),
+              created_at: toMomentOrNull(new Date(item.date * 1000)),
+            })
+          }
+        }
+
+        onRequestEnd({ folders, files })
+      } else {
+        onRequestEnd()
+      }
     }
-  }
   )
 }
 
@@ -94,19 +95,31 @@ export const getPrinterStorageAvailability = (normalizedPrinter) => {
     }
   }
 
-  if (!normalizedPrinter.isAgentMoonraker() && !semverGte(get(normalizedPrinter, 'settings.agent_version', '0.0.0'), MIN_OCTOPRINT_PLUGIN_VERSION)) {
+  if (
+    !normalizedPrinter.isAgentMoonraker() &&
+    !semverGte(
+      get(normalizedPrinter, 'settings.agent_version', '0.0.0'),
+      MIN_OCTOPRINT_PLUGIN_VERSION
+    )
+  ) {
     return {
       key: 'plugin_outdated',
       text: `Obico plugin outdated`,
-      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_OCTOPRINT_PLUGIN_VERSION} or later`
+      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_OCTOPRINT_PLUGIN_VERSION} or later`,
     }
   }
 
-  if (normalizedPrinter.isAgentMoonraker() && !semverGte(get(normalizedPrinter, 'settings.agent_version', '0.0.0'), MIN_MOONRAKER_PLUGIN_VERSION)) {
+  if (
+    normalizedPrinter.isAgentMoonraker() &&
+    !semverGte(
+      get(normalizedPrinter, 'settings.agent_version', '0.0.0'),
+      MIN_MOONRAKER_PLUGIN_VERSION
+    )
+  ) {
     return {
       key: 'plugin_outdated',
       text: `Obico plugin outdated`,
-      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_MOONRAKER_PLUGIN_VERSION} or later`
+      rejectMessage: `Please upgrade your Obico for ${agentName} to ${MIN_MOONRAKER_PLUGIN_VERSION} or later`,
     }
   }
 

@@ -8,7 +8,10 @@ const defaultSections = {
     faIcon: 'fas fa-magic',
     importComponent: () => import('@src/components/user-preferences/ThemePreferences'),
     route: routes.ThemePreferences,
-    isHidden: (inMobileWebView() && !(new URLSearchParams(window.location.search).get('themeable') === 'true')) || onlyNotifications(),
+    isHidden:
+      (inMobileWebView() &&
+        !(new URLSearchParams(window.location.search).get('themeable') === 'true')) ||
+      onlyNotifications(),
   },
   ProfilePreferences: {
     title: 'Profile',
@@ -29,7 +32,8 @@ const defaultSections = {
   GeneralNotifications: {
     title: 'Notifications',
     faIcon: 'fas fa-bell',
-    importComponent: () => import('@src/components/user-preferences/notifications/GeneralNotifications'),
+    importComponent: () =>
+      import('@src/components/user-preferences/notifications/GeneralNotifications'),
     route: routes.GeneralNotifications,
   },
   PushNotifications: {
@@ -43,14 +47,16 @@ const defaultSections = {
 }
 
 const notificationSections = Object.keys(notificationPlugins).reduce((obj, name) => {
-  return Object.assign(obj, { [name]: {
-    title: notificationPlugins[name].displayName,
-    channelName: name,
-    isSubcategory: true,
-    isNotificationChannel: true,
-    route: routes[name],
-    importComponent: () => import('@src/notifications/plugins/'+name),
-  }})
+  return Object.assign(obj, {
+    [name]: {
+      title: notificationPlugins[name].displayName,
+      channelName: name,
+      isSubcategory: true,
+      isNotificationChannel: true,
+      route: routes[name],
+      importComponent: () => import('@src/notifications/plugins/' + name),
+    },
+  })
 }, {})
 
 export default {

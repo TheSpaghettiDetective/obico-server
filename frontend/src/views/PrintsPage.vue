@@ -3,16 +3,25 @@
     <template v-slot:topBarLeft>
       <div class="actions-with-selected-desktop">
         <b-form-group class="m-0">
-          <b-form-checkbox
-            v-model="allPrintsSelected"
-            size="lg"
-          ></b-form-checkbox>
+          <b-form-checkbox v-model="allPrintsSelected" size="lg"></b-form-checkbox>
         </b-form-group>
         <div>
-          <span class="label" @click="allPrintsSelected = !allPrintsSelected" v-show="!selectedPrintIds.size">Select all</span>
-          <b-dropdown v-show="selectedPrintIds.size" class="" toggle-class="btn btn-sm actions-with-selected-btn">
+          <span
+            class="label"
+            @click="allPrintsSelected = !allPrintsSelected"
+            v-show="!selectedPrintIds.size"
+            >Select all</span
+          >
+          <b-dropdown
+            v-show="selectedPrintIds.size"
+            class=""
+            toggle-class="btn btn-sm actions-with-selected-btn"
+          >
             <template #button-content>
-              {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }} selected...
+              {{ selectedPrintIds.size }} item{{
+                selectedPrintIds.size === 1 ? '' : 's'
+              }}
+              selected...
             </template>
             <b-dropdown-item>
               <div class="text-danger" @click="onDeleteBtnClick">
@@ -25,7 +34,11 @@
     </template>
     <template v-slot:topBarRight>
       <div>
-        <a href="/prints/upload/" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload Time-Lapse">
+        <a
+          href="/prints/upload/"
+          class="btn shadow-none icon-btn d-none d-md-inline"
+          title="Upload Time-Lapse"
+        >
           <i class="fas fa-upload"></i>
         </a>
         <b-dropdown right no-caret toggle-class="icon-btn">
@@ -47,7 +60,7 @@
       </div>
     </template>
     <template v-slot:content>
-      <a v-if="shouldShowFilterWarning"  @click="onShowAllClicked" class="active-filter-notice">
+      <a v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
         <div class="filter">
           <i class="fas fa-filter mr-2"></i>
           {{ activeFiltering }}
@@ -120,7 +133,7 @@ export default {
     Layout,
     CascadedDropdown,
   },
-  data: function() {
+  data: function () {
     return {
       prints: [],
       selectedPrintIds: new Set(),
@@ -129,38 +142,34 @@ export default {
       fullScreenPrint: null,
       fullScreenPrintVideoUrl: null,
       menuSelections: {
-        'Sort By': getLocalPref(
-          LOCAL_PREF_NAMES.sorting,
-          'date_desc'),
-        'Filter By': getLocalPref(
-          LOCAL_PREF_NAMES.filtering,
-          'none'),
+        'Sort By': getLocalPref(LOCAL_PREF_NAMES.sorting, 'date_desc'),
+        'Filter By': getLocalPref(LOCAL_PREF_NAMES.filtering, 'none'),
       },
       menuOptions: {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            {value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up'},
-            {value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down'},
-          ]
+            { value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up' },
+            { value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down' },
+          ],
         },
         'Filter By': {
           iconClass: 'fas fa-filter',
           options: [
-            {value: 'none', title: 'All'},
-            {value: 'finished', title: 'Succeeded'},
-            {value: 'cancelled', title: 'Cancelled'},
-            {value: 'need_alert_overwrite', title: 'Review Needed'},
-            {value: 'need_print_shot_feedback', title: 'Focused-Review Needed'},
+            { value: 'none', title: 'All' },
+            { value: 'finished', title: 'Succeeded' },
+            { value: 'cancelled', title: 'Cancelled' },
+            { value: 'need_alert_overwrite', title: 'Review Needed' },
+            { value: 'need_print_shot_feedback', title: 'Focused-Review Needed' },
           ],
-        }
+        },
       },
     }
   },
   computed: {
     allPrintsSelected: {
       get: function () {
-        return (this.selectedPrintIds.size >= this.prints.length) && (this.prints.length !== 0)
+        return this.selectedPrintIds.size >= this.prints.length && this.prints.length !== 0
       },
       set: function (selected) {
         if (selected) {
@@ -168,15 +177,17 @@ export default {
         } else {
           this.selectedPrintIds = new Set()
         }
-      }
+      },
     },
     shouldShowFilterWarning() {
       return this.menuSelections['Filter By'] !== 'none'
     },
     activeFiltering() {
-      const found = this.menuOptions['Filter By'].options.filter(option => option.value === this.menuSelections['Filter By'])
+      const found = this.menuOptions['Filter By'].options.filter(
+        (option) => option.value === this.menuSelections['Filter By']
+      )
       return found.length ? found[0].title : null
-    }
+    },
   },
 
   created() {
@@ -197,12 +208,12 @@ export default {
             limit: PAGE_SIZE,
             filter: this.menuSelections['Filter By'],
             sorting: this.menuSelections['Sort By'],
-          }
+          },
         })
-        .then(response => {
+        .then((response) => {
           this.loading = false
           this.noMoreData = response.data.length < PAGE_SIZE
-          this.prints.push(...response.data.map(data => normalizedPrint(data)))
+          this.prints.push(...response.data.map((data) => normalizedPrint(data)))
         })
     },
 
@@ -237,23 +248,21 @@ export default {
         text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
         showCancelButton: true,
         confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-      }).then(userAction => {
+        cancelButtonText: 'No',
+      }).then((userAction) => {
         if (userAction.isConfirmed) {
-          axios
-            .post(urls.printsBulkDelete(), { print_ids: selectedPrintIds })
-            .then(() => {
-              selectedPrintIds.forEach(printId => this.onPrintDeleted(printId, false))
-              this.$swal.Toast.fire({
-                title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
-              })
-              this.selectedPrintIds = new Set()
+          axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
+            selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
+            this.$swal.Toast.fire({
+              title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
             })
+            this.selectedPrintIds = new Set()
+          })
         }
       })
     },
-    onPrintDeleted(printId, toast=true) {
-      const i = findIndex(this.prints, p => p.id == printId)
+    onPrintDeleted(printId, toast = true) {
+      const i = findIndex(this.prints, (p) => p.id == printId)
       const print = this.prints[i]
       this.$delete(this.prints, i)
       if (toast) {
@@ -263,11 +272,11 @@ export default {
       }
     },
     printDataChanged(data) {
-      const i = findIndex(this.prints, p => p.id == data.id)
+      const i = findIndex(this.prints, (p) => p.id == data.id)
       this.$set(this.prints, i, normalizedPrint(data))
     },
     openFullScreen(printId, videoUrl) {
-      const i = findIndex(this.prints, p => p.id == printId)
+      const i = findIndex(this.prints, (p) => p.id == printId)
       if (i != -1) {
         this.fullScreenPrint = this.prints[i]
         this.fullScreenPrintVideoUrl = videoUrl
@@ -278,15 +287,12 @@ export default {
       this.fullScreenPrint = null
       this.fullScreenPrintVideoUrl = null
     },
-    onShowAllClicked(){
+    onShowAllClicked() {
       this.$set(this.menuSelections, 'Filter By', 'none')
-      setLocalPref(
-        LOCAL_PREF_NAMES.filtering,
-        'none'
-      )
+      setLocalPref(LOCAL_PREF_NAMES.filtering, 'none')
       this.refetchData()
     },
-  }
+  },
 }
 </script>
 

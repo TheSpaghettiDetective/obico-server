@@ -6,34 +6,34 @@
       <div class="col-sm-9 col-md-10">
         <div class="theme-controls">
           <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
-            <svg class="icon" :class="{'active': themeValue === Themes.Dark}">
+            <svg class="icon" :class="{ active: themeValue === Themes.Dark }">
               <use href="#svg-moon-icon" />
             </svg>
             <div class="label">
               <span class="dark" v-show="themeValue === Themes.Dark">DARK</span>
               <span class="light" v-show="themeValue === Themes.Light">LIGHT</span>
             </div>
-            <svg class="icon" :class="{'active': themeValue === Themes.Light}">
+            <svg class="icon" :class="{ active: themeValue === Themes.Light }">
               <use href="#svg-sun-icon" />
             </svg>
-            <div class="active-indicator" :class="{'right': themeValue === Themes.Light}">
+            <div class="active-indicator" :class="{ right: themeValue === Themes.Light }">
               <div class="circle"></div>
             </div>
           </div>
         </div>
       </div>
       <div v-if="showSystemTheme" class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
-          <div class="custom-control custom-checkbox form-check-inline system-theme-control">
-            <input
-              type="checkbox"
-              class="custom-control-input"
-              id="id_theme_system"
-              v-model="systemTheme"
-            >
-            <label class="custom-control-label" for="id_theme_system">
-              Sync theme with system settings
-            </label>
-          </div>
+        <div class="custom-control custom-checkbox form-check-inline system-theme-control">
+          <input
+            type="checkbox"
+            class="custom-control-input"
+            id="id_theme_system"
+            v-model="systemTheme"
+          />
+          <label class="custom-control-label" for="id_theme_system">
+            Sync theme with system settings
+          </label>
+        </div>
       </div>
     </div>
   </section>
@@ -69,7 +69,7 @@ export default {
         if (newValue) {
           this.selectTheme(this.Themes.System)
         }
-      }
+      },
     },
   },
 
@@ -85,10 +85,10 @@ export default {
     selectTheme(newTheme) {
       setTheme(newTheme)
       if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({theme: newTheme}))
+        window.ReactNativeWebView.postMessage(JSON.stringify({ theme: newTheme }))
       }
     },
-  }
+  },
 }
 </script>
 

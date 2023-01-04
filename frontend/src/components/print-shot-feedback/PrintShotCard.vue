@@ -11,9 +11,11 @@
       </b-form-group>
       <small class="text-muted">
         Not sure? Look at
-        <a target="_blank"
+        <a
+          target="_blank"
           href="https://www.obico.io/docs/user-guides/how-does-credits-work#spaghetti-examples"
-        >some examples. <small><i class="fas fa-external-link-alt"></i></small></a>
+          >some examples. <small><i class="fas fa-external-link-alt"></i></small
+        ></a>
       </small>
     </div>
   </div>
@@ -23,7 +25,7 @@
 import axios from 'axios'
 
 import urls from '@config/server-urls'
-import { BFormGroup, BFormRadioGroup} from 'bootstrap-vue'
+import { BFormGroup, BFormRadioGroup } from 'bootstrap-vue'
 
 export default {
   name: 'PrintShotCard',
@@ -34,7 +36,7 @@ export default {
   },
 
   props: {
-    shot: Object
+    shot: Object,
   },
 
   data() {
@@ -44,29 +46,28 @@ export default {
         { text: 'Yes', value: 'LOOKS_BAD' },
         { text: 'No', value: 'LOOKS_OK' },
         { text: 'I am not sure', value: 'UNDECIDED' },
-      ]
+      ],
     }
   },
 
   methods: {
-    updateShot: function(answer) {
+    updateShot: function (answer) {
       axios
         .put(urls.printShotFeedback(this.shot.id, this.shot.print_id), {
-          answer: answer
+          answer: answer,
         })
 
-        .then(response => {
+        .then((response) => {
           const { instance, credited_dhs } = response.data
 
           if (credited_dhs > 0) {
             this.$swal.Prompt.fire({
               title: 'You are awesome!',
-              html:
-                '<p>The AI failure detection just got a little better because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
-              confirmButtonText: 'I\'m done!',
+              html: '<p>The AI failure detection just got a little better because of your feedback!</p><p>You just earned 2 non-expirable AI Detection Hours - Yay!</p>',
+              confirmButtonText: "I'm done!",
               showCancelButton: true,
-              cancelButtonText: 'Change feedback'
-            }).then(result => {
+              cancelButtonText: 'Change feedback',
+            }).then((result) => {
               if (result.isConfirmed) {
                 window.location.href = '/prints/'
               } else {
@@ -77,8 +78,8 @@ export default {
             this.$emit('shotChanged', instance)
           }
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

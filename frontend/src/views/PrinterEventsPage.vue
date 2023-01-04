@@ -6,12 +6,28 @@
           <template #button-content>
             <i class="fas fa-filter"></i>
           </template>
-          <b-dropdown-item v-for="(eventClass, index) in eventClassFiltering" @click="toggleEventFiltering('eventClassFiltering', eventClass.key)" :key="eventClass.key">
-            <i class="fas fa-check text-primary" :style="{visibility: eventClass.selected ? 'visible' : 'hidden'}"></i><span :class="cssClassFromEventClass(eventClass.key)">{{eventClass.title}}</span>
+          <b-dropdown-item
+            v-for="(eventClass, index) in eventClassFiltering"
+            @click="toggleEventFiltering('eventClassFiltering', eventClass.key)"
+            :key="eventClass.key"
+          >
+            <i
+              class="fas fa-check text-primary"
+              :style="{ visibility: eventClass.selected ? 'visible' : 'hidden' }"
+            ></i
+            ><span :class="cssClassFromEventClass(eventClass.key)">{{ eventClass.title }}</span>
           </b-dropdown-item>
           <b-dropdown-divider />
-          <b-dropdown-item v-for="(eventType, index) in eventTypeFiltering" @click="toggleEventFiltering('eventTypeFiltering', eventType.key)" :key="eventType.key">
-            <i class="fas fa-check text-primary" :style="{visibility: eventType.selected ? 'visible' : 'hidden'}"></i>{{eventType.title}}
+          <b-dropdown-item
+            v-for="(eventType, index) in eventTypeFiltering"
+            @click="toggleEventFiltering('eventTypeFiltering', eventType.key)"
+            :key="eventType.key"
+          >
+            <i
+              class="fas fa-check text-primary"
+              :style="{ visibility: eventType.selected ? 'visible' : 'hidden' }"
+            ></i
+            >{{ eventType.title }}
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -25,8 +41,16 @@
               <h5 class="text-primary">Nothing to look here. Enjoy your vacation!</h5>
             </div>
             <div v-else>
-              <printer-event-card v-for="item in printerEvents" :key="item.id" :printer-event="item" />
-              <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
+              <printer-event-card
+                v-for="item in printerEvents"
+                :key="item.id"
+                :printer-event="item"
+              />
+              <mugen-scroll
+                :handler="fetchMoreData"
+                :should-handle="!loading"
+                class="text-center p-4"
+              >
                 <div v-if="noMoreData" class="text-center p-2">No more notifications.</div>
                 <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
               </mugen-scroll>
@@ -50,7 +74,6 @@ import PrinterEventCard from '@src/components/printer-events/PrinterEventCard.vu
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedPrinterEvent } from '@src/lib/normalizers'
 import findIndex from 'lodash/findIndex'
-
 
 const LOCAL_PREF_NAMES = {
   eventClassFiltering: 'printer-event-class-filtering',
@@ -76,8 +99,7 @@ export default {
     PrinterEventCard,
   },
 
-  props: {
-  },
+  props: {},
 
   data() {
     return {
@@ -86,18 +108,50 @@ export default {
       noMoreData: false,
       eventClassFiltering: [
         { key: 'ERROR', title: 'Error', selected: localPref('eventClassFiltering', 'ERROR', true) },
-        { key: 'WARNING', title: 'Warning', selected: localPref('eventClassFiltering', 'WARNING', true) },
-        { key: 'SUCCESS', title: 'Successs', selected: localPref('eventClassFiltering', 'SUCCESS', true) },
+        {
+          key: 'WARNING',
+          title: 'Warning',
+          selected: localPref('eventClassFiltering', 'WARNING', true),
+        },
+        {
+          key: 'SUCCESS',
+          title: 'Successs',
+          selected: localPref('eventClassFiltering', 'SUCCESS', true),
+        },
         { key: 'INFO', title: 'Other', selected: localPref('eventClassFiltering', 'INFO', true) },
       ],
       eventTypeFiltering: [
-        { key: 'ALERT', title: 'Failure Detection', selected: localPref('eventTypeFiltering', 'ALERT', true) },
-        { key: 'ENDED', title: 'Print Job Ended', selected: localPref('eventTypeFiltering', 'ENDED', true) },
-        { key: 'STARTED', title: 'Print Job Started', selected: localPref('eventTypeFiltering', 'STARTED', true) },
-        { key: 'PAUSE_RESUME', title: 'Print Job Paused/Resumed', selected: localPref('eventTypeFiltering', 'PAUSE_RESUME', true) },
-        { key: 'FILAMENT_CHANGE', title: 'Filament Change', selected: localPref('eventTypeFiltering', 'FILAMENT_CHANGE', true) },
-        { key: 'PRINTER_ERROR', title: 'Printer Error', selected: localPref('eventTypeFiltering', 'PRINTER_ERROR', true) },
-      ]
+        {
+          key: 'ALERT',
+          title: 'Failure Detection',
+          selected: localPref('eventTypeFiltering', 'ALERT', true),
+        },
+        {
+          key: 'ENDED',
+          title: 'Print Job Ended',
+          selected: localPref('eventTypeFiltering', 'ENDED', true),
+        },
+        {
+          key: 'STARTED',
+          title: 'Print Job Started',
+          selected: localPref('eventTypeFiltering', 'STARTED', true),
+        },
+        {
+          key: 'PAUSE_RESUME',
+          title: 'Print Job Paused/Resumed',
+          selected: localPref('eventTypeFiltering', 'PAUSE_RESUME', true),
+        },
+        {
+          key: 'FILAMENT_CHANGE',
+          title: 'Filament Change',
+          selected: localPref('eventTypeFiltering', 'FILAMENT_CHANGE', true),
+        },
+        {
+          key: 'PRINTER_ERROR',
+          title: 'Printer Error',
+          selected: localPref('eventTypeFiltering', 'PRINTER_ERROR', true),
+        },
+      ],
     }
   },
 
@@ -121,12 +175,12 @@ export default {
             limit: PAGE_SIZE,
             filter_by_classes,
             filter_by_types,
-          }
+          },
         })
-        .then(response => {
+        .then((response) => {
           this.loading = false
           this.noMoreData = response.data.length < PAGE_SIZE
-          this.printerEvents.push(...response.data.map(data => normalizedPrinterEvent(data)))
+          this.printerEvents.push(...response.data.map((data) => normalizedPrinterEvent(data)))
         })
     },
     refetchData() {
@@ -135,7 +189,7 @@ export default {
       this.fetchMoreData()
     },
     cssClassFromEventClass(eventClass) {
-      switch(eventClass) {
+      switch (eventClass) {
         case 'ERROR':
           return 'text-danger'
           break
@@ -147,15 +201,14 @@ export default {
       }
     },
     toggleEventFiltering(filter, key) {
-      const i = findIndex(this[filter], f => f.key == key)
+      const i = findIndex(this[filter], (f) => f.key == key)
       const original = this[filter][i]
-      this.$set(this[filter], i, {...original, selected: !original.selected})
+      this.$set(this[filter], i, { ...original, selected: !original.selected })
       setLocalPref(localPrefKey('eventClassFiltering', filter.key), !original.selected)
       this.refetchData()
     },
-  }
+  },
 }
 </script>
 
-<style lang="sass" scoped>
-</style>
+<style lang="sass" scoped></style>

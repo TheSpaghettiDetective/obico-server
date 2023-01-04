@@ -3,20 +3,24 @@
     :errorMessages="errorMessages"
     :saving="saving"
     :notificationChannel="notificationChannel"
-
     configVariableTitle="Webhook URL"
     configVariablePlaceholder="Discord Webhook"
     configVariableName="webhook_url"
-
-    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
-    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    @createNotificationChannel="
+      (channel, config) => $emit('createNotificationChannel', channel, config)
+    "
+    @updateNotificationChannel="
+      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
+    "
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <small class="form-text text-muted">
         If you have a Discord channel you wish to receive notifications on, you can
-        <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">generate webhook url</a>
+        <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
+          >generate webhook url</a
+        >
         and enter it here.
       </small>
     </template>

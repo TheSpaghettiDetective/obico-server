@@ -5,10 +5,7 @@
     </div>
     <div>
       <b-form-select v-model="selectedPort" id="connect-port">
-        <b-form-select-option
-          v-for="port in connectionOptions.ports"
-          :key="port"
-          :value="port">
+        <b-form-select-option v-for="port in connectionOptions.ports" :key="port" :value="port">
           {{ port }}
         </b-form-select-option>
       </b-form-select>
@@ -19,14 +16,12 @@
     </div>
     <div>
       <b-form-select v-model="selectedBaudrate" id="connect-baudrate">
-        <b-form-select-option
-          value=''>
-          Auto
-        </b-form-select-option>
+        <b-form-select-option value=""> Auto </b-form-select-option>
         <b-form-select-option
           v-for="baudrate in connectionOptions.baudrates"
           :key="baudrate"
-          :value="baudrate">
+          :value="baudrate"
+        >
           {{ baudrate }}
         </b-form-select-option>
       </b-form-select>
@@ -40,7 +35,7 @@ export default {
   props: {
     connectionOptions: {
       type: Object,
-      required: true
+      required: true,
     },
   },
 

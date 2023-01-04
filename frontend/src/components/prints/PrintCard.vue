@@ -1,11 +1,9 @@
 <template>
   <div class="col-sm-12 col-md-6 col-lg-4 print-card">
     <div class="card vld-parent">
-      <div v-if="isPublic" class="card-header">
-        - By {{ print.creator_name }}
-      </div>
+      <div v-if="isPublic" class="card-header">- By {{ print.creator_name }}</div>
       <div v-else class="card-header">
-        <div :style="{visibility: hasSelectedChangedListener ? 'visible' : 'hidden'}">
+        <div :style="{ visibility: hasSelectedChangedListener ? 'visible' : 'hidden' }">
           <b-form-checkbox
             v-model="selected"
             @change="onSelectedChange"
@@ -50,9 +48,7 @@
           </b-dropdown-item>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item @click="deleteVideo">
-            <span class="text-danger">
-              <i class="fas fa-trash-alt"></i>Delete
-            </span>
+            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -64,7 +60,10 @@
             </svg>
           </div>
           <div class="archived-info">
-            <div class="text">Video file is deleted. <a href="#" @click="showVideoArchivedDescription($event)">Why?</a></div>
+            <div class="text">
+              Video file is deleted.
+              <a href="#" @click="showVideoArchivedDescription($event)">Why?</a>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -91,18 +90,22 @@
                 </div>
                 <div class="col-8">{{ print.filename }}</div>
               </div>
-              <div class="row" v-b-tooltip.hover :title="this.humanizedPrintedOrUploadedTime(longFormat=true)">
+              <div
+                class="row"
+                v-b-tooltip.hover
+                :title="this.humanizedPrintedOrUploadedTime((longFormat = true))"
+              >
                 <div class="text-muted col-4">
-                  {{ wasTimelapseUploaded ? "Uploaded" : "Printed" }}
+                  {{ wasTimelapseUploaded ? 'Uploaded' : 'Printed' }}
                   <span class="float-right">:</span>
                 </div>
-                <div
-                  class="col-8"
-                >{{ this.humanizedPrintedOrUploadedTime() }} {{ endStatus }}</div>
+                <div class="col-8">{{ this.humanizedPrintedOrUploadedTime() }} {{ endStatus }}</div>
               </div>
-              <div class="row" v-if="!wasTimelapseUploaded && duration" :id="'dur-'+print.id">
-                <b-tooltip :target="'dur-'+print.id" triggers="hover">
-                  {{ duration | duration("asHours") | floor }}:{{ duration | duration("minutes") }}:{{ duration | duration("seconds") }}
+              <div class="row" v-if="!wasTimelapseUploaded && duration" :id="'dur-' + print.id">
+                <b-tooltip :target="'dur-' + print.id" triggers="hover">
+                  {{ duration | duration('asHours') | floor }}:{{
+                    duration | duration('minutes')
+                  }}:{{ duration | duration('seconds') }}
                 </b-tooltip>
                 <div class="text-muted col-4">
                   Duration
@@ -114,22 +117,22 @@
           </div>
         </div>
 
-        <div v-if="isPublic" class="bg-warning alert-banner text-center" :style="{opacity: normalizedP > 0.4 ? 1 : 0}">
+        <div
+          v-if="isPublic"
+          class="bg-warning alert-banner text-center"
+          :style="{ opacity: normalizedP > 0.4 ? 1 : 0 }"
+        >
           <!-- v-show="normalizedP > 0.4" -->
           <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
         </div>
 
         <div v-show="cardView == 'detective' || isPublic">
-          <gauge
-            v-if="print.prediction_json_url"
-            :normalizedP="normalizedP"
-          />
+          <gauge v-if="print.prediction_json_url" :normalizedP="normalizedP" />
           <div v-if="!isPublic" class="feedback-section">
             <div class="text-center py-2 px-3">
-              <div
-                class="lead"
-                :class="[print.alerted_at ? 'text-danger' : 'text-success', ]"
-              >{{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}</div>
+              <div class="lead" :class="[print.alerted_at ? 'text-danger' : 'text-success']">
+                {{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}
+              </div>
               <div class="py-2">
                 Did we get it right?
                 <b-button
@@ -158,7 +161,10 @@
                   >
                     F
                     <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
-                    <svg v-if="!focusedFeedbackCompleted" class="seg-control-icon ml-1 double-hours-icon">
+                    <svg
+                      v-if="!focusedFeedbackCompleted"
+                      class="seg-control-icon ml-1 double-hours-icon"
+                    >
                       <use href="#svg-hour-double" />
                     </svg>
                   </a>
@@ -167,22 +173,25 @@
             </div>
             <div class="text-muted py-2 px-3 help-text">
               <small v-if="focusedFeedbackEligible">
-                <span
-                  v-if="focusedFeedbackCompleted"
-                >Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.</span>
+                <span v-if="focusedFeedbackCompleted"
+                  >Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI
+                  Detection Hours. You can click the button again to change your feedback.</span
+                >
                 <span v-else>
-                  With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.
+                  With Focused Feedback, you can tell us exactly where we got it wrong. This is the
+                  most effective way to help us improve.
                   <a
                     href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
-                  >You will earn 2 AI Detection Hours once you finish the Focused Feedback</a>.
+                    >You will earn 2 AI Detection Hours once you finish the Focused Feedback</a
+                  >.
                 </span>
               </small>
 
               <small v-else>
                 Every time you give us feedback,
-                <a
-                  href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-                >you help us get better at detecting failures</a>.
+                <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                  >you help us get better at detecting failures</a
+                >.
               </small>
             </div>
           </div>
@@ -198,7 +207,7 @@ import moment from 'moment'
 import filter from 'lodash/filter'
 // import get from 'lodash/get'
 
-import {getNormalizedP} from '@src/lib/utils'
+import { getNormalizedP } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
 import Gauge from '@src/components/Gauge'
@@ -227,11 +236,11 @@ export default {
     print: Object,
     isPublic: {
       type: Boolean,
-      default: false
+      default: false,
     },
     selected: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
 
@@ -251,17 +260,11 @@ export default {
     },
 
     canShowDetectiveView() {
-      if (
-        this.print.prediction_json_url !== null &&
-        this.print.tagged_video_url !== null
-      ) {
+      if (this.print.prediction_json_url !== null && this.print.tagged_video_url !== null) {
         return true
       }
       // Time-lapses that was uploaded within the past 24 hours are presumably still be processed
-      if (
-        (this.print.uploaded_at &&
-          moment().diff(this.print.uploaded_at, 'hours') < 24)
-      ) {
+      if (this.print.uploaded_at && moment().diff(this.print.uploaded_at, 'hours') < 24) {
         return true
       }
       return false
@@ -272,18 +275,14 @@ export default {
     },
 
     videoUrl() {
-      return this.cardView == 'info'
-        ? this.print.video_url
-        : this.print.tagged_video_url
+      return this.cardView == 'info' ? this.print.video_url : this.print.tagged_video_url
     },
 
     thumbedUp() {
       if (!this.print.alert_overwrite) {
         return false
       }
-      return (
-        this.print.has_alerts ^ (this.print.alert_overwrite === 'NOT_FAILED')
-      )
+      return this.print.has_alerts ^ (this.print.alert_overwrite === 'NOT_FAILED')
     },
 
     thumbedDown() {
@@ -294,17 +293,13 @@ export default {
     },
 
     focusedFeedbackEligible() {
-      return (
-        this.print.printshotfeedback_set.length > 0 &&
-        this.print.alert_overwrite
-      )
+      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
     },
 
     focusedFeedbackCompleted() {
       return (
         this.print.printshotfeedback_set.length > 0 &&
-        filter(this.print.printshotfeedback_set, f => !f.answered_at).length ==
-          0
+        filter(this.print.printshotfeedback_set, (f) => !f.answered_at).length == 0
       )
     },
 
@@ -345,38 +340,33 @@ export default {
     },
 
     onThumbUpClick() {
-      this.inflightAlertOverwrite = this.print.has_alerts
-        ? 'FAILED'
-        : 'NOT_FAILED'
+      this.inflightAlertOverwrite = this.print.has_alerts ? 'FAILED' : 'NOT_FAILED'
       this.alertOverwrite(this.inflightAlertOverwrite)
     },
 
     onThumbDownClick() {
-      this.inflightAlertOverwrite = this.print.has_alerts
-        ? 'NOT_FAILED'
-        : 'FAILED'
+      this.inflightAlertOverwrite = this.print.has_alerts ? 'NOT_FAILED' : 'FAILED'
       this.alertOverwrite(this.inflightAlertOverwrite)
     },
 
     alertOverwrite(value) {
-      axios.patch(
-        urls.print(this.print.id),
-        {
+      axios
+        .patch(urls.print(this.print.id), {
           alert_overwrite: value,
         })
-        .then(response => {
+        .then((response) => {
           this.$emit('printDataChanged', response.data)
           this.inflightAlertOverwrite = null
         })
     },
 
     fetchPredictions() {
-      axios.get(this.print.prediction_json_url).then(response => {
+      axios.get(this.print.prediction_json_url).then((response) => {
         this.predictions = response.data
       })
     },
 
-    humanizedPrintedOrUploadedTime(longFormat=false) {
+    humanizedPrintedOrUploadedTime(longFormat = false) {
       if (!this.print.uploaded_at && !this.print.ended_at) {
         return '-'
       }
@@ -407,7 +397,7 @@ export default {
     if (!this.print.tagged_video_url) {
       this.selectedCardView = 'info'
     }
-  }
+  },
 }
 </script>
 
@@ -483,5 +473,4 @@ export default {
 
 i.fas
   width: 1em
-
 </style>

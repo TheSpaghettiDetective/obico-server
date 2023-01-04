@@ -28,7 +28,7 @@ export const toArrayBuffer = (maybeBin, onData) => {
       if (!e.srcElement) {
         return
       }
-      onData(e.srcElement.result);
+      onData(e.srcElement.result)
     })
     reader.readAsArrayBuffer(maybeBin)
   } else {

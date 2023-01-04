@@ -1,9 +1,14 @@
 <template>
   <layout :isPopup="isPopup">
-
     <!-- Tob bar -->
     <template v-slot:topBarLeft>
-      <a v-if="isPopup" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+      <a
+        v-if="isPopup"
+        @click.prevent="goBack"
+        href="#"
+        class="btn shadow-none icon-btn d-inline"
+        title="Go Back"
+      >
         <i class="fas fa-chevron-left"></i>
       </a>
     </template>
@@ -13,16 +18,18 @@
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item @click="renameFile">
-            <i class="fas fa-edit"></i>Rename
-          </b-dropdown-item>
+          <b-dropdown-item @click="renameFile"> <i class="fas fa-edit"></i>Rename </b-dropdown-item>
           <b-dropdown-item @click="deleteFile">
-            <span class="text-danger">
-              <i class="fas fa-trash-alt"></i>Delete
-            </span>
+            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
           </b-dropdown-item>
         </b-dropdown>
-        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline" title="Close">
+        <a
+          v-if="onClose"
+          @click.prevent="onClose"
+          href="#"
+          class="btn shadow-none icon-btn d-inline"
+          title="Close"
+        >
           <i class="fas fa-times text-danger"></i>
         </a>
       </div>
@@ -93,14 +100,23 @@
 
             <div class="mt-5" v-if="isCloud">
               <h2 class="section-title">Print history</h2>
-              <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
+              <div
+                class="print-history-card"
+                v-for="print in gcode.print_set"
+                :key="`print_${print.id}`"
+              >
                 <div class="print-info">
-
-                  <div class="result text-success font-weight-bold" v-if="print.finished_at">Succeeded</div>
-                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">Cancelled / Failed</div>
+                  <div class="result text-success font-weight-bold" v-if="print.finished_at">
+                    Succeeded
+                  </div>
+                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">
+                    Cancelled / Failed
+                  </div>
                   <div class="result font-weight-bold" v-else>Printing...</div>
 
-                  <div class="printer truncate-overflow-text">Printer: {{ print.printer.name }}</div>
+                  <div class="printer truncate-overflow-text">
+                    Printer: {{ print.printer.name }}
+                  </div>
                   <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
 
                   <div class="date">
@@ -110,7 +126,7 @@
                   </div>
                 </div>
                 <div class="poster" v-if="print.poster_url">
-                  <div class="img" :style="{backgroundImage: `url(${print.poster_url})`}"></div>
+                  <div class="img" :style="{ backgroundImage: `url(${print.poster_url})` }"></div>
                 </div>
               </div>
               <div v-if="!gcode.print_set.length">
@@ -134,11 +150,7 @@
           </b-col>
         </b-row>
       </b-container>
-      <rename-modal
-        :item="gcode"
-        @renamed="onItemRenamed"
-        ref="renameModal"
-      />
+      <rename-modal :item="gcode" @renamed="onItemRenamed" ref="renameModal" />
       <delete-confirmation-modal
         :item="gcode"
         @deleted="onItemDeleted"
@@ -158,7 +170,6 @@ import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationM
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
 import { listFiles } from '@src/components/g-codes/localFiles'
-
 
 export default {
   name: 'GCodeDetailsPage',
@@ -190,8 +201,8 @@ export default {
           fileId: null,
           printerId: null,
         }
-      }
-    }
+      },
+    },
   },
 
   data() {
@@ -229,7 +240,10 @@ export default {
 
       const decodedPath = decodeURIComponent(this.gcodeId)
       const filename = decodedPath.split('/').at(-1)
-      const path = filename === decodedPath ? '' : decodedPath.slice(0, decodedPath.length - filename.length - 1)
+      const path =
+        filename === decodedPath
+          ? ''
+          : decodedPath.slice(0, decodedPath.length - filename.length - 1)
 
       listFiles(this.printerComm, {
         query: filename,
@@ -237,7 +251,7 @@ export default {
         onRequestEnd: (result) => {
           this.loading = false
           if (result?.files?.length) {
-            const file = result.files.filter(f => f.path === decodedPath)[0]
+            const file = result.files.filter((f) => f.path === decodedPath)[0]
             if (!file) {
               this.gcodeNotFound = true
               return

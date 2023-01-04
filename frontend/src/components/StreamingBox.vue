@@ -5,8 +5,16 @@
       class="slow-link-wrapper"
       ref="slowLinkWrapper"
       @click="slowLinkClicked"
-      @mouseenter="fixSlowLinkTextWidth(); slowLinkShowing = true; slowLinkHiding = false;"
-      @mouseleave="fixSlowLinkTextWidth(); slowLinkShowing = false; slowLinkHiding = true;"
+      @mouseenter="
+        fixSlowLinkTextWidth()
+        slowLinkShowing = true
+        slowLinkHiding = false
+      "
+      @mouseleave="
+        fixSlowLinkTextWidth()
+        slowLinkShowing = false
+        slowLinkHiding = true
+      "
     >
       <div class="icon bg-warning">
         <i class="fas fa-exclamation"></i>
@@ -16,34 +24,48 @@
         class="text"
         :class="{
           'show-and-hide': !slowLinkShowing && !slowLinkHiding,
-          'showing': slowLinkShowing && !slowLinkHiding,
-          'hiding': !slowLinkShowing && slowLinkHiding}"
-      >Video frames dropped</div>
+          showing: slowLinkShowing && !slowLinkHiding,
+          hiding: !slowLinkShowing && slowLinkHiding,
+        }"
+      >
+        Video frames dropped
+      </div>
     </div>
     <div v-show="trackMuted" class="muted-status-wrapper">
       <div class="text">Buffering...</div>
       <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
     </div>
     <b-button
-      v-if="isVideoAvailable && !autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)" @click="onPlayBtnClicked"
+      v-if="
+        isVideoAvailable && !autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)
+      "
+      @click="onPlayBtnClicked"
       class="centered-element p-0"
       :disabled="isBasicStreamingFrozen"
     >
       <i class="fas fa-play ml-1" v-if="isBasicStreamingReadyToPlay"></i>
-      <span class="medium" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s</span>
+      <span class="medium" v-if="isBasicStreamingFrozen"
+        >{{ remainingSecondsUntilNextCycle }}s</span
+      >
     </b-button>
-    <b-spinner v-if="trackMuted || videoLoading" class="centered-element" label="Buffering..."></b-spinner>
+    <b-spinner
+      v-if="trackMuted || videoLoading"
+      class="centered-element"
+      label="Buffering..."
+    ></b-spinner>
 
     <div v-if="isVideoAvailable">
       <!-- show countdown and bitrate while streaming -->
       <div
         v-if="(!autoplay && isBasicStreamingInProgress) || currentBitrate"
         class="streaming-info overlay-info small"
-        :class="{'clickable': isBasicStreamingInProgress}"
+        :class="{ clickable: isBasicStreamingInProgress }"
         @click="onInfoClicked"
       >
-        <div v-if="isBasicStreamingInProgress" class="text-success">{{remainingSecondsCurrentVideoCycle}}</div>
-        <div v-if="currentBitrate">{{currentBitrate}}</div>
+        <div v-if="isBasicStreamingInProgress" class="text-success">
+          {{ remainingSecondsCurrentVideoCycle }}
+        </div>
+        <div v-if="currentBitrate">{{ currentBitrate }}</div>
       </div>
       <!-- show full-width info message -->
       <div
@@ -51,8 +73,12 @@
         class="streaming-guide overlay-info"
         @click="onInfoClicked"
       >
-        <div class="message" v-if="isBasicStreamingReadyToPlay">Webcam streams up to 5 FPS for Free</div>
-        <div class="message text-warning" v-if="isBasicStreamingFrozen">{{remainingSecondsUntilNextCycle}}s left in the cooldown period</div>
+        <div class="message" v-if="isBasicStreamingReadyToPlay">
+          Webcam streams up to 5 FPS for Free
+        </div>
+        <div class="message text-warning" v-if="isBasicStreamingFrozen">
+          {{ remainingSecondsUntilNextCycle }}s left in the cooldown period
+        </div>
         <a href="#" class="learn-more">Learn more...</a>
       </div>
     </div>
@@ -63,7 +89,7 @@
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
-            :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
+            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             :src="taggedSrc"
             :alt="printer.name + ' current image'"
           />
@@ -78,11 +104,13 @@
           <video
             ref="video"
             class="remote-video"
-            :class="{flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV}"
-            width=960
+            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
+            width="960"
             :height="webcamVideoHeight"
             :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
-            autoplay muted playsinline
+            autoplay
+            muted
+            playsinline
             @loadstart="onLoadStart()"
             @canplay="onCanPlay()"
           ></video>
@@ -97,11 +125,10 @@ import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
-import {toArrayBuffer} from '@src/lib/utils'
+import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing_throttle'
 
 function MJpegStreamDecoder(onFrame) {
-
   const self = {
     onFrame,
     contentLength: NaN,
@@ -112,27 +139,27 @@ function MJpegStreamDecoder(onFrame) {
 
   self.onMJpegChunk = function (maybeBin) {
     toArrayBuffer(maybeBin, (arrayBuffer) => {
-      const value = (new TextDecoder("utf-8")).decode(new Uint8Array(arrayBuffer))
+      const value = new TextDecoder('utf-8').decode(new Uint8Array(arrayBuffer))
       if (self.contentLength) {
-          self.imageBuffer += value;
-          self.bytesRead += value.length;
+        self.imageBuffer += value
+        self.bytesRead += value.length
 
-          if (self.bytesRead >= self.contentLength) {
-              const jpg = self.imageBuffer;
-              const jpgLength = self.originalJpgLength;
-              self.contentLength = NaN;
-              self.imageBuffer = '';
-              self.bytesRead = 0;
-              self.originalJpgLength = 0;
-              self.onFrame(jpg, jpgLength);
-          }
+        if (self.bytesRead >= self.contentLength) {
+          const jpg = self.imageBuffer
+          const jpgLength = self.originalJpgLength
+          self.contentLength = NaN
+          self.imageBuffer = ''
+          self.bytesRead = 0
+          self.originalJpgLength = 0
+          self.onFrame(jpg, jpgLength)
+        }
       } else {
-        if ( value.slice(0, 2) == '\r\n' && value.slice(value.length-2) == '\r\n' ) {
-        // if (isEqual(value.slice(0, 2), crlf) && isEqual(value.slice(value.byteLength-2), crlf) ) {
-        // const lengthHeaders = (new TextDecoder("utf-8")).decode( value.slice(2, value.byteLength - 2) ).split(':');
-          const lengthHeaders = value.slice(2, value.length - 2).split(':');
-          self.contentLength = parseInt(lengthHeaders[0]);
-          self.originalJpgLength = parseInt(lengthHeaders[1]);
+        if (value.slice(0, 2) == '\r\n' && value.slice(value.length - 2) == '\r\n') {
+          // if (isEqual(value.slice(0, 2), crlf) && isEqual(value.slice(value.byteLength-2), crlf) ) {
+          // const lengthHeaders = (new TextDecoder("utf-8")).decode( value.slice(2, value.byteLength - 2) ).split(':');
+          const lengthHeaders = value.slice(2, value.length - 2).split(':')
+          self.contentLength = parseInt(lengthHeaders[0])
+          self.originalJpgLength = parseInt(lengthHeaders[1])
         }
       }
     })
@@ -144,21 +171,20 @@ function MJpegStreamDecoder(onFrame) {
 export default {
   name: 'StreamingBox',
   created() {
-
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
       this.onCanPlay()
-      })
+    })
 
     if (this.webrtc) {
       this.webrtc.setCallbacks({
         onStreamAvailable: this.onStreamAvailable,
         onRemoteStream: this.onWebRTCRemoteStream,
-        onDefaultStreamCleanup: () => this.isVideoVisible = false,
+        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
         onSlowLink: this.onSlowLink,
-        onTrackMuted: () => this.trackMuted = true,
-        onTrackUnmuted: () => this.trackMuted = false,
-        onBitrateUpdated: (bitrate) => this.currentBitrate = bitrate.value,
+        onTrackMuted: () => (this.trackMuted = true),
+        onTrackUnmuted: () => (this.trackMuted = false),
+        onBitrateUpdated: (bitrate) => (this.currentBitrate = bitrate.value),
         onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
       })
 
@@ -183,7 +209,7 @@ export default {
   props: {
     printer: {
       type: Object,
-      required: true
+      required: true,
     },
     webrtc: {
       type: Object,
@@ -192,7 +218,7 @@ export default {
     autoplay: {
       type: Boolean,
       required: true,
-    }
+    },
   },
 
   data() {
@@ -225,32 +251,32 @@ export default {
     },
     webcamRotateClass() {
       switch (this.printer.settings.webcam_rotate90) {
-      case true:
-        return 'webcam_rotated'
-      case false:
-        return 'webcam_unrotated'
-      default:
-        return 'webcam_unrotated'
+        case true:
+          return 'webcam_rotated'
+        case false:
+          return 'webcam_unrotated'
+        default:
+          return 'webcam_unrotated'
       }
     },
     webcamRatioClass() {
       switch (this.printer.settings.ratio169) {
-      case true:
-        return 'ratio169'
-      case false:
-        return 'ratio43'
-      default:
-        return 'ratio43'
+        case true:
+          return 'ratio169'
+        case false:
+          return 'ratio43'
+        default:
+          return 'ratio43'
       }
     },
     webcamVideoHeight() {
       switch (this.printer.settings.ratio169) {
-      case true:
-        return 540
-      case false:
-        return 720
-      default:
-        return 720
+        case true:
+          return 540
+        case false:
+          return 720
+        default:
+          return 720
       }
     },
     taggedSrc() {
@@ -259,10 +285,17 @@ export default {
 
     // streaming timeline
     isBasicStreamingInProgress() {
-      return this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
+      return (
+        this.remainingSecondsCurrentVideoCycle > 0 && this.remainingSecondsCurrentVideoCycle < 30
+      )
     },
     isBasicStreamingReadyToPlay() {
-      return !this.isVideoVisible && !this.trackMuted && !this.videoLoading && (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
+      return (
+        !this.isVideoVisible &&
+        !this.trackMuted &&
+        !this.videoLoading &&
+        (this.remainingSecondsCurrentVideoCycle == 30 || this.remainingSecondsUntilNextCycle == 0)
+      )
     },
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
@@ -275,7 +308,6 @@ export default {
       if (!this.autoplay) {
         this.videoLimit.startOrResumeVideoCycle()
       }
-
     },
     onLoadStart() {
       this.videoLoading = true
@@ -287,7 +319,7 @@ export default {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
         }
-        if ((!this.autoplay && this.isBasicStreamingInProgress)) {
+        if (!this.autoplay && this.isBasicStreamingInProgress) {
           this.webrtc.startStream()
         }
         this.videoLimit.resumeVideoCycle()
@@ -394,9 +426,8 @@ export default {
         `,
         showCloseButton: true,
       })
-    }
+    },
     /** End of video warning handling */
-
   },
 }
 </script>
@@ -549,5 +580,4 @@ export default {
   position: absolute
   left: calc(50% - #{$size / 2})
   top: calc(50% - #{$size / 2})
-
 </style>

@@ -9,7 +9,7 @@ const defaultRoutes = {
 }
 
 const notificationRoutes = Object.keys(notificationPlugins).reduce((obj, name) => {
-  return Object.assign(obj, { [name]: `/user_preferences/notification_${name}/`})
+  return Object.assign(obj, { [name]: `/user_preferences/notification_${name}/` })
 }, {})
 
 export default {

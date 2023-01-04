@@ -1,7 +1,7 @@
 <template>
   <div
     class="item"
-    :class="{'disabled': isDisabled, 'move-modal': isMoveModal}"
+    :class="{ disabled: isDisabled, 'move-modal': isMoveModal }"
     @click="() => !isDisabled && $emit('click')"
   >
     <div class="item-info">
@@ -26,7 +26,9 @@
         <div v-if="!isFolder && isCloud" class="last-printed">
           <span v-if="!item.print_set">-</span>
           <span v-else-if="!item.print_set.length">No prints yet</span>
-          <span v-else-if="item.last_print">{{ item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...' }}</span>
+          <span v-else-if="item.last_print">{{
+            item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...'
+          }}</span>
           <div
             v-if="item.last_print_result"
             class="circle-indicator"
@@ -36,7 +38,9 @@
         <div v-if="isFolder && isCloud" class="d-none d-md-block"></div>
       </template>
     </div>
-    <div v-if="!isMoveModal && ((!isFolder && (isCloud || targetPrinter)) || (isFolder && isCloud))">
+    <div
+      v-if="!isMoveModal && ((!isFolder && (isCloud || targetPrinter)) || (isFolder && isCloud))"
+    >
       <b-dropdown right no-caret toggle-class="icon-btn py-0">
         <template #button-content>
           <i class="fas fa-ellipsis-v"></i>
@@ -53,9 +57,7 @@
           <i class="fas fa-arrows-alt"></i>Move
         </b-dropdown-item>
         <b-dropdown-item @click.stop="$emit('deleteItem', item)">
-          <span class="text-danger">
-            <i class="fas fa-trash-alt"></i>Delete
-          </span>
+          <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
         </b-dropdown-item>
       </b-dropdown>
     </div>
@@ -86,7 +88,7 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-    }
+    },
   },
 
   computed: {
@@ -95,8 +97,8 @@ export default {
     },
     isDisabled() {
       return (this.isMoveModal && !this.isFolder) || this.disabled
-    }
-  }
+    },
+  },
 }
 </script>
 

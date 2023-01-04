@@ -14,18 +14,24 @@
               @vdropzone-success="printUploadSuccess"
             >
               <div class="dz-message needsclick">
-                <i class="fas fa-upload fa-2x"></i> <br>
-                Drop files here or click to upload.<br>
+                <i class="fas fa-upload fa-2x"></i> <br />
+                Drop files here or click to upload.<br />
                 *.mp4 or *.mpg files only. Up to 100MB each.
               </div>
             </vue-dropzone>
             <div v-show="uploaded" class="pt-5">
               <div id="tl-uploaded">
-                <img class="detective-working" :src="require('@static/img/detective-working.gif')" />
+                <img
+                  class="detective-working"
+                  :src="require('@static/img/detective-working.gif')"
+                />
                 <div class="py-2 text-center">
-                  <div class="py-2">The Obico Server is running failure detection on the time-lapse video(s) you
-                    uploaded.</div>
-                  <div>We will send you email when it is done.</div><a href="/prints/">Check status now >>></a>
+                  <div class="py-2">
+                    The Obico Server is running failure detection on the time-lapse video(s) you
+                    uploaded.
+                  </div>
+                  <div>We will send you email when it is done.</div>
+                  <a href="/prints/">Check status now >>></a>
                 </div>
               </div>
             </div>
@@ -64,7 +70,7 @@ export default {
         timeout: 60 * 60 * 1000, // For large files
         acceptedFiles: 'video/mp4, video/mpeg',
         url: '?',
-        headers: {'X-CSRFToken': this.csrf},
+        headers: { 'X-CSRFToken': this.csrf },
       },
       uploaded: false,
     }
@@ -75,7 +81,7 @@ export default {
       console.log(file)
       this.uploaded = true
     },
-  }
+  },
 }
 </script>
 

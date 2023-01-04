@@ -5,7 +5,10 @@
     <!-- FIXME: reuse NotificationSettingSwitch -->
     <div v-if="theme === 'web'" class="row">
       <div class="col-12 col-form-label">
-        <saving-animation :errors="errorMessages.notification_enabled" :saving="saving.notification_enabled">
+        <saving-animation
+          :errors="errorMessages.notification_enabled"
+          :saving="saving.notification_enabled"
+        >
           <div class="custom-control custom-checkbox form-check-inline">
             <input
               type="checkbox"
@@ -13,7 +16,7 @@
               id="id_notification_enabled"
               v-model="user.notification_enabled"
               @change="$emit('updateSetting', 'notification_enabled')"
-            >
+            />
             <label class="custom-control-label" for="id_notification_enabled">
               Enable notifications
             </label>
@@ -22,12 +25,13 @@
       </div>
     </div>
     <div v-else>
-      <saving-animation :errors="errorMessages.notification_enabled" :saving="saving.notification_enabled">
+      <saving-animation
+        :errors="errorMessages.notification_enabled"
+        :saving="saving.notification_enabled"
+      >
         <div class="mobile-setting-item-wrapper">
           <div class="setting-item-text">
-            <label for="id_notification_enabled">
-              Enable notifications
-            </label>
+            <label for="id_notification_enabled"> Enable notifications </label>
           </div>
           <div class="setting-item-switch">
             <onoff-toggle

@@ -33,12 +33,12 @@ export default {
   },
 
   props: {
-    config: Object
+    config: Object,
   },
 
-  data: function() {
+  data: function () {
     return {
-      print: null
+      print: null,
     }
   },
 
@@ -48,7 +48,7 @@ export default {
 
   methods: {
     fetchData() {
-      axios.get(urls.print(this.config.printId)).then(response => {
+      axios.get(urls.print(this.config.printId)).then((response) => {
         this.print = normalizedPrint(response.data)
       })
     },
@@ -59,10 +59,9 @@ export default {
 
     printDataChanged() {
       this.fetchData()
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style lang="sass" scoped>
-</style>
+<style lang="sass" scoped></style>

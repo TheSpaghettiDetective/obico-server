@@ -1,5 +1,8 @@
 <template>
-  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': inMobileWebView, 'is-in-popup': isPopup}">
+  <div
+    class="page-wrapper"
+    :class="{ collapsed: collapsed, 'is-in-mobile': inMobileWebView, 'is-in-popup': isPopup }"
+  >
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
@@ -8,28 +11,28 @@
         </svg>
       </a>
       <ul class="list-unstyled m-0">
-        <li v-if="isEnt && !user.is_pro" :class="{'active': path === '/ent_pub/pricing/'}">
+        <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">
           <a href="/ent_pub/pricing/" class="primary">
             <i class="fas fa-star"></i>
             Upgrade to Pro
           </a>
         </li>
-        <li v-if="user" :class="{'active': path === '/printers/'}">
+        <li v-if="user" :class="{ active: path === '/printers/' }">
           <a href="/printers/">
             <svg width="1.4em" height="1.4em" style="margin-bottom: 5px">
               <use href="#svg-3d-printer" />
             </svg>
-            <br>
+            <br />
             Printers
           </a>
         </li>
-        <li v-if="user" :class="{'active': path === '/prints/'}">
+        <li v-if="user" :class="{ active: path === '/prints/' }">
           <a href="/prints/">
             <i class="fas fa-video"></i>
             Time-Lapses
           </a>
         </li>
-        <li v-if="user" :class="{'active': path.includes('/g_code_')}">
+        <li v-if="user" :class="{ active: path.includes('/g_code_') }">
           <a href="/g_code_folders/cloud/">
             <i class="fas fa-file-code"></i>
             G-Codes
@@ -38,7 +41,7 @@
       </ul>
       <div class="side-nav-footer">
         <ul class="list-unstyled m-0">
-          <li v-if="isEnt" :class="{'active': path === '/ent_pub/pricing/'}">
+          <li v-if="isEnt" :class="{ active: path === '/ent_pub/pricing/' }">
             <a href="/ent_pub/pricing/">
               <i class="fas fa-dollar-sign"></i>
               Pricing
@@ -57,17 +60,19 @@
             </a>
           </li>
           <li>
-            <hr class="my-0 mx-2">
+            <hr class="my-0 mx-2" />
           </li>
-          <li v-if="user" :class="{'active': path === '/printer_events/'}">
+          <li v-if="user" :class="{ active: path === '/printer_events/' }">
             <a href="/printer_events/">
               <i class="fas fa-bell position-relative">
-                <span v-if="hasUnseenPrinterEvents" class='badge'>{{ unseenPrinterEventsDisplay }}</span>
+                <span v-if="hasUnseenPrinterEvents" class="badge">{{
+                  unseenPrinterEventsDisplay
+                }}</span>
               </i>
               <span class="trim-text">Notifications</span>
             </a>
           </li>
-          <li v-if="user" :class="{'active': path === '/user_preferences/'}">
+          <li v-if="user" :class="{ active: path === '/user_preferences/' }">
             <a href="/user_preferences/">
               <i class="fas fa-cog"></i>
               <span class="trim-text">Preferences</span>
@@ -80,13 +85,17 @@
     <div
       class="content-wrapper"
       :class="{
-        'hide-top-nav': !$slots.topBarLeft && !$slots.topBarRight
+        'hide-top-nav': !$slots.topBarLeft && !$slots.topBarRight,
       }"
     >
       <!-- Top-bar -->
       <b-navbar class="top-nav">
         <div class="d-flex align-items-center">
-          <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 position-relative toggle-sidebar">
+          <b-button
+            @click="collapsed = !collapsed"
+            variant="_"
+            class="shadow-none p-0 mr-3 position-relative toggle-sidebar"
+          >
             <i class="fas fa-bars position-relative">
               <div v-if="hasUnseenPrinterEvents" class="notification-dot">
                 <svg width="8px" height="8px">
@@ -127,7 +136,7 @@ export default {
     isPopup: {
       type: Boolean,
       default: false,
-    }
+    },
   },
 
   data() {
@@ -155,7 +164,7 @@ export default {
   },
 
   created() {
-    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = settings()
+    const { ACCOUNT_ALLOW_SIGN_UP, IS_ENT } = settings()
     this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
     this.isEnt = !!IS_ENT
     this.user = user()

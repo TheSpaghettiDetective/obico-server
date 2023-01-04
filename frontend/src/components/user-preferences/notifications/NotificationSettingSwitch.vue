@@ -1,6 +1,6 @@
 <template>
   <div v-if="theme === 'web'" class="row">
-    <div class="col-12 col-form-label" :class="{'pl-5': isSubcategory}">
+    <div class="col-12 col-form-label" :class="{ 'pl-5': isSubcategory }">
       <saving-animation
         :errors="errorMessages ? errorMessages[settingKey(settingId)] : []"
         :saving="saving ? saving[settingKey(settingId)] : false"
@@ -13,17 +13,18 @@
             :disabled="disabled"
             v-model="notificationChannel.channelInfo[settingId]"
             @change="$emit('updateNotificationChannel', notificationChannel, [settingId])"
-          >
+          />
           <label :class="['custom-control-label', labelClass]" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
-            <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
+            <span v-if="settingDescription" class="text-muted setting-description"
+              ><br />{{ settingDescription }}</span
+            >
           </label>
-
         </div>
       </saving-animation>
     </div>
     <div v-if="bottomDivider" class="col-12">
-      <hr class="my-1">
+      <hr class="my-1" />
     </div>
   </div>
   <div v-else>
@@ -31,11 +32,13 @@
       :errors="errorMessages ? errorMessages[settingKey(settingId)] : []"
       :saving="saving ? saving[settingKey(settingId)] : false"
     >
-      <div class="mobile-setting-item-wrapper" :class="{'is-subcategory': isSubcategory}">
+      <div class="mobile-setting-item-wrapper" :class="{ 'is-subcategory': isSubcategory }">
         <div class="setting-item-text">
           <label :class="labelClass" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
-            <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
+            <span v-if="settingDescription" class="text-muted setting-description"
+              ><br />{{ settingDescription }}</span
+            >
           </label>
         </div>
         <div class="setting-item-switch">
@@ -123,13 +126,13 @@ export default {
     },
     labelClass() {
       return this.isHeader ? 'lg' : ''
-    }
+    },
   },
 
   methods: {
     settingKey(settingId) {
       return getNotificationSettingKey(this.notificationChannel, settingId)
-    }
+    },
   },
 }
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div class="gcodes-wrapper" :class="{'is-move-modal': isMoveModal}">
+  <div class="gcodes-wrapper" :class="{ 'is-move-modal': isMoveModal }">
     <div
       v-if="!isMoveModal"
       class="header-panel"
-      :class="{'without-action-buttons': !isCloud && !targetPrinter}"
+      :class="{ 'without-action-buttons': !isCloud && !targetPrinter }"
     >
       <div class="text">Name</div>
       <div class="text">Size</div>
@@ -15,7 +15,9 @@
       <div>
         <file-structure-item
           v-for="(item, key) in [...folders, ...files]"
-          v-show="(isFolder(item) && !searchStateIsActive) || (!isFolder(item) && !searchInProgress)"
+          v-show="
+            (isFolder(item) && !searchStateIsActive) || (!isFolder(item) && !searchInProgress)
+          "
           :key="`${isFolder(item) ? 'folder' : 'file'}_${key}`"
           :item="item"
           :isCloud="isCloud"
@@ -132,14 +134,16 @@ export default {
 
   computed: {
     isFolderEmpty() {
-      return !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
+      return (
+        !this.searchStateIsActive && !this.loading && !this.files.length && !this.folders.length
+      )
     },
   },
 
   methods: {
     isFolder(item) {
       return !item.filename
-    }
+    },
   },
 }
 </script>

@@ -30,41 +30,44 @@ export default {
   methods: {
     show() {
       this.isOpen = true
-      this.$bvModal.msgBoxConfirm('Are you sure?', {
-        id: 'b-modal-confirm-delete',
-        centered: true,
-        okTitle: 'Delete',
-        okVariant: 'danger',
-        size: 'sm',
-        autoFocusButton: 'ok',
-      }).
-      then(async value => {
-        this.isOpen = false
-        if (!value) return
+      this.$bvModal
+        .msgBoxConfirm('Are you sure?', {
+          id: 'b-modal-confirm-delete',
+          centered: true,
+          okTitle: 'Delete',
+          okVariant: 'danger',
+          size: 'sm',
+          autoFocusButton: 'ok',
+        })
+        .then(async (value) => {
+          this.isOpen = false
+          if (!value) return
 
-        try {
-          const url = this.item.filename ? urls.gcodeFile(this.item.id) : urls.gcodeFolder(this.item.id)
-          await axios.delete(url)
-        } catch (e) {
-          console.log(e)
-          return
-        }
+          try {
+            const url = this.item.filename
+              ? urls.gcodeFile(this.item.id)
+              : urls.gcodeFolder(this.item.id)
+            await axios.delete(url)
+          } catch (e) {
+            console.log(e)
+            return
+          }
 
-        this.$emit('deleted')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+          this.$emit('deleted')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
   },
 }
 </script>
 
 <style lang="sass">
-  #b-modal-confirm-delete
-    .modal-body
-      font-size: 1.125rem
-      text-align: center
-    .modal-footer
-      justify-content: center
+#b-modal-confirm-delete
+  .modal-body
+    font-size: 1.125rem
+    text-align: center
+  .modal-footer
+    justify-content: center
 </style>

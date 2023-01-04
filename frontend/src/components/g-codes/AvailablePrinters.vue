@@ -8,7 +8,7 @@
         class="printer-item"
         v-for="printer in printers"
         :key="`printer_${printer.id}`"
-        :class="{active: selectedPrinter && printer.id === selectedPrinter.id}"
+        :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
@@ -17,17 +17,27 @@
           class="printer-status"
           :class="{
             'text-success': printer.printAvailability.key === 'ready',
-            'text-warning': printer.printAvailability.key === 'unavailable'
+            'text-warning': printer.printAvailability.key === 'unavailable',
           }"
-        >{{ printer.printAvailability.text }}</div>
+        >
+          {{ printer.printAvailability.text }}
+        </div>
       </div>
 
-      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">No available printers</p>
+      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">
+        No available printers
+      </p>
 
-      <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
+      <button
+        class="btn btn-primary mt-3"
+        :disabled="!selectedPrinter || isSending"
+        @click="onPrintClicked"
+      >
         <b-spinner small v-if="isSending" />
         <div v-else>
-          <div class="truncate-overflow-text" v-if="selectedPrinter">Print on {{ selectedPrinter.name }}</div>
+          <div class="truncate-overflow-text" v-if="selectedPrinter">
+            Print on {{ selectedPrinter.name }}
+          </div>
           <div class="truncate-overflow-text" v-else>Print</div>
         </div>
       </button>
@@ -71,7 +81,7 @@ export default {
     isCloud: {
       type: Boolean,
       default: true,
-    }
+    },
   },
 
   data() {
@@ -105,18 +115,18 @@ export default {
       }
 
       printers = printers?.data
-      printers = printers.map(p => normalizedPrinter(p))
-      printers = printers.map(p => ({...p, printAvailability: getPrinterPrintAvailability(p)}))
+      printers = printers.map((p) => normalizedPrinter(p))
+      printers = printers.map((p) => ({ ...p, printAvailability: getPrinterPrintAvailability(p) }))
 
       if (this.targetPrinterId) {
-        const selectedPrinter = printers.find(p => p.id === this.targetPrinterId)
+        const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
         if (selectedPrinter.printAvailability.key === 'ready') {
           this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.filter(p => p.printAvailability.key === 'ready')[0]
+        this.selectedPrinter = printers.filter((p) => p.printAvailability.key === 'ready')[0]
       }
 
       this.printersLoading = false
@@ -129,7 +139,7 @@ export default {
             <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
             <li>Printer is not connected to ${printer.agentDisplayName()}</li>
             <li>Printer is currently busy</li>
-          </ul>`
+          </ul>`,
         })
         return
       }
@@ -157,7 +167,7 @@ export default {
 
           this.isSending = false
           this.fetchPrinters()
-        }
+        },
       })
     },
     showRedirectModal() {
@@ -166,7 +176,9 @@ export default {
         html: `
           <div class="text-center">
             <h5 class="py-3">
-              You'll be redirected to printers page in <strong>${Math.round(REDIRECT_TIMER / 1000)}</strong> seconds
+              You'll be redirected to printers page in <strong>${Math.round(
+                REDIRECT_TIMER / 1000
+              )}</strong> seconds
             </h5>
           </div>
         `,
@@ -179,16 +191,16 @@ export default {
           const $ = content.querySelector.bind(content)
 
           timerInterval = setInterval(() => {
-            this.$swal.getHtmlContainer().querySelector('strong')
-              .textContent = (this.$swal.getTimerLeft() / 1000)
-                .toFixed(0)
+            this.$swal.getHtmlContainer().querySelector('strong').textContent = (
+              this.$swal.getTimerLeft() / 1000
+            ).toFixed(0)
           }, 1000)
         },
         onClose: () => {
           clearInterval(timerInterval)
           timerInterval = null
-        }
-      }).then(result => {
+        },
+      }).then((result) => {
         if (result.isConfirmed || result.dismiss === 'timer') {
           window.location.assign('/printers/')
         } else {

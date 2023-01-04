@@ -44,10 +44,17 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
+    "@vue/compiler-dom": "^3.2.45",
+    "@vue/runtime-dom": "latest",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-tracker": "^0.4.3"
+    "webpack-bundle-tracker": "^0.4.3",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.8.0",
+    "prettier": "2.8.1"
   },
   "browserslist": [
     "> 1%",

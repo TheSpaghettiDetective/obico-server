@@ -1,0 +1,9 @@
+// Volar VSCode extension needs this because we use Vue 2 and don't use TypeScript
+{
+  "compilerOptions": {
+    "allowJs": true
+  },
+  "vueCompilerOptions": {
+    "target": 2
+  }
+}

@@ -273,15 +273,37 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
             return GCodeFolderDeSerializer
 
     def get_queryset(self):
-        qs = GCodeFolder.objects.filter(user=self.request.user,)
-        if 'parent_folder' in self.request.GET:
-            parent_folder = self.request.GET.get('parent_folder')
+        return GCodeFolder.objects.filter(user=self.request.user,)
+
+    def list(self, request):
+        qs = self.get_queryset().select_related(
+            'parent_folder')
+
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+        elif sorting == 'name_asc':
+            qs = qs.order_by('name')
+        elif sorting == 'name_desc':
+            qs = qs.order_by('-name')
+
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
             if parent_folder == 'null':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
-        return qs
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
 
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
@@ -297,23 +319,47 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             return GCodeFileDeSerializer
 
     def get_queryset(self):
-        qs = GCodeFile.objects.filter(
-            user=self.request.user,
-            resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
-            ).order_by('-created_at')
+        return GCodeFile.objects.filter(user=self.request.user)
 
-        q = self.request.GET.get('q')
+    def list(self, request):
+        qs = self.get_queryset().select_related(
+            'parent_folder').prefetch_related(
+            'print_set__printer').filter(
+                resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
+            )
+
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+        elif sorting == 'num_bytes_asc':
+            qs = qs.order_by('num_bytes')
+        elif sorting == 'num_bytes_desc':
+            qs = qs.order_by('-num_bytes')
+        elif sorting == 'filename_asc':
+            qs = qs.order_by('filename')
+        elif sorting == 'filename_desc':
+            qs = qs.order_by('-filename')
+
+        q = request.GET.get('q')
         if q:
             qs = qs.filter(safe_filename__icontains=q)
 
-        if 'parent_folder' in self.request.GET:
-            parent_folder = self.request.GET.get('parent_folder')
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
             if parent_folder == 'null':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
 
-        return qs
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -324,11 +370,13 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         if 'file' in request.FILES:
             file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
-            if request.FILES['file'].size > file_size_limit:
+            num_bytes=request.FILES['file'].size
+            if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
             _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
             gcode_file.url = ext_url
+            gcode_file.num_bytes = num_bytes
             gcode_file.save()
 
         return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)

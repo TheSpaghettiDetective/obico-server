@@ -1,0 +1,20 @@
+diff --git a/node_modules/vue-mugen-scroll/dist/vue-mugen-scroll.common.js b/node_modules/vue-mugen-scroll/dist/vue-mugen-scroll.common.js
+index aa1f001..849660e 100644
+--- a/node_modules/vue-mugen-scroll/dist/vue-mugen-scroll.common.js
++++ b/node_modules/vue-mugen-scroll/dist/vue-mugen-scroll.common.js
+@@ -57,14 +57,7 @@ var MugenScroll = {
+       }
+ 
+       if (this.scrollContainer) {
+-        var parent = this;
+-        while ((parent = parent.$parent) && !this._scrollContainer) {
+-          this$1._scrollContainer = parent.$refs[this$1.scrollContainer];
+-        }
+-        // Ensure it's html element (ref could be component)
+-        if (this._scrollContainer && this._scrollContainer.$el) {
+-          this._scrollContainer = this._scrollContainer.$el;
+-        }
++        this._scrollContainer = document.getElementById(this.scrollContainer);
+       }
+ 
+       this._scrollContainer = this._scrollContainer || window;

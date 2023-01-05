@@ -54,6 +54,7 @@
             :printer="printer"
             :is-pro-account="user.is_pro"
             @PrinterUpdated="onPrinterUpdated"
+            @printModalOpened="() => targetPrinter = printer"
             class="printer-card-wrapper"
           ></printer-card>
         </b-row>
@@ -85,6 +86,40 @@
           </b-col>
         </b-row>
       </b-container>
+      <b-modal size="lg" id="b-modal-gcodes" @hidden="resetGcodesModal">
+        <g-code-file-page
+          v-if="selectedGcodeId"
+          :isPopup="true"
+          :targetPrinterId="targetPrinter.id"
+          :routeParams="{
+            fileId: selectedGcodeId,
+            printerId: selectedPrinterId
+          }"
+          :onClose="() => $bvModal.hide('b-modal-gcodes')"
+          @goBack="() => {
+            selectedGcodeId = null
+            scrollToTop()
+          }"
+        />
+        <g-code-folders-page
+          v-else
+          :isPopup="true"
+          :targetPrinter="targetPrinter"
+          :routeParams="{
+            printerId: selectedPrinterId,
+            parentFolder: null
+          }"
+          :onClose="() => $bvModal.hide('b-modal-gcodes')"
+          :savedPath="savedPath"
+          @openFile="(fileId, printerId, path) => {
+            selectedGcodeId = fileId
+            selectedPrinterId = printerId
+            savedPath = path
+            scrollToTop()
+          }"
+          scrollContainerId="b-modal-gcodes"
+        />
+      </b-modal>
     </template>
   </layout>
 </template>
@@ -102,6 +137,8 @@ import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import { user, settings } from '@src/lib/page_context'
+import GCodeFoldersPage from '@src/views/gcodes/GCodeFoldersPage.vue'
+import GCodeFilePage from '@src/views/gcodes/GCodeFilePage.vue'
 
 const SortIconClass = {
   asc: 'fas fa-long-arrow-alt-up',
@@ -119,6 +156,8 @@ export default {
     PrinterCard,
     Layout,
     CascadedDropdown,
+    GCodeFoldersPage,
+    GCodeFilePage,
   },
   created() {
     const {IS_ENT} = settings()
@@ -161,6 +200,12 @@ export default {
       },
       dontShowFilterWarning: false,
       archivedPrinterNum: 0,
+
+      // gcodes browse modal
+      selectedGcodeId: null,
+      selectedPrinterId: null,
+      targetPrinter: null,
+      savedPath: [null],
     }
   },
   computed: {
@@ -222,7 +267,6 @@ export default {
       const prefName = menu === 'Sort By' ? LocalPrefNames.SortFilter : LocalPrefNames.StateFilter
       setLocalPref(prefName, val)
     },
-
     fetchPrinters() {
       this.loading = true
       return axios
@@ -252,7 +296,6 @@ export default {
     insertPrinter(printer) {
       this.printers.push(printer)
     },
-
     onPrinterUpdated(printer) {
       let index = this.printers.findIndex(p => p.id == printer.id)
       if (index < 0) {
@@ -261,6 +304,13 @@ export default {
       }
 
       this.$set(this.printers, index, printer)
+    },
+    scrollToTop() {
+      document.querySelector('#b-modal-gcodes').scrollTo(0,0)
+    },
+    resetGcodesModal() {
+      this.selectedGcodeId = null
+      this.targetPrinter = null
     },
   },
 }
@@ -314,4 +364,14 @@ export default {
 ::v-deep .dropdown-item .clickable-area
   margin: -0.25rem -1.5rem
   padding: 0.25rem 1.5rem
+</style>
+
+<style lang="sass">
+  #b-modal-gcodes
+    .modal-header
+      display: none
+    .modal-body
+      padding: 0
+    .modal-footer
+      display: none
 </style>

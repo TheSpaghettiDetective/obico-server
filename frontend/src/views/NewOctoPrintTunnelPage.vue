@@ -43,7 +43,7 @@
         </div>
         <div v-else>
           <div class="text-center">
-            <svg width="100" height="30">
+            <svg width="100" height="40">
               <use href="#svg-logo-full" />
             </svg>
           </div>

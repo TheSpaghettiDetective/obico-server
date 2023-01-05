@@ -182,15 +182,41 @@ LOGGING = {
         'console': {
             'format': '%(name)-12s %(levelname)-8s %(message)s'
         },
+        'console_debug': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s%(name)-12s %(levelname)-8s %(message)s',
+            'log_colors': {
+                'DEBUG':    'bold_black',
+                'INFO':     'white',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            },
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
     },
     'handlers': {
+        'console_debug': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'console_debug'
+        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'console'
         },
     },
     'loggers': {
-        '': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console_debug'],
+        },
+        'root': {
             'level': 'INFO',
             'handlers': ['console']
         }

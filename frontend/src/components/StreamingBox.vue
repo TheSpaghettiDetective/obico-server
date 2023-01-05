@@ -59,7 +59,7 @@
 
     <div :class="webcamRotateClass">
       <div class="webcam_fixed_ratio" :class="webcamRatioClass">
-        <div class="webcam_fixed_ratio_inner full" >
+        <div class="webcam_fixed_ratio_inner full">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
@@ -71,7 +71,7 @@
             <use :href="printerStockImgSrc" />
           </svg>
         </div>
-        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner full" >
+        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop full">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
         <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop full">

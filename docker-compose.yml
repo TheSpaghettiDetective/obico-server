@@ -4,7 +4,7 @@ x-web-defaults: &web-defaults
   restart: unless-stopped
   build:
     context: backend
-    dockerfile: "Dockerfile${DOCKERFILE_VERSION-}"
+    dockerfile: 'Dockerfile'
   volumes:
     - ./backend:/app
     - ./frontend:/frontend

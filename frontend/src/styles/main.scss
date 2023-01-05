@@ -26,6 +26,7 @@
   --color-overlay: #000000CC;
   --color-hover: #FFFFFF13;
   --color-divider: #6A7B8A;
+  --color-divider-muted: #6A7B8A66;
   --color-text-primary: #EBEBEB;
   --color-text-secondary: #AAACB0;
   --color-text-help: #4C9BE8;
@@ -37,6 +38,7 @@
   --url-loader: url(/static/img/loader/loader_dark-scheme.svg);
   --shadow-top-nav: 0px 2px 10px rgb(0 0 0 / 0.3);
   --border-radius-lg: 16px;
+  --border-radius-md: 10px;
   --border-radius-sm: 6px;
 }
 
@@ -118,7 +120,7 @@ button, .btn {
   display: none;
 }
 
-footer {
+#global-footer {
   padding: 23px 0;
   text-align: center;
   color: var(--color-text-primary);
@@ -214,6 +216,7 @@ hr {
 
 .alert {
   margin-bottom: 0;
+  border-radius: var(--border-radius-sm);
 }
 
 a.link {
@@ -340,10 +343,12 @@ a.link {
 .swal2-popup {
   background-color: var(--color-surface-secondary) !important;
   border-radius: var(--border-radius-lg);
+  overflow: hidden;
 
   .swal2-title, .swal2-content, #swal2-content {
     color: var(--color-text-primary) !important;
     text-align: left !important;
+    font-weight: normal;
   }
 
   &.swal2-modal {
@@ -389,6 +394,10 @@ a.link {
 
   }
 }
+}
+
+.swal2-container.error-alert #swal2-content {
+  text-align: center !important;
 }
 
 .swal2-container {
@@ -864,4 +873,28 @@ a.text-warning {
 .vue-form-wizard .wizard-nav-pills>li.active>a:focus .wizard-icon,
 .vue-form-wizard .wizard-nav-pills>li.active>a:hover .wizard-icon {
   color: var(--color-on-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+
+
+.card-container {
+  background: var(--color-surface-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5em;
+}
+
+.btn {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+div[id^="b-modal-"] {
+  .modal-content {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
 }

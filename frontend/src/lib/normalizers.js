@@ -23,7 +23,56 @@ export const normalizedGcode = gcode => {
   gcode.updated_at = toMomentOrNull(gcode.updated_at)
   gcode.deleted = toMomentOrNull(gcode.deleted)
   gcode.filesize = filesize(gcode.num_bytes)
+
+  for (const i in gcode.print_set) {
+    gcode.print_set[i].started_at = toMomentOrNull(gcode.print_set[i].started_at)
+    gcode.print_set[i].finished_at = toMomentOrNull(gcode.print_set[i].finished_at)
+    gcode.print_set[i].cancelled_at = toMomentOrNull(gcode.print_set[i].cancelled_at)
+    gcode.print_set[i].ended_at = toMomentOrNull(gcode.print_set[i].ended_at)
+  }
+
+  gcode.print_set.sort((a, b) => {
+    if (!a.ended_at && !b.ended_at) { // both in progress, sort by started_at
+      if (a.started_at > b.started_at) {
+        return -1
+      } else if (a.started_at < b.started_at) {
+        return 1
+      } else {
+        return 0
+      }
+    } else if (!a.ended_at) {
+      return -1
+    } else if (!b.ended_at) {
+      return 1
+    } else {
+      if (a.ended_at > b.ended_at) {
+        return -1
+      } else if (a.ended_at < b.ended_at) {
+        return 1
+      } else {
+        return 0
+      }
+    }
+  })
+
+  gcode.last_print = gcode.print_set[0]
+  if (gcode.last_print?.cancelled_at) {
+    gcode.last_print_result = 'cancelled'
+  } else if (gcode.last_print?.finished_at) {
+    gcode.last_print_result = 'finished'
+  }
+
+  gcode.failedPrints = gcode.print_set.filter(p => p.cancelled_at).length
+  gcode.successPrints = gcode.print_set.filter(p => p.finished_at).length
+  gcode.totalPrints = gcode.print_set.length
   return gcode
+}
+
+export const normalizedGcodeFolder = folder => {
+  folder.created_at = toMomentOrNull(folder.created_at)
+  folder.updated_at = toMomentOrNull(folder.updated_at)
+  folder.numItems = folder.g_code_file_count + folder.g_code_folder_count
+  return folder
 }
 
 export const normalizedPrinter = (newData, oldData) => {

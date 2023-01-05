@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': inMobileWebView}">
+  <div class="page-wrapper" :class="{'collapsed': collapsed, 'is-in-mobile': inMobileWebView, 'is-in-popup': isPopup}">
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
@@ -29,8 +29,8 @@
             Time-Lapses
           </a>
         </li>
-        <li v-if="user" :class="{'active': path === '/g_code_files/'}">
-          <a href="/g_code_files/">
+        <li v-if="user" :class="{'active': path.includes('/g_code_')}">
+          <a href="/g_code_folders/cloud/">
             <i class="fas fa-file-code"></i>
             G-Codes
           </a>
@@ -85,7 +85,7 @@
     >
       <!-- Top-bar -->
       <b-navbar class="top-nav">
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
           <b-button @click="collapsed = !collapsed" variant="_" class="shadow-none p-0 mr-3 position-relative toggle-sidebar">
             <i class="fas fa-bars position-relative">
               <div v-if="hasUnseenPrinterEvents" class="notification-dot">
@@ -121,6 +121,13 @@ export default {
     ...Object.keys(layoutSections).reduce((obj, name) => {
       return Object.assign(obj, { [name]: layoutSections[name].importComponent })
     }, {}),
+  },
+
+  props: {
+    isPopup: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   data() {
@@ -181,6 +188,7 @@ export default {
 .page-wrapper
   display: flex
   padding-left: 100px
+  background-color: var(--color-background)
   &.is-in-mobile
     padding-left: 0
     .side-nav
@@ -193,6 +201,20 @@ export default {
         display: none
       .page-content
         padding: 15px 0
+
+  &.is-in-popup
+    padding-left: 0
+    .side-nav
+      display: none
+    .toggle-sidebar
+      display: none
+
+    .top-nav
+      position: relative
+      padding: 0 15px
+    .page-content
+      padding: 15px 0
+      min-height: unset
 
 .side-nav
   min-width: 100px

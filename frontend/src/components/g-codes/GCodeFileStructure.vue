@@ -22,7 +22,7 @@
           :targetPrinter="targetPrinter"
           :isMoveModal="isMoveModal"
           :disabled="disabledItem && disabledItem.id === item.id"
-          @click="$emit('openFolder', item)"
+          @click="isFolder(item) ? $emit('openFolder', item) : $emit('openFile', item)"
           @renameItem="$emit('renameItem', item)"
           @moveItem="$emit('moveItem', item)"
           @deleteItem="$emit('deleteItem', item)"

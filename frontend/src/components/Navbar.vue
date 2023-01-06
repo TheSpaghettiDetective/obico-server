@@ -21,7 +21,7 @@
           </template>
         </b-navbar-toggle>
 
-        <b-collapse id="navbar-toggle-collapse" is-nav v-model="showMainMenu">
+        <b-collapse id="navbar-toggle-collapse" v-model="showMainMenu" is-nav>
           <b-navbar-nav>
             <b-nav-item
               v-if="user"
@@ -86,9 +86,18 @@ import { Themes } from '@static/js/color-scheme'
 import { currentThemeValue } from '@src/lib/color-scheme-controller'
 
 export default {
-  name: 'Navbar',
+  name: 'NavBar',
 
   components: {},
+
+  props: {
+    viewName: {
+      default() {
+        return ''
+      },
+      type: String,
+    },
+  },
 
   data() {
     return {
@@ -100,22 +109,6 @@ export default {
     }
   },
 
-  props: {
-    viewName: {
-      default() {
-        return ''
-      },
-      type: String,
-    },
-  },
-
-  created() {
-    const { ACCOUNT_ALLOW_SIGN_UP, IS_ENT } = settings()
-    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
-    this.isEnt = !!IS_ENT
-    this.user = user()
-  },
-
   computed: {
     inMobileWebView() {
       return inMobileWebView()
@@ -124,6 +117,13 @@ export default {
     theme() {
       return currentThemeValue()
     },
+  },
+
+  created() {
+    const { ACCOUNT_ALLOW_SIGN_UP, IS_ENT } = settings()
+    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
+    this.isEnt = !!IS_ENT
+    this.user = user()
   },
 
   methods: {

@@ -14,12 +14,9 @@ import { Themes } from '@static/js/color-scheme'
 import { currentThemeValue } from '@src/lib/color-scheme-controller'
 
 export default {
-  name: 'Gauge',
+  name: 'FailureDetectionGauge',
   components: {
     RadialGauge,
-  },
-  data: () => {
-    return {}
   },
   props: {
     normalizedP: {
@@ -36,6 +33,9 @@ export default {
       type: Object,
       default: null,
     },
+  },
+  data: () => {
+    return {}
   },
 
   computed: {

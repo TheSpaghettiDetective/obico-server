@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
@@ -11,7 +11,7 @@
               </h5>
               <loading :active="print === null" :is-full-page="true"></loading>
               <div v-if="print !== null">
-                <consent
+                <focused-feedback-consent
                   v-if="!print.access_consented_at"
                   :print="print"
                   @continue-btn-pressed="consentBtnPressed"
@@ -19,10 +19,10 @@
                 <div v-else>
                   <div>
                     <vue-slick-carousel
+                      ref="carousel"
                       :arrows="true"
                       :dots="true"
                       @afterChange="onNextShot"
-                      ref="carousel"
                     >
                       <print-shot-card
                         v-for="(shot, i) in shots"
@@ -46,7 +46,7 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -61,21 +61,20 @@ import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-
-import Consent from '@src/components/print-shot-feedback/Consent'
 import PrintShotCard from '@src/components/print-shot-feedback/PrintShotCard'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout'
+import FocusedFeedbackConsent from '../components/print-shot-feedback/FocusedFeedbackConsent.vue'
 
 export default {
   name: 'PrintShotFeedbackApp',
   components: {
-    Consent,
+    FocusedFeedbackConsent,
     Loading,
     PrintShotCard,
     VueSlickCarousel,
-    Layout,
+    PageLayout,
   },
   props: {
     config: {

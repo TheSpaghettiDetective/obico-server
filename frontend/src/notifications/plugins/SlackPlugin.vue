@@ -1,15 +1,11 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-    :showSettings="setupCompleted"
-    @createNotificationChannel="
-      (channel, config) => $emit('createNotificationChannel', channel, config)
-    "
-    @updateNotificationChannel="
-      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
-    "
+    :notification-channel="notificationChannel"
+    :show-settings="setupCompleted"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
@@ -100,7 +96,7 @@ import axios from 'axios'
 import urls from '@config/server-urls'
 
 export default {
-  name: 'slack',
+  name: 'SlackPlugin',
 
   components: {
     NotificationChannelTemplate,

@@ -1,16 +1,16 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8" class="text-center">
             <h1 class="pb-2">Upload Time-lapse</h1>
             <p class="pb-2">Upload time-lapse videos to test Obico's AI failure detection.</p>
             <vue-dropzone
-              class="upload-box"
               id="dropzone"
+              class="upload-box"
               :options="dropzoneOptions"
-              :useCustomSlot="true"
+              :use-custom-slot="true"
               @vdropzone-success="printUploadSuccess"
             >
               <div class="dz-message needsclick">
@@ -39,20 +39,20 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 
 export default {
   name: 'UploadPrintPage',
 
   components: {
     vueDropzone: vue2Dropzone,
-    Layout,
+    PageLayout,
   },
 
   props: {

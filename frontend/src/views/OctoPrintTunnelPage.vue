@@ -24,10 +24,10 @@
       </div>
       <div
         v-else
+        :class="usageClass"
         @click="showDetails = true"
         @mouseover="showDetails = true"
         @mouseleave="showDetails = false"
-        :class="usageClass"
       >
         {{ percentage }}%
       </div>

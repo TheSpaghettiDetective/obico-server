@@ -12,12 +12,12 @@
       <div class="my-2">
         <input
           ref="input"
+          v-model="newItemName"
           type="text"
           name="name"
           placeholder="New name"
           class="input-lg"
           required="required"
-          v-model="newItemName"
         />
         <b-alert v-if="errorMessage" variant="danger" class="mt-3" show>
           {{ errorMessage }}

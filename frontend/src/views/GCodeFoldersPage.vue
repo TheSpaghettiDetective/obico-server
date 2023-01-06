@@ -1,29 +1,29 @@
 <template>
-  <layout :isPopup="isPopup">
+  <page-layout :is-popup="isPopup">
     <!-- Tob bar -->
-    <template v-slot:topBarLeft>
+    <template #topBarLeft>
       <a
         v-if="isPopup && parentFolder !== null"
-        @click.prevent="goBack"
         href="#"
         class="btn shadow-none icon-btn d-inline"
         title="Go Back"
+        @click.prevent="goBack"
       >
         <i class="fas fa-chevron-left"></i>
       </a>
-      <search-input @input="updateSearch" class="search-input mr-3"></search-input>
+      <search-input class="search-input mr-3" @input="updateSearch"></search-input>
     </template>
-    <template v-slot:topBarRight>
+    <template #topBarRight>
       <div class="d-flex">
         <!-- <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
           <i class="fas fa-file-upload"></i>
         </a> -->
         <a
           v-if="isCloud"
-          @click.prevent="createFolder"
           href="#"
           class="btn shadow-none icon-btn d-none d-md-inline"
           title="Create folder"
+          @click.prevent="createFolder"
         >
           <i class="fas fa-folder-plus"></i>
         </a>
@@ -113,10 +113,10 @@
         </b-dropdown>
         <a
           v-if="onClose"
-          @click.prevent="onClose"
           href="#"
           class="btn shadow-none icon-btn d-inline order-4"
           title="Close"
+          @click.prevent="onClose"
         >
           <i class="fas fa-times text-danger"></i>
         </a>
@@ -124,20 +124,20 @@
     </template>
 
     <!-- Page content -->
-    <template v-slot:content>
+    <template #content>
       <b-container>
         <b-row>
           <b-col>
             <vue-dropzone
               v-if="isCloud"
-              class="upload-box"
               id="dropzone"
+              ref="gcodesDropzone"
+              class="upload-box"
               :options="dropzoneOptions"
-              :useCustomSlot="true"
+              :use-custom-slot="true"
               @vdropzone-queue-complete="gcodeUploadSuccess"
               @vdropzone-error="gcodeUploadError"
               @vdropzone-sending="addParentFolderParam"
-              ref="gcodesDropzone"
             >
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br />
@@ -147,18 +147,18 @@
             </vue-dropzone>
 
             <g-code-file-structure
-              :isCloud="isCloud"
-              :searchStateIsActive="searchStateIsActive"
-              :searchInProgress="searchInProgress"
+              :is-cloud="isCloud"
+              :search-state-is-active="searchStateIsActive"
+              :search-in-progress="searchInProgress"
               :folders="folders"
               :files="files"
-              :targetPrinter="targetPrinter"
-              :nothingFound="nothingFound"
+              :target-printer="targetPrinter"
+              :nothing-found="nothingFound"
               :loading="loading"
-              :scrollContainerId="scrollContainerId"
-              :noMoreFolders="noMoreFolders"
-              :noMoreFiles="noMoreFiles"
-              :localFilesLoading="localFilesLoading"
+              :scroll-container-id="scrollContainerId"
+              :no-more-folders="noMoreFolders"
+              :no-more-files="noMoreFiles"
+              :local-files-loading="localFilesLoading"
               @openFolder="openFolder"
               @openFile="openFile"
               @renameItem="renameItem"
@@ -171,37 +171,37 @@
         </b-row>
       </b-container>
       <rename-modal
-        :item="activeItem"
-        @renamed="onItemRenamed"
-        :preConfirm="verifyItemRename"
         ref="renameModal"
+        :item="activeItem"
+        :pre-confirm="verifyItemRename"
+        @renamed="onItemRenamed"
       />
       <move-modal
-        :item="activeItem"
-        :targetPrinter="targetPrinter"
-        :scrollContainerId="scrollContainerId"
-        :activeSorting="activeSorting"
-        :activeSortingDirection="activeSortingDirection"
-        @moved="onItemMoved"
         ref="moveModal"
+        :item="activeItem"
+        :target-printer="targetPrinter"
+        :scroll-container-id="scrollContainerId"
+        :active-sorting="activeSorting"
+        :active-sorting-direction="activeSortingDirection"
+        @moved="onItemMoved"
       />
       <delete-confirmation-modal
+        ref="deleteConfirmationModal"
         :item="activeItem"
         @deleted="onItemDeleted"
-        ref="deleteConfirmationModal"
       />
       <new-folder-modal
-        @created="onFolderCreated"
-        :preConfirm="verifyNewFolder"
-        :parentFolderId="parentFolder"
         ref="newFolderModal"
+        :pre-confirm="verifyNewFolder"
+        :parent-folder-id="parentFolder"
+        @created="onFolderCreated"
       />
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
@@ -273,7 +273,7 @@ export default {
   name: 'GCodeFoldersPage',
 
   components: {
-    Layout,
+    PageLayout,
     SearchInput,
     vueDropzone: vue2Dropzone,
     GCodeFileStructure,
@@ -351,34 +351,6 @@ export default {
     }
   },
 
-  async created() {
-    this.csrf = getCsrfFromDocument()
-    this.user = user()
-
-    if (this.savedPath && this.savedPath.length >= 1) {
-      this.parentFolder = this.savedPath.at(-1)
-      this.path = this.savedPath.slice(0, this.savedPath.length - 1)
-    } else {
-      this.parentFolder = this.getRouteParam('parentFolder') || null
-    }
-
-    this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
-
-    if (!this.isPopup) {
-      this.$watch(
-        () => this.$route.params,
-        (toParams, previousParams) => {
-          this.parentFolder = toParams.parentFolder || null
-          this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
-          this.fetchFilesAndFolders(true)
-        }
-      )
-    }
-
-    await this.fetchPrinters()
-    this.fetchFilesAndFolders(true)
-  },
-
   computed: {
     isCloud() {
       return !this.selectedPrinterId
@@ -405,6 +377,34 @@ export default {
         headers: { 'X-CSRFToken': this.csrf },
       }
     },
+  },
+
+  async created() {
+    this.csrf = getCsrfFromDocument()
+    this.user = user()
+
+    if (this.savedPath && this.savedPath.length >= 1) {
+      this.parentFolder = this.savedPath.at(-1)
+      this.path = this.savedPath.slice(0, this.savedPath.length - 1)
+    } else {
+      this.parentFolder = this.getRouteParam('parentFolder') || null
+    }
+
+    this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+
+    if (!this.isPopup) {
+      this.$watch(
+        () => this.$route.params,
+        (toParams, previousParams) => {
+          this.parentFolder = toParams.parentFolder || null
+          this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+          this.fetchFilesAndFolders(true)
+        }
+      )
+    }
+
+    await this.fetchPrinters()
+    this.fetchFilesAndFolders(true)
   },
 
   methods: {

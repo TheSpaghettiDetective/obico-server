@@ -5,9 +5,9 @@
     </div>
     <div v-else>
       <div
-        class="printer-item"
         v-for="printer in printers"
         :key="`printer_${printer.id}`"
+        class="printer-item"
         :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
         @click="selectPrinter(printer)"
       >
@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">
+      <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
         No available printers
       </p>
 
@@ -33,12 +33,12 @@
         :disabled="!selectedPrinter || isSending"
         @click="onPrintClicked"
       >
-        <b-spinner small v-if="isSending" />
+        <b-spinner v-if="isSending" small />
         <div v-else>
-          <div class="truncate-overflow-text" v-if="selectedPrinter">
+          <div v-if="selectedPrinter" class="truncate-overflow-text">
             Print on {{ selectedPrinter.name }}
           </div>
-          <div class="truncate-overflow-text" v-else>Print</div>
+          <div v-else class="truncate-overflow-text">Print</div>
         </div>
       </button>
     </div>
@@ -46,12 +46,9 @@
 </template>
 
 <script>
-import Layout from '@src/components/Layout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import { sendToPrint, getPrinterPrintAvailability } from './sendToPrint'
 
 const REDIRECT_TIMER = 3000
@@ -59,11 +56,7 @@ const REDIRECT_TIMER = 3000
 export default {
   name: 'AvailablePrinters',
 
-  components: {
-    Layout,
-    RenameModal,
-    DeleteConfirmationModal,
-  },
+  components: {},
 
   props: {
     isPopup: {
@@ -73,6 +66,7 @@ export default {
     targetPrinterId: {
       type: Number,
       required: false,
+      default: null,
     },
     gcode: {
       type: Object,
@@ -126,7 +120,7 @@ export default {
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.filter((p) => p.printAvailability.key === 'ready')[0]
+        this.selectedPrinter = printers.find((p) => p.printAvailability.key === 'ready')
       }
 
       this.printersLoading = false
@@ -187,9 +181,6 @@ export default {
         showCancelButton: true,
         confirmButtonText: 'Go now',
         onOpen: () => {
-          const content = this.$swal.getHtmlContainer()
-          const $ = content.querySelector.bind(content)
-
           timerInterval = setInterval(() => {
             this.$swal.getHtmlContainer().querySelector('strong').textContent = (
               this.$swal.getTimerLeft() / 1000

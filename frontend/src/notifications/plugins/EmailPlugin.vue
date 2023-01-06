@@ -1,17 +1,13 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    ref="notificationChannelTemplate"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-    @createNotificationChannel="
-      (channel, config) => $emit('createNotificationChannel', channel, config)
-    "
-    @updateNotificationChannel="
-      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
-    "
+    :notification-channel="notificationChannel"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
-    ref="notificationChannelTemplate"
   >
     <template #header>
       <div class="row">
@@ -29,16 +25,15 @@
           <saving-animation :errors="[]" :saving="false">
             <div class="custom-control custom-checkbox form-check-inline">
               <input
+                id="id_account_notification_by_email"
+                v-model="accountNotificationByEmail"
                 type="checkbox"
                 class="custom-control-input"
-                id="id_account_notification_by_email"
                 :disabled="
                   $refs.notificationChannelTemplate
                     ? !$refs.notificationChannelTemplate.notificationsEnabled
                     : false
                 "
-                v-model="user.account_notification_by_email"
-                @change="$emit('updateSetting', 'account_notification_by_email')"
               />
               <label class="custom-control-label" for="id_account_notification_by_email">
                 Account events
@@ -63,15 +58,14 @@
             </div>
             <div class="setting-item-switch">
               <onoff-toggle
+                v-model="accountNotificationByEmail"
                 :theme="theme"
                 :width="theme === 'ios' ? 48 : 30"
                 :height="theme === 'ios' ? 24 : 12"
-                :onColor="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
-                offColor="var(--color-divider)"
-                borderColor="var(--color-divider)"
-                :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
-                v-model="user.account_notification_by_email"
-                @input="$emit('updateSetting', 'account_notification_by_email')"
+                :on-color="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
+                off-color="var(--color-divider)"
+                border-color="var(--color-divider)"
+                :thumb-color="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
                 :disabled="
                   $refs.notificationChannelTemplate
                     ? !$refs.notificationChannelTemplate.notificationsEnabled
@@ -93,7 +87,7 @@ import NotificationChannelTemplate from '@src/components/user-preferences/notifi
 import { mobilePlatform } from '@src/lib/page_context'
 
 export default {
-  name: 'email',
+  name: 'EmailPlugin',
 
   components: {
     SavingAnimation,
@@ -119,6 +113,12 @@ export default {
     },
   },
 
+  data() {
+    return {
+      accountNotificationByEmail: this.user.account_notification_by_email,
+    }
+  },
+
   computed: {
     // FIXME: remove after NotificationSettingSwitch reuse
     theme() {
@@ -128,6 +128,18 @@ export default {
       } else {
         return platform === 'ios' ? 'ios' : 'material'
       }
+    },
+  },
+
+  watch: {
+    accountNotificationByEmail: function (newVal, prevVal) {
+      this.$emit('updateNotificationChannel', {
+        section: this.notificationChannel,
+        propNames: [this.settingId],
+        propValues: [newVal],
+      })
+
+      this.$emit('updateSetting', 'account_notification_by_email', newVal)
     },
   },
 }

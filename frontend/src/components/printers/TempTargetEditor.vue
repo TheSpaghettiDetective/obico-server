@@ -12,7 +12,7 @@
         <h5>Presets:</h5>
       </div>
       <div>
-        <b-form-select v-model="preset" id="id_preset" @change="onPresetChanged">
+        <b-form-select id="id_preset" v-model="preset" @change="onPresetChanged">
           <b-form-select-option
             v-for="pre in allPresets"
             :key="pre.value"
@@ -26,11 +26,11 @@
       <h5>Manual:</h5>
       <div>
         <vue-slider
+          v-model="value"
           :min="0"
           :max="maxTemp"
           :step="1"
           :tooltip="'none'"
-          v-model="value"
           @change="onSliderChanged"
         ></vue-slider>
         <input id="target-temp" v-model="value" type="hidden" />

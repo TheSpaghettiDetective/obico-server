@@ -167,8 +167,8 @@
                   <button
                     class="btn btn-primary"
                     style="flex: 1"
-                    @click="authorize"
                     :disabled="!printerToAuthorize || performingAuthRequest"
+                    @click="authorize"
                   >
                     <b-spinner v-if="performingAuthRequest" small label="Loading..."></b-spinner>
                     <span v-else>Authorize</span>
@@ -289,16 +289,6 @@ export default {
     }
   },
 
-  created() {
-    this.user = user()
-    const { IS_ENT } = settings()
-    this.isEnt = !!IS_ENT
-    this.printerId = new URLSearchParams(window.location.search).get('printer_id')
-    if (this.user) {
-      this.fetchPrinters()
-    }
-  },
-
   computed: {
     printersToShow() {
       return this.printerId
@@ -343,6 +333,16 @@ export default {
           return genericAppLogo
       }
     },
+  },
+
+  created() {
+    this.user = user()
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+    this.printerId = new URLSearchParams(window.location.search).get('printer_id')
+    if (this.user) {
+      this.fetchPrinters()
+    }
   },
 
   methods: {

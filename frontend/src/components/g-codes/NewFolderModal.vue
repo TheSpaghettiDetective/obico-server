@@ -12,12 +12,12 @@
       <div class="my-2">
         <input
           ref="input"
+          v-model="newFolderName"
           type="text"
           name="name"
           placeholder="Folder name"
           class="input-lg"
           required="required"
-          v-model="newFolderName"
         />
         <b-alert v-if="errorMessage" variant="danger" class="mt-3" show>
           {{ errorMessage }}

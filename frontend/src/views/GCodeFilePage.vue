@@ -1,18 +1,18 @@
 <template>
-  <layout :isPopup="isPopup">
+  <page-layout :is-popup="isPopup">
     <!-- Tob bar -->
-    <template v-slot:topBarLeft>
+    <template #topBarLeft>
       <a
         v-if="isPopup"
-        @click.prevent="goBack"
         href="#"
         class="btn shadow-none icon-btn d-inline"
         title="Go Back"
+        @click.prevent="goBack"
       >
         <i class="fas fa-chevron-left"></i>
       </a>
     </template>
-    <template v-slot:topBarRight>
+    <template #topBarRight>
       <div>
         <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn">
           <template #button-content>
@@ -25,10 +25,10 @@
         </b-dropdown>
         <a
           v-if="onClose"
-          @click.prevent="onClose"
           href="#"
           class="btn shadow-none icon-btn d-inline"
           title="Close"
+          @click.prevent="onClose"
         >
           <i class="fas fa-times text-danger"></i>
         </a>
@@ -36,7 +36,7 @@
     </template>
 
     <!-- Page content -->
-    <template v-slot:content>
+    <template #content>
       <b-container v-if="loading || gcodeNotFound">
         <b-row>
           <b-col class="text-center mt-5">
@@ -70,7 +70,7 @@
                       <div class="value">{{ gcode.filesize }}</div>
                     </div>
                   </b-col>
-                  <b-col sm="6" v-show="isCloud">
+                  <b-col v-show="isCloud" sm="6">
                     <div class="file-info-line">
                       <div><i class="fas fa-circle"></i>Times printed</div>
                       <div class="value">{{ gcode.totalPrints }}</div>
@@ -91,28 +91,28 @@
             <available-printers
               class="card-container mt-4"
               :class="[isPopup ? 'd-lg-block' : 'd-lg-none']"
-              :isPopup="isPopup"
-              :targetPrinterId="targetPrinterId || selectedPrinterId"
+              :is-popup="isPopup"
+              :target-printer-id="targetPrinterId || selectedPrinterId"
               :gcode="gcode"
-              :isCloud="isCloud"
+              :is-cloud="isCloud"
               @refresh="onRefresh"
             />
 
-            <div class="mt-5" v-if="isCloud">
+            <div v-if="isCloud" class="mt-5">
               <h2 class="section-title">Print history</h2>
               <div
-                class="print-history-card"
                 v-for="print in gcode.print_set"
                 :key="`print_${print.id}`"
+                class="print-history-card"
               >
                 <div class="print-info">
-                  <div class="result text-success font-weight-bold" v-if="print.finished_at">
+                  <div v-if="print.finished_at" class="result text-success font-weight-bold">
                     Succeeded
                   </div>
-                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">
+                  <div v-else-if="print.cancelled_at" class="result text-danger font-weight-bold">
                     Cancelled / Failed
                   </div>
-                  <div class="result font-weight-bold" v-else>Printing...</div>
+                  <div v-else class="result font-weight-bold">Printing...</div>
 
                   <div class="printer truncate-overflow-text">
                     Printer: {{ print.printer.name }}
@@ -125,7 +125,7 @@
                     <span v-else>-</span>
                   </div>
                 </div>
-                <div class="poster" v-if="print.poster_url">
+                <div v-if="print.poster_url" class="poster">
                   <div class="img" :style="{ backgroundImage: `url(${print.poster_url})` }"></div>
                 </div>
               </div>
@@ -141,27 +141,27 @@
             <available-printers
               class="card-container d-none"
               :class="[isPopup ? 'd-lg-none' : 'd-lg-block']"
-              :isPopup="isPopup"
-              :targetPrinterId="targetPrinterId || Number(selectedPrinterId)"
+              :is-popup="isPopup"
+              :target-printer-id="targetPrinterId || Number(selectedPrinterId)"
               :gcode="gcode"
-              :isCloud="isCloud"
+              :is-cloud="isCloud"
               @refresh="onRefresh"
             />
           </b-col>
         </b-row>
       </b-container>
-      <rename-modal :item="gcode" @renamed="onItemRenamed" ref="renameModal" />
+      <rename-modal ref="renameModal" :item="gcode" @renamed="onItemRenamed" />
       <delete-confirmation-modal
+        ref="deleteConfirmationModal"
         :item="gcode"
         @deleted="onItemDeleted"
-        ref="deleteConfirmationModal"
       />
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedGcode } from '@src/lib/normalizers'
@@ -175,7 +175,7 @@ export default {
   name: 'GCodeDetailsPage',
 
   components: {
-    Layout,
+    PageLayout,
     RenameModal,
     DeleteConfirmationModal,
     availablePrinters,
@@ -213,16 +213,16 @@ export default {
     }
   },
 
+  computed: {
+    isCloud() {
+      return !this.selectedPrinterId
+    },
+  },
+
   created() {
     this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
     this.gcodeId = this.getRouteParam('fileId')
     this.fetchGcode()
-  },
-
-  computed: {
-    isCloud() {
-      return !Boolean(this.selectedPrinterId)
-    },
   },
 
   methods: {
@@ -251,7 +251,7 @@ export default {
         onRequestEnd: (result) => {
           this.loading = false
           if (result?.files?.length) {
-            const file = result.files.filter((f) => f.path === decodedPath)[0]
+            const file = result.files.find((f) => f.path === decodedPath)
             if (!file) {
               this.gcodeNotFound = true
               return

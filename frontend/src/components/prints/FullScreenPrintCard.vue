@@ -1,12 +1,12 @@
 <template>
   <div>
     <video-box
-      :videoUrl="videoUrl"
-      :posterUrl="print.poster_url"
-      @timeupdate="onTimeUpdate"
+      :video-url="videoUrl"
+      :poster-url="print.poster_url"
       :fluid="false"
       :autoplay="autoplay"
-      :fullscreenBtn="false"
+      :fullscreen-btn="false"
+      @timeupdate="onTimeUpdate"
     />
 
     <div
@@ -17,7 +17,7 @@
       <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
     </div>
 
-    <gauge :normalizedP="normalizedP" />
+    <failure-detection-gauge :normalized-p="normalizedP" />
   </div>
 </template>
 
@@ -25,13 +25,13 @@
 import axios from 'axios'
 import { getNormalizedP } from '@src/lib/utils'
 import VideoBox from '@src/components/VideoBox'
-import Gauge from '@src/components/Gauge'
+import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 
 export default {
   name: 'FullScreenPrintCard',
   components: {
     VideoBox,
-    Gauge,
+    FailureDetectionGauge,
   },
   props: {
     print: {
@@ -66,6 +66,11 @@ export default {
       return getNormalizedP(this.predictions, this.currentPosition, this.isPublic)
     },
   },
+  mounted() {
+    if (this.print.prediction_json_url) {
+      this.fetchPredictions()
+    }
+  },
   methods: {
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
@@ -76,11 +81,6 @@ export default {
         this.predictions = response.data
       })
     },
-  },
-  mounted() {
-    if (this.print.prediction_json_url) {
-      this.fetchPredictions()
-    }
   },
 }
 </script>

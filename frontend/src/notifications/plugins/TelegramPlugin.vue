@@ -1,15 +1,11 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-    :showSettings="setupCompleted"
-    @createNotificationChannel="
-      (channel, config) => $emit('createNotificationChannel', channel, config)
-    "
-    @updateNotificationChannel="
-      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
-    "
+    :notification-channel="notificationChannel"
+    :show-settings="setupCompleted"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
@@ -76,7 +72,7 @@ import { vueTelegramLogin } from 'vue-telegram-login'
 import { mobilePlatform } from '@src/lib/page_context'
 
 export default {
-  name: 'telegram',
+  name: 'TelegramPlugin',
 
   components: {
     NotificationChannelTemplate,
@@ -113,7 +109,7 @@ export default {
   methods: {
     onTelegramAuth(telegram_user) {
       const config = { chat_id: JSON.stringify(telegram_user.id) }
-      this.$emit('createNotificationChannel', this.notificationChannel, config)
+      this.$emit('createNotificationChannel', { section: this.notificationChannel, config })
     },
 
     onTelegramLogout() {

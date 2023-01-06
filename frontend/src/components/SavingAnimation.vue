@@ -18,13 +18,6 @@
 export default {
   name: 'SavingAnimation',
 
-  data() {
-    return {
-      savingTimeout: null,
-      savingDoneTimeout: null,
-    }
-  },
-
   props: {
     saving: {
       default() {
@@ -43,20 +36,11 @@ export default {
     },
   },
 
-  watch: {
-    saving: function (nowSaving, prevSaving) {
-      // watch it
-      if (!prevSaving && nowSaving) {
-        this.clearSavingTimeout()
-        this.savingTimeout = setTimeout(this.clearSavingTimeout, 15 * 1000)
-      } else if (prevSaving && !nowSaving) {
-        this.clearSavingTimeout()
-        this.savingDoneTimeout = setTimeout(() => {
-          clearTimeout(this.savingDoneTimeout)
-          this.savingDoneTimeout = null
-        }, 2 * 1000)
-      }
-    },
+  data() {
+    return {
+      savingTimeout: null,
+      savingDoneTimeout: null,
+    }
   },
 
   computed: {
@@ -74,6 +58,22 @@ export default {
     },
     errorMsg() {
       return this.errors ? this.errors.join(' ') : ''
+    },
+  },
+
+  watch: {
+    saving: function (nowSaving, prevSaving) {
+      // watch it
+      if (!prevSaving && nowSaving) {
+        this.clearSavingTimeout()
+        this.savingTimeout = setTimeout(this.clearSavingTimeout, 15 * 1000)
+      } else if (prevSaving && !nowSaving) {
+        this.clearSavingTimeout()
+        this.savingDoneTimeout = setTimeout(() => {
+          clearTimeout(this.savingDoneTimeout)
+          this.savingDoneTimeout = null
+        }, 2 * 1000)
+      }
     },
   },
 

@@ -1,17 +1,13 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-    configVariableTitle="Webhook URL"
-    configVariablePlaceholder="Discord Webhook"
-    configVariableName="webhook_url"
-    @createNotificationChannel="
-      (channel, config) => $emit('createNotificationChannel', channel, config)
-    "
-    @updateNotificationChannel="
-      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
-    "
+    :notification-channel="notificationChannel"
+    config-variable-title="Webhook URL"
+    config-variable-placeholder="Discord Webhook"
+    config-variable-name="webhook_url"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
@@ -31,7 +27,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 
 export default {
-  name: 'discord',
+  name: 'DiscordPlugin',
 
   components: {
     NotificationChannelTemplate,

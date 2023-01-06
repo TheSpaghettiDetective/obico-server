@@ -10,8 +10,8 @@
               <use href="#svg-moon-icon" />
             </svg>
             <div class="label">
-              <span class="dark" v-show="themeValue === Themes.Dark">DARK</span>
-              <span class="light" v-show="themeValue === Themes.Light">LIGHT</span>
+              <span v-show="themeValue === Themes.Dark" class="dark">DARK</span>
+              <span v-show="themeValue === Themes.Light" class="light">LIGHT</span>
             </div>
             <svg class="icon" :class="{ active: themeValue === Themes.Light }">
               <use href="#svg-sun-icon" />
@@ -25,10 +25,10 @@
       <div v-if="showSystemTheme" class="col-md-10 offset-md-2 col-sm-9 offset-sm-3 col-form-label">
         <div class="custom-control custom-checkbox form-check-inline system-theme-control">
           <input
-            type="checkbox"
-            class="custom-control-input"
             id="id_theme_system"
             v-model="systemTheme"
+            type="checkbox"
+            class="custom-control-input"
           />
           <label class="custom-control-label" for="id_theme_system">
             Sync theme with system settings

@@ -1,15 +1,15 @@
 <template>
-  <layout>
-    <template v-slot:topBarLeft>
+  <page-layout>
+    <template #topBarLeft>
       <div class="actions-with-selected-desktop">
         <b-form-group class="m-0">
           <b-form-checkbox v-model="allPrintsSelected" size="lg"></b-form-checkbox>
         </b-form-group>
         <div>
           <span
+            v-show="!selectedPrintIds.size"
             class="label"
             @click="allPrintsSelected = !allPrintsSelected"
-            v-show="!selectedPrintIds.size"
             >Select all</span
           >
           <b-dropdown
@@ -18,9 +18,7 @@
             toggle-class="btn btn-sm actions-with-selected-btn"
           >
             <template #button-content>
-              {{ selectedPrintIds.size }} item{{
-                selectedPrintIds.size === 1 ? '' : 's'
-              }}
+              {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
               selected...
             </template>
             <b-dropdown-item>
@@ -32,7 +30,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:topBarRight>
+    <template #topBarRight>
       <div>
         <a
           href="/prints/upload/"
@@ -51,16 +49,16 @@
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
 
           <cascaded-dropdown
-            :menuOptions="menuOptions"
-            :menuSelections="menuSelections"
+            :menu-options="menuOptions"
+            :menu-selections="menuSelections"
             @menuSelectionChanged="menuSelectionChanged"
           >
           </cascaded-dropdown>
         </b-dropdown>
       </div>
     </template>
-    <template v-slot:content>
-      <a v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
+    <template #content>
+      <a v-if="shouldShowFilterWarning" class="active-filter-notice" @click="onShowAllClicked">
         <div class="filter">
           <i class="fas fa-filter mr-2"></i>
           {{ activeFiltering }}
@@ -68,7 +66,7 @@
         <div>SHOW ALL</div>
       </a>
       <b-container>
-        <b-row class="print-cards" v-show="prints.length">
+        <b-row v-show="prints.length" class="print-cards">
           <print-card
             v-for="print of prints"
             :key="print.id"
@@ -89,19 +87,19 @@
         <b-modal
           id="tl-fullscreen-modal"
           size="full"
+          :hide-header="true"
+          :hide-footer="true"
           @hidden="fullScreenClosed"
-          :hideHeader="true"
-          :hideFooter="true"
         >
           <FullScreenPrintCard
             :print="fullScreenPrint"
-            :videoUrl="fullScreenPrintVideoUrl"
+            :video-url="fullScreenPrintVideoUrl"
             :autoplay="true"
           />
         </b-modal>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -115,7 +113,7 @@ import { normalizedPrint } from '@src/lib/normalizers'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import PrintCard from '@src/components/prints/PrintCard.vue'
 import FullScreenPrintCard from '@src/components/prints/FullScreenPrintCard.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 
 const LOCAL_PREF_NAMES = {
@@ -130,7 +128,7 @@ export default {
     MugenScroll,
     PrintCard,
     FullScreenPrintCard,
-    Layout,
+    PageLayout,
     CascadedDropdown,
   },
   data: function () {

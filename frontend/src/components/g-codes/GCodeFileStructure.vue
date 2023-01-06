@@ -8,7 +8,7 @@
       <div class="text">Name</div>
       <div class="text">Size</div>
       <div class="text">Created</div>
-      <div class="text" v-if="isCloud">Last printed</div>
+      <div v-if="isCloud" class="text">Last printed</div>
     </div>
 
     <div class="gcode-items-wrapper">
@@ -20,11 +20,11 @@
           "
           :key="`${isFolder(item) ? 'folder' : 'file'}_${key}`"
           :item="item"
-          :isCloud="isCloud"
-          :targetPrinter="targetPrinter"
-          :isMoveModal="isMoveModal"
+          :is-cloud="isCloud"
+          :target-printer="targetPrinter"
+          :is-move-modal="isMoveModal"
           :disabled="disabledItem && disabledItem.id === item.id"
-          @click="$emit('openFolder', item)"
+          @click="isFolder(item) ? $emit('openFolder', item) : $emit('openFile', item)"
           @renameItem="$emit('renameItem', item)"
           @moveItem="$emit('moveItem', item)"
           @deleteItem="$emit('deleteItem', item)"

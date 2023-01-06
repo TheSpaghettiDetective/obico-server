@@ -1,19 +1,19 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <print-card
             v-if="print"
             :print="print"
+            class="m-0"
             @printDeleted="onPrintDeleted"
             @printDataChanged="printDataChanged"
-            class="m-0"
           ></print-card>
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -22,14 +22,14 @@ import axios from 'axios'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
 import PrintCard from '@src/components/prints/PrintCard.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 
 export default {
   name: 'PrintPage',
 
   components: {
     PrintCard,
-    Layout,
+    PageLayout,
   },
 
   props: {

@@ -54,7 +54,8 @@ const notificationSections = Object.keys(notificationPlugins).reduce((obj, name)
       isSubcategory: true,
       isNotificationChannel: true,
       route: routes[name],
-      importComponent: () => import('@src/notifications/plugins/' + name),
+      importComponent: () =>
+        import('@src/notifications/plugins/' + notificationPlugins[name].componentName),
     },
   })
 }, {})

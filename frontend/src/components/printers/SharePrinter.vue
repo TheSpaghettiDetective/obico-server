@@ -21,11 +21,11 @@
       <div class="py-3">
         <div class="custom-control custom-switch">
           <input
+            :id="'sharing_enabled-toggle-' + printer.id"
             type="checkbox"
             class="custom-control-input update-printer"
-            :id="'sharing_enabled-toggle-' + printer.id"
-            @click="onSharingToggled"
             :checked="sharedResource"
+            @click="onSharingToggled"
           />
           <label
             class="custom-control-label"
@@ -39,13 +39,13 @@
           <div v-show="sharedLink">
             <div class="input-group mt-4 mb-2">
               <input
-                type="text"
                 id="secret-token-input"
+                ref="sharedLink"
+                type="text"
                 class="form-control shared-link-text"
                 aria-label="Secret token"
                 readonly
                 :value="sharedLink"
-                ref="sharedLink"
               />
               <div class="input-group-append">
                 <div
@@ -124,10 +124,6 @@ export default {
     }
   },
 
-  created() {
-    this.fetchSharedResources()
-  },
-
   computed: {
     sharedLink() {
       if (this.sharedResource) {
@@ -137,6 +133,10 @@ export default {
 
       return ''
     },
+  },
+
+  created() {
+    this.fetchSharedResources()
   },
 
   methods: {

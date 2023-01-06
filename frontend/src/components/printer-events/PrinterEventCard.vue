@@ -3,13 +3,13 @@
     <div
       class="printer-event-text"
       :class="{ link: printerEvent.info_url }"
-      v-on:click="onTextClick"
+      @click="onTextClick"
     >
       <div class="title font-weight-bold my-2" :class="tintClass">
         {{ eventTitle }}
         <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
       </div>
-      <div v-html="printerEvent.event_text" class="description"></div>
+      <div class="description" v-html="printerEvent.event_text"></div>
       <div class="my-2 text-muted font-weight-light small">
         {{ printerEvent.created_at.format('LLLL') }}
       </div>

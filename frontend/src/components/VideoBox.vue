@@ -1,8 +1,8 @@
 <template>
   <div class="card-img-top">
     <video-player
-      class="vjs-default-skin vjs-big-play-centered"
       ref="videoPlayer"
+      class="vjs-default-skin vjs-big-play-centered"
       :options="playerOptions"
       :playsinline="true"
       @timeupdate="onTimeUpdate"

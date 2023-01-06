@@ -11,11 +11,10 @@
         >
           <div class="custom-control custom-checkbox form-check-inline">
             <input
+              id="id_notification_enabled"
+              v-model="notificationsEnabled"
               type="checkbox"
               class="custom-control-input"
-              id="id_notification_enabled"
-              v-model="user.notification_enabled"
-              @change="$emit('updateSetting', 'notification_enabled')"
             />
             <label class="custom-control-label" for="id_notification_enabled">
               Enable notifications
@@ -31,19 +30,18 @@
       >
         <div class="mobile-setting-item-wrapper">
           <div class="setting-item-text">
-            <label for="id_notification_enabled"> Enable notifications </label>
+            <label for="id_notification_enabled">Enable notifications</label>
           </div>
           <div class="setting-item-switch">
             <onoff-toggle
+              v-model="notificationsEnabled"
               :theme="theme"
               :width="theme === 'ios' ? 48 : 30"
               :height="theme === 'ios' ? 24 : 12"
-              :onColor="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
-              offColor="var(--color-divider)"
-              borderColor="var(--color-divider)"
-              :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
-              v-model="user.notification_enabled"
-              @input="$emit('updateSetting', 'notification_enabled')"
+              :on-color="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
+              off-color="var(--color-divider)"
+              border-color="var(--color-divider)"
+              :thumb-color="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
               class="mb-0"
             />
           </div>
@@ -79,6 +77,12 @@ export default {
     },
   },
 
+  data() {
+    return {
+      notificationsEnabled: this.user.notification_enabled,
+    }
+  },
+
   computed: {
     // FIXME: remove after NotificationSettingSwitch reuse
     theme() {
@@ -88,6 +92,12 @@ export default {
       } else {
         return platform === 'ios' ? 'ios' : 'material'
       }
+    },
+  },
+
+  watch: {
+    notificationsEnabled: function (newVal, prevVal) {
+      this.$emit('updateSetting', 'notification_enabled', newVal)
     },
   },
 }

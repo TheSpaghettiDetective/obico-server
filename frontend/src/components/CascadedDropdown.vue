@@ -22,12 +22,12 @@
     </template>
     <template v-if="menuExpanded !== null">
       <b-dropdown-item>
-        <div @click.stop.prevent="menuExpanded = null" class="clickable-area">
+        <div class="clickable-area" @click.stop.prevent="menuExpanded = null">
           <i class="fas fa-chevron-left"></i>Back
         </div>
       </b-dropdown-item>
       <b-dropdown-item v-for="option in menuOptions[menuExpanded].options" :key="option.value">
-        <div @click="onSelected(option)" class="clickable-area">
+        <div class="clickable-area" @click="onSelected(option)">
           <i
             class="fas fa-check text-primary"
             :style="{
@@ -43,32 +43,38 @@
 <script>
 export default {
   name: 'CascadedDropdown',
+  props: {
+    menuOptions: {
+      type: Object,
+      required: true,
+    },
+    menuSelections: {
+      type: Object,
+      required: true,
+    },
+  },
   data: function () {
     return {
       menuExpanded: null,
     }
-  },
-  props: {
-    menuOptions: Object,
-    menuSelections: Object,
-  },
-
-  methods: {
-    onSelected(option) {
-      this.$emit('menuSelectionChanged', this.menuExpanded, option)
-      this.menuExpanded = null
-    },
   },
 
   computed: {
     activeItems() {
       let items = {}
       for (const key of Object.keys(this.menuSelections)) {
-        items[key] = this.menuOptions[key].options.filter(
+        items[key] = this.menuOptions[key].options.find(
           (option) => option.value === this.menuSelections[key]
-        )[0]
+        )
       }
       return items
+    },
+  },
+
+  methods: {
+    onSelected(option) {
+      this.$emit('menuSelectionChanged', this.menuExpanded, option)
+      this.menuExpanded = null
     },
   },
 }

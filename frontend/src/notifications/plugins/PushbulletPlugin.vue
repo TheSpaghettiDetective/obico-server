@@ -1,28 +1,20 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-    configVariableTitle="User Key"
-    configVariablePlaceholder="Pushover User Key"
-    configVariableName="user_key"
-    @createNotificationChannel="
-      (channel, config) => $emit('createNotificationChannel', channel, config)
-    "
-    @updateNotificationChannel="
-      (channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)
-    "
+    :notification-channel="notificationChannel"
+    config-variable-title="Access Token"
+    config-variable-placeholder="Pushbullet Access Token"
+    config-variable-name="access_token"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <small class="form-text text-muted">
-        If you have a Pushover account, you can
-        <a
-          href="https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it"
-          target="_blank"
-          >get your User Key</a
-        >
+        If you have a Pushbullet account, you can
+        <a href="https://www.pushbullet.com/#settings" target="_blank">generate an access token</a>
         and enter it here.
       </small>
     </template>
@@ -33,7 +25,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 
 export default {
-  name: 'pushover',
+  name: 'PushbulletPlugin',
 
   components: {
     NotificationChannelTemplate,

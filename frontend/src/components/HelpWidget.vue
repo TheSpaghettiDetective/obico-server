@@ -1,5 +1,5 @@
 <template>
-  <div class="help-wrapper" v-click-outside="() => (show = false)">
+  <div v-click-outside="() => (show = false)" class="help-wrapper">
     <!-- Slot for text -->
     <div
       class="text"
@@ -11,7 +11,7 @@
       <slot></slot>
     </div>
 
-    <div class="widget-wrapper" ref="widgetWrapper">
+    <div ref="widgetWrapper" class="widget-wrapper">
       <!-- Help icon -->
       <div
         class="question-mark"
@@ -237,14 +237,6 @@ import ClickOutside from 'vue-click-outside'
 export default {
   name: 'HelpWidget',
 
-  data() {
-    return {
-      show: false,
-      xDirection: 'left',
-      yDirection: 'top',
-    }
-  },
-
   directives: {
     ClickOutside,
   },
@@ -254,6 +246,14 @@ export default {
       type: String,
       required: true,
     },
+  },
+
+  data() {
+    return {
+      show: false,
+      xDirection: 'left',
+      yDirection: 'top',
+    }
   },
 
   methods: {

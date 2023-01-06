@@ -4,11 +4,12 @@
       <div v-if="isPublic" class="card-header">- By {{ print.creator_name }}</div>
       <div v-else class="card-header">
         <div :style="{ visibility: hasSelectedChangedListener ? 'visible' : 'hidden' }">
+          <!-- Don't fix 'selected' mutation eslint error because of new print history page -->
           <b-form-checkbox
             v-model="selected"
-            @change="onSelectedChange"
             size="lg"
             class="text-decoration-none"
+            @change="onSelectedChange"
           ></b-form-checkbox>
         </div>
         <b-form-radio-group
@@ -33,15 +34,15 @@
             <i class="fas fa-ellipsis-v"></i>
           </template>
           <b-dropdown-item
-            v-if="this.print.video_url && !print.video_archived_at"
-            :href="this.print.video_url"
+            v-if="print.video_url && !print.video_archived_at"
+            :href="print.video_url"
             target="_blank"
           >
             <i class="fas fa-download"></i>Download Original Time-lapse
           </b-dropdown-item>
           <b-dropdown-item
-            v-if="this.print.tagged_video_url && !print.video_archived_at"
-            :href="this.print.tagged_video_url"
+            v-if="print.tagged_video_url && !print.video_archived_at"
+            :href="print.tagged_video_url"
             target="_blank"
           >
             <i class="fas fa-download"></i>Download Detective Time-lapse
@@ -53,7 +54,7 @@
         </b-dropdown>
       </div>
       <div>
-        <div class="position-relative" v-if="print.video_archived_at">
+        <div v-if="print.video_archived_at" class="position-relative">
           <div class="poster-placeholder-wrapper">
             <svg class="poster-placeholder">
               <use :href="posterSrc" />
@@ -69,10 +70,10 @@
         <div v-else>
           <video-box
             v-if="videoUrl"
-            :videoUrl="videoUrl"
-            :posterUrl="print.poster_url"
+            :video-url="videoUrl"
+            :poster-url="print.poster_url"
             :fluid="true"
-            :fullscreenBtn="hasFullscreenListener"
+            :fullscreen-btn="hasFullscreenListener"
             @timeupdate="onTimeUpdate"
             @fullscreen="$emit('fullscreen', print.id, videoUrl)"
           />
@@ -91,17 +92,17 @@
                 <div class="col-8">{{ print.filename }}</div>
               </div>
               <div
-                class="row"
                 v-b-tooltip.hover
-                :title="this.humanizedPrintedOrUploadedTime((longFormat = true))"
+                class="row"
+                :title="humanizedPrintedOrUploadedTime((longFormat = true))"
               >
                 <div class="text-muted col-4">
                   {{ wasTimelapseUploaded ? 'Uploaded' : 'Printed' }}
                   <span class="float-right">:</span>
                 </div>
-                <div class="col-8">{{ this.humanizedPrintedOrUploadedTime() }} {{ endStatus }}</div>
+                <div class="col-8">{{ humanizedPrintedOrUploadedTime() }} {{ endStatus }}</div>
               </div>
-              <div class="row" v-if="!wasTimelapseUploaded && duration" :id="'dur-' + print.id">
+              <div v-if="!wasTimelapseUploaded && duration" :id="'dur-' + print.id" class="row">
                 <b-tooltip :target="'dur-' + print.id" triggers="hover">
                   {{ duration | duration('asHours') | floor }}:{{
                     duration | duration('minutes')
@@ -127,7 +128,7 @@
         </div>
 
         <div v-show="cardView == 'detective' || isPublic">
-          <gauge v-if="print.prediction_json_url" :normalizedP="normalizedP" />
+          <failure-detection-gauge v-if="print.prediction_json_url" :normalized-p="normalizedP" />
           <div v-if="!isPublic" class="feedback-section">
             <div class="text-center py-2 px-3">
               <div class="lead" :class="[print.alerted_at ? 'text-danger' : 'text-success']">
@@ -137,16 +138,16 @@
                 Did we get it right?
                 <b-button
                   :variant="thumbedUp ? 'primary' : 'outline'"
-                  @click="onThumbUpClick"
                   class="mx-2 btn-sm"
+                  @click="onThumbUpClick"
                 >
                   <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-up"></i>
                 </b-button>
                 <b-button
                   :variant="thumbedDown ? 'primary' : 'outline'"
-                  @click="onThumbDownClick"
                   class="mx-2 btn-sm"
+                  @click="onThumbDownClick"
                 >
                   <b-spinner v-if="inflightAlertOverwrite" type="grow" small></b-spinner>
                   <i v-else class="fas fa-thumbs-down"></i>
@@ -210,7 +211,7 @@ import filter from 'lodash/filter'
 import { getNormalizedP } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
-import Gauge from '@src/components/Gauge'
+import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 import DetectiveWorking from '@src/components/DetectiveWorking'
 
 export default {
@@ -218,8 +219,23 @@ export default {
 
   components: {
     VideoBox,
-    Gauge,
+    FailureDetectionGauge,
     DetectiveWorking,
+  },
+
+  props: {
+    print: {
+      type: Object,
+      required: true,
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data: () => {
@@ -230,18 +246,6 @@ export default {
       selectedCardView: 'detective',
       inflightAlertOverwrite: null,
     }
-  },
-
-  props: {
-    print: Object,
-    isPublic: {
-      type: Boolean,
-      default: false,
-    },
-    selected: {
-      type: Boolean,
-      default: false,
-    },
   },
 
   computed: {
@@ -323,6 +327,15 @@ export default {
       return this.print.poster_url || '#svg-3d-printer'
     },
   },
+  mounted() {
+    if (this.print.prediction_json_url) {
+      this.fetchPredictions()
+    }
+
+    if (!this.print.tagged_video_url) {
+      this.selectedCardView = 'info'
+    }
+  },
 
   methods: {
     onTimeUpdate(currentPosition) {
@@ -388,15 +401,6 @@ export default {
         showCloseButton: true,
       })
     },
-  },
-  mounted() {
-    if (this.print.prediction_json_url) {
-      this.fetchPredictions()
-    }
-
-    if (!this.print.tagged_video_url) {
-      this.selectedCardView = 'info'
-    }
   },
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row>
           <b-col>
@@ -22,10 +22,10 @@
                         <i class="fas fa-pen"></i>
                       </div>
                       <input
+                        v-model="verifiedPrinter.name"
                         type="text"
                         class="dark"
                         placeholder="Printer name"
-                        v-model="verifiedPrinter.name"
                         @input="updatePrinterName"
                       />
                     </div>
@@ -195,7 +195,7 @@ cd moonraker-obico
                               <discovered-printer
                                 v-for="discoveredPrinter in discoveredPrinters"
                                 :key="discoveredPrinter.device_id"
-                                :discoveredPrinter="discoveredPrinter"
+                                :discovered-printer="discoveredPrinter"
                                 @auto-link-printer="autoLinkPrinter"
                               />
                             </div>
@@ -249,8 +249,8 @@ cd moonraker-obico
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
                               <input
-                                disabled
                                 ref="code"
+                                disabled
                                 class="code-btn"
                                 :value="`${verificationCode && verificationCode.code}`"
                               />
@@ -303,23 +303,23 @@ cd moonraker-obico
                       <div class="wizard-footer-left">
                         <wizard-button
                           v-if="props.activeTabIndex > 0"
+                          class="btn btn-link btn-back"
                           @click.native="
                             props.prevTab()
                             prevTab(props.activeTabIndex)
                           "
-                          class="btn btn-link btn-back"
                           >&lt; Back</wizard-button
                         >
                       </div>
                       <div class="wizard-footer-right">
                         <wizard-button
                           v-if="!props.isLastStep"
+                          class="wizard-footer-right wizard-btn"
+                          :style="{ ...props.fillButtonStyle, color: 'var(--color-on-primary)' }"
                           @click.native="
                             props.nextTab()
                             nextTab(props.activeTabIndex)
                           "
-                          class="wizard-footer-right wizard-btn"
-                          :style="{ ...props.fillButtonStyle, color: 'var(--color-on-primary)' }"
                           >Next &gt;</wizard-button
                         >
                       </div>
@@ -371,7 +371,7 @@ cd moonraker-obico
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -387,7 +387,7 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import sortBy from 'lodash/sortBy'
 import theme from '@src/styles/main.sass'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import DiscoveredPrinter from '@src/components/printers/DiscoveredPrinter.vue'
 import AutoLinkPopup from '@src/components/printers/AutoLinkPopup.vue'
@@ -399,7 +399,7 @@ export default {
     TabContent,
     WizardButton,
     Loading,
-    Layout,
+    PageLayout,
     SavingAnimation,
     DiscoveredPrinter,
   },
@@ -428,18 +428,6 @@ export default {
       apiCallIntervalId: null,
       targetPlatform: null,
       routes,
-    }
-  },
-  created() {
-    if (this.printerIdToLink) {
-      // Re-link currently doesn't support auto-discovery on the plugin side
-      this.discoveryEnabled = false
-    }
-    this.getVerificationCode()
-
-    // Start from platform selection after page refresh
-    if (this.$route.path !== routes.printerWizard) {
-      this.$router.push(routes.printerWizard + `?${window.location.search}`)
     }
   },
   computed: {
@@ -478,6 +466,18 @@ export default {
     targetMoonraker() {
       return this.targetPlatform === 'moonraker'
     },
+  },
+  created() {
+    if (this.printerIdToLink) {
+      // Re-link currently doesn't support auto-discovery on the plugin side
+      this.discoveryEnabled = false
+    }
+    this.getVerificationCode()
+
+    // Start from platform selection after page refresh
+    if (this.$route.path !== routes.printerWizard) {
+      this.$router.push(routes.printerWizard + `?${window.location.search}`)
+    }
   },
   methods: {
     setTargetPlatform(platfrom) {

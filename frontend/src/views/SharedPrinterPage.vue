@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navbar view-name="printer_shared"></navbar>
+    <nav-bar view-name="printer_shared"></nav-bar>
 
     <div class="row justify-content-center">
       <b-spinner v-if="loading" class="mt-5" label="Loading..."></b-spinner>
@@ -41,12 +41,21 @@ import urls from '@config/server-urls'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import StreamingBox from '@src/components/StreamingBox'
-import Navbar from '@src/components/Navbar.vue'
+import NavBar from '@src/components/NavBar.vue'
 export default {
   name: 'SharedPrinterPage',
   components: {
     StreamingBox,
-    Navbar,
+    NavBar,
+  },
+  data: function () {
+    return {
+      printer: null,
+      shareToken: null,
+      videoAvailable: {},
+      loading: true,
+      webrtc: WebRTCConnection(),
+    }
   },
   created() {
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
@@ -60,15 +69,6 @@ export default {
     )
     this.printerComm.connect()
     this.webrtc.openForShareToken(this.shareToken)
-  },
-  data: function () {
-    return {
-      printer: null,
-      shareToken: null,
-      videoAvailable: {},
-      loading: true,
-      webrtc: WebRTCConnection(),
-    }
   },
 }
 </script>

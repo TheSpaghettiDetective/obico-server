@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:topBarRight>
+  <page-layout>
+    <template #topBarRight>
       <div>
         <a
           v-if="isEnt"
@@ -33,8 +33,8 @@
           </b-dropdown-item>
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
           <cascaded-dropdown
-            :menuOptions="menuOptions"
-            :menuSelections="menuSelections"
+            :menu-options="menuOptions"
+            :menu-selections="menuSelections"
             @menuSelectionChanged="menuSelectionChanged"
           >
           </cascaded-dropdown>
@@ -42,8 +42,8 @@
       </div>
     </template>
 
-    <template v-slot:content>
-      <div v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
+    <template #content>
+      <div v-if="shouldShowFilterWarning" class="active-filter-notice" @click="onShowAllClicked">
         <div class="filter">
           <i class="fas fa-filter mr-2"></i>
           {{ activeFiltering }}
@@ -62,9 +62,9 @@
             :key="printer.id"
             :printer="printer"
             :is-pro-account="user.is_pro"
+            class="printer-card-wrapper"
             @PrinterUpdated="onPrinterUpdated"
             @printModalOpened="() => (targetPrinter = printer)"
-            class="printer-card-wrapper"
           ></printer-card>
         </b-row>
         <div class="row justify-content-center">
@@ -94,16 +94,16 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-modal size="lg" id="b-modal-gcodes" @hidden="resetGcodesModal">
+      <b-modal id="b-modal-gcodes" size="lg" @hidden="resetGcodesModal">
         <g-code-file-page
           v-if="selectedGcodeId"
-          :isPopup="true"
-          :targetPrinterId="targetPrinter.id"
-          :routeParams="{
+          :is-popup="true"
+          :target-printer-id="targetPrinter.id"
+          :route-params="{
             fileId: selectedGcodeId,
             printerId: selectedPrinterId,
           }"
-          :onClose="() => $bvModal.hide('b-modal-gcodes')"
+          :on-close="() => $bvModal.hide('b-modal-gcodes')"
           @goBack="
             () => {
               selectedGcodeId = null
@@ -113,14 +113,15 @@
         />
         <g-code-folders-page
           v-else
-          :isPopup="true"
-          :targetPrinter="targetPrinter"
-          :routeParams="{
+          :is-popup="true"
+          :target-printer="targetPrinter"
+          :route-params="{
             printerId: selectedPrinterId,
             parentFolder: null,
           }"
-          :onClose="() => $bvModal.hide('b-modal-gcodes')"
-          :savedPath="savedPath"
+          :on-close="() => $bvModal.hide('b-modal-gcodes')"
+          :saved-path="savedPath"
+          scroll-container-id="b-modal-gcodes"
           @openFile="
             (fileId, printerId, path) => {
               selectedGcodeId = fileId
@@ -129,11 +130,10 @@
               scrollToTop()
             }
           "
-          scrollContainerId="b-modal-gcodes"
         />
       </b-modal>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -146,7 +146,7 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 
 import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import { user, settings } from '@src/lib/page_context'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
@@ -166,16 +166,10 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    Layout,
+    PageLayout,
     CascadedDropdown,
     GCodeFoldersPage,
     GCodeFilePage,
-  },
-  created() {
-    const { IS_ENT } = settings()
-    this.isEnt = !!IS_ENT
-    this.user = user()
-    this.fetchPrinters()
   },
   data: function () {
     return {
@@ -269,6 +263,12 @@ export default {
       )
       return found.length ? found[0].title : null
     },
+  },
+  created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+    this.user = user()
+    this.fetchPrinters()
   },
   methods: {
     menuSelectionChanged(menu, selectedOption) {

@@ -3,19 +3,19 @@
     id="b-modal-move"
     title="Move item"
     ok-title="Place here"
-    @ok="handleOk"
-    :okDisabled="isSameDir || patchLoading"
-    @hidden="resetModal"
+    :ok-disabled="isSameDir || patchLoading"
     scrollable
+    @ok="handleOk"
+    @hidden="resetModal"
   >
     <template #modal-title>
       <div class="title">
         <a
           v-if="parentFolder !== null"
-          @click.prevent="goBack"
           href="#"
           class="btn shadow-none icon-btn d-inline"
           title="Go Back"
+          @click.prevent="goBack"
         >
           <i class="fas fa-chevron-left"></i>
         </a>
@@ -26,13 +26,13 @@
       <g-code-file-structure
         :folders="folders"
         :files="files"
-        :targetPrinter="targetPrinter"
+        :target-printer="targetPrinter"
         :loading="loading"
-        scrollContainerId="b-modal-move___BV_modal_body_"
-        :noMoreFolders="noMoreFolders"
-        :noMoreFiles="noMoreFiles"
-        :isMoveModal="true"
-        :disabledItem="item"
+        scroll-container-id="b-modal-move___BV_modal_body_"
+        :no-more-folders="noMoreFolders"
+        :no-more-files="noMoreFiles"
+        :is-move-modal="true"
+        :disabled-item="item"
         @openFolder="openFolder"
         @fetchMore="fetchFilesAndFolders"
       />

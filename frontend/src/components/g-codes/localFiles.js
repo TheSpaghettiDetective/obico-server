@@ -41,7 +41,7 @@ export const listFiles = (printerComm, options) => {
         // ObicoUpload is used to cache Obico Cloud files and should be hidden from the users
         delete ret.local.ObicoUpload
 
-        const items = Boolean(query) ? listRecoursively(ret.local) : Object.values(ret.local)
+        const items = query ? listRecoursively(ret.local) : Object.values(ret.local)
         for (const item of items) {
           if (item.type === 'folder') {
             folders.push({

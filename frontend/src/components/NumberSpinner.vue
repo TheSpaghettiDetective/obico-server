@@ -50,9 +50,6 @@
 <script>
 export default {
   name: 'NumberSpinner',
-  created() {
-    this.timer = null
-  },
   props: {
     min: {
       type: Number,
@@ -95,6 +92,9 @@ export default {
     classes() {
       return 'form-control'
     },
+  },
+  created() {
+    this.timer = null
   },
   methods: {
     increase() {

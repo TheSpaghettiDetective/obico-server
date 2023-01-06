@@ -1,15 +1,15 @@
 <template>
-  <layout>
-    <template v-slot:topBarRight>
+  <page-layout>
+    <template #topBarRight>
       <div>
         <b-dropdown right no-caret toggle-class="icon-btn">
           <template #button-content>
             <i class="fas fa-filter"></i>
           </template>
           <b-dropdown-item
-            v-for="(eventClass, index) in eventClassFiltering"
-            @click="toggleEventFiltering('eventClassFiltering', eventClass.key)"
+            v-for="eventClass in eventClassFiltering"
             :key="eventClass.key"
+            @click="toggleEventFiltering('eventClassFiltering', eventClass.key)"
           >
             <i
               class="fas fa-check text-primary"
@@ -19,9 +19,9 @@
           </b-dropdown-item>
           <b-dropdown-divider />
           <b-dropdown-item
-            v-for="(eventType, index) in eventTypeFiltering"
-            @click="toggleEventFiltering('eventTypeFiltering', eventType.key)"
+            v-for="eventType in eventTypeFiltering"
             :key="eventType.key"
+            @click="toggleEventFiltering('eventTypeFiltering', eventType.key)"
           >
             <i
               class="fas fa-check text-primary"
@@ -32,7 +32,7 @@
         </b-dropdown>
       </div>
     </template>
-    <template v-slot:content>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <div class="col-sm-12 col-md-10 col-lg-8">
@@ -59,7 +59,7 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -69,7 +69,7 @@ import axios from 'axios'
 import MugenScroll from 'vue-mugen-scroll'
 
 import urls from '@config/server-urls'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import PrinterEventCard from '@src/components/printer-events/PrinterEventCard.vue'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedPrinterEvent } from '@src/lib/normalizers'
@@ -95,7 +95,7 @@ export default {
 
   components: {
     MugenScroll,
-    Layout,
+    PageLayout,
     PrinterEventCard,
   },
 
@@ -192,10 +192,8 @@ export default {
       switch (eventClass) {
         case 'ERROR':
           return 'text-danger'
-          break
         case 'INFO':
           return ''
-          break
         default:
           return `text-${eventClass.toLowerCase()}`
       }

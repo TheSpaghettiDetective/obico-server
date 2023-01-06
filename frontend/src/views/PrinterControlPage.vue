@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
@@ -14,9 +14,9 @@
                 <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="user.is_pro" />
                 <div class="card-body" :class="{ overlay: printer.isActive() }">
                   <div
+                    v-show="printer.isActive()"
                     class="overlay-top text-center"
                     style="left: 0; width: 100%; top: 50%; margin-top: -85px"
-                    v-show="printer.isActive()"
                   >
                     <div>Printer controls are disabled</div>
                     <div>because the printer is not idle.</div>
@@ -125,7 +125,7 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -135,7 +135,7 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer_comm'
 import WebRTCConnection from '@src/lib/webrtc'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page_context'
 
@@ -157,7 +157,7 @@ export default {
 
   components: {
     StreamingBox,
-    Layout,
+    PageLayout,
   },
 
   data() {
@@ -174,6 +174,14 @@ export default {
       jogDistance: 10,
       jogDistanceOptions: [0.1, 1, 10, 100],
     }
+  },
+
+  watch: {
+    jogDistance: function (newValue) {
+      if (isLocalStorageSupported()) {
+        localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
+      }
+    },
   },
 
   created() {
@@ -224,14 +232,6 @@ export default {
           })
         }
       })
-    },
-  },
-
-  watch: {
-    jogDistance: function (newValue) {
-      if (isLocalStorageSupported()) {
-        localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
-      }
     },
   },
 }

@@ -92,9 +92,9 @@
       <b-navbar class="top-nav">
         <div class="d-flex align-items-center">
           <b-button
-            @click="collapsed = !collapsed"
             variant="_"
             class="shadow-none p-0 mr-3 position-relative toggle-sidebar"
+            @click="collapsed = !collapsed"
           >
             <i class="fas fa-bars position-relative">
               <div v-if="hasUnseenPrinterEvents" class="notification-dot">
@@ -124,7 +124,7 @@ import { inMobileWebView, user, settings } from '@src/lib/page_context'
 import layoutSections from '@config/layout/sections'
 
 export default {
-  name: 'Layout',
+  name: 'PageLayout',
 
   components: {
     ...Object.keys(layoutSections).reduce((obj, name) => {

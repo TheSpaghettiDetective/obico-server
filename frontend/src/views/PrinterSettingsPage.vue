@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
@@ -12,13 +12,13 @@
                   <saving-animation :errors="errorMessages.name" :saving="saving.name">
                     <input
                       id="id_name"
+                      v-model="printer.name"
                       type="text"
                       name="name"
                       maxlength="200"
                       placeholder=""
                       class="form-control field_required"
                       required="required"
-                      v-model="printer.name"
                     />
                   </saving-animation>
                 </div>
@@ -32,12 +32,12 @@
                     >
                       <div class="custom-control custom-radio mt-1 radio">
                         <input
+                          id="id_action_on_failure_0"
+                          v-model="printer.action_on_failure"
                           type="radio"
                           name="action_on_failure"
                           class="custom-control-input field_required"
-                          id="id_action_on_failure_0"
                           value="NONE"
-                          v-model="printer.action_on_failure"
                           @change="updateSetting('action_on_failure')"
                         />
                         <label class="custom-control-label" for="id_action_on_failure_0"
@@ -50,16 +50,16 @@
                       :saving="saving.action_on_failure_PAUSE"
                     >
                       <div
-                        class="custom-control custom-radio mt-1 radio"
                         id="action_on_failure_PAUSE"
+                        class="custom-control custom-radio mt-1 radio"
                       >
                         <input
+                          id="id_action_on_failure_1"
+                          v-model="printer.action_on_failure"
                           type="radio"
                           name="action_on_failure"
                           class="custom-control-input field_required"
-                          id="id_action_on_failure_1"
                           value="PAUSE"
-                          v-model="printer.action_on_failure"
                           @change="updateSetting('action_on_failure')"
                         />
                         <label class="custom-control-label" for="id_action_on_failure_1"
@@ -88,11 +88,11 @@
                     >
                       <div class="custom-control custom-checkbox mt-2 checkbox">
                         <input
+                          id="id_tools_off_on_pause"
+                          v-model="printer.tools_off_on_pause"
                           type="checkbox"
                           name="tools_off_on_pause"
                           class="custom-control-input"
-                          id="id_tools_off_on_pause"
-                          v-model="printer.tools_off_on_pause"
                           @change="updateSetting('tools_off_on_pause')"
                         />
                         <label class="custom-control-label" for="id_tools_off_on_pause">
@@ -106,11 +106,11 @@
                     >
                       <div class="custom-control custom-checkbox mt-2 checkbox">
                         <input
+                          id="id_bed_off_on_pause"
+                          v-model="printer.bed_off_on_pause"
                           type="checkbox"
                           name="bed_off_on_pause"
                           class="custom-control-input"
-                          id="id_bed_off_on_pause"
-                          v-model="printer.bed_off_on_pause"
                           @change="updateSetting('bed_off_on_pause')"
                         />
                         <label class="custom-control-label" for="id_bed_off_on_pause">
@@ -127,10 +127,10 @@
                       <div class="form-inline my-1 checkbox-with-input">
                         <div class="custom-control custom-checkbox">
                           <input
-                            type="checkbox"
-                            class="custom-control-input"
                             id="retract-checkbox"
                             v-model="retractFilamentByEnabled"
+                            type="checkbox"
+                            class="custom-control-input"
                           />
                           <label class="custom-control-label" for="retract-checkbox"
                             >Retract filament by</label
@@ -153,10 +153,10 @@
                       <div class="form-inline my-1 checkbox-with-input">
                         <div class="custom-control custom-checkbox">
                           <input
-                            type="checkbox"
-                            class="custom-control-input"
                             id="lift-z-checkbox"
                             v-model="liftExtruderByEnabled"
+                            type="checkbox"
+                            class="custom-control-input"
                           />
                           <label class="custom-control-label" for="lift-z-checkbox"
                             >Lift extruder along Z axis by</label
@@ -186,7 +186,7 @@
                           :min="0.8"
                           :max="1.2"
                           :interval="0.05"
-                          :tooltipFormatter="sensitivityTooltipFormatter"
+                          :tooltip-formatter="sensitivityTooltipFormatter"
                         />
                       </div>
                     </saving-animation>
@@ -233,10 +233,10 @@
                     <div class="form-inline my-1 checkbox-with-input">
                       <div class="custom-control custom-checkbox">
                         <input
-                          type="checkbox"
-                          class="custom-control-input"
                           id="timelapseOnFinishEnabled"
                           v-model="timelapseOnFinishEnabled"
+                          type="checkbox"
+                          class="custom-control-input"
                         />
                         <label class="custom-control-label" for="timelapseOnFinishEnabled"
                           >Record time-lapse when a print finishes successfully.</label
@@ -266,10 +266,10 @@
                     <div class="form-inline mt-3 mb-1 checkbox-with-input">
                       <div class="custom-control custom-checkbox">
                         <input
-                          type="checkbox"
-                          class="custom-control-input"
                           id="timelapseOnCancelEnabled"
                           v-model="timelapseOnCancelEnabled"
+                          type="checkbox"
+                          class="custom-control-input"
                         />
                         <label class="custom-control-label" for="timelapseOnCancelEnabled"
                           >Record time-lapse when a print is cancelled.</label
@@ -346,7 +346,7 @@
         </div>
       </div> -->
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -358,13 +358,13 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import urls from '@config/server-urls'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NumberInput from '@src/components/NumberInput.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 
 export default {
   components: {
     SavingAnimation,
     NumberInput,
-    Layout,
+    PageLayout,
     VueSlider,
   },
 

@@ -6,11 +6,11 @@
       <div class="col-md-10 col-sm-9">
         <saving-animation :errors="errorMessages.first_name" :saving="saving.first_name">
           <input
+            id="id_first_name"
+            v-model="firstName"
             type="text"
             maxlength="30"
             class="form-control"
-            id="id_first_name"
-            v-model="user.first_name"
           />
         </saving-animation>
       </div>
@@ -20,23 +20,23 @@
       <div class="col-md-10 col-sm-9">
         <saving-animation :errors="errorMessages.last_name" :saving="saving.last_name">
           <input
+            id="id_last_name"
+            v-model="lastName"
             type="text"
             maxlength="30"
             class="form-control"
-            id="id_last_name"
-            v-model="user.last_name"
           />
         </saving-animation>
       </div>
     </div>
-    <div class="row" v-if="!onlyName()">
+    <div v-if="!onlyName()" class="row">
       <label for="id_email" class="col-md-2 col-sm-3 col-form-label">Primary Email</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
         {{ user.email }} ({{ user.is_primary_email_verified ? 'Verified' : 'Unverified' }})
         <div class="form-text"><a href="/accounts/email">Manage email addresses</a></div>
       </div>
     </div>
-    <div class="form-group row" v-if="!onlyName()">
+    <div v-if="!onlyName()" class="form-group row">
       <label class="col-md-2 col-sm-3 col-form-label">Password</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
         <a href="/accounts/password/change">Change</a>
@@ -74,7 +74,18 @@ export default {
   data() {
     return {
       onlyName,
+      firstName: this.user.first_name,
+      lastName: this.user.last_name,
     }
+  },
+
+  watch: {
+    firstName: function (newVal, prevVal) {
+      this.$emit('updateSetting', 'first_name', newVal)
+    },
+    lastName: function (newVal, prevVal) {
+      this.$emit('updateSetting', 'last_name', newVal)
+    },
   },
 }
 </script>

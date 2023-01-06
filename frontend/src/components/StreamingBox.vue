@@ -2,8 +2,8 @@
   <div class="card-img-top webcam_container">
     <div
       v-show="slowLinkLoss > 50"
-      class="slow-link-wrapper"
       ref="slowLinkWrapper"
+      class="slow-link-wrapper"
       @click="slowLinkClicked"
       @mouseenter="
         fixSlowLinkTextWidth()
@@ -39,12 +39,12 @@
       v-if="
         isVideoAvailable && !autoplay && (isBasicStreamingReadyToPlay || isBasicStreamingFrozen)
       "
-      @click="onPlayBtnClicked"
       class="centered-element p-0"
       :disabled="isBasicStreamingFrozen"
+      @click="onPlayBtnClicked"
     >
-      <i class="fas fa-play ml-1" v-if="isBasicStreamingReadyToPlay"></i>
-      <span class="medium" v-if="isBasicStreamingFrozen"
+      <i v-if="isBasicStreamingReadyToPlay" class="fas fa-play ml-1"></i>
+      <span v-if="isBasicStreamingFrozen" class="medium"
         >{{ remainingSecondsUntilNextCycle }}s</span
       >
     </b-button>
@@ -73,10 +73,10 @@
         class="streaming-guide overlay-info"
         @click="onInfoClicked"
       >
-        <div class="message" v-if="isBasicStreamingReadyToPlay">
+        <div v-if="isBasicStreamingReadyToPlay" class="message">
           Webcam streams up to 5 FPS for Free
         </div>
-        <div class="message text-warning" v-if="isBasicStreamingFrozen">
+        <div v-if="isBasicStreamingFrozen" class="message text-warning">
           {{ remainingSecondsUntilNextCycle }}s left in the cooldown period
         </div>
         <a href="#" class="learn-more">Learn more...</a>
@@ -170,41 +170,6 @@ function MJpegStreamDecoder(onFrame) {
 
 export default {
   name: 'StreamingBox',
-  created() {
-    this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
-      this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
-      this.onCanPlay()
-    })
-
-    if (this.webrtc) {
-      this.webrtc.setCallbacks({
-        onStreamAvailable: this.onStreamAvailable,
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => (this.trackMuted = true),
-        onTrackUnmuted: () => (this.trackMuted = false),
-        onBitrateUpdated: (bitrate) => (this.currentBitrate = bitrate.value),
-        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
-      })
-
-      if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
-      }
-
-      ifvisible.on('blur', () => {
-        if (this.webrtc) {
-          this.webrtc.stopStream()
-        }
-      })
-
-      ifvisible.on('focus', () => {
-        if (this.webrtc && this.autoplay) {
-          this.webrtc.startStream()
-        }
-      })
-    }
-  },
 
   props: {
     printer: {
@@ -300,6 +265,41 @@ export default {
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
+  },
+  created() {
+    this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
+      this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
+      this.onCanPlay()
+    })
+
+    if (this.webrtc) {
+      this.webrtc.setCallbacks({
+        onStreamAvailable: this.onStreamAvailable,
+        onRemoteStream: this.onWebRTCRemoteStream,
+        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
+        onSlowLink: this.onSlowLink,
+        onTrackMuted: () => (this.trackMuted = true),
+        onTrackUnmuted: () => (this.trackMuted = false),
+        onBitrateUpdated: (bitrate) => (this.currentBitrate = bitrate.value),
+        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
+      })
+
+      if (!this.autoplay) {
+        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
+      }
+
+      ifvisible.on('blur', () => {
+        if (this.webrtc) {
+          this.webrtc.stopStream()
+        }
+      })
+
+      ifvisible.on('focus', () => {
+        if (this.webrtc && this.autoplay) {
+          this.webrtc.startStream()
+        }
+      })
+    }
   },
 
   methods: {

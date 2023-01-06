@@ -1,23 +1,23 @@
 <template>
   <div>
-    <div class="row my-2" v-if="!printer.isOffline() && printer.hasError()">
+    <div v-if="!printer.isOffline() && printer.hasError()" class="row my-2">
       <div class="col-12 bg-danger text-center">
         <div class="lead">{{ printer.agentDisplayName() }} Error</div>
         <div>{{ printer.status.state.error }}</div>
       </div>
     </div>
-    <div class="row my-2" v-if="printer.inUserInteractionRequired()">
+    <div v-if="printer.inUserInteractionRequired()" class="row my-2">
       <div class="col-12 bg-warning text-center">
         <div>Filament change or user interaction required</div>
       </div>
     </div>
-    <div class="row my-2" v-if="printer.inTransientState()">
+    <div v-if="printer.inTransientState()" class="row my-2">
       <div class="col-12 text-center my-3">
         <b-spinner label="Processing..."></b-spinner>
         <div>{{ printer.status.state.text }} ...</div>
       </div>
     </div>
-    <div class="row my-2" v-else>
+    <div v-else class="row my-2">
       <div
         v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()"
         class="col-sm-6"
@@ -81,7 +81,7 @@
         </button>
       </div>
     </div>
-    <div class="row my-2" v-if="!printer.isOffline() && printer.isDisconnected()">
+    <div v-if="!printer.isOffline() && printer.isDisconnected()" class="row my-2">
       <div class="col-12 text-center py-2 text-warning">
         <div>Printer not connected at the serial port.</div>
         <button
@@ -90,7 +90,7 @@
           type="button"
           class="btn btn-outline-primary btn-block mt-2"
           :disabled="connecting"
-          @click="this.onConnectClicked"
+          @click="onConnectClicked"
         >
           <b-spinner v-if="connecting" small></b-spinner>
           <i v-else class="fab fa-usb"></i>
@@ -98,7 +98,7 @@
         </button>
       </div>
     </div>
-    <div class="row my-2" v-if="printer.isOffline()">
+    <div v-if="printer.isOffline()" class="row my-2">
       <div class="col-12 text-center py-3 text-warning">
         <div>
           Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.

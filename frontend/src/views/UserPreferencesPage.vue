@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container fluid="xl" :class="{ 'is-in-mobile': useMobileLayout }" class="flex-full-size">
         <b-row class="flex-full-size">
           <b-col class="flex-full-size">
@@ -43,16 +43,16 @@
                   :class="{ 'is-in-mobile': useMobileLayout }"
                 >
                   <component
+                    :is="currentRouteComponent"
                     v-if="
                       currentSection &&
                       (!currentSection.isNotificationChannel || availableNotificationPlugins)
                     "
-                    :is="currentRouteComponent"
                     :user="user"
-                    :errorMessages="errorMessages"
+                    :error-messages="errorMessages"
                     :saving="saving"
                     :config="config"
-                    :notificationChannel="
+                    :notification-channel="
                       currentSection && currentSection.isNotificationChannel ? currentSection : {}
                     "
                     @createNotificationChannel="createNotificationChannel"
@@ -88,13 +88,13 @@
                       {{ value.title }}
                     </template>
                     <component
-                      v-if="!value.isNotificationChannel || availableNotificationPlugins"
                       :is="name"
+                      v-if="!value.isNotificationChannel || availableNotificationPlugins"
                       :user="user"
-                      :errorMessages="errorMessages"
+                      :error-messages="errorMessages"
                       :saving="saving"
                       :config="config"
-                      :notificationChannel="value.isNotificationChannel ? value : {}"
+                      :notification-channel="value.isNotificationChannel ? value : {}"
                       @createNotificationChannel="createNotificationChannel"
                       @updateNotificationChannel="patchNotificationChannel"
                       @deleteNotificationChannel="deleteNotificationChannel"
@@ -122,21 +122,27 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
 import axios from 'axios'
 import urls from '@config/server-urls'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
-import { mobilePlatform } from '@src/lib/page_context'
 import { getNotificationSettingKey } from '@src/lib/utils'
 
 export default {
   name: 'UserPreferencesPage',
+
+  components: {
+    PageLayout,
+    ...Object.keys(sections).reduce((obj, name) => {
+      return Object.assign(obj, { [name]: sections[name].importComponent })
+    }, {}),
+  },
 
   props: {
     config: {
@@ -145,13 +151,6 @@ export default {
       },
       type: Object,
     },
-  },
-
-  components: {
-    Layout,
-    ...Object.keys(sections).reduce((obj, name) => {
-      return Object.assign(obj, { [name]: sections[name].importComponent })
-    }, {}),
   },
 
   data() {
@@ -208,41 +207,20 @@ export default {
         new URLSearchParams(window.location.search).get('themeable') === 'true'
       )
     },
-    firstName: {
-      get: function () {
-        return this.user ? this.user.first_name : undefined
-      },
-      set: function (newValue) {
-        this.user.first_name = newValue
-      },
-    },
-    lastName: {
-      get: function () {
-        return this.user ? this.user.last_name : undefined
-      },
-      set: function (newValue) {
-        this.user.last_name = newValue
-      },
-    },
-  },
-
-  watch: {
-    firstName: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('first_name')
-      }
-    },
-    lastName: function (newValue, oldValue) {
-      if (oldValue !== undefined) {
-        this.updateSetting('last_name')
-      }
-    },
   },
 
   created() {
     this.fetchNotificationPlugins()
     this.fetchNotificationChannels()
     this.fetchUser()
+  },
+
+  mounted() {
+    this.checkMobileLayout()
+    window.onresize = this.checkMobileLayout
+    if (this.useMobileLayout) {
+      document.querySelector('body').style.paddingTop = '0px'
+    }
   },
 
   methods: {
@@ -288,14 +266,14 @@ export default {
         this.configuredNotificationChannels = channels
         for (const [key, val] of Object.entries(this.sections)) {
           if (val.isNotificationChannel) {
-            this.sections[key].channelInfo = channels.filter(
+            this.sections[key].channelInfo = channels.find(
               (channel) => channel.name === val.channelName
-            )[0]
+            )
           }
         }
       })
     },
-    createNotificationChannel(section, config, opts = {}) {
+    createNotificationChannel({ section, config, opts = {} }) {
       const data = {
         user: this.user.id,
         name: section.channelName,
@@ -336,7 +314,15 @@ export default {
           }
         })
     },
-    patchNotificationChannel(section, propNames) {
+    patchNotificationChannel({ section, propNames, propValues }) {
+      if (propValues !== undefined) {
+        // assuming propNames.length and propValues.lenth are equal
+        propValues.forEach((value, index) => {
+          const propName = propNames[index]
+          this.sections[section.channelName].channelInfo[propName] = value
+        })
+      }
+
       let data = {
         name: section.channelName,
       }
@@ -445,11 +431,16 @@ export default {
           }
         })
         .then(() => {
+          // send to mobile app to update it's state
           if (window.ReactNativeWebView) {
             if (key === 'first_name') {
-              window.ReactNativeWebView.postMessage(JSON.stringify({ firstName: this.firstName }))
+              window.ReactNativeWebView.postMessage(
+                JSON.stringify({ firstName: this.user.first_name })
+              )
             } else if (key === 'last_name') {
-              window.ReactNativeWebView.postMessage(JSON.stringify({ lastName: this.lastName }))
+              window.ReactNativeWebView.postMessage(
+                JSON.stringify({ lastName: this.user.last_name })
+              )
             }
           }
 
@@ -478,8 +469,11 @@ export default {
         }</p><p>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</p>`,
       })
     },
-    updateSetting(settingsItem) {
-      console.log('updateSetting, ', settingsItem)
+    updateSetting(settingsItem, value) {
+      if (value !== undefined) {
+        this.user[settingsItem] = value
+      }
+
       if (settingsItem in this.delayedSubmit) {
         const delayInfo = this.delayedSubmit[settingsItem]
         if (delayInfo['timeoutId']) {
@@ -492,13 +486,6 @@ export default {
       }
       this.patchUser(settingsItem, this.user[settingsItem])
     },
-  },
-  mounted() {
-    this.checkMobileLayout()
-    window.onresize = this.checkMobileLayout
-    if (this.useMobileLayout) {
-      document.querySelector('body').style.paddingTop = '0px'
-    }
   },
 }
 </script>

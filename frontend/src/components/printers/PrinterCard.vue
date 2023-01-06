@@ -41,8 +41,8 @@
         <i class="fas fa-exclamation-triangle align-middle"></i>
         <span class="align-middle">Failure Detected!</span>
         <button
-          type="button"
           id="not-a-failure"
+          type="button"
           class="btn btn-outline-primary btn-sm float-right"
           @click="onNotAFailureClicked($event, false)"
         >
@@ -65,7 +65,7 @@
           ></small>
           <div></div>
         </div>
-        <Gauge :normalizedP="printer.normalized_p" :isWatching="isWatching" />
+        <failure-detection-gauge :normalized-p="printer.normalized_p" :is-watching="isWatching" />
         <hr />
       </div>
       <PrinterActions
@@ -108,7 +108,7 @@
       <div class="info-section" style="height: 0.3rem"></div>
       <div>
         <div class="info-section container">
-          <div id="panel-settings" v-if="section_toggles.settings">
+          <div v-if="section_toggles.settings" id="panel-settings">
             <div class="pt-2 pb-3">
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
@@ -120,12 +120,12 @@
                   </label>
                   <div class="custom-control custom-switch">
                     <input
+                      :id="'watching_enabled-toggle-' + printer.id"
                       type="checkbox"
                       name="watching_enabled"
                       class="custom-control-input update-printer"
-                      :id="'watching_enabled-toggle-' + printer.id"
-                      @click="onWatchForFailuresToggled"
                       :checked="watchForFailures"
+                      @click="onWatchForFailuresToggled"
                     />
                     <label
                       class="custom-control-label"
@@ -145,12 +145,12 @@
                   </label>
                   <div class="custom-control custom-switch">
                     <input
+                      :id="'pause-toggle-' + printer.id"
                       type="checkbox"
                       name="pause_on_failure"
                       class="custom-control-input update-printer"
-                      :id="'pause-toggle-' + printer.id"
-                      @click="onPauseOnFailureToggled"
                       :checked="pauseOnFailure"
+                      @click="onPauseOnFailureToggled"
                     />
                     <label
                       class="custom-control-label"
@@ -217,17 +217,15 @@
 
 <script>
 import get from 'lodash/get'
-import capitalize from 'lodash/capitalize'
 import moment from 'moment'
-import filter from 'lodash/filter'
 import axios from 'axios'
 
 import urls from '@config/server-urls'
-import { normalizedPrinter, normalizedGcode } from '@src/lib/normalizers'
+import { normalizedPrinter } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
 import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
-import Gauge from '@src/components/Gauge'
+import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 import StreamingBox from '@src/components/StreamingBox'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import DurationBlock from './DurationBlock.vue'
@@ -256,7 +254,7 @@ export default {
   name: 'PrinterCard',
   components: {
     StreamingBox,
-    Gauge,
+    FailureDetectionGauge,
     DurationBlock,
     PrinterActions,
     StatusTemp,
@@ -281,24 +279,6 @@ export default {
       },
       webrtc: WebRTCConnection(),
     }
-  },
-  created() {
-    this.printerComm = PrinterComm(
-      this.printer.id,
-      urls.printerWebSocket(this.printer.id),
-      (data) => {
-        this.$emit('PrinterUpdated', this.updatedPrinter(data))
-      },
-      (printerStatus) => {
-        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
-        const status = printerStatus.status || printerStatus.octoprint_data
-        this.$emit('PrinterUpdated', this.updatedPrinter({ status }))
-      }
-    )
-    this.printerComm.connect()
-
-    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-    this.printerComm.setWebRTC(this.webrtc)
   },
   computed: {
     isWatching() {
@@ -373,6 +353,24 @@ export default {
       return 'text-success'
     },
   },
+  created() {
+    this.printerComm = PrinterComm(
+      this.printer.id,
+      urls.printerWebSocket(this.printer.id),
+      (data) => {
+        this.$emit('PrinterUpdated', this.updatedPrinter(data))
+      },
+      (printerStatus) => {
+        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+        const status = printerStatus.status || printerStatus.octoprint_data
+        this.$emit('PrinterUpdated', this.updatedPrinter({ status }))
+      }
+    )
+    this.printerComm.connect()
+
+    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+    this.printerComm.setWebRTC(this.webrtc)
+  },
 
   methods: {
     updatedPrinter(newData) {
@@ -422,10 +420,14 @@ export default {
       ev.preventDefault()
     },
     onWatchForFailuresToggled() {
+      // FIXME: fix on printer page update (when better desktop experience will be introduced)
+      // eslint-disable-next-line vue/no-mutating-props
       this.printer.watching_enabled = !this.printer.watching_enabled
       this.updatePrinter(this.printer)
     },
     onPauseOnFailureToggled() {
+      // FIXME: fix on printer page update (when better desktop experience will be introduced)
+      // eslint-disable-next-line vue/no-mutating-props
       this.printer.action_on_failure = this.printer.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
       this.updatePrinter(this.printer)
     },

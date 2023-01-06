@@ -2,11 +2,11 @@
   <div class="card-body consent-section">
     <div>
       Number of snapshots:
-      <span class="feedback-estimate">{{ this.print.printshotfeedback_set.length }}</span>
+      <span class="feedback-estimate">{{ print.printshotfeedback_set.length }}</span>
     </div>
     <p>
       Estimated time to finish:
-      <span class="feedback-estimate">{{ this.estimatedFeedbackTime }}</span>
+      <span class="feedback-estimate">{{ estimatedFeedbackTime }}</span>
     </p>
     <p class="font-weight-light">
       Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of
@@ -19,21 +19,21 @@
     </p>
     <br />
     <button
-      v-on:click="$emit('continue-btn-pressed')"
       :disabled="!consentChecked"
       class="btn btn-primary btn-block"
       type="button"
+      @click="$emit('continue-btn-pressed')"
     >
       Start Focused Feedback
     </button>
     <br />
     <div class="custom-control custom-checkbox form-check-inline">
       <input
+        id="consented-checkbox"
         v-model="consentChecked"
         type="checkbox"
         name="consented"
         class="custom-control-input"
-        id="consented-checkbox"
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
         I grant the Obico app team members the permission to review the time-lapse video of the
@@ -57,9 +57,9 @@
     <br />
     <video-box
       v-if="print.video_url"
-      :videoUrl="print.video_url"
-      :posterUrl="print.poster_url"
-      :fullScreenBtn="false"
+      :video-url="print.video_url"
+      :poster-url="print.poster_url"
+      :full-screen-btn="false"
     />
     <div v-else>
       <detective-working />
@@ -74,13 +74,13 @@ import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
 
 export default {
-  name: 'Consent',
+  name: 'FocusedFeedbackConsent',
+
+  components: { VideoBox, DetectiveWorking },
 
   props: {
     print: Object,
   },
-
-  components: { VideoBox, DetectiveWorking },
 
   data() {
     return {

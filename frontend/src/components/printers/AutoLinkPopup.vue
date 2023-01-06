@@ -39,11 +39,6 @@
 <script>
 export default {
   name: 'AutoLinkPopup',
-  data() {
-    return {
-      linking: false,
-    }
-  },
   props: {
     discoveredPrinter: {
       type: Object,
@@ -57,6 +52,11 @@ export default {
       type: Function,
       required: true,
     },
+  },
+  data() {
+    return {
+      linking: false,
+    }
   },
 
   mounted() {

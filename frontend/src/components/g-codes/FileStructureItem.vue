@@ -19,7 +19,7 @@
         <span v-if="!isFolder">{{ item.filesize }}</span>
         <span v-if="isFolder">{{ item.numItems }} item(s)</span>
       </div>
-      <div class="created" v-if="!isMoveModal">
+      <div v-if="!isMoveModal" class="created">
         {{ item.created_at ? item.created_at.fromNow() : '-' }}
       </div>
       <template v-if="!isMoveModal">

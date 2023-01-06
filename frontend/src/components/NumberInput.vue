@@ -4,11 +4,11 @@
       <button
         class="btn btn-outline-secondary control-button"
         type="button"
+        :disabled="disable"
         @click="
           inputValue = inputValue > 0 ? Math.round((inputValue - step) * 10) / 10 : 0
           $emit('input', inputValue)
         "
-        :disabled="disable"
       >
         ↓
       </button>
@@ -25,11 +25,11 @@
       <button
         class="btn btn-outline-secondary control-button"
         type="button"
+        :disabled="disable"
         @click="
           inputValue = Math.round((inputValue + step) * 10) / 10
           $emit('input', inputValue)
         "
-        :disabled="disable"
       >
         ↑
       </button>

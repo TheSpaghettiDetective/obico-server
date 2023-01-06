@@ -7,20 +7,20 @@
 
       <slot name="configuration">
         <div v-if="configVariableName" class="form-group row my-4">
-          <label :for="`id_${settingKey(configVariableName)}`" class="col-12 col-form-label">{{
-            configVariableTitle
-          }}</label>
+          <label :for="`id_${settingKey(configVariableName)}`" class="col-12 col-form-label">
+            {{ configVariableTitle }}
+          </label>
           <div class="col-12 col-form-label">
             <saving-animation
               :errors="errorMessages[settingKey('config')]"
               :saving="saving[settingKey('config')]"
             >
               <input
+                :id="`id_${settingKey(configVariableName)}`"
+                v-model="configVariable"
                 type="text"
                 :placeholder="configVariablePlaceholder"
                 class="form-control"
-                :id="`id_${settingKey(configVariableName)}`"
-                v-model="configVariable"
               />
             </saving-animation>
           </div>
@@ -29,17 +29,14 @@
 
       <div v-if="channelCreated && showSettings">
         <notification-setting-switch
-          settingId="enabled"
-          settingTitle="Enable notification"
-          :isHeader="true"
-          :errorMessages="errorMessages"
+          setting-id="enabled"
+          setting-title="Enable notification"
+          :is-header="true"
+          :error-messages="errorMessages"
           :saving="saving"
-          :notificationChannel="notificationChannel"
-          :bottomDivider="true"
-          @updateNotificationChannel="
-            (notificationChannel, settingIds) =>
-              $emit('updateNotificationChannel', notificationChannel, settingIds)
-          "
+          :notification-channel="notificationChannel"
+          :bottom-divider="true"
+          @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
         />
         <div :class="{ inactive: !notificationsEnabled }">
           <slot name="custom-settings"></slot>
@@ -51,11 +48,11 @@
                   <saving-animation :errors="[]" :saving="false">
                     <div class="custom-control custom-checkbox form-check-inline">
                       <input
+                        :id="`id_${settingKey(setting.id)}`"
+                        v-model="printerStatusChangeNotifications"
                         type="checkbox"
                         class="custom-control-input"
-                        :id="`id_${settingKey(setting.id)}`"
                         :disabled="!notificationsEnabled"
-                        v-model="printerStatusChangeNotifications"
                       />
                       <label class="custom-control-label" :for="`id_${settingKey(setting.id)}`">
                         {{ setting.title }}
@@ -80,16 +77,16 @@
                     </div>
                     <div class="setting-item-switch">
                       <onoff-toggle
+                        v-model="printerStatusChangeNotifications"
                         :theme="theme"
                         :width="theme === 'ios' ? 48 : 30"
                         :height="theme === 'ios' ? 24 : 12"
-                        :onColor="
+                        :on-color="
                           theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'
                         "
-                        offColor="var(--color-divider)"
-                        borderColor="var(--color-divider)"
-                        :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
-                        v-model="printerStatusChangeNotifications"
+                        off-color="var(--color-divider)"
+                        border-color="var(--color-divider)"
+                        :thumb-color="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
                         :disabled="!notificationsEnabled"
                         class="mb-0"
                       />
@@ -100,35 +97,29 @@
             </template>
             <template v-else>
               <notification-setting-switch
-                :settingId="setting.id"
-                :settingTitle="setting.title"
-                :settingDescription="setting.description"
+                :setting-id="setting.id"
+                :setting-title="setting.title"
+                :setting-description="setting.description"
                 :disabled="!notificationsEnabled"
-                :errorMessages="errorMessages"
+                :error-messages="errorMessages"
                 :saving="saving"
-                :notificationChannel="notificationChannel"
-                @updateNotificationChannel="
-                  (notificationChannel, settingIds) =>
-                    $emit('updateNotificationChannel', notificationChannel, settingIds)
-                "
+                :notification-channel="notificationChannel"
+                @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
               />
             </template>
             <div v-if="setting.subcategories">
               <notification-setting-switch
                 v-for="subcategory in setting.subcategories"
-                :key="subcategory.id"
-                :settingId="subcategory.id"
-                :settingTitle="subcategory.title"
-                :settingDescription="subcategory.description"
-                :isSubcategory="true"
+                :key="getKey(subcategory)"
+                :setting-id="subcategory.id"
+                :setting-title="subcategory.title"
+                :setting-description="subcategory.description"
+                :is-subcategory="true"
                 :disabled="!notificationsEnabled"
-                :errorMessages="errorMessages"
+                :error-messages="errorMessages"
                 :saving="saving"
-                :notificationChannel="notificationChannel"
-                @updateNotificationChannel="
-                  (notificationChannel, settingIds) =>
-                    $emit('updateNotificationChannel', notificationChannel, settingIds)
-                "
+                :notification-channel="notificationChannel"
+                @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
               />
             </div>
           </div>
@@ -184,12 +175,15 @@ export default {
     },
     configVariableTitle: {
       type: String,
+      default: '',
     },
     configVariablePlaceholder: {
       type: String,
+      default: '',
     },
     configVariableName: {
       type: String,
+      default: '',
     },
   },
 
@@ -224,9 +218,9 @@ export default {
         if (!this.notificationChannel.channelInfo) {
           return null
         }
-        const subcategories = this.notificationSettings.filter(
+        const subcategories = this.notificationSettings.find(
           (setting) => setting.id === 'print_job'
-        )[0].subcategories
+        ).subcategories
         for (const subcategory of subcategories) {
           if (this.notificationChannel.channelInfo[subcategory.id]) {
             return true
@@ -236,32 +230,44 @@ export default {
       },
       set: function (newValue) {
         if (newValue) {
-          const subcategories = this.notificationSettings.filter(
+          const subcategories = this.notificationSettings.find(
             (setting) => setting.id === 'print_job'
-          )[0].subcategories
+          ).subcategories
           let changedProps = []
+          let newValues = []
           for (const subcategory of subcategories) {
             if (subcategory.enabledByDefault) {
-              this.notificationChannel.channelInfo[subcategory.id] = true
+              // this.notificationChannel.channelInfo[subcategory.id] = true
               changedProps.push(subcategory.id)
+              newValues.push(true)
             }
           }
           if (changedProps.length) {
-            this.$emit('updateNotificationChannel', this.notificationChannel, changedProps)
+            this.$emit('updateNotificationChannel', {
+              section: this.notificationChannel,
+              propNames: changedProps,
+              propValues: newValues,
+            })
           }
         } else {
-          const subcategories = this.notificationSettings.filter(
+          const subcategories = this.notificationSettings.find(
             (setting) => setting.id === 'print_job'
-          )[0].subcategories
+          ).subcategories
           let changedProps = []
+          let newValues = []
           for (const subcategory of subcategories) {
             if (this.notificationChannel.channelInfo[subcategory.id]) {
-              this.notificationChannel.channelInfo[subcategory.id] = false
+              // this.notificationChannel.channelInfo[subcategory.id] = false
               changedProps.push(subcategory.id)
+              newValues.push(false)
             }
           }
           if (changedProps.length) {
-            this.$emit('updateNotificationChannel', this.notificationChannel, changedProps)
+            this.$emit('updateNotificationChannel', {
+              section: this.notificationChannel,
+              propNames: changedProps,
+              propValues: newValues,
+            })
           }
         }
       },
@@ -277,6 +283,16 @@ export default {
     },
   },
 
+  watch: {
+    configVariable(newValue, oldValue) {
+      if (oldValue === null) {
+        return
+      }
+      this.$emit('clearErrorMessages', this.settingKey('config'))
+      this.updateConfig()
+    },
+  },
+
   created() {
     if (
       this.notificationChannel.channelInfo &&
@@ -289,17 +305,11 @@ export default {
     }
   },
 
-  watch: {
-    configVariable(newValue, oldValue) {
-      if (oldValue === null) {
-        return
-      }
-      this.$emit('clearErrorMessages', this.settingKey('config'))
-      this.updateConfig()
-    },
-  },
-
   methods: {
+    getKey(setting) {
+      // update key on setting value change to force re-render
+      return `${setting.id}_${this.notificationChannel.channelInfo[setting.id]}`
+    },
     settingKey(settingId) {
       return getNotificationSettingKey(this.notificationChannel, settingId)
     },
@@ -315,15 +325,19 @@ export default {
       if (this.channelCreated) {
         this.configUpdateTimeout = setTimeout(() => {
           if (this.configVariable) {
-            this.notificationChannel.channelInfo.config = config
-            this.$emit('updateNotificationChannel', this.notificationChannel, ['config'])
+            this.$emit('updateNotificationChannel', {
+              section: this.notificationChannel,
+              propNames: ['config'],
+              propValues: [config],
+            })
           } else {
             this.$emit('deleteNotificationChannel', this.notificationChannel)
           }
         }, 1000)
       } else if (this.configVariable) {
         this.configUpdateTimeout = setTimeout(
-          () => this.$emit('createNotificationChannel', this.notificationChannel, config),
+          () =>
+            this.$emit('createNotificationChannel', { section: this.notificationChannel, config }),
           1000
         )
       }

@@ -1,6 +1,6 @@
 <template>
   <b-dropdown :toggle-class="'btn-light obico-dropdown-toggle'" :menu-class="'obico-dropdown-menu'">
-    <template v-slot:button-content>
+    <template #button-content>
       <div class="obico-dropdown-selected-title">
         {{ selected_title }} <i v-if="selected.iconClass" :class="selected.iconClass"></i>
       </div>
@@ -17,13 +17,8 @@
 
 <script>
 export default {
-  name: 'Select',
+  name: 'SelectInput',
   props: ['options', 'value'],
-  methods: {
-    onOptionClicked(option) {
-      this.$emit('input', option.value)
-    },
-  },
   computed: {
     selected() {
       if (this.options) {
@@ -34,6 +29,11 @@ export default {
     selected_title() {
       let cur = this.selected
       return cur.selected_title || cur.title
+    },
+  },
+  methods: {
+    onOptionClicked(option) {
+      this.$emit('input', option.value)
     },
   },
 }

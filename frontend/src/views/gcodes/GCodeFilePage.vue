@@ -234,11 +234,11 @@ export default {
               ...file,
               print_set: [],
             }
-            if (file.path && file.hash && this.routeParams['printerId']) { // Not sure why this.routeParams['printerId'] is null here
+            if (file.path && file.hash && this.getRouteParam('printerId')) {
               const safeFilename = file.path.replace(/^.*[\\\/]/, '');
               try {
                 let response = await axios.get(urls.gcodeFiles({
-                    resident_printer: this.routeParams['printerId'],
+                    resident_printer: this.getRouteParam('printerId'),
                     safe_filename: safeFilename,
                     agent_signature: `md5:${file.hash}`,
                   }))

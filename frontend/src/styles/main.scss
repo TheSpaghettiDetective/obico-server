@@ -25,6 +25,7 @@
   --color-surface-secondary: #2D3E4F;
   --color-overlay: #000000CC;
   --color-hover: #FFFFFF13;
+  --color-hover-accent: #C9E0FA26;
   --color-divider: #6A7B8A;
   --color-divider-muted: #6A7B8A66;
   --color-text-primary: #EBEBEB;
@@ -40,6 +41,7 @@
   --border-radius-lg: 16px;
   --border-radius-md: 10px;
   --border-radius-sm: 6px;
+  --border-radius-xs: 4px;
 }
 
 :root {
@@ -797,10 +799,12 @@ a.text-warning {
 .nav-pills .nav-link,
 .nav-pills .nav-link:hover {
   color: var(--color-text-primary);
+  border-radius: var(--border-radius-xs);
 }
 
 .nav-tabs .nav-link.active,
-.nav-tabs .nav-item.show .nav-link {
+.nav-tabs .nav-item.show .nav-link,
+.nav-pills .nav-link.active {
   background-color: var(--color-surface-secondary);
   border-color: var(--color-divider);
   color: var(--color-text-primary);
@@ -897,4 +901,15 @@ div[id^="b-modal-"] {
     border-radius: var(--border-radius-lg);
     overflow: hidden;
   }
+}
+
+.overflow-truncated-parent {
+  overflow: hidden;
+}
+
+.overflow-truncated {
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }

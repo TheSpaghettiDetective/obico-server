@@ -52,8 +52,8 @@ export const listFiles = (printerComm, options) => {
             })
           } else {
             files.push({
+              ...item,
               id: item.path,
-              path: item.path,
               filename: item.name,
               num_bytes: item.size,
               filesize: filesize(item.size),

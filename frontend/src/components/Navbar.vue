@@ -16,9 +16,7 @@
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">
-          <template>
-            <span class="navbar-toggler-icon"></span>
-          </template>
+          <span class="navbar-toggler-icon"></span>
         </b-navbar-toggle>
 
         <b-collapse id="navbar-toggle-collapse" v-model="showMainMenu" is-nav>

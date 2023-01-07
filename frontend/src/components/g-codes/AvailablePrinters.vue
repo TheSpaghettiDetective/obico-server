@@ -12,15 +12,15 @@
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
-        <div class="printer-name">{{ printer.name }}</div>
+        <div class="printer-name overflow-truncated">{{ printer.name }}</div>
         <div
           class="printer-status"
           :class="{
-            'text-success': printer.printAvailability.key === 'ready',
-            'text-warning': printer.printAvailability.key === 'unavailable',
+            'text-success': printer.availabilityStatus().key === 'ready',
+            'text-warning': printer.availabilityStatus().key === 'unavailable',
           }"
         >
-          {{ printer.printAvailability.text }}
+          {{ printer.availabilityStatus().title }}
         </div>
       </div>
 
@@ -49,9 +49,7 @@
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import { sendToPrint, getPrinterPrintAvailability } from './sendToPrint'
-
-const REDIRECT_TIMER = 3000
+import { sendToPrint, showRedirectModal } from './sendToPrint'
 
 export default {
   name: 'AvailablePrinters',
@@ -110,23 +108,22 @@ export default {
 
       printers = printers?.data
       printers = printers.map((p) => normalizedPrinter(p))
-      printers = printers.map((p) => ({ ...p, printAvailability: getPrinterPrintAvailability(p) }))
 
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
-        if (selectedPrinter.printAvailability.key === 'ready') {
+        if (selectedPrinter.availabilityStatus().key === 'ready') {
           this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.find((p) => p.printAvailability.key === 'ready')
+        this.selectedPrinter = printers.find((p) => p.availabilityStatus().key === 'ready')
       }
 
       this.printersLoading = false
     },
     selectPrinter(printer) {
-      if (printer.printAvailability.key !== 'ready') {
+      if (printer.availabilityStatus().key !== 'ready') {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't ready for print for one of the following reasons:`,
           html: `<ul style="text-align: left">
@@ -156,47 +153,12 @@ export default {
         },
         onPrinterStatusChanged: () => {
           if (!this.isPopup) {
-            this.showRedirectModal()
+            showRedirectModal(this.$swal, () => this.$emit('refresh'))
           }
 
           this.isSending = false
           this.fetchPrinters()
         },
-      })
-    },
-    showRedirectModal() {
-      let timerInterval
-      this.$swal.Prompt.fire({
-        html: `
-          <div class="text-center">
-            <h5 class="py-3">
-              You'll be redirected to printers page in <strong>${Math.round(
-                REDIRECT_TIMER / 1000
-              )}</strong> seconds
-            </h5>
-          </div>
-        `,
-        timer: REDIRECT_TIMER,
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Go now',
-        onOpen: () => {
-          timerInterval = setInterval(() => {
-            this.$swal.getHtmlContainer().querySelector('strong').textContent = (
-              this.$swal.getTimerLeft() / 1000
-            ).toFixed(0)
-          }, 1000)
-        },
-        onClose: () => {
-          clearInterval(timerInterval)
-          timerInterval = null
-        },
-      }).then((result) => {
-        if (result.isConfirmed || result.dismiss === 'timer') {
-          window.location.assign('/printers/')
-        } else {
-          this.$emit('refresh')
-        }
       })
     },
   },

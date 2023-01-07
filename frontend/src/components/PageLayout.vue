@@ -26,10 +26,10 @@
             Printers
           </a>
         </li>
-        <li v-if="user" :class="{ active: path === '/prints/' }">
+        <li v-if="user" :class="{ active: path.includes('/prints/') }">
           <a href="/prints/">
-            <i class="fas fa-video"></i>
-            Time-Lapses
+            <i class="fas fa-history"></i>
+            Print History
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/g_code_') }">
@@ -318,10 +318,8 @@ export default {
     display: inline-block
     overflow: hidden
     width: 100%
-
 .content-wrapper
   width: 100%
-
 .top-nav
   height: 50px
   background: var(--color-surface-primary) !important
@@ -420,9 +418,10 @@ export default {
   padding: 0.5rem 1rem
   background-color: var(--color-surface-secondary)
   margin: calc(-1 * var(--gap-between-blocks)) -15px var(--gap-between-blocks)
-
   .filter
     color: var(--color-primary)
+  .action-btn
+    color: var(--color-text-primary)
 
   @media (max-width: 768px)
     font-size: .875rem

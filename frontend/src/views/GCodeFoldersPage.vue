@@ -207,7 +207,12 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
-import { normalizedGcode, normalizedGcodeFolder, normalizedPrinter } from '@src/lib/normalizers'
+import {
+  normalizedGcode,
+  normalizedGcodeFolder,
+  normalizedPrinter,
+  PrintStatus,
+} from '@src/lib/normalizers'
 import { user } from '@src/lib/page_context'
 import SearchInput from '@src/components/SearchInput.vue'
 import { getCsrfFromDocument } from '@src/lib/utils'
@@ -290,7 +295,7 @@ export default {
     },
     onClose: {
       type: Function,
-      required: false,
+      default: null,
     },
     scrollContainerId: {
       type: String,
@@ -298,11 +303,11 @@ export default {
     },
     targetPrinter: {
       type: Object,
-      required: false,
+      default: null,
     },
     savedPath: {
       type: Array,
-      required: false,
+      default: () => [],
     },
     routeParams: {
       type: Object,
@@ -317,6 +322,7 @@ export default {
 
   data() {
     return {
+      PrintStatus,
       csrf: null,
       user: null,
       loading: false,
@@ -552,7 +558,7 @@ export default {
         try {
           let response = await axios.get(urls.gcodeFolders(), {
             params: {
-              parent_folder: this.parentFolder || 'null',
+              parent_folder: this.parentFolder,
               page: this.currentFoldersPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
@@ -583,7 +589,7 @@ export default {
               'Cache-Control': 'no-cache',
             },
             params: {
-              parent_folder: this.parentFolder || 'null',
+              parent_folder: this.parentFolder,
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,

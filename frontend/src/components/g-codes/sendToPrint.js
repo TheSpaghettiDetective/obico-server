@@ -93,3 +93,43 @@ export const getPrinterPrintAvailability = (normalizedPrinter) => {
     }
   }
 }
+
+const REDIRECT_TIMER = 3000
+export const showRedirectModal = (Swal, onClose) => {
+  let timerInterval
+  Swal.Prompt.fire({
+    html: `
+      <div class="text-center">
+        <h5 class="py-3">
+          You'll be redirected to printers page in <strong>${Math.round(
+            REDIRECT_TIMER / 1000
+          )}</strong> seconds
+        </h5>
+      </div>
+    `,
+    timer: REDIRECT_TIMER,
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Redirect now',
+    onOpen: () => {
+      const content = Swal.getHtmlContainer()
+      const $ = content.querySelector.bind(content)
+
+      timerInterval = setInterval(() => {
+        Swal.getHtmlContainer().querySelector('strong').textContent = (
+          Swal.getTimerLeft() / 1000
+        ).toFixed(0)
+      }, 1000)
+    },
+    onClose: () => {
+      clearInterval(timerInterval)
+      timerInterval = null
+    },
+  }).then((result) => {
+    if (result.isConfirmed || result.dismiss === 'timer') {
+      window.location.assign('/printers/')
+    } else {
+      onClose && onClose()
+    }
+  })
+}

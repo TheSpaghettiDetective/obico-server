@@ -98,39 +98,16 @@
               @refresh="onRefresh"
             />
 
-            <div v-if="isCloud" class="mt-5">
+            <div v-if="gcode.print_set.length" class="mt-5">
               <h2 class="section-title">Print history</h2>
-              <div
-                v-for="print in gcode.print_set"
+              <print-history-item
+                v-for="print of gcode.print_set"
                 :key="`print_${print.id}`"
-                class="print-history-card"
-              >
-                <div class="print-info">
-                  <div v-if="print.finished_at" class="result text-success font-weight-bold">
-                    Succeeded
-                  </div>
-                  <div v-else-if="print.cancelled_at" class="result text-danger font-weight-bold">
-                    Cancelled / Failed
-                  </div>
-                  <div v-else class="result font-weight-bold">Printing...</div>
-
-                  <div class="printer truncate-overflow-text">
-                    Printer: {{ print.printer.name }}
-                  </div>
-                  <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
-
-                  <div class="date">
-                    Ended:
-                    <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
-                    <span v-else>-</span>
-                  </div>
-                </div>
-                <div v-if="print.poster_url" class="poster">
-                  <div class="img" :style="{ backgroundImage: `url(${print.poster_url})` }"></div>
-                </div>
-              </div>
+                :print="print"
+                class="print-item"
+              ></print-history-item>
               <div v-if="!gcode.print_set.length">
-                <div class="print-history-card p-4 justify-content-center text-secondary">
+                <div class="card-container p-4 justify-content-center text-secondary">
                   This file doesn't have any prints yet
                 </div>
               </div>
@@ -162,6 +139,7 @@
 
 <script>
 import PageLayout from '@src/components/PageLayout.vue'
+import get from 'lodash/get'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedGcode } from '@src/lib/normalizers'
@@ -170,15 +148,17 @@ import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationM
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
 import { listFiles } from '@src/components/g-codes/localFiles'
+import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {
-  name: 'GCodeDetailsPage',
+  name: 'GCodeFilePage',
 
   components: {
     PageLayout,
     RenameModal,
     DeleteConfirmationModal,
     availablePrinters,
+    PrintHistoryItem,
   },
 
   props: {
@@ -188,11 +168,11 @@ export default {
     },
     targetPrinterId: {
       type: Number,
-      required: false,
+      default: null,
     },
     onClose: {
       type: Function,
-      required: false,
+      default: null,
     },
     routeParams: {
       type: Object,
@@ -248,7 +228,7 @@ export default {
       listFiles(this.printerComm, {
         query: filename,
         path,
-        onRequestEnd: (result) => {
+        onRequestEnd: async (result) => {
           this.loading = false
           if (result?.files?.length) {
             const file = result.files.find((f) => f.path === decodedPath)
@@ -259,6 +239,24 @@ export default {
             this.gcode = {
               ...file,
               print_set: [],
+            }
+            if (file.path && file.hash && this.getRouteParam('printerId')) {
+              const safeFilename = file.path.replace(/^.*[\\/]/, '')
+              try {
+                let response = await axios.get(
+                  urls.gcodeFiles({
+                    resident_printer: this.getRouteParam('printerId'),
+                    safe_filename: safeFilename,
+                    agent_signature: `md5:${file.hash}`,
+                  })
+                )
+                const gcodeFileOnServer = get(response, 'data.results[0]')
+                if (gcodeFileOnServer) {
+                  this.gcode = normalizedGcode(gcodeFileOnServer)
+                }
+              } catch (e) {
+                console.error(e)
+              }
             }
           } else {
             this.gcodeNotFound = true
@@ -344,43 +342,6 @@ export default {
   font-size: 1.25rem
   margin-bottom: 0.5rem
 
-.print-history-card
-  display: flex
-  justify-content: space-between
-  align-items: stretch
-  background-color: var(--color-surface-secondary)
-  border-radius: var(--border-radius-lg)
-  margin-bottom: 1rem
-
-.print-info
-  flex: 1
-  padding: 1rem
-  overflow: hidden
-
-  & > div
-    margin-bottom: 0.25rem
-
-.truncate-overflow-text
-  width: 100%
-  text-overflow: ellipsis
-  overflow: hidden
-  white-space: nowrap
-
-.date
-  color: var(--color-text-secondary)
-
-.poster
-  padding: .875rem
-  .img
-    border-radius: var(--border-radius-sm)
-    background-size: cover
-    background-position: center
-    height: 100%
-    width: 150px
-    background-color: var(--color-hover)
-    display: flex
-    justify-content: center
-    align-items: center
-    color: var(--color-text-secondary)
-    font-size: 0.875rem
+.print-item
+  margin-bottom: 10px
 </style>

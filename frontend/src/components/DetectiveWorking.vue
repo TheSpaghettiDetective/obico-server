@@ -6,9 +6,7 @@
       alt="Obi is still working"
     />
     <div class="card-img-overlay" style="background-color: rgba(0, 0, 0, 0.6)">
-      <h5 class="card-title text-center" style="padding: 70px 0">
-        Obi is still busy working on your time-lapse
-      </h5>
+      <h5 class="card-title text-center">Obi is still busy working on your time-lapse</h5>
     </div>
   </div>
 </template>
@@ -19,4 +17,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="sass" scoped>
+.card-img-overlay
+  display: flex
+  align-items: center
+  justify-content: center
+</style>

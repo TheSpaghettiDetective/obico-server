@@ -326,9 +326,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     def list(self, request):
         qs = self.get_queryset().select_related(
             'parent_folder').prefetch_related(
-            'print_set__printer').filter(
-                resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
-            )
+            'print_set__printer')
 
         sorting = request.GET.get('sorting', 'created_at_desc')
         if sorting == 'created_at_asc':

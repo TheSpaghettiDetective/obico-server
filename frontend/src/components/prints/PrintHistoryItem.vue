@@ -48,7 +48,7 @@ export default {
     },
   },
 
-  data: () => {
+  data: function () {
     return {
       PrintStatus,
     }

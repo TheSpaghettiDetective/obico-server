@@ -12,8 +12,8 @@
         v-if="downloadBtn"
         class="action-btn"
         role="button"
-        @click="$emit('download')"
         title="Download"
+        @click="$emit('download')"
       >
         <i class="fas fa-download" aria-hidden="true"></i>
       </a>
@@ -21,8 +21,8 @@
         v-if="fullscreenBtn"
         class="action-btn"
         role="button"
-        @click="$emit('fullscreen')"
         title="Full screen"
+        @click="$emit('fullscreen')"
       >
         <i class="fa fa-expand" aria-hidden="true"></i>
       </a>
@@ -30,8 +30,8 @@
         v-if="exitFullscreenBtn"
         class="action-btn"
         role="button"
-        @click="$emit('exitFullscreen')"
         title="Exit full screen"
+        @click="$emit('exitFullscreen')"
       >
         <i class="fa fa-times" aria-hidden="true"></i>
       </a>
@@ -55,7 +55,7 @@ export default {
     },
     posterUrl: {
       type: String,
-      required: true,
+      default: null,
     },
     fullscreenBtn: {
       type: Boolean,

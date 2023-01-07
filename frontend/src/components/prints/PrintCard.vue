@@ -4,12 +4,10 @@
       <div v-if="isPublic" class="card-header">- By {{ print.creator_name }}</div>
       <div v-else class="card-header">
         <div :style="{ visibility: hasSelectedChangedListener ? 'visible' : 'hidden' }">
-          <!-- Don't fix 'selected' mutation eslint error because of new print history page -->
           <b-form-checkbox
-            v-model="selected"
+            v-model="isSelected"
             size="lg"
             class="text-decoration-none"
-            @change="onSelectedChange"
           ></b-form-checkbox>
         </div>
         <b-form-radio-group
@@ -236,13 +234,14 @@ export default {
     },
   },
 
-  data: () => {
+  data: function () {
     return {
       ALERT_THRESHOLD: 0.4,
       currentPosition: 0,
       predictions: [],
       selectedCardView: 'detective',
       inflightAlertOverwrite: null,
+      isSelected: this.selected,
     }
   },
 
@@ -325,6 +324,13 @@ export default {
       return this.print.poster_url || '#svg-3d-printer'
     },
   },
+
+  watch: {
+    isSelected(newValue) {
+      this.$emit('selectedChanged', this.print.id, newValue)
+    },
+  },
+
   mounted() {
     if (this.print.prediction_json_url) {
       this.fetchPredictions()
@@ -338,10 +344,6 @@ export default {
   methods: {
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
-    },
-
-    onSelectedChange() {
-      this.$emit('selectedChanged', this.print.id, !this.selected) // this method is called before this.selected is flipped. So need to inverse it before passing it event listener
     },
 
     deleteVideo() {

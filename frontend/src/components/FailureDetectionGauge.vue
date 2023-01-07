@@ -21,6 +21,7 @@ export default {
   props: {
     normalizedP: {
       type: Number,
+      required: true,
     },
 
     isWatching: {
@@ -33,9 +34,6 @@ export default {
       type: Object,
       default: null,
     },
-  },
-  data: () => {
-    return {}
   },
 
   computed: {

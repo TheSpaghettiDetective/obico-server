@@ -112,9 +112,6 @@ export const showRedirectModal = (Swal, onClose) => {
     showCancelButton: true,
     confirmButtonText: 'Redirect now',
     onOpen: () => {
-      const content = Swal.getHtmlContainer()
-      const $ = content.querySelector.bind(content)
-
       timerInterval = setInterval(() => {
         Swal.getHtmlContainer().querySelector('strong').textContent = (
           Swal.getTimerLeft() / 1000

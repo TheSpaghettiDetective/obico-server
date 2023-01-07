@@ -45,7 +45,7 @@
         <template #button-content>
           <i class="fas fa-ellipsis-v"></i>
         </template>
-        <b-dropdown-item v-if="!isFolder && targetPrinter" @click="$mit('print', item)">
+        <b-dropdown-item v-if="!isFolder && targetPrinter" @click.stop="$emit('print', item)">
           <span class="text-primary">
             <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
           </span>

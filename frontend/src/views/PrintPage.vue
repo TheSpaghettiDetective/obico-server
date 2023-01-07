@@ -11,6 +11,7 @@
                   <div class="date">{{ print.ended_at ? print.ended_at.fromNow() : '-' }}</div>
                 </div>
               </div>
+              <!-- Printer -->
               <div class="card-container printer">
                 <div class="icon">
                   <svg width="1em" height="1em" style="margin-bottom: 5px">
@@ -37,20 +38,21 @@
                   </button>
                 </div>
               </div>
+              <!-- File -->
               <div class="card-container file">
                 <div class="icon">
                   <i class="fas fa-file-code"></i>
                 </div>
                 <div class="info overflow-truncated-parent">
                   <div class="title overflow-truncated">{{ print.filename }}</div>
-                  <div class="subtitle text-secondary overflow-truncated">
+                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
                     <span>{{ print.g_code_file.filesize }}</span>
                     <span v-if="print.g_code_file.created_at"
                       >, created {{ print.g_code_file.created_at.fromNow() }}</span
                     >
                   </div>
                 </div>
-                <div class="action">
+                <div v-if="print.g_code_file" class="action">
                   <a
                     class="btn btn-secondary"
                     :href="`/g_code_files/cloud/${print.g_code_file.id}/`"

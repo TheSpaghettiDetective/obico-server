@@ -116,19 +116,26 @@
 <script>
 export default {
   name: 'PrinterActions',
+
   props: {
-    printer: {},
+    printer: {
+      type: Object,
+      required: true,
+    },
   },
+
   data() {
     return {
       connectBtnClicked: false,
     }
   },
+
   computed: {
     connecting() {
       return this.connectBtnClicked && this.printer.isDisconnected()
     },
   },
+
   methods: {
     onPauseToggled(ev) {
       if (this.printer.isPaused()) {

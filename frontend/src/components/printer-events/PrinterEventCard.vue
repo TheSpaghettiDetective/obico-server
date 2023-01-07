@@ -1,10 +1,6 @@
 <template>
   <div class="printer-event-card my-3" :class="tintBorderClass">
-    <div
-      class="printer-event-text"
-      :class="{ link: printerEvent.info_url }"
-      @click="onTextClick"
-    >
+    <div class="printer-event-text" :class="{ link: printerEvent.info_url }" @click="onTextClick">
       <div class="title font-weight-bold my-2" :class="tintClass">
         {{ eventTitle }}
         <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
@@ -29,7 +25,10 @@ export default {
   components: {},
 
   props: {
-    printerEvent: Object,
+    printerEvent: {
+      type: Object,
+      required: true,
+    },
   },
 
   computed: {

@@ -18,7 +18,18 @@
 <script>
 export default {
   name: 'SelectInput',
-  props: ['options', 'value'],
+
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    value: {
+      type: String || Number,
+      default: null,
+    },
+  },
+
   computed: {
     selected() {
       if (this.options) {

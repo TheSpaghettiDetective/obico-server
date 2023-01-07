@@ -58,7 +58,7 @@ export default {
   props: {
     csrf: {
       type: String,
-      requeired: true,
+      required: true,
     },
   },
 

@@ -178,7 +178,7 @@ export default {
     },
     webrtc: {
       type: Object,
-      required: false,
+      default: null,
     },
     autoplay: {
       type: Boolean,

@@ -33,7 +33,7 @@ export default {
     },
     format: {
       type: String, // i.e. 'png'
-      require: true,
+      required: true,
     },
     alt: {
       type: String, // i.e. 'Logo'

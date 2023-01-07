@@ -36,7 +36,10 @@ export default {
   },
 
   props: {
-    shot: Object,
+    shot: {
+      type: Object,
+      required: true,
+    },
   },
 
   data() {

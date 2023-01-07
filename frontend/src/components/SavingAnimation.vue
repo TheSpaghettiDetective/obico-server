@@ -27,6 +27,7 @@ export default {
     },
     errors: {
       type: Array,
+      default: null,
     },
     height: {
       default() {

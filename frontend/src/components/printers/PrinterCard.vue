@@ -68,7 +68,7 @@
         <failure-detection-gauge :normalized-p="printer.normalized_p" :is-watching="isWatching" />
         <hr />
       </div>
-      <PrinterActions
+      <printer-actions
         :id="'printer-actions-' + printer.id"
         class="container"
         v-bind="actionsProps"
@@ -78,7 +78,7 @@
         @PrinterActionConnectClicked="onPrinterActionConnectClicked"
         @PrinterActionStartClicked="onPrinterActionStartClicked"
         @PrinterActionControlClicked="onPrinterActionControlClicked"
-      ></PrinterActions>
+      ></printer-actions>
       <div class="info-section settings">
         <button
           type="button"
@@ -203,12 +203,12 @@
               </div>
             </div>
           </div>
-          <StatusTemp
+          <status-temp
             v-if="section_toggles.statusTemp && tempProps.show"
             id="status_temp_block"
             v-bind="tempProps"
             @TempEditClicked="onTempEditClicked"
-          ></StatusTemp>
+          ></status-temp>
         </div>
       </div>
     </div>

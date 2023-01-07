@@ -79,7 +79,10 @@ export default {
   components: { VideoBox, DetectiveWorking },
 
   props: {
-    print: Object,
+    print: {
+      type: Object,
+      required: true,
+    },
   },
 
   data() {

@@ -44,10 +44,6 @@ export default {
       type: String,
       default: null,
     },
-    targetPrinterId: {
-      type: Number,
-      required: false,
-    },
   },
 
   data() {

@@ -49,14 +49,17 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-container v-else>
+      <b-container v-else fluid="xl">
         <b-row>
-          <b-col :lg="isPopup ? 12 : 8">
-            <div class="card-container">
+          <b-col>
+            <!-- File info -->
+            <div class="card-container file-info" :class="{ 'full-width': isPopup }">
               <b-container fluid>
                 <b-row>
                   <b-col>
-                    <h1 class="file-name truncate-overflow-text">{{ gcode.filename }}</h1>
+                    <h1 class="file-name overflow-truncated">
+                      {{ gcode.filename }}
+                    </h1>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -87,43 +90,33 @@
                 </b-row>
               </b-container>
             </div>
-
+            <!-- Available printers -->
             <available-printers
-              class="card-container mt-4"
-              :class="[isPopup ? 'd-lg-block' : 'd-lg-none']"
+              class="card-container available-printers"
+              :class="{ 'full-width': isPopup }"
               :is-popup="isPopup"
               :target-printer-id="targetPrinterId || selectedPrinterId"
               :gcode="gcode"
               :is-cloud="isCloud"
               @refresh="onRefresh"
             />
-
-            <div v-if="gcode.print_set.length" class="mt-5">
+            <!-- Print history -->
+            <div class="print-history" :class="{ 'full-width': isPopup }">
               <h2 class="section-title">Print history</h2>
-              <print-history-item
-                v-for="print of gcode.print_set"
-                :key="`print_${print.id}`"
-                :print="print"
-                class="print-item"
-              ></print-history-item>
-              <div v-if="!gcode.print_set.length">
+              <div v-if="gcode.print_set.length">
+                <print-history-item
+                  v-for="print of gcode.print_set"
+                  :key="`print_${print.id}`"
+                  :print="print"
+                  class="print-item"
+                ></print-history-item>
+              </div>
+              <div v-else>
                 <div class="card-container p-4 justify-content-center text-secondary">
                   This file doesn't have any prints yet
                 </div>
               </div>
             </div>
-          </b-col>
-
-          <b-col :lg="isPopup ? 12 : 4">
-            <available-printers
-              class="card-container d-none"
-              :class="[isPopup ? 'd-lg-none' : 'd-lg-block']"
-              :is-popup="isPopup"
-              :target-printer-id="targetPrinterId || Number(selectedPrinterId)"
-              :gcode="gcode"
-              :is-cloud="isCloud"
-              @refresh="onRefresh"
-            />
           </b-col>
         </b-row>
       </b-container>
@@ -321,6 +314,27 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.file-info, .print-history
+  width: 60%
+  display: inline-block
+  &.print-history
+    padding-top: 10px
+    margin-top: 30px
+
+.available-printers
+  width: calc(40% - 30px)
+  float: right
+
+.file-info, .print-history, .available-printers
+  &.full-width
+    width: 100%
+    &.print-history, &.available-printers
+      margin-top: 15px
+  @media (max-width: 996px)
+    width: 100%
+    &.print-history, &.available-printers
+      margin-top: 15px
+
 .file-name
   font-size: 1.25rem
   margin-bottom: 1rem

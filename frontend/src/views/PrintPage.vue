@@ -283,8 +283,8 @@ export default {
   },
 
   props: {
-    config: {
-      type: Object,
+    printId: {
+      type: Number,
       required: true,
     },
   },
@@ -364,7 +364,7 @@ export default {
         this.loading = true
       }
       axios
-        .get(urls.print(this.config.printId))
+        .get(urls.print(this.printId))
         .then((response) => {
           this.print = normalizedPrint(response.data)
           return axios.get(urls.printer(this.print.printer.id))

@@ -27,7 +27,10 @@
               :class="{ active: viewName.includes('printers') }"
               >Printer</b-nav-item
             >
-            <b-nav-item v-if="user" href="/prints/" :class="{ active: viewName.includes('prints') }"
+            <b-nav-item
+              v-if="user"
+              href="/print_history/"
+              :class="{ active: viewName.includes('print_history') }"
               >Time-lapse</b-nav-item
             >
             <b-nav-item

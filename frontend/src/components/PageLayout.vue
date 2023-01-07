@@ -26,8 +26,8 @@
             Printers
           </a>
         </li>
-        <li v-if="user" :class="{ active: path.includes('/prints/') }">
-          <a href="/prints/">
+        <li v-if="user" :class="{ active: path.includes('/print_history/') }">
+          <a href="/print_history/">
             <i class="fas fa-history"></i>
             Print History
           </a>

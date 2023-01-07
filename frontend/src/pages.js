@@ -5,6 +5,7 @@ import wizardRoutes from '@src/views/printer-wizard/wizard-routes'
 import NewOctoPrintTunnelPage from '@src/views/NewOctoPrintTunnelPage.vue'
 import OctoPrintTunnelPage from '@src/views/OctoPrintTunnelPage.vue'
 import PrintShotFeedbackApp from '@src/views/PrintShotFeedbackApp.vue'
+import PrintHistoryPage from '@src/views/PrintHistoryPage.vue'
 import PrintsPage from '@src/views/PrintsPage.vue'
 import PrintPage from '@src/views/PrintPage.vue'
 import UploadPrintPage from '@src/views/UploadPrintPage.vue'
@@ -66,6 +67,7 @@ const components = {
   GCodeFilePage,
   PrintsPage,
   PrintPage,
+  PrintHistoryPage,
   UploadPrintPage,
   UserPreferencesPage,
   PrinterEventsPage,

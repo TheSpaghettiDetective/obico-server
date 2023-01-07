@@ -445,7 +445,7 @@ export default {
   .status
     font-weight: bold
     font-size: .875rem
-    &.failed
+    &.cancelled
       color: var(--color-danger)
     &.finished
       color: var(--color-success)

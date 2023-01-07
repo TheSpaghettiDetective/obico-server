@@ -77,7 +77,7 @@ export default {
   flex: 0 0 5px
   &.finished
     background-color: var(--color-success)
-  &.failed
+  &.cancelled
     background-color: var(--color-danger)
   &.printing
     background-color: var(--color-text-primary)

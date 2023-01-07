@@ -30,9 +30,12 @@
             item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...'
           }}</span>
           <div
-            v-if="item.last_print_result"
+            v-if="item.last_print && item.last_print.ended_at"
             class="circle-indicator"
-            :class="item.last_print_result"
+            :class="{
+              cancelled: item.last_print.cancelled_at,
+              finished: item.last_print.finished_at,
+            }"
           ></div>
         </div>
         <div v-if="isFolder && isCloud" class="d-none d-md-block"></div>

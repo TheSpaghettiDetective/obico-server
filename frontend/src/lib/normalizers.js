@@ -13,7 +13,7 @@ export const toMomentOrNull = (datetimeStr) => {
 export const PrintStatus = {
   Printing: { key: 'printing', title: 'Printing...' },
   Finished: { key: 'finished', title: 'Finished' },
-  Failed: { key: 'failed', title: 'Failed / Cancelled' },
+  Cancelled: { key: 'cancelled', title: 'Cancelled' },
 }
 
 export const PrinterStatus = {
@@ -41,7 +41,7 @@ export const normalizedPrint = (print) => {
     print.printshotfeedback_set.find((shot) => shot.answered_at === null)
   print.status = print.ended_at
     ? print.cancelled_at
-      ? PrintStatus.Failed
+      ? PrintStatus.Cancelled
       : PrintStatus.Finished
     : PrintStatus.Printing
   if (print.printer) {
@@ -63,7 +63,7 @@ export const normalizedGcode = (gcode) => {
     gcode.print_set.map((p) => normalizedPrint(p))
     gcode.print_set.sort((a, b) => {
       if (!a.ended_at && !b.ended_at) {
-        // both in progress, sort by started_at
+        // if both in progress, sort by started_at
         if (a.started_at > b.started_at) {
           return -1
         } else if (a.started_at < b.started_at) {

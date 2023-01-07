@@ -22,15 +22,15 @@
                   <div class="title overflow-truncated">{{ printer.name }}</div>
                   <div
                     class="subtitle overflow-truncated"
-                    :class="printer.availabilityStatus().key"
+                    :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
                   >
-                    {{ printer.availabilityStatus().title }}
+                    {{ printer.printabilityText() }}
                   </div>
                 </div>
                 <div class="action">
                   <button
                     class="btn btn-primary"
-                    :disabled="printer.availabilityStatus().key !== PrinterStatus.Ready.key"
+                    :disabled="!printer.isPrintable()"
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" small />
@@ -262,12 +262,7 @@ import axios from 'axios'
 import moment from 'moment'
 import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
-import {
-  normalizedPrint,
-  PrintStatus,
-  PrinterStatus,
-  normalizedPrinter,
-} from '@src/lib/normalizers'
+import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
@@ -294,7 +289,6 @@ export default {
   data: function () {
     return {
       PrintStatus,
-      PrinterStatus,
       absoluteDateFormat: 'MMM M, YYYY H:mm A',
       print: null,
       printer: null,
@@ -461,12 +455,6 @@ export default {
     text-align: center
     *
       font-size: 2rem
-
-.printer .info .subtitle
-    &.ready
-      color: var(--color-success)
-    &.unavailable
-      color: var(--color-warning)
 
 .info-line
   display: flex

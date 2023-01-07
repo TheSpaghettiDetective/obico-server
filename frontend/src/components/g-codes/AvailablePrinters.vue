@@ -15,12 +15,9 @@
         <div class="printer-name overflow-truncated">{{ printer.name }}</div>
         <div
           class="printer-status"
-          :class="{
-            'text-success': printer.availabilityStatus().key === 'ready',
-            'text-warning': printer.availabilityStatus().key === 'unavailable',
-          }"
+          :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
         >
-          {{ printer.availabilityStatus().title }}
+          {{ printer.printabilityText() }}
         </div>
       </div>
 
@@ -112,18 +109,18 @@ export default {
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
-        if (selectedPrinter.availabilityStatus().key === 'ready') {
+        if (selectedPrinter.isPrintable()) {
           this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.find((p) => p.availabilityStatus().key === 'ready')
+        this.selectedPrinter = printers.find((p) => p.isPrintable())
       }
 
       this.printersLoading = false
     },
     selectPrinter(printer) {
-      if (printer.availabilityStatus().key !== 'ready') {
+      if (!printer.isPrintable()) {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't ready for print for one of the following reasons:`,
           html: `<ul style="text-align: left">

@@ -16,11 +16,6 @@ export const PrintStatus = {
   Cancelled: { key: 'cancelled', title: 'Cancelled' },
 }
 
-export const PrinterStatus = {
-  Ready: { key: 'ready', title: 'Ready' },
-  Unavailable: { key: 'unavailable', title: 'Unavailable' },
-}
-
 // ––––––––––––––––––––––
 
 export const normalizedPrint = (print) => {
@@ -159,10 +154,30 @@ export const normalizedPrinter = (newData, oldData) => {
         )
       )
     },
-    availabilityStatus: function () {
+    // Printing availability
+    isPrintable: function () {
       return !this.isOffline() && !this.isDisconnected() && !this.isActive()
-        ? PrinterStatus.Ready
-        : PrinterStatus.Unavailable
+    },
+    printabilityText: function () {
+      return this.isPrintable() ? 'Ready' : 'Unavailable'
+    },
+    // Storage availability
+    browsabilityMinPluginVersion: function () {
+      const MIN_OCTOPRINT_PLUGIN_VERSION = '2.3.0'
+      const MIN_MOONRAKER_PLUGIN_VERSION = '1.2.0'
+      return this.isAgentMoonraker() ? MIN_MOONRAKER_PLUGIN_VERSION : MIN_OCTOPRINT_PLUGIN_VERSION
+    },
+    isBrowsable: function () {
+      return !(
+        this.isOffline() ||
+        !semverGte(
+          get(this, 'settings.agent_version', '0.0.0'),
+          this.browsabilityMinPluginVersion()
+        )
+      )
+    },
+    browsabilityText: function () {
+      return this.isBrowsable() ? 'Available to browse files' : 'Unable to browse files'
     },
   }
   if (oldData) {

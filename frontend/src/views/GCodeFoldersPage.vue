@@ -58,13 +58,9 @@
                 <div class="title">{{ printer.name }}</div>
                 <div
                   class="subtitle"
-                  :class="{
-                    'text-secondary': printer.storageAvailability.key === 'offline',
-                    'text-success': printer.storageAvailability.key === 'online',
-                    'text-warning': printer.storageAvailability.key === 'plugin_outdated',
-                  }"
+                  :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
                 >
-                  {{ printer.storageAvailability.text }}
+                  {{ printer.browsabilityText() }}
                 </div>
               </div>
             </div>
@@ -222,7 +218,7 @@ import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles, getPrinterStorageAvailability } from '@src/components/g-codes/localFiles'
+import { listFiles } from '@src/components/g-codes/localFiles'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 
 // Waiting time (ms) before asking server for search results
@@ -428,9 +424,14 @@ export default {
       }
     },
     switchToPrinterStorage(printer) {
-      if (printer.storageAvailability.rejectMessage) {
+      if (!printer.isBrowsable()) {
         this.$swal.Reject.fire({
-          text: printer.storageAvailability.rejectMessage,
+          title: `${printer.name} isn't available for browsing files for one of the following reasons:`,
+          html: `<ul style="text-align: left">
+            <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
+            <li>Printer is not connected to ${printer.agentDisplayName()}</li>
+            <li>Obico for ${printer.agentDisplayName()} plugin is outdated (you need version ${printer.browsabilityMinPluginVersion()} or later)</li>
+          </ul>`,
         })
         return
       }
@@ -477,10 +478,8 @@ export default {
         return
       }
       printers = printers.map((p) => normalizedPrinter(p))
-      printers = printers.map((p) => ({
-        ...p,
-        storageAvailability: getPrinterStorageAvailability(p),
-      }))
+      // bring browsable printers at the top of the list
+      printers = printers.sort((a, b) => Number(b.isBrowsable()) - Number(a.isBrowsable()))
       this.printers = this.targetPrinter
         ? printers.filter((p) => p.id === this.targetPrinter.id)
         : printers

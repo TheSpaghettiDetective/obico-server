@@ -30,12 +30,12 @@
       <b-container>
         <b-row>
           <b-col v-if="prints.length">
-            <print-item
+            <print-history-item
               v-for="print of prints"
               :key="print.id"
               :print="print"
               class="print-item"
-            ></print-item>
+            ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
               <div class="text-center p-4" v-if="!noMoreData">
                 <b-spinner label="Loading..."></b-spinner>
@@ -61,7 +61,7 @@ import { normalizedPrint } from '@src/lib/normalizers'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import Layout from '@src/components/Layout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import PrintItem from '@src/components/prints/PrintItem.vue'
+import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 const LOCAL_PREF_NAMES = {
   filtering: 'prints-filtering',
@@ -77,7 +77,7 @@ export default {
     MugenScroll,
     Layout,
     CascadedDropdown,
-    PrintItem,
+    PrintHistoryItem,
   },
 
   data: function() {

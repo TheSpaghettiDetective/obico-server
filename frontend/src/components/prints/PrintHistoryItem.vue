@@ -41,7 +41,7 @@ import DetectiveWorking from '@src/components/DetectiveWorking'
 import { PrintStatus } from '@src/lib/normalizers'
 
 export default {
-  name: 'PrintItem',
+  name: 'PrintHistoryItem',
 
   components: {
 
@@ -122,7 +122,7 @@ export default {
     text-overflow: ellipsis
     white-space: nowrap
     overflow: hidden
-  
+
   @media (max-width: 768px)
     max-width: 100%
 
@@ -144,7 +144,7 @@ export default {
   &.focused
     background-color: var(--color-primary)
     color: var(--color-on-primary)
-  
+
 .poster
   margin-left: auto
   .img

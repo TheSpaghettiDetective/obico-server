@@ -91,14 +91,14 @@
               @refresh="onRefresh"
             />
 
-            <div class="mt-5" v-if="isCloud">
+            <div class="mt-5" v-if="gcode.print_set.length">
               <h2 class="section-title">Print history</h2>
-              <print-item
+              <print-history-item
                 v-for="print of gcode.print_set"
                 :key="`print_${print.id}`"
                 :print="print"
                 class="print-item"
-              ></print-item>
+              ></print-history-item>
               <div v-if="!gcode.print_set.length">
                 <div class="card-container p-4 justify-content-center text-secondary">
                   This file doesn't have any prints yet
@@ -145,7 +145,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 import availablePrinters from './AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
 import { listFiles } from './localFiles'
-import PrintItem from '@src/components/prints/PrintItem.vue'
+import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {
   name: 'GCodeFilePage',
@@ -155,7 +155,7 @@ export default {
     RenameModal,
     DeleteConfirmationModal,
     availablePrinters,
-    PrintItem,
+    PrintHistoryItem,
   },
 
   props: {
@@ -242,7 +242,7 @@ export default {
                     safe_filename: safeFilename,
                     agent_signature: `md5:${file.hash}`,
                   }))
-                const gcodeFileOnServer = get(response, 'data.result[0]')
+                const gcodeFileOnServer = get(response, 'data.results[0]')
                 if (gcodeFileOnServer) {
                   this.gcode = normalizedGcode(gcodeFileOnServer)
                 }

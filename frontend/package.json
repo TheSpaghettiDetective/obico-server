@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "lint": "npx eslint --ext .js,vue src/ --fix",
     "postinstall": "patch-package"
   },
   "dependencies": {

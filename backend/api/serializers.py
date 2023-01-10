@@ -125,7 +125,7 @@ class PrinterSerializer(BasePrinterSerializer):
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
+        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else 0
 
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):

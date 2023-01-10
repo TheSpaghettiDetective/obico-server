@@ -82,7 +82,7 @@
         </div>
         <div v-else>
           <div class="text-center">
-            <svg width="100" height="40">
+            <svg width="100" height="30">
               <use href="#svg-logo-full" />
             </svg>
           </div>

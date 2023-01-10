@@ -234,7 +234,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'app.storage.CustomCompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../frontend/static'),
     os.path.join(BASE_DIR, '../frontend/builds'),

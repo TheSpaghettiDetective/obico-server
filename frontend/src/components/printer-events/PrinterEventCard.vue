@@ -1,17 +1,20 @@
 <template>
   <div class="printer-event-card my-3" :class="tintBorderClass">
-    <div class="printer-event-text" :class="{link: printerEvent.info_url}" v-on:click="onTextClick">
+    <div class="printer-event-text" :class="{ link: printerEvent.info_url }" @click="onTextClick">
       <div class="title font-weight-bold my-2" :class="tintClass">
         {{ eventTitle }}
         <i v-if="printerEvent.info_url" class="fas fa-external-link-alt"></i>
       </div>
-      <div v-html="printerEvent.event_text" class="description"></div>
+      <div class="description" v-html="printerEvent.event_text"></div>
       <div class="my-2 text-muted font-weight-light small">
         {{ printerEvent.created_at.format('LLLL') }}
       </div>
     </div>
-    <div v-if="printerEvent.image_url" :style="{backgroundImage: `url(${printerEvent.image_url})`}" class="printer-event-snapshot">
-    </div>
+    <div
+      v-if="printerEvent.image_url"
+      :style="{ backgroundImage: `url(${printerEvent.image_url})` }"
+      class="printer-event-snapshot"
+    ></div>
   </div>
 </template>
 
@@ -19,11 +22,13 @@
 export default {
   name: 'PrinterEventCard',
 
-  components: {
-  },
+  components: {},
 
   props: {
-    printerEvent: Object
+    printerEvent: {
+      type: Object,
+      required: true,
+    },
   },
 
   computed: {
@@ -59,10 +64,10 @@ export default {
   methods: {
     onTextClick() {
       if (this.printerEvent.info_url) {
-        window.open(this.printerEvent.info_url, '_blank');
+        window.open(this.printerEvent.info_url, '_blank')
       }
     },
-  }
+  },
 }
 </script>
 

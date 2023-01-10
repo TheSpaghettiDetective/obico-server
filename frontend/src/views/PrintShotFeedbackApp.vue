@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
@@ -11,7 +11,7 @@
               </h5>
               <loading :active="print === null" :is-full-page="true"></loading>
               <div v-if="print !== null">
-                <consent
+                <focused-feedback-consent
                   v-if="!print.access_consented_at"
                   :print="print"
                   @continue-btn-pressed="consentBtnPressed"
@@ -19,10 +19,10 @@
                 <div v-else>
                   <div>
                     <vue-slick-carousel
+                      ref="carousel"
                       :arrows="true"
                       :dots="true"
                       @afterChange="onNextShot"
-                      ref="carousel"
                     >
                       <print-shot-card
                         v-for="(shot, i) in shots"
@@ -35,12 +35,15 @@
                       </template>
                     </vue-slick-carousel>
                   </div>
-                  <br />
+                  <!-- FIXME: -->
+                  <!-- Commented this for now because this page temporary available both from legacy
+                  Time-Lapses page and new Print Page (not sure how Back should work here) -->
+                  <!-- <br />
                   <div class="card-body p-3">
-                    <a href="/prints/">
-                      <i class="fas fa-chevron-left"></i> Time-lapse
+                    <a :href="`/print_history/${print.id}/`">
+                      <i class="fas fa-chevron-left"></i> Print Page
                     </a>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -48,7 +51,7 @@
         </b-row>
       </b-container>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -63,33 +66,32 @@ import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 // TODO: this should be configured as global. But for some reason it doesn't work.
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-
-import Consent from '@src/components/print-shot-feedback/Consent'
 import PrintShotCard from '@src/components/print-shot-feedback/PrintShotCard'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout'
+import FocusedFeedbackConsent from '../components/print-shot-feedback/FocusedFeedbackConsent.vue'
 
 export default {
   name: 'PrintShotFeedbackApp',
   components: {
-    Consent,
+    FocusedFeedbackConsent,
     Loading,
     PrintShotCard,
     VueSlickCarousel,
-    Layout,
+    PageLayout,
   },
   props: {
     config: {
       default: () => {},
-      type: Object
-    }
+      type: Object,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       shots: [],
       currentShot: 0,
-      print: null
+      print: null,
     }
   },
   computed: {},
@@ -100,7 +102,7 @@ export default {
 
   methods: {
     fetchData() {
-      axios.get(urls.print(this.config.printId)).then(response => {
+      axios.get(urls.print(this.config.printId)).then((response) => {
         this.print = normalizedPrint(response.data)
         this.shots = sortBy(this.print.printshotfeedback_set, 'id')
       })
@@ -110,7 +112,7 @@ export default {
       axios
         .patch(urls.print(this.print.id), data)
 
-        .then(response => (this.print = response.data))
+        .then((response) => (this.print = response.data))
     },
 
     consentBtnPressed() {
@@ -118,7 +120,7 @@ export default {
     },
 
     onShotChanged(data) {
-      const i = findIndex(this.shots, shot => shot.id == data.id)
+      const i = findIndex(this.shots, (shot) => shot.id == data.id)
       this.$set(this.shots, i, data)
       this.$refs.carousel.next()
     },
@@ -132,8 +134,8 @@ export default {
         return 'page-visiting'
       }
       return this.shots[page].answered_at ? 'text-success' : 'page-unvisited'
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -1,22 +1,24 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-
-    configVariableTitle="Webhook URL"
-    configVariablePlaceholder="Discord Webhook"
-    configVariableName="webhook_url"
-
-    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
-    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    :notification-channel="notificationChannel"
+    config-variable-title="User Key"
+    config-variable-placeholder="Pushover User Key"
+    config-variable-name="user_key"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
     <template #header>
       <small class="form-text text-muted">
-        If you have a Discord channel you wish to receive notifications on, you can
-        <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">generate webhook url</a>
+        If you have a Pushover account, you can
+        <a
+          href="https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it"
+          target="_blank"
+          >get your User Key</a
+        >
         and enter it here.
       </small>
     </template>
@@ -27,7 +29,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 
 export default {
-  name: 'discord',
+  name: 'PushoverPlugin',
 
   components: {
     NotificationChannelTemplate,

@@ -30,7 +30,7 @@ export default [
         description: 'Such as start, pause, and resume',
         enabledByDefault: false,
       },
-    ]
+    ],
   },
   {
     id: 'notify_on_heater_status',

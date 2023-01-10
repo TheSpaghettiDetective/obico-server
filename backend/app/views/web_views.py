@@ -172,6 +172,10 @@ def unsubscribe_email(request):
 ### Prints and public time lapse ###
 
 @login_required
+def print_history(request, template_dir=None):
+    return render(request, get_template_path('print_history', template_dir))
+
+@login_required
 def prints(request, template_dir=None):
     return render(request, get_template_path('prints', template_dir))
 

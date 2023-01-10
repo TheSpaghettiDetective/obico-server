@@ -1,29 +1,29 @@
 <template>
   <div v-if="theme === 'web'" class="row">
-    <div class="col-12 col-form-label" :class="{'pl-5': isSubcategory}">
+    <div class="col-12 col-form-label" :class="{ 'pl-5': isSubcategory }">
       <saving-animation
         :errors="errorMessages ? errorMessages[settingKey(settingId)] : []"
         :saving="saving ? saving[settingKey(settingId)] : false"
       >
         <div class="custom-control custom-checkbox form-check-inline">
           <input
+            :id="`id_${settingKey(settingId)}`"
+            v-model="value"
             type="checkbox"
             class="custom-control-input"
-            :id="`id_${settingKey(settingId)}`"
             :disabled="disabled"
-            v-model="notificationChannel.channelInfo[settingId]"
-            @change="$emit('updateNotificationChannel', notificationChannel, [settingId])"
-          >
+          />
           <label :class="['custom-control-label', labelClass]" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
-            <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
+            <span v-if="settingDescription" class="text-muted setting-description"
+              ><br />{{ settingDescription }}</span
+            >
           </label>
-
         </div>
       </saving-animation>
     </div>
     <div v-if="bottomDivider" class="col-12">
-      <hr class="my-1">
+      <hr class="my-1" />
     </div>
   </div>
   <div v-else>
@@ -31,24 +31,25 @@
       :errors="errorMessages ? errorMessages[settingKey(settingId)] : []"
       :saving="saving ? saving[settingKey(settingId)] : false"
     >
-      <div class="mobile-setting-item-wrapper" :class="{'is-subcategory': isSubcategory}">
+      <div class="mobile-setting-item-wrapper" :class="{ 'is-subcategory': isSubcategory }">
         <div class="setting-item-text">
           <label :class="labelClass" :for="`id_${settingKey(settingId)}`">
             {{ settingTitle }}
-            <span v-if="settingDescription" class="text-muted setting-description"><br>{{ settingDescription }}</span>
+            <span v-if="settingDescription" class="text-muted setting-description"
+              ><br />{{ settingDescription }}</span
+            >
           </label>
         </div>
         <div class="setting-item-switch">
           <onoff-toggle
+            v-model="value"
             :theme="theme"
             :width="theme === 'ios' ? 48 : 30"
             :height="theme === 'ios' ? 24 : 12"
-            :onColor="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
-            offColor="var(--color-divider)"
-            borderColor="var(--color-divider)"
-            :thumbColor="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
-            v-model="notificationChannel.channelInfo[settingId]"
-            @input="$emit('updateNotificationChannel', notificationChannel, [settingId])"
+            :on-color="theme === 'ios' ? 'var(--color-primary)' : 'var(--color-primary-muted)'"
+            off-color="var(--color-divider)"
+            border-color="var(--color-divider)"
+            :thumb-color="theme === 'ios' ? '#fff' : 'var(--color-primary)'"
             :disabled="disabled"
             class="mb-0"
           />
@@ -93,6 +94,7 @@ export default {
     },
     settingDescription: {
       type: String,
+      default: '',
     },
     isSubcategory: {
       type: Boolean,
@@ -112,6 +114,12 @@ export default {
     },
   },
 
+  data() {
+    return {
+      value: this.notificationChannel.channelInfo[this.settingId],
+    }
+  },
+
   computed: {
     theme() {
       const platform = mobilePlatform()
@@ -123,13 +131,23 @@ export default {
     },
     labelClass() {
       return this.isHeader ? 'lg' : ''
-    }
+    },
+  },
+
+  watch: {
+    value: function (newVal, prevVal) {
+      this.$emit('updateNotificationChannel', {
+        section: this.notificationChannel,
+        propNames: [this.settingId],
+        propValues: [newVal],
+      })
+    },
   },
 
   methods: {
     settingKey(settingId) {
       return getNotificationSettingKey(this.notificationChannel, settingId)
-    }
+    },
   },
 }
 </script>

@@ -1,35 +1,42 @@
 <template>
-  <layout :isPopup="isPopup">
-
+  <page-layout :is-popup="isPopup">
     <!-- Tob bar -->
-    <template v-slot:topBarLeft>
-      <a v-if="isPopup" @click.prevent="goBack" href="#" class="btn shadow-none icon-btn d-inline" title="Go Back">
+    <template #topBarLeft>
+      <a
+        v-if="isPopup"
+        href="#"
+        class="btn shadow-none icon-btn d-inline"
+        title="Go Back"
+        @click.prevent="goBack"
+      >
         <i class="fas fa-chevron-left"></i>
       </a>
     </template>
-    <template v-slot:topBarRight>
+    <template #topBarRight>
       <div>
         <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item @click="renameFile">
-            <i class="fas fa-edit"></i>Rename
-          </b-dropdown-item>
+          <b-dropdown-item @click="renameFile"> <i class="fas fa-edit"></i>Rename </b-dropdown-item>
           <b-dropdown-item @click="deleteFile">
-            <span class="text-danger">
-              <i class="fas fa-trash-alt"></i>Delete
-            </span>
+            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
           </b-dropdown-item>
         </b-dropdown>
-        <a v-if="onClose" @click.prevent="onClose" href="#" class="btn shadow-none icon-btn d-inline" title="Close">
+        <a
+          v-if="onClose"
+          href="#"
+          class="btn shadow-none icon-btn d-inline"
+          title="Close"
+          @click.prevent="onClose"
+        >
           <i class="fas fa-times text-danger"></i>
         </a>
       </div>
     </template>
 
     <!-- Page content -->
-    <template v-slot:content>
+    <template #content>
       <b-container v-if="loading || gcodeNotFound">
         <b-row>
           <b-col class="text-center mt-5">
@@ -42,14 +49,17 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-container v-else>
+      <b-container v-else fluid="xl">
         <b-row>
-          <b-col :lg="isPopup ? 12 : 8">
-            <div class="card-container">
+          <b-col>
+            <!-- File info -->
+            <div class="card-container file-info" :class="{ 'full-width': isPopup }">
               <b-container fluid>
                 <b-row>
                   <b-col>
-                    <h1 class="file-name truncate-overflow-text">{{ gcode.filename }}</h1>
+                    <h1 class="file-name overflow-truncated">
+                      {{ gcode.filename }}
+                    </h1>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -63,7 +73,7 @@
                       <div class="value">{{ gcode.filesize }}</div>
                     </div>
                   </b-col>
-                  <b-col sm="6" v-show="isCloud">
+                  <b-col v-show="isCloud" sm="6">
                     <div class="file-info-line">
                       <div><i class="fas fa-circle"></i>Times printed</div>
                       <div class="value">{{ gcode.totalPrints }}</div>
@@ -80,94 +90,68 @@
                 </b-row>
               </b-container>
             </div>
-
+            <!-- Available printers -->
             <available-printers
-              class="card-container mt-4"
-              :class="[isPopup ? 'd-lg-block' : 'd-lg-none']"
-              :isPopup="isPopup"
-              :targetPrinterId="targetPrinterId || selectedPrinterId"
+              class="card-container available-printers"
+              :class="{ 'full-width': isPopup }"
+              :is-popup="isPopup"
+              :target-printer-id="targetPrinterId || selectedPrinterId"
               :gcode="gcode"
-              :isCloud="isCloud"
+              :is-cloud="isCloud"
               @refresh="onRefresh"
             />
-
-            <div class="mt-5" v-if="isCloud">
+            <!-- Print history -->
+            <div class="print-history" :class="{ 'full-width': isPopup }">
               <h2 class="section-title">Print history</h2>
-              <div class="print-history-card" v-for="print in gcode.print_set" :key="`print_${print.id}`">
-                <div class="print-info">
-
-                  <div class="result text-success font-weight-bold" v-if="print.finished_at">Succeeded</div>
-                  <div class="result text-danger font-weight-bold" v-else-if="print.cancelled_at">Cancelled / Failed</div>
-                  <div class="result font-weight-bold" v-else>Printing...</div>
-
-                  <div class="printer truncate-overflow-text">Printer: {{ print.printer.name }}</div>
-                  <div class="file truncate-overflow-text">File: {{ print.filename }}</div>
-
-                  <div class="date">
-                    Ended:
-                    <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
-                    <span v-else>-</span>
-                  </div>
-                </div>
-                <div class="poster" v-if="print.poster_url">
-                  <div class="img" :style="{backgroundImage: `url(${print.poster_url})`}"></div>
-                </div>
+              <div v-if="gcode.print_set.length">
+                <print-history-item
+                  v-for="print of gcode.print_set"
+                  :key="`print_${print.id}`"
+                  :print="print"
+                  class="print-item"
+                ></print-history-item>
               </div>
-              <div v-if="!gcode.print_set.length">
-                <div class="print-history-card p-4 justify-content-center text-secondary">
+              <div v-else>
+                <div class="card-container p-4 justify-content-center text-secondary">
                   This file doesn't have any prints yet
                 </div>
               </div>
             </div>
           </b-col>
-
-          <b-col :lg="isPopup ? 12 : 4">
-            <available-printers
-              class="card-container d-none"
-              :class="[isPopup ? 'd-lg-none' : 'd-lg-block']"
-              :isPopup="isPopup"
-              :targetPrinterId="targetPrinterId || Number(selectedPrinterId)"
-              :gcode="gcode"
-              :isCloud="isCloud"
-              @refresh="onRefresh"
-            />
-          </b-col>
         </b-row>
       </b-container>
-      <rename-modal
-        :item="gcode"
-        @renamed="onItemRenamed"
-        ref="renameModal"
-      />
+      <rename-modal ref="renameModal" :item="gcode" @renamed="onItemRenamed" />
       <delete-confirmation-modal
+        ref="deleteConfirmationModal"
         :item="gcode"
         @deleted="onItemDeleted"
-        ref="deleteConfirmationModal"
       />
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
+import get from 'lodash/get'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedGcode } from '@src/lib/normalizers'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import availablePrinters from './AvailablePrinters.vue'
+import RenameModal from '@src/components/g-codes/RenameModal.vue'
+import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
+import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from './localFiles'
-
+import { listFiles } from '@src/components/g-codes/localFiles'
+import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {
-  name: 'GCodeDetailsPage',
+  name: 'GCodeFilePage',
 
   components: {
-    Layout,
+    PageLayout,
     RenameModal,
     DeleteConfirmationModal,
     availablePrinters,
+    PrintHistoryItem,
   },
 
   props: {
@@ -177,11 +161,11 @@ export default {
     },
     targetPrinterId: {
       type: Number,
-      required: false,
+      default: null,
     },
     onClose: {
       type: Function,
-      required: false,
+      default: null,
     },
     routeParams: {
       type: Object,
@@ -190,8 +174,8 @@ export default {
           fileId: null,
           printerId: null,
         }
-      }
-    }
+      },
+    },
   },
 
   data() {
@@ -202,16 +186,16 @@ export default {
     }
   },
 
+  computed: {
+    isCloud() {
+      return !this.selectedPrinterId
+    },
+  },
+
   created() {
     this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
     this.gcodeId = this.getRouteParam('fileId')
     this.fetchGcode()
-  },
-
-  computed: {
-    isCloud() {
-      return !Boolean(this.selectedPrinterId)
-    },
   },
 
   methods: {
@@ -229,15 +213,18 @@ export default {
 
       const decodedPath = decodeURIComponent(this.gcodeId)
       const filename = decodedPath.split('/').at(-1)
-      const path = filename === decodedPath ? '' : decodedPath.slice(0, decodedPath.length - filename.length - 1)
+      const path =
+        filename === decodedPath
+          ? ''
+          : decodedPath.slice(0, decodedPath.length - filename.length - 1)
 
       listFiles(this.printerComm, {
         query: filename,
         path,
-        onRequestEnd: (result) => {
+        onRequestEnd: async (result) => {
           this.loading = false
           if (result?.files?.length) {
-            const file = result.files.filter(f => f.path === decodedPath)[0]
+            const file = result.files.find((f) => f.path === decodedPath)
             if (!file) {
               this.gcodeNotFound = true
               return
@@ -245,6 +232,24 @@ export default {
             this.gcode = {
               ...file,
               print_set: [],
+            }
+            if (file.path && file.hash && this.getRouteParam('printerId')) {
+              const safeFilename = file.path.replace(/^.*[\\/]/, '')
+              try {
+                let response = await axios.get(
+                  urls.gcodeFiles({
+                    resident_printer: this.getRouteParam('printerId'),
+                    safe_filename: safeFilename,
+                    agent_signature: `md5:${file.hash}`,
+                  })
+                )
+                const gcodeFileOnServer = get(response, 'data.results[0]')
+                if (gcodeFileOnServer) {
+                  this.gcode = normalizedGcode(gcodeFileOnServer)
+                }
+              } catch (e) {
+                console.error(e)
+              }
             }
           } else {
             this.gcodeNotFound = true
@@ -309,6 +314,27 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.file-info, .print-history
+  width: 60%
+  display: inline-block
+  &.print-history
+    padding-top: 10px
+    margin-top: 30px
+
+.available-printers
+  width: calc(40% - 30px)
+  float: right
+
+.file-info, .print-history, .available-printers
+  &.full-width
+    width: 100%
+    &.print-history, &.available-printers
+      margin-top: 15px
+  @media (max-width: 996px)
+    width: 100%
+    &.print-history, &.available-printers
+      margin-top: 15px
+
 .file-name
   font-size: 1.25rem
   margin-bottom: 1rem
@@ -330,43 +356,6 @@ export default {
   font-size: 1.25rem
   margin-bottom: 0.5rem
 
-.print-history-card
-  display: flex
-  justify-content: space-between
-  align-items: stretch
-  background-color: var(--color-surface-secondary)
-  border-radius: var(--border-radius-lg)
-  margin-bottom: 1rem
-
-.print-info
-  flex: 1
-  padding: 1rem
-  overflow: hidden
-
-  & > div
-    margin-bottom: 0.25rem
-
-.truncate-overflow-text
-  width: 100%
-  text-overflow: ellipsis
-  overflow: hidden
-  white-space: nowrap
-
-.date
-  color: var(--color-text-secondary)
-
-.poster
-  padding: .875rem
-  .img
-    border-radius: var(--border-radius-sm)
-    background-size: cover
-    background-position: center
-    height: 100%
-    width: 150px
-    background-color: var(--color-hover)
-    display: flex
-    justify-content: center
-    align-items: center
-    color: var(--color-text-secondary)
-    font-size: 0.875rem
+.print-item
+  margin-bottom: 10px
 </style>

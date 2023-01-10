@@ -5,28 +5,53 @@
       toggleable="xl"
       :class="{
         'navbar-dark': theme === themes.Dark,
-        'navbar-light': theme === themes.Light
-      }">
+        'navbar-light': theme === themes.Light,
+      }"
+    >
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <svg width="100" height="40">
+          <svg width="100" height="30">
             <use href="#svg-logo-full" />
           </svg>
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">
-          <template>
-            <span class="navbar-toggler-icon"></span>
-          </template>
+          <span class="navbar-toggler-icon"></span>
         </b-navbar-toggle>
 
-        <b-collapse id="navbar-toggle-collapse" is-nav v-model="showMainMenu">
+        <b-collapse id="navbar-toggle-collapse" v-model="showMainMenu" is-nav>
           <b-navbar-nav>
-            <b-nav-item v-if="user" href="/printers/" :class="{'active': viewName.includes('printers')}">Printer</b-nav-item>
-            <b-nav-item v-if="user" href="/prints/" :class="{'active': viewName.includes('prints')}">Time-lapse</b-nav-item>
-            <b-nav-item v-if="user" href="/g_code_folders/cloud/" :class="{'active': viewName.includes('g_code_folders')}">G-Code</b-nav-item>
-            <b-nav-item v-if="isEnt && !user" href="/ent_pub/publictimelapses/" :class="{'active': viewName === 'publictimelapse_list'}" class="glowing">Spaghetti Gallery</b-nav-item>
-            <b-nav-item v-if="isEnt" href="/ent_pub/pricing/" :class="{'active': viewName === 'pricing'}">Pricing</b-nav-item>
+            <b-nav-item
+              v-if="user"
+              href="/printers/"
+              :class="{ active: viewName.includes('printers') }"
+              >Printer</b-nav-item
+            >
+            <b-nav-item
+              v-if="user"
+              href="/print_history/"
+              :class="{ active: viewName.includes('print_history') }"
+              >Time-lapse</b-nav-item
+            >
+            <b-nav-item
+              v-if="user"
+              href="/g_code_folders/cloud/"
+              :class="{ active: viewName.includes('g_code_folders') }"
+              >G-Code</b-nav-item
+            >
+            <b-nav-item
+              v-if="isEnt && !user"
+              href="/ent_pub/publictimelapses/"
+              :class="{ active: viewName === 'publictimelapse_list' }"
+              class="glowing"
+              >Spaghetti Gallery</b-nav-item
+            >
+            <b-nav-item
+              v-if="isEnt"
+              href="/ent_pub/pricing/"
+              :class="{ active: viewName === 'pricing' }"
+              >Pricing</b-nav-item
+            >
             <b-nav-item href="https://www.obico.io/help/">Help</b-nav-item>
             <b-nav-item href="https://obico.io/discord">Community</b-nav-item>
           </b-navbar-nav>
@@ -34,7 +59,13 @@
           <b-navbar-nav class="ml-auto">
             <b-nav-item v-if="!user" href="/accounts/login/">SIGN IN</b-nav-item>
             <b-nav-item v-if="!user && allowSignUp" href="/accounts/signup/">SIGN UP</b-nav-item>
-            <b-nav-item-dropdown v-if="user" ref="accountDropdown" right toggle-class="user-menu" :text="user.first_name || user.email">
+            <b-nav-item-dropdown
+              v-if="user"
+              ref="accountDropdown"
+              right
+              toggle-class="user-menu"
+              :text="user.first_name || user.email"
+            >
               <b-dropdown-item href="/user_preferences/">
                 <i class="fas fa-cog mr-2"></i>Preferences
               </b-dropdown-item>
@@ -56,9 +87,18 @@ import { Themes } from '@static/js/color-scheme'
 import { currentThemeValue } from '@src/lib/color-scheme-controller'
 
 export default {
-  name: 'Navbar',
+  name: 'NavBar',
 
   components: {},
+
+  props: {
+    viewName: {
+      default() {
+        return ''
+      },
+      type: String,
+    },
+  },
 
   data() {
     return {
@@ -68,20 +108,6 @@ export default {
       themes: Themes,
       showMainMenu: false,
     }
-  },
-
-  props: {
-    viewName: {
-      default() {return ''},
-      type: String,
-    },
-  },
-
-  created() {
-    const {ACCOUNT_ALLOW_SIGN_UP, IS_ENT} = settings()
-    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
-    this.isEnt = !!IS_ENT
-    this.user = user()
   },
 
   computed: {
@@ -94,6 +120,13 @@ export default {
     },
   },
 
+  created() {
+    const { ACCOUNT_ALLOW_SIGN_UP, IS_ENT } = settings()
+    this.allowSignUp = !!ACCOUNT_ALLOW_SIGN_UP
+    this.isEnt = !!IS_ENT
+    this.user = user()
+  },
+
   methods: {
     hideDropdowns() {
       this.showMainMenu = false
@@ -103,7 +136,7 @@ export default {
       if (accountDropdown) {
         accountDropdown.hide()
       }
-    }
+    },
   },
 }
 </script>
@@ -150,8 +183,3 @@ export default {
     .nav-item
       padding: 0.5rem 0.24rem
 </style>
-
-
-
-
-

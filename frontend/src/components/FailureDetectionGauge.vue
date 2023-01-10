@@ -1,6 +1,6 @@
 <template>
   <div class="obico-gauge-container">
-    <span id="title" :style="{color: titleColor}">{{ titleText }}</span>
+    <span id="title" :style="{ color: titleColor }">{{ titleText }}</span>
     <div class="obico-gauge">
       <radial-gauge :value="value" :options="computedOptions"></radial-gauge>
     </div>
@@ -14,29 +14,26 @@ import { Themes } from '@static/js/color-scheme'
 import { currentThemeValue } from '@src/lib/color-scheme-controller'
 
 export default {
-  name: 'Gauge',
+  name: 'FailureDetectionGauge',
   components: {
-    RadialGauge
-  },
-  data: () => {
-    return {
-    }
+    RadialGauge,
   },
   props: {
     normalizedP: {
       type: Number,
+      required: true,
     },
 
     isWatching: {
       type: Boolean,
-      default: true
+      default: true,
     },
 
     options: {
       // https://canvas-gauges.com/documentation/user-guide/configuration
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
 
   computed: {
@@ -66,7 +63,7 @@ export default {
         highlights: [
           { from: 0, to: 33, color: this.isWatching ? '#5cb85c' : inactiveColor.highlight1 },
           { from: 33, to: 67, color: this.isWatching ? '#f0ad4e' : inactiveColor.highlight2 },
-          { from: 67, to: 100, color: this.isWatching ? '#d9534f' : inactiveColor.highlight3 }
+          { from: 67, to: 100, color: this.isWatching ? '#d9534f' : inactiveColor.highlight3 },
         ],
         colorPlate: 'rgba(255,255,255,.0)',
         colorTitle: '#5cb85c',
@@ -80,36 +77,36 @@ export default {
         animatedValue: true,
         startAngle: 90,
         ticksAngle: 180,
-        borders: false
+        borders: false,
       }
     },
     value() {
-      return this.normalizedP*100
+      return this.normalizedP * 100
     },
     titleText() {
       switch (this.level()) {
-      case 0:
-        return 'Looking Good'
-      case 1:
-        return 'Fishy...'
-      case 2:
-        return 'Failing!'
-      default:
-        return 'Looking Good'
+        case 0:
+          return 'Looking Good'
+        case 1:
+          return 'Fishy...'
+        case 2:
+          return 'Failing!'
+        default:
+          return 'Looking Good'
       }
     },
     titleColor() {
       switch (this.level()) {
-      case 0:
-        return '#5cb85c'
-      case 1:
-        return '#f0ad4e'
-      case 2:
-        return '#d9534f'
-      default:
-        return '#5cb85c'
+        case 0:
+          return '#5cb85c'
+        case 1:
+          return '#f0ad4e'
+        case 2:
+          return '#d9534f'
+        default:
+          return '#5cb85c'
       }
-    }
+    },
   },
 
   methods: {
@@ -121,8 +118,8 @@ export default {
       } else {
         return 0
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -23,7 +23,7 @@ function BlogListPage(props) {
   const isBlogOnlyMode = permalink === '/';
   const title = isBlogOnlyMode ? siteTitle : blogTitle;
   return (
-    <Layout
+    <page-layout
       title={title}
       description={blogDescription}
       wrapperClassName={ThemeClassNames.wrapper.blogPages}

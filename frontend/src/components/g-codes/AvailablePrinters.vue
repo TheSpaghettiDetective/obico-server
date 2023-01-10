@@ -5,30 +5,37 @@
     </div>
     <div v-else>
       <div
-        class="printer-item"
         v-for="printer in printers"
         :key="`printer_${printer.id}`"
-        :class="{active: selectedPrinter && printer.id === selectedPrinter.id}"
+        class="printer-item"
+        :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
-        <div class="printer-name">{{ printer.name }}</div>
+        <div class="printer-name overflow-truncated">{{ printer.name }}</div>
         <div
           class="printer-status"
-          :class="{
-            'text-success': printer.printAvailability.key === 'ready',
-            'text-warning': printer.printAvailability.key === 'unavailable'
-          }"
-        >{{ printer.printAvailability.text }}</div>
+          :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+        >
+          {{ printer.printabilityText() }}
+        </div>
       </div>
 
-      <p class="text-center text-secondary mt-3 mb-3" v-if="!printersLoading && !printers.length">No available printers</p>
+      <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
+        No available printers
+      </p>
 
-      <button class="btn btn-primary mt-3" :disabled="!selectedPrinter || isSending" @click="onPrintClicked">
-        <b-spinner small v-if="isSending" />
+      <button
+        class="btn btn-primary mt-3"
+        :disabled="!selectedPrinter || isSending"
+        @click="onPrintClicked"
+      >
+        <b-spinner v-if="isSending" small />
         <div v-else>
-          <div class="truncate-overflow-text" v-if="selectedPrinter">Print on {{ selectedPrinter.name }}</div>
-          <div class="truncate-overflow-text" v-else>Print</div>
+          <div v-if="selectedPrinter" class="truncate-overflow-text">
+            Print on {{ selectedPrinter.name }}
+          </div>
+          <div v-else class="truncate-overflow-text">Print</div>
         </div>
       </button>
     </div>
@@ -36,24 +43,15 @@
 </template>
 
 <script>
-import Layout from '@src/components/Layout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import RenameModal from './RenameModal.vue'
-import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
-import { sendToPrint, getPrinterPrintAvailability } from './sendToPrint'
-
-const REDIRECT_TIMER = 3000
+import { sendToPrint, showRedirectModal } from './sendToPrint'
 
 export default {
   name: 'AvailablePrinters',
 
-  components: {
-    Layout,
-    RenameModal,
-    DeleteConfirmationModal,
-  },
+  components: {},
 
   props: {
     isPopup: {
@@ -63,6 +61,7 @@ export default {
     targetPrinterId: {
       type: Number,
       required: false,
+      default: null,
     },
     gcode: {
       type: Object,
@@ -71,7 +70,7 @@ export default {
     isCloud: {
       type: Boolean,
       default: true,
-    }
+    },
   },
 
   data() {
@@ -105,31 +104,30 @@ export default {
       }
 
       printers = printers?.data
-      printers = printers.map(p => normalizedPrinter(p))
-      printers = printers.map(p => ({...p, printAvailability: getPrinterPrintAvailability(p)}))
+      printers = printers.map((p) => normalizedPrinter(p))
 
       if (this.targetPrinterId) {
-        const selectedPrinter = printers.find(p => p.id === this.targetPrinterId)
+        const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
-        if (selectedPrinter.printAvailability.key === 'ready') {
+        if (selectedPrinter.isPrintable()) {
           this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.filter(p => p.printAvailability.key === 'ready')[0]
+        this.selectedPrinter = printers.find((p) => p.isPrintable())
       }
 
       this.printersLoading = false
     },
     selectPrinter(printer) {
-      if (printer.printAvailability.key !== 'ready') {
+      if (!printer.isPrintable()) {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't ready for print for one of the following reasons:`,
           html: `<ul style="text-align: left">
             <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
             <li>Printer is not connected to ${printer.agentDisplayName()}</li>
             <li>Printer is currently busy</li>
-          </ul>`
+          </ul>`,
         })
         return
       }
@@ -152,48 +150,12 @@ export default {
         },
         onPrinterStatusChanged: () => {
           if (!this.isPopup) {
-            this.showRedirectModal()
+            showRedirectModal(this.$swal, () => this.$emit('refresh'))
           }
 
           this.isSending = false
           this.fetchPrinters()
-        }
-      })
-    },
-    showRedirectModal() {
-      let timerInterval
-      this.$swal.Prompt.fire({
-        html: `
-          <div class="text-center">
-            <h5 class="py-3">
-              You'll be redirected to printers page in <strong>${Math.round(REDIRECT_TIMER / 1000)}</strong> seconds
-            </h5>
-          </div>
-        `,
-        timer: REDIRECT_TIMER,
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Go now',
-        onOpen: () => {
-          const content = this.$swal.getHtmlContainer()
-          const $ = content.querySelector.bind(content)
-
-          timerInterval = setInterval(() => {
-            this.$swal.getHtmlContainer().querySelector('strong')
-              .textContent = (this.$swal.getTimerLeft() / 1000)
-                .toFixed(0)
-          }, 1000)
         },
-        onClose: () => {
-          clearInterval(timerInterval)
-          timerInterval = null
-        }
-      }).then(result => {
-        if (result.isConfirmed || result.dismiss === 'timer') {
-          window.location.assign('/printers/')
-        } else {
-          this.$emit('refresh')
-        }
       })
     },
   },

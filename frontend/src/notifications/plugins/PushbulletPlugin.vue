@@ -1,15 +1,13 @@
 <template>
   <notification-channel-template
-    :errorMessages="errorMessages"
+    :error-messages="errorMessages"
     :saving="saving"
-    :notificationChannel="notificationChannel"
-
-    configVariableTitle="Access Token"
-    configVariablePlaceholder="Pushbullet Access Token"
-    configVariableName="access_token"
-
-    @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
-    @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+    :notification-channel="notificationChannel"
+    config-variable-title="Access Token"
+    config-variable-placeholder="Pushbullet Access Token"
+    config-variable-name="access_token"
+    @createNotificationChannel="$emit('createNotificationChannel', $event)"
+    @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
     @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
     @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
   >
@@ -27,7 +25,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 
 export default {
-  name: 'pushbullet',
+  name: 'PushbulletPlugin',
 
   components: {
     NotificationChannelTemplate,

@@ -12,13 +12,13 @@
       <div class="my-2">
         <input
           ref="input"
+          v-model="newItemName"
           type="text"
           name="name"
           placeholder="New name"
           class="input-lg"
           required="required"
-          v-model="newItemName"
-        >
+        />
         <b-alert v-if="errorMessage" variant="danger" class="mt-3" show>
           {{ errorMessage }}
         </b-alert>
@@ -85,7 +85,7 @@ export default {
       } else {
         return `${this.newItemName}.${this.fileExt}`
       }
-    }
+    },
   },
 
   methods: {
@@ -144,7 +144,10 @@ export default {
 
       try {
         const url = this.itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
-        await axios.patch(url, `${this.itemType === 'file' ? 'filename' : 'name'}=${this.newNameWithExt}`)
+        await axios.patch(
+          url,
+          `${this.itemType === 'file' ? 'filename' : 'name'}=${this.newNameWithExt}`
+        )
       } catch (e) {
         this.errorMessage = 'Server error'
         console.log(e)

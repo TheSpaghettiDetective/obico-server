@@ -31,7 +31,8 @@
         <div class="action-btn">SHOW ALL</div>
       </a>
       <!-- Prints list -->
-      <b-container>
+      <loading-placeholder v-if="loading" />
+      <b-container v-else>
         <b-row>
           <b-col v-if="prints.length">
             <print-history-item

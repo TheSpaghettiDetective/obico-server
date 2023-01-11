@@ -10,6 +10,7 @@ import { initTheme } from '@src/lib/color-scheme-controller'
 import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
 import LoadScript from 'vue-plugin-load-script'
+import LoadingPlaceholder from '@src/components/LoadingPlaceholder.vue'
 
 export default (router, components) => {
   initTheme()
@@ -22,6 +23,20 @@ export default (router, components) => {
   Vue.use(VuePluralize)
   Vue.use(OnoffToggle)
   Vue.use(LoadScript)
+
+  Vue.mixin({
+    methods: {
+      _showErrorPopup: function (axiosError) {
+        console.error(axiosError)
+        this.$swal.Reject.fire({
+          title: 'Error',
+          text: axiosError.message,
+        })
+      },
+    },
+  })
+
+  Vue.component('LoadingPlaceholder', LoadingPlaceholder)
 
   if (document.getElementById('app')) {
     new Vue({

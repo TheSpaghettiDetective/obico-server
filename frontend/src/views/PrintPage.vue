@@ -1,14 +1,19 @@
 <template>
   <page-layout>
     <template #content>
-      <b-container v-if="!loading" fluid>
+      <loading-placeholder v-if="isLoading" />
+      <b-container v-else fluid>
         <b-row>
           <b-col lg="5">
             <div class="print-info">
               <div class="card-container header">
                 <div class="info">
-                  <div class="status" :class="print.status.key">{{ print.status.title }}</div>
-                  <div class="date">{{ print.ended_at ? print.ended_at.fromNow() : '-' }}</div>
+                  <div class="status" :class="print.status.key">
+                    {{ print.status.title }}
+                  </div>
+                  <div class="date">
+                    {{ print.ended_at ? print.ended_at.fromNow() : '-' }}
+                  </div>
                 </div>
               </div>
               <!-- Printer -->
@@ -19,15 +24,21 @@
                   </svg>
                 </div>
                 <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ printer.name }}</div>
+                  <div class="title overflow-truncated">{{ print.printer.name }}</div>
                   <div
                     class="subtitle overflow-truncated"
-                    :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+                    :class="[
+                      printer
+                        ? printer.isPrintable()
+                          ? 'text-success'
+                          : 'text-warning'
+                        : 'text-danger',
+                    ]"
                   >
-                    {{ printer.printabilityText() }}
+                    {{ printer ? printer.printabilityText() : 'Deleted' }}
                   </div>
                 </div>
-                <div class="action">
+                <div v-if="printer" class="action">
                   <button
                     class="btn btn-primary"
                     :disabled="!printer.isPrintable()"
@@ -290,11 +301,12 @@ export default {
     return {
       PrintStatus,
       absoluteDateFormat: 'MMM M, YYYY H:mm A',
-      print: null,
-      printer: null,
-      loading: true,
+      data: {
+        print: undefined,
+        predictions: undefined,
+        printer: undefined,
+      },
       isSending: false,
-      predictions: [],
       currentPosition: 0,
       inflightAlertOverwrite: null,
       fullscreenUrl: null,
@@ -302,6 +314,20 @@ export default {
   },
 
   computed: {
+    // shortcuts
+    print() {
+      return this.data.print
+    },
+    predictions() {
+      return this.data.predictions
+    },
+    printer() {
+      return this.data.printer
+    },
+
+    isLoading() {
+      return !!Object.values(this.data).filter((d) => d === undefined).length
+    },
     focusedFeedbackEligible() {
       return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
     },
@@ -355,32 +381,37 @@ export default {
 
   methods: {
     downloadFile,
-    fetchData(showLoading = true) {
-      if (showLoading) {
-        this.loading = true
+    async fetchData(clearPreviousData = true) {
+      if (clearPreviousData) {
+        for (const key of Object.keys(this.data)) {
+          this.data[key] = undefined
+        }
       }
-      axios
-        .get(urls.print(this.printId))
-        .then((response) => {
-          this.print = normalizedPrint(response.data)
-          return axios.get(urls.printer(this.print.printer.id))
+
+      try {
+        const printResponse = await axios.get(urls.print(this.printId))
+        this.data.print = normalizedPrint(printResponse.data)
+
+        axios.get(this.print.prediction_json_url).then((response) => {
+          this.data.predictions = response.data
         })
-        .then((response) => {
-          this.printer = normalizedPrinter(response.data)
-          return axios.get(this.print.prediction_json_url)
-        })
-        .then((response) => {
-          this.predictions = response.data
-          if (showLoading) {
-            this.loading = false
-          }
-        })
-        .catch((error) => {
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: error.message,
+
+        axios
+          .get(urls.printer(this.print.printer.id))
+          .then((response) => {
+            this.data.printer = normalizedPrinter(response.data)
           })
-        })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              // Printer could be old and deleted from account
+              this.data.printer = null
+            } else {
+              this._showErrorPopup(error)
+            }
+          })
+      } catch (error) {
+        this._showErrorPopup(error)
+      }
     },
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition

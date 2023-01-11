@@ -47,7 +47,7 @@
               </div>
             </mugen-scroll>
           </b-col>
-          <b-col v-else> Not found </b-col>
+          <b-col v-else class="text-center my-5">You don't have print history yet</b-col>
         </b-row>
       </b-container>
     </template>

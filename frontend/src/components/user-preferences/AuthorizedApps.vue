@@ -40,10 +40,7 @@ export default {
         this.authorizedApps = response.data
       })
       .catch((error) => {
-        this.$swal.Reject.fire({
-          title: 'Oops',
-          text: error.message,
-        })
+        this._showErrorPopup(error)
       })
   },
 
@@ -55,10 +52,7 @@ export default {
           this.authorizedApps = this.authorizedApps.filter((app) => app.id !== id)
         })
         .catch((error) => {
-          this.$swal.Reject.fire({
-            title: 'Oops',
-            text: error.message,
-          })
+          this._showErrorPopup(error)
         })
     },
   },

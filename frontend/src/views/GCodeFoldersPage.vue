@@ -566,13 +566,9 @@ export default {
           response = response.data
           this.noMoreFolders = response?.next === null
           folders = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -598,13 +594,9 @@ export default {
           response = response.data
           this.noMoreFiles = response?.next === null
           files = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.files.push(...files.map((data) => normalizedGcode(data)))

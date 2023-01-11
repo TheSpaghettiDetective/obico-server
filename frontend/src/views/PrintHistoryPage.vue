@@ -148,10 +148,7 @@ export default {
           this.prints.push(...response.data.map((data) => normalizedPrint(data)))
         })
         .catch((error) => {
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: error.message,
-          })
+          this._showErrorPopup(error)
         })
     },
     refetchData() {

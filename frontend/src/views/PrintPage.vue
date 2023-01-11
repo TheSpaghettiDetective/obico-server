@@ -402,11 +402,10 @@ export default {
             this.data.printer = normalizedPrinter(response.data)
           })
           .catch((error) => {
-            if (error.response && error.response.status === 404) {
-              // Printer could be old and deleted from account
-              this.data.printer = null
-            } else {
-              this._showErrorPopup(error)
+            // Printer could be old and deleted from account (404 error)
+            this.data.printer = null
+            if (error?.response?.status !== 404) {
+              this._showErrorPopup(error, 'Failed to fetch printer information')
             }
           })
       } catch (error) {

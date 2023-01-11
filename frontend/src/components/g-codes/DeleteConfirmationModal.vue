@@ -55,8 +55,8 @@ export default {
 
           this.$emit('deleted')
         })
-        .catch((err) => {
-          console.log(err)
+        .catch((error) => {
+          this._showErrorPopup(error)
         })
     },
   },

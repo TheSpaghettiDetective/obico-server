@@ -26,11 +26,17 @@ export default (router, components) => {
 
   Vue.mixin({
     methods: {
-      _showErrorPopup: function (axiosError) {
-        console.error(axiosError)
+      _showErrorPopup: function (error, userMessage) {
+        console.error(error)
         this.$swal.Reject.fire({
           title: 'Error',
-          text: axiosError.message,
+          html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
+            ${userMessage || error?.message || 'Error occured'}.
+            Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.
+          </p>`,
+          showConfirmButton: false,
+          showCancelButton: true,
+          cancelButtonText: 'Close',
         })
       },
     },

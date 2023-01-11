@@ -577,12 +577,8 @@ export default {
             throw response
           }
         })
-        .catch((response) => {
-          console.error(response)
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: 'Failed to update printer!',
-          }) // FIXME this was not handled in original code. sentry?
+        .catch((error) => {
+          this._showErrorPopup(error, 'Failed to update printer')
         })
     },
 

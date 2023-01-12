@@ -177,7 +177,8 @@
                                   <b-button
                                     variant="outline-primary"
                                     size="sm"
-                                    :href="focusedFeedbackLink"
+                                    :href="`/prints/shot-feedback/${print.id}/`"
+                                    target="_blank"
                                   >
                                     <i
                                       v-if="focusedFeedbackCompleted"

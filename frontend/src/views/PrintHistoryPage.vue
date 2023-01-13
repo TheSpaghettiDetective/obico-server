@@ -31,10 +31,9 @@
         <div class="action-btn">SHOW ALL</div>
       </a>
       <!-- Prints list -->
-      <loading-placeholder v-if="loading" />
       <b-container v-else>
         <b-row>
-          <b-col v-if="prints.length">
+          <b-col v-if="prints.length || loading">
             <print-history-item
               v-for="print of prints"
               :key="print.id"
@@ -42,9 +41,7 @@
               class="print-item"
             ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
-              <div v-if="!noMoreData" class="text-center p-4">
-                <b-spinner label="Loading..."></b-spinner>
-              </div>
+              <loading-placeholder v-if="!noMoreData" />
             </mugen-scroll>
           </b-col>
           <b-col v-else class="text-center my-5">You don't have print history yet</b-col>

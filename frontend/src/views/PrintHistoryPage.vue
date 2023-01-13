@@ -31,7 +31,7 @@
         <div class="action-btn">SHOW ALL</div>
       </a>
       <!-- Prints list -->
-      <b-container v-else>
+      <b-container>
         <b-row>
           <b-col v-if="prints.length || loading">
             <print-history-item
@@ -150,18 +150,8 @@ export default {
     },
     refetchData() {
       this.prints = []
-      this.selectedPrintIds = new Set()
       this.noMoreData = false
       this.fetchMoreData()
-    },
-    onSelectedChanged(printId, selected) {
-      const selectedPrintIdsClone = new Set(this.selectedPrintIds)
-      if (selected) {
-        selectedPrintIdsClone.add(printId)
-      } else {
-        selectedPrintIdsClone.delete(printId)
-      }
-      this.selectedPrintIds = selectedPrintIdsClone
     },
     menuSelectionChanged(menu, selectedOption) {
       this.$set(this.menuSelections, menu, selectedOption.value)

@@ -20,4 +20,7 @@ export default {
   slack: {
     displayName: 'Slack',
   },
+  webhook: {
+    displayName: 'Webhook',
+  },
 }

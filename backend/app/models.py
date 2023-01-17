@@ -691,7 +691,7 @@ class GCodeFolder(models.Model):
         return self.gcodefile_set.count()
 
 
-class GCodeFile(models.Model):
+class GCodeFile(SafeDeleteModel):
     class Meta:
         indexes = [
             models.Index(fields=['agent_signature'])

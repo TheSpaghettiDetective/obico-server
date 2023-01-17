@@ -90,8 +90,8 @@ export default {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            { value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up' },
-            { value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down' },
+            { value: 'date_asc', title: 'Oldest First', iconClass: 'fas fa-long-arrow-alt-up' },
+            { value: 'date_desc', title: 'Newest First', iconClass: 'fas fa-long-arrow-alt-down' },
           ],
         },
         'Filter By': {

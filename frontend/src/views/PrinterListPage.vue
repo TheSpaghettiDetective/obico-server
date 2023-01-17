@@ -185,8 +185,8 @@ export default {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            { value: 'by-date-asc', title: 'Sort By Date', iconClass: SortIconClass['asc'] },
-            { value: 'by-date-desc', title: 'Sort By Date', iconClass: SortIconClass['desc'] },
+            { value: 'by-date-asc', title: 'Oldest First', iconClass: SortIconClass['asc'] },
+            { value: 'by-date-desc', title: 'Newest First', iconClass: SortIconClass['desc'] },
             { value: 'by-name-asc', title: 'Sort By Name', iconClass: SortIconClass['asc'] },
             { value: 'by-name-desc', title: 'Sort By Name', iconClass: SortIconClass['desc'] },
           ],

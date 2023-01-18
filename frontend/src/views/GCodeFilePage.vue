@@ -51,9 +51,13 @@
       </b-container>
       <b-container v-else fluid="xl">
         <b-row>
-          <b-col>
+          <b-col :lg="isDeleted ? 8 : 12" :offset-lg="isDeleted ? 2 : 0">
+            <b-alert :show="isDeleted" variant="warning warning-block">
+              This file is deleted and unavailable for print
+            </b-alert>
+
             <!-- File info -->
-            <div class="card-container file-info" :class="{ 'full-width': isPopup }">
+            <div class="card-container file-info" :class="{ 'full-width': isPopup || isDeleted }">
               <b-container fluid>
                 <b-row>
                   <b-col>
@@ -92,6 +96,7 @@
             </div>
             <!-- Available printers -->
             <available-printers
+              v-if="!isDeleted"
               class="card-container available-printers"
               :class="{ 'full-width': isPopup }"
               :is-popup="isPopup"
@@ -101,7 +106,7 @@
               @refresh="onRefresh"
             />
             <!-- Print history -->
-            <div class="print-history" :class="{ 'full-width': isPopup }">
+            <div class="print-history" :class="{ 'full-width': isPopup || isDeleted }">
               <h2 class="section-title">Print history</h2>
               <div v-if="gcode.print_set.length">
                 <print-history-item
@@ -189,6 +194,9 @@ export default {
   computed: {
     isCloud() {
       return !this.selectedPrinterId
+    },
+    isDeleted() {
+      return !!this.gcode?.deleted
     },
   },
 
@@ -314,6 +322,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.warning-block
+  margin-bottom: var(--gap-between-blocks)
+
 .file-info, .print-history
   width: 60%
   display: inline-block

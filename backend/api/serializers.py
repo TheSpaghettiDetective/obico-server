@@ -69,19 +69,27 @@ class BasePrinterSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
 
 
+class BaseGCodeFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
+
+
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
     printer = BasePrinterSerializer(many=False, read_only=True)
+    g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
 
     class Meta:
         model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'ended_at', 'finished_at',
+        fields = ('id', 'printer', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
                   'cancelled_at', 'uploaded_at', 'alerted_at',
                   'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
                   'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
                   'access_consented_at', 'video_archived_at')
         read_only_fields = (
-            'id', 'filename', 'started_at', 'ended_at', 'finished_at',
+            'id', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
             'cancelled_at', 'uploaded_at', 'alerted_at',
             'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
             'video_url', 'tagged_video_url', 'poster_url',
@@ -117,7 +125,7 @@ class PrinterSerializer(BasePrinterSerializer):
         read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
+        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else 0
 
 
 class BaseGCodeFolderSerializer(serializers.ModelSerializer):
@@ -188,14 +196,11 @@ class GCodeFileDeSerializer(serializers.ModelSerializer):
 
         return attrs
 
-class GCodeFileSerializer(serializers.ModelSerializer):
+
+class GCodeFileSerializer(BaseGCodeFileSerializer):
     parent_folder = BaseGCodeFolderSerializer()
     print_set = BasePrintSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = GCodeFile
-        fields = '__all__'
-        read_only_fields = ('user', 'resident_printer')
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
 
@@ -285,6 +290,11 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         config = self.validated_data.pop('config', None)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
+
+        # HACK: For some reason sqlite will set created_at to None on a PATCH call and results in an exception. Force it now()
+        if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
+            return super().save(user=self.context['request'].user, created_at=now(), updated_at=now())
+
         return super().save()
 
 

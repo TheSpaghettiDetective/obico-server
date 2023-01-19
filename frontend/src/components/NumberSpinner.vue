@@ -3,7 +3,7 @@
     <div class="input-group-prepend">
       <button
         type="button"
-        :style="{'min-width': buttonsWidth}"
+        :style="{ 'min-width': buttonsWidth }"
         :class="'btn btn-num-spinner ' + buttonsClass"
         @click="decrease"
         @mousedown="whileMouseDown(decrease)"
@@ -18,7 +18,7 @@
     <input
       type="text"
       :class="classes"
-      :style="{'text-align': textAlign}"
+      :style="{ 'text-align': textAlign }"
       :min="min"
       :max="max"
       :step="step"
@@ -33,7 +33,7 @@
     <div class="input-group-append">
       <button
         type="button"
-        :style="{'min-width': buttonsWidth}"
+        :style="{ 'min-width': buttonsWidth }"
         :class="'btn btn-num-spinner ' + buttonsClass"
         @click="increase"
         @mousedown="whileMouseDown(increase)"
@@ -50,51 +50,51 @@
 <script>
 export default {
   name: 'NumberSpinner',
-  created() {
-    this.timer = null
-  },
   props: {
     min: {
       type: Number,
-      default: () => null
+      default: () => null,
     },
     max: {
       type: Number,
-      default: () => null
+      default: () => null,
     },
     step: {
       type: Number,
-      default: () => null
+      default: () => null,
     },
     value: {
       type: Number,
-      required: true
+      required: true,
     },
     groupClass: {
       type: String,
-      default: () => ''
+      default: () => '',
     },
     buttonsClass: {
       type: String,
-      default: () => ''
+      default: () => '',
     },
     buttonsWidth: {
       type: String,
-      default: () => '2.5rem'
+      default: () => '2.5rem',
     },
     textAlign: {
       type: String,
-      default: () => 'center'
+      default: () => 'center',
     },
     mouseDownSpeed: {
       default: () => 500,
-      type: Number
-    }
+      type: Number,
+    },
   },
   computed: {
     classes() {
       return 'form-control'
-    }
+    },
+  },
+  created() {
+    this.timer = null
   },
   methods: {
     increase() {
@@ -113,10 +113,7 @@ export default {
     onNewValue(value) {
       const v = parseFloat(value)
       if (v) {
-        if (
-          this.min === null ||
-          (v >= this.min && (this.max === null || v <= this.max))
-        ) {
+        if (this.min === null || (v >= this.min && (this.max === null || v <= this.max))) {
           this.$emit('input', v)
         }
       }
@@ -133,8 +130,8 @@ export default {
           callback()
         }, this.mouseDownSpeed)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

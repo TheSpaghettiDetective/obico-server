@@ -1,28 +1,37 @@
 <template>
   <div class="px-2">
     <div class="title-pic">
-    <img class="pic-item"
-      :src="require('@static/img/webpage-multiple.svg')" />
-    <div class="pic-item">
-      <i class="fas fa-ellipsis-h fa-2x"></i>
-      <i class="fas fa-ellipsis-h fa-2x"></i>
-    </div>
-    <img class="pic-item"
-      :src="require('@static/img/octoprint_logo.png')" />
+      <img class="pic-item" :src="require('@static/img/webpage-multiple.svg')" />
+      <div class="pic-item">
+        <i class="fas fa-ellipsis-h fa-2x"></i>
+        <i class="fas fa-ellipsis-h fa-2x"></i>
+      </div>
+      <img class="pic-item" :src="require('@static/img/octoprint_logo.png')" />
     </div>
     <div class="my-4">
       <p>The Obico app needs to make sure you have access to selected OctoPrint.</p>
-      <p>When you press "Link Now" button below, a new browser window will pop up to finish a handshake with this OctoPrint.</p>
+      <p>
+        When you press "Link Now" button below, a new browser window will pop up to finish a
+        handshake with this OctoPrint.
+      </p>
     </div>
     <div>
-    <div class="row my-2">
-      <div class="col-sm-6">
-        <button class="btn btn-block btn-primary mt-2" :disabled="linking" @click="autoLinkPrinter"><b-spinner v-if="linking" small></b-spinner>Link Now&nbsp;<i class="fas fa-external-link-alt"></i></button>
+      <div class="row my-2">
+        <div class="col-sm-6">
+          <button
+            class="btn btn-block btn-primary mt-2"
+            :disabled="linking"
+            @click="autoLinkPrinter"
+          >
+            <b-spinner v-if="linking" small></b-spinner>Link Now&nbsp;<i
+              class="fas fa-external-link-alt"
+            ></i>
+          </button>
+        </div>
+        <div class="col-sm-6">
+          <button class="btn btn-block btn-secondary mt-2" @click="cancel">Cancel</button>
+        </div>
       </div>
-      <div class="col-sm-6">
-        <button class="btn btn-block btn-secondary mt-2" @click="cancel">Cancel</button>
-      </div>
-    </div>
     </div>
   </div>
 </template>
@@ -30,24 +39,24 @@
 <script>
 export default {
   name: 'AutoLinkPopup',
+  props: {
+    discoveredPrinter: {
+      type: Object,
+      required: true,
+    },
+    switchToManualLinking: {
+      type: Function,
+      required: true,
+    },
+    secretObtained: {
+      type: Function,
+      required: true,
+    },
+  },
   data() {
     return {
       linking: false,
     }
-  },
-  props: {
-    discoveredPrinter: {
-      type: Object,
-      required: true
-    },
-    switchToManualLinking: {
-      type: Function,
-      required: true
-    },
-    secretObtained: {
-      type: Function,
-      required: true
-    },
   },
 
   mounted() {
@@ -74,12 +83,11 @@ export default {
         this.$swal.Prompt.fire({
           icon: 'error',
           title: 'Oops!',
-          html:
-            '<p>Handshake failed because the pop-up was blcoked.</p><p>Please unblock the pop-up in your browser and try it again.</p>',
+          html: '<p>Handshake failed because the pop-up was blcoked.</p><p>Please unblock the pop-up in your browser and try it again.</p>',
           confirmButtonText: 'Okay!',
           showCancelButton: true,
-          cancelButtonText: 'Switch to Manual Setup'
-        }).then(result => {
+          cancelButtonText: 'Switch to Manual Setup',
+        }).then((result) => {
           if (result.isDismissed && result.dismiss === 'cancel') {
             this.switchToManualLinking()
           }
@@ -95,16 +103,15 @@ export default {
           this.$swal.Prompt.fire({
             icon: 'error',
             title: 'Handshake failed!',
-            html:
-              `<p>Please make sure:</p>
+            html: `<p>Please make sure:</p>
               <ul>
                 <li>The OctoPrint you want to link is at ${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port}, and it's connected to the same local network as your computer/phone.</li>
                 <li>The version of plugin is 1.8.0 or above.</li>
               </ul>`,
             confirmButtonText: 'Okay!',
             showCancelButton: true,
-            cancelButtonText: 'Switch to Manual Setup'
-          }).then(result => {
+            cancelButtonText: 'Switch to Manual Setup',
+          }).then((result) => {
             if (result.isDismissed && result.dismiss === 'cancel') {
               this.switchToManualLinking()
             }
@@ -115,7 +122,9 @@ export default {
 
     destUrl() {
       const pluginName = this.discoveredPrinter.agent ? 'obico' : 'thespaghettidetective'
-      return `http://${this.discoveredPrinter.host_or_ip}:${this.discoveredPrinter.port || '80'}/plugin/${pluginName}/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
+      return `http://${this.discoveredPrinter.host_or_ip}:${
+        this.discoveredPrinter.port || '80'
+      }/plugin/${pluginName}/grab-discovery-secret?device_id=${this.discoveredPrinter.device_id}`
     },
 
     switchToManual() {
@@ -131,7 +140,7 @@ export default {
     },
 
     gotWindowMessage(ev) {
-      const data = {...(ev?.data || {})}
+      const data = { ...(ev?.data || {}) }
       if (this.gotSecret || !this.discoveredPrinter.device_id || !data.device_secret) {
         console.log('Ignored message', ev)
         return
@@ -145,7 +154,7 @@ export default {
     cancel() {
       this.closeDiscoveryPopup()
       this.$swal.close()
-    }
+    },
   },
 }
 </script>
@@ -165,5 +174,4 @@ export default {
     filter: grayscale(100%)
   i
     color: #888888
-
 </style>

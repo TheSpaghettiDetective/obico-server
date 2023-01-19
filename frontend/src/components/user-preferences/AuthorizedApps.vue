@@ -29,17 +29,17 @@ export default {
 
   data() {
     return {
-      authorizedApps: []
+      authorizedApps: [],
     }
   },
 
   created() {
     axios
       .get(urls.tunnels())
-      .then(response => {
+      .then((response) => {
         this.authorizedApps = response.data
       })
-      .catch(error => {
+      .catch((error) => {
         this.$swal.Reject.fire({
           title: 'Oops',
           text: error.message,
@@ -52,15 +52,15 @@ export default {
       axios
         .delete(urls.tunnel(id))
         .then(() => {
-          this.authorizedApps = this.authorizedApps.filter(app => app.id !== id)
+          this.authorizedApps = this.authorizedApps.filter((app) => app.id !== id)
         })
-        .catch(error => {
+        .catch((error) => {
           this.$swal.Reject.fire({
             title: 'Oops',
             text: error.message,
           })
         })
-    }
+    },
   },
 }
 </script>

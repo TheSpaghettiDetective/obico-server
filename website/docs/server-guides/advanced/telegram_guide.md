@@ -6,15 +6,15 @@ My Base: Fresh Install Ubuntu 20.04.
 
 You need to open a terminal with your device. I am doing this via SSH (I'm using Putty on windows).
 
-1. Install nmp
+1. Install npm
 ```sh
-sudo install npm
+sudo apt install npm
 ```
 ![install nmp](/img/server-guides/telegram/installnpm.JPG)
 
 2. Install looptools
 ```sh
-sudo install looptools
+sudo apt install looptools
 ```
 ![loop](/img/server-guides/telegram/installloop.JPG)
 
@@ -36,7 +36,7 @@ npx localtunnel --port 3334
 ```
 ![botcommands](/img/server-guides/telegram/botcommands.JPG)
 
-6. Create your own bot and give him name
+6. Create your own bot and give it a name
 ```
 /newbot
 ```

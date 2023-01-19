@@ -1,15 +1,25 @@
 <template>
-  <div class="help-wrapper" v-click-outside="() => show = false">
-
+  <div v-click-outside="() => (show = false)" class="help-wrapper">
     <!-- Slot for text -->
-    <div class="text" @click="positionWidget(); show = !show;">
+    <div
+      class="text"
+      @click="
+        positionWidget()
+        show = !show
+      "
+    >
       <slot></slot>
     </div>
 
-    <div class="widget-wrapper" ref="widgetWrapper">
-
+    <div ref="widgetWrapper" class="widget-wrapper">
       <!-- Help icon -->
-      <div class="question-mark" @click="positionWidget(); show = !show;">
+      <div
+        class="question-mark"
+        @click="
+          positionWidget()
+          show = !show
+        "
+      >
         <svg>
           <use href="#svg-question-icon" />
         </svg>
@@ -18,27 +28,31 @@
       <!-- Help widget -->
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
-            <div class="close-button" @click="show = false">
-              <svg width="16" height="16">
-                <use href="#svg-cross-icon" />
-              </svg>
-            </div>
+          <div class="close-button" @click="show = false">
+            <svg width="16" height="16">
+              <use href="#svg-cross-icon" />
+            </svg>
+          </div>
 
           <!-- Help content -->
           <div class="content">
-
             <!-- basic-streaming-on-pricing-page -->
             <template v-if="id === 'basic-streaming-on-pricing-page'">
               <div>
                 Basic Streaming:
                 <ul>
-                <li>Up to 5 FPS (frame-per-second)</li>
-                <li>Throttled for 30 seconds every minute</li>
+                  <li>Up to 5 FPS (frame-per-second)</li>
+                  <li>Throttled for 30 seconds every minute</li>
                 </ul>
               </div>
               <div>
                 Learn more about
-                <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                <a
+                  href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/"
+                  target="_blank"
+                  >the differences between the Premium Streaming and the Basic Streaming
+                  <i class="fas fa-external-link-alt"></i
+                ></a>
               </div>
             </template>
 
@@ -47,12 +61,23 @@
               <h3>Yup! Even Free account gets 10 AI Detection Hours for FREE each month.</h3>
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
-                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn free AI Detection Hours by helping her improve</a>.</li>
-                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
+                <li>
+                  You can
+                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                    >earn free AI Detection Hours by helping her improve</a
+                  >.
+                </li>
+                <li>
+                  You can also <a class="link" href="#need-more">purchase additional AI hours</a>.
+                </li>
               </ul>
               <p>
                 Learn more about
-                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
+                <a
+                  href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/"
+                  target="_blank"
+                  >how the AI Detection Hour works <i class="fas fa-external-link-alt"></i
+                ></a>
               </p>
             </template>
 
@@ -62,12 +87,23 @@
               <ul>
                 <li>Unused AI Detection Hours roll over month to month.</li>
                 <li>AI Detection Hours expire when subscription ends.</li>
-                <li>You can <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">earn more AI Detection Hours by helping her improve</a>.</li>
-                <li>You can also <a class="link" href="#need-more">purchase additional AI hours</a>.</li>
+                <li>
+                  You can
+                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                    >earn more AI Detection Hours by helping her improve</a
+                  >.
+                </li>
+                <li>
+                  You can also <a class="link" href="#need-more">purchase additional AI hours</a>.
+                </li>
               </ul>
               <p>
                 Learn more about
-                  <a href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/" target="_blank">how the AI Detection Hour works <i class="fas fa-external-link-alt"></i></a>
+                <a
+                  href="https://www.obico.io/docs/user-guides/how-does-detective-hour-work/"
+                  target="_blank"
+                  >how the AI Detection Hour works <i class="fas fa-external-link-alt"></i
+                ></a>
               </p>
             </template>
 
@@ -76,23 +112,33 @@
               <div>
                 Premium Streaming:
                 <ul>
-                <li>Up to 25 FPS (frame-per-second)</li>
-                <li>Un-throttled</li>
+                  <li>Up to 25 FPS (frame-per-second)</li>
+                  <li>Un-throttled</li>
                 </ul>
               </div>
               <p>
                 Learn more about
-                  <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">the differences between the Premium Streaming and the Basic Streaming <i class="fas fa-external-link-alt"></i></a>
+                <a
+                  href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/"
+                  target="_blank"
+                  >the differences between the Premium Streaming and the Basic Streaming
+                  <i class="fas fa-external-link-alt"></i
+                ></a>
               </p>
             </template>
 
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
               <p>Securely tunnel to your OctoPrint from anywhere.</p>
-              <p>Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of each month.</p>
+              <p>
+                Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of
+                each month.
+              </p>
               <p>
                 Learn more about
-                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
+                  >OctoPrint Tunneling <i class="fas fa-external-link-alt"></i
+                ></a>
               </p>
             </template>
 
@@ -101,7 +147,9 @@
               <div>Securely tunnel to your OctoPrint from anywhere. Unlimited.</div>
               <p>
                 Learn more about
-                  <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">OctoPrint Tunneling <i class="fas fa-external-link-alt"></i></a>
+                <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
+                  >OctoPrint Tunneling <i class="fas fa-external-link-alt"></i
+                ></a>
               </p>
             </template>
 
@@ -114,14 +162,10 @@
                   <li>Data usage is reset on the 1st day of each month.</li>
                 </ul>
                 <p>Supported 3rd-party mobile apps:</p>
-                <img class="logo-icon"
-                  :src="require('@static/img/octoapp.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/printoid.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/octopod.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/polymer.webp')" />
+                <img class="logo-icon" :src="require('@static/img/octoapp.webp')" />
+                <img class="logo-icon" :src="require('@static/img/printoid.webp')" />
+                <img class="logo-icon" :src="require('@static/img/octopod.webp')" />
+                <img class="logo-icon" :src="require('@static/img/polymer.webp')" />
               </div>
             </template>
 
@@ -129,46 +173,45 @@
             <template v-if="id === '3rd-party-app-integration-pro-on-pricing-page'">
               <div>
                 <p>Supported 3rd-party mobile apps:</p>
-                <img class="logo-icon"
-                  :src="require('@static/img/octoapp.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/printoid.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/octopod.webp')" />
-                <img class="logo-icon"
-                  :src="require('@static/img/polymer.webp')" />
+                <img class="logo-icon" :src="require('@static/img/octoapp.webp')" />
+                <img class="logo-icon" :src="require('@static/img/printoid.webp')" />
+                <img class="logo-icon" :src="require('@static/img/octopod.webp')" />
+                <img class="logo-icon" :src="require('@static/img/polymer.webp')" />
               </div>
             </template>
 
             <!-- filament-change-on-notification-preferences -->
             <template v-if="id === 'filament-change-on-notification-preferences'">
               <i>
-                <ul>Required versions:
+                <ul>
+                  Required versions:
                   <li>OctoPrint 1.7.0 or higher</li>
                   <li>The Obico plugin 1.8.11 or higher</li>
                 </ul>
               </i>
               <h3>Filament Runout Notifications</h3>
               <p>
-                Host_action_commands must be enabled in your firmware to make it possible for your filament runout
-                sensor to communicate with OctoPrint and the Obico app. If you enable action commands in
-                your firmware, then the filament runout sensor can work properly and the Obico app can notify
-                you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable
-                to communicate with the printer to know that a filament runout was detected.
+                Host_action_commands must be enabled in your firmware to make it possible for your
+                filament runout sensor to communicate with OctoPrint and the Obico app. If you
+                enable action commands in your firmware, then the filament runout sensor can work
+                properly and the Obico app can notify you when the filament runs out. Unfortunately,
+                without host_action_commands enabled, OctoPrint is unable to communicate with the
+                printer to know that a filament runout was detected.
               </p>
 
               <p>To enable support, you need to do the following:</p>
               <ul>
                 <li>
-                  Marlin: Uncomment #define HOST_ACTION_COMMANDS in Configuration_adv.h and recompile. See here for more
-                  information on host_action_commands.
+                  Marlin: Uncomment #define HOST_ACTION_COMMANDS in Configuration_adv.h and
+                  recompile. See here for more information on host_action_commands.
                 </li>
               </ul>
 
               <h3>Color Change Notifications</h3>
               <p>
-                Notifications on color change will work with any printer that has M600 enabled in its firmware. You do not
-                need host_action_commands enabled to get notified when a color change is needed.
+                Notifications on color change will work with any printer that has M600 enabled in
+                its firmware. You do not need host_action_commands enabled to get notified when a
+                color change is needed.
               </p>
             </template>
           </div>
@@ -194,14 +237,6 @@ import ClickOutside from 'vue-click-outside'
 export default {
   name: 'HelpWidget',
 
-  data() {
-    return {
-      show: false,
-      xDirection: 'left',
-      yDirection: 'top',
-    }
-  },
-
   directives: {
     ClickOutside,
   },
@@ -209,8 +244,16 @@ export default {
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
+  },
+
+  data() {
+    return {
+      show: false,
+      xDirection: 'left',
+      yDirection: 'top',
+    }
   },
 
   methods: {
@@ -224,7 +267,8 @@ export default {
 
       const helpIconPosition = this.$refs.widgetWrapper.getBoundingClientRect()
 
-      const distanceFromRightEdge = window.innerWidth - (helpIconPosition.left + helpIconPosition.width)
+      const distanceFromRightEdge =
+        window.innerWidth - (helpIconPosition.left + helpIconPosition.width)
       // const distanceFromBottomEdge = window.innerHeight - (helpIconPosition.top + helpIconPosition.height)
 
       if (distanceFromRightEdge < minHorizontalSpace) {
@@ -239,7 +283,7 @@ export default {
       //   this.yDirection = 'top'
       // }
     },
-  }
+  },
 }
 </script>
 
@@ -379,8 +423,9 @@ export default {
   transition: all 0.1s ease-in;
 }
 
-.pop-up-enter, .pop-up-leave-to {
-  transform: translate(-2rem, -1rem) scale(.8);
-  opacity: 0
+.pop-up-enter,
+.pop-up-leave-to {
+  transform: translate(-2rem, -1rem) scale(0.8);
+  opacity: 0;
 }
 </style>

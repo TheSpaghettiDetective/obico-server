@@ -3,42 +3,50 @@
     <h2 class="text-center">Printer Feed Sharing</h2>
     <hr />
     <div v-if="!isProAccount">
-      <h5 class="mb-5">Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to enable Printer feed. </h5>
+      <h5 class="mb-5">
+        Wait! You need to <a href="/ent_pub/pricing/">upgrade to the Pro plan</a> to enable Printer
+        feed.
+      </h5>
       <p>Printer feed sharing is a Pro feature.</p>
-      <p><a
-          href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">Running
-         the Obico app incurs non-trivial amount of costs</a>. With little more than 1 Starbucks per month, you can upgrade to a
-        Pro account and help us run the Obico app smoothly.</p>
+      <p>
+        <a
+          href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know"
+          >Running the Obico app incurs non-trivial amount of costs</a
+        >. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us
+        run the Obico app smoothly.
+      </p>
       <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
     </div>
     <div v-else>
       <div class="py-3">
         <div class="custom-control custom-switch">
-            <input
-              type="checkbox"
-              class="custom-control-input update-printer"
-              :id="'sharing_enabled-toggle-' + printer.id"
-              @click="onSharingToggled"
-              :checked="sharedResource"
-            >
-            <label
-              class="custom-control-label"
-              :for="'sharing_enabled-toggle-' + printer.id"
-              style="font-size: 1rem;"
-            >Share live feed for printer "<b>{{ printer.name }}</b>"</label>
+          <input
+            :id="'sharing_enabled-toggle-' + printer.id"
+            type="checkbox"
+            class="custom-control-input update-printer"
+            :checked="sharedResource"
+            @click="onSharingToggled"
+          />
+          <label
+            class="custom-control-label"
+            :for="'sharing_enabled-toggle-' + printer.id"
+            style="font-size: 1rem"
+            >Share live feed for printer "<b>{{ printer.name }}</b
+            >"</label
+          >
         </div>
         <div class="form-group">
           <div v-show="sharedLink">
             <div class="input-group mt-4 mb-2">
               <input
-                type="text"
                 id="secret-token-input"
+                ref="sharedLink"
+                type="text"
                 class="form-control shared-link-text"
                 aria-label="Secret token"
                 readonly
                 :value="sharedLink"
-                ref="sharedLink"
-              >
+              />
               <div class="input-group-append">
                 <div
                   id="copy-link"
@@ -49,23 +57,40 @@
                 >
                   <i class="fas fa-clipboard"></i>
                 </div>
-                <b-tooltip :show.sync="copyStatus" target="copy-link" triggers="click" placement="bottom">{{ copyMessage }}</b-tooltip>
+                <b-tooltip
+                  :show.sync="copyStatus"
+                  target="copy-link"
+                  triggers="click"
+                  placement="bottom"
+                  >{{ copyMessage }}</b-tooltip
+                >
               </div>
             </div>
-            <div class="my-1">Click the clipboard icon above to copy the secure shareable link to your clipboard.</div>
-            <div class="my-1">You can test the shareable link by right-clicking <a :href="sharedLink">here</a>
-              and select "Open Link in Incognito Window".</div>
-          <br />
-          <em class="text-muted">
-            <small>
-              <div>Notes:</div>
-              <ul>
-                <li>Send the secure link to anyone you want to share your printer feed with. They do NOT need the Obico account to see your printer feed.</li>
-                <li>Anyone with this shareable link will be able to see your printer feed. <a href="https://www.obico.io/docs/user-guides/printer-feed-sharing/">Learn more about what
-                    they can see.</a></li>
-              </ul>
-            </small>
-          </em>
+            <div class="my-1">
+              Click the clipboard icon above to copy the secure shareable link to your clipboard.
+            </div>
+            <div class="my-1">
+              You can test the shareable link by right-clicking <a :href="sharedLink">here</a> and
+              select "Open Link in Incognito Window".
+            </div>
+            <br />
+            <em class="text-muted">
+              <small>
+                <div>Notes:</div>
+                <ul>
+                  <li>
+                    Send the secure link to anyone you want to share your printer feed with. They do
+                    NOT need the Obico account to see your printer feed.
+                  </li>
+                  <li>
+                    Anyone with this shareable link will be able to see your printer feed.
+                    <a href="https://www.obico.io/docs/user-guides/printer-feed-sharing/"
+                      >Learn more about what they can see.</a
+                    >
+                  </li>
+                </ul>
+              </small>
+            </em>
           </div>
         </div>
         <br />
@@ -99,10 +124,6 @@ export default {
     }
   },
 
-  created() {
-    this.fetchSharedResources()
-  },
-
   computed: {
     sharedLink() {
       if (this.sharedResource) {
@@ -111,34 +132,32 @@ export default {
       }
 
       return ''
-    }
+    },
+  },
+
+  created() {
+    this.fetchSharedResources()
   },
 
   methods: {
     fetchSharedResources() {
-      return axios
-        .get(urls.sharedResources({'printer_id': this.printer.id}))
-        .then(response => {
-          if (response.data.length > 0) {
-            this.sharedResource = response.data[0]
-          }
-        })
+      return axios.get(urls.sharedResources({ printer_id: this.printer.id })).then((response) => {
+        if (response.data.length > 0) {
+          this.sharedResource = response.data[0]
+        }
+      })
     },
     postSharedResources() {
-      return axios
-        .post(urls.sharedResources({'printer_id': this.printer.id}))
-        .then(response => {
-          if (response.data.length > 0) {
-            this.sharedResource = response.data[0]
-          }
-        })
+      return axios.post(urls.sharedResources({ printer_id: this.printer.id })).then((response) => {
+        if (response.data.length > 0) {
+          this.sharedResource = response.data[0]
+        }
+      })
     },
     deleteSharedResources() {
-      return axios
-        .delete(urls.sharedResource(this.sharedResource.id))
-        .then(() => {
-          this.sharedResource = null
-        })
+      return axios.delete(urls.sharedResource(this.sharedResource.id)).then(() => {
+        this.sharedResource = null
+      })
     },
     onSharingToggled() {
       if (this.sharedResource) {
@@ -161,7 +180,7 @@ export default {
         this.copyMessage = 'Failed!'
       }
     },
-  }
+  },
 }
 </script>
 

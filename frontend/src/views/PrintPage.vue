@@ -441,6 +441,7 @@ export default {
         printerId: this.printer.id,
         gcode: this.print.g_code_file,
         isCloud: true,
+        isAgentMoonraker: this.printer.isAgentMoonraker(),
         Swal: this.$swal,
         onPrinterStatusChanged: () => {
           this.isSending = false

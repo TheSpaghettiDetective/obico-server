@@ -769,6 +769,7 @@ export default {
         printerId: this.targetPrinter.id,
         gcode: gcode,
         isCloud: this.isCloud,
+        isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
         Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {

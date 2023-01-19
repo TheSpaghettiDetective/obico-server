@@ -4,7 +4,15 @@ import axios from 'axios'
 import get from 'lodash/get'
 
 export const sendToPrint = (args) => {
-  const { printerId, gcode, isCloud, Swal, onCommandSent, onPrinterStatusChanged } = args
+  const {
+    printerId,
+    gcode,
+    isCloud,
+    Swal,
+    onCommandSent,
+    onPrinterStatusChanged,
+    isAgentMoonraker = false,
+  } = args
 
   const printerComm = PrinterComm(
     printerId,
@@ -20,6 +28,15 @@ export const sendToPrint = (args) => {
         func: 'download',
         target: 'file_downloader',
         args: [gcode],
+      }
+    } else if (isAgentMoonraker) {
+      passThruProps = {
+        func: 'printer/print/start',
+        target: 'moonraker_api',
+        kwargs: {
+          verb: 'post',
+          filename: gcode.path,
+        },
       }
     } else {
       passThruProps = {

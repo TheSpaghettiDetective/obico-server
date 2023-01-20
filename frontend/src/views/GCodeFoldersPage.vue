@@ -218,7 +218,10 @@ import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from '@src/components/g-codes/localFiles'
+import {
+  listPrinterLocalGCodesOctoPrint,
+  listPrinterLocalGCodesMoonraker,
+} from '@src/lib/printer_local_comm'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 
 // Waiting time (ms) before asking server for search results
@@ -489,20 +492,23 @@ export default {
         return
       }
       this.localFilesLoading = true
-      listFiles(this.selectedPrinterComm, {
-        query: this.searchQuery,
-        path: this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
-        isAgentMoonraker: this.printers
-          .find((p) => p.id === this.selectedPrinterId)
-          .isAgentMoonraker(),
-        onRequestEnd: (result) => {
-          this.localFilesLoading = false
-          if (result) {
-            const { folders, files } = result
-            this.folders = folders
-            this.files = files
-          }
-        },
+      const listPrinterLocalGCodes = this.printers
+        .find((p) => p.id === this.selectedPrinterId)
+        .isAgentMoonraker()
+        ? listPrinterLocalGCodesMoonraker
+        : listPrinterLocalGCodesOctoPrint
+
+      listPrinterLocalGCodes(
+        this.selectedPrinterComm,
+        this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
+        this.searchQuery
+      ).then((result) => {
+        this.localFilesLoading = false
+        if (result) {
+          const { folders, files } = result
+          this.folders = folders
+          this.files = files
+        }
       })
     },
     async fetchFilesAndFolders(reset = false) {

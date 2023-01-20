@@ -145,7 +145,10 @@ import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from '@src/components/g-codes/localFiles'
+import {
+  listPrinterLocalGCodesOctoPrint,
+  listPrinterLocalGCodesMoonraker,
+} from '@src/lib/printer_local_comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {
@@ -240,44 +243,43 @@ export default {
           ? ''
           : decodedPath.slice(0, decodedPath.length - filename.length - 1)
 
-      listFiles(this.printerComm, {
-        query: filename,
-        path,
-        isAgentMoonraker: this.printer.isAgentMoonraker(),
-        onRequestEnd: async (result) => {
-          this.loading = false
-          if (result?.files?.length) {
-            const file = result.files.find((f) => f.path === decodedPath)
-            if (!file) {
-              this.gcodeNotFound = true
-              return
-            }
-            this.gcode = {
-              ...file,
-              print_set: [],
-            }
-            if (file.path && file.hash && this.getRouteParam('printerId')) {
-              const safeFilename = file.path.replace(/^.*[\\/]/, '')
-              try {
-                let response = await axios.get(
-                  urls.gcodeFiles({
-                    resident_printer: this.getRouteParam('printerId'),
-                    safe_filename: safeFilename,
-                    agent_signature: `md5:${file.hash}`,
-                  })
-                )
-                const gcodeFileOnServer = get(response, 'data.results[0]')
-                if (gcodeFileOnServer) {
-                  this.gcode = normalizedGcode(gcodeFileOnServer)
-                }
-              } catch (e) {
-                console.error(e)
-              }
-            }
-          } else {
+      const listPrinterLocalGCodes = this.printer.isAgentMoonraker()
+        ? listPrinterLocalGCodesMoonraker
+        : listPrinterLocalGCodesOctoPrint
+
+      listPrinterLocalGCodes(this.printerComm, path, filename).then(async (result) => {
+        this.loading = false
+        if (result?.files?.length) {
+          const file = result.files.find((f) => f.path === decodedPath)
+          if (!file) {
             this.gcodeNotFound = true
+            return
           }
-        },
+          this.gcode = {
+            ...file,
+            print_set: [],
+          }
+          if (file.path && file.hash && this.getRouteParam('printerId')) {
+            const safeFilename = file.path.replace(/^.*[\\/]/, '')
+            try {
+              let response = await axios.get(
+                urls.gcodeFiles({
+                  resident_printer: this.getRouteParam('printerId'),
+                  safe_filename: safeFilename,
+                  agent_signature: `md5:${file.hash}`,
+                })
+              )
+              const gcodeFileOnServer = get(response, 'data.results[0]')
+              if (gcodeFileOnServer) {
+                this.gcode = normalizedGcode(gcodeFileOnServer)
+              }
+            } catch (e) {
+              console.error(e)
+            }
+          }
+        } else {
+          this.gcodeNotFound = true
+        }
       })
     },
     async fetchGcode() {

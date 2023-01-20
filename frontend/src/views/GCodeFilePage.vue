@@ -140,7 +140,7 @@ import PageLayout from '@src/components/PageLayout.vue'
 import get from 'lodash/get'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedGcode } from '@src/lib/normalizers'
+import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
@@ -186,6 +186,7 @@ export default {
   data() {
     return {
       gcode: null,
+      printer: null,
       loading: true,
       gcodeNotFound: false,
     }
@@ -200,8 +201,11 @@ export default {
     },
   },
 
-  created() {
+  async created() {
     this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+    if (this.selectedPrinterId) {
+      await this.fetchPrinter()
+    }
     this.gcodeId = this.getRouteParam('fileId')
     this.fetchGcode()
   },
@@ -212,6 +216,16 @@ export default {
     },
     goBack() {
       this.$emit('goBack')
+    },
+    async fetchPrinter() {
+      return axios
+        .get(urls.printer(this.selectedPrinterId))
+        .then((response) => {
+          this.printer = normalizedPrinter(response.data)
+        })
+        .catch((error) => {
+          this._showErrorPopup(error, 'Host printer for this gcode not found')
+        })
     },
     async fetchLocalFile() {
       if (!this.printerComm) {
@@ -229,6 +243,7 @@ export default {
       listFiles(this.printerComm, {
         query: filename,
         path,
+        isAgentMoonraker: this.printer.isAgentMoonraker(),
         onRequestEnd: async (result) => {
           this.loading = false
           if (result?.files?.length) {

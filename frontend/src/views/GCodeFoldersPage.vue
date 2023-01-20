@@ -492,6 +492,9 @@ export default {
       listFiles(this.selectedPrinterComm, {
         query: this.searchQuery,
         path: this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
+        isAgentMoonraker: this.printers
+          .find((p) => p.id === this.selectedPrinterId)
+          .isAgentMoonraker(),
         onRequestEnd: (result) => {
           this.localFilesLoading = false
           if (result) {
@@ -511,6 +514,7 @@ export default {
         this.resetFiles()
       }
 
+      // need to fetch local printer files
       if (this.selectedPrinterId) {
         if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({

@@ -568,7 +568,7 @@ export default {
         try {
           let response = await axios.get(urls.gcodeFolders(), {
             params: {
-              parent_folder: this.parentFolder,
+              parent_folder: this.parentFolder || 'null',
               page: this.currentFoldersPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
@@ -595,7 +595,7 @@ export default {
               'Cache-Control': 'no-cache',
             },
             params: {
-              parent_folder: this.parentFolder,
+              parent_folder: this.parentFolder || 'null',
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,

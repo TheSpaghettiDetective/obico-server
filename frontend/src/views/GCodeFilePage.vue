@@ -271,7 +271,7 @@ export default {
               )
               const gcodeFileOnServer = get(response, 'data.results[0]')
               if (gcodeFileOnServer) {
-                this.gcode = normalizedGcode(gcodeFileOnServer)
+                this.gcode = { ...this.gcode, ...normalizedGcode(gcodeFileOnServer) }
               }
             } catch (e) {
               console.error(e)

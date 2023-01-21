@@ -123,3 +123,45 @@ const listRecoursively = (fileObj) => {
   }
   return fileList
 }
+
+export function printPrinterLocalGCodeOctoPrint(printerComm, gcode) {
+  return new Promise((resolve, reject) => {
+    const path = gcode.path
+    printerComm.passThruToPrinter(
+      {
+        func: 'select_file',
+        target: '_printer',
+        args: [`${path}`, null],
+        kwargs: {printAfterSelect: 'true'}
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(ret?.error || 'Something went wrong!');
+        } else {
+          resolve();
+        }
+      });
+  });
+}
+
+export function printPrinterLocalGCodeMoonraker(printerComm, gcode) {
+  return new Promise((resolve, reject) => {
+    const path = gcode.path
+    printerComm.passThruToPrinter(
+      {
+        target: 'moonraker_api',
+        func: 'printer/print/start',
+        kwargs: {
+          verb: 'post',
+          filename: path,
+        },
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(ret?.error || 'Something went wrong!');
+        } else {
+          resolve();
+        }
+      });
+  });
+}

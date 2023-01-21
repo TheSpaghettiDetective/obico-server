@@ -66,9 +66,7 @@ export default {
       },
       set(newValue) {
         theme.value = Themes.System
-        if (newValue) {
-          this.selectTheme(this.Themes.System)
-        }
+        this.selectTheme(newValue ? this.Themes.System : this.themeValue)
       },
     },
   },

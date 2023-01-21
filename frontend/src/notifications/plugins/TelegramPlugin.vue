@@ -106,6 +106,7 @@ export default {
       return mobilePlatform()
     },
   },
+
   methods: {
     onTelegramAuth(telegram_user) {
       const config = { chat_id: JSON.stringify(telegram_user.id) }
@@ -126,7 +127,7 @@ export default {
         })
         .catch((err) => {
           event.target.classList.remove('disabled')
-          this.$emit('errorAlert', 'Telegram test failed.')
+          this.$emit('errorAlert', 'Telegram test failed')
           console.log(err)
         })
     },

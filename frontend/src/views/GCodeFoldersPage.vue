@@ -218,7 +218,10 @@ import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from '@src/components/g-codes/localFiles'
+import {
+  listPrinterLocalGCodesOctoPrint,
+  listPrinterLocalGCodesMoonraker,
+} from '@src/lib/printer_local_comm'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 
 // Waiting time (ms) before asking server for search results
@@ -489,17 +492,24 @@ export default {
         return
       }
       this.localFilesLoading = true
-      listFiles(this.selectedPrinterComm, {
-        query: this.searchQuery,
-        path: this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
-        onRequestEnd: (result) => {
-          this.localFilesLoading = false
-          if (result) {
-            const { folders, files } = result
-            this.folders = folders
-            this.files = files
-          }
-        },
+      const isAgentMoonraker = this.printers
+        .find((p) => p.id === this.selectedPrinterId)
+        .isAgentMoonraker()
+      const listPrinterLocalGCodes = isAgentMoonraker
+        ? listPrinterLocalGCodesMoonraker
+        : listPrinterLocalGCodesOctoPrint
+
+      listPrinterLocalGCodes(
+        this.selectedPrinterComm,
+        this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
+        this.searchQuery
+      ).then((result) => {
+        this.localFilesLoading = false
+        if (result) {
+          const { folders, files } = result
+          this.folders = folders
+          this.files = files
+        }
       })
     },
     async fetchFilesAndFolders(reset = false) {
@@ -511,6 +521,7 @@ export default {
         this.resetFiles()
       }
 
+      // need to fetch local printer files
       if (this.selectedPrinterId) {
         if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
@@ -557,7 +568,7 @@ export default {
         try {
           let response = await axios.get(urls.gcodeFolders(), {
             params: {
-              parent_folder: this.parentFolder,
+              parent_folder: this.parentFolder || 'null',
               page: this.currentFoldersPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
@@ -566,13 +577,9 @@ export default {
           response = response.data
           this.noMoreFolders = response?.next === null
           folders = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -588,7 +595,7 @@ export default {
               'Cache-Control': 'no-cache',
             },
             params: {
-              parent_folder: this.parentFolder,
+              parent_folder: this.parentFolder || 'null',
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
               sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
@@ -598,13 +605,9 @@ export default {
           response = response.data
           this.noMoreFiles = response?.next === null
           files = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.files.push(...files.map((data) => normalizedGcode(data)))
@@ -777,6 +780,7 @@ export default {
         printerId: this.targetPrinter.id,
         gcode: gcode,
         isCloud: this.isCloud,
+        isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
         Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {

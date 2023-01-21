@@ -375,10 +375,7 @@ export default {
           })
           .catch((error) => {
             this.performingAuthRequest = false
-            this.$swal.Reject.fire({
-              title: 'Oops',
-              text: error.message,
-            })
+            this._showErrorPopup(error)
           })
       }
     },

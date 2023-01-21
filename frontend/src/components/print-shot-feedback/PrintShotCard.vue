@@ -72,7 +72,7 @@ export default {
               cancelButtonText: 'Change feedback',
             }).then((result) => {
               if (result.isConfirmed) {
-                window.location.href = '/prints/'
+                window.location.href = '/print_history/'
               } else {
                 this.$emit('shotChanged', instance)
               }

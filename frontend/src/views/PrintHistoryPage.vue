@@ -33,7 +33,7 @@
       <!-- Prints list -->
       <b-container>
         <b-row>
-          <b-col v-if="prints.length">
+          <b-col v-if="prints.length || loading">
             <print-history-item
               v-for="print of prints"
               :key="print.id"
@@ -41,12 +41,10 @@
               class="print-item"
             ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
-              <div v-if="!noMoreData" class="text-center p-4">
-                <b-spinner label="Loading..."></b-spinner>
-              </div>
+              <loading-placeholder v-if="!noMoreData" />
             </mugen-scroll>
           </b-col>
-          <b-col v-else> Not found </b-col>
+          <b-col v-else class="text-center my-5">You don't have print history yet</b-col>
         </b-row>
       </b-container>
     </template>
@@ -92,8 +90,8 @@ export default {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            { value: 'date_asc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-up' },
-            { value: 'date_desc', title: 'Sort By Date', iconClass: 'fas fa-long-arrow-alt-down' },
+            { value: 'date_asc', title: 'Oldest First', iconClass: 'fas fa-long-arrow-alt-up' },
+            { value: 'date_desc', title: 'Newest First', iconClass: 'fas fa-long-arrow-alt-down' },
           ],
         },
         'Filter By': {
@@ -147,26 +145,13 @@ export default {
           this.prints.push(...response.data.map((data) => normalizedPrint(data)))
         })
         .catch((error) => {
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: error.message,
-          })
+          this._showErrorPopup(error)
         })
     },
     refetchData() {
       this.prints = []
-      this.selectedPrintIds = new Set()
       this.noMoreData = false
       this.fetchMoreData()
-    },
-    onSelectedChanged(printId, selected) {
-      const selectedPrintIdsClone = new Set(this.selectedPrintIds)
-      if (selected) {
-        selectedPrintIdsClone.add(printId)
-      } else {
-        selectedPrintIdsClone.delete(printId)
-      }
-      this.selectedPrintIds = selectedPrintIdsClone
     },
     menuSelectionChanged(menu, selectedOption) {
       this.$set(this.menuSelections, menu, selectedOption.value)

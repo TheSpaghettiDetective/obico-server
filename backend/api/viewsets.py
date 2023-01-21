@@ -321,7 +321,10 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             return GCodeFileDeSerializer
 
     def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user)
+        qs = GCodeFile.objects
+        if 'pk' in self.kwargs:
+            qs = qs.all_with_deleted()
+        return qs.filter(user=self.request.user)
 
     def list(self, request):
         qs = self.get_queryset().select_related(

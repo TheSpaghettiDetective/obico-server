@@ -140,7 +140,7 @@ export default {
         })
         .catch((err) => {
           event.target.classList.remove('disabled')
-          this.$emit('errorAlert', 'Slack test failed.')
+          this.$emit('errorAlert', 'Slack test failed')
           console.log(err)
         })
     },

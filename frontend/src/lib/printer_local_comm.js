@@ -83,9 +83,11 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
                 (d) => !d.dirname.startsWith('.') && !d.dirname.startsWith('Obico_Upload')
               ),
               (d) => {
+                const path = `${pathPrefix}${d.dirname}`
                 return {
                   name: d.dirname,
-                  path: `${pathPrefix}${d.dirname}`,
+                  id: path,
+                  path,
                   children: [], // To signify this is a folder, not a file
                 }
               }
@@ -104,7 +106,7 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
               num_bytes: f.size,
               filesize: filesize(f.size),
               created_at: toMomentOrNull(new Date(f.modified * 1000)),
-              path: `${pathPrefix}/${f.filename}`,
+              path: `${pathPrefix}${f.filename}`,
             }
           }
         )

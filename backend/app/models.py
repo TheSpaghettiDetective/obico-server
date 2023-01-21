@@ -529,6 +529,13 @@ class Print(SafeDeleteModel):
     def is_canceled(self):
         return bool(self.cancelled_at)
 
+    def need_alert_overwrite(self):
+        return self.alert_overwrite is None and self.tagged_video_url is not None
+
+    def need_print_shot_feedback(self):
+        return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
+
+
     @property
     def expecting_detective_view(self):
         return self.tagged_video_url or self.uploaded_at

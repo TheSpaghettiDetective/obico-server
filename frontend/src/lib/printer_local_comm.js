@@ -60,12 +60,13 @@ export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword
 
 export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword) {
   return new Promise((resolve, reject) => {
+    const pathPrefix = path == null ? '' : `${path}/`
     printerComm.passThruToPrinter(
       {
         target: 'moonraker_api',
         func: 'server/files/directory',
         kwargs: {
-          path,
+          path: `gcodes/${path ? path : ''}`,
           extended: true,
         },
       },
@@ -84,7 +85,7 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
               (d) => {
                 return {
                   name: d.dirname,
-                  path: `${path}/${d.dirname}`,
+                  path: `${pathPrefix}${d.dirname}`,
                   children: [], // To signify this is a folder, not a file
                 }
               }
@@ -101,8 +102,9 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
             return {
               ...f,
               num_bytes: f.size,
-              created_at: new Date(f.modified * 1000),
-              path: `${path}/${f.filename}`,
+              filesize: filesize(f.size),
+              created_at: toMomentOrNull(new Date(f.modified * 1000)),
+              path: `${pathPrefix}/${f.filename}`,
             }
           }
         )
@@ -112,16 +114,13 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
   })
 }
 
-const listRecoursively = (fileObj) => {
-  const fileList = []
-  for (const item of Object.values(fileObj)) {
-    if (item.children) {
-      fileList.push(...listRecoursively(item.children))
-    } else {
-      fileList.push(item)
+export function getPrinterLocalGCodeOctoPrint(printerComm, path) {
+
+  return listPrinterLocalGCodesOctoPrint(printerComm, dir_path, null).then((result) => {
+    return {
+      files: _.filter(_.get(result, 'files', []), (f) => f.filename == filename)
     }
-  }
-  return fileList
+  })
 }
 
 export function printPrinterLocalGCodeOctoPrint(printerComm, gcode) {

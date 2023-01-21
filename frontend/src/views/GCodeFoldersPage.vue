@@ -492,9 +492,10 @@ export default {
         return
       }
       this.localFilesLoading = true
-      const listPrinterLocalGCodes = this.printers
+      const isAgentMoonraker = this.printers
         .find((p) => p.id === this.selectedPrinterId)
         .isAgentMoonraker()
+      const listPrinterLocalGCodes = isAgentMoonraker
         ? listPrinterLocalGCodesMoonraker
         : listPrinterLocalGCodesOctoPrint
 

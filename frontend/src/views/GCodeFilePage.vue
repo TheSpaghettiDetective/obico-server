@@ -146,8 +146,8 @@ import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationM
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
 import PrinterComm from '@src/lib/printer_comm'
 import {
-  listPrinterLocalGCodesOctoPrint,
   listPrinterLocalGCodesMoonraker,
+  listPrinterLocalGCodesOctoPrint,
 } from '@src/lib/printer_local_comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
@@ -238,23 +238,27 @@ export default {
 
       const decodedPath = decodeURIComponent(this.gcodeId)
       const filename = decodedPath.split('/').at(-1)
-      const path =
+      const dir_path =
         filename === decodedPath
           ? ''
           : decodedPath.slice(0, decodedPath.length - filename.length - 1)
 
-      const listPrinterLocalGCodes = this.printer.isAgentMoonraker()
+      const getPrinterLocalGCode = this.printer.isAgentMoonraker()
         ? listPrinterLocalGCodesMoonraker
         : listPrinterLocalGCodesOctoPrint
 
-      listPrinterLocalGCodes(this.printerComm, path, filename).then(async (result) => {
-        this.loading = false
-        if (result?.files?.length) {
-          const file = result.files.find((f) => f.path === decodedPath)
-          if (!file) {
+      getPrinterLocalGCode(this.printerComm, dir_path, null)
+        .then((result) => {
+          return { files: _.filter(_.get(result, 'files', []), (f) => f.filename == filename) }
+        })
+        .then(async (result) => {
+          this.loading = false
+          if (result?.files?.length === 0) {
             this.gcodeNotFound = true
             return
           }
+
+          const file = result?.files[0]
           this.gcode = {
             ...file,
             print_set: [],
@@ -277,10 +281,10 @@ export default {
               console.error(e)
             }
           }
-        } else {
+        })
+        .catch((err) => {
           this.gcodeNotFound = true
-        }
-      })
+        })
     },
     async fetchGcode() {
       if (this.selectedPrinterId) {

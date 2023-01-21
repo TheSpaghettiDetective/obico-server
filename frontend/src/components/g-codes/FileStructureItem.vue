@@ -53,13 +53,13 @@
             <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
           </span>
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="$emit('renameItem', item)">
+        <b-dropdown-item v-if="isCloud" @click.stop="$emit('renameItem', item)">
           <i class="fas fa-edit"></i>Rename
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="$emit('moveItem', item)">
+        <b-dropdown-item v-if="isCloud" @click.stop="$emit('moveItem', item)">
           <i class="fas fa-arrows-alt"></i>Move
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="$emit('deleteItem', item)">
+        <b-dropdown-item v-if="isCloud" @click.stop="$emit('deleteItem', item)">
           <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
         </b-dropdown-item>
       </b-dropdown>

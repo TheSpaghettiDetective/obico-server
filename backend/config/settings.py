@@ -90,7 +90,6 @@ MIDDLEWARE = [
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'nplusone.ext.django.NPlusOneMiddleware',
-    'app.middleware.rename_session_cookie',
     'app.middleware.SessionHostDomainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

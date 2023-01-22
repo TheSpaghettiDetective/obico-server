@@ -127,38 +127,6 @@ class SessionHostDomainMiddleware(SessionMiddleware):
                         )
         return response
 
-# TODO: To be removed when mobile apps older than 1.60 are not longer active.
-
-
-def rename_session_cookie(get_response):
-
-    def middleware(request):
-        if (
-            settings.SESSION_COOKIE_NAME not in request.COOKIES and
-            'sessionid' in request.COOKIES
-        ):
-            request.COOKIES[
-                settings.SESSION_COOKIE_NAME
-            ] = request.COOKIES['sessionid']
-
-        response = get_response(request)
-
-        if (
-            settings.SESSION_COOKIE_NAME in request.COOKIES and
-            'sessionid' in request.COOKIES
-        ):
-            response.delete_cookie(
-                'sessionid',
-                path=settings.SESSION_COOKIE_PATH,
-                domain=settings.SESSION_COOKIE_DOMAIN,
-                samesite=settings.SESSION_COOKIE_SAMESITE,
-            )
-
-        return response
-
-    return middleware
-
-
 def check_admin_ip_whitelist(get_response):
     try:
         prefix = reverse('admin:index')

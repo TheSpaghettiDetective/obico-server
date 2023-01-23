@@ -1,4 +1,3 @@
-
 export const mobilePlatform = () => {
   return JSON.parse(document.querySelector('#app-platform-json').text)['platform']
 }

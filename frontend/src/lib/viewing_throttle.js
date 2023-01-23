@@ -3,18 +3,18 @@ import { isLocalStorageSupported } from '@static/js/utils'
 export default function ViewingThrottle(printerId, countDownCallback) {
   const localStorageItemId = `tsNextVideoCycle-${printerId}`
   let self = {
-    countDownTimer: null
+    countDownTimer: null,
   }
 
   self.startOrResumeVideoCycle = function () {
     if (!self.countDownTimer) {
-      self.countDownTimer = setInterval( () => self.countDown(), 1000)
+      self.countDownTimer = setInterval(() => self.countDown(), 1000)
     }
   }
 
   self.resumeVideoCycle = function () {
     if (remainingSeconds < 60 && !self.countDownTimer) {
-      self.countDownTimer = setInterval( () => self.countDown(), 1000)
+      self.countDownTimer = setInterval(() => self.countDown(), 1000)
     }
   }
 
@@ -22,7 +22,7 @@ export default function ViewingThrottle(printerId, countDownCallback) {
     self.updateRemainingSeconds(remainingSeconds - 1)
 
     if (isLocalStorageSupported()) {
-      localStorage.setItem(localStorageItemId, (new Date().getTime())/1000 + remainingSeconds)
+      localStorage.setItem(localStorageItemId, new Date().getTime() / 1000 + remainingSeconds)
     }
 
     if (remainingSeconds < 0) {
@@ -42,11 +42,11 @@ export default function ViewingThrottle(printerId, countDownCallback) {
   let remainingSeconds
   if (isLocalStorageSupported()) {
     const tsNextVideoCycle = parseFloat(localStorage.getItem(localStorageItemId))
-    const now = (new Date().getTime())/1000
+    const now = new Date().getTime() / 1000
     if (!tsNextVideoCycle || now > tsNextVideoCycle) {
       self.updateRemainingSeconds(60)
     } else {
-      self.updateRemainingSeconds(Math.round((tsNextVideoCycle - now)))
+      self.updateRemainingSeconds(Math.round(tsNextVideoCycle - now))
     }
   } else {
     self.updateRemainingSeconds(60)

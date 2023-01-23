@@ -172,7 +172,9 @@ class PrintViewSet(
         return Print.objects.filter(user=self.request.user)
 
     def list(self, request):
-        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
+            ).select_related('printer', 'g_code_file',
+            ).filter(uploaded_at__isnull=True)
         filter = request.GET.get('filter', 'none')
         if filter == 'cancelled':
             queryset = queryset.filter(cancelled_at__isnull=False)
@@ -291,7 +293,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 
         if 'parent_folder' in request.GET:
             parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null':
+            if parent_folder == 'null' or parent_folder == '':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
@@ -324,9 +326,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
     def list(self, request):
         qs = self.get_queryset().select_related(
             'parent_folder').prefetch_related(
-            'print_set__printer').filter(
-                resident_printer__isnull=True, # g-code files on the server for now, unless we start to support printing g-code files already on OctoPrint/Klipper.
-            )
+            'print_set__printer')
 
         sorting = request.GET.get('sorting', 'created_at_desc')
         if sorting == 'created_at_asc':
@@ -348,10 +348,20 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         if 'parent_folder' in request.GET:
             parent_folder = request.GET.get('parent_folder')
-            if parent_folder == 'null':
+            if parent_folder == 'null' or parent_folder == '':
                 qs = qs.filter(parent_folder__isnull=True)
             else:
                 qs = qs.filter(parent_folder_id=int(parent_folder))
+
+        if 'safe_filename' in request.GET and 'agent_signature' in request.GET:
+            qs = qs.filter(agent_signature=request.GET.get('agent_signature'),
+                           safe_filename=request.GET.get('safe_filename'))
+
+        resident_printer = request.GET.get('resident_printer')
+        if resident_printer:
+            qs = qs.filter(resident_printer=resident_printer)
+        else:
+            qs = qs.filter(resident_printer__isnull=True)
 
         page = self.paginate_queryset(qs)
         if page is not None:

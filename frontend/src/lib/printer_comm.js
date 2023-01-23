@@ -3,9 +3,14 @@ import assign from 'lodash/assign'
 import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
-import {toArrayBuffer} from '@src/lib/utils'
+import { toArrayBuffer } from '@src/lib/utils'
 
-export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, onStatusReceived=null) {
+export default function PrinterComm(
+  printerId,
+  wsUri,
+  onPrinterUpdateReceived,
+  onStatusReceived = null
+) {
   var self = {}
 
   self.printerId = printerId
@@ -17,15 +22,15 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   self.webrtc = null
   self.passthruQueue = new Map()
 
-  ifvisible.on('blur', function(){
+  ifvisible.on('blur', function () {
     self.closeWebSocket()
   })
 
-  ifvisible.on('focus', function(){
+  ifvisible.on('focus', function () {
     self.connect()
   })
 
-  self.onPassThruReceived = function(msg) {
+  self.onPassThruReceived = function (msg) {
     const refId = msg.ref
     if (refId && self.passthruQueue.get(refId)) {
       const callback = self.passthruQueue.get(refId)
@@ -37,23 +42,26 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
         icon: printerEvent.event_class.toLowerCase(),
         title: printerEvent.event_title,
         html: printerEvent.event_text,
-      }).then(result => {
-        if (result.isDismissed && result.dismiss === 'close') { // SWAL returns 'close' as the reason when user clicks on the toast
+      }).then((result) => {
+        if (result.isDismissed && result.dismiss === 'close') {
+          // SWAL returns 'close' as the reason when user clicks on the toast
           window.location.href = '/printer_events/'
         }
       })
     }
   }
 
-  self.connect = function(onOpenCallback = null) {
-    self.ws = new WebSocket( window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri)
+  self.connect = function (onOpenCallback = null) {
+    self.ws = new WebSocket(
+      window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri
+    )
     self.ws.onmessage = function (e) {
       let msg = {}
       try {
         msg = JSON.parse(e.data)
       } catch (error) {
         console.log(e.data)
-        throw(error)
+        throw error
       }
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
@@ -63,14 +71,16 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     }
 
     if (onOpenCallback) {
-      self.ws.onopen = onOpenCallback;
+      self.ws.onopen = onOpenCallback
     }
 
     self.ensureWebsocketClosed()
-    setTimeout( function () { self.heartbeat() }, 30*1000)
+    setTimeout(function () {
+      self.heartbeat()
+    }, 30 * 1000)
   }
 
-  self.setWebRTC = function(webrtc) {
+  self.setWebRTC = function (webrtc) {
     self.webrtc = webrtc
 
     function parseJsonData(jsonData) {
@@ -98,34 +108,35 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
           parseJsonData(maybeBin)
         } else {
           toArrayBuffer(maybeBin, (arrayBuffer) => {
-            parseJsonData(pako.ungzip(new Uint8Array(arrayBuffer), {'to': 'string'}))
+            parseJsonData(pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' }))
           })
         }
       },
     })
   }
 
-  self.passThruToPrinter = function(msg, callback) {
+  self.passThruToPrinter = function (msg, callback) {
     if (self.canSend()) {
       var refId = Math.random().toString()
-      assign(msg, {ref: refId})
+      assign(msg, { ref: refId })
       if (callback) {
         self.passthruQueue.set(refId, callback)
-        setTimeout(function() {
+        setTimeout(function () {
           if (self.passthruQueue.has(refId)) {
             Vue.swal.Toast.fire({
               icon: 'error',
-              title: 'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
+              title:
+                'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
             })
           }
-        }, 10*1000)
+        }, 10 * 1000)
       }
       if (self.webrtc) {
         self.webrtc.sendData(JSON.stringify(msg))
       }
-      self.ws.send(JSON.stringify({passthru: msg}))
+      self.ws.send(JSON.stringify({ passthru: msg }))
     } else {
-      if (callback){
+      if (callback) {
         callback('Message not passed through. No suitable WebSocket.')
       }
     }
@@ -133,7 +144,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
 
   // Helper methods
 
-  self.ensureWebsocketClosed = function() {
+  self.ensureWebsocketClosed = function () {
     self.ws.onclose = function (ev) {
       if (self.ws === ev.target) {
         self.ws = null
@@ -146,7 +157,7 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
     }
   }
 
-  self.closeWebSocket = function() {
+  self.closeWebSocket = function () {
     if (self.ws) {
       self.ws.close()
     }
@@ -155,15 +166,17 @@ export default function PrinterComm(printerId, wsUri, onPrinterUpdateReceived, o
   // Heartbeat to maintain the presence of connection
   // Adapted from https://stackoverflow.com/questions/50876766/how-to-implement-ping-pong-request-for-websocket-connection-alive-in-javascript
 
-  self.heartbeat = function() {
+  self.heartbeat = function () {
     if (!self.canSend()) {
       return
     }
     self.ws.send(JSON.stringify({}))
-    setTimeout( function () { self.heartbeat() }, 30*1000)
+    setTimeout(function () {
+      self.heartbeat()
+    }, 30 * 1000)
   }
 
-  self.canSend = function() {
+  self.canSend = function () {
     return self.ws && self.ws.readyState === 1
   }
 

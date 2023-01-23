@@ -1,14 +1,10 @@
 <template>
   <div>
     <div class="text-center">
-      <h1
-        v-if="value > 0"
-        class="target-temp-degree"
-      >{{ value }} <span class="text-subscript text-muted">°C</span></h1>
-      <h1
-        v-if="value < 1"
-        class="target-temp-degree"
-      >OFF</h1>
+      <h1 v-if="value > 0" class="target-temp-degree">
+        {{ value }} <span class="text-subscript text-muted">°C</span>
+      </h1>
+      <h1 v-if="value < 1" class="target-temp-degree">OFF</h1>
     </div>
     <br />
     <div class="mb-5">
@@ -16,12 +12,13 @@
         <h5>Presets:</h5>
       </div>
       <div>
-        <b-form-select v-model="preset" id="id_preset" @change="onPresetChanged">
+        <b-form-select id="id_preset" v-model="preset" @change="onPresetChanged">
           <b-form-select-option
             v-for="pre in allPresets"
             :key="pre.value"
-            :value="parseInt(pre.value)">
-            {{pre.title}}
+            :value="parseInt(pre.value)"
+          >
+            {{ pre.title }}
           </b-form-select-option>
         </b-form-select>
       </div>
@@ -29,18 +26,14 @@
       <h5>Manual:</h5>
       <div>
         <vue-slider
+          v-model="value"
           :min="0"
           :max="maxTemp"
           :step="1"
           :tooltip="'none'"
-          v-model="value"
           @change="onSliderChanged"
         ></vue-slider>
-        <input
-          id="target-temp"
-          v-model="value"
-          type="hidden"
-        >
+        <input id="target-temp" v-model="value" type="hidden" />
       </div>
     </div>
   </div>
@@ -57,11 +50,11 @@ export default {
   props: {
     presets: {
       type: Array,
-      required: true
+      required: true,
     },
     maxTemp: {
       type: Number,
-      required: true
+      required: true,
     },
     curTarget: {
       type: Number,
@@ -69,21 +62,23 @@ export default {
     },
   },
   data() {
-    let curPreset = this.presets.find((pre) => pre.target == this.curTarget) || {target: this.curTarget != 0 ? -1 : 0}
-    return {value: this.curTarget, preset: curPreset.target}
+    let curPreset = this.presets.find((pre) => pre.target == this.curTarget) || {
+      target: this.curTarget != 0 ? -1 : 0,
+    }
+    return { value: this.curTarget, preset: curPreset.target }
   },
   computed: {
     allPresets() {
       let presets = []
-      presets.push({value: -1, title: 'Manual'})
-      presets.push({value: 0, title: 'OFF'})
+      presets.push({ value: -1, title: 'Manual' })
+      presets.push({ value: 0, title: 'OFF' })
       this.presets.forEach((pre) => {
         if (pre.target) {
-          presets.push({value: pre.target, title: `${pre.name} (${pre.target}°C)`})
+          presets.push({ value: pre.target, title: `${pre.name} (${pre.target}°C)` })
         }
       })
       return presets
-    }
+    },
   },
   methods: {
     onPresetChanged() {
@@ -97,10 +92,8 @@ export default {
       } else {
         this.preset = -1
       }
-
-    }
-  }
+    },
+  },
 }
 </script>
-<style>
-</style>
+<style></style>

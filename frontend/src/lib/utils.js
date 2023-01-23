@@ -28,7 +28,7 @@ export const toArrayBuffer = (maybeBin, onData) => {
       if (!e.srcElement) {
         return
       }
-      onData(e.srcElement.result);
+      onData(e.srcElement.result)
     })
     reader.readAsArrayBuffer(maybeBin)
   } else {
@@ -40,16 +40,16 @@ export const getCsrfFromDocument = () => {
   return document.getElementsByName('csrfmiddlewaretoken')[0]?.value
 }
 
-export const wasElementClicked = (event, className) => {
-  let clicked = false
-  const path = event.path || (event.composedPath && event.composedPath())
-  
-  for (const node of path) {
-    if (node.className && node.className.includes(className)) {
-      clicked = true
-      break
-    }
-  }
-
-  return clicked
+export const downloadFile = (url, filename) => {
+  fetch(url)
+    .then((res) => res.blob())
+    .then((res) => {
+      const aElement = document.createElement('a')
+      aElement.setAttribute('download', filename)
+      const href = URL.createObjectURL(res)
+      aElement.href = href
+      aElement.setAttribute('target', '_blank')
+      aElement.click()
+      URL.revokeObjectURL(href)
+    })
 }

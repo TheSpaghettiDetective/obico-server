@@ -9,7 +9,7 @@ import setupSentry from '@src/lib/sentry'
 import { initTheme } from '@src/lib/color-scheme-controller'
 import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
-import LoadScript from "vue-plugin-load-script"
+import LoadScript from 'vue-plugin-load-script'
 
 export default (router, components) => {
   initTheme()

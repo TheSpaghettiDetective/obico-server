@@ -6,7 +6,7 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 const openModalWithComponent = (C, props, modalOptions) => {
   let wrapper = document.createElement('div')
   const c = new Vue({
-    render: h => h(C, {props: props}),
+    render: (h) => h(C, { props: props }),
   }).$mount(wrapper)
 
   return Vue.swal({
@@ -21,10 +21,9 @@ const openModalWithComponent = (C, props, modalOptions) => {
     onDestroy: () => {
       c.$destroy()
       wrapper.remove()
-    }
+    },
   })
 }
-
 
 const openModalWithElement = (element, props, modalOptions) => {
   return Vue.swal({
@@ -73,20 +72,18 @@ const install = (Vue, options) => {
   })
 
   const DismissableToast = (swalOpt, dismissKey) => {
-
     if (!getLocalPref(dismissKey, false)) {
       const opt = {
         ...swalOpt,
         position: 'top-end',
-        confirmButtonText: 'Gotcha! Don\'t show this again.',
+        confirmButtonText: "Gotcha! Don't show this again.",
       }
-      return Vue.swal(opt)
-        .then(function (result) {
-          if (result.value) {
-            setLocalPref(dismissKey, true)
-            console.log(result)
-          }
-        })
+      return Vue.swal(opt).then(function (result) {
+        if (result.value) {
+          setLocalPref(dismissKey, true)
+          console.log(result)
+        }
+      })
     }
   }
 
@@ -99,4 +96,4 @@ const install = (Vue, options) => {
   Vue.prototype.$swal['Prompt'] = Prompt
 }
 
-export default {install: install}
+export default { install: install }

@@ -1,4 +1,3 @@
-
 import { isLocalStorageSupported } from '@static/js/utils'
 
 export const getLocalPref = (prefId, defaultValue) => {

@@ -1,3 +1,3 @@
 import Vue from 'vue'
 
-Vue.filter('floor', value => Math.floor(value))
+Vue.filter('floor', (value) => Math.floor(value))

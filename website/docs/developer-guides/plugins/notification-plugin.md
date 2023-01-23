@@ -350,8 +350,8 @@ Required. The Vue component that will be shown to the user. It should contain th
         configVariablePlaceholder="Pushover User Key"
         configVariableName="user_key"
 
-        @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
-        @updateNotificationChannel="(channel, changedProps) => $emit('updateNotificationChannel', channel, changedProps)"
+        @createNotificationChannel="$emit('createNotificationChannel', $event)"
+        @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
         @deleteNotificationChannel="(channel) => $emit('deleteNotificationChannel', channel)"
         @clearErrorMessages="(settingKey) => $emit('clearErrorMessages', settingKey)"
     >

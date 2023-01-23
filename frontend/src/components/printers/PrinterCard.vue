@@ -1,19 +1,17 @@
 <template>
-  <div :id="printer.id"
-    class="col-sm-12 col-lg-6 printer-card"
-  >
+  <div :id="printer.id" class="col-sm-12 col-lg-6 printer-card">
     <div class="card">
       <div class="card-header">
         <div class="title-box">
-          <div
-            v-if="hasCurrentPrintFilename"
-            class="primary-title print-filename"
-          >{{ printer.current_print.filename }}</div>
-          <div
-            class="printer-name"
-            :class="{'secondary-title': hasCurrentPrintFilename}"
-          >{{ printer.name }} &nbsp;
-          (<a :href="'#printer-actions-' + printer.id" :class="statusClass">{{ statusText }}</a>)
+          <div v-if="hasCurrentPrintFilename" class="primary-title print-filename">
+            {{ printer.current_print.filename }}
+          </div>
+          <div class="printer-name" :class="{ 'secondary-title': hasCurrentPrintFilename }">
+            {{ printer.name }} &nbsp; (<a
+              :href="'#printer-actions-' + printer.id"
+              :class="statusClass"
+              >{{ statusText }}</a
+            >)
           </div>
         </div>
         <b-dropdown right no-caret toggle-class="icon-btn">
@@ -43,36 +41,34 @@
         <i class="fas fa-exclamation-triangle align-middle"></i>
         <span class="align-middle">Failure Detected!</span>
         <button
-          type="button"
           id="not-a-failure"
+          type="button"
           class="btn btn-outline-primary btn-sm float-right"
           @click="onNotAFailureClicked($event, false)"
-        >Not a failure?</button>
+        >
+          Not a failure?
+        </button>
       </div>
 
-      <div
-        class="card-body gauge-container"
-        :class="{overlay: !isWatching}"
-      >
+      <div class="card-body gauge-container" :class="{ overlay: !isWatching }">
         <div
           v-if="!isWatching"
           class="overlay-top text-center"
-          style="left: 0; width: 100%; top: 50%; margin-top: -55px;"
+          style="left: 0; width: 100%; top: 50%; margin-top: -55px"
         >
           <H1><i class="far fa-eye-slash"></i></H1>
           <h5 class="text-warning">Failure Detection is Off</h5>
-          <small
-            v-if="printer.not_watching_reason"
-          >{{ printer.not_watching_reason }}. <a href="https://www.obico.io/docs/user-guides/detective-not-watching/" target="_blank">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a></small>
+          <small v-if="printer.not_watching_reason"
+            >{{ printer.not_watching_reason }}.
+            <a href="https://www.obico.io/docs/user-guides/detective-not-watching/" target="_blank"
+              >Learn more. <small><i class="fas fa-external-link-alt"></i></small></a
+          ></small>
           <div></div>
         </div>
-        <Gauge
-          :normalizedP="printer.normalized_p"
-          :isWatching="isWatching"
-        />
+        <failure-detection-gauge :normalized-p="printer.normalized_p" :is-watching="isWatching" />
         <hr />
       </div>
-      <PrinterActions
+      <printer-actions
         :id="'printer-actions-' + printer.id"
         class="container"
         v-bind="actionsProps"
@@ -82,104 +78,96 @@
         @PrinterActionConnectClicked="onPrinterActionConnectClicked"
         @PrinterActionStartClicked="onPrinterActionStartClicked"
         @PrinterActionControlClicked="onPrinterActionControlClicked"
-      ></PrinterActions>
+      ></printer-actions>
       <div class="info-section settings">
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
-          :class="{pressed: section_toggles.settings}"
+          :class="{ pressed: section_toggles.settings }"
           @click="onSettingsToggleClicked()"
-        ><i class="fas fa-cog fa-lg"></i></button>
+        >
+          <i class="fas fa-cog fa-lg"></i>
+        </button>
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
-          :class="{pressed: section_toggles.time}"
+          :class="{ pressed: section_toggles.time }"
           @click="onTimeToggleClicked()"
-        ><i class="fas fa-clock fa-lg"></i></button>
+        >
+          <i class="fas fa-clock fa-lg"></i>
+        </button>
         <button
           type="button"
           class="info-section-toggle btn btn-sm no-corner mx-2"
-          :class="{pressed: section_toggles.statusTemp}"
+          :class="{ pressed: section_toggles.statusTemp }"
           @click="onStatusTempToggleClicked()"
-          ><i class="fas fa-thermometer-half fa-lg"></i></button>
+        >
+          <i class="fas fa-thermometer-half fa-lg"></i>
+        </button>
       </div>
-      <div class="info-section" style="height: 0.3rem;"></div>
+      <div class="info-section" style="height: 0.3rem"></div>
       <div>
         <div class="info-section container">
-          <div
-            id="panel-settings"
-            v-if="section_toggles.settings"
-          >
+          <div v-if="section_toggles.settings" id="panel-settings">
             <div class="pt-2 pb-3">
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
-                  <label
-                    class="toggle-label"
-                    :for="'watching_enabled-toggle-' + printer.id"
-                  >Enable AI failure detection
-                    <div
-                      v-if="!watchForFailures"
-                      class="text-muted font-weight-light font-size-sm">AI failure detection is disabled. You are on your own.
+                  <label class="toggle-label" :for="'watching_enabled-toggle-' + printer.id"
+                    >Enable AI failure detection
+                    <div v-if="!watchForFailures" class="text-muted font-weight-light font-size-sm">
+                      AI failure detection is disabled. You are on your own.
                     </div>
                   </label>
                   <div class="custom-control custom-switch">
                     <input
+                      :id="'watching_enabled-toggle-' + printer.id"
                       type="checkbox"
                       name="watching_enabled"
                       class="custom-control-input update-printer"
-                      :id="'watching_enabled-toggle-' + printer.id"
-                      @click="onWatchForFailuresToggled"
                       :checked="watchForFailures"
-                    >
+                      @click="onWatchForFailuresToggled"
+                    />
                     <label
                       class="custom-control-label"
                       :for="'watching_enabled-toggle-' + printer.id"
-                      style="font-size: 1rem;"
+                      style="font-size: 1rem"
                     ></label>
                   </div>
                 </div>
               </div>
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
-                  <label
-                    class="toggle-label"
-                    :for="'pause-toggle-' + printer.id"
-                  >Pause on detected failures
-                    <div
-                      v-if="!pauseOnFailure"
-                      class="text-muted font-weight-light font-size-sm">You will still be alerted via notifications
+                  <label class="toggle-label" :for="'pause-toggle-' + printer.id"
+                    >Pause on detected failures
+                    <div v-if="!pauseOnFailure" class="text-muted font-weight-light font-size-sm">
+                      You will still be alerted via notifications
                     </div>
                   </label>
                   <div class="custom-control custom-switch">
                     <input
+                      :id="'pause-toggle-' + printer.id"
                       type="checkbox"
                       name="pause_on_failure"
                       class="custom-control-input update-printer"
-                      :id="'pause-toggle-' + printer.id"
-                      @click="onPauseOnFailureToggled"
                       :checked="pauseOnFailure"
-                    >
+                      @click="onPauseOnFailureToggled"
+                    />
                     <label
                       class="custom-control-label"
-                      :for="'pause-toggle-'+printer.id"
-                      style="font-size: 1rem;">
+                      :for="'pause-toggle-' + printer.id"
+                      style="font-size: 1rem"
+                    >
                     </label>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div
-            v-if="section_toggles.time"
-            id="print-time">
+          <div v-if="section_toggles.time" id="print-time">
             <div class="py-2">
               <div class="row text-muted">
-                <small class="col-5 offset-2">
-                  Remaining
-                </small>
-                <small class="col-5">
-                  Total
-                </small>
+                <small class="col-5 offset-2"> Remaining </small>
+                <small class="col-5"> Total </small>
               </div>
               <div class="row">
                 <div class="col-2 text-muted">
@@ -196,28 +184,31 @@
                   v-bind="timeTotal"
                 ></duration-block>
                 <div class="col-12">
-                  <div class="progress" style="height: 2px;">
+                  <div class="progress" style="height: 2px">
                     <div
                       id="print-progress"
                       class="progress-bar"
-                      :class="{'progress-bar-striped': progressPct < 100, 'progress-bar-animated': progressPct < 100}"
+                      :class="{
+                        'progress-bar-striped': progressPct < 100,
+                        'progress-bar-animated': progressPct < 100,
+                      }"
                       role="progressbar"
                       aria-valuenow="0"
                       aria-valuemin="0"
                       aria-valuemax="100"
-                      :style="`width: ${progressPct}%;`">
-                    </div>
+                      :style="`width: ${progressPct}%;`"
+                    ></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <StatusTemp
+          <status-temp
             v-if="section_toggles.statusTemp && tempProps.show"
             id="status_temp_block"
             v-bind="tempProps"
             @TempEditClicked="onTempEditClicked"
-          ></StatusTemp>
+          ></status-temp>
         </div>
       </div>
     </div>
@@ -226,17 +217,15 @@
 
 <script>
 import get from 'lodash/get'
-import capitalize from 'lodash/capitalize'
 import moment from 'moment'
-import filter from 'lodash/filter'
 import axios from 'axios'
 
 import urls from '@config/server-urls'
-import { normalizedPrinter, normalizedGcode } from '@src/lib/normalizers'
+import { normalizedPrinter } from '@src/lib/normalizers'
 import PrinterComm from '@src/lib/printer_comm'
-import {temperatureDisplayName} from '@src/lib/utils'
+import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
-import Gauge from '@src/components/Gauge'
+import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 import StreamingBox from '@src/components/StreamingBox'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import DurationBlock from './DurationBlock.vue'
@@ -265,7 +254,7 @@ export default {
   name: 'PrinterCard',
   components: {
     StreamingBox,
-    Gauge,
+    FailureDetectionGauge,
     DurationBlock,
     PrinterActions,
     StatusTemp,
@@ -274,11 +263,11 @@ export default {
   props: {
     printer: {
       type: Object,
-      required: true
+      required: true,
     },
     isProAccount: {
       type: Boolean,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -291,40 +280,19 @@ export default {
       webrtc: WebRTCConnection(),
     }
   },
-  created() {
-    this.printerComm = PrinterComm(
-      this.printer.id,
-      urls.printerWebSocket(this.printer.id),
-      (data) => {
-        this.$emit('PrinterUpdated', this.updatedPrinter(data))
-      },
-      (printerStatus) => {
-        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
-        const status = printerStatus.status || printerStatus.octoprint_data
-        this.$emit('PrinterUpdated', this.updatedPrinter( {status,} ))
-      }
-    )
-    this.printerComm.connect()
-
-    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-    this.printerComm.setWebRTC(this.webrtc)
-  },
   computed: {
     isWatching() {
       return !this.printer.not_watching_reason
     },
     timeRemaining() {
-      return this.toDuration(
-        this.secondsLeft, this.printer.isActive())
+      return this.toDuration(this.secondsLeft, this.printer.isActive())
     },
     timeTotal() {
       let secs = null
       if (this.secondsPrinted && this.secondsLeft) {
         secs = this.secondsPrinted + this.secondsLeft
       }
-      return this.toDuration(
-        secs,
-        this.printer.isActive())
+      return this.toDuration(secs, this.printer.isActive())
     },
     secondsLeft() {
       return get(this.printer, 'status.progress.printTimeLeft')
@@ -357,7 +325,8 @@ export default {
       let editable = get(this.printer, 'settings.temp_profiles') != undefined
       const temperatures = {}
       for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
-        if ( Boolean(value.actual) && !isNaN(value.actual) ) {  // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
+        if (Boolean(value.actual) && !isNaN(value.actual)) {
+          // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
           temperatures[key] = value
         }
       }
@@ -374,11 +343,33 @@ export default {
       if (this.printer.hasError()) {
         return 'text-danger'
       }
-      if (this.printer.isOffline() || this.printer.isDisconnected() || this.printer.inTransientState()) {
+      if (
+        this.printer.isOffline() ||
+        this.printer.isDisconnected() ||
+        this.printer.inTransientState()
+      ) {
         return 'text-warning'
       }
       return 'text-success'
-    }
+    },
+  },
+  created() {
+    this.printerComm = PrinterComm(
+      this.printer.id,
+      urls.printerWebSocket(this.printer.id),
+      (data) => {
+        this.$emit('PrinterUpdated', this.updatedPrinter(data))
+      },
+      (printerStatus) => {
+        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+        const status = printerStatus.status || printerStatus.octoprint_data
+        this.$emit('PrinterUpdated', this.updatedPrinter({ status }))
+      }
+    )
+    this.printerComm.connect()
+
+    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+    this.printerComm.setWebRTC(this.webrtc)
   },
 
   methods: {
@@ -401,7 +392,10 @@ export default {
     },
     onStatusTempToggleClicked() {
       this.section_toggles.statusTemp = !this.section_toggles.statusTemp
-      setLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), this.section_toggles.statusTemp)
+      setLocalPref(
+        LocalPrefNames.StatusTemp + String(this.printer.id),
+        this.section_toggles.statusTemp
+      )
     },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
@@ -413,33 +407,27 @@ export default {
         if (result.dismiss == 'cancel') {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
-            this.sendPrinterAction(
-              this.printer.id,
-              MUTE_CURRENT_PRINT,
-              false
-            )
+            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
           }, 1000)
         }
         if (resumePrint) {
-          this.sendPrinterAction(
-            this.printer.id,
-            RESUME_PRINT,
-            true)
+          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
         } else {
-          this.sendPrinterAction(
-            this.printer.id,
-            ACK_ALERT_NOT_FAILED,
-            false)
+          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
         }
       })
 
       ev.preventDefault()
     },
     onWatchForFailuresToggled() {
+      // FIXME: fix on printer page update (when better desktop experience will be introduced)
+      // eslint-disable-next-line vue/no-mutating-props
       this.printer.watching_enabled = !this.printer.watching_enabled
       this.updatePrinter(this.printer)
     },
     onPauseOnFailureToggled() {
+      // FIXME: fix on printer page update (when better desktop experience will be introduced)
+      // eslint-disable-next-line vue/no-mutating-props
       this.printer.action_on_failure = this.printer.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
       this.updatePrinter(this.printer)
     },
@@ -485,33 +473,33 @@ export default {
                 title: 'Uh-Oh. No printer is found on the serial port.',
               })
             } else {
-              this.$swal.openModalWithComponent(
-                ConnectPrinter,
-                {
-                  connectionOptions: connectionOptions,
-                },
-                {
-                  confirmButtonText: 'Connect',
-                  showCancelButton: true,
-                  preConfirm: () => {
-                    return {
-                      port: document.getElementById('connect-port').value,
-                      baudrate: document.getElementById('connect-baudrate').value
-                    }
+              this.$swal
+                .openModalWithComponent(
+                  ConnectPrinter,
+                  {
+                    connectionOptions: connectionOptions,
+                  },
+                  {
+                    confirmButtonText: 'Connect',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                      return {
+                        port: document.getElementById('connect-port').value,
+                        baudrate: document.getElementById('connect-baudrate').value,
+                      }
+                    },
                   }
-                }
-              ).then((result) => {
-                if (result.value) {
-                  let args = [
-                    result.value.port,
-                    result.value.baudrate
-                  ]
-                  this.printerComm.passThruToPrinter(
-                    { func: 'connect', target: '_printer',
-                      args: args }
-                  )
-                }
-              })
+                )
+                .then((result) => {
+                  if (result.value) {
+                    let args = [result.value.port, result.value.baudrate]
+                    this.printerComm.passThruToPrinter({
+                      func: 'connect',
+                      target: '_printer',
+                      args: args,
+                    })
+                  }
+                })
             }
           }
         }
@@ -536,60 +524,60 @@ export default {
       }
       if (key.search(/tool/) > -1) {
         // OctoPrint uses 'extruder' for toolx heaters
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v['extruder']}}
-        )
+        presets = tempProfiles.map((v) => {
+          return { name: v.name, target: v['extruder'] }
+        })
       } else {
-        presets = tempProfiles.map(
-          (v) => {return {name: v.name, target: v[key]}}
-        )
+        presets = tempProfiles.map((v) => {
+          return { name: v.name, target: v[key] }
+        })
       }
 
-      this.$swal.openModalWithComponent(
-        TempTargetEditor,
-        {
-          presets: presets,
-          maxTemp: maxTemp,
-          curTarget: item.target,
-        },
-        {
-          title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
-          confirmButtonText: 'Confirm',
-          showCancelButton: true,
-          preConfirm: () => {
-            return {
-              target: parseInt(document.getElementById('target-temp').value)
-            }
+      this.$swal
+        .openModalWithComponent(
+          TempTargetEditor,
+          {
+            presets: presets,
+            maxTemp: maxTemp,
+            curTarget: item.target,
+          },
+          {
+            title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
+            confirmButtonText: 'Confirm',
+            showCancelButton: true,
+            preConfirm: () => {
+              return {
+                target: parseInt(document.getElementById('target-temp').value),
+              }
+            },
           }
-        }).then((result) => {
-        if (result.value) {
-          let targetTemp = result.value.target
-          this.printerComm.passThruToPrinter(
-            {
+        )
+        .then((result) => {
+          if (result.value) {
+            let targetTemp = result.value.target
+            this.printerComm.passThruToPrinter({
               func: 'set_temperature',
               target: '_printer',
-              args: [key, targetTemp]
+              args: [key, targetTemp],
             })
-        }
-      })
+          }
+        })
     },
 
     updatePrinter(printer) {
       return axios
-        .patch(
-          urls.printer(printer.id),
-          {
-            watching_enabled: printer.watching_enabled,
-            action_on_failure: printer.action_on_failure,
-          })
-        .then(response => {
+        .patch(urls.printer(printer.id), {
+          watching_enabled: printer.watching_enabled,
+          action_on_failure: printer.action_on_failure,
+        })
+        .then((response) => {
           if (response.data.succeeded) {
             this.$emit('PrinterUpdated', normalizedPrinter(response.data.printer, this.printer))
           } else {
             throw response
           }
         })
-        .catch(response => {
+        .catch((response) => {
           console.error(response)
           this.$swal.Toast.fire({
             icon: 'error',
@@ -599,21 +587,20 @@ export default {
     },
 
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios
-        .post(urls.printerAction(printerId, path))
-        .then(() => {
-          let toastHtml = ''
-          if (isOctoPrintCommand) {
-            toastHtml += `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-                  '<p>It may take a while to be executed.</p>'
-          }
-          if (toastHtml != '') {
-            this.$swal.Toast.fire({
-              icon: 'success',
-              html: toastHtml,
-            })
-          }
-        })
+      axios.post(urls.printerAction(printerId, path)).then(() => {
+        let toastHtml = ''
+        if (isOctoPrintCommand) {
+          toastHtml +=
+            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+            '<p>It may take a while to be executed.</p>'
+        }
+        if (toastHtml != '') {
+          this.$swal.Toast.fire({
+            icon: 'success',
+            html: toastHtml,
+          })
+        }
+      })
     },
 
     shouldVideoBeFull(printer) {
@@ -622,7 +609,7 @@ export default {
       return !shouldBeThumb
     },
 
-    toDuration (seconds, isActive) {
+    toDuration(seconds, isActive) {
       if (seconds == null || seconds == 0) {
         return {
           valid: false,
@@ -637,11 +624,11 @@ export default {
           valid: true,
           printing: isActive,
           hours: h,
-          showHours: (h>0),
+          showHours: h > 0,
           minutes: m,
-          showMinutes: (h>0 || m>0),
+          showMinutes: h > 0 || m > 0,
           seconds: s,
-          showSeconds: (h==0 && m==0)
+          showSeconds: h == 0 && m == 0,
         }
       }
     },
@@ -651,13 +638,13 @@ export default {
         SharePrinter,
         {
           isProAccount: this.isProAccount,
-          printer: this.printer
+          printer: this.printer,
         },
         {
           confirmButtonText: 'Close',
         }
       )
-    }
+    },
   },
 }
 </script>

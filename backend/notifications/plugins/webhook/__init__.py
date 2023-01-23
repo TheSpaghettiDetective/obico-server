@@ -7,6 +7,7 @@ import json
 from enum import IntEnum
 import requests
 from rest_framework.serializers import ValidationError
+from datetime import datetime
 
 from lib import site as site
 
@@ -48,12 +49,12 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
     def execute_webhook(
         self,
         url: str,
-        eventData: obj,
+        eventData: Dict,
         timeout: float = 5.0,
     ) -> None:
 
         headers = {'content-type': 'application/json'}
-        response = requests.post(url, data=json.dumps(eventData), headers=headers, timeout=timeout)
+        response = requests.post(url, json=eventData, headers=headers, timeout=timeout)
         response.raise_for_status()
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
@@ -65,21 +66,30 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
         printer: Dict[str, Any] = {
             "id": context.printer.id,
             "name": context.printer.name,
-        } 
-        
-        print: Dict[str, Any] = {
+        }
+
+        printStart = ""
+        if context.print.started_at is not None:  printStart = context.print.started_at.timestamp()
+        printEnd = ""
+        if context.print.ended_at is not None: printEnd = context.print.ended_at.timestamp()
+  
+        printJob: Dict[str, Any] = {
             "id": context.print.id,
             "filename": context.print.filename,
-            "started_at": context.print.started_at,
-            "ended_at": context.print.ended_at,
+            "started_at": printStart,
+            "ended_at": printEnd,
         } 
-          
-        data: Dict[str, Any] = {
-            "event": "PrintFailure",
+
+        event: Dict[str, Any] = {
+            "type": "PrintFailure",
             "is_warning": context.is_warning,
             "print_paused": context.print_paused,
+        }
+          
+        data: Dict[str, Any] = {
+            "event": event,
             "printer": printer,
-            "print": print,
+            "print": printJob,
             "img_url": context.img_url,
         }
           
@@ -89,29 +99,40 @@ class WebhookNotificationPlugin(BaseNotificationPlugin):
         )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
-
+        
         webhook_URL = self.get_webhook_URL_from_config(context.config)
         if not webhook_URL:
             return
 
+        event: Dict[str, Any] = {
+            "type": context.notification_type,
+        }
+        
         printer: Dict[str, Any] = {
             "id": context.printer.id,
             "name": context.printer.name,
-        } 
-        
-        print: Dict[str, Any] = {
-            "id": context.print.id,
-            "filename": context.print.filename,
-            "started_at": context.print.started_at,
-            "ended_at": context.print.ended_at,
-        } 
-          
-        data: Dict[str, Any] = {
-            "event": context.notification_type,
-            "printer": printer,
-            "print": print,
-            "img_url": context.img_url
         }
+
+        data: Dict[str, Any] = {
+            "event": event,
+            "printer": printer,
+        }
+        
+        if context.print is not None:
+            printStart = ""
+            if context.print.started_at is not None:  printStart = context.print.started_at.timestamp()
+            printEnd = ""
+            if context.print.ended_at is not None: printEnd = context.print.ended_at.timestamp()
+  
+            printJob: Dict[str, Any] = {
+                "id": context.print.id,
+                "filename": context.print.filename,
+                "started_at": printStart,
+                "ended_at": printEnd,
+            }
+          
+            data["print"] = printJob
+            data["img_url"] = context.img_url
           
         self.execute_webhook(
             url=webhook_URL,

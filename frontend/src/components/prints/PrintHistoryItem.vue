@@ -17,13 +17,11 @@
           <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
           <span v-else>Printing...</span>
         </div>
-        <div
-          v-if="print.reviewNeeded || print.focusedFeedbackNeeded"
-          class="info feedback-info"
-          :class="{ focused: print.focusedFeedbackNeeded }"
-        >
-          <span v-if="print.reviewNeeded">Review needed</span>
-          <span v-else>Focused feedback needed</span>
+        <div v-if="print.need_alert_overwrite" class="info feedback-info">
+          <span>Review Needed</span>
+        </div>
+        <div v-if="print.need_print_shot_feedback" class="info feedback-info focused">
+          <span>Focused-Review Needed</span>
         </div>
       </div>
     </div>

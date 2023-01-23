@@ -173,7 +173,7 @@
                                 </b-button>
                               </div>
                               <transition name="bounce">
-                                <div v-if="focusedFeedbackEligible" class="pt-2">
+                                <div v-if="print.printShotFeedbackEligible" class="pt-2">
                                   <b-button
                                     variant="outline-primary"
                                     size="sm"
@@ -181,7 +181,7 @@
                                     target="_blank"
                                   >
                                     <i
-                                      v-if="focusedFeedbackCompleted"
+                                      v-if="!print.need_print_shot_feedback"
                                       class="fas fa-check mr-2"
                                     ></i>
                                     FOCUSED FEEDBACK
@@ -190,8 +190,8 @@
                               </transition>
 
                               <div class="about-feedback">
-                                <small v-if="focusedFeedbackEligible">
-                                  <span v-if="focusedFeedbackCompleted">
+                                <small v-if="print.printShotFeedbackEligible">
+                                  <span v-if="!print.need_print_shot_feedback">
                                     Thank you for completing the Focused Feedback. You have earned 2
                                     non-expirable AI Detection Hours. You can click the button again
                                     to change your feedback.
@@ -328,13 +328,6 @@ export default {
 
     isLoading() {
       return !!Object.values(this.data).filter((d) => d === undefined).length
-    },
-    focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
-    },
-
-    focusedFeedbackCompleted() {
-      return this.print.printshotfeedback_set.length > 0 && !this.print.focusedFeedbackNeeded
     },
 
     normalizedP() {

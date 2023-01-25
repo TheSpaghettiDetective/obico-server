@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 Follow this troubleshooting guide if the webcam is streaming at a very low frame rate (about 0.1 FPS, or 1 frame per 10 seconds), and the webcam stream mode is shown as *0.1 FPS*.
 
 :::info
-The failure detection is not impacted in any ways even if the webcam stream is stuck in 0.1 FPS. This is because the failure detection is designed to work best at 0.1 FPS.
+The failure detection is not impacted in any way even if the webcam stream is stuck in 0.1 FPS. This is because the failure detection is designed to work best at 0.1 FPS.
 :::
 
 :::tip
@@ -95,7 +95,7 @@ This step is relevant only to OctoPrint users. Obico for Klipper always uses the
 
 ## 4. Are you using an OS image that doesn't support streaming? {#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card}
 
-Not all Operating Systems that can run on a Rapsberry Pi has the libraies required for the webcamm streaming. Make sure you flashed the SD card using the supported OS images if you want to have a smooth webcam stream in Obico.
+Not all Operating Systems that can run on a Raspberry Pi has the libraries required for the webcam streaming. Make sure you flashed the SD card using the supported OS images if you want to have a smooth webcam stream in Obico.
 
 <Tabs
   defaultValue="octoprint"
@@ -132,7 +132,7 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
 
 - MainsailOS version 0.6.0 or newer.
 - FluiddPi version 1.17.0 or newer.
-- 32-bit Raspberry Pi OS veresion Buster or newer.
+- 32-bit Raspberry Pi OS version Buster or newer.
 
 #### OS images that will NOT support the webcam streaming {#os-images-that-will-not-support-the-webcam-streaming-1}
 

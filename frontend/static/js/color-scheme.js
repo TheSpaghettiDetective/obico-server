@@ -102,8 +102,16 @@ const colors = [
     values: {[Themes.Light]: '#66666613', [Themes.Dark]: '#FFFFFF13'},
   },
   {
+    name: 'hover-accent',
+    values: {[Themes.Light]: '#66666626', [Themes.Dark]: '#C9E0FA26'},
+  },
+  {
     name: 'divider',
     values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'},
+  },
+  {
+    name: 'divider-muted',
+    values: {[Themes.Light]: '#ABB6C266', [Themes.Dark]: '#6A7B8A66'},
   },
   {
     name: 'text-primary',

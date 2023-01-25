@@ -1,57 +1,59 @@
 <template>
   <div>
     <video-box
-      :videoUrl="videoUrl"
-      :posterUrl="print.poster_url"
-      @timeupdate="onTimeUpdate"
+      :video-url="videoUrl"
+      :poster-url="print.poster_url"
       :fluid="false"
       :autoplay="autoplay"
-      :fullscreenBtn="false"
+      :fullscreen-btn="false"
+      @timeupdate="onTimeUpdate"
     />
 
-    <div v-if="isPublic" :style="{opacity: normalizedP > 0.4 ? 1 : 0}" class="bg-warning alert-banner text-center">
+    <div
+      v-if="isPublic"
+      :style="{ opacity: normalizedP > 0.4 ? 1 : 0 }"
+      class="bg-warning alert-banner text-center"
+    >
       <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
     </div>
 
-    <gauge
-      :normalizedP="normalizedP"
-    />
+    <failure-detection-gauge :normalized-p="normalizedP" />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import {getNormalizedP} from '@src/lib/utils'
+import { getNormalizedP } from '@src/lib/utils'
 import VideoBox from '@src/components/VideoBox'
-import Gauge from '@src/components/Gauge'
+import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 
 export default {
   name: 'FullScreenPrintCard',
   components: {
     VideoBox,
-    Gauge
+    FailureDetectionGauge,
   },
   props: {
     print: {
       type: Object,
-      required: true
+      required: true,
     },
     videoUrl: {
       type: String,
-      required: true
+      required: true,
     },
     initialPosition: {
       type: Number,
-      default: () => 0
+      default: () => 0,
     },
     autoplay: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     isPublic: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -62,6 +64,11 @@ export default {
   computed: {
     normalizedP() {
       return getNormalizedP(this.predictions, this.currentPosition, this.isPublic)
+    },
+  },
+  mounted() {
+    if (this.print.prediction_json_url) {
+      this.fetchPredictions()
     }
   },
   methods: {
@@ -70,15 +77,10 @@ export default {
     },
 
     fetchPredictions() {
-      axios.get(this.print.prediction_json_url).then(response => {
+      axios.get(this.print.prediction_json_url).then((response) => {
         this.predictions = response.data
       })
-    }
-  },
-  mounted() {
-    if (this.print.prediction_json_url) {
-      this.fetchPredictions()
-    }
+    },
   },
 }
 </script>

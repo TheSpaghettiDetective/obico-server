@@ -9,7 +9,9 @@
       placeholder="Search"
       :value="value"
       @input="$emit('input', $event.target.value)"
-    >
+      @focus="$emit('focus')"
+      @blur="$emit('blur')"
+    />
   </div>
 </template>
 
@@ -20,7 +22,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
   },
 }

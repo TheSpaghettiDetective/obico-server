@@ -18,14 +18,23 @@ urlpatterns = [
     path('printers/share_token/<share_token>/', web_views.printer_shared, name='printer_shared'),
     re_path('^user_preferences/(?P<route>([^/]+/)*)$', web_views.user_preferences),
     path('unsubscribe_email/', web_views.unsubscribe_email),
+
+    # TODO: Delete both after making sure it's no longer used from mobile app
     path('prints/<int:pk>/cancel/', web_views.cancel_print),
     path('prints/<int:pk>/resume/', web_views.resume_print),
+    # TODO: Delete both when mobile app get rid of legacy Prints (Time-Lapses) webview:
     path('prints/', web_views.prints, name='prints'),
     path('prints/upload/', web_views.upload_print),
+    # TODO: Change this to `/prints/` for consistency when mobile app get rid of legacy Prints (Time-Lapses) webview:
+    path('print_history/', web_views.print_history, name='print_history'),
+
     path('prints/<int:pk>/', web_views.print),
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),
-    path('gcodes/', web_views.gcodes),
-    path('gcodes/upload/', web_views.upload_gcode_file,),
+
+    re_path('^g_code_folders/', web_views.g_code_folders),
+    re_path('^g_code_files/', web_views.g_code_files),
+    # Compatible with mobile app versions <= 1.73
+    path('gcodes/', web_views.g_code_folders),
     path('hc/', web_views.health_check,),
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
     path('slack_oauth_callback/', web_views.slack_oauth_callback, name='slack_oauth_callback'),
@@ -49,10 +58,4 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
-    path('mobile/user_preferences/', web_views.user_preferences),
-    path('mobile/prints/', web_views.prints),
-    path('mobile/gcodes/', web_views.gcodes, {"template_dir": "mobile"}),
-    path('mobile/gcodes/upload/', web_views.upload_gcode_file),
-    path('mobile/printers/<pk>/', web_views.edit_printer),
-    path('mobile/printers/<int:pk>/delete/', web_views.delete_printer),
 ]

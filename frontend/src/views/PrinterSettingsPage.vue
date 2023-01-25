@@ -1,6 +1,6 @@
 <template>
-  <layout>
-    <template v-slot:content>
+  <page-layout>
+    <template #content>
       <b-container>
         <b-row class="justify-content-center">
           <b-col lg="8">
@@ -12,46 +12,59 @@
                   <saving-animation :errors="errorMessages.name" :saving="saving.name">
                     <input
                       id="id_name"
+                      v-model="printer.name"
                       type="text"
                       name="name"
                       maxlength="200"
                       placeholder=""
                       class="form-control field_required"
                       required="required"
-                      v-model="printer.name"
-                    >
+                    />
                   </saving-animation>
                 </div>
                 <!-- Potential failure section -->
                 <div class="failure-notification">
                   <div class="form-group mt-4 mb-4">
                     <div class="form-label text-muted">When a potential failure is detected:</div>
-                    <saving-animation :errors="errorMessages.action_on_failure_NONE" :saving="saving.action_on_failure_NONE">
+                    <saving-animation
+                      :errors="errorMessages.action_on_failure_NONE"
+                      :saving="saving.action_on_failure_NONE"
+                    >
                       <div class="custom-control custom-radio mt-1 radio">
                         <input
+                          id="id_action_on_failure_0"
+                          v-model="printer.action_on_failure"
                           type="radio"
                           name="action_on_failure"
                           class="custom-control-input field_required"
-                          id="id_action_on_failure_0"
                           value="NONE"
-                          v-model="printer.action_on_failure"
                           @change="updateSetting('action_on_failure')"
+                        />
+                        <label class="custom-control-label" for="id_action_on_failure_0"
+                          >Just notify me</label
                         >
-                        <label class="custom-control-label" for="id_action_on_failure_0">Just notify me</label>
                       </div>
                     </saving-animation>
-                    <saving-animation :errors="errorMessages.action_on_failure_PAUSE" :saving="saving.action_on_failure_PAUSE">
-                      <div class="custom-control custom-radio mt-1 radio" id="action_on_failure_PAUSE">
+                    <saving-animation
+                      :errors="errorMessages.action_on_failure_PAUSE"
+                      :saving="saving.action_on_failure_PAUSE"
+                    >
+                      <div
+                        id="action_on_failure_PAUSE"
+                        class="custom-control custom-radio mt-1 radio"
+                      >
                         <input
+                          id="id_action_on_failure_1"
+                          v-model="printer.action_on_failure"
                           type="radio"
                           name="action_on_failure"
                           class="custom-control-input field_required"
-                          id="id_action_on_failure_1"
                           value="PAUSE"
-                          v-model="printer.action_on_failure"
                           @change="updateSetting('action_on_failure')"
+                        />
+                        <label class="custom-control-label" for="id_action_on_failure_1"
+                          >Pause the printer and notify me</label
                         >
-                        <label class="custom-control-label" for="id_action_on_failure_1">Pause the printer and notify me</label>
                       </div>
                     </saving-animation>
                   </div>
@@ -59,122 +72,181 @@
               </section>
               <section class="mt-5">
                 <h2 class="section-title">Failure Detection</h2>
-                  <div class="card-body p-0 pt-3">
-                    <p class="text-warning">
-                      <i class="fas fa-exclamation-triangle"></i>
-                      If you are not sure about the settings below, leave the default values to minimize surprises.
-                    </p>
+                <div class="card-body p-0 pt-3">
+                  <p class="text-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    If you are not sure about the settings below, leave the default values to
+                    minimize surprises.
+                  </p>
 
-                    <!-- Advanced settngs: when printer is paused -->
-                    <div class="form-group mt-4">
-                      <div class="form-label text-muted">When print is paused,</div>
-                      <saving-animation :errors="errorMessages.tools_off_on_pause" :saving="saving.tools_off_on_pause">
-                        <div class="custom-control custom-checkbox mt-2 checkbox">
+                  <!-- Advanced settngs: when printer is paused -->
+                  <div class="form-group mt-4">
+                    <div class="form-label text-muted">When print is paused,</div>
+                    <saving-animation
+                      :errors="errorMessages.tools_off_on_pause"
+                      :saving="saving.tools_off_on_pause"
+                    >
+                      <div class="custom-control custom-checkbox mt-2 checkbox">
+                        <input
+                          id="id_tools_off_on_pause"
+                          v-model="printer.tools_off_on_pause"
+                          type="checkbox"
+                          name="tools_off_on_pause"
+                          class="custom-control-input"
+                          @change="updateSetting('tools_off_on_pause')"
+                        />
+                        <label class="custom-control-label" for="id_tools_off_on_pause">
+                          Turn off hotend heater(s)
+                        </label>
+                      </div>
+                    </saving-animation>
+                    <saving-animation
+                      :errors="errorMessages.bed_off_on_pause"
+                      :saving="saving.bed_off_on_pause"
+                    >
+                      <div class="custom-control custom-checkbox mt-2 checkbox">
+                        <input
+                          id="id_bed_off_on_pause"
+                          v-model="printer.bed_off_on_pause"
+                          type="checkbox"
+                          name="bed_off_on_pause"
+                          class="custom-control-input"
+                          @change="updateSetting('bed_off_on_pause')"
+                        />
+                        <label class="custom-control-label" for="id_bed_off_on_pause">
+                          Turn off bed heater
+                        </label>
+                      </div>
+                    </saving-animation>
+
+                    <saving-animation
+                      :errors="errorMessages.retract_on_pause"
+                      :saving="saving.retract_on_pause"
+                      class="mobile-full-width"
+                    >
+                      <div class="form-inline my-1 checkbox-with-input">
+                        <div class="custom-control custom-checkbox">
                           <input
+                            id="retract-checkbox"
+                            v-model="retractFilamentByEnabled"
                             type="checkbox"
-                            name="tools_off_on_pause"
                             class="custom-control-input"
-                            id="id_tools_off_on_pause"
-                            v-model="printer.tools_off_on_pause"
-                            @change="updateSetting('tools_off_on_pause')"
-                          >
-                          <label class="custom-control-label" for="id_tools_off_on_pause">
-                            Turn off hotend heater(s)
-                          </label>
-                        </div>
-                      </saving-animation>
-                      <saving-animation :errors="errorMessages.bed_off_on_pause" :saving="saving.bed_off_on_pause">
-                        <div class="custom-control custom-checkbox mt-2 checkbox">
-                          <input
-                            type="checkbox"
-                            name="bed_off_on_pause"
-                            class="custom-control-input"
-                            id="id_bed_off_on_pause"
-                            v-model="printer.bed_off_on_pause"
-                            @change="updateSetting('bed_off_on_pause')"
-                          >
-                          <label class="custom-control-label" for="id_bed_off_on_pause">
-                            Turn off bed heater
-                          </label>
-                        </div>
-                      </saving-animation>
-
-                      <saving-animation :errors="errorMessages.retract_on_pause" :saving="saving.retract_on_pause" class="mobile-full-width">
-                        <div class="form-inline my-1 checkbox-with-input">
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="retract-checkbox" v-model="retractFilamentByEnabled">
-                            <label class="custom-control-label" for="retract-checkbox">Retract filament by</label>
-                          </div>
-                          <number-input
-                            v-model="retractOnPause"
-                            :step=".5"
-                            :disable="!retractFilamentByEnabled"
-                            class="wrappable-field"
-                          ></number-input>
-                        </div>
-                      </saving-animation>
-
-                      <saving-animation :errors="errorMessages.lift_z_on_pause" :saving="saving.lift_z_on_pause" class="mobile-full-width">
-                        <div class="form-inline my-1 checkbox-with-input">
-                          <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="lift-z-checkbox" v-model="liftExtruderByEnabled">
-                            <label class="custom-control-label" for="lift-z-checkbox">Lift extruder along Z axis by</label>
-                          </div>
-                          <number-input
-                            v-model="liftExtruderBy"
-                            :step=".5"
-                            :disable="!liftExtruderByEnabled"
-                            class="wrappable-field"
-                          ></number-input>
-                        </div>
-                      </saving-animation>
-                    </div>
-
-                    <!-- Advanced settngs: sensitivity slider -->
-                    <div class="form-group sensitivity my-4">
-                      <div class="form-label text-muted">AI failure detection sensitivity</div>
-                      <saving-animation :errors="errorMessages.detective_sensitivity" :saving="saving.detective_sensitivity">
-                        <div class="my-2 sensitivity-slider">
-                          <vue-slider
-                            v-model="detectiveSensitivity"
-                            :lazy="true"
-                            :min="0.8"
-                            :max="1.2"
-                            :interval="0.05"
-                            :tooltipFormatter="sensitivityTooltipFormatter"
                           />
+                          <label class="custom-control-label" for="retract-checkbox"
+                            >Retract filament by</label
+                          >
                         </div>
-                      </saving-animation>
-                      <div v-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Low'">
-                        Low - I don't want a lot of false alarms. Only alert me when you are absolutely sure.
+                        <number-input
+                          v-model="retractOnPause"
+                          :step="0.5"
+                          :disable="!retractFilamentByEnabled"
+                          class="wrappable-field"
+                        ></number-input>
                       </div>
-                      <div v-else-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Medium'">
-                        Medium - A few false alarms won't bother me. But some well-disguised spaghetti will be missed.
+                    </saving-animation>
+
+                    <saving-animation
+                      :errors="errorMessages.lift_z_on_pause"
+                      :saving="saving.lift_z_on_pause"
+                      class="mobile-full-width"
+                    >
+                      <div class="form-inline my-1 checkbox-with-input">
+                        <div class="custom-control custom-checkbox">
+                          <input
+                            id="lift-z-checkbox"
+                            v-model="liftExtruderByEnabled"
+                            type="checkbox"
+                            class="custom-control-input"
+                          />
+                          <label class="custom-control-label" for="lift-z-checkbox"
+                            >Lift extruder along Z axis by</label
+                          >
+                        </div>
+                        <number-input
+                          v-model="liftExtruderBy"
+                          :step="0.5"
+                          :disable="!liftExtruderByEnabled"
+                          class="wrappable-field"
+                        ></number-input>
                       </div>
-                      <div v-else>
-                        High - Hit me with all the false alarms. I want to catch as many failures as possible.
+                    </saving-animation>
+                  </div>
+
+                  <!-- Advanced settngs: sensitivity slider -->
+                  <div class="form-group sensitivity my-4">
+                    <div class="form-label text-muted">AI failure detection sensitivity</div>
+                    <saving-animation
+                      :errors="errorMessages.detective_sensitivity"
+                      :saving="saving.detective_sensitivity"
+                    >
+                      <div class="my-2 sensitivity-slider">
+                        <vue-slider
+                          v-model="detectiveSensitivity"
+                          :lazy="true"
+                          :min="0.8"
+                          :max="1.2"
+                          :interval="0.05"
+                          :tooltip-formatter="sensitivityTooltipFormatter"
+                        />
                       </div>
+                    </saving-animation>
+                    <div
+                      v-if="sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Low'"
+                    >
+                      Low - I don't want a lot of false alarms. Only alert me when you are
+                      absolutely sure.
+                    </div>
+                    <div
+                      v-else-if="
+                        sensitivityTooltipFormatter(printer.detective_sensitivity) === 'Medium'
+                      "
+                    >
+                      Medium - A few false alarms won't bother me. But some well-disguised spaghetti
+                      will be missed.
+                    </div>
+                    <div v-else>
+                      High - Hit me with all the false alarms. I want to catch as many failures as
+                      possible.
                     </div>
                   </div>
+                </div>
               </section>
               <section class="mt-5">
                 <h2 class="section-title">Time-lapse</h2>
-                <p v-if="!(timelapseOnFinishEnabled && timelapseOnCancelEnabled)" class="text-warning">
+                <p
+                  v-if="!(timelapseOnFinishEnabled && timelapseOnCancelEnabled)"
+                  class="text-warning"
+                >
                   <i class="fas fa-exclamation-triangle"></i>
-                  Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">help us get better while earning AI Detection Hours for yourself</a>.
+                  Focused Feedback won't be available when time-lapse recording is turned off. You
+                  won't be able to
+                  <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
+                    >help us get better while earning AI Detection Hours for yourself</a
+                  >.
                 </p>
                 <div class="form-group mt-4">
-                  <saving-animation :errors="errorMessages.min_timelapse_secs_on_finish" :saving="saving.min_timelapse_secs_on_finish" class="mobile-full-width">
+                  <saving-animation
+                    :errors="errorMessages.min_timelapse_secs_on_finish"
+                    :saving="saving.min_timelapse_secs_on_finish"
+                    class="mobile-full-width"
+                  >
                     <div class="form-inline my-1 checkbox-with-input">
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="timelapseOnFinishEnabled" v-model="timelapseOnFinishEnabled">
-                        <label class="custom-control-label" for="timelapseOnFinishEnabled">Record time-lapse when a print finishes successfully.</label>
+                        <input
+                          id="timelapseOnFinishEnabled"
+                          v-model="timelapseOnFinishEnabled"
+                          type="checkbox"
+                          class="custom-control-input"
+                        />
+                        <label class="custom-control-label" for="timelapseOnFinishEnabled"
+                          >Record time-lapse when a print finishes successfully.</label
+                        >
                       </div>
                     </div>
                     <div
                       v-if="timelapseOnFinishEnabled"
                       class="form-inline my-1 checkbox-with-input"
-                      >
+                    >
                       <div class="custom-control custom-checkbox">
                         Skip if the print is finished in less than
                       </div>
@@ -186,17 +258,28 @@
                       ></number-input>
                     </div>
                   </saving-animation>
-                  <saving-animation :errors="errorMessages.min_timelapse_secs_on_cancel" :saving="saving.min_timelapse_secs_on_cancel" class="mobile-full-width">
+                  <saving-animation
+                    :errors="errorMessages.min_timelapse_secs_on_cancel"
+                    :saving="saving.min_timelapse_secs_on_cancel"
+                    class="mobile-full-width"
+                  >
                     <div class="form-inline mt-3 mb-1 checkbox-with-input">
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="timelapseOnCancelEnabled" v-model="timelapseOnCancelEnabled">
-                        <label class="custom-control-label" for="timelapseOnCancelEnabled">Record time-lapse when a print is cancelled.</label>
+                        <input
+                          id="timelapseOnCancelEnabled"
+                          v-model="timelapseOnCancelEnabled"
+                          type="checkbox"
+                          class="custom-control-input"
+                        />
+                        <label class="custom-control-label" for="timelapseOnCancelEnabled"
+                          >Record time-lapse when a print is cancelled.</label
+                        >
                       </div>
                     </div>
                     <div
                       v-if="timelapseOnCancelEnabled"
                       class="form-inline my-1 checkbox-with-input"
-                      >
+                    >
                       <div class="custom-control custom-checkbox">
                         Skip if the print is cancelled in less than
                       </div>
@@ -213,31 +296,34 @@
               <section class="danger mt-5">
                 <h2 class="section-title">Danger Zone</h2>
                 <div class="mt-4">
-                  <a
-                    class="btn btn-outline-secondary"
-                    :href="printerWizardUrl">
-                        Re-Link Printer
+                  <a class="btn btn-outline-secondary" :href="printerWizardUrl">
+                    Re-Link Printer
                   </a>
                   <div class="text-muted mt-1">
-                    <small>If your printer is always showing as "offline", and you have gone through <a href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">all the trouble-shooting steps</a>, you can try to re-link printer as the last resort.</small>
+                    <small
+                      >If your printer is always showing as "offline", and you have gone through
+                      <a
+                        href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/"
+                        >all the trouble-shooting steps</a
+                      >, you can try to re-link printer as the last resort.</small
+                    >
                   </div>
                 </div>
                 <div class="mt-4">
-                  <button
-                    class="btn btn-outline-warning"
-                    @click="archivePrinter"
-                  >
+                  <button class="btn btn-outline-warning" @click="archivePrinter">
                     Archive Printer
                   </button>
                   <div class="text-muted mt-1">
-                    <small>Archived printers are not counted toward your subscription plan. You won't see them in the app either. Go to <a href="/ent/printers/archived/">this page</a> to find all archived printers and/or un-archive them.</small>
+                    <small
+                      >Archived printers are not counted toward your subscription plan. You won't
+                      see them in the app either. Go to
+                      <a href="/ent/printers/archived/">this page</a> to find all archived printers
+                      and/or un-archive them.</small
+                    >
                   </div>
                 </div>
                 <div class="mt-4">
-                  <button
-                    class="btn btn-outline-danger"
-                    @click="deletePrinter"
-                  >
+                  <button class="btn btn-outline-danger" @click="deletePrinter">
                     Delete Printer
                   </button>
                   <div class="text-muted mt-1">
@@ -253,7 +339,6 @@
         </b-row>
       </b-container>
 
-
       <!-- <div class="row justify-content-center">
         <div class="col-sm-11 col-md-10 col-lg-8">
 
@@ -261,7 +346,7 @@
         </div>
       </div> -->
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -273,13 +358,13 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import urls from '@config/server-urls'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NumberInput from '@src/components/NumberInput.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 
 export default {
   components: {
     SavingAnimation,
     NumberInput,
-    Layout,
+    PageLayout,
     VueSlider,
   },
 
@@ -289,37 +374,38 @@ export default {
       printerId: '',
       saving: {},
       errorMessages: {},
-      delayedSubmit: { // Make pause before sending new value to API
-        'name': {
-          'delay': 1000,
-          'timeoutId': null
+      delayedSubmit: {
+        // Make pause before sending new value to API
+        name: {
+          delay: 1000,
+          timeoutId: null,
         },
-        'retract_on_pause': {
-          'delay': 1000,
-          'timeoutId': null
+        retract_on_pause: {
+          delay: 1000,
+          timeoutId: null,
         },
-        'lift_z_on_pause': {
-          'delay': 1000,
-          'timeoutId': null
+        lift_z_on_pause: {
+          delay: 1000,
+          timeoutId: null,
         },
-        'min_timelapse_secs_on_finish': {
-          'delay': 1000,
-          'timeoutId': null
+        min_timelapse_secs_on_finish: {
+          delay: 1000,
+          timeoutId: null,
         },
-        'min_timelapse_secs_on_cancel': {
-          'delay': 1000,
-          'timeoutId': null
+        min_timelapse_secs_on_cancel: {
+          delay: 1000,
+          timeoutId: null,
         },
-      }
+      },
     }
   },
 
   computed: {
     retractFilamentByEnabled: {
-      get(){
+      get() {
         return this.printer.retract_on_pause > 0
       },
-      set(newValue){
+      set(newValue) {
         if (newValue) {
           this.printer.retract_on_pause = 6.5 // Default retraction value
         } else {
@@ -335,13 +421,13 @@ export default {
         if (this.printer) {
           this.printer.retract_on_pause = newValue
         }
-      }
+      },
     },
     liftExtruderByEnabled: {
-      get(){
+      get() {
         return this.printer.lift_z_on_pause > 0
       },
-      set(newValue){
+      set(newValue) {
         if (newValue) {
           this.printer.lift_z_on_pause = 2.5 // Default z-lift value
         } else {
@@ -357,13 +443,13 @@ export default {
         if (this.printer) {
           this.printer.lift_z_on_pause = newValue
         }
-      }
+      },
     },
     timelapseOnFinishEnabled: {
-      get(){
+      get() {
         return this.printer.min_timelapse_secs_on_finish >= 0
       },
-      set(newValue){
+      set(newValue) {
         if (newValue) {
           this.printer.min_timelapse_secs_on_finish = 600
         } else {
@@ -379,13 +465,13 @@ export default {
         if (this.printer) {
           this.printer.min_timelapse_secs_on_finish = newValue * 60
         }
-      }
+      },
     },
     timelapseOnCancelEnabled: {
-      get(){
+      get() {
         return this.printer.min_timelapse_secs_on_cancel >= 0
       },
-      set(newValue){
+      set(newValue) {
         if (newValue) {
           this.printer.min_timelapse_secs_on_cancel = 300
         } else {
@@ -401,18 +487,18 @@ export default {
         if (this.printer) {
           this.printer.min_timelapse_secs_on_cancel = newValue * 60
         }
-      }
+      },
     },
     printerWizardUrl() {
       return urls.printerWizard(this.printer.id)
     },
     printerName: {
-      get: function() {
+      get: function () {
         return this.printer ? this.printer.name : undefined
       },
-      set: function(newValue) {
+      set: function (newValue) {
         this.printer.name = newValue
-      }
+      },
     },
     detectiveSensitivity: {
       get() {
@@ -433,22 +519,22 @@ export default {
         this.updateSetting('name')
       }
     },
-    retractOnPause: function(newValue, oldValue) {
+    retractOnPause: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.changeRetractOnPause(newValue)
       }
     },
-    liftExtruderBy: function(newValue, oldValue) {
+    liftExtruderBy: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.changeLiftExtruderBy(newValue)
       }
     },
-    minTimelapseMinutesOnFinish: function(newValue, oldValue) {
+    minTimelapseMinutesOnFinish: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('min_timelapse_secs_on_finish')
       }
     },
-    minTimelapseMinutesOnCancel: function(newValue, oldValue) {
+    minTimelapseMinutesOnCancel: function (newValue, oldValue) {
       if (oldValue !== undefined) {
         this.updateSetting('min_timelapse_secs_on_cancel')
       }
@@ -465,11 +551,9 @@ export default {
      * Get actual printer settings
      */
     fetchPrinter() {
-      return axios
-        .get(urls.printer(this.printerId))
-        .then(response => {
-          this.printer = normalizedPrinter(response.data, this.printer)
-        })
+      return axios.get(urls.printer(this.printerId)).then((response) => {
+        this.printer = normalizedPrinter(response.data, this.printer)
+      })
     },
 
     /**
@@ -479,16 +563,15 @@ export default {
      * @param {String} settingsItem
      */
     patchPrinter(propName, propValue) {
-
       const inputElem = this.getSettingsItemInput(propName, propValue)
       this.setSavingStatus(inputElem, true)
 
       // Make request to API
       return axios
         .patch(urls.printer(this.printerId), {
-          [propName]: propValue
+          [propName]: propValue,
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             if (err.response.data.non_field_errors) {
               this.errorAlert(err.response.data.non_field_errors)
@@ -535,7 +618,7 @@ export default {
       this.patchPrinter(settingsItem, this.printer[settingsItem])
     },
 
-    sensitivityTooltipFormatter: function(value) {
+    sensitivityTooltipFormatter: function (value) {
       if (value < 0.95) {
         return 'Low'
       }
@@ -551,14 +634,12 @@ export default {
         text: `Delete ${this.printer.name} printer? This action can not be undone.`,
         showCancelButton: true,
         confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-      }).then(userAction => {
+        cancelButtonText: 'No',
+      }).then((userAction) => {
         if (userAction.isConfirmed) {
-          axios
-            .delete(urls.printer(this.printerId) + '?with_archived=true')
-            .then(() => {
-              window.location.href = `/printers/`
-            })
+          axios.delete(urls.printer(this.printerId) + '?with_archived=true').then(() => {
+            window.location.href = `/printers/`
+          })
         }
       })
     },
@@ -566,18 +647,15 @@ export default {
     archivePrinter() {
       this.$swal.Confirm.fire().then((userAction) => {
         if (userAction.isConfirmed) {
-          axios
-            .post(urls.printerAction(this.printerId, '/archive/'))
-            .then(() => {
-              this.$swal.Prompt.fire({
-                  title: 'Printer archived',
-                  html: `<p>${this.printer.name} is archived.</p><p>You can find it on <a href="/ent/printers/archived/">this page</a> and un-archive it.</p>`,
-                  confirmButtonText: 'Go to the printer page',
-                })
-                .then(() => {
-                  window.location.href = '/printers/'
-                })
+          axios.post(urls.printerAction(this.printerId, '/archive/')).then(() => {
+            this.$swal.Prompt.fire({
+              title: 'Printer archived',
+              html: `<p>${this.printer.name} is archived.</p><p>You can find it on <a href="/ent/printers/archived/">this page</a> and un-archive it.</p>`,
+              confirmButtonText: 'Go to the printer page',
+            }).then(() => {
+              window.location.href = '/printers/'
             })
+          })
         }
       })
     },
@@ -587,12 +665,12 @@ export default {
      * @param {String} settingsItem
      * @returns {Object, null}
      */
-    getSettingsItemInput: function(settingsItem, value = '') {
+    getSettingsItemInput: function (settingsItem, value = '') {
       switch (settingsItem) {
-      case 'action_on_failure':
-        return `${settingsItem}_${value}`
-      default:
-        return `${settingsItem}`
+        case 'action_on_failure':
+          return `${settingsItem}_${value}`
+        default:
+          return `${settingsItem}`
       }
     },
 
@@ -617,8 +695,8 @@ export default {
     changeLiftExtruderBy(value) {
       this.printer.lift_z_on_pause = value
       this.updateSetting('lift_z_on_pause')
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -651,6 +729,5 @@ section.danger
 
 .form-inline
   .wrappable-field
-    padding-left: 1.5rem
-
+    margin-left: 1.5rem
 </style>

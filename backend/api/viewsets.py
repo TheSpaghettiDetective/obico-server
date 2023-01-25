@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
@@ -25,16 +26,17 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
 from .serializers import (
-    UserSerializer, GCodeFileSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
+    UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
+from lib.file_storage import save_file_obj
 from .printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
@@ -133,16 +135,12 @@ class PrinterViewSet(
     @action(detail=True, methods=['post', 'get'])
     def acknowledge_alert(self, request, pk=None):
         printer = get_printer_or_404(pk, request)
-        printer.acknowledge_alert(request.GET.get('alert_overwrite'))
+        if not printer.current_print:
+            raise Http404('Not currently printing')
 
+        printer.current_print.alert_acknowledged(request.GET.get('alert_overwrite'))
         return self.send_command_response(printer, True)
 
-    @action(detail=True, methods=['post'])
-    def send_command(self, request, pk=None):
-        printer = get_printer_or_404(pk, request)
-        printer.send_octoprint_command(request.data['cmd'], request.data['args'])
-
-        return self.send_command_response(printer, True)
 
     def partial_update(self, request, pk=None):
         self.get_queryset().filter(pk=pk).update(**request.data)
@@ -174,7 +172,9 @@ class PrintViewSet(
         return Print.objects.filter(user=self.request.user)
 
     def list(self, request):
-        queryset = self.get_queryset().prefetch_related('printshotfeedback_set').filter(video_url__isnull=False)
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
+            ).select_related('printer', 'g_code_file',
+            ).filter(uploaded_at__isnull=True)
         filter = request.GET.get('filter', 'none')
         if filter == 'cancelled':
             queryset = queryset.filter(cancelled_at__isnull=False)
@@ -263,37 +263,133 @@ class PrintViewSet(
         )
 
 
-class GCodeFileViewSet(
-    # no create, no update
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet
-):
+class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    serializer_class = GCodeFileSerializer
     pagination_class = StandardResultsSetPagination
 
-    def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user).order_by('-created_at')
-
-    # TODO: remove this override and go back to DRF's standard pagination impl when we no longer need to support the legacy format.
-    def list(self, request, *args, **kwargs):
-        page_num = request.GET.get('page')
-        if page_num:
-            queryset = self.filter_queryset(self.get_queryset())
-
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return GCodeFolderSerializer
         else:
-            results = self.get_queryset()
-            return Response(self.serializer_class(results, many=True).data)
+            return GCodeFolderDeSerializer
+
+    def get_queryset(self):
+        return GCodeFolder.objects.filter(user=self.request.user,)
+
+    def list(self, request):
+        qs = self.get_queryset().select_related(
+            'parent_folder')
+
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+        elif sorting == 'name_asc':
+            qs = qs.order_by('name')
+        elif sorting == 'name_desc':
+            qs = qs.order_by('-name')
+
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
+            if parent_folder == 'null' or parent_folder == '':
+                qs = qs.filter(parent_folder__isnull=True)
+            else:
+                qs = qs.filter(parent_folder_id=int(parent_folder))
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
+
+
+class GCodeFileViewSet(viewsets.ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    pagination_class = StandardResultsSetPagination
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return GCodeFileSerializer
+        else:
+            return GCodeFileDeSerializer
+
+    def get_queryset(self):
+        return GCodeFile.objects.filter(user=self.request.user)
+
+    def list(self, request):
+        qs = self.get_queryset().select_related(
+            'parent_folder').prefetch_related(
+            'print_set__printer')
+
+        sorting = request.GET.get('sorting', 'created_at_desc')
+        if sorting == 'created_at_asc':
+            qs = qs.order_by('id')
+        elif sorting == 'created_at_desc':
+            qs = qs.order_by('-id')
+        elif sorting == 'num_bytes_asc':
+            qs = qs.order_by('num_bytes')
+        elif sorting == 'num_bytes_desc':
+            qs = qs.order_by('-num_bytes')
+        elif sorting == 'filename_asc':
+            qs = qs.order_by('filename')
+        elif sorting == 'filename_desc':
+            qs = qs.order_by('-filename')
+
+        q = request.GET.get('q')
+        if q:
+            qs = qs.filter(safe_filename__icontains=q)
+
+        if 'parent_folder' in request.GET:
+            parent_folder = request.GET.get('parent_folder')
+            if parent_folder == 'null' or parent_folder == '':
+                qs = qs.filter(parent_folder__isnull=True)
+            else:
+                qs = qs.filter(parent_folder_id=int(parent_folder))
+
+        if 'safe_filename' in request.GET and 'agent_signature' in request.GET:
+            qs = qs.filter(agent_signature=request.GET.get('agent_signature'),
+                           safe_filename=request.GET.get('safe_filename'))
+
+        resident_printer = request.GET.get('resident_printer')
+        if resident_printer:
+            qs = qs.filter(resident_printer=resident_printer)
+        else:
+            qs = qs.filter(resident_printer__isnull=True)
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        gcode_file = GCodeFile.objects.create(**validated_data)
+
+        if 'file' in request.FILES:
+            file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
+            num_bytes=request.FILES['file'].size
+            if num_bytes > file_size_limit:
+                return Response({'error': 'File size too large'}, status=413)
+
+            _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
+            gcode_file.url = ext_url
+            gcode_file.num_bytes = num_bytes
+            gcode_file.save()
+
+        return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)
 
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
@@ -572,7 +668,6 @@ class NotificationSettingsViewSet(
 
 class PrinterEventViewSet(
     mixins.ListModelMixin,
-    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):

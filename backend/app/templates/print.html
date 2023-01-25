@@ -1,5 +1,5 @@
 {% extends "vue_layout.html" %}
 
 {% block vue_content %}
-  <print-page :config='{"printId": {{ print.id }}}'></print-page>
+  <print-page :print-id='{{ print.id }}'></print-page>
 {% endblock vue_content%}

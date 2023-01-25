@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from rest_framework.relations import PrimaryKeyRelatedField
 from django.conf import settings
+import re
 from django.utils.timezone import now
 from pushbullet import Pushbullet, PushbulletError
 import phonenumbers
@@ -9,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent,
+    NotificationSetting, PrinterEvent, GCodeFolder
 )
 
 from notifications.handlers import handler
@@ -53,36 +55,7 @@ class PrintShotFeedbackSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class PrintSerializer(serializers.ModelSerializer):
-    printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
-    prediction_json_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Print
-        fields = ('id', 'printer', 'filename', 'started_at', 'finished_at',
-                  'cancelled_at', 'uploaded_at', 'alerted_at',
-                  'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
-                  'video_url', 'tagged_video_url', 'poster_url',
-                  'prediction_json_url', 'alert_overwrite',
-                  'access_consented_at', 'printshotfeedback_set', 'video_archived_at')
-        read_only_fields = (
-            'id', 'printer', 'filename', 'started_at', 'finished_at',
-            'cancelled_at', 'uploaded_at', 'alerted_at',
-            'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
-            'video_url', 'tagged_video_url', 'poster_url',
-            'prediction_json_url',
-            'printshotfeedback_set', 'video_archived_at')
-
-    def get_prediction_json_url(self, obj: Print) -> str:
-        return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
-
-
-class PrinterSerializer(serializers.ModelSerializer):
-    pic = serializers.DictField(read_only=True)
-    status = serializers.DictField(read_only=True)
-    settings = serializers.DictField(read_only=True)
-    normalized_p = serializers.SerializerMethodField()
-    current_print = PrintSerializer(read_only=True)
+class BasePrinterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Printer
@@ -91,26 +64,142 @@ class PrinterSerializer(serializers.ModelSerializer):
                   'tools_off_on_pause', 'bed_off_on_pause', 'retract_on_pause',
                   'lift_z_on_pause', 'detective_sensitivity',
                   'min_timelapse_secs_on_finish', 'min_timelapse_secs_on_cancel',
-                  'pic', 'status', 'settings', 'current_print',
-                  'normalized_p', 'auth_token', 'archived_at', 'agent_name', 'agent_version',)
+                  'auth_token', 'archived_at', 'agent_name', 'agent_version',)
 
-        read_only_fields = ('created_at',  'not_watching_reason', 'pic', 'status',
-        'settings', 'current_print', 'normalized_p', 'auth_token', 'archived_at',)
+        read_only_fields = ('created_at', 'not_watching_reason', 'auth_token', 'archived_at',)
+
+
+class BaseGCodeFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GCodeFile
+        fields = '__all__'
+        read_only_fields = ('user', 'resident_printer')
+
+
+class BasePrintSerializer(serializers.ModelSerializer):
+    ended_at = serializers.DateTimeField(read_only=True)
+    printer = BasePrinterSerializer(many=False, read_only=True)
+    g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Print
+        fields = ('id', 'printer', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
+                  'cancelled_at', 'uploaded_at', 'alerted_at',
+                  'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
+                  'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
+                  'access_consented_at', 'video_archived_at')
+        read_only_fields = (
+            'id', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
+            'cancelled_at', 'uploaded_at', 'alerted_at',
+            'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
+            'video_url', 'tagged_video_url', 'poster_url',
+            'video_archived_at')
+
+    def get_prediction_json_url(self, obj: Print) -> str:
+        return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
+
+
+class PrintSerializer(BasePrintSerializer):
+    printshotfeedback_set = PrintShotFeedbackSerializer(many=True, read_only=True)
+    prediction_json_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Print
+        fields = BasePrintSerializer.Meta.fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
+        read_only_fields = BasePrintSerializer.Meta.read_only_fields + ('printer', 'prediction_json_url', 'printshotfeedback_set',)
+
+    def get_prediction_json_url(self, obj: Print) -> str:
+        return reverse('Print-prediction-json', kwargs={'pk': obj.pk})
+
+
+class PrinterSerializer(BasePrinterSerializer):
+    pic = serializers.DictField(read_only=True)
+    status = serializers.DictField(read_only=True)
+    settings = serializers.DictField(read_only=True)
+    normalized_p = serializers.SerializerMethodField()
+    current_print = BasePrintSerializer(read_only=True)
+
+    class Meta:
+        model = Printer
+        fields = BasePrinterSerializer.Meta.fields + ('pic', 'status', 'settings', 'current_print','normalized_p',)
+        read_only_fields = BasePrinterSerializer.Meta.read_only_fields + ('pic', 'status', 'settings', 'current_print', 'normalized_p',)
 
     def get_normalized_p(self, obj: Printer) -> float:
-        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else None
+        return calc_normalized_p(obj.detective_sensitivity, obj.printerprediction) if hasattr(obj, 'printerprediction') else 0
 
 
-class GCodeFileSerializer(serializers.ModelSerializer):
+class BaseGCodeFolderSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    g_code_folder_count = serializers.IntegerField(read_only=True)
+    g_code_file_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = GCodeFolder
+        fields = '__all__'
+        read_only_fields = ('user', 'safe_name')
+
+
+class GCodeFolderDeSerializer(BaseGCodeFolderSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
+
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        user = self.context['request'].user
+        if 'name' in attrs:   # safe_name should always be updated when name is
+            safe_name = re.sub(r'[^\w\.]', '_', attrs['name'])
+            attrs['safe_name'] = safe_name
+        elif self.instance:
+            safe_name = self.instance.safe_name
+
+        if 'parent_folder' in attrs:
+            parent_folder = attrs.get('parent_folder')
+            if parent_folder is None: # '?parent_folder='
+                existing = GCodeFolder.objects.filter(user=user, parent_folder__isnull=True, safe_name=safe_name).first()
+            else:
+                existing = GCodeFolder.objects.filter(user=user, parent_folder=parent_folder, safe_name=safe_name).first()
+
+            if existing and self.instance and existing.id != self.instance.id:
+                raise serializers.ValidationError({'name': f'Already existed.'})
+
+        return attrs
+
+class GCodeFolderSerializer(BaseGCodeFolderSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
+
+
+class GCodeFileDeSerializer(serializers.ModelSerializer):
+    parent_folder = PrimaryKeyRelatedField(queryset=GCodeFolder.objects, allow_null=True, required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GCodeFile
         fields = '__all__'
-        read_only_fields = ('user', )
+        read_only_fields = ('user', 'resident_printer', 'safe_filename')
 
-    def save(self):
-        user = self.context['request'].user
-        return super().save(user=user)
+    def validate_parent_folder(self, parent_folder):
+        if parent_folder is not None and self.context['request'].user != parent_folder.user:
+            raise serializers.ValidationError('Parent folder does not exist')
+        return parent_folder
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        if 'filename' in attrs: # safe_filename should always be updated when filename is
+            safe_filename = re.sub(r'[^\w\.]', '_', attrs['filename'])
+            attrs['safe_filename'] = safe_filename
+
+        return attrs
+
+
+class GCodeFileSerializer(BaseGCodeFileSerializer):
+    parent_folder = BaseGCodeFolderSerializer()
+    print_set = BasePrintSerializer(many=True, read_only=True)
 
 
 class MobileDeviceSerializer(serializers.ModelSerializer):
@@ -155,6 +244,7 @@ class OctoPrintTunnelSerializer(serializers.ModelSerializer):
 
 class NotificationSettingSerializer(serializers.ModelSerializer):
     config = serializers.DictField(required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = NotificationSetting
@@ -197,16 +287,15 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
         return data
 
     def save(self):
-        user = self.context['request'].user
         config = self.validated_data.pop('config', None)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
 
         # HACK: For some reason sqlite will set created_at to None on a PATCH call and results in an exception. Force it now()
         if settings.DATABASES.get('default', {}).get('ENGINE') == 'django.db.backends.sqlite3':
-            return super().save(user=user, created_at=now(), updated_at=now())
+            return super().save(user=self.context['request'].user, created_at=now(), updated_at=now())
 
-        return super().save(user=user)
+        return super().save()
 
 
 class PrinterEventSerializer(serializers.ModelSerializer):

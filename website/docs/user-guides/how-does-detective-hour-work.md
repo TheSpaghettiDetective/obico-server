@@ -15,7 +15,7 @@ It is indicated by the symbol <img src="/img/user-guides/detective-hour-primary.
 You need a positive balance of AI Detection Hours on your account to have the failure detection on. [Here is why.](#why-do-you-make-it-so-complicated)
 
 You do **NOT** need AI Detection Hours to watch your printer feed in the app. You can watch it for as long as you want. There is no limit to it!
-å
+
 ## How do I get AI Detection Hours? {#how-do-i-get-ai-detection-hours}
 
 There are several ways to get AI Detection Hours:

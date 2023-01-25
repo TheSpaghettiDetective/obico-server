@@ -90,6 +90,7 @@ The following is using gmail as an example. Other web mail services may vary sli
 You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to use a Gmail account to send emails.
 
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
+*Note: Make sure to to remove the # or else it will not work.
 
 
 ## What's next? {#whats-next}

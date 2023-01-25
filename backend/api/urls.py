@@ -9,7 +9,9 @@ router = DefaultRouter()
 router.register(r'users', viewsets.UserViewSet, 'User')
 router.register(r'printers', viewsets.PrinterViewSet, 'Printer')
 router.register(r'prints', viewsets.PrintViewSet, 'Print')
-router.register(r'gcodes', viewsets.GCodeFileViewSet, 'GCodeFile')
+router.register(r'g_code_files', viewsets.GCodeFileViewSet, 'GCodeFile')
+router.register(r'g_code_folders', viewsets.GCodeFolderViewSet, 'GCodeFolder')
+router.register(r'gcodes', viewsets.GCodeFileViewSet, 'GCodeFile') # Compatible with mobile app versions <= 1.73
 router.register(
     r'printshotfeedbacks',
     viewsets.PrintShotFeedbackViewSet,
@@ -34,6 +36,8 @@ router.register(
 router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
 router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
+
+router.register(r'octo/g_code_files', octoprint_views.GCodeFileView, 'AgentGCodeFile')
 
 urlpatterns = [
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0

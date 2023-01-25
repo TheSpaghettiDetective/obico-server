@@ -23,7 +23,7 @@ function BlogPostPage(props) {
   const {title, description, nextItem, prevItem, tags} = metadata;
   const {hide_table_of_contents: hideTableOfContents} = frontMatter;
   return (
-    <Layout
+    <page-layout
       title={title}
       description={description}
       wrapperClassName={ThemeClassNames.wrapper.blogPages, 'blog-post-with-bg'}

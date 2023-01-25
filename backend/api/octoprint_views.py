@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.db.models import Q
 import time
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -8,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework import viewsets, mixins
 from rest_framework import status
 from django.conf import settings
 from django.core import serializers
@@ -33,12 +35,12 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer
+from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
 
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -46,7 +48,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 LOGGER = logging.getLogger(__name__)
 
 IMG_URL_TTL_SECONDS = 60 * 30
-ALERT_COOLDOWN_SECONDS = 120
+ALERT_COOLDOWN_SECONDS = 300
 
 
 def send_failure_alert(printer: Printer, img_url, is_warning: bool, print_paused: bool) -> None:
@@ -149,6 +151,7 @@ class OctoPrintPicView(APIView):
         save_file_obj(f'p/{printer.id}/{printer.current_print.id}/{pic_id}.json', p_out, settings.PICS_CONTAINER, long_term_storage=False)
 
         if is_failing(prediction, printer.detective_sensitivity, escalating_factor=settings.ESCALATING_FACTOR):
+            # The prediction is high enough to match the "escalated" level and hence print needs to be paused
             pause_if_needed(printer, external_url)
         elif is_failing(prediction, printer.detective_sensitivity, escalating_factor=1):
             alert_if_needed(printer, external_url)
@@ -181,39 +184,37 @@ class OctoPrinterView(APIView):
 
 # Helper methods
 
-def alert_suppressed(printer):
-    if not printer.watching_enabled or printer.current_print is None or printer.current_print.alert_muted_at:
+def is_alert_cooldown_period(current_print):
+    if not current_print:
         return True
 
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
-    return (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS
+    last_acknowledged = current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+    last_alerted = current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
+    last_activity = max(last_acknowledged, last_alerted)
+    return (timezone.now() - last_activity).total_seconds() < ALERT_COOLDOWN_SECONDS
 
 
 def alert_if_needed(printer, img_url):
-    if alert_suppressed(printer):
+    if not printer.should_watch() or is_alert_cooldown_period(printer.current_print):
         return
-
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-    if last_alerted > last_acknowledged:
-        return
-
     printer.set_alert()
     send_failure_alert(printer, img_url, is_warning=True, print_paused=False)
 
 
 def pause_if_needed(printer, img_url):
-    if alert_suppressed(printer):
+    if not printer.should_watch():
         return
 
-    last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(1, timezone.utc)
-    last_alerted = printer.current_print.alerted_at or datetime.fromtimestamp(0, timezone.utc)
-
     if printer.action_on_failure == Printer.PAUSE and not printer.current_print.paused_at:
+        last_acknowledged = printer.current_print.alert_acknowledged_at or datetime.fromtimestamp(0, timezone.utc)
+        if (timezone.now() - last_acknowledged).total_seconds() < ALERT_COOLDOWN_SECONDS: # If user has acknowledged a previous alert, and it's in cooldown period, don't pause otherwise it can be annoying
+            return
         printer.pause_print(initiator='system')
         printer.set_alert()
         send_failure_alert(printer, img_url, is_warning=False, print_paused=True)
-    elif not last_alerted > last_acknowledged:
+    else:
+        if is_alert_cooldown_period(printer.current_print):
+            return
         printer.set_alert()
         send_failure_alert(printer, img_url, is_warning=False, print_paused=False)
 
@@ -297,15 +298,19 @@ class OneTimeVerificationCodeVerifyView(APIView):
         else:
             raise Http404("Requested resource does not exist")
 
+
 class PrinterEventView(CreateAPIView):
     authentication_classes = (PrinterAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return PrinterEvent.objects.filter(printer=self.request.auth)
 
     def post(self, request):
         printer = request.auth
 
         # Dedup repeated errors
-        last_event = PrinterEvent.objects.filter(printer=printer).order_by('id').last()
+        last_event = self.get_queryset().order_by('id').last()
         if last_event and last_event.event_title == request.data.get('event_title'):
             return Response({'result': 'ok', 'details': 'Duplicate'})
 
@@ -334,3 +339,47 @@ class PrinterEventView(CreateAPIView):
             task_handler=False,
         )
         return Response({'result': 'ok'})
+
+class GCodeFileView(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
+    authentication_classes = (PrinterAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = GCodeFileSerializer
+
+    def get_queryset(self):
+        return GCodeFile.objects.filter(user=self.request.user)
+
+    # Post to this endpoint is considered an upsert, identified by resident_printer + agent_signature + safe_filename
+    # Agent is required to upsert a GCodeFile before or during a print so that the Print can be linked to a GCodeFile
+    def post(self, request):
+        printer = request.auth
+
+        serializer = self.get_serializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        # Overwrite the foreign keys as they are not supposed to be set by the agent.
+        validated_data['resident_printer_id'] = printer.id
+        validated_data['user_id'] = request.user.id
+
+        (g_code_file, created) = self.get_queryset().filter(
+            Q(resident_printer=printer) | Q(resident_printer__isnull=True), # Matching g-code can either reside in the requesting agent, or in the cloud.
+            ).get_or_create(
+                agent_signature=validated_data['agent_signature'],
+                safe_filename=validated_data['safe_filename'],
+                defaults=validated_data,
+            )
+        return Response(
+            self.get_serializer(g_code_file).data,
+            status=(status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            )
+
+    def partial_update(self, request, pk=None):
+        instance = self.get_queryset().filter(pk=pk).first()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

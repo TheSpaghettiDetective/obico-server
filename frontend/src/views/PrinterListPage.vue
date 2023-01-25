@@ -1,15 +1,24 @@
 <template>
-  <layout>
-    <template v-slot:topBarRight>
+  <page-layout>
+    <template #topBarRight>
       <div>
-        <a v-if="isEnt" href="/user_preferences/dh/" class="btn shadow-none hours-btn d-none d-md-inline" :title="dhBadgeNum + ' AI Detection Hours'">
+        <a
+          v-if="isEnt"
+          href="/user_preferences/dh/"
+          class="btn shadow-none hours-btn d-none d-md-inline"
+          :title="dhBadgeNum + ' AI Detection Hours'"
+        >
           <svg>
             <use href="#svg-detective-hours"></use>
           </svg>
-          <span id="user-credits" class="badge badge-light">{{dhBadgeNum}}</span>
+          <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
           <span class="sr-only">AI Detection Hours</span>
         </a>
-        <a href="/printers/wizard/" class="btn shadow-none icon-btn d-none d-md-inline" title="Link New Printer">
+        <a
+          href="/printers/wizard/"
+          class="btn shadow-none icon-btn d-none d-md-inline"
+          title="Link New Printer"
+        >
           <i class="fas fa-plus"></i>
         </a>
         <b-dropdown right no-caret toggle-class="icon-btn">
@@ -17,15 +26,15 @@
             <i class="fas fa-ellipsis-v"></i>
           </template>
           <b-dropdown-item v-if="isEnt" href="/user_preferences/dh/" class="d-md-none">
-            <i class="fas fa-hourglass-half"></i>{{dhBadgeNum}} AI Detection Hours
+            <i class="fas fa-hourglass-half"></i>{{ dhBadgeNum }} AI Detection Hours
           </b-dropdown-item>
           <b-dropdown-item href="/printers/wizard/" class="d-md-none">
             <i class="fas fa-plus"></i>Link New Printer
           </b-dropdown-item>
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
           <cascaded-dropdown
-            :menuOptions="menuOptions"
-            :menuSelections="menuSelections"
+            :menu-options="menuOptions"
+            :menu-selections="menuSelections"
             @menuSelectionChanged="menuSelectionChanged"
           >
           </cascaded-dropdown>
@@ -33,8 +42,8 @@
       </div>
     </template>
 
-    <template v-slot:content>
-      <div v-if="shouldShowFilterWarning" @click="onShowAllClicked" class="active-filter-notice">
+    <template #content>
+      <div v-if="shouldShowFilterWarning" class="active-filter-notice" @click="onShowAllClicked">
         <div class="filter">
           <i class="fas fa-filter mr-2"></i>
           {{ activeFiltering }}
@@ -53,8 +62,9 @@
             :key="printer.id"
             :printer="printer"
             :is-pro-account="user.is_pro"
-            @PrinterUpdated="onPrinterUpdated"
             class="printer-card-wrapper"
+            @PrinterUpdated="onPrinterUpdated"
+            @printModalOpened="() => (targetPrinter = printer)"
           ></printer-card>
         </b-row>
         <div class="row justify-content-center">
@@ -71,13 +81,12 @@
           <b-col>
             <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
-                <div>{{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }}
-                  have been archived.</div>
-                  <a
-                    href="/ent/printers/archived/"
-                    class="warning-action"
-                  >Show Archived Printers</a>
+                <div>
+                  {{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }} have been
+                  archived.
                 </div>
+                <a href="/ent/printers/archived/" class="warning-action">Show Archived Printers</a>
+              </div>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -85,8 +94,46 @@
           </b-col>
         </b-row>
       </b-container>
+      <b-modal id="b-modal-gcodes" size="lg" @hidden="resetGcodesModal">
+        <g-code-file-page
+          v-if="selectedGcodeId"
+          :is-popup="true"
+          :target-printer-id="targetPrinter.id"
+          :route-params="{
+            fileId: selectedGcodeId,
+            printerId: selectedPrinterId,
+          }"
+          :on-close="() => $bvModal.hide('b-modal-gcodes')"
+          @goBack="
+            () => {
+              selectedGcodeId = null
+              scrollToTop()
+            }
+          "
+        />
+        <g-code-folders-page
+          v-else
+          :is-popup="true"
+          :target-printer="targetPrinter"
+          :route-params="{
+            printerId: selectedPrinterId,
+            parentFolder: null,
+          }"
+          :on-close="() => $bvModal.hide('b-modal-gcodes')"
+          :saved-path="savedPath"
+          scroll-container-id="b-modal-gcodes"
+          @openFile="
+            (fileId, printerId, path) => {
+              selectedGcodeId = fileId
+              selectedPrinterId = printerId
+              savedPath = path
+              scrollToTop()
+            }
+          "
+        />
+      </b-modal>
     </template>
-  </layout>
+  </page-layout>
 </template>
 
 <script>
@@ -99,13 +146,15 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 
 import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
-import Layout from '@src/components/Layout.vue'
+import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import { user, settings } from '@src/lib/page_context'
+import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
+import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 
 const SortIconClass = {
   asc: 'fas fa-long-arrow-alt-up',
-  desc: 'fas fa-long-arrow-alt-down'
+  desc: 'fas fa-long-arrow-alt-down',
 }
 
 const LocalPrefNames = {
@@ -117,56 +166,54 @@ export default {
   name: 'PrinterListPage',
   components: {
     PrinterCard,
-    Layout,
+    PageLayout,
     CascadedDropdown,
+    GCodeFoldersPage,
+    GCodeFilePage,
   },
-  created() {
-    const {IS_ENT} = settings()
-    this.isEnt = !!IS_ENT
-    this.user = user()
-    this.fetchPrinters()
-  },
-  data: function() {
+  data: function () {
     return {
       user: null,
       printers: [],
       loading: true,
       isEnt: false,
       menuSelections: {
-        'Sort By': getLocalPref(
-          LocalPrefNames.SortFilter,
-          'by-date-desc'),
-        'Filter By': getLocalPref(
-          LocalPrefNames.StateFilter,
-          'all'),
+        'Sort By': getLocalPref(LocalPrefNames.SortFilter, 'by-date-desc'),
+        'Filter By': getLocalPref(LocalPrefNames.StateFilter, 'all'),
       },
       menuOptions: {
         'Sort By': {
           iconClass: 'fas fa-sort-amount-up',
           options: [
-            {value: 'by-date-asc', title: 'Sort By Date', iconClass: SortIconClass['asc']},
-            {value: 'by-date-desc', title: 'Sort By Date', iconClass: SortIconClass['desc']},
-            {value: 'by-name-asc', title: 'Sort By Name', iconClass: SortIconClass['asc']},
-            {value: 'by-name-desc', title: 'Sort By Name', iconClass: SortIconClass['desc']},
+            { value: 'by-date-asc', title: 'Sort By Date', iconClass: SortIconClass['asc'] },
+            { value: 'by-date-desc', title: 'Sort By Date', iconClass: SortIconClass['desc'] },
+            { value: 'by-name-asc', title: 'Sort By Name', iconClass: SortIconClass['asc'] },
+            { value: 'by-name-desc', title: 'Sort By Name', iconClass: SortIconClass['desc'] },
           ],
         },
         'Filter By': {
           iconClass: 'fas fa-filter',
           options: [
-            {value: 'all', title: 'All Printers'},
-            {value: 'online', title: 'Online Printers'},
-            {value: 'active', title: 'Active Printers'},
+            { value: 'all', title: 'All Printers' },
+            { value: 'online', title: 'Online Printers' },
+            { value: 'active', title: 'Active Printers' },
           ],
-        }
+        },
       },
       dontShowFilterWarning: false,
       archivedPrinterNum: 0,
+
+      // gcodes browse modal
+      selectedGcodeId: null,
+      selectedPrinterId: null,
+      targetPrinter: null,
+      savedPath: [null],
     }
   },
   computed: {
     dhBadgeNum() {
       if (this.user && this.user.is_dh_unlimited) {
-        return'\u221E'
+        return '\u221E'
       } else {
         return Math.round(this.user.dh_balance)
       }
@@ -174,29 +221,29 @@ export default {
     visiblePrinters() {
       let printers = this.printers
       switch (this.menuSelections['Filter By']) {
-      case 'online':
-        printers = printers.filter((p) => !p.isDisconnected())
-        break
-      case 'active':
-        printers = printers.filter((p) => p.isActive())
-        break
-      case 'all':
-        break
+        case 'online':
+          printers = printers.filter((p) => !p.isDisconnected())
+          break
+        case 'active':
+          printers = printers.filter((p) => p.isActive())
+          break
+        case 'all':
+          break
       }
 
       switch (this.menuSelections['Sort By']) {
-      case 'by-date-asc':
-        printers = sortBy(printers, (p) => p.createdAt())
-        break
-      case 'by-date-desc':
-        printers = reverse(sortBy(printers, (p) => p.createdAt()))
-        break
-      case 'by-name-asc':
-        printers = sortBy(printers, (p) => p.name)
-        break
-      case 'by-name-desc':
-        printers = reverse(sortBy(printers, (p) => p.name))
-        break
+        case 'by-date-asc':
+          printers = sortBy(printers, (p) => p.createdAt())
+          break
+        case 'by-date-desc':
+          printers = reverse(sortBy(printers, (p) => p.createdAt()))
+          break
+        case 'by-name-asc':
+          printers = sortBy(printers, (p) => p.name)
+          break
+        case 'by-name-desc':
+          printers = reverse(sortBy(printers, (p) => p.name))
+          break
       }
 
       return printers
@@ -211,9 +258,17 @@ export default {
       return this.archivedPrinterNum > 0
     },
     activeFiltering() {
-      const found = this.menuOptions['Filter By'].options.filter(option => option.value === this.menuSelections['Filter By'])
+      const found = this.menuOptions['Filter By'].options.filter(
+        (option) => option.value === this.menuSelections['Filter By']
+      )
       return found.length ? found[0].title : null
-    }
+    },
+  },
+  created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+    this.user = user()
+    this.fetchPrinters()
   },
   methods: {
     menuSelectionChanged(menu, selectedOption) {
@@ -222,16 +277,15 @@ export default {
       const prefName = menu === 'Sort By' ? LocalPrefNames.SortFilter : LocalPrefNames.StateFilter
       setLocalPref(prefName, val)
     },
-
     fetchPrinters() {
       this.loading = true
       return axios
         .get(urls.printers(), {
           params: {
             with_archived: true,
-          }
+          },
         })
-        .then(response => {
+        .then((response) => {
           this.loading = false
           response.data.forEach((p) => {
             if (p.archived_at) {
@@ -242,25 +296,28 @@ export default {
           })
         })
     },
-    onShowAllClicked(){
+    onShowAllClicked() {
       this.$set(this.menuSelections, 'Filter By', 'all')
-      setLocalPref(
-        LocalPrefNames.StateFilter,
-        'all'
-      )
+      setLocalPref(LocalPrefNames.StateFilter, 'all')
     },
     insertPrinter(printer) {
       this.printers.push(printer)
     },
-
     onPrinterUpdated(printer) {
-      let index = this.printers.findIndex(p => p.id == printer.id)
+      let index = this.printers.findIndex((p) => p.id == printer.id)
       if (index < 0) {
         // FIXME any alert here?
         return
       }
 
       this.$set(this.printers, index, printer)
+    },
+    scrollToTop() {
+      document.querySelector('#b-modal-gcodes').scrollTo(0, 0)
+    },
+    resetGcodesModal() {
+      this.selectedGcodeId = null
+      this.targetPrinter = null
     },
   },
 }
@@ -314,4 +371,14 @@ export default {
 ::v-deep .dropdown-item .clickable-area
   margin: -0.25rem -1.5rem
   padding: 0.25rem 1.5rem
+</style>
+
+<style lang="sass">
+#b-modal-gcodes
+  .modal-header
+    display: none
+  .modal-body
+    padding: 0
+  .modal-footer
+    display: none
 </style>

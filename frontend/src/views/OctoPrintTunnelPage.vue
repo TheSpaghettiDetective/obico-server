@@ -44,7 +44,7 @@ import moment from 'moment'
 import split from 'lodash/split'
 import filesize from 'filesize'
 import urls from '@config/server-urls'
-import { user } from '@src/lib/page_context'
+import { user } from '@src/lib/page-context'
 import { isLocalStorageSupported } from '@static/js/utils'
 
 export default {

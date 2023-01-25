@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueSwal from '@src/lib/VueSwal'
+import VueSwal from '@src/lib/vue-swal'
 import { BootstrapVue } from 'bootstrap-vue'
 import Sticky from 'vue-sticky-directive'
 import VueMoment from 'vue-moment'

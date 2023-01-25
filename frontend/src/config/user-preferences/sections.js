@@ -1,6 +1,6 @@
 import routes from '@config/user-preferences/routes'
 import notificationPlugins from '@src/notifications/plugins'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
+import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 
 const defaultSections = {
   ThemePreferences: {

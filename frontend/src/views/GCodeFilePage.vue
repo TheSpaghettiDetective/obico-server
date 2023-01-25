@@ -145,11 +145,11 @@ import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesMoonraker,
   listPrinterLocalGCodesOctoPrint,
-} from '@src/lib/printer_local_comm'
+} from '@src/lib/printer-local-comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {

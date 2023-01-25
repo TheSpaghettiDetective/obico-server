@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { inMobileWebView, user, settings } from '@src/lib/page_context'
+import { inMobileWebView, user, settings } from '@src/lib/page-context'
 import { Themes } from '@static/js/color-scheme'
 import { currentThemeValue } from '@src/lib/color-scheme-controller'
 

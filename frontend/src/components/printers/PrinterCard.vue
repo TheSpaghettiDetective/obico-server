@@ -222,7 +222,7 @@ import axios from 'axios'
 
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'

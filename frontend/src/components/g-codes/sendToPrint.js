@@ -1,11 +1,11 @@
 import axios from 'axios'
 import get from 'lodash/get'
 
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import {
   printPrinterLocalGCodeOctoPrint,
   printPrinterLocalGCodeMoonraker,
-} from '@src/lib/printer_local_comm'
+} from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
 
 export function printCloudGCode(printerComm, gcode) {

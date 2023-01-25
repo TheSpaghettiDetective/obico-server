@@ -69,7 +69,7 @@ import NotificationChannelTemplate from '@src/components/user-preferences/notifi
 import axios from 'axios'
 import urls from '@config/server-urls'
 import { vueTelegramLogin } from 'vue-telegram-login'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'TelegramPlugin',

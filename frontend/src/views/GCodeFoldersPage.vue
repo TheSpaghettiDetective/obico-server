@@ -209,7 +209,7 @@ import {
   normalizedPrinter,
   PrintStatus,
 } from '@src/lib/normalizers'
-import { user } from '@src/lib/page_context'
+import { user } from '@src/lib/page-context'
 import SearchInput from '@src/components/SearchInput.vue'
 import { getCsrfFromDocument } from '@src/lib/utils'
 import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
@@ -217,11 +217,11 @@ import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesOctoPrint,
   listPrinterLocalGCodesMoonraker,
-} from '@src/lib/printer_local_comm'
+} from '@src/lib/printer-local-comm'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 
 // Waiting time (ms) before asking server for search results

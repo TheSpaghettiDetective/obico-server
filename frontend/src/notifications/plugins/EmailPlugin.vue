@@ -84,7 +84,7 @@
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'EmailPlugin',

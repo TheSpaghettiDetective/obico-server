@@ -30,7 +30,8 @@ export const normalizedPrint = (print) => {
     print.duration += `${duration.minutes()}m`
   }
   print.has_alerts = Boolean(print.alerted_at)
-  print.printShotFeedbackEligible = print.printshotfeedback_set.length > 0
+  print.printShotFeedbackEligible =
+    print.printshotfeedback_set && print.printshotfeedback_set.length > 0
   print.status = print.ended_at
     ? print.cancelled_at
       ? PrintStatus.Cancelled

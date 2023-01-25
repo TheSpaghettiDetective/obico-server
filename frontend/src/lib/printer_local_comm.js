@@ -3,6 +3,18 @@ import filesize from 'filesize'
 import _ from 'lodash'
 
 export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword) {
+  const listRecoursively = (fileObj) => {
+    const fileList = []
+    for (const item of Object.values(fileObj)) {
+      if (item.children) {
+        fileList.push(...listRecoursively(item.children))
+      } else {
+        fileList.push(item)
+      }
+    }
+    return fileList
+  }
+
   return new Promise((resolve, reject) => {
     let kwargs;
     if (searchKeyword) {
@@ -113,15 +125,6 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
         resolve({ folders: dirsInServerFormat, files: filesInServerFormat })
       }
     )
-  })
-}
-
-export function getPrinterLocalGCodeOctoPrint(printerComm, path) {
-
-  return listPrinterLocalGCodesOctoPrint(printerComm, dir_path, null).then((result) => {
-    return {
-      files: _.filter(_.get(result, 'files', []), (f) => f.filename == filename)
-    }
   })
 }
 

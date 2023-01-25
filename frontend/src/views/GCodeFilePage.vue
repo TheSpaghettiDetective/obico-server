@@ -137,6 +137,7 @@
 
 <script>
 import PageLayout from '@src/components/PageLayout.vue'
+import filter from 'lodash/filter'
 import get from 'lodash/get'
 import urls from '@config/server-urls'
 import axios from 'axios'
@@ -249,7 +250,7 @@ export default {
 
       getPrinterLocalGCode(this.printerComm, dir_path, null)
         .then((result) => {
-          return { files: _.filter(_.get(result, 'files', []), (f) => f.filename == filename) }
+          return { files: filter(get(result, 'files', []), (f) => f.filename == filename) }
         })
         .then(async (result) => {
           this.loading = false

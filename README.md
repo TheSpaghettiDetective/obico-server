@@ -58,18 +58,18 @@ Upon fresh installation, the Obico Server can only work on the localhost. You wi
 
 [Recommended Read: Connecting to your server with a .local address](https://www.obico.io/docs/server-guides/configure/)
 
-This refers to the LAN IP address that has been given to the computer that the Obico server is running on. 
-- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value. 
+This refers to the LAN IP address that has been given to the computer that the Obico server is running on.
+- If you are on Linux: Open the wifi settings and select "settings" for the network your device is currently connected to. Look for the IPv4 value.
 - If you are on Windows: Select "Properties" for the network your device is connected to, then look for the IPv4 value.
 - If you are on Mac: Go to Settings > Network. You will find your IPv4 value below the wifi status.
 
-The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server. 
+The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 
 It is also reccomended that a static IP is set to avoid issues with chaning IP's. Please look up your WiFi routers guide on how to do this.
 
 ## Login as Django admin
 
-1. Open Django admin page at `http://your_server_ip:3334/admin/`. 
+1. Open Django admin page at `http://your_server_ip:3334/admin/`.
 
 *Note: If the browser complains "Can't connect to the server", wait for a couple more minutes. The web server container may still be starting up.*
 
@@ -102,3 +102,4 @@ Browse and search in the [Obico Server guide website](https://www.obico.io/docs/
 
 # Thanks
 ![BrowserStack](docs/img/browserstack.png "BrowserStack") [BrowserStack](https://www.browserstack.com/) generously sponsors a free license so that I can test Obico webcam streaming on different browsers/versions.
+[Moonraker](https://github.com/Arksine/moonraker) for the source code to extract g-code metadata.

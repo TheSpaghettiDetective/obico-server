@@ -1,5 +1,9 @@
 # Credit: Huge THANK-YOU to @Arksine for his work at: https://github.com/Arksine/moonraker
 
+import tempfile
+import random
+from pathlib import Path
+
 from components.file_manager.metadata import *
 
 
@@ -52,7 +56,28 @@ def extract_metadata(file_path: str, check_objects: bool, f: bytes, encoding: st
             metadata[key] = result
     return metadata
 
+def parse(f: bytes, encoding: str):
+    random_file_prefix = random.randint(0,1000000)
+    stub_gcode_path = os.path.join(tempfile.gettempdir(), f'{random_file_prefix}.gcode')
+    Path(stub_gcode_path).touch()   # extract_metadata needs a path to a real file, in addition to a BytesIO.
+    metadata = extract_metadata(stub_gcode_path, False, f, encoding)
+
+    # Clean up the stub g_code file s to free up disk space
+    Path(stub_gcode_path).unlink()
+
+    # Clean up thumbnail to free up disk space
+    for thumbnail in metadata.pop('thumbnails', []):
+        thumbnail_path = os.path.join(tempfile.gettempdir(), thumbnail['relative_path'])
+        Path(thumbnail_path).unlink()
+
+    # Remove the fields generated from the stub g_code file
+    metadata.pop('modified', None)
+    metadata.pop('size', None)
+    metadata.pop('uuid', None)
+
+    return metadata
+
 if __name__ == "__main__":
     import sys
     with open(sys.argv[1], 'rb') as f:
-        print(extract_metadata(sys.argv[1], False, f, 'utf-8'))
+        print(parse(f, 'utf-8'))

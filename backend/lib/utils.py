@@ -2,7 +2,6 @@
 import json
 from django.conf import settings
 import subprocess
-import tempfile
 import os
 import io
 import re

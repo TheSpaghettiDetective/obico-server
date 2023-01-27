@@ -721,6 +721,7 @@ class GCodeFile(SafeDeleteModel):
     resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)  # null for gcode files on the server
     # A value the agent can independently derive to match with the server. Format: scheme:value
     agent_signature = models.CharField(max_length=256, null=True, blank=False)
+    metadata_json = models.TextField(null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

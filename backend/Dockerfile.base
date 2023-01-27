@@ -2,11 +2,21 @@ FROM python:3.7.12-alpine3.14
 
 WORKDIR /app
 EXPOSE 3334
-RUN apk -U add bash vim ffmpeg postgresql-libs git && \
-    apk add --virtual .build-deps g++ musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev
+RUN apk -U add bash vim ffmpeg postgresql-libs git openjpeg tiff
+RUN apk add --virtual .build-deps g++ musl-dev postgresql-dev zlib-dev jpeg-dev libffi-dev openjpeg-dev tiff-dev \
+    patch curl-dev python3-dev libressl-dev build-base freetype-dev lcms2-dev tk-dev tcl-dev  # Needed by /moonraker/scripts/moonraker-requirements.txt
+
+
+RUN git clone https://github.com/Arksine/moonraker.git /moonraker
+ENV PYTHONPATH="${PYTHONPATH}:/moonraker/moonraker"
+
 RUN pip install --upgrade pip
 
 ADD requirements.txt .
 RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install -r requirements.txt
+
+RUN pip install tornado==6.2.0 inotify-simple==1.3.5
+# Apparent newer version of importlib-metadata will cause django to fail
+RUN pip install importlib-metadata==4.13.0
 
 RUN apk --purge del .build-deps

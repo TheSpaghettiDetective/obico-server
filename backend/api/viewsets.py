@@ -21,6 +21,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
 from ipware import get_client_ip
+import json
 
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
@@ -387,7 +388,7 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
-            metadata = gcode_metadata.extract_metadata("/tmp/my_file.gcode", False, request.FILES['file'], request.encoding or settings.DEFAULT_CHARSET)
+            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
 
             request.FILES['file'].seek(0)
             _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
@@ -397,6 +398,18 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)
 
+    def set_metadata(self, gcode_file, metadata, thumbnails):
+        gcode_file.metadata_json = json.dumps(metadata)
+        for key in ['estimated_time', 'filament_total']:
+            setattr(gcode_file, key, metadata.get(key))
+
+        thumb_num = 0
+        for thumb in sorted(thumbnails, key=lambda x: x.getbuffer().nbytes, reverse=True):
+            thumb_num += 1
+            if thumb_num > 3:
+                continue
+            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
+            setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin,

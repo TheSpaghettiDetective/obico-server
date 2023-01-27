@@ -33,7 +33,7 @@ from .serializers import (
     NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
 )
 from lib.channels import send_status_to_web
-from lib import cache
+from lib import cache, gcode_metadata
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 from lib.file_storage import save_file_obj
@@ -387,6 +387,9 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
+            metadata = gcode_metadata.extract_metadata("/tmp/my_file.gcode", False, request.FILES['file'], request.encoding or settings.DEFAULT_CHARSET)
+
+            request.FILES['file'].seek(0)
             _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes

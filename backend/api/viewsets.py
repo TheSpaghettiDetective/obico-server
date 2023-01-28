@@ -23,10 +23,10 @@ import requests
 from ipware import get_client_ip
 import json
 import pytz
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.utils.dateparse import parse_datetime
 from django.db.models.functions import TruncDay
-from django.db.models import Sum, Count, fields, Case, Value, When
+from django.db.models import Sum, Max, Count, fields, Case, Value, When
 
 
 from .utils import report_validationerror
@@ -729,23 +729,6 @@ class PrinterEventViewSet(
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
 
-
-def week_group_range_tuples(from_date, to_date):
-
-    def first_sunday_after(date_time):
-        day_of_week = date_time.weekday()
-        days_until_sunday = 6 - day_of_week
-        if days_until_sunday == 0:
-            days_until_sunday = 7
-        next_sunday = date_time + timedelta(days=days_until_sunday)
-        return next_sunday.replace(hour=0, minute=0, second=0, microsecond=0)
-
-    group_ranges = [(from_date, first_sunday_after(from_date)),]
-    while group_ranges[-1][1] <= to_date:
-        group_ranges.append((group_ranges[-1][1], first_sunday_after(group_ranges[-1][1])))
-
-    return group_ranges
-
 class PrintStatsViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet
@@ -754,7 +737,34 @@ class PrintStatsViewSet(
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def list(self, request):
+
+        def datetime_periods_by_week(from_date, to_date, period):
+            datetime_periods = [from_date,next_period_start_after(from_date, period)]
+            while datetime_periods[-1] <= to_date:
+                datetime_periods.append(next_period_start_after(datetime_periods[-1], period))
+            return datetime_periods
+
+        def next_period_start_after(date_time, period):
+            if period == 'day':
+                next_period_start = date_time + timedelta(days=1)
+            elif period == 'week':
+                day_of_week = date_time.weekday()
+                days_until_sunday = 6 - day_of_week
+                if days_until_sunday == 0:
+                    days_until_sunday = 7
+                next_period_start = date_time + timedelta(days=days_until_sunday)
+            elif period == 'month':
+                next_month = date_time.month + 1 if date_time.month < 12 else 1
+                next_year = date_time.year + 1 if next_month == 1 else date_time.year
+                next_period_start = datetime(next_year, next_month, 1, tzinfo=date_time.tzinfo)
+            elif period == 'year':
+                next_year = date_time.year + 1
+                next_period_start = datetime(next_year, 1, 1, tzinfo=date_time.tzinfo)
+
+            return next_period_start.replace(hour=0, minute=0, second=0, microsecond=0)
+
         tz = pytz.timezone(request.GET['timezone'])
+        group_by = request.GET['group_by'].lower()
         from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
         to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
 
@@ -771,7 +781,8 @@ class PrintStatsViewSet(
                 date=TruncDay('started_at', tzinfo=tz),
             ).values('date').annotate(
                 filament_used=Sum('filament_used'),
-                print_time=Sum('print_time'),
+                total_print_time=Sum('print_time'),
+                longest_print_time=Max('print_time'),
                 print_count=Count('*'),
                 cancelled_print_count=Sum(Case(When(cancelled_at=None, then=Value(1)), default=Value(0), output_field=fields.IntegerField())),
             ).order_by('date')
@@ -783,24 +794,31 @@ class PrintStatsViewSet(
         filament_used_groups = []
         cancelled_print_count_groups = []
 
-        for group_range in week_group_range_tuples(from_date, to_date):
-            group_key = group_range[0].isoformat()
+        group_periods = datetime_periods_by_week(from_date, to_date, group_by)
+        for i in range(len(group_periods) - 1):
+            period_start = group_periods[i]
+            period_end = group_periods[i+1]
 
-            all_days_in_range = [day for day in all_days if group_range[0] <= day['date'] < group_range[1]]
+            group_key = period_start.isoformat()
 
-            print_count_groups.append( dict( key=group_key, value=sum([d['print_count'] for d in all_days_in_range]) ) )
-            print_time_groups.append( dict( key=group_key, value=sum([d['print_time'] for d in all_days_in_range if d['print_time'] is not None]) ) )
-            filament_used_groups.append( dict( key=group_key, value=sum([d['filament_used'] for d in all_days_in_range if d['filament_used'] is not None]) ) )
-            cancelled_print_count_groups.append( dict( key=group_key, value=sum([d['cancelled_print_count'] for d in all_days_in_range]) ) )
+            all_days_in_current_period = [day for day in all_days if period_start <= day['date'] < period_end]
+
+            print_count_groups.append( dict( key=group_key, value=sum([d['print_count'] for d in all_days_in_current_period]) ) )
+            print_time_groups.append( dict( key=group_key, value=sum([d['total_print_time'] for d in all_days_in_current_period if d['total_print_time'] is not None]) ) )
+            filament_used_groups.append( dict( key=group_key, value=sum([d['filament_used'] for d in all_days_in_current_period if d['filament_used'] is not None]) ) )
+            cancelled_print_count_groups.append( dict( key=group_key, value=sum([d['cancelled_print_count'] for d in all_days_in_current_period]) ) )
 
         result = {
             'print_count_groups': print_count_groups,
             'print_time_groups': print_time_groups,
             'filament_used_groups': filament_used_groups,
-            'print_count': sum([g['value'] for g in print_count_groups]),
-            'print_time': sum([g['value'] for g in print_time_groups]),
-            'filament_used': sum([g['value'] for g in filament_used_groups]),
-            'cancelled_print_count':  sum([g['value'] for g in cancelled_print_count_groups]),
+            'total_print_count': sum([g['value'] for g in print_count_groups]),
+            'total_print_time': sum([g['value'] for g in print_time_groups]),
+            'total_filament_used': sum([g['value'] for g in filament_used_groups]),
+            'total_cancelled_print_count':  sum([g['value'] for g in cancelled_print_count_groups]),
+            'longest_print_time': max([d['longest_print_time'] or 0 for d in all_days]),
         }
+        result['average_print_time'] = result['total_print_time'] / result['total_print_count'] if result['total_print_count'] > 0 else 0
+        result['total_succeeded_print_count'] = result['total_print_count'] - result['total_cancelled_print_count']
 
         return Response(result)

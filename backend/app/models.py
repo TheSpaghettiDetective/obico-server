@@ -538,7 +538,6 @@ class Print(SafeDeleteModel):
     def need_print_shot_feedback(self):
         return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
 
-
     @property
     def expecting_detective_view(self):
         return self.tagged_video_url or self.uploaded_at

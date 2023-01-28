@@ -130,17 +130,18 @@ Not all Operating Systems that can run on a Raspberry Pi has the libraries requi
 
 #### OS images that have been verified to support the webcam streaming {#os-images-that-have-been-verified-to-support-the-webcam-streaming-1}
 
-- MainsailOS version 0.6.0 or newer.
+- MainsailOS x86 version 0.6.0 or newer.
 - FluiddPi version 1.17.0 or newer.
 - 32-bit Raspberry Pi OS version Buster or newer.
 
 #### OS images that will NOT support the webcam streaming {#os-images-that-will-not-support-the-webcam-streaming-1}
 
 - 64-bit Raspberry Pi OS. All versions.
+- MainsailOS x64.  All versions.
 
 #### OS images that *may* support the webcam streaming {#os-images-that-may-support-the-webcam-streaming-1}
 
-- All MainsailOS versions older than 0.6.0.
+- All MainsailOS x86 versions older than 0.6.0.
 - All FluiddPi versions older than 1.17.0.
 - 32-bit Raspberry Pi OS versions older than Buster.
 - All Raspbian versions.

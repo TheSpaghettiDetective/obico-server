@@ -22,6 +22,12 @@ from rest_framework.pagination import PageNumberPagination
 import requests
 from ipware import get_client_ip
 import json
+import pytz
+from datetime import timedelta
+from django.utils.dateparse import parse_datetime
+from django.db.models.functions import TruncDay
+from django.db.models import Sum, Count, fields, Case, Value, When
+
 
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
@@ -722,3 +728,79 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+
+def week_group_range_tuples(from_date, to_date):
+
+    def first_sunday_after(date_time):
+        day_of_week = date_time.weekday()
+        days_until_sunday = 6 - day_of_week
+        if days_until_sunday == 0:
+            days_until_sunday = 7
+        next_sunday = date_time + timedelta(days=days_until_sunday)
+        return next_sunday.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    group_ranges = [(from_date, first_sunday_after(from_date)),]
+    while group_ranges[-1][1] <= to_date:
+        group_ranges.append((group_ranges[-1][1], first_sunday_after(group_ranges[-1][1])))
+
+    return group_ranges
+
+class PrintStatsViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def list(self, request):
+        tz = pytz.timezone(request.GET['timezone'])
+        from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
+        to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
+
+        queryset = Print.objects.all_with_deleted().filter(
+                user=request.user,
+                started_at__range=[from_date, to_date],
+            )
+
+        filter_by_printer_ids = request.GET.getlist('filter_by_printer_ids[]')
+        if filter_by_printer_ids:
+            queryset = queryset.filter(printer_id__in=filter_by_printer_ids)
+
+        queryset = queryset.annotate(
+                date=TruncDay('started_at', tzinfo=tz),
+            ).values('date').annotate(
+                filament_used=Sum('filament_used'),
+                print_time=Sum('print_time'),
+                print_count=Count('*'),
+                cancelled_print_count=Sum(Case(When(cancelled_at=None, then=Value(1)), default=Value(0), output_field=fields.IntegerField())),
+            ).order_by('date')
+
+        all_days = queryset.all()
+
+        print_count_groups = []
+        print_time_groups = []
+        filament_used_groups = []
+        cancelled_print_count_groups = []
+
+        for group_range in week_group_range_tuples(from_date, to_date):
+            group_key = group_range[0].isoformat()
+
+            all_days_in_range = [day for day in all_days if group_range[0] <= day['date'] < group_range[1]]
+
+            print_count_groups.append( dict( key=group_key, value=sum([d['print_count'] for d in all_days_in_range]) ) )
+            print_time_groups.append( dict( key=group_key, value=sum([d['print_time'] for d in all_days_in_range if d['print_time'] is not None]) ) )
+            filament_used_groups.append( dict( key=group_key, value=sum([d['filament_used'] for d in all_days_in_range if d['filament_used'] is not None]) ) )
+            cancelled_print_count_groups.append( dict( key=group_key, value=sum([d['cancelled_print_count'] for d in all_days_in_range]) ) )
+
+        result = {
+            'print_count_groups': print_count_groups,
+            'print_time_groups': print_time_groups,
+            'filament_used_groups': filament_used_groups,
+            'print_count': sum([g['value'] for g in print_count_groups]),
+            'print_time': sum([g['value'] for g in print_time_groups]),
+            'filament_used': sum([g['value'] for g in filament_used_groups]),
+            'cancelled_print_count':  sum([g['value'] for g in cancelled_print_count_groups]),
+        }
+
+        return Response(result)

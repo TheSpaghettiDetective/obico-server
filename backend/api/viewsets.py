@@ -816,7 +816,7 @@ class PrintStatsViewSet(
             'total_print_time': sum([g['value'] for g in print_time_groups]),
             'total_filament_used': sum([g['value'] for g in filament_used_groups]),
             'total_cancelled_print_count':  sum([g['value'] for g in cancelled_print_count_groups]),
-            'longest_print_time': max([d['longest_print_time'] or 0 for d in all_days]),
+            'longest_print_time': max([d['longest_print_time'] or 0 for d in all_days]) if all_days else 0,
         }
         result['average_print_time'] = result['total_print_time'] / result['total_print_count'] if result['total_print_count'] > 0 else 0
         result['total_succeeded_print_count'] = result['total_print_count'] - result['total_cancelled_print_count']

@@ -29,7 +29,7 @@ PUSHOVER_APP_TOKEN=the-pushover-app-token-you-obtained-in-step-1
 
 ### 3. Rebuild the app containers {#3-rebuild-the-app-containers}
 
-Run these command to rebuild the frontend:
+Run this command to rebuild your app containers:
 
 ```
 docker-compose up --build -d

@@ -6,14 +6,26 @@
         <b-row>
           <b-col lg="5">
             <div class="print-info">
-              <div class="card-container header">
-                <div class="info">
-                  <div class="status" :class="print.status.key">
-                    {{ print.status.title }}
+              <!-- File -->
+              <div class="card-container file">
+                <div class="icon">
+                  <i class="fas fa-file-code"></i>
+                </div>
+                <div class="info overflow-truncated-parent">
+                  <div class="title overflow-truncated">{{ print.filename }}</div>
+                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
+                    <span>{{ print.g_code_file.filesize }}</span>
+                    <span v-if="print.g_code_file.created_at"
+                      >, created {{ print.g_code_file.created_at.fromNow() }}</span
+                    >
                   </div>
-                  <div class="date">
-                    {{ print.ended_at ? print.ended_at.fromNow() : '-' }}
-                  </div>
+                </div>
+                <div v-if="print.g_code_file" class="action">
+                  <a
+                    class="btn btn-secondary"
+                    :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
+                    >Open file</a
+                  >
                 </div>
               </div>
               <!-- Printer -->
@@ -49,29 +61,15 @@
                   </button>
                 </div>
               </div>
-              <!-- File -->
-              <div class="card-container file">
-                <div class="icon">
-                  <i class="fas fa-file-code"></i>
-                </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.filename }}</div>
-                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
-                    <span>{{ print.g_code_file.filesize }}</span>
-                    <span v-if="print.g_code_file.created_at"
-                      >, created {{ print.g_code_file.created_at.fromNow() }}</span
-                    >
+              <div class="card-container">
+                <div class="info-line">
+                  <div class="title">Status</div>
+                  <div class="value">
+                    <div class="print-status" :class="print.status.key">
+                      {{ print.status.title }}
+                    </div>
                   </div>
                 </div>
-                <div v-if="print.g_code_file" class="action">
-                  <a
-                    class="btn btn-secondary"
-                    :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
-                    >Open file</a
-                  >
-                </div>
-              </div>
-              <div class="card-container">
                 <div class="info-line">
                   <div class="title">Start time</div>
                   <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
@@ -458,17 +456,6 @@ export default {
   flex-direction: column
   gap: 15px
 
-.header
-  .date
-    font-size: 1.125rem
-  .status
-    font-weight: bold
-    font-size: .875rem
-    &.cancelled
-      color: var(--color-danger)
-    &.finished
-      color: var(--color-success)
-
 .printer, .file
   display: flex
   align-items: center
@@ -491,6 +478,14 @@ export default {
     border-bottom: none
 .title
   font-weight: bold
+
+.print-status
+  font-weight: bold
+  font-size: .875rem
+  &.cancelled
+    color: var(--color-danger)
+  &.finished
+    color: var(--color-success)
 
 .time-lapse
   .title

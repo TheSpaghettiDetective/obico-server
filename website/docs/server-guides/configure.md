@@ -30,10 +30,10 @@ Doing this on a device that is already running software with similar functionali
 - If you are on Mac, you do not need to do anything. Mac already has this set up by default.
 - If you are on Linux, most distros come with `avahi-daemon` installed(ubuntu, debian, arch, redhat). Instructions on installation/update for `avahi-daemon` for your distro can be found online.
   - To enable Avahi, run `sudo systemctl enable avahi-daemon && sudo systemctl start avahi-daemon`. You are now done.
-  - Although optional, we reccomend you change some settings in yoru config file.
+  - Although optional, we recommend you change some settings in your config file.
     - Located in `/etc/avahi/avahi-daemon.conf`, uncomment(if needed, done by removing the `#`) and set `publish-addresses`, `publish-hinfo`, `publish-workstation`, `publish-domain` all equal to `yes`. Do **not** include spaces before and after the equal sign
-    - More optionally, you can change the hostname of the service by uncomenting and setting `hostname` to whatever you would like.
-    - you can now restart avahi by runnning `sudo systemctl restart avahi-daemon`
+    - More optionally, you can change the hostname of the service by uncommenting and setting `hostname` to whatever you would like.
+    - you can now restart avahi by running `sudo systemctl restart avahi-daemon`
     - More information on this can be found in the [docs](https://manpages.ubuntu.com/manpages/trusty/man5/avahi-daemon.conf.5.html).
 
 You can find your hostname by typing `hostname` into your terminal, regardless of OS.
@@ -69,7 +69,7 @@ The following is using gmail as an example. Other web mail services may vary sli
 
 3. Find the following lines, and set them to the correct values of your email account:
 
-```
+```text
 # EMAIL_HOST=
 
 # EMAIL_HOST_USER=

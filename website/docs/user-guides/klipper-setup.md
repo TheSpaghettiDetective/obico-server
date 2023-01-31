@@ -29,7 +29,7 @@ Before you start, make sure:
 
 1. SSH to the Raspberry Pi your Klipper runs on.
 2. Run:
-```
+```bash
     cd ~
     git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
     cd moonraker-obico

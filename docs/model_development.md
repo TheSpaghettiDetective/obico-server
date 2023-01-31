@@ -170,4 +170,3 @@ services:
 Segfaults can happen when there is a mismatch in the compiled darknet shared library and the python code attempting to run it. You may not get a lot of detail if you're running a python script and the segfault happens in C code - in this case, prepending your shell command with `PYTHONFAULTHANDLER=1` can increase the amount of information you get back (details [here](https://docs.python.org/3/library/faulthandler.html)).
 
 If the segfault appears to be about trying to invoke a method that the `*.so` file doesn't have, you can run `nm -D bin/model_aarch64.so` to see inside the binary and confirm whether or not this is actually the case.
-

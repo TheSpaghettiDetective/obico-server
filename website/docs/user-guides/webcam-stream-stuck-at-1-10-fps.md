@@ -157,4 +157,3 @@ If you are not sure if the OS causes the webcam stream to be stuck at 0.1 FPS, g
 ## 5. If none of the above worked {#6-if-none-of-the-above-worked}
 
 [Get help from a human](/docs/user-guides/contact-us-for-support).
-

@@ -14,4 +14,3 @@ When you run into an issue in The Spaghetti Detective mobile app, or even have a
 1. Send the email, along with the attached files, to [support@obico.io](mailto:support@obico.io).
 
 ![](/img/user-guides/helpdocs/submit-mobile-app-log-files.gif)
-

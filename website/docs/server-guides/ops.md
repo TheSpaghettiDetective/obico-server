@@ -10,9 +10,9 @@ title: Common tasks for operating self-hosted server
     git pull
     docker compose up --build -d
 ```
-*Note: if you are on linux you will have to run the last line as `sudo`(ex. `sudo docker...`)*
+*Note: if you are on linux you will have to run the last line as `sudo` (ex. `sudo docker...`)*
 
-*Note: you need to use docker-compose instead of docker compose on older Docker versions*
+*Note: you need to use `docker-compose` instead of `docker compose` on older Docker versions*
 
 ## Backup database {#backup-database}
 

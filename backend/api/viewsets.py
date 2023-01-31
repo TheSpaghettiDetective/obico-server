@@ -43,7 +43,7 @@ from lib.channels import send_status_to_web
 from lib import cache, gcode_metadata
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
-from lib.file_storage import save_file_obj
+from lib.file_storage import save_file_obj, delete_file
 from .printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
@@ -397,12 +397,23 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
 
             request.FILES['file'].seek(0)
-            _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
+            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER)
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes
             gcode_file.save()
 
         return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        gcode_file = self.get_object()
+
+        # Delete the file from storage, and set url to None before soft-deleting a g-code file
+        delete_file(self.path_in_storage(gcode_file), settings.GCODE_CONTAINER)
+        gcode_file.url = None
+        gcode_file.save()
+
+        gcode_file.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def set_metadata(self, gcode_file, metadata, thumbnails):
         gcode_file.metadata_json = json.dumps(metadata)
@@ -416,6 +427,10 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
                 continue
             _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
             setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
+
+    def path_in_storage(self, gcode_file):
+        return f'{gcode_file.user.id}/{gcode_file.id}'
+
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin,

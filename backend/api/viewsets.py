@@ -192,6 +192,17 @@ class PrintViewSet(
         if filter == 'need_print_shot_feedback':
             queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
 
+        if 'from_date' in request.GET:
+            tz = pytz.timezone(request.GET['timezone'])
+            from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
+            to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
+
+            queryset = queryset.filter(started_at__range=[from_date, to_date])
+
+        filter_by_printer_ids = request.GET.getlist('filter_by_printer_ids[]')
+        if filter_by_printer_ids:
+            queryset = queryset.filter(printer_id__in=filter_by_printer_ids)
+
         sorting = request.GET.get('sorting', 'date_desc')
         if sorting == 'date_asc':
             queryset = queryset.order_by('id')
@@ -778,15 +789,18 @@ class PrintStatsViewSet(
 
             return next_period_start.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        tz = pytz.timezone(request.GET['timezone'])
-        group_by = request.GET['group_by'].lower()
-        from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
-        to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
-
         queryset = Print.objects.all_with_deleted().filter(
                 user=request.user,
-                started_at__range=[from_date, to_date],
+                uploaded_at__isnull=True,
             )
+
+        if 'from_date' in request.GET:
+            tz = pytz.timezone(request.GET['timezone'])
+            group_by = request.GET['group_by'].lower()
+            from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
+            to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
+
+            queryset = queryset.filter(started_at__range=[from_date, to_date])
 
         filter_by_printer_ids = request.GET.getlist('filter_by_printer_ids[]')
         if filter_by_printer_ids:

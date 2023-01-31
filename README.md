@@ -46,6 +46,10 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 
 4. There is no step 4. This is how easy it is to get Obico up and running (thanks to Docker and Docker-compose).
 
+5. Alternatively, if the procedure above does not work for you or you rather like to build your images manually, **either**:
+    - Run the provided bash script which does the above steps for you automatically with `cd /obico-server; chmod u+x build-and-start-obico.sh; ./build-and-start-obico.sh`
+    - Build the containers manually, naming them "obico_ml_api" and "obico_backend", and then simply run: `cd obico-server; docker-compose -f docker-compose-prebuilt.yml up -d`
+
 Open "http://localhost:3334" on the same computer. Voila - your self-hosted Obico Server is now up and running!
 
 ![Login page](website/static/img/server-guides/login-page.png)

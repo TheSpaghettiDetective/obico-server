@@ -5,7 +5,6 @@ title: Obico for Klipper Overview
 
 **Obico for Klipper** is implemented as a [**Moonraker agent**](https://moonraker.readthedocs.io/en/latest/web_api/).
 
-
 :::info
 [Moonraker](https://moonraker.readthedocs.io/en/latest/web_api/) is a "middleware" that handles the low-level communication with the Klipper firmware.
 

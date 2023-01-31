@@ -95,7 +95,7 @@ This step is relevant only to OctoPrint users. Obico for Klipper always uses the
 
 ## 4. Are you using an OS image that doesn't support streaming? {#4-did-you-use-the-official-octopi-image-to-flash-the-sd-card}
 
-Not all Operating Systems that can run on a Rapsberry Pi has the libraies required for the webcamm streaming. Make sure you flashed the SD card using the supported OS images if you want to have a smooth webcam stream in Obico.
+Not all Operating Systems that can run on a Raspberry Pi has the libraries required for the webcam streaming. Make sure you flashed the SD card using the supported OS images if you want to have a smooth webcam stream in Obico.
 
 <Tabs
   defaultValue="octoprint"
@@ -132,7 +132,7 @@ Not all Operating Systems that can run on a Rapsberry Pi has the libraies requir
 
 - MainsailOS x86 version 0.6.0 or newer.
 - FluiddPi version 1.17.0 or newer.
-- 32-bit Raspberry Pi OS veresion Buster or newer.
+- 32-bit Raspberry Pi OS version Buster or newer.
 
 #### OS images that will NOT support the webcam streaming {#os-images-that-will-not-support-the-webcam-streaming-1}
 
@@ -157,4 +157,3 @@ If you are not sure if the OS causes the webcam stream to be stuck at 0.1 FPS, g
 ## 5. If none of the above worked {#6-if-none-of-the-above-worked}
 
 [Get help from a human](/docs/user-guides/contact-us-for-support).
-

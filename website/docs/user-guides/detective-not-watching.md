@@ -36,4 +36,3 @@ The AI Detection Hour balance for your account is displayed on the right hand si
 ![](/img/user-guides/helpdocs/negative-dh-balance.png)
 
 [](#2-you-have-disabled-the-"ai-failure-detection"-option)
-

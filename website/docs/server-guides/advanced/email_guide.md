@@ -19,7 +19,7 @@ For Outlook there are a few different SMTP settings, you can verify which are ne
 
       EMAIL_HOST=smtp.gmail.com    # -> such as smtp.gmail.com
       EMAIL_HOST_USER=changeme@example.com  # -> such as your email address for a Gmail account
-      EMAIL_HOST_PASSWORD="akepassword  # -> your email account password, or your app password
+      EMAIL_HOST_PASSWORD="fakepassword  # -> your email account password, or your app password
       EMAIL_PORT=587   # Check with your email provider to make sure. DO NOT surround it with quotes. Otherwise email won't be sent!
       EMAIL_USE_TLS=True # -> Still set to True even for Outlook with STARTTLS
       DEFAULT_FROM_EMAIL=changeme@example.com  # -> For Outlook set this to match EMAIL_HOST_USER: field, otherwise it is recommended not to change (Seems to work for Gmail without issue)

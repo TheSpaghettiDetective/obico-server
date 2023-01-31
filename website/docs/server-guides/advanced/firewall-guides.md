@@ -18,7 +18,7 @@ Windows blocks all incoming connections by default. To allow the connection betw
 
 3. Run the following command.
 
-```
+```powershell
 New-NetFirewallRule -DisplayName 'Obico' -Name 'Obico' -Description 'inbound rule through TCP port 3334 intended for a private Obico' -direction inbound -action allow -Profile Private -Protocol TCP -LocalPort 3334
 ```
 

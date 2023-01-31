@@ -18,9 +18,9 @@ TSD private server can only run on Jetson Nano 4GB model. The 2GB model doesn't 
 The following software is required before you start installing the server:
 
 - [JetPack 4.5 SDK](https://developer.nvidia.com/jetpack-sdk-45-archive). If you already flashed a different OS on your sd card, you will have to replace it with this one. Slow download of the software from NVIDIA is normal.
-  - **Important:** The last JetPack SDK version this has been tested on is jp45. Newer versions may not work correctly (see [bug](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)). If you succesfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133
+  - **Important:** The last JetPack SDK version this has been tested on is jp45. Newer versions may not work correctly (see [bug](https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/552)). If you successfully run this on a newer version, please send a message to the official discord and mention @LyricPants66133
 - [Flashing Software](https://www.balena.io/etcher/)
-- [SD Card Formater](https://www.sdcard.org/downloads/formatter/)
+- [SD Card Formatter](https://www.sdcard.org/downloads/formatter/)
 
 ### Email delivery {#email-delivery}
 
@@ -31,13 +31,13 @@ should also work but we haven't tried them.
 
 1. Get the code:
 
-```
+```bash
 git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
 ```
 
 2. Run it!
 
-```
+```bash
 cd obico-server
 ./scripts/install_on_jetson.sh
 ```
@@ -47,6 +47,5 @@ cd obico-server
 4. There is no step 4. This is how easy it is to get the Obico server up and running (thanks to Docker and Docker-compose).
 
 ## Continue to [server configuration the main documentation](../../configure) {#continue-to-server-configuration-the-main-documentation}
-
 
 *Thanks to the work of Raymond, LyricPants, and others for their contribution!*

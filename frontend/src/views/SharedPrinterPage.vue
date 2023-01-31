@@ -54,6 +54,7 @@ export default {
       shareToken: null,
       videoAvailable: {},
       loading: true,
+      isWebrtcOpened: false,
       webrtc: WebRTCConnection(),
     }
   },
@@ -65,10 +66,14 @@ export default {
       (data) => {
         this.printer = normalizedPrinter(data, this.printer)
         this.loading = false
+
+        if (!this.isWebrtcOpened) {
+          this.webrtc.openForShareToken(this.shareToken)
+          this.isWebrtcOpened = true
+        }
       }
     )
     this.printerComm.connect()
-    this.webrtc.openForShareToken(this.shareToken)
   },
 }
 </script>

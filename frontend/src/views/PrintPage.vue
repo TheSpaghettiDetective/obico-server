@@ -257,7 +257,17 @@
                 </b-card>
               </div>
               <div v-else class="card-container">
-                <p class="text-secondary text-center mt-3">Time-Lapse video unavailable</p>
+                <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
+                <ul>
+                  <li class="text-secondary mt-3">
+                    The Obico server is still processing the time-lapse;
+                  </li>
+                  <li class="text-secondary mt-3">
+                    Or, the print time was shorter than the threshold. You can change the threshold
+                    in
+                    <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
+                  </li>
+                </ul>
               </div>
             </div>
           </b-col>

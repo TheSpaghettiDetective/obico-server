@@ -175,8 +175,9 @@ class PrintViewSet(
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrintSerializer
 
-    def get_queryset(self):
-        queryset = Print.objects.all_with_deleted().filter(
+    def get_queryset(self, with_deleted=False):
+        queryset = Print.objects.all_with_deleted() if with_deleted else Print.objects
+        queryset = queryset.filter(
             user=self.request.user,
             uploaded_at__isnull=True,
             )
@@ -319,7 +320,7 @@ class PrintViewSet(
         to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
         group_by = request.GET['group_by'].lower()
 
-        queryset = queryset = self.get_queryset().annotate(
+        queryset = queryset = self.get_queryset(with_deleted=True).annotate(
                 date=TruncDay('started_at', tzinfo=tz),
             ).values('date').annotate(
                 filament_used=Sum('filament_used'),

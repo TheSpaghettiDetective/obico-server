@@ -327,7 +327,7 @@ class PrintViewSet(
                 total_print_time=Sum('print_time'),
                 longest_print_time=Max('print_time'),
                 print_count=Count('*'),
-                cancelled_print_count=Sum(Case(When(cancelled_at=None, then=Value(1)), default=Value(0), output_field=fields.IntegerField())),
+                cancelled_print_count=Sum(Case(When(cancelled_at=None, then=Value(0)), default=Value(1), output_field=fields.IntegerField())),
             ).order_by('date')
 
         all_days = queryset.all()

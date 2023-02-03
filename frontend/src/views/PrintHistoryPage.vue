@@ -44,7 +44,7 @@
               <loading-placeholder v-if="!noMoreData" />
             </mugen-scroll>
           </b-col>
-          <b-col v-else class="text-center my-5">You don't have print history yet</b-col>
+          <b-col v-else class="text-center my-5">No prints found</b-col>
         </b-row>
       </b-container>
     </template>

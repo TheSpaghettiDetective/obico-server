@@ -142,6 +142,13 @@
               </div>
             </vue-dropzone>
 
+            <div v-if="!isCloud && isAgentMoonraker && searchStateIsActive" class="notice-block">
+              <div class="icon">
+                <i class="fas fa-info"></i>
+              </div>
+              <p class="message">Search in Klipper printers works only for current directory</p>
+            </div>
+
             <g-code-file-structure
               :is-cloud="isCloud"
               :search-state-is-active="searchStateIsActive"
@@ -357,6 +364,10 @@ export default {
   },
 
   computed: {
+    isAgentMoonraker() {
+      const selectedPrinter = this.printers.find((p) => p.id === this.selectedPrinterId)
+      return !selectedPrinter || selectedPrinter.isAgentMoonraker()
+    },
     isCloud() {
       return !this.selectedPrinterId
     },
@@ -492,10 +503,7 @@ export default {
         return
       }
       this.localFilesLoading = true
-      const isAgentMoonraker = this.printers
-        .find((p) => p.id === this.selectedPrinterId)
-        .isAgentMoonraker()
-      const listPrinterLocalGCodes = isAgentMoonraker
+      const listPrinterLocalGCodes = this.isAgentMoonraker
         ? listPrinterLocalGCodesMoonraker
         : listPrinterLocalGCodesOctoPrint
 
@@ -811,4 +819,16 @@ export default {
     flex-direction: column
     .subtitle
       font-size: 0.75rem
+
+.notice-block
+  border: 1px solid var(--color-divider)
+  border-radius: var(--border-radius-md)
+  display: flex
+  align-items: center
+  padding: 1rem 1.5rem
+  margin-bottom: var(--gap-between-blocks)
+
+  .message
+    margin: 0
+    margin-left: 1rem
 </style>

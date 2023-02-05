@@ -27,4 +27,7 @@ export default {
     displayName: 'Slack',
     componentName: 'SlackPlugin',
   },
+  webhook: {
+    displayName: 'Webhook',
+  },
 }

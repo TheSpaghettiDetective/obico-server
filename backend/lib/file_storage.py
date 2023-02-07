@@ -30,3 +30,7 @@ def retrieve_to_file_obj(src_path, file_obj, container, long_term_storage=True):
 def delete_dir(dir_path, container, long_term_storage=True):
     file_storage = lt_file_storage if long_term_storage else st_file_storage
     return file_storage.delete_dir(dir_path, container)
+
+def delete_file(file_path, container, long_term_storage=True):
+    file_storage = lt_file_storage if long_term_storage else st_file_storage
+    return file_storage.delete_file(file_path, container)

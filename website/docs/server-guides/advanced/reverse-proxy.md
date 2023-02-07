@@ -99,7 +99,7 @@ server {
 
 1. Add `labels:` and `networks:` to the `web:` section, and also add `networks:` at the end of the file:
 
-    ```
+    ```yaml
     ...
       web:
         <<: *web-defaults
@@ -126,6 +126,6 @@ server {
             external: true
       ```
 
-1. Retart the Obico Server with `docker compose restart`
+1. Restart the Obico Server with `docker compose restart`
 
 1. You should now be able to browse to `spaghetti.your.domain`

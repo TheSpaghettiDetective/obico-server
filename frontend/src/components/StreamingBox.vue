@@ -126,7 +126,7 @@ import ifvisible from 'ifvisible'
 
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
-import ViewingThrottle from '@src/lib/viewing_throttle'
+import ViewingThrottle from '@src/lib/viewing-throttle'
 
 function MJpegStreamDecoder(onFrame) {
   const self = {

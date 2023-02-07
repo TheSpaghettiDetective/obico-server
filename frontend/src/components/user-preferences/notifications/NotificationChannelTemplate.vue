@@ -142,7 +142,7 @@ import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NotificationSettingSwitch from '@src/components/user-preferences/notifications/NotificationSettingSwitch.vue'
 import { getNotificationSettingKey } from '@src/lib/utils'
 import defaultNotificationSettings from '@config/user-preferences/notification-settings'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'NotificationChannelTemplate',

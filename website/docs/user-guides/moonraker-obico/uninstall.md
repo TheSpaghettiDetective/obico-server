@@ -4,7 +4,7 @@ title: Uninstall Obico for Klipper
 
 To remove the code and system services for Obico for Klipper, run these command
 
-```
+```bash
 sudo systemctl stop moonraker-obico.service
 sudo systemctl disable moonraker-obico.service
 sudo rm /etc/systemd/system/moonraker-obico.service
@@ -15,7 +15,7 @@ rm -rf ~/moonraker-obico
 
 To remove the configuration:
 
-```
+```bash
 rm ~/klipper_config/moonraker-obico.cfg
 rm ~/klipper_config/moonraker-obico-update.cfg
 ```

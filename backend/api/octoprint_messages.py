@@ -87,6 +87,9 @@ def update_current_print_if_needed(msg, printer):
     # This has to happen before event saving, as `current_print` may change after event saving.
     mobile_notifications.send_if_needed(printer.current_print, op_event, printer_status)
 
+    if op_event.get('event_type') == 'PrintCancelling':
+        # progress data will be reset after PrintCancelling in OctoPrint. Set it now or never.
+        update_print_stats_if_needed(printer_status, printer.current_print)
     if op_event.get('event_type') == 'PrintCancelled':
         printer.current_print.cancelled()
     elif op_event.get('event_type') == 'PrintFailed':
@@ -95,6 +98,7 @@ def update_current_print_if_needed(msg, printer):
         printer.current_print.cancelled()
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintDone':
+        update_print_stats_if_needed(printer_status, printer.current_print)
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
         printer.current_print.paused()
@@ -104,3 +108,33 @@ def update_current_print_if_needed(msg, printer):
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)
+
+def update_print_stats_if_needed(printer_status, print):
+    '''
+    This method is idempotent and set the stats at the first chance.
+    This is because various versions of OctoPrint-Obico and moonraker-obico
+    are not consistent at when the relevant values will be reset.
+    For instance, the earliest and the latest events for OctoPrint-Obico are:
+    PrintDone, PrintCancelling.
+    For moonraker-obico, it's Cancelled, Done, but not with a wrong completion value
+    '''
+    print_obj_dirty = False
+
+    print_time = printer_status.get('progress', {}).get('printTime')
+
+    if print.print_time is None and print_time is not None:
+        print.print_time = print_time
+        print_obj_dirty = True
+
+    completion = printer_status.get('progress', {}).get('completion')
+
+    if print.filament_used is None and completion is not None and print.g_code_file and print.g_code_file.filament_total:
+
+        if completion == 0 and print_time and print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time
+            completion = print_time / print.g_code_file.estimated_time
+
+        print.filament_used = print.g_code_file.filament_total * completion / 100.0
+        print_obj_dirty = True
+
+    if print_obj_dirty:
+        print.save()

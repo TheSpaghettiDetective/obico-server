@@ -42,7 +42,7 @@
 <script>
 import { Themes } from '@static/js/color-scheme'
 import { theme, setTheme, currentThemeValue } from '@src/lib/color-scheme-controller'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'ThemePreferences',

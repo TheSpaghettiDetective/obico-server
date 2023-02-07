@@ -13,22 +13,19 @@
           <span>{{ print.printer ? print.printer.name : 'Unavailable' }}</span>
         </div>
         <div class="info">
-          <i class="far fa-clock icon"></i>
-          <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
+          <i class="fas fa-calendar-alt icon"></i>
+          <span v-if="print.ended_at">{{ print.ended_at.format('MMMM M, YYYY') }}</span>
           <span v-else>Printing...</span>
-        </div>
-        <div
-          v-if="print.reviewNeeded || print.focusedFeedbackNeeded"
-          class="info feedback-info"
-          :class="{ focused: print.focusedFeedbackNeeded }"
-        >
-          <span v-if="print.reviewNeeded">Review needed</span>
-          <span v-else>Focused feedback needed</span>
         </div>
       </div>
     </div>
     <div v-if="print.poster_url" class="poster">
       <div class="img" :style="{ backgroundImage: `url(${print.poster_url})` }"></div>
+    </div>
+    <div v-else class="poster no-photo">
+      <svg>
+        <use href="#svg-no-photo" />
+      </svg>
     </div>
   </div>
 </template>
@@ -141,15 +138,24 @@ export default {
 
 .poster
   margin-left: auto
+  background-color: var(--color-hover)
   .img
     background-size: cover
     background-position: center
     height: 100%
     width: 100px
-    background-color: var(--color-hover)
     display: flex
     justify-content: center
     align-items: center
     color: var(--color-text-secondary)
     font-size: 0.875rem
+  &.no-photo
+    width: 100px
+    display: flex
+    align-items: center
+    justify-content: center
+    svg
+      width: 3rem
+      height: 3rem
+      color: var(--color-background)
 </style>

@@ -6,14 +6,26 @@
         <b-row>
           <b-col lg="5">
             <div class="print-info">
-              <div class="card-container header">
-                <div class="info">
-                  <div class="status" :class="print.status.key">
-                    {{ print.status.title }}
+              <!-- File -->
+              <div class="card-container file">
+                <div class="icon">
+                  <i class="fas fa-file-code"></i>
+                </div>
+                <div class="info overflow-truncated-parent">
+                  <div class="title overflow-truncated">{{ print.filename }}</div>
+                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
+                    <span>{{ print.g_code_file.filesize }}</span>
+                    <span v-if="print.g_code_file.created_at"
+                      >, created {{ print.g_code_file.created_at.fromNow() }}</span
+                    >
                   </div>
-                  <div class="date">
-                    {{ print.ended_at ? print.ended_at.fromNow() : '-' }}
-                  </div>
+                </div>
+                <div v-if="print.g_code_file" class="action">
+                  <a
+                    class="btn btn-secondary"
+                    :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
+                    >Open file</a
+                  >
                 </div>
               </div>
               <!-- Printer -->
@@ -49,29 +61,15 @@
                   </button>
                 </div>
               </div>
-              <!-- File -->
-              <div class="card-container file">
-                <div class="icon">
-                  <i class="fas fa-file-code"></i>
-                </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.filename }}</div>
-                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
-                    <span>{{ print.g_code_file.filesize }}</span>
-                    <span v-if="print.g_code_file.created_at"
-                      >, created {{ print.g_code_file.created_at.fromNow() }}</span
-                    >
+              <div class="card-container">
+                <div class="info-line">
+                  <div class="title">Status</div>
+                  <div class="value">
+                    <div class="print-status" :class="print.status.key">
+                      {{ print.status.title }}
+                    </div>
                   </div>
                 </div>
-                <div v-if="print.g_code_file" class="action">
-                  <a
-                    class="btn btn-secondary"
-                    :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
-                    >Open file</a
-                  >
-                </div>
-              </div>
-              <div class="card-container">
                 <div class="info-line">
                   <div class="title">Start time</div>
                   <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
@@ -173,7 +171,7 @@
                                 </b-button>
                               </div>
                               <transition name="bounce">
-                                <div v-if="focusedFeedbackEligible" class="pt-2">
+                                <div v-if="print.printShotFeedbackEligible" class="pt-2">
                                   <b-button
                                     variant="outline-primary"
                                     size="sm"
@@ -181,7 +179,7 @@
                                     target="_blank"
                                   >
                                     <i
-                                      v-if="focusedFeedbackCompleted"
+                                      v-if="!print.need_print_shot_feedback"
                                       class="fas fa-check mr-2"
                                     ></i>
                                     FOCUSED FEEDBACK
@@ -190,8 +188,8 @@
                               </transition>
 
                               <div class="about-feedback">
-                                <small v-if="focusedFeedbackEligible">
-                                  <span v-if="focusedFeedbackCompleted">
+                                <small v-if="print.printShotFeedbackEligible">
+                                  <span v-if="!print.need_print_shot_feedback">
                                     Thank you for completing the Focused Feedback. You have earned 2
                                     non-expirable AI Detection Hours. You can click the button again
                                     to change your feedback.
@@ -259,7 +257,17 @@
                 </b-card>
               </div>
               <div v-else class="card-container">
-                <p class="text-secondary text-center mt-3">Time-Lapse video unavailable</p>
+                <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
+                <ul>
+                  <li class="text-secondary mt-3">
+                    The Obico server is still processing the time-lapse;
+                  </li>
+                  <li class="text-secondary mt-3">
+                    Or, the print time was shorter than the threshold. You can change the threshold
+                    in
+                    <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
+                  </li>
+                </ul>
               </div>
             </div>
           </b-col>
@@ -301,7 +309,7 @@ export default {
   data: function () {
     return {
       PrintStatus,
-      absoluteDateFormat: 'MMM M, YYYY H:mm A',
+      absoluteDateFormat: 'MMM M, YYYY h:mm A',
       data: {
         print: undefined,
         predictions: undefined,
@@ -328,13 +336,6 @@ export default {
 
     isLoading() {
       return !!Object.values(this.data).filter((d) => d === undefined).length
-    },
-    focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
-    },
-
-    focusedFeedbackCompleted() {
-      return this.print.printshotfeedback_set.length > 0 && !this.print.focusedFeedbackNeeded
     },
 
     normalizedP() {
@@ -465,17 +466,6 @@ export default {
   flex-direction: column
   gap: 15px
 
-.header
-  .date
-    font-size: 1.125rem
-  .status
-    font-weight: bold
-    font-size: .875rem
-    &.cancelled
-      color: var(--color-danger)
-    &.finished
-      color: var(--color-success)
-
 .printer, .file
   display: flex
   align-items: center
@@ -498,6 +488,14 @@ export default {
     border-bottom: none
 .title
   font-weight: bold
+
+.print-status
+  font-weight: bold
+  font-size: .875rem
+  &.cancelled
+    color: var(--color-danger)
+  &.finished
+    color: var(--color-success)
 
 .time-lapse
   .title

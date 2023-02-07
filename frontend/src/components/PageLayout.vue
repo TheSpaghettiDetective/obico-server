@@ -123,7 +123,7 @@
 
 <script>
 import get from 'lodash/get'
-import { inMobileWebView, user, settings } from '@src/lib/page_context'
+import { inMobileWebView, user, settings } from '@src/lib/page-context'
 import layoutSections from '@config/layout/sections'
 
 export default {

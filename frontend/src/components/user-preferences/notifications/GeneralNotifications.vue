@@ -53,7 +53,7 @@
 
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'GeneralNotifications',

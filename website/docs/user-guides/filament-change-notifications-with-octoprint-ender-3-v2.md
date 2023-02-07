@@ -124,4 +124,3 @@ Be patient, compiling the firmware can take as long as ten minutes.
 1. Clear (delete or move) everything on it.
 
 1. Save the BIN firmware file to the Micro SD card.
-

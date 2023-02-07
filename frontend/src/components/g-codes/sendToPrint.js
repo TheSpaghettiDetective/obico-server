@@ -1,26 +1,30 @@
 import axios from 'axios'
 import get from 'lodash/get'
 
-import PrinterComm from '@src/lib/printer_comm'
-import {printPrinterLocalGCodeOctoPrint, printPrinterLocalGCodeMoonraker} from '@src/lib/printer_local_comm'
+import PrinterComm from '@src/lib/printer-comm'
+import {
+  printPrinterLocalGCodeOctoPrint,
+  printPrinterLocalGCodeMoonraker,
+} from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
 
 export function printCloudGCode(printerComm, gcode) {
   return new Promise((resolve, reject) => {
     printerComm.passThruToPrinter(
       {
-          func: 'download',
-          target: 'file_downloader',
-          args: [gcode],
+        func: 'download',
+        target: 'file_downloader',
+        args: [gcode],
       },
       (err, ret) => {
         if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!');
+          reject(ret?.error || 'Something went wrong!')
         } else {
-          resolve();
+          resolve()
         }
-      });
-  });
+      }
+    )
+  })
 }
 
 export const sendToPrint = (args) => {
@@ -41,8 +45,12 @@ export const sendToPrint = (args) => {
     (printerStatus) => {}
   )
   printerComm.connect(() => {
-    const printGCode = isCloud ? printCloudGCode : ( isAgentMoonraker ? printPrinterLocalGCodeMoonraker : printPrinterLocalGCodeOctoPrint)
-    printGCode(printerComm, gcode).catch( err => {
+    const printGCode = isCloud
+      ? printCloudGCode
+      : isAgentMoonraker
+      ? printPrinterLocalGCodeMoonraker
+      : printPrinterLocalGCodeOctoPrint
+    printGCode(printerComm, gcode).catch((err) => {
       Swal.Toast.fire({
         icon: 'error',
         title: err,

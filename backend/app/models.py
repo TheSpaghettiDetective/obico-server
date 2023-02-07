@@ -473,7 +473,7 @@ class Print(SafeDeleteModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     ext_id = models.IntegerField(null=True, blank=True)
     filename = models.CharField(max_length=1000, null=False, blank=False)
-    started_at = models.DateTimeField(null=True)
+    started_at = models.DateTimeField(null=True, db_index=True)
     finished_at = models.DateTimeField(null=True)
     cancelled_at = models.DateTimeField(null=True)
     uploaded_at = models.DateTimeField(null=True)
@@ -492,6 +492,9 @@ class Print(SafeDeleteModel):
     )
     access_consented_at = models.DateTimeField(null=True, blank=True)
     video_archived_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    filament_used = models.FloatField(null=True)
+    print_time = models.FloatField(null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -528,6 +531,12 @@ class Print(SafeDeleteModel):
 
     def is_canceled(self):
         return bool(self.cancelled_at)
+
+    def need_alert_overwrite(self):
+        return self.alert_overwrite is None and self.tagged_video_url is not None
+
+    def need_print_shot_feedback(self):
+        return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
 
     @property
     def expecting_detective_view(self):
@@ -714,6 +723,12 @@ class GCodeFile(SafeDeleteModel):
     resident_printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=True)  # null for gcode files on the server
     # A value the agent can independently derive to match with the server. Format: scheme:value
     agent_signature = models.CharField(max_length=256, null=True, blank=False)
+    metadata_json = models.TextField(null=True, blank=False)
+    filament_total = models.FloatField(null=True)
+    estimated_time = models.FloatField(null=True)
+    thumbnail1_url = models.CharField(max_length=2000, null=True, blank=False)
+    thumbnail2_url = models.CharField(max_length=2000, null=True, blank=False)
+    thumbnail3_url = models.CharField(max_length=2000, null=True, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

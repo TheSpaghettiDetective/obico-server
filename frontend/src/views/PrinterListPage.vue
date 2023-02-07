@@ -148,7 +148,7 @@ import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import { user, settings } from '@src/lib/page_context'
+import { user, settings } from '@src/lib/page-context'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 

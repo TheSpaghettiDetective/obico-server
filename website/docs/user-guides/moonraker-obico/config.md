@@ -28,7 +28,7 @@ port = 7125
 disable_video_streaming = False
 
 # CAUTION: Don't set this section unless you know what you are doing
-#   In most cases webcam configuration will be automatically retrived from moonraker
+#   In most cases webcam configuration will be automatically retrieved from moonraker
 #
 # snapshot_url = http://127.0.0.1:8080/?action=snapshot
 # stream_url = http://127.0.0.1:8080/?action=stream

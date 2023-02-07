@@ -56,7 +56,7 @@ Testing upload speed in the Raspberry Pi requires technical skills such as SSH a
 
 2. Once you are in the Raspberry Pi, run the follow commands:
 
-```
+```bash
 source /home/pi/oprint/bin/activate
 pip install speedtest-cli
 speedtest-cli

@@ -133,11 +133,11 @@ import split from 'lodash/split'
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { isLocalStorageSupported } from '@static/js/utils'
-import { user } from '@src/lib/page_context'
+import { user } from '@src/lib/page-context'
 
 const AXIS = {
   x: 'x',

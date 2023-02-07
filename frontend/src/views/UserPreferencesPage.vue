@@ -129,7 +129,7 @@
 import axios from 'axios'
 import urls from '@config/server-urls'
 import PageLayout from '@src/components/PageLayout.vue'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
+import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'

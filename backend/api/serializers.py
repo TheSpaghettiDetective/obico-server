@@ -87,13 +87,13 @@ class BasePrintSerializer(serializers.ModelSerializer):
                   'cancelled_at', 'uploaded_at', 'alerted_at',
                   'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
                   'video_url', 'tagged_video_url', 'poster_url', 'alert_overwrite',
-                  'access_consented_at', 'video_archived_at')
+                  'access_consented_at', 'video_archived_at', 'need_alert_overwrite', 'need_print_shot_feedback')
         read_only_fields = (
             'id', 'g_code_file', 'filename', 'started_at', 'ended_at', 'finished_at',
             'cancelled_at', 'uploaded_at', 'alerted_at',
             'alert_acknowledged_at', 'alert_muted_at', 'paused_at',
             'video_url', 'tagged_video_url', 'poster_url',
-            'video_archived_at')
+            'video_archived_at', 'need_alert_overwrite', 'need_print_shot_feedback')
 
     def get_prediction_json_url(self, obj: Print) -> str:
         return reverse('Print-prediction-json', kwargs={'pk': obj.pk})

@@ -25,7 +25,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 
 export default {
-  name: 'webhook',
+  name: 'WebhookPlugin',
 
   components: {
     NotificationChannelTemplate,

@@ -309,7 +309,7 @@ export default {
   data: function () {
     return {
       PrintStatus,
-      absoluteDateFormat: 'MMM M, YYYY h:mm A',
+      absoluteDateFormat: 'MMM D, YYYY h:mm a',
       data: {
         print: undefined,
         predictions: undefined,

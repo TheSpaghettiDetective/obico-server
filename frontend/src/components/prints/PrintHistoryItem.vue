@@ -14,7 +14,7 @@
         </div>
         <div class="info">
           <i class="fas fa-calendar-alt icon"></i>
-          <span v-if="print.ended_at">{{ print.ended_at.format('MMMM M, YYYY') }}</span>
+          <span v-if="print.ended_at">{{ print.ended_at.format('MMM D, YYYY') }}</span>
           <span v-else>Printing...</span>
         </div>
       </div>

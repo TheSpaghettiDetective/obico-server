@@ -1,5 +1,5 @@
 <template>
-  <div class="print-container" @click="openPrint">
+  <a :href="`/prints/${print.id}/`" class="print-container">
     <div class="status-indicator" :class="print.status.key"></div>
     <div class="main-content overflow-truncated-parent">
       <div class="top">
@@ -27,7 +27,7 @@
         <use href="#svg-no-photo" />
       </svg>
     </div>
-  </div>
+  </a>
 </template>
 
 <script>
@@ -50,12 +50,6 @@ export default {
       PrintStatus,
     }
   },
-
-  methods: {
-    openPrint() {
-      window.location.assign(`/prints/${this.print.id}/`)
-    },
-  },
 }
 </script>
 
@@ -65,6 +59,7 @@ export default {
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
   overflow: hidden
+  color: var(--color-text-primary)
   &:hover
     cursor: pointer
     background: var(--color-hover-accent)

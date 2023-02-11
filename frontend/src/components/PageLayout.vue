@@ -410,7 +410,7 @@ export default {
     .clickable-area
       margin: -0.25rem -0.75rem
       padding: 0.25rem 0.75rem
-    i
+    i, .custom-svg-icon
       width: 20px
       margin-right: .5rem
 

@@ -8,7 +8,7 @@
           class="btn shadow-none hours-btn d-none d-md-inline"
           :title="dhBadgeNum + ' AI Detection Hours'"
         >
-          <svg>
+          <svg class="custom-svg-icon">
             <use href="#svg-detective-hours"></use>
           </svg>
           <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
@@ -19,7 +19,9 @@
           class="btn shadow-none icon-btn d-none d-md-inline"
           title="Link New Printer"
         >
-          <i class="fas fa-plus"></i>
+          <svg class="custom-svg-icon add-printer">
+            <use href="#svg-add-printer"></use>
+          </svg>
         </a>
         <b-dropdown right no-caret toggle-class="icon-btn">
           <template #button-content>
@@ -29,7 +31,10 @@
             <i class="fas fa-hourglass-half"></i>{{ dhBadgeNum }} AI Detection Hours
           </b-dropdown-item>
           <b-dropdown-item href="/printers/wizard/" class="d-md-none">
-            <i class="fas fa-plus"></i>Link New Printer
+            <svg class="custom-svg-icon add-printer">
+              <use href="#svg-add-printer"></use>
+            </svg>
+            Link New Printer
           </b-dropdown-item>
           <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
           <cascaded-dropdown
@@ -355,10 +360,6 @@ export default {
   padding-right: 1.625rem
   color: var(--color-text-primary)
 
-  svg
-    height: 1.125rem
-    width: 1.125rem
-
   .badge
     position: absolute
     left: 22px
@@ -367,6 +368,13 @@ export default {
     background-color: var(--color-primary)
     height: auto
     font-size: .625rem
+
+.custom-svg-icon
+  height: 1.125rem
+  width: 1.125rem
+  &.add-printer
+    height: 1.25rem
+    width: 1.25rem
 
 ::v-deep .dropdown-item .clickable-area
   margin: -0.25rem -1.5rem

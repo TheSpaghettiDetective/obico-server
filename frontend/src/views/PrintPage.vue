@@ -335,7 +335,7 @@ export default {
     },
 
     isLoading() {
-      return !!Object.values(this.data).filter((d) => d === undefined).length
+      return this.data.print === undefined || this.data.printer === undefined
     },
 
     normalizedP() {
@@ -411,7 +411,7 @@ export default {
             }
           })
       } catch (error) {
-        this._showErrorPopup(error)
+        console.error(error)
       }
     },
     onTimeUpdate(currentPosition) {

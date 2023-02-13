@@ -369,6 +369,7 @@ class GCodeFileView(
             ).get_or_create(
                 agent_signature=validated_data['agent_signature'],
                 safe_filename=validated_data['safe_filename'],
+                resident_printer=printer, # If a file is copied to a different folder in octoprint/klipper, they will be considered as 1 gcode. This may or may not be the desired behavior
                 defaults=validated_data,
             )
         return Response(

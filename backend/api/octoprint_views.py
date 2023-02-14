@@ -309,10 +309,6 @@ class PrinterEventView(CreateAPIView):
     def post(self, request):
         printer = request.auth
 
-        # Dedup event repeating shorter than 5 minutes
-        if self.get_queryset().filter(event_title=request.data.get('event_title'), created_at__gt=(timezone.now()-timedelta(seconds=60*5))).count() > 0:
-            return Response({'result': 'ok', 'details': 'Duplicate'})
-
         rotated_jpg_url = None
         if 'snapshot' in request.FILES:
             pic = request.FILES['snapshot']

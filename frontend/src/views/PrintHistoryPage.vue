@@ -88,6 +88,56 @@
       <b-container>
         <b-row>
           <b-col v-if="prints.length || loading">
+            <div class="prints-summary">
+              <div class="summary-item">
+                <div class="icon">
+                  <i class="fas fa-hashtag"></i>
+                </div>
+                <div class="info">
+                  <div class="title">Prints done</div>
+                  <div class="value">
+                    {{ stats.total_print_count }} (<span class="text-success">{{
+                      stats.total_succeeded_print_count
+                    }}</span>
+                    / <span class="text-danger">{{ stats.total_cancelled_print_count }}</span
+                    >)
+                  </div>
+                </div>
+              </div>
+              <div class="summary-item">
+                <div class="icon">
+                  <i class="far fa-clock"></i>
+                </div>
+                <div class="info">
+                  <div class="title">Total print time</div>
+                  <div class="value">{{ totalPrintTimeFormatted }}</div>
+                </div>
+              </div>
+              <div class="summary-item">
+                <div class="icon">
+                  <i class="fas fa-ruler-horizontal"></i>
+                </div>
+                <div class="info">
+                  <div class="title">
+                    <help-widget
+                      id="filament-used-may-be-incorrect"
+                      :highlight="false"
+                      :show-close-button="false"
+                    >
+                      Filament used
+                    </help-widget>
+                  </div>
+                  <div class="value">{{ stats.total_filament_used }}m</div>
+                </div>
+              </div>
+              <!-- <div class="btn-wrapper">
+                <a class="btn btn-secondary" :href="`/stats/`">
+                  Full stats
+                  <i class="fas fa-arrow-right"></i>
+                </a>
+              </div> -->
+            </div>
+
             <print-history-item
               v-for="print of prints"
               :key="print.id"
@@ -109,6 +159,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import axios from 'axios'
 import MugenScroll from 'vue-mugen-scroll'
 import urls from '@config/server-urls'
@@ -124,8 +175,8 @@ import FilteringDropdown, {
 import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import DatePickerModal from '@src/components/DatePickerModal.vue'
-import moment from 'moment'
 import { user } from '@src/lib/page-context'
+import HelpWidget from '@src/components/HelpWidget.vue'
 
 const PAGE_SIZE = 24
 
@@ -135,13 +186,13 @@ const SortingOptions = {
   default: { sorting: 'date', direction: 'desc' },
 }
 
+const DateParamFormat = 'YYYY-MM-DD'
 const FilterLocalStoragePrefix = 'printsFiltering'
 const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
     buildQueryParam: (val, dateFrom, dateTo, user) => {
       let params = {}
-      const formatting = 'YYYY-MM-DD'
       const today = new Date()
       const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
@@ -149,27 +200,27 @@ const FilterOptions = {
 
       switch (val) {
         case 'this_week':
-          params = { from_date: moment(firstDayOfWeek).format(formatting) }
+          params = { from_date: moment(firstDayOfWeek).format(DateParamFormat) }
           break
         case 'this_month':
-          params = { from_date: moment(firstDayOfMonth).format(formatting) }
+          params = { from_date: moment(firstDayOfMonth).format(DateParamFormat) }
           break
         case 'this_year':
-          params = { from_date: moment(firstDayOfYear).format(formatting) }
+          params = { from_date: moment(firstDayOfYear).format(DateParamFormat) }
           break
         case 'custom':
           if (dateFrom) {
-            params['from_date'] = moment(dateFrom).format(formatting)
+            params['from_date'] = moment(dateFrom).format(DateParamFormat)
           }
           if (dateTo) {
-            params['to_date'] = moment(dateTo).format(formatting)
+            params['to_date'] = moment(dateTo).format(DateParamFormat)
           }
           break
         default:
           return {}
       }
-      params['from_date'] = params['from_date'] || moment(user.date_joined).format(formatting)
-      params['to_date'] = params['to_date'] || moment(new Date()).format(formatting)
+      params['from_date'] = params['from_date'] || moment(user.date_joined).format(DateParamFormat)
+      params['to_date'] = params['to_date'] || moment(new Date()).format(DateParamFormat)
       params['timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
       return params
     },
@@ -226,10 +277,12 @@ export default {
     FilteringDropdown,
     ActiveFilterNotice,
     PrintHistoryItem,
+    HelpWidget,
   },
 
   data: function () {
     return {
+      stats: {},
       prints: [],
       loading: false,
       noMoreData: false,
@@ -245,6 +298,25 @@ export default {
       filterOptions: FilterOptions,
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
     }
+  },
+
+  computed: {
+    totalPrintTimeFormatted() {
+      const duration = moment.duration(this.stats.total_print_time, 'seconds')
+      const days = duration.days()
+      const hours = duration.hours()
+      const minutes = duration.minutes()
+
+      return `${days}d ${hours}h ${minutes}m`
+    },
+    defaultStatsParams() {
+      return {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        from_date: moment(this.user.date_joined).format(DateParamFormat),
+        to_date: moment(new Date()).format(DateParamFormat),
+        group_by: 'year',
+      }
+    },
   },
 
   created() {
@@ -311,6 +383,26 @@ export default {
       this.prints = []
       this.noMoreData = false
       this.fetchMoreData()
+      this.fetchStats()
+    },
+    fetchStats() {
+      axios
+        .get(urls.stats(), {
+          params: {
+            ...this.defaultStatsParams,
+            ...getFilterParams(
+              this.filterOptions,
+              this.filterValues,
+              this.customFilterParamsBuilder
+            ),
+          },
+        })
+        .then((response) => {
+          this.stats = response.data
+        })
+        .catch((error) => {
+          this._showErrorPopup(error)
+        })
     },
 
     // Sorting
@@ -414,4 +506,52 @@ export default {
 <style lang="sass" scoped>
 .print-item
   margin-bottom: 10px
+
+.prints-summary
+  margin-bottom: var(--gap-between-blocks)
+  border: 1px solid var(--color-divider)
+  border-radius: var(--border-radius-lg)
+  padding: 1.5rem 2rem
+  display: flex
+  justify-content: space-around
+  align-items: center
+  .summary-item
+    display: flex
+    align-items: center
+    gap: 1rem
+  .icon
+    font-size: 1.5rem
+    color: var(--color-divider)
+  .value
+    font-weight: bold
+  .btn
+    display: inline-flex
+    gap: .5rem
+    align-items: center
+    justify-content: center
+    .fa-arrow-right
+      font-size: .8em
+
+  @media (max-width: 768px)
+    flex-direction: column
+    align-items: normal
+    gap: .25rem
+    padding: 1rem
+
+    .summary-item
+      gap: 0
+      .icon
+        font-size: 1rem
+        width: 2rem
+        text-align: center
+      .info
+        flex: 1
+        display: flex
+        justify-content: space-between
+
+    .btn-wrapper
+      text-align: center
+    .btn
+      margin-top: 1rem
+      font-size: .875rem
 </style>

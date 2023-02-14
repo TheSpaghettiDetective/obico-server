@@ -68,7 +68,7 @@ def send_notification_for_print_event(_print, print_event, extra_context=None):
         ] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
 
         handler.queue_send_printer_notifications_task(
-            printer=_print.printer,
+            printer=print_event.printer,
             notification_type=notification_type,
             print_=_print,
             img_url=print_event.image_url,

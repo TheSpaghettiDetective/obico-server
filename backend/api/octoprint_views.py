@@ -331,7 +331,7 @@ class PrinterEventView(CreateAPIView):
             event_text=request.data.get('event_text'),
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
-            task_handler=False,
+            task_handler=request.data.get('notify', '').lower() in ['t', 'true'],
         )
         return Response({'result': 'ok'})
 

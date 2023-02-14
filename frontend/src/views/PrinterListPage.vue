@@ -185,7 +185,7 @@ const SortingLocalStoragePrefix = 'printersSorting'
 const SortingOptions = {
   options: [
     { title: 'Name', key: 'name' },
-    { title: 'Date', key: 'created_at' },
+    { title: 'Created at', key: 'created_at' },
   ],
   default: { sorting: 'created_at', direction: 'desc' },
 }

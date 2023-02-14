@@ -309,12 +309,11 @@ export default {
   data: function () {
     return {
       PrintStatus,
-      absoluteDateFormat: 'MMM M, YYYY h:mm A',
-      data: {
-        print: undefined,
-        predictions: undefined,
-        printer: undefined,
-      },
+      absoluteDateFormat: 'MMM D, YYYY h:mm a',
+      print: null,
+      predictions: [],
+      printer: null,
+      isLoading: true,
       isSending: false,
       currentPosition: 0,
       inflightAlertOverwrite: null,
@@ -323,21 +322,6 @@ export default {
   },
 
   computed: {
-    // shortcuts
-    print() {
-      return this.data.print
-    },
-    predictions() {
-      return this.data.predictions
-    },
-    printer() {
-      return this.data.printer
-    },
-
-    isLoading() {
-      return !!Object.values(this.data).filter((d) => d === undefined).length
-    },
-
     normalizedP() {
       return getNormalizedP(this.predictions, this.currentPosition, false)
     },
@@ -385,33 +369,40 @@ export default {
     downloadFile,
     async fetchData(clearPreviousData = true) {
       if (clearPreviousData) {
-        for (const key of Object.keys(this.data)) {
-          this.data[key] = undefined
-        }
+        this.print = null
+        this.predictions = []
+        this.printer = null
       }
+
+      this.isLoading = true
 
       try {
         const printResponse = await axios.get(urls.print(this.printId))
-        this.data.print = normalizedPrint(printResponse.data)
+        this.print = normalizedPrint(printResponse.data)
 
-        axios.get(this.print.prediction_json_url).then((response) => {
-          this.data.predictions = response.data
-        })
+        if (this.print.prediction_json_url) {
+          axios.get(this.print.prediction_json_url).then((response) => {
+            this.predictions = response.data
+          })
+        }
 
         axios
           .get(urls.printer(this.print.printer.id))
           .then((response) => {
-            this.data.printer = normalizedPrinter(response.data)
+            this.printer = normalizedPrinter(response.data)
           })
           .catch((error) => {
             // Printer could be old and deleted from account (404 error)
-            this.data.printer = null
+            this.printer = null
             if (error?.response?.status !== 404) {
               this._showErrorPopup(error, 'Failed to fetch printer information')
             }
           })
+          .finally(() => {
+            this.isLoading = false
+          })
       } catch (error) {
-        this._showErrorPopup(error)
+        console.log(error)
       }
     },
     onTimeUpdate(currentPosition) {

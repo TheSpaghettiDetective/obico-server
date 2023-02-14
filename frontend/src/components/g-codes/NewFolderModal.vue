@@ -3,6 +3,7 @@
     id="b-modal-new-folder"
     title="Enter new folder name"
     ok-title="Create"
+    :ok-disabled="!newFolderName.length"
     centered
     @ok="handleOk"
     @hidden="resetModal"
@@ -28,7 +29,6 @@
 </template>
 
 <script>
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
 
@@ -72,7 +72,9 @@ export default {
       this.handleSubmit()
     },
     async handleSubmit() {
-      if (!this.newFolderName) return
+      if (!this.newFolderName) {
+        return
+      }
 
       if (this.preConfirm) {
         const result = this.preConfirm(this.newFolderName)

@@ -109,7 +109,7 @@ def update_current_print_if_needed(msg, printer):
     elif op_event.get('event_type') == 'FilamentChange':
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)
 
-def update_print_stats_if_needed(printer_status, print):
+def update_print_stats_if_needed(printer_status, _print):
     '''
     This method is idempotent and set the stats at the first chance.
     This is because various versions of OctoPrint-Obico and moonraker-obico
@@ -122,19 +122,19 @@ def update_print_stats_if_needed(printer_status, print):
 
     print_time = printer_status.get('progress', {}).get('printTime')
 
-    if print.print_time is None and print_time is not None:
-        print.print_time = print_time
+    if _print.print_time is None and print_time is not None:
+        _print.print_time = print_time
         print_obj_dirty = True
 
     completion = printer_status.get('progress', {}).get('completion')
 
-    if print.filament_used is None and completion is not None and print.g_code_file and print.g_code_file.filament_total:
+    if _print.filament_used is None and completion is not None and _print.g_code_file and _print.g_code_file.filament_total:
 
-        if completion == 0 and print_time and print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time
-            completion = print_time / print.g_code_file.estimated_time
+        if completion == 0 and print_time and _print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time
+            completion = print_time / _print.g_code_file.estimated_time
 
-        print.filament_used = print.g_code_file.filament_total * completion / 100.0
+        _print.filament_used = _print.g_code_file.filament_total * completion / 100.0
         print_obj_dirty = True
 
     if print_obj_dirty:
-        print.save()
+        _print.save()

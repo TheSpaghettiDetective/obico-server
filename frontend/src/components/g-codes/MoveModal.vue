@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
@@ -69,11 +68,7 @@ export default {
       type: String,
       default: null,
     },
-    activeSorting: {
-      type: Object,
-      required: true,
-    },
-    activeSortingDirection: {
+    sortingValue: {
       type: Object,
       required: true,
     },
@@ -147,14 +142,15 @@ export default {
 
       if (!this.noMoreFolders) {
         try {
-          let response = await axios.get(urls.gcodeFolders(), {
-            params: {
-              parent_folder: this.parentFolder || 'null',
-              page: this.currentFoldersPage,
-              page_size: PAGE_SIZE,
-              sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
-            },
-          })
+          const params = {
+            parent_folder: this.parentFolder || 'null',
+            page: this.currentFoldersPage,
+            page_size: PAGE_SIZE,
+          }
+          if (this.sortingValue.sorting.folderKey) {
+            params.sorting = `${this.sortingValue.sorting.folderKey}_${this.sortingValue.direction.key}`
+          }
+          let response = await axios.get(urls.gcodeFolders(), { params })
           response = response.data
           this.noMoreFolders = response?.next === null
           folders = response?.results || []
@@ -174,7 +170,7 @@ export default {
               parent_folder: this.parentFolder || 'null',
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
-              sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+              sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,
             },
           })
           response = response.data
@@ -196,13 +192,13 @@ export default {
       this.isOpen = true
       this.fetchFilesAndFolders()
 
-      setTimeout(() => {
+      this.$nextTick(() => {
         if (!this.item) {
           this.isOpen = false
           return
         }
         this.$bvModal.show('b-modal-move')
-      }, 100)
+      })
     },
     close() {
       this.$bvModal.hide('b-modal-move')

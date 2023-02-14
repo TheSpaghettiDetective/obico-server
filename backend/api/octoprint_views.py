@@ -309,11 +309,6 @@ class PrinterEventView(CreateAPIView):
     def post(self, request):
         printer = request.auth
 
-        # Dedup repeated errors
-        last_event = self.get_queryset().order_by('id').last()
-        if last_event and last_event.event_title == request.data.get('event_title'):
-            return Response({'result': 'ok', 'details': 'Duplicate'})
-
         rotated_jpg_url = None
         if 'snapshot' in request.FILES:
             pic = request.FILES['snapshot']
@@ -336,7 +331,7 @@ class PrinterEventView(CreateAPIView):
             event_text=request.data.get('event_text'),
             info_url=request.data.get('info_url'),
             image_url=rotated_jpg_url,
-            task_handler=False,
+            task_handler=request.data.get('notify', '').lower() in ['t', 'true'],
         )
         return Response({'result': 'ok'})
 
@@ -370,6 +365,7 @@ class GCodeFileView(
             ).get_or_create(
                 agent_signature=validated_data['agent_signature'],
                 safe_filename=validated_data['safe_filename'],
+                resident_printer=printer, # If a file is copied to a different folder in octoprint/klipper, they will be considered as 1 gcode. This may or may not be the desired behavior
                 defaults=validated_data,
             )
         return Response(

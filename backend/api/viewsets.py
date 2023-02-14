@@ -175,7 +175,8 @@ class PrintViewSet(
     authentication_classes = (CsrfExemptSessionAuthentication,)
     serializer_class = PrintSerializer
 
-    def get_queryset(self, with_deleted=False):
+    def get_queryset(self):
+        with_deleted = self.request.GET.get('with_deleted', None) is not None
         queryset = Print.objects.all_with_deleted() if with_deleted else Print.objects
         queryset = queryset.filter(
             user=self.request.user,
@@ -187,9 +188,16 @@ class PrintViewSet(
             queryset = queryset.filter(cancelled_at__isnull=False)
         if filter == 'finished':
             queryset = queryset.filter(finished_at__isnull=False)
+        # FIXME: remove when mobile app will use separate filters (below) for feedback_needed:
         if filter == 'need_alert_overwrite':
             queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
         if filter == 'need_print_shot_feedback':
+            queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        feedback_filter = self.request.GET.get('feedback_needed', 'none')
+        if feedback_filter == 'need_alert_overwrite':
+            queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
+        if feedback_filter == 'need_print_shot_feedback':
             queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
 
         if 'from_date' in self.request.GET:
@@ -320,7 +328,7 @@ class PrintViewSet(
         to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
         group_by = request.GET['group_by'].lower()
 
-        queryset = queryset = self.get_queryset(with_deleted=True).annotate(
+        queryset = queryset = self.get_queryset().annotate(
                 date=TruncDay('started_at', tzinfo=tz),
             ).values('date').annotate(
                 filament_used=Sum('filament_used'),

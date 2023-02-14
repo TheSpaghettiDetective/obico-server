@@ -127,7 +127,7 @@
                       Filament used
                     </help-widget>
                   </div>
-                  <div class="value">{{ stats.total_filament_used }}m</div>
+                  <div class="value">{{ totalFilamentUsedFormatted }}m</div>
                 </div>
               </div>
               <!-- <div class="btn-wrapper">
@@ -308,6 +308,13 @@ export default {
       const minutes = duration.minutes()
 
       return `${days}d ${hours}h ${minutes}m`
+    },
+    totalFilamentUsedFormatted() {
+      if (!this.stats?.total_filament_used) {
+        return 0
+      }
+      const meters = this.stats.total_filament_used / 1000
+      return Math.round(meters * 100) / 100
     },
     defaultStatsParams() {
       return {

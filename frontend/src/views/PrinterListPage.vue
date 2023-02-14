@@ -1,11 +1,12 @@
 <template>
   <page-layout>
     <template #topBarRight>
-      <div>
+      <div class="action-panel">
+        <!-- Detective Hours -->
         <a
           v-if="isEnt"
           href="/user_preferences/dh/"
-          class="btn shadow-none hours-btn d-none d-md-inline"
+          class="btn shadow-none action-btn icon-btn hours-btn"
           :title="dhBadgeNum + ' AI Detection Hours'"
         >
           <svg class="custom-svg-icon">
@@ -14,47 +15,68 @@
           <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
           <span class="sr-only">AI Detection Hours</span>
         </a>
-        <a
-          href="/printers/wizard/"
-          class="btn shadow-none icon-btn d-none d-md-inline"
-          title="Link New Printer"
+        <!-- Sorting -->
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+          <template #button-content>
+            <i class="fas fa-sort-amount-down"></i>
+          </template>
+          <sorting-dropdown
+            :local-storage-prefix="sortingLocalStoragePrefix"
+            :sorting-options="sortingOptions"
+            :sorting-value="sortingValue"
+            @onSortingUpdated="onSortingUpdated"
+          />
+        </b-dropdown>
+        <!-- Filtering -->
+        <b-dropdown
+          right
+          no-caret
+          toggle-class="action-btn icon-btn"
+          menu-class="scrollable"
+          title="Filter"
         >
-          <svg class="custom-svg-icon add-printer">
-            <use href="#svg-add-printer"></use>
-          </svg>
-        </a>
-        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-filter"></i>
+          </template>
+          <filtering-dropdown
+            :local-storage-prefix="filterLocalStoragePrefix"
+            :filter-options="filterOptions"
+            :filter-values="filterValues"
+            @onFilterUpdated="onFilterUpdated"
+          />
+        </b-dropdown>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item v-if="isEnt" href="/user_preferences/dh/" class="d-md-none">
-            <i class="fas fa-hourglass-half"></i>{{ dhBadgeNum }} AI Detection Hours
-          </b-dropdown-item>
-          <b-dropdown-item href="/printers/wizard/" class="d-md-none">
-            <svg class="custom-svg-icon add-printer">
-              <use href="#svg-add-printer"></use>
-            </svg>
-            Link New Printer
-          </b-dropdown-item>
-          <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-          <cascaded-dropdown
-            :menu-options="menuOptions"
-            :menu-selections="menuSelections"
-            @menuSelectionChanged="menuSelectionChanged"
-          >
+          <cascaded-dropdown ref="cascadedDropdown" :menu-options="mobileMenuOptions">
+            <template #sorting>
+              <sorting-dropdown
+                :local-storage-prefix="sortingLocalStoragePrefix"
+                :sorting-options="sortingOptions"
+                :sorting-value="sortingValue"
+                @onSortingUpdated="onSortingUpdated"
+              />
+            </template>
+            <template #filtering>
+              <filtering-dropdown
+                :local-storage-prefix="filterLocalStoragePrefix"
+                :filter-options="filterOptions"
+                :filter-values="filterValues"
+                @onFilterUpdated="onFilterUpdated"
+              />
+            </template>
           </cascaded-dropdown>
         </b-dropdown>
       </div>
     </template>
 
+    <!-- Page content -->
     <template #content>
-      <div v-if="shouldShowFilterWarning" class="active-filter-notice" @click="onShowAllClicked">
-        <div class="filter">
-          <i class="fas fa-filter mr-2"></i>
-          {{ activeFiltering }}
-        </div>
-        <a>SHOW ALL</a>
-      </div>
+      <active-filter-notice :filter-values="filterValues" @onShowAllClicked="resetFilters" />
+
+      <!-- Printers list -->
       <b-container class="printer-list-page">
         <b-row v-if="loading">
           <b-col class="text-center">
@@ -76,7 +98,9 @@
           <div id="new-printer" class="col-sm-12 col-lg-6">
             <div class="new-printer-container">
               <a href="/printers/wizard/">
-                <i class="fa fa-plus fa-2x"></i>
+                <svg class="icon">
+                  <use href="#svg-add-printer"></use>
+                </svg>
                 <div>Link New Printer</div>
               </a>
             </div>
@@ -144,68 +168,62 @@
 <script>
 import axios from 'axios'
 import sortBy from 'lodash/sortBy'
-import reverse from 'lodash/reverse'
-
-import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import { setLocalPref } from '@src/lib/pref'
 import { normalizedPrinter } from '@src/lib/normalizers'
-
 import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
 import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
+import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
+import FilteringDropdown, { restoreFilterValues } from '@src/components/FilteringDropdown'
 import { user, settings } from '@src/lib/page-context'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
+import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
 
-const SortIconClass = {
-  asc: 'fas fa-long-arrow-alt-up',
-  desc: 'fas fa-long-arrow-alt-down',
+const SortingLocalStoragePrefix = 'printersSorting'
+const SortingOptions = {
+  options: [
+    { title: 'Name', key: 'name' },
+    { title: 'Date', key: 'created_at' },
+  ],
+  default: { sorting: 'created_at', direction: 'desc' },
 }
 
-const LocalPrefNames = {
-  StateFilter: 'printer-filtering',
-  SortFilter: 'printer-sorting',
+const FilterLocalStoragePrefix = 'printersFiltering'
+const FilterOptions = {
+  status: {
+    title: 'Print Status',
+    queryParam: 'status',
+    values: [
+      { key: 'none', title: 'All Printers' },
+      { key: 'online', title: 'Online Printers' },
+      { key: 'active', title: 'Active Printers' },
+    ],
+    default: 'none',
+  },
 }
 
 export default {
   name: 'PrinterListPage',
+
   components: {
     PrinterCard,
     PageLayout,
     CascadedDropdown,
+    SortingDropdown,
+    FilteringDropdown,
     GCodeFoldersPage,
     GCodeFilePage,
+    ActiveFilterNotice,
   },
+
   data: function () {
     return {
       user: null,
       printers: [],
       loading: true,
       isEnt: false,
-      menuSelections: {
-        'Sort By': getLocalPref(LocalPrefNames.SortFilter, 'by-date-desc'),
-        'Filter By': getLocalPref(LocalPrefNames.StateFilter, 'all'),
-      },
-      menuOptions: {
-        'Sort By': {
-          iconClass: 'fas fa-sort-amount-up',
-          options: [
-            { value: 'by-date-asc', title: 'Oldest First', iconClass: SortIconClass['asc'] },
-            { value: 'by-date-desc', title: 'Newest First', iconClass: SortIconClass['desc'] },
-            { value: 'by-name-asc', title: 'Sort By Name', iconClass: SortIconClass['asc'] },
-            { value: 'by-name-desc', title: 'Sort By Name', iconClass: SortIconClass['desc'] },
-          ],
-        },
-        'Filter By': {
-          iconClass: 'fas fa-filter',
-          options: [
-            { value: 'all', title: 'All Printers' },
-            { value: 'online', title: 'Online Printers' },
-            { value: 'active', title: 'Active Printers' },
-          ],
-        },
-      },
-      dontShowFilterWarning: false,
       archivedPrinterNum: 0,
 
       // gcodes browse modal
@@ -213,8 +231,19 @@ export default {
       selectedPrinterId: null,
       targetPrinter: null,
       savedPath: [null],
+
+      // Sorting
+      sortingLocalStoragePrefix: SortingLocalStoragePrefix,
+      sortingOptions: SortingOptions,
+      sortingValue: restoreSortingValue(SortingLocalStoragePrefix, SortingOptions),
+
+      // Filtering
+      filterLocalStoragePrefix: FilterLocalStoragePrefix,
+      filterOptions: FilterOptions,
+      filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
     }
   },
+
   computed: {
     dhBadgeNum() {
       if (this.user && this.user.is_dh_unlimited) {
@@ -223,32 +252,55 @@ export default {
         return Math.round(this.user.dh_balance)
       }
     },
+    mobileMenuOptions() {
+      const options = [
+        {
+          key: 'sorting',
+          icon: 'fas fa-sort-amount-down',
+          title: `Sort`,
+          expandable: true,
+        },
+        {
+          key: 'filtering',
+          icon: 'fas fa-filter',
+          title: `Filter`,
+          expandable: true,
+        },
+      ]
+
+      if (this.isEnt) {
+        options.unshift({
+          key: 'dh',
+          icon: 'fas fa-hourglass-half',
+          title: `${this.dhBadgeNum} AI Detection Hours`,
+          href: '/user_preferences/dh/',
+        })
+      }
+
+      return options
+    },
+
     visiblePrinters() {
       let printers = this.printers
-      switch (this.menuSelections['Filter By']) {
+      switch (this.filterValues.status) {
         case 'online':
           printers = printers.filter((p) => !p.isDisconnected())
           break
         case 'active':
           printers = printers.filter((p) => p.isActive())
           break
-        case 'all':
+        case 'none':
           break
       }
 
-      switch (this.menuSelections['Sort By']) {
-        case 'by-date-asc':
-          printers = sortBy(printers, (p) => p.createdAt())
-          break
-        case 'by-date-desc':
-          printers = reverse(sortBy(printers, (p) => p.createdAt()))
-          break
-        case 'by-name-asc':
-          printers = sortBy(printers, (p) => p.name)
-          break
-        case 'by-name-desc':
-          printers = reverse(sortBy(printers, (p) => p.name))
-          break
+      if (this.sortingValue.sorting.key === 'created_at') {
+        printers = sortBy(printers, (p) => p.createdAt())
+      } else if (this.sortingValue.sorting.key === 'name') {
+        printers = sortBy(printers, (p) => p.name)
+      }
+
+      if (this.sortingValue.direction.key === 'desc') {
+        printers.reverse()
       }
 
       return printers
@@ -256,32 +308,19 @@ export default {
     hiddenPrinterCount() {
       return this.printers.length - this.visiblePrinters.length
     },
-    shouldShowFilterWarning() {
-      return this.menuSelections['Filter By'] !== 'all'
-    },
     shouldShowArchiveWarning() {
       return this.archivedPrinterNum > 0
     },
-    activeFiltering() {
-      const found = this.menuOptions['Filter By'].options.filter(
-        (option) => option.value === this.menuSelections['Filter By']
-      )
-      return found.length ? found[0].title : null
-    },
   },
+
   created() {
     const { IS_ENT } = settings()
     this.isEnt = !!IS_ENT
     this.user = user()
     this.fetchPrinters()
   },
+
   methods: {
-    menuSelectionChanged(menu, selectedOption) {
-      const val = selectedOption.value
-      this.$set(this.menuSelections, menu, val)
-      const prefName = menu === 'Sort By' ? LocalPrefNames.SortFilter : LocalPrefNames.StateFilter
-      setLocalPref(prefName, val)
-    },
     fetchPrinters() {
       this.loading = true
       return axios
@@ -301,10 +340,6 @@ export default {
           })
         })
     },
-    onShowAllClicked() {
-      this.$set(this.menuSelections, 'Filter By', 'all')
-      setLocalPref(LocalPrefNames.StateFilter, 'all')
-    },
     insertPrinter(printer) {
       this.printers.push(printer)
     },
@@ -323,6 +358,22 @@ export default {
     resetGcodesModal() {
       this.selectedGcodeId = null
       this.targetPrinter = null
+    },
+
+    // Sorting
+    onSortingUpdated(sortingValue) {
+      this.sortingValue = sortingValue
+    },
+
+    // Filtering
+    onFilterUpdated(filterOptionKey, filterOptionValue) {
+      this.filterValues[filterOptionKey] = filterOptionValue
+    },
+    resetFilters() {
+      for (const key of Object.keys(this.filterValues)) {
+        this.filterValues[key] = 'none'
+        setLocalPref(`${FilterLocalStoragePrefix}-${key}`, 'none')
+      }
     },
   },
 }
@@ -357,12 +408,14 @@ export default {
 
 .btn.hours-btn
   position: relative
-  padding-right: 1.625rem
+  padding-right: 0.5rem !important
+  margin-right: .5rem
+  width: 48px !important
   color: var(--color-text-primary)
 
   .badge
     position: absolute
-    left: 22px
+    right: 0
     top: 8px
     border-radius: var(--border-radius-sm)
     background-color: var(--color-primary)
@@ -372,9 +425,6 @@ export default {
 .custom-svg-icon
   height: 1.125rem
   width: 1.125rem
-  &.add-printer
-    height: 1.25rem
-    width: 1.25rem
 
 ::v-deep .dropdown-item .clickable-area
   margin: -0.25rem -1.5rem

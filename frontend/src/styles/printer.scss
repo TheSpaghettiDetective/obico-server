@@ -255,7 +255,6 @@
 #new-printer {
   min-height: 25em;
   .new-printer-container {
-
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -267,13 +266,19 @@
       border: thin dashed;
       color: var(--color-primary);
       border-color: var(--color-primary);
-      padding: 5em 3em;
+      padding: 4em 3em;
       border-radius: var(--border-radius-lg);
 
       &:hover {
         text-decoration: none;
         background-color: var(--color-hover);
       }
+    }
+
+    .icon {
+      width: 2rem;
+      height: 2rem;
+      margin-bottom: 1rem;
     }
   }
 }

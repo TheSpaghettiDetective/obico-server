@@ -336,6 +336,15 @@ export default {
   box-shadow: var(--shadow-top-nav)
   justify-content: space-between
 
+  ::v-deep .action-panel
+    .action-btn
+      box-sizing: border-box
+      width: 36px
+      padding-left: 0
+      padding-right: 0
+      @media (max-width: 768px)
+        display: none
+
 .is-in-mobile .top-nav
   padding-left: 15px
   padding-right: 15px
@@ -413,21 +422,7 @@ export default {
     i, .custom-svg-icon
       width: 20px
       margin-right: .5rem
-
-::v-deep .active-filter-notice
-  display: flex
-  align-items: center
-  justify-content: space-between
-  padding: 0.5rem 1rem
-  background-color: var(--color-surface-secondary)
-  margin: calc(-1 * var(--gap-between-blocks)) -15px var(--gap-between-blocks)
-  .filter
-    color: var(--color-primary)
-  .action-btn
-    color: var(--color-text-primary)
-
-  @media (max-width: 768px)
-    font-size: .875rem
-    margin-left: 0
-    margin-right: 0
+  .b-dropdown-text
+    padding-left: 0.75rem
+    padding-right: 0.75rem
 </style>

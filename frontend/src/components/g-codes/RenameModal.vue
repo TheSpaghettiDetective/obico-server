@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
 
@@ -92,14 +91,14 @@ export default {
     show() {
       this.isOpen = true
 
-      setTimeout(() => {
+      this.$nextTick(() => {
         if (!this.item) {
           this.isOpen = false
           return
         }
         this.newItemName = this.nameWithoutExt
         this.$bvModal.show('b-modal-rename')
-      }, 100)
+      })
     },
     focusInput() {
       this.$refs.input.select()

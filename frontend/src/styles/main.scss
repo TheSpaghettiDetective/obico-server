@@ -913,3 +913,25 @@ div[id^="b-modal-"] {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.b-dropdown-text {
+  font-weight: normal;
+}
+
+.dropdown-menu.scrollable {
+  max-height: calc(100vh - 75px);
+  overflow-y: auto;
+}
+
+.dropdown-text-group {
+  display: flex;
+  align-items: center;
+  .text {
+    display: flex;
+    flex-direction: column;
+    .subtitle {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary)
+    }
+  }
+}

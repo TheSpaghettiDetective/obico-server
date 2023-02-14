@@ -1,22 +1,28 @@
 <template>
   <div>
     <template v-if="menuExpanded === null">
-      <b-dropdown-item v-for="(menu, name) in menuOptions" :key="name">
+      <b-dropdown-item
+        v-for="option in menuOptions"
+        :key="option.key"
+        :href="option.href"
+        @click="onClick(option)"
+      >
         <div
+          v-if="option.expandable"
           class="d-flex justify-content-between clickable-area"
-          @click.stop.prevent="menuExpanded = name"
+          @click.stop.prevent="menuExpanded = option.key"
         >
           <div>
-            <i :class="menu.iconClass"></i>
-            <span v-if="activeItems[name]">
-              {{ activeItems[name].title }}
-              <i v-if="activeItems[name].iconClass" :class="activeItems[name].iconClass"></i>
-            </span>
-            <span v-else>
-              {{ name }}
-            </span>
+            <i :class="option.icon"></i>
+            <span>{{ option.title }}</span>
           </div>
           <div><i class="fas fa-chevron-right m-0"></i></div>
+        </div>
+        <div v-else class="d-flex justify-content-between clickable-area">
+          <div>
+            <i :class="option.icon"></i>
+            <span>{{ option.title }}</span>
+          </div>
         </div>
       </b-dropdown-item>
     </template>
@@ -26,55 +32,46 @@
           <i class="fas fa-chevron-left"></i>Back
         </div>
       </b-dropdown-item>
-      <b-dropdown-item v-for="option in menuOptions[menuExpanded].options" :key="option.value">
-        <div class="clickable-area" @click="onSelected(option)">
-          <i
-            class="fas fa-check text-primary"
-            :style="{
-              visibility: menuSelections[menuExpanded] === option.value ? 'visible' : 'hidden',
-            }"
-          ></i>
-          {{ option.title }} <i v-if="option.iconClass" :class="option.iconClass"></i>
-        </div>
-      </b-dropdown-item>
+      <b-dropdown-divider />
+
+      <div v-if="menuExpanded === 'sorting'">
+        <slot name="sorting"></slot>
+      </div>
+      <div v-if="menuExpanded === 'filtering'">
+        <slot name="filtering"></slot>
+      </div>
+      <div v-if="menuExpanded === 'storage'">
+        <slot name="storage"></slot>
+      </div>
     </template>
   </div>
 </template>
+
 <script>
 export default {
   name: 'CascadedDropdown',
+
   props: {
     menuOptions: {
-      type: Object,
-      required: true,
-    },
-    menuSelections: {
-      type: Object,
+      type: Array,
       required: true,
     },
   },
+
   data: function () {
     return {
       menuExpanded: null,
     }
   },
 
-  computed: {
-    activeItems() {
-      let items = {}
-      for (const key of Object.keys(this.menuSelections)) {
-        items[key] = this.menuOptions[key].options.find(
-          (option) => option.value === this.menuSelections[key]
-        )
-      }
-      return items
-    },
-  },
-
   methods: {
-    onSelected(option) {
-      this.$emit('menuSelectionChanged', this.menuExpanded, option)
+    resetMenuExpanded() {
       this.menuExpanded = null
+    },
+    onClick(menuOption) {
+      if (menuOption.callback) {
+        this.$emit('menuOptionClicked', menuOption.key)
+      }
     },
   },
 }

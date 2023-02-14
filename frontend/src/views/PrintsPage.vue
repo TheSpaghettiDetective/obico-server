@@ -31,40 +31,82 @@
       </div>
     </template>
     <template #topBarRight>
-      <div>
-        <a
-          href="/prints/upload/"
-          class="btn shadow-none icon-btn d-none d-md-inline"
-          title="Upload Time-Lapse"
+      <div class="action-panel">
+        <!-- Sorting -->
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+          <template #button-content>
+            <i class="fas fa-sort-amount-down"></i>
+          </template>
+          <sorting-dropdown
+            :local-storage-prefix="sortingLocalStoragePrefix"
+            :sorting-options="sortingOptions"
+            :sorting-value="sortingValue"
+            @onSortingUpdated="onSortingUpdated"
+          />
+        </b-dropdown>
+        <!-- Filtering -->
+        <b-dropdown
+          right
+          no-caret
+          toggle-class="action-btn icon-btn"
+          menu-class="scrollable"
+          title="Filter"
         >
-          <i class="fas fa-upload"></i>
-        </a>
-        <b-dropdown right no-caret toggle-class="icon-btn">
+          <template #button-content>
+            <i class="fas fa-filter"></i>
+          </template>
+          <filtering-dropdown
+            :local-storage-prefix="filterLocalStoragePrefix"
+            :filter-options="filterOptions"
+            :filter-values="filterValues"
+            @onFilterUpdated="onFilterUpdated"
+          />
+        </b-dropdown>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item href="/prints/upload/" class="d-md-none">
-            <i class="fas fa-upload"></i>Upload Time-Lapse
-          </b-dropdown-item>
-          <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-
           <cascaded-dropdown
-            :menu-options="menuOptions"
-            :menu-selections="menuSelections"
-            @menuSelectionChanged="menuSelectionChanged"
+            ref="cascadedDropdown"
+            :menu-options="[
+              {
+                key: 'sorting',
+                icon: 'fas fa-sort-amount-down',
+                title: `Sort`,
+                expandable: true,
+              },
+              {
+                key: 'filtering',
+                icon: 'fas fa-filter',
+                title: `Filter`,
+                expandable: true,
+              },
+            ]"
           >
+            <template #sorting>
+              <sorting-dropdown
+                :local-storage-prefix="sortingLocalStoragePrefix"
+                :sorting-options="sortingOptions"
+                :sorting-value="sortingValue"
+                @onSortingUpdated="onSortingUpdated"
+              />
+            </template>
+            <template #filtering>
+              <filtering-dropdown
+                :local-storage-prefix="filterLocalStoragePrefix"
+                :filter-options="filterOptions"
+                :filter-values="filterValues"
+                @onFilterUpdated="onFilterUpdated"
+              />
+            </template>
           </cascaded-dropdown>
         </b-dropdown>
       </div>
     </template>
     <template #content>
-      <a v-if="shouldShowFilterWarning" class="active-filter-notice" @click="onShowAllClicked">
-        <div class="filter">
-          <i class="fas fa-filter mr-2"></i>
-          {{ activeFiltering }}
-        </div>
-        <div>SHOW ALL</div>
-      </a>
+      <active-filter-notice :filter-values="filterValues" @onShowAllClicked="resetFilters" />
+
       <b-container>
         <b-row v-show="prints.length" class="print-cards">
           <print-card
@@ -109,17 +151,49 @@ import MugenScroll from 'vue-mugen-scroll'
 import map from 'lodash/map'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
-import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import { setLocalPref } from '@src/lib/pref'
 import PrintCard from '@src/components/prints/PrintCard.vue'
 import FullScreenPrintCard from '@src/components/prints/FullScreenPrintCard.vue'
 import PageLayout from '@src/components/PageLayout.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
+import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
+import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
+import FilteringDropdown, {
+  restoreFilterValues,
+  getFilterParams,
+} from '@src/components/FilteringDropdown'
 
-const LOCAL_PREF_NAMES = {
-  filtering: 'prints-filtering',
-  sorting: 'prints-sorting',
-}
 const PAGE_SIZE = 6
+
+const SortingLocalStoragePrefix = 'printsPageSorting'
+const SortingOptions = {
+  options: [{ title: 'Date', key: 'date' }],
+  default: { sorting: 'date', direction: 'desc' },
+}
+
+const FilterLocalStoragePrefix = 'printsPageFiltering'
+const FilterOptions = {
+  printStatus: {
+    title: 'Print Status',
+    queryParam: 'filter',
+    values: [
+      { key: 'none', title: 'All' },
+      { key: 'finished', title: 'Finished' },
+      { key: 'cancelled', title: 'Cancelled' },
+    ],
+    default: 'none',
+  },
+  feedbackNeeded: {
+    title: 'Feedback Needed',
+    queryParam: 'feedback_needed',
+    values: [
+      { key: 'none', title: 'All' },
+      { key: 'need_alert_overwrite', title: 'Review Needed' },
+      { key: 'need_print_shot_feedback', title: 'Focused Feedback Needed' },
+    ],
+    default: 'none',
+  },
+}
 
 export default {
   name: 'PrintsPage',
@@ -130,6 +204,9 @@ export default {
     FullScreenPrintCard,
     PageLayout,
     CascadedDropdown,
+    FilteringDropdown,
+    SortingDropdown,
+    ActiveFilterNotice,
   },
 
   data: function () {
@@ -140,29 +217,16 @@ export default {
       noMoreData: false,
       fullScreenPrint: null,
       fullScreenPrintVideoUrl: null,
-      menuSelections: {
-        'Sort By': getLocalPref(LOCAL_PREF_NAMES.sorting, 'date_desc'),
-        'Filter By': getLocalPref(LOCAL_PREF_NAMES.filtering, 'none'),
-      },
-      menuOptions: {
-        'Sort By': {
-          iconClass: 'fas fa-sort-amount-up',
-          options: [
-            { value: 'date_asc', title: 'Oldest First', iconClass: 'fas fa-long-arrow-alt-up' },
-            { value: 'date_desc', title: 'Newest First', iconClass: 'fas fa-long-arrow-alt-down' },
-          ],
-        },
-        'Filter By': {
-          iconClass: 'fas fa-filter',
-          options: [
-            { value: 'none', title: 'All' },
-            { value: 'finished', title: 'Succeeded' },
-            { value: 'cancelled', title: 'Cancelled' },
-            { value: 'need_alert_overwrite', title: 'Review Needed' },
-            { value: 'need_print_shot_feedback', title: 'Focused-Review Needed' },
-          ],
-        },
-      },
+
+      // Sorting
+      sortingLocalStoragePrefix: SortingLocalStoragePrefix,
+      sortingOptions: SortingOptions,
+      sortingValue: restoreSortingValue(SortingLocalStoragePrefix, SortingOptions),
+
+      // Filtering
+      filterLocalStoragePrefix: FilterLocalStoragePrefix,
+      filterOptions: FilterOptions,
+      filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
     }
   },
 
@@ -182,15 +246,6 @@ export default {
         }
       },
     },
-    shouldShowFilterWarning() {
-      return this.menuSelections['Filter By'] !== 'none'
-    },
-    activeFiltering() {
-      const found = this.menuOptions['Filter By'].options.filter(
-        (option) => option.value === this.menuSelections['Filter By']
-      )
-      return found.length ? found[0].title : null
-    },
   },
 
   created() {
@@ -208,8 +263,12 @@ export default {
           params: {
             start: this.prints.length,
             limit: PAGE_SIZE,
-            filter: this.menuSelections['Filter By'],
-            sorting: this.menuSelections['Sort By'],
+            ...getFilterParams(
+              this.filterOptions,
+              this.filterValues,
+              this.customFilterParamsBuilder
+            ),
+            sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,
           },
         })
         .then((response) => {
@@ -232,12 +291,6 @@ export default {
         selectedPrintIdsClone.delete(printId)
       }
       this.selectedPrintIds = selectedPrintIdsClone
-    },
-    menuSelectionChanged(menu, selectedOption) {
-      this.$set(this.menuSelections, menu, selectedOption.value)
-      const prefName = menu === 'Sort By' ? LOCAL_PREF_NAMES.sorting : LOCAL_PREF_NAMES.filtering
-      setLocalPref(prefName, selectedOption.value)
-      this.refetchData()
     },
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
@@ -285,9 +338,23 @@ export default {
       this.fullScreenPrint = null
       this.fullScreenPrintVideoUrl = null
     },
-    onShowAllClicked() {
-      this.$set(this.menuSelections, 'Filter By', 'none')
-      setLocalPref(LOCAL_PREF_NAMES.filtering, 'none')
+
+    // Sorting
+    onSortingUpdated(sortingValue) {
+      this.sortingValue = sortingValue
+      this.refetchData()
+    },
+
+    // Filtering
+    onFilterUpdated(filterOptionKey, filterOptionValue) {
+      this.filterValues[filterOptionKey] = filterOptionValue
+      this.refetchData()
+    },
+    resetFilters() {
+      for (const key of Object.keys(this.filterValues)) {
+        this.filterValues[key] = 'none'
+        setLocalPref(`${FilterLocalStoragePrefix}-${key}`, 'none')
+      }
       this.refetchData()
     },
   },

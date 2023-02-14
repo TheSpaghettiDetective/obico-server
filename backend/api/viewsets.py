@@ -188,9 +188,16 @@ class PrintViewSet(
             queryset = queryset.filter(cancelled_at__isnull=False)
         if filter == 'finished':
             queryset = queryset.filter(finished_at__isnull=False)
+        # FIXME: remove when mobile app will use separate filters (below) for feedback_needed:
         if filter == 'need_alert_overwrite':
             queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
         if filter == 'need_print_shot_feedback':
+            queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        feedback_filter = self.request.GET.get('feedback_needed', 'none')
+        if feedback_filter == 'need_alert_overwrite':
+            queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
+        if feedback_filter == 'need_print_shot_feedback':
             queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
 
         if 'from_date' in self.request.GET:

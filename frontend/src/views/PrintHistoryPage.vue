@@ -88,7 +88,7 @@
       <b-container>
         <b-row>
           <b-col v-if="prints.length || loading">
-            <div class="prints-summary">
+            <div v-if="!loading" class="prints-summary">
               <div class="summary-item">
                 <div class="icon">
                   <i class="fas fa-hashtag"></i>

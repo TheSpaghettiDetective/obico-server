@@ -303,11 +303,21 @@ export default {
   computed: {
     totalPrintTimeFormatted() {
       const duration = moment.duration(this.stats.total_print_time, 'seconds')
-      const days = duration.days()
+      const days = Math.floor(duration.asDays())
       const hours = duration.hours()
       const minutes = duration.minutes()
 
-      return `${days}d ${hours}h ${minutes}m`
+      let result = ''
+
+      if (days !== 0) {
+        result += `${days}d `
+      }
+      if (days !== 0 || hours !== 0) {
+        result += `${hours}h `
+      }
+
+      result += `${minutes}m`
+      return result
     },
     totalFilamentUsedFormatted() {
       if (!this.stats?.total_filament_used) {

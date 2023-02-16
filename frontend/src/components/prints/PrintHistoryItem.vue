@@ -3,7 +3,7 @@
     <div class="status-indicator" :class="print.status.key"></div>
     <div class="main-content overflow-truncated-parent">
       <div class="top">
-        <div class="title overflow-truncated">{{ print.filename }}</div>
+        <div class="title overflow-truncated">{{ print.g_code_file.filename }}</div>
       </div>
       <div class="bottom">
         <div class="info">

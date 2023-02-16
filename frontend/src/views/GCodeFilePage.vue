@@ -276,7 +276,8 @@ export default {
               })
               const gcodeFileOnServer = get(response, 'data.results[0]')
               if (gcodeFileOnServer) {
-                this.gcode = { ...this.gcode, ...normalizedGcode(gcodeFileOnServer) }
+                const cloudCopy = normalizedGcode(gcodeFileOnServer)
+                this.gcode.print_set = cloudCopy.print_set
               }
             } catch (e) {
               console.error(e)

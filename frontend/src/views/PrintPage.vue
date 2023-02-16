@@ -20,7 +20,7 @@
                     >
                   </div>
                 </div>
-                <div v-if="print.g_code_file" class="action">
+                <div v-if="print.g_code_file && !print.g_code_file.resident_printer" class="action">
                   <a
                     class="btn btn-secondary"
                     :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
@@ -50,7 +50,7 @@
                     {{ printer ? printer.printabilityText() : 'Deleted' }}
                   </div>
                 </div>
-                <div v-if="printer" class="action">
+                <div v-if="printer && !print.g_code_file.resident_printer" class="action">
                   <button
                     class="btn btn-primary"
                     :disabled="!printer.isPrintable()"

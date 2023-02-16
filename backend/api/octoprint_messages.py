@@ -91,6 +91,7 @@ def update_current_print_if_needed(msg, printer):
         # progress data will be reset after PrintCancelling in OctoPrint. Set it now or never.
         update_print_stats_if_needed(printer_status, printer.current_print)
     if op_event.get('event_type') == 'PrintCancelled':
+        update_print_stats_if_needed(printer_status, printer.current_print)
         printer.current_print.cancelled()
     elif op_event.get('event_type') == 'PrintFailed':
         # setting cancelled_at here, original commit:

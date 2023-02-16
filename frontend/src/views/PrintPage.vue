@@ -387,7 +387,7 @@ export default {
         }
 
         axios
-          .get(urls.printer(this.print.printer.id))
+          .get(urls.printer(this.print.printer.id), { params: { with_archived: true } })
           .then((response) => {
             this.printer = normalizedPrinter(response.data)
           })

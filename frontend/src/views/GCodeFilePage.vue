@@ -267,13 +267,13 @@ export default {
           if (file.path && file.hash && this.getRouteParam('printerId')) {
             const safeFilename = file.path.replace(/^.*[\\/]/, '')
             try {
-              let response = await axios.get(
-                urls.gcodeFiles({
+              let response = await axios.get(urls.gcodeFiles(), {
+                params: {
                   resident_printer: this.getRouteParam('printerId'),
                   safe_filename: safeFilename,
                   agent_signature: `md5:${file.hash}`,
-                })
-              )
+                },
+              })
               const gcodeFileOnServer = get(response, 'data.results[0]')
               if (gcodeFileOnServer) {
                 this.gcode = { ...this.gcode, ...normalizedGcode(gcodeFileOnServer) }

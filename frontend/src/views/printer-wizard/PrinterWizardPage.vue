@@ -815,10 +815,10 @@ pre
       background-image: url('/static/img/tick_dark.svg')
       background-size: $size $size
       position: absolute
-      top: calc(50% - #{$size / 2})
-      left: calc(50% - #{$size / 2})
-      bottom: calc(50% - #{$size / 2})
-      right: calc(50% - #{$size / 2})
+      top: calc(50% - $size / 2)
+      left: calc(50% - $size / 2)
+      bottom: calc(50% - $size / 2)
+      right: calc(50% - $size / 2)
 .success-checkmark
   width: 6rem
   height: 6rem

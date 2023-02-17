@@ -578,6 +578,6 @@ export default {
   width: $size
   height: $size
   position: absolute
-  left: calc(50% - #{$size / 2})
-  top: calc(50% - #{$size / 2})
+  left: calc(50% - $size / 2)
+  top: calc(50% - $size / 2)
 </style>

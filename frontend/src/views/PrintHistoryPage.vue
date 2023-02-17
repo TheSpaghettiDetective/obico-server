@@ -87,8 +87,8 @@
       <!-- Prints list -->
       <b-container>
         <b-row>
-          <b-col v-if="prints.length || loading">
-            <div v-if="!loading" class="prints-summary">
+          <b-col>
+            <div v-if="prints.length && !loading" class="prints-summary">
               <div class="summary-item">
                 <div class="icon">
                   <i class="fas fa-hashtag"></i>
@@ -137,7 +137,10 @@
                 </a>
               </div> -->
             </div>
-
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col v-if="prints.length || loading">
             <print-history-item
               v-for="print of prints"
               :key="print.id"

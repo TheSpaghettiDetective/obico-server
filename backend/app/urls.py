@@ -27,6 +27,7 @@ urlpatterns = [
     path('prints/upload/', web_views.upload_print),
     # TODO: Change this to `/prints/` for consistency when mobile app get rid of legacy Prints (Time-Lapses) webview:
     path('print_history/', web_views.print_history, name='print_history'),
+    path('stats/', web_views.stats, name='stats'),
 
     path('prints/<int:pk>/', web_views.print),
     path('prints/shot-feedback/<pk>/', web_views.print_shot_feedback),

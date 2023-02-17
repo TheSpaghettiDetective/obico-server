@@ -50,7 +50,10 @@
                     {{ printer ? printer.printabilityText() : 'Deleted' }}
                   </div>
                 </div>
-                <div v-if="printer && !print.g_code_file.resident_printer" class="action">
+                <div
+                  v-if="printer && print.g_code_file && !print.g_code_file.resident_printer"
+                  class="action"
+                >
                   <button
                     class="btn btn-primary"
                     :disabled="!printer.isPrintable()"

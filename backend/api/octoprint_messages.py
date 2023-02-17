@@ -121,21 +121,29 @@ def update_print_stats_if_needed(printer_status, _print):
     '''
     print_obj_dirty = False
 
-    print_time = printer_status.get('progress', {}).get('printTime')
+    if _print.print_time is None:
 
-    if _print.print_time is None and print_time is not None:
-        _print.print_time = print_time
+        print_time = printer_status.get('progress', {}).get('printTime')
+        if print_time is not None:
+            _print.print_time = print_time
+        else:
+            _print.print_time = (timezone.now() - _print.started_at).total_seconds()
+
         print_obj_dirty = True
 
-    completion = printer_status.get('progress', {}).get('completion')
+    if _print.filament_used is None:
 
-    if _print.filament_used is None and completion is not None and _print.g_code_file and _print.g_code_file.filament_total:
+        completion = printer_status.get('progress', {}).get('completion')
+        filament_used = printer_status.get('progress', {}).get('filamentUsed')
 
-        if completion == 0 and print_time and _print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time
-            completion = print_time / _print.g_code_file.estimated_time
+        if filament_used is None and completion is not None and _print.g_code_file and _print.g_code_file.filament_total:
+            if completion == 0 and print_time and _print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time
+                completion = print_time / _print.g_code_file.estimated_time
+            filament_used = _print.g_code_file.filament_total * completion / 100.0
 
-        _print.filament_used = _print.g_code_file.filament_total * completion / 100.0
-        print_obj_dirty = True
+        if filament_used is not None:
+            _print.filament_used = filament_used
+            print_obj_dirty = True
 
     if print_obj_dirty:
         _print.save()

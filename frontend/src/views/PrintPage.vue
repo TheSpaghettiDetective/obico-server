@@ -1,43 +1,11 @@
 <template>
   <page-layout>
     <template #content>
-      <b-container v-if="!loading" fluid>
+      <loading-placeholder v-if="isLoading" />
+      <b-container v-else fluid>
         <b-row>
           <b-col lg="5">
             <div class="print-info">
-              <div class="card-container header">
-                <div class="info">
-                  <div class="status" :class="print.status.key">{{ print.status.title }}</div>
-                  <div class="date">{{ print.ended_at ? print.ended_at.fromNow() : '-' }}</div>
-                </div>
-              </div>
-              <!-- Printer -->
-              <div class="card-container printer">
-                <div class="icon">
-                  <svg width="1em" height="1em" style="margin-bottom: 5px">
-                    <use href="#svg-3d-printer" />
-                  </svg>
-                </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ printer.name }}</div>
-                  <div
-                    class="subtitle overflow-truncated"
-                    :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
-                  >
-                    {{ printer.printabilityText() }}
-                  </div>
-                </div>
-                <div class="action">
-                  <button
-                    class="btn btn-primary"
-                    :disabled="!printer.isPrintable()"
-                    @click="onRepeatPrintClicked"
-                  >
-                    <b-spinner v-if="isSending" small />
-                    <span v-else>Repeat print</span>
-                  </button>
-                </div>
-              </div>
               <!-- File -->
               <div class="card-container file">
                 <div class="icon">
@@ -60,7 +28,48 @@
                   >
                 </div>
               </div>
+              <!-- Printer -->
+              <div class="card-container printer">
+                <div class="icon">
+                  <svg width="1em" height="1em" style="margin-bottom: 5px">
+                    <use href="#svg-3d-printer" />
+                  </svg>
+                </div>
+                <div class="info overflow-truncated-parent">
+                  <div class="title overflow-truncated">{{ print.printer.name }}</div>
+                  <div
+                    class="subtitle overflow-truncated"
+                    :class="[
+                      printer
+                        ? printer.isPrintable()
+                          ? 'text-success'
+                          : 'text-warning'
+                        : 'text-danger',
+                    ]"
+                  >
+                    {{ printer ? printer.printabilityText() : 'Deleted' }}
+                  </div>
+                </div>
+                <div v-if="printer" class="action">
+                  <button
+                    class="btn btn-primary"
+                    :disabled="!printer.isPrintable()"
+                    @click="onRepeatPrintClicked"
+                  >
+                    <b-spinner v-if="isSending" small />
+                    <span v-else>Repeat print</span>
+                  </button>
+                </div>
+              </div>
               <div class="card-container">
+                <div class="info-line">
+                  <div class="title">Status</div>
+                  <div class="value">
+                    <div class="print-status" :class="print.status.key">
+                      {{ print.status.title }}
+                    </div>
+                  </div>
+                </div>
                 <div class="info-line">
                   <div class="title">Start time</div>
                   <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
@@ -162,14 +171,15 @@
                                 </b-button>
                               </div>
                               <transition name="bounce">
-                                <div v-if="focusedFeedbackEligible" class="pt-2">
+                                <div v-if="print.printShotFeedbackEligible" class="pt-2">
                                   <b-button
                                     variant="outline-primary"
                                     size="sm"
-                                    :href="focusedFeedbackLink"
+                                    :href="`/prints/shot-feedback/${print.id}/`"
+                                    target="_blank"
                                   >
                                     <i
-                                      v-if="focusedFeedbackCompleted"
+                                      v-if="!print.need_print_shot_feedback"
                                       class="fas fa-check mr-2"
                                     ></i>
                                     FOCUSED FEEDBACK
@@ -178,8 +188,8 @@
                               </transition>
 
                               <div class="about-feedback">
-                                <small v-if="focusedFeedbackEligible">
-                                  <span v-if="focusedFeedbackCompleted">
+                                <small v-if="print.printShotFeedbackEligible">
+                                  <span v-if="!print.need_print_shot_feedback">
                                     Thank you for completing the Focused Feedback. You have earned 2
                                     non-expirable AI Detection Hours. You can click the button again
                                     to change your feedback.
@@ -247,7 +257,17 @@
                 </b-card>
               </div>
               <div v-else class="card-container">
-                <p class="text-secondary text-center mt-3">Time-Lapse video unavailable</p>
+                <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
+                <ul>
+                  <li class="text-secondary mt-3">
+                    The Obico server is still processing the time-lapse;
+                  </li>
+                  <li class="text-secondary mt-3">
+                    Or, the print time was shorter than the threshold. You can change the threshold
+                    in
+                    <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
+                  </li>
+                </ul>
               </div>
             </div>
           </b-col>
@@ -289,12 +309,12 @@ export default {
   data: function () {
     return {
       PrintStatus,
-      absoluteDateFormat: 'MMM M, YYYY H:mm A',
+      absoluteDateFormat: 'MMM D, YYYY h:mm a',
       print: null,
-      printer: null,
-      loading: true,
-      isSending: false,
       predictions: [],
+      printer: null,
+      isLoading: true,
+      isSending: false,
       currentPosition: 0,
       inflightAlertOverwrite: null,
       fullscreenUrl: null,
@@ -302,14 +322,6 @@ export default {
   },
 
   computed: {
-    focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
-    },
-
-    focusedFeedbackCompleted() {
-      return this.print.printshotfeedback_set.length > 0 && !this.print.focusedFeedbackNeeded
-    },
-
     normalizedP() {
       return getNormalizedP(this.predictions, this.currentPosition, false)
     },
@@ -355,32 +367,43 @@ export default {
 
   methods: {
     downloadFile,
-    fetchData(showLoading = true) {
-      if (showLoading) {
-        this.loading = true
+    async fetchData(clearPreviousData = true) {
+      if (clearPreviousData) {
+        this.print = null
+        this.predictions = []
+        this.printer = null
       }
-      axios
-        .get(urls.print(this.printId))
-        .then((response) => {
-          this.print = normalizedPrint(response.data)
-          return axios.get(urls.printer(this.print.printer.id))
-        })
-        .then((response) => {
-          this.printer = normalizedPrinter(response.data)
-          return axios.get(this.print.prediction_json_url)
-        })
-        .then((response) => {
-          this.predictions = response.data
-          if (showLoading) {
-            this.loading = false
-          }
-        })
-        .catch((error) => {
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: error.message,
+
+      this.isLoading = true
+
+      try {
+        const printResponse = await axios.get(urls.print(this.printId))
+        this.print = normalizedPrint(printResponse.data)
+
+        if (this.print.prediction_json_url) {
+          axios.get(this.print.prediction_json_url).then((response) => {
+            this.predictions = response.data
           })
-        })
+        }
+
+        axios
+          .get(urls.printer(this.print.printer.id))
+          .then((response) => {
+            this.printer = normalizedPrinter(response.data)
+          })
+          .catch((error) => {
+            // Printer could be old and deleted from account (404 error)
+            this.printer = null
+            if (error?.response?.status !== 404) {
+              this._showErrorPopup(error, 'Failed to fetch printer information')
+            }
+          })
+          .finally(() => {
+            this.isLoading = false
+          })
+      } catch (error) {
+        console.log(error)
+      }
     },
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
@@ -410,6 +433,7 @@ export default {
         printerId: this.printer.id,
         gcode: this.print.g_code_file,
         isCloud: true,
+        isAgentMoonraker: this.printer.isAgentMoonraker(),
         Swal: this.$swal,
         onPrinterStatusChanged: () => {
           this.isSending = false
@@ -433,17 +457,6 @@ export default {
   flex-direction: column
   gap: 15px
 
-.header
-  .date
-    font-size: 1.125rem
-  .status
-    font-weight: bold
-    font-size: .875rem
-    &.cancelled
-      color: var(--color-danger)
-    &.finished
-      color: var(--color-success)
-
 .printer, .file
   display: flex
   align-items: center
@@ -466,6 +479,14 @@ export default {
     border-bottom: none
 .title
   font-weight: bold
+
+.print-status
+  font-weight: bold
+  font-size: .875rem
+  &.cancelled
+    color: var(--color-danger)
+  &.finished
+    color: var(--color-success)
 
 .time-lapse
   .title

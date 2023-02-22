@@ -4,7 +4,7 @@ title: Failure detection false alarms
 sidebar_label: False alarms
 ---
 
-Since The Detective has not been around the block for too long (For the record her birth certificate says Feburary 12th, 2019. AND IT IS A GIRL!), she makes mistakes like all of us. To be fallible is to be human.
+Since The Detective has not been around the block for too long (For the record her birth certificate says February 12th, 2019. AND IT IS A GIRL!), she makes mistakes like all of us. To be fallible is to be human.
 
 The Detective has openly admitted that the most common mistakes she makes are false alarms (but secretly she thinks it's just because she works too hard). Some examples:
 

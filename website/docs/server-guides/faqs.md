@@ -33,6 +33,8 @@ At the minimum, your server's firewall should have the following rules allowed:
 - Inbound - port 3334 or whatever port your reverse proxy is on. If your server is on http.
 - If you are using a reverse proxy, make sure it proxies WebSocket protocol.
 - Outbound - stun.l.google.com:19302.
+- UDP port 3478.
+- UDP port 5349.
 - UDP port range 20000-24999.
 
 But having all these firewall rules in place still doesn't guarantee the Premium Streaming. If you feel adventurous, Google "WebRTC network configuration requirements" for more details.

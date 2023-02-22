@@ -21,6 +21,13 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.pagination import PageNumberPagination
 import requests
 from ipware import get_client_ip
+import json
+import pytz
+from datetime import timedelta, datetime
+from django.utils.dateparse import parse_datetime
+from django.db.models.functions import TruncDay
+from django.db.models import Sum, Max, Count, fields, Case, Value, When
+
 
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
@@ -33,10 +40,10 @@ from .serializers import (
     NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
 )
 from lib.channels import send_status_to_web
-from lib import cache
+from lib import cache, gcode_metadata
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
-from lib.file_storage import save_file_obj
+from lib.file_storage import save_file_obj, delete_file
 from .printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
@@ -169,21 +176,46 @@ class PrintViewSet(
     serializer_class = PrintSerializer
 
     def get_queryset(self):
-        return Print.objects.filter(user=self.request.user)
+        with_deleted = self.request.GET.get('with_deleted', None) is not None
+        queryset = Print.objects.all_with_deleted() if with_deleted else Print.objects
+        queryset = queryset.filter(
+            user=self.request.user,
+            uploaded_at__isnull=True,
+            )
 
-    def list(self, request):
-        queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
-            ).select_related('printer', 'g_code_file',
-            ).filter(uploaded_at__isnull=True)
-        filter = request.GET.get('filter', 'none')
+        filter = self.request.GET.get('filter', 'none')
         if filter == 'cancelled':
             queryset = queryset.filter(cancelled_at__isnull=False)
         if filter == 'finished':
             queryset = queryset.filter(finished_at__isnull=False)
+        # FIXME: remove when mobile app will use separate filters (below) for feedback_needed:
         if filter == 'need_alert_overwrite':
             queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
         if filter == 'need_print_shot_feedback':
             queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        feedback_filter = self.request.GET.get('feedback_needed', 'none')
+        if feedback_filter == 'need_alert_overwrite':
+            queryset = queryset.filter(alert_overwrite__isnull=True, tagged_video_url__isnull=False)
+        if feedback_filter == 'need_print_shot_feedback':
+            queryset = queryset.filter(printshotfeedback__isnull=False, printshotfeedback__answered_at__isnull=True).distinct()
+
+        if 'from_date' in self.request.GET:
+            tz = pytz.timezone(self.request.GET['timezone'])
+            from_date = timezone.make_aware(parse_datetime(f'{self.request.GET["from_date"]}T00:00:00'), timezone=tz)
+            to_date = timezone.make_aware(parse_datetime(f'{self.request.GET["to_date"]}T23:59:59'), timezone=tz)
+            queryset = queryset.filter(started_at__range=[from_date, to_date])
+
+        filter_by_printer_ids = self.request.GET.getlist('filter_by_printer_ids[]')
+        if filter_by_printer_ids:
+            queryset = queryset.filter(printer_id__in=filter_by_printer_ids)
+
+        return queryset
+
+    def list(self, request):
+        queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
+            ).select_related('printer', 'g_code_file',
+            )
 
         sorting = request.GET.get('sorting', 'date_desc')
         if sorting == 'date_asc':
@@ -262,6 +294,85 @@ class PrintViewSet(
             headers={k: v for k, v in resp_headers.items() if v is not None}
         )
 
+    @action(detail=False, methods=['get', ])
+    def stats(self, request):
+
+        def datetime_periods_by_week(from_date, to_date, period):
+            datetime_periods = [from_date,next_period_start_after(from_date, period)]
+            while datetime_periods[-1] <= to_date:
+                datetime_periods.append(next_period_start_after(datetime_periods[-1], period))
+            return datetime_periods
+
+        def next_period_start_after(date_time, period):
+            if period == 'day':
+                next_period_start = date_time + timedelta(days=1)
+            elif period == 'week':
+                day_of_week = date_time.weekday()
+                days_until_sunday = 6 - day_of_week
+                if days_until_sunday == 0:
+                    days_until_sunday = 7
+                next_period_start = date_time + timedelta(days=days_until_sunday)
+            elif period == 'month':
+                next_month = date_time.month + 1 if date_time.month < 12 else 1
+                next_year = date_time.year + 1 if next_month == 1 else date_time.year
+                next_period_start = datetime(next_year, next_month, 1, tzinfo=date_time.tzinfo)
+            elif period == 'year':
+                next_year = date_time.year + 1
+                next_period_start = datetime(next_year, 1, 1, tzinfo=date_time.tzinfo)
+
+            return next_period_start.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+        tz = pytz.timezone(request.GET['timezone'])
+        from_date = timezone.make_aware(parse_datetime(f'{request.GET["from_date"]}T00:00:00'), timezone=tz)
+        to_date = timezone.make_aware(parse_datetime(f'{request.GET["to_date"]}T23:59:59'), timezone=tz)
+        group_by = request.GET['group_by'].lower()
+
+        queryset = queryset = self.get_queryset().annotate(
+                date=TruncDay('started_at', tzinfo=tz),
+            ).values('date').annotate(
+                filament_used=Sum('filament_used'),
+                total_print_time=Sum('print_time'),
+                longest_print_time=Max('print_time'),
+                print_count=Count('*'),
+                cancelled_print_count=Sum(Case(When(cancelled_at=None, then=Value(0)), default=Value(1), output_field=fields.IntegerField())),
+            ).order_by('date')
+
+        all_days = queryset.all()
+
+        print_count_groups = []
+        print_time_groups = []
+        filament_used_groups = []
+        cancelled_print_count_groups = []
+
+        group_periods = datetime_periods_by_week(from_date, to_date, group_by)
+        for i in range(len(group_periods) - 1):
+            period_start = group_periods[i]
+            period_end = group_periods[i+1]
+
+            group_key = period_start.isoformat()
+
+            all_days_in_current_period = [day for day in all_days if period_start <= day['date'] < period_end]
+
+            print_count_groups.append( dict( key=group_key, value=sum([d['print_count'] for d in all_days_in_current_period]) ) )
+            print_time_groups.append( dict( key=group_key, value=sum([d['total_print_time'] for d in all_days_in_current_period if d['total_print_time'] is not None]) ) )
+            filament_used_groups.append( dict( key=group_key, value=sum([d['filament_used'] for d in all_days_in_current_period if d['filament_used'] is not None]) ) )
+            cancelled_print_count_groups.append( dict( key=group_key, value=sum([d['cancelled_print_count'] for d in all_days_in_current_period]) ) )
+
+        result = {
+            'print_count_groups': print_count_groups,
+            'print_time_groups': print_time_groups,
+            'filament_used_groups': filament_used_groups,
+            'total_print_count': sum([g['value'] for g in print_count_groups]),
+            'total_print_time': sum([g['value'] for g in print_time_groups]),
+            'total_filament_used': sum([g['value'] for g in filament_used_groups]),
+            'total_cancelled_print_count':  sum([g['value'] for g in cancelled_print_count_groups]),
+            'longest_print_time': max([d['longest_print_time'] or 0 for d in all_days]) if all_days else 0,
+        }
+        result['average_print_time'] = result['total_print_time'] / result['total_print_count'] if result['total_print_count'] > 0 else 0
+        result['total_succeeded_print_count'] = result['total_print_count'] - result['total_cancelled_print_count']
+
+        return Response(result)
 
 class GCodeFolderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -321,7 +432,10 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             return GCodeFileDeSerializer
 
     def get_queryset(self):
-        return GCodeFile.objects.filter(user=self.request.user)
+        qs = GCodeFile.objects
+        if 'pk' in self.kwargs:
+            qs = qs.all_with_deleted()
+        return qs.filter(user=self.request.user)
 
     def list(self, request):
         qs = self.get_queryset().select_related(
@@ -384,12 +498,42 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
             if num_bytes > file_size_limit:
                 return Response({'error': 'File size too large'}, status=413)
 
-            _, ext_url = save_file_obj(f'{request.user.id}/{gcode_file.id}', request.FILES['file'], settings.GCODE_CONTAINER)
+            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
+
+            request.FILES['file'].seek(0)
+            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER)
             gcode_file.url = ext_url
             gcode_file.num_bytes = num_bytes
             gcode_file.save()
 
         return Response(self.get_serializer(instance=gcode_file, many=False).data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        gcode_file = self.get_object()
+
+        # Delete the file from storage, and set url to None before soft-deleting a g-code file
+        delete_file(self.path_in_storage(gcode_file), settings.GCODE_CONTAINER)
+        gcode_file.url = None
+        gcode_file.save()
+
+        gcode_file.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def set_metadata(self, gcode_file, metadata, thumbnails):
+        gcode_file.metadata_json = json.dumps(metadata)
+        for key in ['estimated_time', 'filament_total']:
+            setattr(gcode_file, key, metadata.get(key))
+
+        thumb_num = 0
+        for thumb in sorted(thumbnails, key=lambda x: x.getbuffer().nbytes, reverse=True):
+            thumb_num += 1
+            if thumb_num > 3:
+                continue
+            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
+            setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
+
+    def path_in_storage(self, gcode_file):
+        return f'{gcode_file.user.id}/{gcode_file.id}'
 
 
 class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,

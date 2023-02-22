@@ -507,11 +507,11 @@ export default {
             .patch(urls.printer(this.verifiedPrinter.id), {
               name: this.verifiedPrinter.name,
             })
-            .catch((err) => {
-              console.log(err)
-            })
             .then(() => {
               this.setSavingStatus('printer_name', false)
+            })
+            .catch((error) => {
+              this._showErrorPopup(error, 'Failed to update printer name')
             })
         }, delayInfo['delay'])
         return

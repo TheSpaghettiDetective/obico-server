@@ -133,6 +133,7 @@ module.exports = {
             'server-guides/advanced/gmail_smtp_setup_guide',
             'server-guides/advanced/email_guide',
             'server-guides/advanced/telegram_guide',
+            'server-guides/advanced/pushover_guide',
           ],
         },
         {

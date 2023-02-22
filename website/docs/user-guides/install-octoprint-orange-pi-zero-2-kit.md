@@ -115,11 +115,11 @@ Unbox your kit and lay out the components:
 
 ### **3. Put the Orange Pi in the Case**
 
-While putting your Orange Pi Zero 2 is not required, it is recommended to help keep it clean and safe. 
+While putting your Orange Pi Zero 2 is not required, it is recommended to help keep it clean and safe.
 
-As mentioned above, it is not recemmended to use the case that is included in the kit due to it's pour cooling capabilities. You can [print the case we designed](https://www.printables.com/model/322614-orange-pi-zero-2-case). 
+As mentioned above, it is not recommended to use the case that is included in the kit due to it's pour cooling capabilities. You can [print the case we designed](https://www.printables.com/model/322614-orange-pi-zero-2-case).
 
-If you prefer a different case, we also made a [collection on Printables](https://www.printables.com/social/288649-obico/collections/346815) with a few other options that have been tested. 
+If you prefer a different case, we also made a [collection on Printables](https://www.printables.com/social/288649-obico/collections/346815) with a few other options that have been tested.
 
 ### **4. Mounting the Camera**
 
@@ -204,7 +204,7 @@ ssh pi@your-ip-address
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/nmtui-connect-wifi.png)
 
 - Enter the following command to open up the network configuration menu. You can simply copy and paste the command into the terminal and then hit enter on your keyboard to execute the command.
-  
+
 ```
 nmtui
 ```
@@ -223,7 +223,7 @@ nmtui
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/wifi-activated.png)
 
-- You can verify your wifi has been connected succesfully when the upper right indicator switches from \<activate\> to \<deactivate\>. Once confirmed, move the arrow key to back and hit enter.
+- You can verify your wifi has been connected successfully when the upper right indicator switches from \<activate\> to \<deactivate\>. Once confirmed, move the arrow key to back and hit enter.
 
 ### **5. Find your Wireless IP address**
 
@@ -284,7 +284,7 @@ That's it! You have successfully connected to OctoPrint!
 Obico for OctoPrint extends OctoPrint's capabilities:
 
 - Monitor and control your 3D printer from anywhere on any device - Use the Obico mobile app on the go, or access the full OctoPrint interface from anywhere with Obico's Tunneling feature.
-- Get added peace of mind with Ai failure detection. Obico watches your prints for you and can alert you through your favorite notification service when a failure is detected. Fully configurage to get notified or pause the print when a failure is detected.
+- Get added peace of mind with Ai failure detection. Obico watches your prints for you and can alert you through your favorite notification service when a failure is detected. Fully configurable to get notified or pause the print when a failure is detected.
 - Start, stop pause and cancel prints on the go from anywhere.
 - Check in on your prints on the go with high quality webcam streaming
 
@@ -310,8 +310,8 @@ Before you start, make sure:
 
 ## Step 1: Access "Obico for OctoPrint" plugin wizard. {#step-1-access-obico-for-octoprint-plugin-wizard}
 
-1. Restart OctoPrint by clicking the **power button** 
-1. Click **Restart OctoPrint**. Wait for OctoPrint to reload. 
+1. Restart OctoPrint by clicking the **power button**
+1. Click **Restart OctoPrint**. Wait for OctoPrint to reload.
 1.The Obico plugin setup wizard should popup once OctoPrint reloads. If it doesn't open automatically, open up the OctoPrint settings menu by clicking the **gear** icon. Then find **Obico for OctoPrint** in the menu, and click **run setup wizard**
 
 

@@ -30,3 +30,7 @@ def retrieve_to_file_obj(src_path, file_obj, container):
 def delete_dir(dir_path, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dir_path)
     rmtree(fqp, ignore_errors=True)
+
+def delete_file(file_path, container):
+    fqp = path.join(settings.MEDIA_ROOT, container, file_path)
+    os.remove(fqp)

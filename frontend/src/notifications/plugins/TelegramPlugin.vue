@@ -69,7 +69,7 @@ import NotificationChannelTemplate from '@src/components/user-preferences/notifi
 import axios from 'axios'
 import urls from '@config/server-urls'
 import { vueTelegramLogin } from 'vue-telegram-login'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'TelegramPlugin',
@@ -106,6 +106,7 @@ export default {
       return mobilePlatform()
     },
   },
+
   methods: {
     onTelegramAuth(telegram_user) {
       const config = { chat_id: JSON.stringify(telegram_user.id) }
@@ -126,7 +127,7 @@ export default {
         })
         .catch((err) => {
           event.target.classList.remove('disabled')
-          this.$emit('errorAlert', 'Telegram test failed.')
+          this.$emit('errorAlert', 'Telegram test failed')
           console.log(err)
         })
     },

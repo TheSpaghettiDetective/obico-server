@@ -18,7 +18,7 @@ For instance, you can use port range 15853-15858, which can be allocated to up t
 
 Create a file named `docker-compose.override.yml` (or add to it if you already have one) with a content similar to the follows. You need to adjust the port range if you are not using 15853-15873.
 
-```
+```yaml
 version: "2.4"
 
 services:

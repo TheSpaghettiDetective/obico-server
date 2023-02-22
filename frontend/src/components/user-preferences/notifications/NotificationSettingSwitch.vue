@@ -62,7 +62,7 @@
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import { getNotificationSettingKey } from '@src/lib/utils'
-import { mobilePlatform } from '@src/lib/page_context'
+import { mobilePlatform } from '@src/lib/page-context'
 
 export default {
   name: 'NotificationSettingSwitch',

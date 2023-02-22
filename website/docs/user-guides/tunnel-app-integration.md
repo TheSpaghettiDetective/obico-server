@@ -63,7 +63,7 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 #### Response {#response-1}
 
-* `snapshot`: The url to fetch the most recent webcam snapshot (in JEPG). No authentication is required.
+* `snapshot`: The url to fetch the most recent webcam snapshot (in JPEG). No authentication is required.
 
 ### Failure prediction API {#failure-prediction-api}
 

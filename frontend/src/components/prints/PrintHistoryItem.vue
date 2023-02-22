@@ -1,5 +1,5 @@
 <template>
-  <div class="print-container" @click="openPrint">
+  <a :href="`/prints/${print.id}/`" class="print-container">
     <div class="status-indicator" :class="print.status.key"></div>
     <div class="main-content overflow-truncated-parent">
       <div class="top">
@@ -13,24 +13,20 @@
           <span>{{ print.printer ? print.printer.name : 'Unavailable' }}</span>
         </div>
         <div class="info">
-          <i class="far fa-clock icon"></i>
-          <span v-if="print.ended_at">{{ print.ended_at.fromNow() }}</span>
-          <span v-else>Printing...</span>
-        </div>
-        <div
-          v-if="print.reviewNeeded || print.focusedFeedbackNeeded"
-          class="info feedback-info"
-          :class="{ focused: print.focusedFeedbackNeeded }"
-        >
-          <span v-if="print.reviewNeeded">Review needed</span>
-          <span v-else>Focused feedback needed</span>
+          <i class="fas fa-calendar-alt icon"></i>
+          <span>{{ print.started_at.format('MMM D, YYYY') }}</span>
         </div>
       </div>
     </div>
     <div v-if="print.poster_url" class="poster">
       <div class="img" :style="{ backgroundImage: `url(${print.poster_url})` }"></div>
     </div>
-  </div>
+    <div v-else class="poster no-photo">
+      <svg>
+        <use href="#svg-no-photo" />
+      </svg>
+    </div>
+  </a>
 </template>
 
 <script>
@@ -53,12 +49,6 @@ export default {
       PrintStatus,
     }
   },
-
-  methods: {
-    openPrint() {
-      window.location.assign(`/prints/${this.print.id}/`)
-    },
-  },
 }
 </script>
 
@@ -68,6 +58,7 @@ export default {
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
   overflow: hidden
+  color: var(--color-text-primary)
   &:hover
     cursor: pointer
     background: var(--color-hover-accent)
@@ -141,15 +132,24 @@ export default {
 
 .poster
   margin-left: auto
+  background-color: var(--color-hover)
   .img
     background-size: cover
     background-position: center
     height: 100%
     width: 100px
-    background-color: var(--color-hover)
     display: flex
     justify-content: center
     align-items: center
     color: var(--color-text-secondary)
     font-size: 0.875rem
+  &.no-photo
+    width: 100px
+    display: flex
+    align-items: center
+    justify-content: center
+    svg
+      width: 3rem
+      height: 3rem
+      color: var(--color-background)
 </style>

@@ -61,7 +61,7 @@
                     @clearErrorMessages="clearErrorMessages"
                     @addErrorMessage="addErrorMessage"
                     @updateSetting="updateSetting"
-                    @errorAlert="errorAlert"
+                    @errorAlert="_showErrorPopup({ message: $event })"
                   ></component>
                 </div>
               </div>
@@ -101,7 +101,7 @@
                       @clearErrorMessages="clearErrorMessages"
                       @addErrorMessage="addErrorMessage"
                       @updateSetting="updateSetting"
-                      @errorAlert="errorAlert"
+                      @errorAlert="_showErrorPopup({ message: $event })"
                     ></component>
                   </b-tab>
                 </template>
@@ -129,7 +129,7 @@
 import axios from 'axios'
 import urls from '@config/server-urls'
 import PageLayout from '@src/components/PageLayout.vue'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page_context'
+import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
@@ -309,8 +309,7 @@ export default {
             const key = getNotificationSettingKey(section, 'config')
             this.$set(this.errorMessages, key, errors)
           } else {
-            console.log(err.response)
-            this.errorAlert()
+            this._showErrorPopup(err, 'Can not update your preferences')
           }
         })
     },
@@ -368,8 +367,7 @@ export default {
               this.$set(this.errorMessages, key, errors)
             }
           } else {
-            console.log(err.response)
-            this.errorAlert()
+            this._showErrorPopup(err, 'Can not update your preferences')
           }
         })
     },
@@ -380,8 +378,7 @@ export default {
           this.$router.go()
         })
         .catch((err) => {
-          console.log(err.response)
-          this.errorAlert()
+          this._showErrorPopup(err, 'Can not update your preferences')
         })
     },
     clearErrorMessages(propName) {
@@ -420,14 +417,14 @@ export default {
         .catch((err) => {
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             if (err.response.data.non_field_errors) {
-              this.errorAlert(err.response.data.non_field_errors)
+              this._showErrorPopup(err, err.response.data.non_field_errors)
             } else {
               for (const error in err.response.data) {
                 this.errorMessages[key] = err.response.data[error]
               }
             }
           } else {
-            this.errorAlert()
+            this._showErrorPopup(err, 'Can not update your preferences')
           }
         })
         .then(() => {
@@ -460,14 +457,6 @@ export default {
         delete this.errorMessages[propName]
       }
       this.$set(this.saving, propName, status)
-    },
-    errorAlert(text = null) {
-      this.$swal({
-        icon: 'error',
-        html: `<p>${
-          text ? text : 'Can not update your preferences.'
-        }</p><p>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</p>`,
-      })
     },
     updateSetting(settingsItem, value) {
       if (value !== undefined) {

@@ -152,7 +152,7 @@
                 </b-button>
               </div>
               <transition name="bounce">
-                <div v-if="focusedFeedbackEligible" class="pt-2">
+                <div v-if="print.printShotFeedbackEligible" class="pt-2">
                   <a
                     role="button"
                     class="btn btn-sm btn-outline-primary px-4"
@@ -161,7 +161,7 @@
                     F
                     <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
                     <svg
-                      v-if="!focusedFeedbackCompleted"
+                      v-if="print.need_print_shot_feedback"
                       class="seg-control-icon ml-1 double-hours-icon"
                     >
                       <use href="#svg-hour-double" />
@@ -171,8 +171,8 @@
               </transition>
             </div>
             <div class="text-muted py-2 px-3 help-text">
-              <small v-if="focusedFeedbackEligible">
-                <span v-if="focusedFeedbackCompleted"
+              <small v-if="print.printShotFeedbackEligible">
+                <span v-if="!print.need_print_shot_feedback"
                   >Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI
                   Detection Hours. You can click the button again to change your feedback.</span
                 >
@@ -203,7 +203,6 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-import filter from 'lodash/filter'
 import { getNormalizedP } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import VideoBox from '@src/components/VideoBox'
@@ -291,17 +290,6 @@ export default {
         return false
       }
       return this.print.has_alerts ^ (this.print.alert_overwrite === 'FAILED')
-    },
-
-    focusedFeedbackEligible() {
-      return this.print.printshotfeedback_set.length > 0 && this.print.alert_overwrite
-    },
-
-    focusedFeedbackCompleted() {
-      return (
-        this.print.printshotfeedback_set.length > 0 &&
-        filter(this.print.printshotfeedback_set, (f) => !f.answered_at).length == 0
-      )
     },
 
     focusedFeedbackLink() {

@@ -50,7 +50,7 @@ PUSHOVER_APP_TOKEN=the-pushover-app-token-you-obtained-in-step-1
 
 Run these command to rebuild the frontend:
 
-```
+```bash
 cd frontend
 yarn
 yarn build
@@ -59,11 +59,10 @@ cd ..
 
 ## 3. Restart the server {#3-restart-the-server}
 
-```
+```bash
 docker-compose restart
 ```
 
 You should be able to see the notification plugin you just created on your Obico server and start receiving notifications from your own pushover app!
 
 ![](/img/tutorials/pushover-notification-plugin-done.jpg)
-

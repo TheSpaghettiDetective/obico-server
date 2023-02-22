@@ -1,5 +1,9 @@
 <template>
-  <div v-click-outside="() => (show = false)" class="help-wrapper">
+  <div
+    v-click-outside="() => (show = false)"
+    class="help-wrapper"
+    :class="{ highlighted: highlight }"
+  >
     <!-- Slot for text -->
     <div
       class="text"
@@ -28,7 +32,7 @@
       <!-- Help widget -->
       <transition name="pop-up">
         <div v-show="show" class="widget" :class="[xDirection, yDirection]">
-          <div class="close-button" @click="show = false">
+          <div v-if="showCloseButton" class="close-button" @click="show = false">
             <svg width="16" height="16">
               <use href="#svg-cross-icon" />
             </svg>
@@ -214,6 +218,23 @@
                 color change is needed.
               </p>
             </template>
+
+            <!-- filament-used-may-be-incorrect -->
+            <template v-if="id === 'filament-used-may-be-incorrect'">
+              <h3>Filament usage may not be accurate if:</h3>
+              <ul>
+                <li>The G-Code file is only on OctoPrint/Klipper, and never uploaded to Obico.</li>
+                <li>Your slicer doesn't include filament usage into G-Code file.</li>
+                <li>
+                  You deleted the G-Code file from your Obico account before 12/20/2022. If a G-Code
+                  file is deleted after 12/20/2022, the print stats are still preserved.
+                </li>
+              </ul>
+              <p>
+                If you want accurate stats for your print history, please make sure you upload the
+                G-Code file to Obico, and start the print in the Obico app.
+              </p>
+            </template>
           </div>
         </div>
       </transition>
@@ -245,6 +266,14 @@ export default {
     id: {
       type: String,
       required: true,
+    },
+    highlight: {
+      type: Boolean,
+      default: true,
+    },
+    showCloseButton: {
+      type: Boolean,
+      default: true,
     },
   },
 
@@ -291,8 +320,9 @@ export default {
 .help-wrapper
   display: inline
   position: relative
-  text-decoration: underline
-  text-decoration-color: var(--color-text-help)
+  &.highlighted
+    text-decoration: underline
+    text-decoration-color: var(--color-text-help)
   .text
     display: inline
     &:hover
@@ -304,6 +334,7 @@ export default {
   $x-breakpoint-2: #{$widget-width * 2 + 20px}
   position: relative
   left: .1rem
+  top: .1rem
   width: 1rem
   height: 1rem
   display: inline-block

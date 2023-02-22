@@ -222,7 +222,7 @@ import axios from 'axios'
 
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import PrinterComm from '@src/lib/printer_comm'
+import PrinterComm from '@src/lib/printer-comm'
 import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
@@ -577,12 +577,8 @@ export default {
             throw response
           }
         })
-        .catch((response) => {
-          console.error(response)
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: 'Failed to update printer!',
-          }) // FIXME this was not handled in original code. sentry?
+        .catch((error) => {
+          this._showErrorPopup(error, 'Failed to update printer')
         })
     },
 

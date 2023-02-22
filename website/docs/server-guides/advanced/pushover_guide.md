@@ -31,7 +31,7 @@ PUSHOVER_APP_TOKEN=the-pushover-app-token-you-obtained-in-step-1
 
 Run this command to rebuild your app containers:
 
-```
+```bash
 docker-compose up --build -d
 ```
 

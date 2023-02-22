@@ -51,9 +51,13 @@
       </b-container>
       <b-container v-else fluid="xl">
         <b-row>
-          <b-col>
+          <b-col :lg="isDeleted ? 8 : 12" :offset-lg="isDeleted ? 2 : 0">
+            <b-alert :show="isDeleted" variant="warning warning-block">
+              This file is deleted and unavailable for print
+            </b-alert>
+
             <!-- File info -->
-            <div class="card-container file-info" :class="{ 'full-width': isPopup }">
+            <div class="card-container file-info" :class="{ 'full-width': isPopup || isDeleted }">
               <b-container fluid>
                 <b-row>
                   <b-col>
@@ -92,6 +96,7 @@
             </div>
             <!-- Available printers -->
             <available-printers
+              v-if="!isDeleted"
               class="card-container available-printers"
               :class="{ 'full-width': isPopup }"
               :is-popup="isPopup"
@@ -101,7 +106,7 @@
               @refresh="onRefresh"
             />
             <!-- Print history -->
-            <div class="print-history" :class="{ 'full-width': isPopup }">
+            <div class="print-history" :class="{ 'full-width': isPopup || isDeleted }">
               <h2 class="section-title">Print history</h2>
               <div v-if="gcode.print_set.length">
                 <print-history-item
@@ -132,15 +137,19 @@
 
 <script>
 import PageLayout from '@src/components/PageLayout.vue'
+import filter from 'lodash/filter'
 import get from 'lodash/get'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedGcode } from '@src/lib/normalizers'
+import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
-import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from '@src/components/g-codes/localFiles'
+import PrinterComm from '@src/lib/printer-comm'
+import {
+  listPrinterLocalGCodesMoonraker,
+  listPrinterLocalGCodesOctoPrint,
+} from '@src/lib/printer-local-comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 
 export default {
@@ -181,6 +190,7 @@ export default {
   data() {
     return {
       gcode: null,
+      printer: null,
       loading: true,
       gcodeNotFound: false,
     }
@@ -190,10 +200,16 @@ export default {
     isCloud() {
       return !this.selectedPrinterId
     },
+    isDeleted() {
+      return !!this.gcode?.deleted
+    },
   },
 
-  created() {
+  async created() {
     this.selectedPrinterId = Number(this.getRouteParam('printerId')) || null
+    if (this.selectedPrinterId) {
+      await this.fetchPrinter()
+    }
     this.gcodeId = this.getRouteParam('fileId')
     this.fetchGcode()
   },
@@ -205,6 +221,16 @@ export default {
     goBack() {
       this.$emit('goBack')
     },
+    async fetchPrinter() {
+      return axios
+        .get(urls.printer(this.selectedPrinterId))
+        .then((response) => {
+          this.printer = normalizedPrinter(response.data)
+        })
+        .catch((error) => {
+          this._showErrorPopup(error, 'Host printer for this gcode not found')
+        })
+    },
     async fetchLocalFile() {
       if (!this.printerComm) {
         return
@@ -213,49 +239,53 @@ export default {
 
       const decodedPath = decodeURIComponent(this.gcodeId)
       const filename = decodedPath.split('/').at(-1)
-      const path =
+      const dir_path =
         filename === decodedPath
           ? ''
           : decodedPath.slice(0, decodedPath.length - filename.length - 1)
 
-      listFiles(this.printerComm, {
-        query: filename,
-        path,
-        onRequestEnd: async (result) => {
+      const getPrinterLocalGCode = this.printer.isAgentMoonraker()
+        ? listPrinterLocalGCodesMoonraker
+        : listPrinterLocalGCodesOctoPrint
+
+      getPrinterLocalGCode(this.printerComm, dir_path, null)
+        .then((result) => {
+          return { files: filter(get(result, 'files', []), (f) => f.filename == filename) }
+        })
+        .then(async (result) => {
           this.loading = false
-          if (result?.files?.length) {
-            const file = result.files.find((f) => f.path === decodedPath)
-            if (!file) {
-              this.gcodeNotFound = true
-              return
-            }
-            this.gcode = {
-              ...file,
-              print_set: [],
-            }
-            if (file.path && file.hash && this.getRouteParam('printerId')) {
-              const safeFilename = file.path.replace(/^.*[\\/]/, '')
-              try {
-                let response = await axios.get(
-                  urls.gcodeFiles({
-                    resident_printer: this.getRouteParam('printerId'),
-                    safe_filename: safeFilename,
-                    agent_signature: `md5:${file.hash}`,
-                  })
-                )
-                const gcodeFileOnServer = get(response, 'data.results[0]')
-                if (gcodeFileOnServer) {
-                  this.gcode = normalizedGcode(gcodeFileOnServer)
-                }
-              } catch (e) {
-                console.error(e)
-              }
-            }
-          } else {
+          if (result?.files?.length === 0) {
             this.gcodeNotFound = true
+            return
           }
-        },
-      })
+
+          const file = result?.files[0]
+          this.gcode = {
+            ...file,
+            print_set: [],
+          }
+          if (file.path && file.hash && this.getRouteParam('printerId')) {
+            const safeFilename = file.path.replace(/^.*[\\/]/, '')
+            try {
+              let response = await axios.get(
+                urls.gcodeFiles({
+                  resident_printer: this.getRouteParam('printerId'),
+                  safe_filename: safeFilename,
+                  agent_signature: `md5:${file.hash}`,
+                })
+              )
+              const gcodeFileOnServer = get(response, 'data.results[0]')
+              if (gcodeFileOnServer) {
+                this.gcode = { ...this.gcode, ...normalizedGcode(gcodeFileOnServer) }
+              }
+            } catch (e) {
+              console.error(e)
+            }
+          }
+        })
+        .catch((err) => {
+          this.gcodeNotFound = true
+        })
     },
     async fetchGcode() {
       if (this.selectedPrinterId) {
@@ -314,6 +344,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.warning-block
+  margin-bottom: var(--gap-between-blocks)
+
 .file-info, .print-history
   width: 60%
   display: inline-block

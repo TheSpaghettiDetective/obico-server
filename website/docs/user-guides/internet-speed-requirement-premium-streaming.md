@@ -15,7 +15,7 @@ The minimum Internet speed required for a solid Premium Stream depends on 3 fact
 
 There are actually 2 kinds of connection speed:
 
-* The Internet download speed on your phone or you computer, whichever you are using The Spaghetti Detective app on.
+* The Internet download speed on your phone or your computer, whichever you are using The Spaghetti Detective app on.
 * The Internet upload speed on your Raspberry Pi. This is often overlooked. And trickier to find out too.
 
 :::

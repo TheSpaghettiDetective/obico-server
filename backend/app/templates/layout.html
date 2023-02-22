@@ -96,38 +96,6 @@
   <!-- Bundles -->
   {% bundlechunk 'chunk-vendors' 'js' %}
 
-  <!-- Sentry -->
-  {% block sentry %}
-  <script
-    src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js"
-    integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo"
-    crossorigin="anonymous"></script>
-  <script type="text/javascript">
-    var userAuthenticated = {{ user.is_authenticated |yesno:"true,false" }};
-    {% if user.is_authenticated and user.is_pro %}
-      var isProAccount = true;
-    {% else %}
-      var isProAccount = false;
-    {% endif %}
-    {% if settings.SENTRY_DSN %}
-      if (Sentry) {
-        Sentry.init({
-          dsn: '{{ settings.SENTRY_DSN }}',
-          release: '{{ settings.VERSION }}',
-          ignoreErrors: [
-            'window.webkit.messageHandlers',
-            'api.telegram.org',
-            /^Network Error$/,
-          ]
-        });
-        {% if user.is_authenticated %}
-          Sentry.setUser({"email": "{{ user.email }}"});
-        {% endif %}
-      }
-    {% endif %}
-  </script>
-  {% endblock sentry %}
-
   {% block page_js %}{% endblock page_js %}
   {% block body_bottom_ext %}{% endblock body_bottom_ext %}
 </body>

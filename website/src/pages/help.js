@@ -25,7 +25,7 @@ function HomepageHeader() {
 export default function Home() {
   // const {siteConfig} = useDocusaurusContext();
   return (
-    <page-layout
+    <Layout
       title="Obico Knowledge Base"
       description="Access the Obico app knowledge base to learn more about popular topics and find resources that will help you answer any questions you may have.">
       <HomepageHeader />

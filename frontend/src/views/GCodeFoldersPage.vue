@@ -14,10 +14,8 @@
       <search-input class="search-input mr-3" @input="updateSearch"></search-input>
     </template>
     <template #topBarRight>
-      <div class="d-flex">
-        <!-- <a href="#" class="btn shadow-none icon-btn d-none d-md-inline" title="Upload G-Code">
-          <i class="fas fa-file-upload"></i>
-        </a> -->
+      <div class="action-panel">
+        <!-- Create folder -->
         <a
           v-if="isCloud"
           href="#"
@@ -27,14 +25,14 @@
         >
           <i class="fas fa-folder-plus"></i>
         </a>
-        <!-- Storage dropdown -->
-        <b-dropdown right no-caret toggle-class="icon-btn" class="order-md-2">
+        <!-- Select storage -->
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn">
           <template #button-content>
             <i class="fas fa-server"></i>
           </template>
           <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
           <b-dropdown-item @click="switchToCloudStorage">
-            <div class="dropdown-group">
+            <div class="dropdown-text-group">
               <i
                 class="fas fa-check text-primary"
                 :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
@@ -49,7 +47,7 @@
             :key="printer.id"
             @click="() => switchToPrinterStorage(printer)"
           >
-            <div class="dropdown-group">
+            <div class="dropdown-text-group">
               <i
                 class="fas fa-check text-primary"
                 :style="{ visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden' }"
@@ -66,47 +64,87 @@
             </div>
           </b-dropdown-item>
         </b-dropdown>
-        <!-- Sorting / all actions for mobile -->
-        <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn" class="order-md-1">
+        <!-- Sorting -->
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
           <template #button-content>
-            <i class="fas fa-ellipsis-v d-md-none"></i>
-            <i class="fas fa-sort-amount-down d-none d-md-block"></i>
+            <i class="fas fa-sort-amount-down"></i>
           </template>
-          <!-- <b-dropdown-item href="#" class="d-md-none">
-            <i class="fas fa-file-upload"></i>Upload G-Code
-          </b-dropdown-item> -->
-          <b-dropdown-item class="d-md-none" @click="createFolder">
-            <i class="fas fa-folder-plus"></i>Create Folder
-          </b-dropdown-item>
-          <b-dropdown-divider class="d-md-none"></b-dropdown-divider>
-          <b-dropdown-text class="small text-secondary">ORDER</b-dropdown-text>
-          <b-dropdown-item
-            v-for="sortingOption in sorting.options"
-            :key="`s_${sortingOption.id}`"
-            @click="() => updateSorting(sortingOption)"
-          >
-            <i
-              class="fas fa-check text-primary"
-              :style="{ visibility: activeSorting.id === sortingOption.id ? 'visible' : 'hidden' }"
-            ></i>
-            {{ sortingOption.title }}
-          </b-dropdown-item>
-          <b-dropdown-divider />
-          <b-dropdown-item
-            v-for="sortingDirection in sorting.directions"
-            :key="`d_${sortingDirection.id}`"
-            @click="() => updateSorting(activeSorting, sortingDirection)"
-          >
-            <i
-              class="fas fa-check text-primary"
-              :style="{
-                visibility:
-                  activeSortingDirection.id === sortingDirection.id ? 'visible' : 'hidden',
-              }"
-            ></i>
-            {{ sortingDirection.title }}
-          </b-dropdown-item>
+          <sorting-dropdown
+            :local-storage-prefix="sortingLocalStoragePrefix"
+            :sorting-options="sortingOptions"
+            :sorting-value="sortingValue"
+            @onSortingUpdated="onSortingUpdated"
+          />
         </b-dropdown>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+
+          <cascaded-dropdown
+            ref="cascadedDropdown"
+            :menu-options="mobileMenuOptions"
+            @menuOptionClicked="onMenuOptionClicked"
+          >
+            <template #sorting>
+              <sorting-dropdown
+                :local-storage-prefix="sortingLocalStoragePrefix"
+                :sorting-options="sortingOptions"
+                :sorting-value="sortingValue"
+                @onSortingUpdated="onSortingUpdated"
+              />
+            </template>
+            <template #storage>
+              <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
+              <b-dropdown-item
+                @click="
+                  () => {
+                    switchToCloudStorage()
+                    $refs.cascadedDropdown.resetMenuExpanded()
+                  }
+                "
+              >
+                <div class="dropdown-text-group">
+                  <i
+                    class="fas fa-check text-primary"
+                    :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
+                  ></i>
+                  <div class="text">
+                    <div class="title">Obico Cloud</div>
+                  </div>
+                </div>
+              </b-dropdown-item>
+              <b-dropdown-item
+                v-for="printer in printers"
+                :key="printer.id"
+                @click="
+                  () => {
+                    switchToPrinterStorage(printer)
+                    $refs.cascadedDropdown.resetMenuExpanded()
+                  }
+                "
+              >
+                <div class="dropdown-text-group">
+                  <i
+                    class="fas fa-check text-primary"
+                    :style="{ visibility: selectedPrinterId === printer.id ? 'visible' : 'hidden' }"
+                  ></i>
+                  <div class="text">
+                    <div class="title">{{ printer.name }}</div>
+                    <div
+                      class="subtitle"
+                      :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
+                    >
+                      {{ printer.browsabilityText() }}
+                    </div>
+                  </div>
+                </div>
+              </b-dropdown-item>
+            </template>
+          </cascaded-dropdown>
+        </b-dropdown>
+
         <a
           v-if="onClose"
           href="#"
@@ -141,6 +179,13 @@
                 <div>Up to {{ maxFilesize }} MB each file, {{ maxTotalFilesize }} GB total.</div>
               </div>
             </vue-dropzone>
+
+            <div v-if="!isCloud && isAgentMoonraker && searchStateIsActive" class="notice-block">
+              <div class="icon">
+                <i class="fas fa-info"></i>
+              </div>
+              <p class="message">Search in Klipper printers works only for current directory</p>
+            </div>
 
             <g-code-file-structure
               :is-cloud="isCloud"
@@ -177,8 +222,7 @@
         :item="activeItem"
         :target-printer="targetPrinter"
         :scroll-container-id="scrollContainerId"
-        :active-sorting="activeSorting"
-        :active-sorting-direction="activeSortingDirection"
+        :sorting-value="sortingValue"
         @moved="onItemMoved"
       />
       <delete-confirmation-modal
@@ -202,14 +246,13 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import {
   normalizedGcode,
   normalizedGcodeFolder,
   normalizedPrinter,
   PrintStatus,
 } from '@src/lib/normalizers'
-import { user } from '@src/lib/page_context'
+import { user } from '@src/lib/page-context'
 import SearchInput from '@src/components/SearchInput.vue'
 import { getCsrfFromDocument } from '@src/lib/utils'
 import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
@@ -217,57 +260,28 @@ import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import PrinterComm from '@src/lib/printer_comm'
-import { listFiles } from '@src/components/g-codes/localFiles'
+import PrinterComm from '@src/lib/printer-comm'
+import {
+  listPrinterLocalGCodesOctoPrint,
+  listPrinterLocalGCodesMoonraker,
+} from '@src/lib/printer-local-comm'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
+import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
+import CascadedDropdown from '@src/components/CascadedDropdown'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
 
 const PAGE_SIZE = 24
 
-const Sorting = {
-  options: {
-    name: {
-      id: 1,
-      title: 'Name',
-      file_query: 'filename',
-      folder_query: 'name',
-    },
-    size: {
-      id: 2,
-      title: 'Size',
-      file_query: 'num_bytes',
-    },
-    created_at: {
-      id: 3,
-      title: 'Created',
-      file_query: 'created_at',
-      folder_query: 'created_at',
-    },
-  },
-  directions: {
-    asc: {
-      id: 1,
-      title: 'Ascending',
-      query: 'asc',
-    },
-    desc: {
-      id: 2,
-      title: 'Descending',
-      query: 'desc',
-    },
-  },
-}
-const LOCAL_PREF_NAMES = {
-  sorting: 'gcode-folders-sorting-id',
-  sortingDirection: 'gcode-folders-sorting-direction-id',
-}
-const getSortingById = (id) => {
-  return Object.values(Sorting.options).find((s) => s.id === id)
-}
-const getSortingDirectionById = (id) => {
-  return Object.values(Sorting.directions).find((s) => s.id === id)
+const SortingLocalStoragePrefix = 'gcodesSorting'
+const SortingOptions = {
+  options: [
+    { title: 'Name', key: 'filename', folderKey: 'name' },
+    { title: 'Size', key: 'num_bytes' },
+    { title: 'Created', key: 'created_at', folderKey: 'created_at' },
+  ],
+  default: { sorting: 'created_at', direction: 'desc' },
 }
 
 export default {
@@ -282,6 +296,8 @@ export default {
     MoveModal,
     DeleteConfirmationModal,
     NewFolderModal,
+    SortingDropdown,
+    CascadedDropdown,
   },
 
   props: {
@@ -331,13 +347,10 @@ export default {
       currentFoldersPage: 1,
       currentFilesPage: 1,
 
-      sorting: Sorting,
-      activeSorting: getSortingById(
-        getLocalPref(LOCAL_PREF_NAMES.sorting, Sorting.options.created_at.id)
-      ),
-      activeSortingDirection: getSortingDirectionById(
-        getLocalPref(LOCAL_PREF_NAMES.sortingDirection, Sorting.directions.desc.id)
-      ),
+      // Sorting
+      sortingLocalStoragePrefix: SortingLocalStoragePrefix,
+      sortingOptions: SortingOptions,
+      sortingValue: restoreSortingValue(SortingLocalStoragePrefix, SortingOptions),
 
       searchQuery: null,
       searchStateIsActive: false,
@@ -354,6 +367,37 @@ export default {
   },
 
   computed: {
+    mobileMenuOptions() {
+      const options = [
+        {
+          key: 'storage',
+          icon: 'fas fa-server',
+          title: `File storage`,
+          expandable: true,
+        },
+        {
+          key: 'sorting',
+          icon: 'fas fa-sort-amount-down',
+          title: `Sort`,
+          expandable: true,
+        },
+      ]
+
+      if (this.isCloud) {
+        options.unshift({
+          key: 'createFolder',
+          icon: 'fas fa-folder-plus',
+          title: 'Create folder',
+          callback: true,
+        })
+      }
+
+      return options
+    },
+    isAgentMoonraker() {
+      const selectedPrinter = this.printers.find((p) => p.id === this.selectedPrinterId)
+      return !selectedPrinter || selectedPrinter.isAgentMoonraker()
+    },
     isCloud() {
       return !this.selectedPrinterId
     },
@@ -489,17 +533,21 @@ export default {
         return
       }
       this.localFilesLoading = true
-      listFiles(this.selectedPrinterComm, {
-        query: this.searchQuery,
-        path: this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
-        onRequestEnd: (result) => {
-          this.localFilesLoading = false
-          if (result) {
-            const { folders, files } = result
-            this.folders = folders
-            this.files = files
-          }
-        },
+      const listPrinterLocalGCodes = this.isAgentMoonraker
+        ? listPrinterLocalGCodesMoonraker
+        : listPrinterLocalGCodesOctoPrint
+
+      listPrinterLocalGCodes(
+        this.selectedPrinterComm,
+        this.parentFolder ? decodeURIComponent(this.parentFolder) : null,
+        this.searchQuery
+      ).then((result) => {
+        this.localFilesLoading = false
+        if (result) {
+          const { folders, files } = result
+          this.folders = folders
+          this.files = files
+        }
       })
     },
     async fetchFilesAndFolders(reset = false) {
@@ -511,6 +559,7 @@ export default {
         this.resetFiles()
       }
 
+      // need to fetch local printer files
       if (this.selectedPrinterId) {
         if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
@@ -555,24 +604,21 @@ export default {
 
       if (!this.noMoreFolders) {
         try {
-          let response = await axios.get(urls.gcodeFolders(), {
-            params: {
-              parent_folder: this.parentFolder,
-              page: this.currentFoldersPage,
-              page_size: PAGE_SIZE,
-              sorting: `${this.activeSorting.folder_query}_${this.activeSortingDirection.query}`,
-            },
-          })
+          const params = {
+            parent_folder: this.parentFolder || 'null',
+            page: this.currentFoldersPage,
+            page_size: PAGE_SIZE,
+          }
+          if (this.sortingValue.sorting.folderKey) {
+            params.sorting = `${this.sortingValue.sorting.folderKey}_${this.sortingValue.direction.key}`
+          }
+          let response = await axios.get(urls.gcodeFolders(), { params })
           response = response.data
           this.noMoreFolders = response?.next === null
           folders = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -588,23 +634,19 @@ export default {
               'Cache-Control': 'no-cache',
             },
             params: {
-              parent_folder: this.parentFolder,
+              parent_folder: this.parentFolder || 'null',
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
-              sorting: `${this.activeSorting.file_query}_${this.activeSortingDirection.query}`,
+              sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,
               q: this.searchQuery,
             },
           })
           response = response.data
           this.noMoreFiles = response?.next === null
           files = response?.results || []
-        } catch (e) {
+        } catch (error) {
           this.loading = false
-          this.$swal.Reject.fire({
-            title: 'Error',
-            text: e.message,
-          })
-          console.error(e)
+          this._showErrorPopup(error)
         }
 
         this.files.push(...files.map((data) => normalizedGcode(data)))
@@ -629,25 +671,6 @@ export default {
         this.fetchFilesAndFolders(true)
         this.searchTimeoutId = null
       }, SEARCH_API_CALL_DELAY)
-    },
-    updateSorting(newSortingOption, newSortingDirection = this.activeSortingDirection) {
-      let sortingChanged = false
-
-      if (this.activeSorting.id !== newSortingOption.id) {
-        this.activeSorting = newSortingOption
-        setLocalPref(LOCAL_PREF_NAMES.sorting, newSortingOption.id)
-        sortingChanged = true
-      }
-
-      if (this.activeSortingDirection.id !== newSortingDirection.id) {
-        this.activeSortingDirection = newSortingDirection
-        setLocalPref(LOCAL_PREF_NAMES.sortingDirection, newSortingDirection.id)
-        sortingChanged = true
-      }
-
-      if (sortingChanged) {
-        this.fetchFilesAndFolders(true)
-      }
     },
     addParentFolderParam(file, xhr, formData) {
       formData.append('filename', file.name)
@@ -729,6 +752,11 @@ export default {
     createFolder() {
       this.$refs.newFolderModal.show()
     },
+    onMenuOptionClicked(menuOptionKey) {
+      if (menuOptionKey === 'createFolder') {
+        this.createFolder()
+      }
+    },
     verifyNewFolder(newFolderName) {
       if (this.folders.find((item) => item.name === newFolderName)) {
         return 'Folder with this name already exists'
@@ -777,6 +805,7 @@ export default {
         printerId: this.targetPrinter.id,
         gcode: gcode,
         isCloud: this.isCloud,
+        isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
         Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {
@@ -784,6 +813,12 @@ export default {
           }
         },
       })
+    },
+
+    // Sorting
+    onSortingUpdated(sortingValue) {
+      this.sortingValue = sortingValue
+      this.fetchFilesAndFolders(true)
     },
   },
 }
@@ -799,12 +834,15 @@ export default {
     background-color: var(--color-surface-secondary)
     border: var(--color-surface-secondary)
 
-.dropdown-group
+.notice-block
+  border: 1px solid var(--color-divider)
+  border-radius: var(--border-radius-md)
   display: flex
   align-items: center
-  .text
-    display: flex
-    flex-direction: column
-    .subtitle
-      font-size: 0.75rem
+  padding: 1rem 1.5rem
+  margin-bottom: var(--gap-between-blocks)
+
+  .message
+    margin: 0
+    margin-left: 1rem
 </style>

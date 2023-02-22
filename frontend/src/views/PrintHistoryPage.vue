@@ -180,7 +180,7 @@ import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
-import timePeriodFilteringQueryBuilder from '@src/lib/time-period-filtering-query-builder'
+import { queryBuilder } from '@src/lib/time-period-filtering'
 
 const PAGE_SIZE = 24
 
@@ -195,7 +195,7 @@ const FilterLocalStoragePrefix = 'printsFiltering'
 const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
-    buildQueryParam: timePeriodFilteringQueryBuilder,
+    buildQueryParam: queryBuilder,
     values: [
       { key: 'none', title: 'All' },
       { key: 'this_week', title: 'This Week' },

@@ -100,20 +100,15 @@
       <b-container v-else>
         <b-row>
           <b-col>
-            <muted-alert>Statistics numbers include deleted prints</muted-alert>
+            <muted-alert>Statistics include deleted prints</muted-alert>
           </b-col>
         </b-row>
-        <!-- <b-row>
-          <b-col>
-            <h2 class="section-title">General</h2>
-          </b-col>
-        </b-row> -->
         <b-row>
           <b-col lg="6" class="mb-4 mb-lg-0">
             <div class="stats-block total-prints">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
-                <span>Total prints</span>
+                <span>Total Prints</span>
               </div>
               <div class="chart-wrapper">
                 <div class="legend">
@@ -136,21 +131,21 @@
             <div class="stats-block print-time">
               <div class="stats-block-title">
                 <i class="far fa-clock"></i>
-                <span>Print time</span>
+                <span>Print Time</span>
               </div>
               <div class="info total-print-time">
                 <div class="title">Total print time</div>
-                <div class="value">{{ stats.total_print_time | durationLong }}</div>
+                <div class="value">{{ durationLong(stats.total_print_time) }}</div>
               </div>
               <div class="other-print-time-numbers">
                 <div class="info">
                   <div class="title">Longest print</div>
-                  <div class="value">{{ stats.longest_print_time | durationShort }}</div>
+                  <div class="value">{{ durationShort(stats.longest_print_time) }}</div>
                 </div>
                 <div class="divider"></div>
                 <div class="info">
                   <div class="title">Average print</div>
-                  <div class="value">{{ stats.average_print_time | durationShort }}</div>
+                  <div class="value">{{ durationShort(stats.average_print_time) }}</div>
                 </div>
               </div>
             </div>
@@ -161,9 +156,43 @@
             <div class="stats-block print-count-groups">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
-                <span>Prints</span>
+                <span>Prints Count</span>
               </div>
               <div ref="printCountGroupsChart"></div>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row class="mt-4">
+          <b-col>
+            <div class="stats-block print-time-groups">
+              <div class="stats-block-title">
+                <i class="far fa-clock"></i>
+                <span>Print Time</span>
+              </div>
+              <div ref="printTimeGroupsChart"></div>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row class="mt-4">
+          <b-col>
+            <div class="stats-block filament-used-groups">
+              <div class="stats-block-title">
+                <i class="fas fa-ruler-horizontal"></i>
+                <div class="title-group">
+                  <span>
+                    <help-widget
+                      id="filament-used-may-be-incorrect"
+                      :highlight="false"
+                      :show-close-button="false"
+                    >
+                      Filament Usage
+                    </help-widget>
+                  </span>
+                  <div class="divider"></div>
+                  <div class="subtitle">{{ totalFilamentUsedFormatted }}m total</div>
+                </div>
+              </div>
+              <div ref="filamentUsedGroupsChart"></div>
             </div>
           </b-col>
         </b-row>
@@ -192,14 +221,17 @@ import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { DonutChart } from '@src/lib/charts/donut-chart'
 import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
-import timePeriodFilteringQueryBuilder from '@src/lib/time-period-filtering-query-builder'
+import { queryBuilder, getDateTo, getRecommendedGrouping } from '@src/lib/time-period-filtering'
+import HelpWidget from '@src/components/HelpWidget.vue'
+
+const GroupingLocalStorageKey = 'statsGrouping'
 
 const DateParamFormat = 'YYYY-MM-DD'
 const FilterLocalStoragePrefix = 'statsFiltering'
 const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
-    buildQueryParam: timePeriodFilteringQueryBuilder,
+    buildQueryParam: queryBuilder,
     values: [
       { key: 'none', title: 'All' },
       { key: 'this_week', title: 'This Week' },
@@ -241,29 +273,7 @@ export default {
     FilteringDropdown,
     ActiveFilterNotice,
     DatePickerModal,
-  },
-
-  filters: {
-    durationLong(v) {
-      const duration = moment.duration(v, 'seconds')
-      const days = duration.days()
-      const daysText = days ? `${days} day${days !== 1 ? 's ' : ' '}` : ''
-      const hours = duration.hours()
-      const hoursText = `${hours} hour${hours !== 1 ? 's ' : ' '}`
-      const minutes = duration.minutes()
-      const minutesText = `${minutes} minute${minutes !== 1 ? 's' : ''}`
-      return `${daysText}${hoursText}${minutesText}`
-    },
-    durationShort(v) {
-      const duration = moment.duration(v, 'seconds')
-      const days = duration.days()
-      const daysText = days ? `${days}d ` : ''
-      const hours = duration.hours()
-      const hoursText = `${hours}h `
-      const minutes = duration.minutes()
-      const minutesText = `${minutes}m`
-      return `${daysText}${hoursText}${minutesText}`
-    },
+    HelpWidget,
   },
 
   data: function () {
@@ -272,12 +282,13 @@ export default {
       stats: null,
 
       groupingOptions: [
+        { key: 'auto', title: 'Auto' },
         { key: 'day', title: 'Day' },
         { key: 'week', title: 'Week' },
         { key: 'month', title: 'Month' },
         { key: 'year', title: 'Year' },
       ],
-      activeGrouping: 'day',
+      activeGrouping: getLocalPref(GroupingLocalStorageKey, 'auto'),
 
       // Filtering
       filterLocalStoragePrefix: FilterLocalStoragePrefix,
@@ -292,7 +303,7 @@ export default {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         from_date: moment(this.user.date_joined).format(DateParamFormat),
         to_date: moment(new Date()).format(DateParamFormat),
-        group_by: this.activeGrouping,
+        group_by: this.getActiveGrouping(),
       }
     },
 
@@ -315,6 +326,14 @@ export default {
       } else {
         return 100 - this.finishedPrintsPercentage
       }
+    },
+
+    totalFilamentUsedFormatted() {
+      if (!this.stats?.total_filament_used) {
+        return 0
+      }
+      const meters = this.stats.total_filament_used / 1000
+      return Math.round(meters * 100) / 100
     },
   },
 
@@ -381,6 +400,7 @@ export default {
     },
     updateChartGrouping(grouping) {
       this.activeGrouping = grouping.key
+      setLocalPref(GroupingLocalStorageKey, grouping.key)
       this.fetchStats()
     },
     drawCharts() {
@@ -407,24 +427,95 @@ export default {
       )
 
       // Print count groups bars
-      const chartWidth = this.$refs.printCountGroupsChart.offsetWidth
-      const barsCount = this.stats.print_count_groups.length
-      const xLabelsFormat = xAxisLabelsFormat(chartWidth, barsCount)
-      const maxValue = Math.max(...this.stats.print_count_groups.map((d) => d.value))
-      this.$refs.printCountGroupsChart.replaceChildren(
-        BarChart(this.stats.print_count_groups, {
+      const printCountMaxValue = Math.max(...this.stats.print_count_groups.map((d) => d.value))
+      this.drawBarChart({
+        data: this.stats.print_count_groups,
+        ref: this.$refs.printCountGroupsChart,
+        yFormat: 'd',
+        titleValue: (v) => `${v} print(s)`,
+        yDomain: [0, printCountMaxValue || 1],
+        yTicks: Math.min(printCountMaxValue || 1, 5),
+      })
+
+      // Print time groups bars
+      const printTimeMaxValue = Math.max(...this.stats.print_time_groups.map((d) => d.value))
+      const printTimeMaxvalueHours = Math.round(printTimeMaxValue / 3600)
+      this.drawBarChart({
+        data: this.stats.print_time_groups.map((d) => ({ ...d, value: d.value / 3600 })),
+        ref: this.$refs.printTimeGroupsChart,
+        yFormat: 'd',
+        yTickFormat: (d) => `${d}h`,
+        titleValue: (v) => this.durationShort(v * 3600),
+        yDomain: [0, printTimeMaxvalueHours || 1],
+        yTicks: Math.min(printTimeMaxvalueHours || 1, 5),
+      })
+
+      // Filament used groups bars
+      const filamentUsedMaxValue = Math.max(...this.stats.filament_used_groups.map((d) => d.value))
+      const filamentUsedMaxvalueMeters = Math.round(filamentUsedMaxValue / 1000)
+      this.drawBarChart({
+        data: this.stats.filament_used_groups.map((d) => ({ ...d, value: d.value / 1000 })),
+        ref: this.$refs.filamentUsedGroupsChart,
+        yFormat: 'd',
+        yTickFormat: (d) => `${d}m`,
+        titleValue: (v) => `${v}m`,
+        yDomain: [0, filamentUsedMaxvalueMeters || 1],
+        yTicks: Math.min(filamentUsedMaxvalueMeters || 1, 5),
+      })
+    },
+    drawBarChart({ data, ref, yFormat, yTickFormat, yTicks, yDomain, titleValue }) {
+      const chartWidth = ref.offsetWidth
+      const barsCount = data.length
+      const xLabelsFormat = xAxisLabelsFormat(
+        chartWidth,
+        barsCount,
+        this.getActiveGrouping(),
+        getDateTo(this.filterValues.timePeriod, this.getCurrentDateTo())
+      )
+
+      ref.replaceChildren(
+        BarChart(data, {
           xLabelRotation: xLabelsFormat.rotation,
           xLabelShow: xLabelsFormat.shouldShow,
           x: xLabelsFormat.value,
           y: (d) => d.value,
-          yFormat: 'd', // decimal
-          yDomain: [0, maxValue || 1],
-          yTicks: Math.min(maxValue || 1, 5),
+          yFormat,
+          yTickFormat,
+          yDomain,
+          yTicks,
           width: chartWidth,
           color: 'var(--color-divider)',
-          title: (d) => `${moment(d.key).format('MMM D, YYYY')} — ${d.value} print(s)`,
+          title: (d) => {
+            const label = xLabelsFormat.value(d).split('\r')[0].split('\n')
+            return `${label[0] + (label[1] ? ', ' + label[1] : '')} — ${
+              titleValue ? titleValue(d.value) : d.value
+            }`
+          },
+          marginBottom: 45,
         })
       )
+    },
+
+    // Duration formatting
+    durationLong(v) {
+      const duration = moment.duration(v, 'seconds')
+      const days = duration.days()
+      const daysText = days ? `${days} day${days !== 1 ? 's ' : ' '}` : ''
+      const hours = duration.hours()
+      const hoursText = `${hours} hour${hours !== 1 ? 's ' : ' '}`
+      const minutes = duration.minutes()
+      const minutesText = `${minutes} minute${minutes !== 1 ? 's' : ''}`
+      return `${daysText}${hoursText}${minutesText}`
+    },
+    durationShort(v) {
+      const duration = moment.duration(v, 'seconds')
+      const days = duration.days()
+      const daysText = days ? `${days}d ` : ''
+      const hours = duration.hours()
+      const hoursText = `${hours}h `
+      const minutes = duration.minutes()
+      const minutesText = `${minutes}m`
+      return `${daysText}${hoursText}${minutesText}`
     },
 
     // Filtering
@@ -439,6 +530,17 @@ export default {
       }
       this.updateCustomPeriodFilterSubtitle()
       this.fetchStats()
+    },
+    // time periods grouping
+    getActiveGrouping() {
+      return this.activeGrouping === 'auto'
+        ? getRecommendedGrouping(
+            this.filterValues.timePeriod,
+            this.getCurrentDateFrom(),
+            this.getCurrentDateTo(),
+            this.user
+          )
+        : this.activeGrouping
     },
     // custom logic for time period filters:
     getCurrentDateFrom() {
@@ -589,4 +691,14 @@ export default {
       background-color: var(--color-danger)
   .value
     font-weight: bold
+
+.filament-used-groups
+  .title-group
+    display: inline-flex
+    align-items: center
+    gap: .875rem
+    .divider
+      width: 1px
+      background-color: var(--color-divider)
+      height: 1.25rem
 </style>

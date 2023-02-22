@@ -17,7 +17,7 @@ export const BarChart = (
     height = 210, // the outer height of the chart, in pixels
     xDomain, // an array of (ordinal) x-values
     xRange = [marginLeft, width - marginRight], // [left, right]
-    xLabelShow = (d) => true, // whether to show the x-axis label
+    xLabelShow = (i) => true, // whether to show the x-axis label
     xLabelRotation = 0, // the rotation of the x-axis label, in degrees
     yType = d3.scaleLinear, // y-scale type
     yDomain, // [ymin, ymax]
@@ -25,6 +25,7 @@ export const BarChart = (
     yTicks = height / 40,
     xPadding = 0.1, // amount of x-range to reserve to separate bars
     yFormat, // a format specifier string for the y-axis
+    yTickFormat = null,
     yLabel, // a label for the y-axis
     color = 'currentColor', // bar fill color
   } = {}
@@ -46,6 +47,9 @@ export const BarChart = (
   const yScale = yType(yDomain, yRange)
   const xAxis = d3.axisBottom(xScale).tickSizeOuter(0)
   const yAxis = d3.axisLeft(yScale).ticks(yTicks, yFormat)
+  if (yTickFormat) {
+    yAxis.tickFormat(yTickFormat)
+  }
 
   // Compute titles
   if (title === undefined) {
@@ -104,7 +108,7 @@ export const BarChart = (
         var lines = self.text().split('\r')[0].split('\n') // get the text and split it
         self.text('') // clear it out
 
-        if (xLabelShow(data[i])) {
+        if (xLabelShow(i)) {
           self
             .append('tspan')
             .attr('x', 0)
@@ -123,26 +127,18 @@ export const BarChart = (
 }
 
 // Adaptive x-axis labels based on the width of the chart and number of bars
-export const xAxisLabelsFormat = (wrapperWidth, barsCount) => {
-  const pxBarWidth = wrapperWidth / barsCount
-  const pxMinWidthForHorizontalLabel = 30
-  const pxMinWidthForRotatedLabel = 18
+export const xAxisLabelsFormat = (wrapperWidth, barsCount, grouping = 'day', lastDayInDataset) => {
+  const barWidth = wrapperWidth / barsCount
+
+  const horizontalLabelRequiredWidth = grouping === 'day' ? 30 : grouping === 'week' ? 70 : 35
+  const rotatedLabelRequiredWidth = 20
 
   let frequency, rotation
-  if (pxBarWidth >= pxMinWidthForHorizontalLabel) {
-    frequency = 'daily'
+  if (barWidth >= horizontalLabelRequiredWidth) {
+    frequency = 1
     rotation = 0
-  } else if (pxBarWidth >= pxMinWidthForRotatedLabel) {
-    frequency = 'daily'
-    rotation = 45
-  } else if (pxBarWidth * 7 >= pxMinWidthForRotatedLabel) {
-    frequency = 'weekly'
-    rotation = 45
-  } else if (pxBarWidth * 30 >= pxMinWidthForRotatedLabel) {
-    frequency = 'monthly'
-    rotation = 45
   } else {
-    frequency = 'yearly'
+    frequency = Math.ceil(rotatedLabelRequiredWidth / barWidth)
     rotation = 45
   }
 
@@ -153,26 +149,33 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount) => {
     value: (d) => {
       const date = moment(d.key)
 
-      const isFirstDayOfYear = date.month() === 0 && date.date() === 1
-      const isFirstWeekOfYear = date.week() === 1
-      const isFirstMonthOfYear = date.month() === 0
-      const renderYear =
-        frequency === 'yearly' ||
-        (frequency === 'monthly' && isFirstMonthOfYear) ||
-        (frequency === 'weekly' && isFirstWeekOfYear) ||
-        (frequency === 'daily' && isFirstDayOfYear)
-      const renderMonth = frequency === 'monthly' && !renderYear
+      let firstLine,
+        secondLine = ''
+      if (grouping === 'day') {
+        firstLine = date.format('M/D')
+        secondLine = date.format('ddd')
+      } else if (grouping === 'week') {
+        firstLine = date.format('M/D')
 
-      let label = renderYear
-        ? date.month() === 11
-          ? (parseInt(date.format('YYYY')) + 1).toString()
-          : date.format('YYYY')
-        : renderMonth
-        ? date.format('MMM')
-        : date.format('M/D')
+        const endOfWeek = date.clone().endOf('week')
+        const lastDayOfWeek = endOfWeek.isBefore(lastDayInDataset) ? endOfWeek : lastDayInDataset
 
+        firstLine += `-${
+          lastDayOfWeek.month() === date.month()
+            ? lastDayOfWeek.format('D')
+            : lastDayOfWeek.format('M/D')
+        }`
+        secondLine = lastDayOfWeek.diff(date, 'days') === 6 ? `Week ${date.week()}` : ''
+      } else if (grouping === 'month') {
+        firstLine = date.format('MMM')
+        secondLine = date.format('YYYY')
+      } else {
+        firstLine = date.format('YYYY')
+      }
+
+      let label = firstLine
       if (rotation === 0) {
-        label += `\n${date.format('ddd')}` // add weekday as a second line
+        label += `\n${secondLine}`
       }
 
       const uniqueDateKey = date.format('M/D/YYYY')
@@ -181,17 +184,8 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount) => {
       return label
     },
 
-    shouldShow: (d) => {
-      const date = moment(d.key)
-      if (frequency === 'daily') {
-        return true
-      } else if (frequency === 'monthly') {
-        return date.date() === 1
-      } else if (frequency === 'weekly') {
-        return date.day() === 0
-      } else if (frequency === 'yearly') {
-        return date.month() === 0 && date.date() === 1
-      }
+    shouldShow: (index) => {
+      return index % frequency === 0
     },
   }
 }

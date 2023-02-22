@@ -130,12 +130,12 @@
                   <div class="value">{{ totalFilamentUsedFormatted }}m</div>
                 </div>
               </div>
-              <!-- <div class="btn-wrapper">
+              <div class="btn-wrapper">
                 <a class="btn btn-secondary" :href="`/stats/`">
-                  Full stats
+                  Full Stats
                   <i class="fas fa-arrow-right"></i>
                 </a>
-              </div> -->
+              </div>
             </div>
           </b-col>
         </b-row>
@@ -180,6 +180,7 @@ import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
+import timePeriodFilteringQueryBuilder from '@src/lib/time-period-filtering-query-builder'
 
 const PAGE_SIZE = 24
 
@@ -194,39 +195,7 @@ const FilterLocalStoragePrefix = 'printsFiltering'
 const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
-    buildQueryParam: (val, dateFrom, dateTo, user) => {
-      let params = {}
-      const today = new Date()
-      const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-      const firstDayOfYear = new Date(today.getFullYear(), 0, 1)
-
-      switch (val) {
-        case 'this_week':
-          params = { from_date: moment(firstDayOfWeek).format(DateParamFormat) }
-          break
-        case 'this_month':
-          params = { from_date: moment(firstDayOfMonth).format(DateParamFormat) }
-          break
-        case 'this_year':
-          params = { from_date: moment(firstDayOfYear).format(DateParamFormat) }
-          break
-        case 'custom':
-          if (dateFrom) {
-            params['from_date'] = moment(dateFrom).format(DateParamFormat)
-          }
-          if (dateTo) {
-            params['to_date'] = moment(dateTo).format(DateParamFormat)
-          }
-          break
-        default:
-          return {}
-      }
-      params['from_date'] = params['from_date'] || moment(user.date_joined).format(DateParamFormat)
-      params['to_date'] = params['to_date'] || moment(new Date()).format(DateParamFormat)
-      params['timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
-      return params
-    },
+    buildQueryParam: timePeriodFilteringQueryBuilder,
     values: [
       { key: 'none', title: 'All' },
       { key: 'this_week', title: 'This Week' },
@@ -533,7 +502,7 @@ export default {
   border-radius: var(--border-radius-lg)
   padding: 1.5rem 2rem
   display: flex
-  justify-content: space-around
+  justify-content: space-between
   align-items: center
   .summary-item
     display: flex

@@ -100,22 +100,36 @@
       <b-container v-else>
         <b-row>
           <b-col>
-            <muted-alert>Statistics also include deleted prints</muted-alert>
+            <muted-alert>Statistics numbers include deleted prints</muted-alert>
           </b-col>
         </b-row>
-        <b-row>
+        <!-- <b-row>
           <b-col>
             <h2 class="section-title">General</h2>
           </b-col>
-        </b-row>
+        </b-row> -->
         <b-row>
           <b-col lg="6" class="mb-4 mb-lg-0">
-            <div class="stats-block">
+            <div class="stats-block total-prints">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
                 <span>Total prints</span>
               </div>
-              <!-- TODO: donut chart -->
+              <div class="chart-wrapper">
+                <div class="legend">
+                  <div class="line">
+                    <div class="square success"></div>
+                    <div class="title">Finished:</div>
+                    <div class="value">{{ stats ? stats.total_succeeded_print_count : '' }}</div>
+                  </div>
+                  <div class="line">
+                    <div class="square danger"></div>
+                    <div class="title">Cancelled:</div>
+                    <div class="value">{{ stats ? stats.total_cancelled_print_count : '' }}</div>
+                  </div>
+                </div>
+                <div ref="totalPrintsDonutChart"></div>
+              </div>
             </div>
           </b-col>
           <b-col lg="6">
@@ -142,6 +156,17 @@
             </div>
           </b-col>
         </b-row>
+        <b-row class="mt-4">
+          <b-col>
+            <div class="stats-block print-count-groups">
+              <div class="stats-block-title">
+                <i class="fas fa-hashtag"></i>
+                <span>Prints</span>
+              </div>
+              <div ref="printCountGroupsChart"></div>
+            </div>
+          </b-col>
+        </b-row>
       </b-container>
 
       <!-- Date picker for filter by time period -->
@@ -158,49 +183,23 @@ import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
 import MutedAlert from '../components/MutedAlert.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import FilteringDropdown, { restoreFilterValues } from '@src/components/FilteringDropdown'
+import FilteringDropdown, {
+  restoreFilterValues,
+  getFilterParams,
+} from '@src/components/FilteringDropdown'
 import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
 import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import { DonutChart } from '@src/lib/charts/donut-chart'
+import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
+import timePeriodFilteringQueryBuilder from '@src/lib/time-period-filtering-query-builder'
 
 const DateParamFormat = 'YYYY-MM-DD'
 const FilterLocalStoragePrefix = 'statsFiltering'
 const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
-    buildQueryParam: (val, dateFrom, dateTo, user) => {
-      let params = {}
-      const today = new Date()
-      const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-      const firstDayOfYear = new Date(today.getFullYear(), 0, 1)
-
-      switch (val) {
-        case 'this_week':
-          params = { from_date: moment(firstDayOfWeek).format(DateParamFormat) }
-          break
-        case 'this_month':
-          params = { from_date: moment(firstDayOfMonth).format(DateParamFormat) }
-          break
-        case 'this_year':
-          params = { from_date: moment(firstDayOfYear).format(DateParamFormat) }
-          break
-        case 'custom':
-          if (dateFrom) {
-            params['from_date'] = moment(dateFrom).format(DateParamFormat)
-          }
-          if (dateTo) {
-            params['to_date'] = moment(dateTo).format(DateParamFormat)
-          }
-          break
-        default:
-          return {}
-      }
-      params['from_date'] = params['from_date'] || moment(user.date_joined).format(DateParamFormat)
-      params['to_date'] = params['to_date'] || moment(new Date()).format(DateParamFormat)
-      params['timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
-      return params
-    },
+    buildQueryParam: timePeriodFilteringQueryBuilder,
     values: [
       { key: 'none', title: 'All' },
       { key: 'this_week', title: 'This Week' },
@@ -296,10 +295,32 @@ export default {
         group_by: this.activeGrouping,
       }
     },
+
+    // Total prints count
+    finishedPrintsPercentage() {
+      const finished = this.stats?.total_succeeded_print_count
+      const total = this.stats?.total_print_count
+
+      if (!finished || !total) {
+        return 0
+      }
+
+      return Math.round((finished / total) * 100)
+    },
+    cancelledPrintsPercentage() {
+      const total = this.stats?.total_print_count
+
+      if (!total) {
+        return 0
+      } else {
+        return 100 - this.finishedPrintsPercentage
+      }
+    },
   },
 
   created() {
     this.user = user()
+    this.updateCustomPeriodFilterSubtitle()
 
     // get printers first to remove deleted/archived printers from filtering before fetching prints
     axios
@@ -329,7 +350,13 @@ export default {
       })
   },
 
-  mounted() {},
+  mounted() {
+    addEventListener('resize', this.drawCharts)
+  },
+
+  unmounted() {
+    removeEventListener('resize', this.drawCharts)
+  },
 
   methods: {
     fetchStats() {
@@ -337,11 +364,16 @@ export default {
         .get(urls.stats(), {
           params: {
             ...this.defaultStatsParams,
+            ...getFilterParams(
+              this.filterOptions,
+              this.filterValues,
+              this.customFilterParamsBuilder
+            ),
           },
         })
         .then((response) => {
-          console.log(response)
           this.stats = response.data
+          this.$nextTick(this.drawCharts)
         })
         .catch((error) => {
           this._showErrorPopup(error)
@@ -350,6 +382,49 @@ export default {
     updateChartGrouping(grouping) {
       this.activeGrouping = grouping.key
       this.fetchStats()
+    },
+    drawCharts() {
+      if (!this.stats) {
+        return
+      }
+
+      this.$refs.totalPrintsDonutChart.replaceChildren(
+        DonutChart(
+          [
+            { name: 'Finished', value: this.finishedPrintsPercentage / 100 },
+            { name: 'Cancelled', value: this.cancelledPrintsPercentage / 100 },
+          ],
+          {
+            name: (d) => d.name,
+            value: (d) => d.value,
+            format: '.0%',
+            totalValue:
+              this.stats.total_succeeded_print_count + this.stats.total_cancelled_print_count,
+            names: ['Finished', 'Cancelled'],
+            colors: ['var(--color-success)', 'var(--color-danger)'],
+          }
+        )
+      )
+
+      // Print count groups bars
+      const chartWidth = this.$refs.printCountGroupsChart.offsetWidth
+      const barsCount = this.stats.print_count_groups.length
+      const xLabelsFormat = xAxisLabelsFormat(chartWidth, barsCount)
+      const maxValue = Math.max(...this.stats.print_count_groups.map((d) => d.value))
+      this.$refs.printCountGroupsChart.replaceChildren(
+        BarChart(this.stats.print_count_groups, {
+          xLabelRotation: xLabelsFormat.rotation,
+          xLabelShow: xLabelsFormat.shouldShow,
+          x: xLabelsFormat.value,
+          y: (d) => d.value,
+          yFormat: 'd', // decimal
+          yDomain: [0, maxValue || 1],
+          yTicks: Math.min(maxValue || 1, 5),
+          width: chartWidth,
+          color: 'var(--color-divider)',
+          title: (d) => `${moment(d.key).format('MMM D, YYYY')} — ${d.value} print(s)`,
+        })
+      )
     },
 
     // Filtering
@@ -450,6 +525,10 @@ export default {
   padding: 1.75em 2.25em
   border-radius: var(--border-radius-lg)
   height: 280px
+  display: flex
+  flex-direction: column
+  @media (max-width: 768px)
+    padding: 1.25em 1.5em
 
 .stats-block-title
   font-size: 1.125rem
@@ -462,8 +541,6 @@ export default {
     color: var(--color-divider)
 
 .print-time
-  display: flex
-  flex-direction: column
   justify-content: space-between
   .title
     font-size: 1.125rem
@@ -482,4 +559,34 @@ export default {
         font-size: .875rem
       .value
         font-size: 1.125rem
+
+.total-prints
+  .chart-wrapper
+    flex: 1
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: 1rem
+  .legend
+    display: flex
+    flex-direction: column
+    justify-content: center
+  .line
+    display: flex
+    align-items: center
+    gap: .3rem
+    margin: .25rem 0
+    @media (max-width: 768px)
+      font-size: .875rem
+  .square
+    width: 1.125rem
+    height: 1.125rem
+    border-radius: var(--border-radius-xs)
+    margin-right: .2rem
+    &.success
+      background-color: var(--color-success)
+    &.danger
+      background-color: var(--color-danger)
+  .value
+    font-weight: bold
 </style>

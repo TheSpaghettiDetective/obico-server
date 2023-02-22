@@ -26,6 +26,12 @@
             Printers
           </a>
         </li>
+        <li v-if="user" :class="{ active: path.includes('/g_code_') }">
+          <a href="/g_code_folders/cloud/">
+            <i class="fas fa-file-code"></i>
+            G-Codes
+          </a>
+        </li>
         <li
           v-if="user"
           :class="{ active: path.includes('/print_history/') || path.includes('/prints/') }"
@@ -35,10 +41,10 @@
             Print History
           </a>
         </li>
-        <li v-if="user" :class="{ active: path.includes('/g_code_') }">
-          <a href="/g_code_folders/cloud/">
-            <i class="fas fa-file-code"></i>
-            G-Codes
+        <li v-if="user" :class="{ active: path.includes('/stats/') }">
+          <a href="/stats/">
+            <i class="fas fa-chart-pie"></i>
+            Statistics
           </a>
         </li>
       </ul>

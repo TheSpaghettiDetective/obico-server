@@ -12,7 +12,7 @@ export const BarChart = (
     marginTop = 20, // the top margin, in pixels
     marginRight = 0, // the right margin, in pixels
     marginBottom = 40, // the bottom margin, in pixels
-    marginLeft = 30, // the left margin, in pixels
+    marginLeft = 40, // the left margin, in pixels
     width = 640, // the outer width of the chart, in pixels
     height = 210, // the outer height of the chart, in pixels
     xDomain, // an array of (ordinal) x-values

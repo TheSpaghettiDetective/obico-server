@@ -444,7 +444,15 @@ export default {
         data: this.stats.print_time_groups.map((d) => ({ ...d, value: d.value / 3600 })),
         ref: this.$refs.printTimeGroupsChart,
         yFormat: 'd',
-        yTickFormat: (d) => `${d}h`,
+        yTickFormat: (h) => {
+          if (h > 24 * 365) {
+            return `${Math.round(h / (24 * 365))}y`
+          } else if (h >= 24) {
+            return `${Math.round(h / 24)}d`
+          } else {
+            return `${h}h`
+          }
+        },
         titleValue: (v) => this.durationShort(v * 3600),
         yDomain: [0, printTimeMaxvalueHours || 1],
         yTicks: Math.min(printTimeMaxvalueHours || 1, 5),
@@ -457,8 +465,8 @@ export default {
         data: this.stats.filament_used_groups.map((d) => ({ ...d, value: d.value / 1000 })),
         ref: this.$refs.filamentUsedGroupsChart,
         yFormat: 'd',
-        yTickFormat: (d) => `${d}m`,
-        titleValue: (v) => `${v}m`,
+        yTickFormat: (m) => `${m}m`,
+        titleValue: (v) => (v >= 1000 ? Math.round(v / 1000) + 'km' : v + 'm'),
         yDomain: [0, filamentUsedMaxvalueMeters || 1],
         yTicks: Math.min(filamentUsedMaxvalueMeters || 1, 5),
       })

@@ -7,6 +7,7 @@
           v-if="isEnt"
           href="/user_preferences/dh/"
           class="btn shadow-none action-btn icon-btn hours-btn"
+          :style="{ marginRight: `${String(dhBadgeNum).length * 0.25}rem` }"
           :title="dhBadgeNum + ' AI Detection Hours'"
         >
           <svg class="custom-svg-icon">
@@ -408,15 +409,12 @@ export default {
 
 .btn.hours-btn
   position: relative
-  padding-right: 0.5rem !important
-  margin-right: .5rem
-  width: 48px !important
   color: var(--color-text-primary)
 
   .badge
     position: absolute
-    right: 0
-    top: 8px
+    left: 18px
+    top: 4px
     border-radius: var(--border-radius-sm)
     background-color: var(--color-primary)
     height: auto

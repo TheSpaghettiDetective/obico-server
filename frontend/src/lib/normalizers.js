@@ -154,7 +154,7 @@ export const normalizedPrinter = (newData, oldData) => {
     },
     // Printing availability
     isPrintable: function () {
-      return !this.isOffline() && !this.isDisconnected() && !this.isActive()
+      return !this.isOffline() && !this.isDisconnected() && !this.isActive() && !this.archived_at
     },
     printabilityText: function () {
       return this.isPrintable() ? 'Ready' : 'Unavailable'

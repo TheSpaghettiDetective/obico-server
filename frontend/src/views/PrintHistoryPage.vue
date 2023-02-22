@@ -87,8 +87,8 @@
       <!-- Prints list -->
       <b-container>
         <b-row>
-          <b-col v-if="prints.length || loading">
-            <div v-if="!loading" class="prints-summary">
+          <b-col>
+            <div v-if="prints.length && !loading" class="prints-summary">
               <div class="summary-item">
                 <div class="icon">
                   <i class="fas fa-hashtag"></i>
@@ -137,7 +137,10 @@
                 </a>
               </div> -->
             </div>
-
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col v-if="prints.length || loading">
             <print-history-item
               v-for="print of prints"
               :key="print.id"
@@ -303,11 +306,21 @@ export default {
   computed: {
     totalPrintTimeFormatted() {
       const duration = moment.duration(this.stats.total_print_time, 'seconds')
-      const days = duration.days()
+      const days = Math.floor(duration.asDays())
       const hours = duration.hours()
       const minutes = duration.minutes()
 
-      return `${days}d ${hours}h ${minutes}m`
+      let result = ''
+
+      if (days !== 0) {
+        result += `${days}d `
+      }
+      if (days !== 0 || hours !== 0) {
+        result += `${hours}h `
+      }
+
+      result += `${minutes}m`
+      return result
     },
     totalFilamentUsedFormatted() {
       if (!this.stats?.total_filament_used) {

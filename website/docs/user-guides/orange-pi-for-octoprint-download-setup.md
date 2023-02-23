@@ -10,6 +10,10 @@ import TOCInline from '@theme/TOCInline';
 
 <TOCInline toc={toc} />
 
+:::tip
+The Orange Pi for OctoPrint SD card images are built and maintained by the Obico team, and supported by the Obico community. Please come to [our discord server](https://obico.io/discord/) in case you run into any issues with it.
+:::
+
 Orange Pi has become a popular choice to run OctoPrint, especially nowadays it's harder to buy a Raspberry Pi at a reasonable price than to make your in-laws happy. However, many steps and familiarity with Linux commands were required to run OctoPrint on an Orange Pi.
 
 Until now. [The Obico team](https://obico.io/) has decided to take stab at this problem by figuring all it takes to build an image that you can just download and flash to an SD card to get OctoPrint up and running. This makes it just as easy to run OctoPrint on an Orange Pi as it's on a Raspberry Pi.

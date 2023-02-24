@@ -31,7 +31,7 @@
 
       <!-- Help widget -->
       <transition name="pop-up">
-        <div v-show="show" class="widget" :class="[xDirection, yDirection]">
+        <div v-show="show" ref="widget" class="widget" :class="[xDirection, yDirection]">
           <div v-if="showCloseButton" class="close-button" @click="show = false">
             <svg width="16" height="16">
               <use href="#svg-cross-icon" />
@@ -280,7 +280,7 @@ export default {
     },
     showCloseButton: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
@@ -296,28 +296,31 @@ export default {
     // Find preferred direction for widget to pup-up
     // Based on help icon position inside viewport
     positionWidget() {
-      const widgetWidth = 360 // should be synced with `$widget-width` in styles
-      // const widgetHeight = 360 // should be synced with `$widget-height` in styles
-      const minHorizontalSpace = widgetWidth + 10
-      // const minVerticalSpace = widgetHeight + 10
+      this.$nextTick(() => {
+        const widgetWidth = this.$refs.widget?.offsetWidth || 360
+        const widgetHeight = this.$refs.widget?.offsetHeight || 420
 
-      const helpIconPosition = this.$refs.widgetWrapper.getBoundingClientRect()
+        const minHorizontalSpace = widgetWidth + 10
+        const minVerticalSpace = widgetHeight + 10
 
-      const distanceFromRightEdge =
-        window.innerWidth - (helpIconPosition.left + helpIconPosition.width)
-      // const distanceFromBottomEdge = window.innerHeight - (helpIconPosition.top + helpIconPosition.height)
+        const helpIconPosition = this.$refs.widgetWrapper.getBoundingClientRect()
+        const distanceFromRightEdge =
+          window.innerWidth - (helpIconPosition.left + helpIconPosition.width)
+        const distanceFromBottomEdge =
+          window.innerHeight - (helpIconPosition.top + helpIconPosition.height)
 
-      if (distanceFromRightEdge < minHorizontalSpace) {
-        this.xDirection = 'right'
-      } else {
-        this.xDirection = 'left'
-      }
+        if (distanceFromRightEdge < minHorizontalSpace) {
+          this.xDirection = 'right'
+        } else {
+          this.xDirection = 'left'
+        }
 
-      // if (distanceFromBottomEdge < minVerticalSpace) {
-      //   this.yDirection = 'bottom'
-      // } else {
-      //   this.yDirection = 'top'
-      // }
+        if (distanceFromBottomEdge < minVerticalSpace) {
+          this.yDirection = 'bottom'
+        } else {
+          this.yDirection = 'top'
+        }
+      })
     },
   },
 }

@@ -135,17 +135,17 @@
               </div>
               <div class="info total-print-time">
                 <div class="title">Total print time</div>
-                <div class="value">{{ durationLong(stats.total_print_time) }}</div>
+                <div class="value">{{ getHumanizedDuration(stats.total_print_time) }}</div>
               </div>
               <div class="other-print-time-numbers">
                 <div class="info">
                   <div class="title">Longest print</div>
-                  <div class="value">{{ durationShort(stats.longest_print_time) }}</div>
+                  <div class="value">{{ getHumanizedDuration(stats.longest_print_time) }}</div>
                 </div>
                 <div class="divider"></div>
                 <div class="info">
                   <div class="title">Average print</div>
-                  <div class="value">{{ durationShort(stats.average_print_time) }}</div>
+                  <div class="value">{{ getHumanizedDuration(stats.average_print_time) }}</div>
                 </div>
               </div>
             </div>
@@ -223,6 +223,7 @@ import { DonutChart } from '@src/lib/charts/donut-chart'
 import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
 import { queryBuilder, getDateTo, getRecommendedGrouping } from '@src/lib/time-period-filtering'
 import HelpWidget from '@src/components/HelpWidget.vue'
+import { getHumanizedDuration } from '@src/lib/utils'
 
 const GroupingLocalStorageKey = 'statsGrouping'
 
@@ -465,7 +466,7 @@ export default {
             return `${h}h`
           }
         },
-        titleValue: (v) => this.durationShort(v * 3600),
+        titleValue: (v) => this.getHumanizedDuration(v * 3600),
         yDomain: [0, printTimeMaxvalueHours || 1],
         yTicks: Math.min(printTimeMaxvalueHours || 1, 5),
       })
@@ -516,27 +517,7 @@ export default {
       )
     },
 
-    // Duration formatting
-    durationLong(v) {
-      const duration = moment.duration(v, 'seconds')
-      const days = duration.days()
-      const daysText = days ? `${days} day${days !== 1 ? 's ' : ' '}` : ''
-      const hours = duration.hours()
-      const hoursText = `${hours} hour${hours !== 1 ? 's ' : ' '}`
-      const minutes = duration.minutes()
-      const minutesText = `${minutes} minute${minutes !== 1 ? 's' : ''}`
-      return `${daysText}${hoursText}${minutesText}`
-    },
-    durationShort(v) {
-      const duration = moment.duration(v, 'seconds')
-      const days = duration.days()
-      const daysText = days ? `${days}d ` : ''
-      const hours = duration.hours()
-      const hoursText = `${hours}h `
-      const minutes = duration.minutes()
-      const minutesText = `${minutes}m`
-      return `${daysText}${hoursText}${minutesText}`
-    },
+    getHumanizedDuration,
 
     // Filtering
     onFilterUpdated(filterOptionKey, filterOptionValue) {

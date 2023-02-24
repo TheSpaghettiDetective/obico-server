@@ -181,6 +181,7 @@ import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { queryBuilder } from '@src/lib/time-period-filtering'
+import { getHumanizedDuration } from '@src/lib/utils'
 
 const PAGE_SIZE = 24
 
@@ -274,22 +275,7 @@ export default {
 
   computed: {
     totalPrintTimeFormatted() {
-      const duration = moment.duration(this.stats.total_print_time, 'seconds')
-      const days = Math.floor(duration.asDays())
-      const hours = duration.hours()
-      const minutes = duration.minutes()
-
-      let result = ''
-
-      if (days !== 0) {
-        result += `${days}d `
-      }
-      if (days !== 0 || hours !== 0) {
-        result += `${hours}h `
-      }
-
-      result += `${minutes}m`
-      return result
+      return getHumanizedDuration(this.stats.total_print_time)
     },
     totalFilamentUsedFormatted() {
       if (!this.stats?.total_filament_used) {

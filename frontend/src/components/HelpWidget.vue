@@ -221,19 +221,26 @@
 
             <!-- filament-used-may-be-incorrect -->
             <template v-if="id === 'filament-used-may-be-incorrect'">
-              <h3>Filament usage may not be accurate if:</h3>
+              <h3>Is filament usage inaccurate?</h3>
+              <p>
+                G-code files uploaded to your Obico account before upgrading to Obico for OctoPrint
+                version 2.3.0 or Obico for Klipper version 1.2.0 do not include filament usage data.
+              </p>
+              <p><strong>To ensure accurate filament usage and other statistics:</strong></p>
               <ul>
-                <li>The G-Code file is only on OctoPrint/Klipper, and never uploaded to Obico.</li>
-                <li>Your slicer doesn't include filament usage into G-Code file.</li>
                 <li>
-                  You deleted the G-Code file from your Obico account before 12/20/2022. If a G-Code
-                  file is deleted after 12/20/2022, the print stats are still preserved.
+                  Upload G-code files and start prints directly through Obico instead of
+                  OctoPrint/Klipper.
+                </li>
+                <li>
+                  Use a slicer that supports filament usage parameters, such as Cura, Prusa Slicer,
+                  SuperSlicer, IdeaMaker, or Simplify3D.
+                </li>
+                <li>
+                  Print statistics for G-code files deleted before 12/20/2022 are not included. For
+                  files deleted after 12/20/2022, statistics are preserved.
                 </li>
               </ul>
-              <p>
-                If you want accurate stats for your print history, please make sure you upload the
-                G-Code file to Obico, and start the print in the Obico app.
-              </p>
             </template>
           </div>
         </div>

@@ -22,6 +22,7 @@ export const DonutChart = (
     strokeWidth = 10, // width of stroke separating wedges
     strokeLinejoin = 'round', // line join of stroke separating wedges
     padAngle = stroke === 'none' ? 2 / outerRadius : 0, // angular separation between wedges
+    emptyState = false, // if true, show empty state
   } = {}
 ) => {
   // Compute values
@@ -91,6 +92,7 @@ export const DonutChart = (
     .attr('transform', (d) => `translate(${arcLabel.centroid(d)})`)
     .selectAll('tspan')
     .data((d) => {
+      if (emptyState) return ['0%']
       const lines = `${title(d.data)}`.split(/\n/)
       return d.endAngle - d.startAngle > 0.25 ? lines : lines.slice(0, 1)
     })

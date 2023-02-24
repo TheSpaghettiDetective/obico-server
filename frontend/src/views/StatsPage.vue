@@ -307,6 +307,10 @@ export default {
       }
     },
 
+    isEmptyState() {
+      return !this.stats?.total_print_count
+    },
+
     // Total prints count
     finishedPrintsPercentage() {
       const finished = this.stats?.total_succeeded_print_count
@@ -411,17 +415,25 @@ export default {
       this.$refs.totalPrintsDonutChart.replaceChildren(
         DonutChart(
           [
-            { name: 'Finished', value: this.finishedPrintsPercentage / 100 },
-            { name: 'Cancelled', value: this.cancelledPrintsPercentage / 100 },
+            {
+              name: 'Finished',
+              value: this.isEmptyState ? 0.5 : this.finishedPrintsPercentage / 100,
+            },
+            {
+              name: 'Cancelled',
+              value: this.isEmptyState ? 0.5 : this.cancelledPrintsPercentage / 100,
+            },
           ],
           {
             name: (d) => d.name,
             value: (d) => d.value,
             format: '.0%',
-            totalValue:
-              this.stats.total_succeeded_print_count + this.stats.total_cancelled_print_count,
+            totalValue: this.isEmptyState
+              ? '0'
+              : this.stats.total_succeeded_print_count + this.stats.total_cancelled_print_count,
             names: ['Finished', 'Cancelled'],
             colors: ['var(--color-success)', 'var(--color-danger)'],
+            emptyState: this.isEmptyState,
           }
         )
       )

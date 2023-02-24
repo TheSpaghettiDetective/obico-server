@@ -153,29 +153,29 @@
         </b-row>
         <b-row class="mt-4">
           <b-col>
-            <div class="stats-block print-count-groups">
+            <div class="stats-block bar-chart">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
                 <span>Prints Count</span>
               </div>
-              <div ref="printCountGroupsChart"></div>
+              <div ref="printCountGroupsChart" class="bar-chart-wrapper"></div>
             </div>
           </b-col>
         </b-row>
         <b-row class="mt-4">
           <b-col>
-            <div class="stats-block print-time-groups">
+            <div class="stats-block bar-chart">
               <div class="stats-block-title">
                 <i class="far fa-clock"></i>
                 <span>Print Time</span>
               </div>
-              <div ref="printTimeGroupsChart"></div>
+              <div ref="printTimeGroupsChart" class="bar-chart-wrapper"></div>
             </div>
           </b-col>
         </b-row>
         <b-row class="mt-4">
           <b-col>
-            <div class="stats-block filament-used-groups">
+            <div class="stats-block bar-chart filament-used-groups">
               <div class="stats-block-title">
                 <i class="fas fa-ruler-horizontal"></i>
                 <div class="title-group">
@@ -192,7 +192,7 @@
                   <div class="subtitle">{{ totalFilamentUsedFormatted }}m total</div>
                 </div>
               </div>
-              <div ref="filamentUsedGroupsChart"></div>
+              <div ref="filamentUsedGroupsChart" class="bar-chart-wrapper"></div>
             </div>
           </b-col>
         </b-row>
@@ -637,6 +637,10 @@ export default {
   height: 280px
   display: flex
   flex-direction: column
+  &.bar-chart
+    height: auto
+    .chart-wrapper
+      height: 210px
   @media (max-width: 768px)
     padding: 1.25em 1.5em
 
@@ -705,6 +709,15 @@ export default {
     display: inline-flex
     align-items: center
     gap: .875rem
+    @media (max-width: 768px)
+      margin-left: 0.5rem
+      flex-direction: column
+      align-items: flex-start
+      gap: 0
+      .divider
+        display: none
+      span
+        margin-left: 0
     .divider
       width: 1px
       background-color: var(--color-divider)

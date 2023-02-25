@@ -512,7 +512,7 @@ export default {
               titleValue ? titleValue(d.value) : d.value
             }`
           },
-          marginBottom: 45,
+          marginBottom: 55,
         })
       )
     },

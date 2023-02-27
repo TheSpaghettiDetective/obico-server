@@ -142,9 +142,10 @@
         <b-row>
           <b-col v-if="prints.length || loading">
             <print-history-item
-              v-for="print of prints"
+              v-for="(print, index) of prints"
               :key="print.id"
               :print="print"
+              :index="index"
               class="print-item"
             ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
@@ -185,15 +186,15 @@ import { getHumanizedDuration } from '@src/lib/utils'
 
 const PAGE_SIZE = 24
 
-const SortingLocalStoragePrefix = 'printsSorting'
-const SortingOptions = {
+export const SortingLocalStoragePrefix = 'printsSorting'
+export const SortingOptions = {
   options: [{ title: 'Date', key: 'date' }],
   default: { sorting: 'date', direction: 'desc' },
 }
 
 const DateParamFormat = 'YYYY-MM-DD'
-const FilterLocalStoragePrefix = 'printsFiltering'
-const FilterOptions = {
+export const FilterLocalStoragePrefix = 'printsFiltering'
+export const FilterOptions = {
   timePeriod: {
     title: 'Time Period',
     buildQueryParam: queryBuilder,

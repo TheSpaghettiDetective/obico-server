@@ -1,7 +1,7 @@
 // Credit: https://observablehq.com/@d3/bar-chart
 
 import * as d3 from 'd3'
-import moment from 'moment'
+import { momentWithoutDaylight } from '@src/lib/utils'
 
 export const BarChart = (
   data,
@@ -147,7 +147,7 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount, grouping = 'day', las
     rotation,
 
     value: (d) => {
-      const date = moment(d.key)
+      const date = momentWithoutDaylight(d.key)
 
       let firstLine,
         secondLine = ''

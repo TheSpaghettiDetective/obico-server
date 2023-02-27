@@ -83,3 +83,9 @@ export const getDurationComponents = (timeInSeconds) => {
     minutes,
   }
 }
+
+export const momentWithoutDaylight = (date) => {
+  const m = moment(date)
+  m.utcOffset(m._tmz)
+  return m
+}

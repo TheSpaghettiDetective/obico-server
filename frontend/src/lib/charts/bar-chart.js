@@ -1,7 +1,8 @@
 // Credit: https://observablehq.com/@d3/bar-chart
 
 import * as d3 from 'd3'
-import { momentWithoutDaylight } from '@src/lib/utils'
+import moment from 'moment'
+import { formatWithoutDaylightSavingShift as format } from '@src/lib/utils'
 
 export const BarChart = (
   data,
@@ -147,15 +148,15 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount, grouping = 'day', las
     rotation,
 
     value: (d) => {
-      const date = momentWithoutDaylight(d.key)
+      const date = moment(d.key)
 
       let firstLine,
         secondLine = ''
       if (grouping === 'day') {
-        firstLine = date.format('M/D')
-        secondLine = date.format('ddd')
+        firstLine = format(date, 'M/D')
+        secondLine = format(date, 'ddd')
       } else if (grouping === 'week') {
-        firstLine = date.format('M/D')
+        firstLine = format(date, 'M/D')
 
         const endOfWeek = date.clone().endOf('week')
         const lastDayOfWeek = endOfWeek.isBefore(lastDayInDataset) ? endOfWeek : lastDayInDataset
@@ -167,10 +168,10 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount, grouping = 'day', las
         }`
         secondLine = lastDayOfWeek.diff(date, 'days') === 6 ? `Week ${date.week()}` : ''
       } else if (grouping === 'month') {
-        firstLine = date.format('MMM')
-        secondLine = date.format('YYYY')
+        firstLine = format(date, 'MMM')
+        secondLine = format(date, 'YYYY')
       } else {
-        firstLine = date.format('YYYY')
+        firstLine = format(date, 'YYYY')
       }
 
       let label = firstLine
@@ -178,7 +179,7 @@ export const xAxisLabelsFormat = (wrapperWidth, barsCount, grouping = 'day', las
         label += `\n${secondLine}`
       }
 
-      const uniqueDateKey = date.format('M/D/YYYY')
+      const uniqueDateKey = format(date, 'M/D/YYYY')
       label += `\r${uniqueDateKey}` // so d3 won't skip same labels
 
       return label

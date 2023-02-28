@@ -387,6 +387,7 @@ export default {
       axios
         .get(urls.stats(), {
           params: {
+            with_deleted: true,
             ...this.defaultStatsParams,
             ...getFilterParams(
               this.filterOptions,

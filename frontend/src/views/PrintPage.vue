@@ -40,7 +40,7 @@
                   <i class="fas fa-file-code"></i>
                 </div>
                 <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.filename }}</div>
+                  <div class="title overflow-truncated">{{ fileName }}</div>
                   <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
                     <span>{{ print.g_code_file.filesize }}</span>
                     <span v-if="print.g_code_file.created_at"
@@ -375,6 +375,9 @@ export default {
   },
 
   computed: {
+    fileName() {
+      return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
+    },
     currentPrintId() {
       return this.currentPrint?.id || this.printId
     },

@@ -22,7 +22,7 @@
             <hr />
             <br /><br />
             <p class="text-center">
-              Obico let you monitor and control your printer from anywhere, on your phone.
+              Obico lets you monitor and control your printer from anywhere, on your phone.
             </p>
             <a class="btn btn-block btn-primary" href="/accounts/signup/"
               >Sign up for a free Obico account</a

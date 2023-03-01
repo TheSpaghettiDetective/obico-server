@@ -11,6 +11,7 @@ import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
 import LoadScript from 'vue-plugin-load-script'
 import LoadingPlaceholder from '@src/components/LoadingPlaceholder.vue'
+import moment from 'moment'
 
 export default (router, components) => {
   initTheme()
@@ -50,4 +51,11 @@ export default (router, components) => {
       components,
     }).$mount('#app')
   }
+
+  // FIXME: make start of the week dynamic when/if it will be done in the backend
+  moment.updateLocale('en', {
+    week: {
+      dow: 0, // Sunday is the first day of the week.
+    },
+  })
 }

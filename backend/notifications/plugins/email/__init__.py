@@ -63,7 +63,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         elif notification_type == notification_types.PrintResumed:
             text = f"{context.print.filename} is resumed"
         elif notification_type == notification_types.FilamentChange:
-            text = f"{context.print.filename} requires filament change"
+            text = f"Printer needs attention - {context.print.filename if context.print else ''}"
         elif notification_type == notification_types.HeaterCooledDown:
             text = (
                 f"Heater {self.b(extra_context['heater_name'])} "

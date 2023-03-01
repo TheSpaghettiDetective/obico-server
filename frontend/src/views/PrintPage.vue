@@ -6,13 +6,41 @@
         <b-row>
           <b-col lg="5">
             <div class="print-info">
+              <!-- Pagination -->
+              <div
+                v-if="currentIndex || currentIndex === 0"
+                class="card-container navigation-container"
+              >
+                <b-button
+                  variant="outline-secondary"
+                  :disabled="!prevPrint"
+                  @click.prevent="switchToPrint(prevPrint)"
+                >
+                  <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Prev
+                </b-button>
+                <div class="summary overflow-truncated-parent">
+                  <div class="date overflow-truncated">
+                    {{ print.started_at.format(absoluteDateFormat) }}
+                  </div>
+                  <div class="print-status overflow-truncated" :class="print.status.key">
+                    {{ print.status.title }}
+                  </div>
+                </div>
+                <b-button
+                  variant="outline-secondary"
+                  :disabled="!nextPrint"
+                  @click.prevent="switchToPrint(nextPrint)"
+                >
+                  Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                </b-button>
+              </div>
               <!-- File -->
               <div class="card-container file">
                 <div class="icon">
                   <i class="fas fa-file-code"></i>
                 </div>
                 <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.filename }}</div>
+                  <div class="title overflow-truncated">{{ fileName }}</div>
                   <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
                     <span>{{ print.g_code_file.filesize }}</span>
                     <span v-if="print.g_code_file.created_at"
@@ -285,12 +313,22 @@ import axios from 'axios'
 import moment from 'moment'
 import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
+import { getLocalPref } from '@src/lib/pref'
+import { user } from '@src/lib/page-context'
 import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 import { sendToPrint, showRedirectModal } from '@src/components/g-codes/sendToPrint'
+import { restoreFilterValues, getFilterParams } from '@src/components/FilteringDropdown'
+import { restoreSortingValue } from '@src/components/SortingDropdown'
+import {
+  FilterOptions,
+  FilterLocalStoragePrefix,
+  SortingLocalStoragePrefix,
+  SortingOptions,
+} from '@src/views/PrintHistoryPage'
 
 export default {
   name: 'PrintPage',
@@ -321,10 +359,42 @@ export default {
       currentPosition: 0,
       inflightAlertOverwrite: null,
       fullscreenUrl: null,
+      user: null,
+      currentPrint: null,
+
+      // Pagination
+      prevPrint: null,
+      nextPrint: null,
+      // Sorting for pagination
+      sortingValue: restoreSortingValue(SortingLocalStoragePrefix, SortingOptions),
+      // Filtering for pagination
+      filterLocalStoragePrefix: FilterLocalStoragePrefix,
+      filterOptions: FilterOptions,
+      filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
     }
   },
 
   computed: {
+    fileName() {
+      return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
+    },
+    currentPrintId() {
+      return this.currentPrint?.id || this.printId
+    },
+    currentIndex() {
+      if (this.currentPrint) {
+        return this.currentPrint.index
+      }
+
+      const urlParams = new URLSearchParams(window.location.search)
+      let indexParam = urlParams.get('index')
+      if (!indexParam) {
+        return
+      }
+
+      return parseInt(indexParam)
+    },
+
     normalizedP() {
       return getNormalizedP(this.predictions, this.currentPosition, false)
     },
@@ -356,7 +426,9 @@ export default {
   },
 
   created() {
+    this.user = user()
     this.fetchData()
+    this.fetchSiblingPrints()
   },
 
   mounted() {
@@ -378,9 +450,8 @@ export default {
       }
 
       this.isLoading = true
-
       try {
-        const printResponse = await axios.get(urls.print(this.printId))
+        const printResponse = await axios.get(urls.print(this.currentPrintId))
         this.print = normalizedPrint(printResponse.data)
 
         if (this.print.prediction_json_url) {
@@ -407,6 +478,77 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    switchToPrint(print) {
+      this.currentPrint = print
+      const newUrl = `/prints/${print.id}/?index=${print.index}`
+      window.history.replaceState({}, '', newUrl)
+      this.fetchData()
+      this.fetchSiblingPrints()
+    },
+    fetchSiblingPrints() {
+      if (!this.currentIndex && this.currentIndex !== 0) {
+        return
+      }
+
+      const prevExists = this.currentIndex > 0
+      const start = prevExists ? this.currentIndex - 1 : 0
+      const limit = prevExists ? 3 : 2
+
+      axios
+        .get(urls.prints(), {
+          params: {
+            start,
+            limit,
+            ...getFilterParams(
+              this.filterOptions,
+              this.filterValues,
+              (filterOptionKey, filterValueKey) => {
+                if (filterOptionKey === 'timePeriod') {
+                  return this.filterOptions[filterOptionKey].buildQueryParam(
+                    filterValueKey,
+                    getLocalPref(`${FilterLocalStoragePrefix}-timePeriod-dateFrom`) || null,
+                    getLocalPref(`${FilterLocalStoragePrefix}-timePeriod-dateTo`) || null,
+                    this.user
+                  )
+                }
+              }
+            ),
+            sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,
+          },
+        })
+        .then((response) => {
+          const data = response.data
+          let prev
+          let next
+          if (prevExists) {
+            if (data.length === 3 && data[1].id === this.currentPrintId) {
+              // prev and next exist
+              prev = data[0]
+              next = data[2]
+            } else if (data.length === 2 && data[1].id === this.currentPrintId) {
+              // only prev exists
+              prev = data[0]
+            } else {
+              // no prev or next
+              return
+            }
+          } else {
+            if (data.length === 2 && data[0].id === this.currentPrintId) {
+              // only next exists
+              next = data[1]
+            } else {
+              // no prev or next
+              return
+            }
+          }
+
+          this.prevPrint = prev ? { id: prev.id, index: this.currentIndex - 1 } : null
+          this.nextPrint = next ? { id: next.id, index: this.currentIndex + 1 } : null
+        })
+        .catch((error) => {
+          this._showErrorPopup(error)
+        })
     },
     onTimeUpdate(currentPosition) {
       this.currentPosition = currentPosition
@@ -484,8 +626,6 @@ export default {
   font-weight: bold
 
 .print-status
-  font-weight: bold
-  font-size: .875rem
   &.cancelled
     color: var(--color-danger)
   &.finished
@@ -584,4 +724,15 @@ export default {
       border-radius: 0
       ::v-deep .video-js
         height: 100vh !important
+
+.navigation-container
+  display: flex
+  justify-content: space-between
+  gap: 1rem
+  .btn
+    flex-shrink: 0
+  .summary
+    text-align: center
+    @media (max-width: 576px)
+      display: none
 </style>

@@ -43,6 +43,9 @@
       <div v-if="menuExpanded === 'storage'">
         <slot name="storage"></slot>
       </div>
+      <div v-if="menuExpanded === 'grouping'">
+        <slot name="grouping"></slot>
+      </div>
     </template>
   </div>
 </template>

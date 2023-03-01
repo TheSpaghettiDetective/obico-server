@@ -83,11 +83,11 @@
                       <div class="value">{{ gcode.totalPrints }}</div>
                     </div>
                     <div class="file-info-line">
-                      <div><i class="fas fa-circle text-success"></i>Succeeded</div>
+                      <div><i class="fas fa-circle text-success"></i>Finished</div>
                       <div class="value">{{ gcode.successPrints }}/{{ gcode.totalPrints }}</div>
                     </div>
                     <div class="file-info-line">
-                      <div><i class="fas fa-circle text-danger"></i>Failed or cancelled</div>
+                      <div><i class="fas fa-circle text-danger"></i>Cancelled</div>
                       <div class="value">{{ gcode.failedPrints }}/{{ gcode.totalPrints }}</div>
                     </div>
                   </b-col>

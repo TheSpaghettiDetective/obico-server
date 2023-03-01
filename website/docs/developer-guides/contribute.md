@@ -56,8 +56,6 @@ Join thousands of other makers on our [Discord server](https://obico.io/discord)
 
 Countless Obico community members joined our Discord server when they needed help at the beginning, and received helping hands from others. When they got a hang of setting up/configuring Obico, they turned around to help other new comers.
 
-The ethos of the Obico community is "pay it forward". By doing so, not only can you help your fellow makers, you can also earn credits that can be [converted to free AI Detection Hours, or even free months of Pro subscription!](https://www.obico.io/blog/2021/03/24/get-involved-and-get-detective-hours/#help-reputation-tell-me-more).
-
 ## Do some awesome testing and report bugs! {#do-some-awesome-testing-and-report-bugs}
 
 All bugs are shallow given enough eyeballs! Help us test and report bugs whenever you find them. Not only can you get your problems fixed faster this way, other users in the similar situation as yours will benefit too.

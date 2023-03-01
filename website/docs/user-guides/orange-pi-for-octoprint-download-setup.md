@@ -1,5 +1,5 @@
 ---
-title: Orange Pi Zero 2 Kit for OctoPrint Setup and Configuration
+title: Download and Setup OctoPrint for Orange Pi
 toc_min_heading_level: 2
 toc_max_heading_level: 5
 ---
@@ -10,36 +10,33 @@ import TOCInline from '@theme/TOCInline';
 
 <TOCInline toc={toc} />
 
-This guide is intended for users with a varied range of technical experience. If you are a wiz, feel free to disregard the detailed explanations. If you have little experience, follow the instructions and you'll have OctoPrint connected to your 3D printer with a webcam in no time.
-
-## **What's Included in the Kit**
-
-- Orange Pi Zero 2
-- Heat Sink with thermal pad
-- USB Hub
-- Case (not recommended - use the printable version)
-
-:::caution
-If possible, do NOT use the stock case included in the kit. The stock case doesn't having sufficient cooling and may cause the CPU to overheat.
-
-Use the printable version instead.
+:::tip
+The Orange Pi for OctoPrint SD card images are built and maintained by the Obico team, and supported by the Obico community. Please come to [our discord server](https://obico.io/discord/) in case you run into any issues with it.
 :::
 
-**You will also need**
+Orange Pi has become a popular choice to run OctoPrint, especially nowadays it's harder to buy a Raspberry Pi at a reasonable price than to make your in-laws happy. However, many steps and familiarity with Linux commands were required to run OctoPrint on an Orange Pi.
 
+Until now. [The Obico team](https://obico.io/) has decided to take stab at this problem by figuring all it takes to build an image that you can just download and flash to an SD card to get OctoPrint up and running. This makes it just as easy to run OctoPrint on an Orange Pi as it's on a Raspberry Pi.
+
+## Hardwares required
+
+- An Orange Pi board. You can source the board from [Orange Pi's official website](http://www.orangepi.org/) yourself. If you are located in North America, you can also buy [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), which will come with 1-year Obico Pro plan as well as warranty and technical support from the Obico team.
 - A high quality SD card (class 10 or better) with at least 8GB of storage
 - An Ethernet cable
 - USB cable to connect your 3D printer to the Orange Pi (comes with most printers)
 
-## **Prepare the Software**
+:::caution
+Currently only Orange Pi 3 LTS (recommended) and Orange Pi Zero 2, the 2 most-used boards, are supported. If you have a different board and you want us to build an image for it, please make suggestions in [our discord server](https://obico.io/discord/).
+:::
 
-### **1. Download the OctoPrint for Orange Pi software**
+## Steps to set up OctoPrint on an Orange Pi
 
-Download the OctoPrint for Orange Pi software [here](https://www.obico.io/download/orangepi_zero2_images/Orangepizero2_3.0.6_debian_bullseye_OctoPrint_1.8.6-20221201.img.zip)
+### 1. Download the OctoPrint for Orange Pi SD card image
 
-- (Mac) Double click the file once downloaded and drag it into the applications folder to install it. (Windows users can right click the file and click extract to unzip the file)
+- If you have an Orange Pi 3 LTS, download it [here](https://www.obico.io/download/orangepi_3_lts_images/Armbian_22.11.1_Orangepi3-lts_bullseye_OctoPrint_1.8.6-20221228.img.zip).
+- If you have an Orange Pi Zero 2, download it [here](https://www.obico.io/download/orangepi_zero2_images/Orangepizero2_3.0.6_debian_bullseye_OctoPrint_1.8.6-20221201.img.zip).
 
-### **2. Download Raspberry Pi Imager**
+### 2. Download Raspberry Pi Imager
 
 - Go to [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
 - Download the Raspberry Pi Imager software (available for Windows and Mac)
@@ -47,7 +44,7 @@ Download the OctoPrint for Orange Pi software [here](https://www.obico.io/downlo
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/raspberry-pi-imager.png)
 
-### **3. Flash the SD card**
+### 3. Flash the SD card
 
 - Open up the Raspberry Pi Imager
 
@@ -85,40 +82,45 @@ The SD card will be wiped, so be sure there are no important files on the card.
 The file is large, so it may take a while (up to 40 minutes but likely less) for the software to be installed on the SD card. Grab a coffee, and get the rest of the kit setup while the software is installed on the SD card.
 :::
 
-## **Setup the Hardware**
+## Connect to OctoPrint
 
-### **1. Unbox the Kit**
+### 1. Access the OctoPrint User Interface
 
-Unbox your kit and lay out the components:
+![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-setup-wizard-1.png)
 
-**The kit includes**
+- Open an internet browser and enter the IP address you just found into the URL bar. You will be greeted with the OctoPrint Setup Wizard.
 
-- Orange Pi Zero 2
-- Heatsink
-- USB Hub
-- 5V 3A USB C Power Supply
-- USB Webcam
-- Official Orange Pi Zero 2 case (not recommended - use the printable version)
+![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-access-control.png)
 
-**You will also need**
+### 2. Complete the Setup Wizard
 
-- A high-quality SD card (class 10 or better) with at least 8GB of storage
-- An Ethernet cable
-- A USB cable to connect the Orange Pi to your printer (comes with most printers)
+- Follow the instructions on the screen to complete the setup wizard such as creating an account.
 
-### **2. Install the heat sink on the Orange Pi Zero 2**
+![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-printer-profile.png)
 
-- Remove one side of the paper backing on the thermal pad and place the pad on the heat sink. Remove the other paper from the other side and place the heat sink on the CPU
+- Under _Defauilt Printer Profile_, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
 
-### **3. Put the Orange Pi in the Case**
+![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-webcam-view.png)
 
-While putting your Orange Pi Zero 2 is not required, it is recommended to help keep it clean and safe.
+- Click _Finish_, and you will be sent to the OctoPrint User interface.
+- Click _Connect_ on the left to connect your 3D printer to your Orange Pi Zero 2.
+- Click _Control_ on the upper tab to see your webcam view.
 
-As mentioned above, it is not recommended to use the case that is included in the kit due to it's pour cooling capabilities. You can [print the case we designed](https://www.printables.com/model/322614-orange-pi-zero-2-case).
+That's it! You have successfully connected to OctoPrint!
 
-If you prefer a different case, we also made a [collection on Printables](https://www.printables.com/social/288649-obico/collections/346815) with a few other options that have been tested.
+## Useful tips (not required by highly recommended)
 
-### **4. Mounting the Camera**
+### Install the heat sink
+
+It's almost always a good idea to install the heat sink on SBCs so that they won't overheat easily. If you bought [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), the heat sink will be included.
+
+### Put the Orange Pi in a case
+
+While putting your Orange Pi is not required, it is recommended to help keep it clean and safe.
+
+We don't recommend to use the official Orange Pi case, due to its pour cooling capabilities. You can [print the case we designed](https://www.printables.com/model/322614-orange-pi-zero-2-case). If you prefer a different case, we also made a [collection on Printables](https://www.printables.com/social/288649-obico/collections/346815) with a few other options that have been tested.
+
+### Connect a Camera
 
 You can mount your camera in many different ways depending on your printer. The best mounting solution depends on how you plan to use the camera with your 3D printer.
 
@@ -140,18 +142,18 @@ For example, If you are simply interested in casually monitoring your 3D prints 
 
 - Use a box, cup, or another surface to elevate the camera. Even a box can provide a nice camera view.
 
-## **Configure Wifi**
+### Configure Wifi
 
 Once the Raspberry Pi Imager has finished flashing the OctoPrint software to your SD card, you can remove it from your computer and insert it into the Orange Pi.
 
-### **1. Connect the Orange Pi to your router.**
+#### 1. Connect the Orange Pi to your router.
 
 We will assume most users will be connecting via Wifi although connection via ethernet is recommended whenever possible.
 
 - Connect one end of an ethernet cable to the Orange Pi, and connect the other end to a port on your wireless router. Assuming you will connect to wifi, this is only temporary, so do not worry if this is not where you plan to keep the device.
 - Connect the included power supply to the Orange Pi and plug it into an electrical outlet.
 
-### **2. Find the Pi's Ip Address**
+#### 2. Find the Pi's Ip Address
 
 - Now, you will need to find the IP address of your Orange Pi. This can be done in multiple ways. The easiest way is to connect to your router's admin portal.
 
@@ -177,7 +179,7 @@ If you are having trouble finding the IP address for your Orange Pi, there are a
 If you are not planning to configure wifi, you can skip the rest of this section and go to the **Connecting to OctoPrint** section.
 :::
 
-### **3. SSH into Your Orange Pi**
+#### 3. SSH into Your Orange Pi
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/ssh-orange-pi.png)
 
@@ -195,7 +197,7 @@ ssh pi@your-ip-address
 
 - Hit enter to confirm the password. You will then be greeted with the _Opi Zero2_ logo confirming you are logged in.
 
-### **4. Connect to your wireless network**
+#### 4. Connect to your wireless network
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/nmtui-connect-wifi.png)
 
@@ -220,7 +222,7 @@ nmtui
 
 - You can verify your wifi has been connected successfully when the upper right indicator switches from \<activate\> to \<deactivate\>. Once confirmed, move the arrow key to back and hit enter.
 
-### **5. Find your Wireless IP address**
+#### 5. Find your Wireless IP address
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/find-wlan.png)
 
@@ -232,47 +234,7 @@ sudo ifconfig -a
 
 - In the output, find the line that starts with _wlan0:_ and note the IP address next to _inet._ Write it down or store it in your notes for easy reference.
 
-## **Connect the Orange Pi to your printer**
-
-### **1. Move the Pi to it's permanent location**
-
-- Disconnect the Orange Pi from the ethernet cable, and move it to where you plan to connect it with your printer.
-
-### **2. Connect the Hardware**
-
-- Plug USB hub cable into the orange pi.
-- Plug the camera into the USB hub
-- Plug the Printer cable into the USB hub.
-- Plug the power cable into the Orange Pi and into the electrical outlet
-- Plug the USB printer cable into the printer with the printer on.
-
-## **Connect to OctoPrint**
-
-### **1. Access the OctoPrint User Interface**
-
-![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-setup-wizard-1.png)
-
-- Open an internet browser and enter the IP address you just found into the URL bar. You will be greeted with the OctoPrint Setup Wizard.
-
-![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-access-control.png)
-
-### **2. Complete the Setup Wizard**
-
-- Follow the instructions on the screen to complete the setup wizard such as creating an account.
-
-![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-printer-profile.png)
-
-- Under _Defauilt Printer Profile_, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
-
-![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-webcam-view.png)
-
-- Click _Finish_, and you will be sent to the OctoPrint User interface.
-- Click _Connect_ on the left to connect your 3D printer to your Orange Pi Zero 2.
-- Click _Control_ on the upper tab to see your webcam view.
-
-That's it! You have successfully connected to OctoPrint!
-
-## **Configure Obico for OctoPrint** - optional but encouraged :)
+### Configure Obico for OctoPrint - optional but encouraged :)
 
 Obico for OctoPrint extends OctoPrint's capabilities:
 
@@ -290,15 +252,7 @@ import TabItem from '@theme/TabItem';
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::
 
-## Hardware requirements {#hardware-requirements}
-
-Before you start, make sure:
-
-- OctoPrint is installed and set up correctly. The easiest way to set up OctoPrint is to get a Raspberry Pi and follow [this guide](https://octoprint.org/download/).
-- A webcam is set up for your printer and connected to OctoPrint. The 3D Printing Zone has an [excellent video](https://www.youtube.com/watch?v=uWsD2HoId9I) for it.
-- There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
-
-## Step 1: Access "Obico for OctoPrint" plugin wizard. {#step-1-access-obico-for-octoprint-plugin-wizard}
+#### Step 1: Access "Obico for OctoPrint" plugin wizard. {#step-1-access-obico-for-octoprint-plugin-wizard}
 
 1. Restart OctoPrint by clicking the **power button**
 1. Click **Restart OctoPrint**. Wait for OctoPrint to reload.
@@ -306,7 +260,7 @@ Before you start, make sure:
 
 ![Install the Plugin](/img/user-guides/setupguide/install-plugin.png)
 
-## Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
+#### Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
 
 :::tip
 
@@ -360,7 +314,7 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**ðŸ
 
 <br />
 
-## Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
+#### Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
 
 :::tip
 
@@ -409,20 +363,3 @@ values={[
 </Tabs>
 
 <b />
-
-## What's next? {#whats-next}
-
-### Check out your printer feed! {#check-out-your-printer-feed}
-
-Press "Go Check Out Printer Feed!" to see everything you care about your printer: the webcam feed, heater temperature, time remaining on the print job, and more! Remember, you can see your printer feed anywhere you go, as long as you have an internet connection on your phone!
-
-### Test the magical failure detection! {#test-the-magical-failure-detection}
-
-AI-powered failure detection sounds too magical to be true? [See the magic in action for yourself](/docs/user-guides/how-to-test-failure-detection).
-
-### Change printer settings. {#change-printer-settings}
-
-The default settings for your printer in Obico are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
-
-- [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when a possible print failure is detected. You will also get status update on your lock screen when your printer is printing. But you can choose to receive a lot more.
-- [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if Obico should pause your printer when a failure is detected.

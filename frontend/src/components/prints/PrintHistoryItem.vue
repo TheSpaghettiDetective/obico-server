@@ -1,5 +1,8 @@
 <template>
-  <a :href="`/prints/${print.id}/`" class="print-container">
+  <a
+    :href="`/prints/${print.id}/${index !== null ? '?index=' + index : ''}`"
+    class="print-container"
+  >
     <div class="status-indicator" :class="print.status.key"></div>
     <div class="main-content overflow-truncated-parent">
       <div class="top">
@@ -41,6 +44,10 @@ export default {
     print: {
       type: Object,
       required: true,
+    },
+    index: {
+      type: Number,
+      default: null,
     },
   },
 

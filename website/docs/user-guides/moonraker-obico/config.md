@@ -32,6 +32,7 @@ disable_video_streaming = False
 #
 # snapshot_url = http://127.0.0.1:8080/?action=snapshot
 # stream_url = http://127.0.0.1:8080/?action=stream
+# target_fps = 25
 # flip_h = False
 # flip_v = False
 # rotate_90 = False
@@ -66,6 +67,7 @@ Set values in this section only when **Obico for Klipper** can't obtain these co
 
 - `snapshot_url`:
 - `stream_url`:
+- `target_fps`:
 - `flip_h`:
 - `flip_v`:
 - `rotate_90`:

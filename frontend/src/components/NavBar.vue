@@ -25,19 +25,19 @@
               v-if="user"
               href="/printers/"
               :class="{ active: viewName.includes('printers') }"
-              >Printer</b-nav-item
+              >Printers</b-nav-item
             >
             <b-nav-item
               v-if="user"
               href="/print_history/"
               :class="{ active: viewName.includes('print_history') }"
-              >Time-lapse</b-nav-item
+              >Print History</b-nav-item
             >
             <b-nav-item
               v-if="user"
               href="/g_code_folders/cloud/"
               :class="{ active: viewName.includes('g_code_folders') }"
-              >G-Code</b-nav-item
+              >G-Codes</b-nav-item
             >
             <b-nav-item
               v-if="isEnt && !user"

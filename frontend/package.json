@@ -9,8 +9,8 @@
     "postinstall": "patch-package",
     "prepare": "cd .. && husky install frontend/.husky"
   },
-  "lint-staged":{
-    "**/src/**/*.{js,vue}":[
+  "lint-staged": {
+    "**/src/**/*.{js,vue}": [
       "npx eslint --fix"
     ]
   },
@@ -18,6 +18,7 @@
     "axios": "^1.3.3",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.4",
+    "d3": "^7.8.2",
     "filesize": "^3.6.1",
     "ifvisible": "^1.1.0",
     "jquery": "^3.5.1",

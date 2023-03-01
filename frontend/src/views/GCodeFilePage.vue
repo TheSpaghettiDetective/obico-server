@@ -13,16 +13,53 @@
       </a>
     </template>
     <template #topBarRight>
-      <div>
-        <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn">
+      <div class="action-panel">
+        <!-- Rename -->
+        <a
+          v-if="isCloud"
+          href="#"
+          class="btn shadow-none icon-btn action-btn"
+          title="Rename file"
+          @click.prevent="renameFile"
+        >
+          <i class="fas fa-edit"></i>
+        </a>
+        <!-- Delete -->
+        <a
+          v-if="isCloud"
+          href="#"
+          class="text-danger btn shadow-none icon-btn action-btn"
+          title="Delete file"
+          @click.prevent="deleteFile"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </a>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item @click="renameFile"> <i class="fas fa-edit"></i>Rename </b-dropdown-item>
-          <b-dropdown-item @click="deleteFile">
-            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
-          </b-dropdown-item>
+          <cascaded-dropdown
+            ref="cascadedDropdown"
+            :menu-options="[
+              {
+                key: 'renameFile',
+                icon: 'fas fa-edit',
+                title: `Rename file`,
+                callback: true,
+              },
+              {
+                key: 'deleteFile',
+                icon: 'fas fa-trash-alt',
+                customMenuOptionClass: 'text-danger',
+                title: `Delete file`,
+                callback: true,
+              },
+            ]"
+            @menuOptionClicked="onMenuOptionClicked"
+          />
         </b-dropdown>
+
         <a
           v-if="onClose"
           href="#"
@@ -151,6 +188,7 @@ import {
   listPrinterLocalGCodesOctoPrint,
 } from '@src/lib/printer-local-comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
+import CascadedDropdown from '@src/components/CascadedDropdown'
 
 export default {
   name: 'GCodeFilePage',
@@ -161,6 +199,7 @@ export default {
     DeleteConfirmationModal,
     availablePrinters,
     PrintHistoryItem,
+    CascadedDropdown,
   },
 
   props: {
@@ -215,6 +254,13 @@ export default {
   },
 
   methods: {
+    onMenuOptionClicked(menuOptionKey) {
+      if (menuOptionKey === 'renameFile') {
+        this.renameFile()
+      } else if (menuOptionKey === 'deleteFile') {
+        this.deleteFile()
+      }
+    },
     getRouteParam(name) {
       return this.isPopup ? this.routeParams[name] : this.$route.params[name]
     },

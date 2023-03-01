@@ -148,7 +148,7 @@
         <a
           v-if="onClose"
           href="#"
-          class="btn shadow-none icon-btn d-inline order-4"
+          class="btn shadow-none icon-btn d-inline"
           title="Close"
           @click.prevent="onClose"
         >

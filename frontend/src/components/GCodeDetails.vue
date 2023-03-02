@@ -189,14 +189,16 @@ export default {
   computed: {
     fileDetailsToShow() {
       let filtered = []
-      filtered = this.fileDetailsConfig
-        .filter((item) => this.file[item.name])
-        .map((item) => {
-          return {
-            ...item,
-            value: item.formatter(this.file[item.name]),
-          }
-        })
+      if (!this.file.deleted) {
+        filtered = this.fileDetailsConfig
+          .filter((item) => this.file[item.name])
+          .map((item) => {
+            return {
+              ...item,
+              value: item.formatter(this.file[item.name]),
+            }
+          })
+      }
       if (this.showPrintStats) {
         filtered.unshift({
           name: 'total_prints',

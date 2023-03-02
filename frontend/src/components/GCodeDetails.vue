@@ -20,7 +20,7 @@
         </div>
       </div>
       <div v-if="showOpenButton && file.id" class="action">
-        <a class="btn btn-secondary" :href="`/g_code_files/cloud/${file.id}/`">Open file</a>
+        <a class="btn btn-secondary" :href="`/g_code_files/cloud/${file.id}/`">Open</a>
       </div>
     </div>
     <!-- First visible lines -->

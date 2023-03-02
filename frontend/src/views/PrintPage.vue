@@ -116,7 +116,7 @@
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" small />
-                    <span v-else>Repeat print</span>
+                    <span v-else>Repeat Print</span>
                   </button>
                 </div>
               </div>

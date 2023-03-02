@@ -127,7 +127,7 @@
                       Filament used
                     </help-widget>
                   </div>
-                  <div class="value">{{ totalFilamentUsedFormatted }}m</div>
+                  <div class="value">{{ totalFilamentUsedFormatted }}</div>
                 </div>
               </div>
               <div class="btn-wrapper">
@@ -182,7 +182,7 @@ import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { queryBuilder } from '@src/lib/time-period-filtering'
-import { getHumanizedDuration } from '@src/lib/utils'
+import { humanizedFilamentUsage, humanizedDuration } from '@src/lib/formatters'
 
 const PAGE_SIZE = 24
 
@@ -276,14 +276,10 @@ export default {
 
   computed: {
     totalPrintTimeFormatted() {
-      return getHumanizedDuration(this.stats.total_print_time)
+      return humanizedDuration(this.stats.total_print_time)
     },
     totalFilamentUsedFormatted() {
-      if (!this.stats?.total_filament_used) {
-        return 0
-      }
-      const meters = this.stats.total_filament_used / 1000
-      return Math.round(meters * 100) / 100
+      return humanizedFilamentUsage(this.stats?.total_filament_used)
     },
     defaultStatsParams() {
       return {

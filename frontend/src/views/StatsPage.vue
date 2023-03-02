@@ -135,17 +135,17 @@
               </div>
               <div class="info total-print-time">
                 <div class="title">Total print time</div>
-                <div class="value">{{ getHumanizedDuration(stats.total_print_time) }}</div>
+                <div class="value">{{ humanizedDuration(stats.total_print_time) }}</div>
               </div>
               <div class="other-print-time-numbers">
                 <div class="info">
                   <div class="title">Longest print</div>
-                  <div class="value">{{ getHumanizedDuration(stats.longest_print_time) }}</div>
+                  <div class="value">{{ humanizedDuration(stats.longest_print_time) }}</div>
                 </div>
                 <div class="divider"></div>
                 <div class="info">
                   <div class="title">Average print</div>
-                  <div class="value">{{ getHumanizedDuration(stats.average_print_time) }}</div>
+                  <div class="value">{{ humanizedDuration(stats.average_print_time) }}</div>
                 </div>
               </div>
             </div>
@@ -189,7 +189,7 @@
                     </help-widget>
                   </span>
                   <div class="divider"></div>
-                  <div class="subtitle">{{ totalFilamentUsedFormatted }}m total</div>
+                  <div class="subtitle">{{ totalFilamentUsedFormatted }} total</div>
                 </div>
               </div>
               <div ref="filamentUsedGroupsChart" class="bar-chart-wrapper"></div>
@@ -223,7 +223,7 @@ import { DonutChart } from '@src/lib/charts/donut-chart'
 import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
 import { queryBuilder, getDateTo, getRecommendedGrouping } from '@src/lib/time-period-filtering'
 import HelpWidget from '@src/components/HelpWidget.vue'
-import { getHumanizedDuration } from '@src/lib/utils'
+import { humanizedDuration, humanizedFilamentUsage } from '@src/lib/formatters'
 
 const GroupingLocalStorageKey = 'statsGrouping'
 
@@ -334,11 +334,7 @@ export default {
     },
 
     totalFilamentUsedFormatted() {
-      if (!this.stats?.total_filament_used) {
-        return 0
-      }
-      const meters = this.stats.total_filament_used / 1000
-      return Math.round(meters * 100) / 100
+      return humanizedFilamentUsage(this.stats?.total_filament_used)
     },
   },
 
@@ -467,7 +463,7 @@ export default {
             return `${h}h`
           }
         },
-        titleValue: (v) => this.getHumanizedDuration(v * 3600),
+        titleValue: (v) => this.humanizedDuration(v * 3600),
         yDomain: [0, printTimeMaxvalueHours || 1],
         yTicks: Math.min(printTimeMaxvalueHours || 1, 5),
       })
@@ -518,7 +514,7 @@ export default {
       )
     },
 
-    getHumanizedDuration,
+    humanizedDuration,
 
     // Filtering
     onFilterUpdated(filterOptionKey, filterOptionValue) {

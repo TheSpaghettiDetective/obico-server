@@ -117,18 +117,6 @@ export default {
       extraDetailsVisible: false,
       fileDetailsConfig: [
         {
-          name: 'first_layer_bed_temp',
-          svgIcon: 'bed-temp',
-          title: 'First layer bed temperature',
-          formatter: (v) => `${v}°C`,
-        },
-        {
-          name: 'first_layer_extr_temp',
-          svgIcon: 'extruder',
-          title: 'First layer extruder temperature',
-          formatter: (v) => `${v}°C`,
-        },
-        {
           name: 'estimated_time',
           faIcon: 'fas fa-clock',
           title: 'Print duration estimate',
@@ -139,6 +127,18 @@ export default {
           faIcon: 'fas fa-ruler-horizontal',
           title: 'Filament usage estimate',
           formatter: formatters.humanizedFilamentUsage,
+        },
+        {
+          name: 'first_layer_bed_temp',
+          svgIcon: 'bed-temp',
+          title: 'First layer bed temperature',
+          formatter: (v) => `${v}°C`,
+        },
+        {
+          name: 'first_layer_extr_temp',
+          svgIcon: 'extruder',
+          title: 'First layer extruder temperature',
+          formatter: (v) => `${v}°C`,
         },
         {
           name: 'first_layer_height',

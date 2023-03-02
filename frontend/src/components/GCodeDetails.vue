@@ -41,6 +41,11 @@
         </div>
       </div>
     </div>
+    <muted-alert v-if="shouldShowDataNotice && fileDetailsToShow.length <= 4" class="mt-2 mb-1">
+      Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual if
+      some fields are not accurate or missing.
+    </muted-alert>
+
     <!-- Hidden lines -->
     <b-collapse id="g-code-details-collapsible" v-model="extraDetailsVisible">
       <div v-for="item in fileDetailsToShow.slice(4)" :key="item.name">
@@ -60,6 +65,10 @@
           </div>
         </div>
       </div>
+      <muted-alert v-if="shouldShowDataNotice && fileDetailsToShow.length > 4" class="mt-2 mb-1">
+        Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
+        if some fields are not accurate or missing.
+      </muted-alert>
     </b-collapse>
     <!-- Collapse toggle -->
     <button
@@ -79,9 +88,14 @@
 
 <script>
 import * as formatters from '@src/lib/formatters'
+import MutedAlert from '@src/components/MutedAlert.vue'
 
 export default {
   name: 'GCodeDetails',
+
+  components: {
+    MutedAlert,
+  },
 
   props: {
     file: {
@@ -196,6 +210,14 @@ export default {
         })
       }
       return filtered
+    },
+    shouldShowDataNotice() {
+      return (
+        !this.file.analysis &&
+        (this.fileDetailsToShow.length > 1 ||
+          (this.fileDetailsToShow.length === 1 &&
+            this.fileDetailsToShow[0].name !== 'total_prints'))
+      )
     },
   },
 }

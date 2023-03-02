@@ -100,7 +100,7 @@
       <b-container v-else>
         <b-row>
           <b-col>
-            <muted-alert>Statistics include deleted prints</muted-alert>
+            <muted-alert class="muted-alert">Statistics include deleted prints</muted-alert>
           </b-col>
         </b-row>
         <b-row>
@@ -620,6 +620,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.muted-alert
+  margin-bottom: var(--gap-between-blocks)
+
 .stats-block
   background-color: var(--color-surface-secondary)
   padding: 1.75em 2.25em

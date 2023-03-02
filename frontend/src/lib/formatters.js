@@ -1,14 +1,14 @@
 import moment from 'moment'
 
 // Possible result variants: 56s | 3m | 1h 56m | 2d 1h 56m
-export const humanizedDuration = (timeInSeconds) => {
-  const seconds = Math.round(timeInSeconds || 0)
+export const humanizedDuration = (durationInSeconds) => {
+  const seconds = Math.round(durationInSeconds || 0)
   const components = getDurationComponents(seconds)
 
   if (components.days !== 0) {
-    return `${components.days}d ${components.hours}h`
+    return `${components.days}d ${components.hours + Math.round(components.minutes / 60)}h`
   } else if (components.hours !== 0) {
-    return `${components.hours}h ${components.minutes}m`
+    return `${components.hours}h ${components.minutes + Math.round(components.seconds / 60)}m`
   } else if (components.minutes !== 0) {
     return `${components.minutes}m ${components.seconds}s`
   } else {

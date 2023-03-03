@@ -1,6 +1,35 @@
 <template>
   <page-layout>
     <!-- Top bar -->
+    <template #topBarLeft>
+      <div class="actions-with-selected-desktop">
+        <b-form-group class="m-0">
+          <b-form-checkbox v-model="allPrintsSelected" size="md"></b-form-checkbox>
+        </b-form-group>
+        <div>
+          <span
+            v-show="!selectedPrintIds.size"
+            class="label"
+            @click="allPrintsSelected = !allPrintsSelected"
+            >Select all</span
+          >
+          <b-dropdown
+            v-show="selectedPrintIds.size"
+            toggle-class="btn btn-sm actions-with-selected-btn"
+          >
+            <template #button-content>
+              {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
+              selected
+            </template>
+            <b-dropdown-item>
+              <div class="text-danger" @click="onDeleteBtnClick">
+                <i class="far fa-trash-alt"></i>Delete
+              </div>
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </div>
+    </template>
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
@@ -146,7 +175,10 @@
               :key="print.id"
               :print="print"
               :index="index"
+              :selectable="true"
+              :selected="selectedPrintIds.has(print.id)"
               class="print-item"
+              @selectedChanged="onSelectedChanged"
             ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
               <loading-placeholder v-if="!noMoreData" />
@@ -165,6 +197,7 @@
 <script>
 import moment from 'moment'
 import axios from 'axios'
+import findIndex from 'lodash/findIndex'
 import MugenScroll from 'vue-mugen-scroll'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
@@ -261,6 +294,7 @@ export default {
       loading: false,
       noMoreData: false,
       user: null,
+      selectedPrintIds: new Set(),
 
       // Sorting
       sortingLocalStoragePrefix: SortingLocalStoragePrefix,
@@ -288,6 +322,20 @@ export default {
         to_date: moment(new Date()).format(DateParamFormat),
         group_by: 'year',
       }
+    },
+    allPrintsSelected: {
+      get: function () {
+        return this.selectedPrintIds.size >= this.prints.length && this.prints.length !== 0
+      },
+      set: function (newValue) {
+        if (newValue) {
+          this.selectedPrintIds = new Set(this.prints.map((p) => p.id))
+        } else {
+          if (this.selectedPrintIds.size === this.prints.length) {
+            this.selectedPrintIds = new Set()
+          }
+        }
+      },
     },
   },
 
@@ -353,6 +401,7 @@ export default {
     },
     refetchData() {
       this.prints = []
+      this.selectedPrintIds = new Set()
       this.noMoreData = false
       this.fetchMoreData()
       this.fetchStats()
@@ -375,6 +424,47 @@ export default {
         .catch((error) => {
           this._showErrorPopup(error)
         })
+    },
+
+    onSelectedChanged(printId, selected) {
+      const selectedPrintIdsClone = new Set(this.selectedPrintIds)
+      if (selected) {
+        selectedPrintIdsClone.add(printId)
+      } else {
+        selectedPrintIdsClone.delete(printId)
+      }
+      this.selectedPrintIds = selectedPrintIdsClone
+    },
+    onDeleteBtnClick() {
+      const selectedPrintIds = Array.from(this.selectedPrintIds)
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((userAction) => {
+        if (userAction.isConfirmed) {
+          axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
+            selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
+            this.fetchStats()
+            this.$swal.Toast.fire({
+              title: `${selectedPrintIds.length} print(s) deleted!`,
+            })
+            this.selectedPrintIds = new Set()
+          })
+        }
+      })
+    },
+    onPrintDeleted(printId, toast = true) {
+      const i = findIndex(this.prints, (p) => p.id == printId)
+      const print = this.prints[i]
+      this.$delete(this.prints, i)
+      if (toast) {
+        this.$swal.Toast.fire({
+          title: `Time-lapse ${print.filename} deleted!`,
+        })
+      }
     },
 
     // Sorting
@@ -526,4 +616,12 @@ export default {
     .btn
       margin-top: 1rem
       font-size: .875rem
+
+.actions-with-selected-desktop
+  display: flex
+  align-items: center
+  .label
+    cursor: pointer
+  ::v-deep .custom-checkbox .custom-control-label::before
+    border-radius: var(--border-radius-xs)
 </style>

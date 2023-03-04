@@ -197,7 +197,6 @@
 <script>
 import moment from 'moment'
 import axios from 'axios'
-import findIndex from 'lodash/findIndex'
 import MugenScroll from 'vue-mugen-scroll'
 import urls from '@config/server-urls'
 import { normalizedPrint } from '@src/lib/normalizers'
@@ -446,25 +445,10 @@ export default {
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
-            selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
-            this.fetchStats()
-            this.$swal.Toast.fire({
-              title: `${selectedPrintIds.length} print(s) deleted!`,
-            })
-            this.selectedPrintIds = new Set()
+            this.refetchData()
           })
         }
       })
-    },
-    onPrintDeleted(printId, toast = true) {
-      const i = findIndex(this.prints, (p) => p.id == printId)
-      const print = this.prints[i]
-      this.$delete(this.prints, i)
-      if (toast) {
-        this.$swal.Toast.fire({
-          title: `Time-lapse ${print.filename} deleted!`,
-        })
-      }
     },
 
     // Sorting

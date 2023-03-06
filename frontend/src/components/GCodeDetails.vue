@@ -26,7 +26,6 @@
           </div>
           <div v-else class="overflow-truncated">
             <span>{{ file.filesize }}</span>
-            <span v-if="file.created_at">, uploaded {{ file.created_at.fromNow() }}</span>
           </div>
         </div>
       </div>
@@ -35,7 +34,7 @@
       </div>
     </div>
     <!-- First visible lines -->
-    <div v-for="item in fileDetailsToShow.slice(0, 4)" :key="item.name">
+    <div v-for="item in fileDetailsToShow.slice(0, numberOfVisibleLines)" :key="item.name">
       <div class="line">
         <div class="label">
           <div class="icon">
@@ -52,14 +51,17 @@
         </div>
       </div>
     </div>
-    <muted-alert v-if="shouldShowDataNotice && fileDetailsToShow.length <= 4" class="mt-2 mb-1">
+    <muted-alert
+      v-if="shouldShowDataNotice && fileDetailsToShow.length <= numberOfVisibleLines"
+      class="mt-2 mb-1"
+    >
       Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual if
       some fields are not accurate or missing.
     </muted-alert>
 
     <!-- Hidden lines -->
     <b-collapse id="g-code-details-collapsible" v-model="extraDetailsVisible">
-      <div v-for="item in fileDetailsToShow.slice(4)" :key="item.name">
+      <div v-for="item in fileDetailsToShow.slice(numberOfVisibleLines)" :key="item.name">
         <div class="line">
           <div class="label">
             <div class="icon">
@@ -76,14 +78,17 @@
           </div>
         </div>
       </div>
-      <muted-alert v-if="shouldShowDataNotice && fileDetailsToShow.length > 4" class="mt-2 mb-1">
+      <muted-alert
+        v-if="shouldShowDataNotice && fileDetailsToShow.length > numberOfVisibleLines"
+        class="mt-2 mb-1"
+      >
         Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
         if some fields are not accurate or missing.
       </muted-alert>
     </b-collapse>
     <!-- Collapse toggle -->
     <button
-      v-if="fileDetailsToShow.length > 4"
+      v-if="fileDetailsToShow.length > numberOfVisibleLines"
       class="collapse-toggle"
       :class="extraDetailsVisible ? 'opened' : 'closed'"
       :aria-expanded="extraDetailsVisible ? 'true' : 'false'"
@@ -129,9 +134,16 @@ export default {
 
   data() {
     return {
+      numberOfVisibleLines: 3,
       extraDetailsVisible: false,
       thumbnailUrl: null,
       fileDetailsConfig: [
+        {
+          name: 'created_at',
+          faIcon: 'fas fa-calendar-alt',
+          title: 'Uploaded',
+          formatter: (v) => v.fromNow(),
+        },
         {
           name: 'estimated_time',
           faIcon: 'fas fa-clock',

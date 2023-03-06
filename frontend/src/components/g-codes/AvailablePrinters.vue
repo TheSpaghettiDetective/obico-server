@@ -12,7 +12,7 @@
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
-        <div class="printer-name overflow-truncated">{{ printer.name }}</div>
+        <div class="printer-name overflow-truncated" :title="printer.name">{{ printer.name }}</div>
         <div
           class="printer-status"
           :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"

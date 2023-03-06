@@ -9,7 +9,7 @@
     </div>
     <div class="main-content overflow-truncated-parent">
       <div class="top">
-        <div class="title overflow-truncated">{{ fileName }}</div>
+        <div class="title overflow-truncated" :title="fileName">{{ fileName }}</div>
       </div>
       <div class="bottom">
         <div class="info">

@@ -92,7 +92,9 @@
                   </svg>
                 </div>
                 <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.printer.name }}</div>
+                  <div class="title overflow-truncated" :title="print.printer.name">
+                    {{ print.printer.name }}
+                  </div>
                   <div
                     class="subtitle overflow-truncated"
                     :class="[

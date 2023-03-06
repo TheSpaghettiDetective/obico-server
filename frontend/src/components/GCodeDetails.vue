@@ -14,7 +14,7 @@
         <i class="fas fa-file-code"></i>
       </div>
       <div class="info overflow-truncated-parent">
-        <div class="title overflow-truncated">
+        <div class="title overflow-truncated" :title="file.filename">
           {{ file.filename }}
         </div>
         <div

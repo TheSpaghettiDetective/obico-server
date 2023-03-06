@@ -94,7 +94,7 @@
             </b-alert>
 
             <!-- File details -->
-            <g-code-details :file="gcode" :show-print-stats="true" />
+            <g-code-details :file="gcode" :show-print-stats="true" :compact-view="false" />
 
             <!-- Available printers -->
             <available-printers

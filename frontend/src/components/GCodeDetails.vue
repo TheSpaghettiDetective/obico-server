@@ -1,19 +1,30 @@
 <template>
   <div class="card-container file">
-    <div class="file-header" :class="{ 'mb-4': fileDetailsToShow.length > 0 }">
-      <div class="icon">
+    <div
+      class="file-header"
+      :class="{
+        'mb-4': fileDetailsToShow.length > 0,
+        compact: compactView,
+      }"
+    >
+      <div v-if="thumbnailUrl" class="thumbnail">
+        <img :src="thumbnailUrl" />
+      </div>
+      <div v-else class="icon">
         <i class="fas fa-file-code"></i>
       </div>
       <div class="info overflow-truncated-parent">
-        <div class="title overflow-truncated">{{ file.filename }}</div>
+        <div class="title overflow-truncated">
+          {{ file.filename }}
+        </div>
         <div
           v-if="file.filesize && file.created_at"
-          class="subtitle text-secondary overflow-truncated"
+          class="subtitle text-secondary overflow-truncated-parent"
         >
-          <div v-if="file.deleted">
+          <div v-if="file.deleted" class="overflow-truncated">
             <span class="text-danger">Deleted</span>
           </div>
-          <div v-else>
+          <div v-else class="overflow-truncated">
             <span>{{ file.filesize }}</span>
             <span v-if="file.created_at">, uploaded {{ file.created_at.fromNow() }}</span>
           </div>
@@ -110,11 +121,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    compactView: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
     return {
       extraDetailsVisible: false,
+      thumbnailUrl: null,
       fileDetailsConfig: [
         {
           name: 'estimated_time',
@@ -222,6 +238,16 @@ export default {
       )
     },
   },
+
+  created() {
+    let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
+    for (const t of thumbnailProps) {
+      if (this.file[t]) {
+        this.thumbnailUrl = this.file[t]
+        break
+      }
+    }
+  },
 }
 </script>
 
@@ -233,7 +259,7 @@ export default {
 .file-header
   display: flex
   align-items: center
-  gap: .7rem
+  gap: 1rem
   .info
     flex: 1
   .icon
@@ -241,8 +267,30 @@ export default {
     text-align: center
     *
       font-size: 2rem
+  .thumbnail
+    width: 100px
+    height: 100px
+    border-radius: var(--border-radius-md)
+    padding: 2px
+    background-color: var(--color-surface-primary)
+    display: flex
+    align-items: center
+    justify-content: center
+    overflow: hidden
+    img
+      width: 100%
+      height: 100%
   .title
     font-weight: bold
+    font-size: 1.25rem
+
+  &.compact
+    gap: .7rem
+    .thumbnail
+      width: 52px
+      height: 52px
+    .title
+      font-size: 1rem
 
 .line
   display: flex

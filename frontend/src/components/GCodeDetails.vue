@@ -292,6 +292,7 @@ export default {
     img
       width: 100%
       height: 100%
+      border-radius: 8px
   .title
     font-weight: bold
     font-size: 1.25rem

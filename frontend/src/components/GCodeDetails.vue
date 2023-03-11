@@ -7,8 +7,18 @@
         compact: compactView,
       }"
     >
-      <div v-if="thumbnailUrl" class="thumbnail">
-        <img :src="thumbnailUrl" />
+      <div v-if="showThumbnail">
+        <div v-if="thumbnailUrl" class="thumbnail">
+          <img :src="thumbnailUrl" />
+        </div>
+        <div v-else class="thumbnail-placeholder">
+          <span class="help">
+            <help-widget id="thumbnail-setup-guide" :highlight="false" :show-close-button="false" />
+          </span>
+          <svg>
+            <use href="#svg-no-photo" />
+          </svg>
+        </div>
       </div>
       <div v-else class="icon">
         <i class="fas fa-file-code"></i>
@@ -105,12 +115,14 @@
 <script>
 import * as formatters from '@src/lib/formatters'
 import MutedAlert from '@src/components/MutedAlert.vue'
+import HelpWidget from '@src/components/HelpWidget.vue'
 
 export default {
   name: 'GCodeDetails',
 
   components: {
     MutedAlert,
+    HelpWidget,
   },
 
   props: {
@@ -215,6 +227,9 @@ export default {
   },
 
   computed: {
+    showThumbnail() {
+      return !this.compactView || this.thumbnailUrl
+    },
     fileDetailsToShow() {
       let filtered = []
       if (!this.file.deleted) {
@@ -279,7 +294,7 @@ export default {
     text-align: center
     *
       font-size: 2rem
-  .thumbnail
+  .thumbnail, .thumbnail-placeholder
     width: 100px
     height: 100px
     border-radius: var(--border-radius-md)
@@ -296,6 +311,17 @@ export default {
   .title
     font-weight: bold
     font-size: 1.25rem
+  .thumbnail-placeholder
+    position: relative
+    overflow: visible
+    svg
+      width: 3rem
+      height: 3rem
+      color: var(--color-background)
+    .help
+      position: absolute
+      top: 4px
+      right: 8px
 
   &.compact
     gap: .7rem

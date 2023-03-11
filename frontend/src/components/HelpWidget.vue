@@ -242,6 +242,16 @@
                 </li>
               </ul>
             </template>
+
+            <!-- thumbnail-setup-guide -->
+            <template v-if="id === 'thumbnail-setup-guide'">
+              <p>
+                <a href="https://obico.io/docs/user-guides/enable-gcode-thumbnails/" target="_blank"
+                  >Learn how to configure G-Code preview generation in your slicer
+                  <i class="fas fa-external-link-alt"></i
+                ></a>
+              </p>
+            </template>
           </div>
         </div>
       </transition>

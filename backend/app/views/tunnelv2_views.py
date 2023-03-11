@@ -274,8 +274,12 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     method = request.method.lower()
     path = request.get_full_path()
 
+    # service worker messes with the loading
+    # an makes it impossible to return
+    # proper error pages (not connected etc)
+    # so we are disabling it.
     if agent == 'moonraker' and path.startswith('/sw.js'):
-        return Http404
+        raise Http404
 
     IGNORE_HEADERS = [
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',  # better not to tell

@@ -5,16 +5,18 @@
     @click="() => !isDisabled && $emit('click')"
   >
     <div class="item-info">
-      <div class="filename">
-        <span v-if="!isFolder">
-          <i class="fas fa-file-code mr-1"></i>
-          {{ item.filename }}
-        </span>
-        <span v-else-if="isFolder">
-          <i class="fas fa-folder mr-1"></i>
-          {{ item.name }}
-        </span>
+      <div class="filename" :class="{ 'without-thumbnail': !thumbnailUrl }">
+        <div v-if="thumbnailUrl" class="thumbnail">
+          <img :src="thumbnailUrl" />
+        </div>
+        <div v-else class="thumbnail-placeholder">
+          <i v-if="isFolder" class="fas fa-folder mr-1"></i>
+          <i v-else class="fas fa-file-code mr-1"></i>
+        </div>
+
+        {{ isFolder ? item.name : item.filename }}
       </div>
+
       <div class="size">
         <span v-if="!isFolder">{{ item.filesize }}</span>
         <span v-if="isFolder">{{ item.numItems }} item(s)</span>
@@ -94,6 +96,10 @@ export default {
     },
   },
 
+  data: () => ({
+    thumbnailUrl: null,
+  }),
+
   computed: {
     isFolder() {
       return !this.item.filename
@@ -101,6 +107,16 @@ export default {
     isDisabled() {
       return (this.isMoveModal && !this.isFolder) || this.disabled
     },
+  },
+
+  created() {
+    let thumbnailProps = ['thumbnail3_url', 'thumbnail2_url', 'thumbnail1_url']
+    for (const t of thumbnailProps) {
+      if (this.item[t]) {
+        this.thumbnailUrl = this.item[t]
+        break
+      }
+    }
   },
 }
 </script>
@@ -141,12 +157,31 @@ export default {
         color: var(--color-text-primary)
         margin-left: 0
 
+    .thumbnail
+      width: 32px
+      height: 32px
+      border-radius: var(--border-radius-xs)
+      background-color: var(--color-surface-primary)
+      display: inline-flex
+      align-items: center
+      justify-content: center
+      overflow: hidden
+      img
+        height: 100%
+        width: auto
+        border-radius: 8px
+
     .filename
+      display: flex
+      align-items: center
+      gap: .5rem
       text-overflow: ellipsis
       overflow: hidden
       white-space: nowrap
       width: 100%
       flex: 3
+      &.without-thumbnail
+        padding-left: 8px
 
   .remove-button
     width: 30px

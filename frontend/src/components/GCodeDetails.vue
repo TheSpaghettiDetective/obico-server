@@ -298,15 +298,14 @@ export default {
     width: 100px
     height: 100px
     border-radius: var(--border-radius-md)
-    padding: 2px
     background-color: var(--color-surface-primary)
     display: flex
     align-items: center
     justify-content: center
     overflow: hidden
     img
-      width: 100%
       height: 100%
+      width: auto
       border-radius: 8px
   .title
     font-weight: bold

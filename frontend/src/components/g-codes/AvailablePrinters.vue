@@ -12,7 +12,7 @@
         @click="selectPrinter(printer)"
       >
         <div class="selected-indicator"></div>
-        <div class="printer-name overflow-truncated" :title="printer.name">{{ printer.name }}</div>
+        <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
         <div
           class="printer-status"
           :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
@@ -32,10 +32,8 @@
       >
         <b-spinner v-if="isSending" small />
         <div v-else>
-          <div v-if="selectedPrinter" class="truncate-overflow-text">
-            Print on {{ selectedPrinter.name }}
-          </div>
-          <div v-else class="truncate-overflow-text">Print</div>
+          <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
+          <div v-else class="truncated">Print</div>
         </div>
       </button>
     </div>
@@ -164,12 +162,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.truncate-overflow-text
-  width: 100%
-  text-overflow: ellipsis
-  overflow: hidden
-  white-space: nowrap
-
 .printer-item
   display: flex
   align-items: center
@@ -200,6 +192,7 @@ export default {
 
 .printer-status
   font-size: 0.875rem
+  margin-left: 0.5rem
 
 .btn
   width: 100%

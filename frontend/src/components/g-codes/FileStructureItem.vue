@@ -5,16 +5,17 @@
     @click="() => !isDisabled && $emit('click')"
   >
     <div class="item-info">
-      <div class="filename" :class="{ 'without-thumbnail': !thumbnailUrl }">
-        <div v-if="thumbnailUrl" class="thumbnail">
-          <img :src="thumbnailUrl" />
+      <div class="filename">
+        <div class="thumbnail-wrapper" :class="{ folder: isFolder }">
+          <div v-if="thumbnailUrl" class="thumbnail">
+            <img :src="thumbnailUrl" />
+          </div>
+          <div v-else class="placeholder">
+            <i v-if="isFolder" class="fas fa-folder"></i>
+            <i v-else class="fas fa-file-code"></i>
+          </div>
         </div>
-        <div v-else class="thumbnail-placeholder">
-          <i v-if="isFolder" class="fas fa-folder mr-1"></i>
-          <i v-else class="fas fa-file-code mr-1"></i>
-        </div>
-
-        {{ isFolder ? item.name : item.filename }}
+        <span class="truncated">{{ isFolder ? item.name : item.filename }}</span>
       </div>
 
       <div class="size">
@@ -157,19 +158,24 @@ export default {
         color: var(--color-text-primary)
         margin-left: 0
 
-    .thumbnail
-      width: 32px
+    .thumbnail-wrapper
+      flex: 0 0 32px
+      display: inline-flex
       height: 32px
       border-radius: var(--border-radius-xs)
       background-color: var(--color-surface-primary)
-      display: inline-flex
+      overflow: hidden
       align-items: center
       justify-content: center
-      overflow: hidden
-      img
+      .thumbnail
+        width: 100%
         height: 100%
-        width: auto
-        border-radius: 8px
+        img
+          height: 100%
+          width: auto
+      &.folder
+        background: none
+        font-size: 1.25em
 
     .filename
       display: flex
@@ -180,8 +186,6 @@ export default {
       white-space: nowrap
       width: 100%
       flex: 3
-      &.without-thumbnail
-        padding-left: 8px
 
   .remove-button
     width: 30px

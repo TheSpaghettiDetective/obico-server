@@ -903,11 +903,11 @@ div[id^="b-modal-"] {
   }
 }
 
-.overflow-truncated-parent {
+.truncated-wrapper {
   overflow: hidden;
 }
 
-.overflow-truncated {
+.truncated {
   max-width: 100%;
   text-overflow: ellipsis;
   overflow: hidden;

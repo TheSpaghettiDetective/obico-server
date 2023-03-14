@@ -16,8 +16,8 @@
                   >
                     <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Prev
                   </b-button>
-                  <div class="summary overflow-truncated-parent">
-                    <div class="date overflow-truncated">
+                  <div class="summary truncated-wrapper">
+                    <div class="date truncated">
                       {{ print.started_at.format(absoluteDateFormat) }}
                     </div>
                   </div>
@@ -91,12 +91,12 @@
                     <use href="#svg-3d-printer" />
                   </svg>
                 </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated" :title="print.printer.name">
+                <div class="info truncated-wrapper">
+                  <div class="title truncated" :title="print.printer.name">
                     {{ print.printer.name }}
                   </div>
                   <div
-                    class="subtitle overflow-truncated"
+                    class="subtitle truncated"
                     :class="[
                       printer
                         ? printer.isPrintable()

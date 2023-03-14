@@ -7,9 +7,9 @@
     <div v-if="selectable" class="checkbox-wrapper">
       <b-form-checkbox v-model="isSelected" size="md"></b-form-checkbox>
     </div>
-    <div class="main-content overflow-truncated-parent">
+    <div class="main-content truncated-wrapper">
       <div class="top">
-        <div class="title overflow-truncated" :title="fileName">{{ fileName }}</div>
+        <div class="title truncated" :title="fileName">{{ fileName }}</div>
       </div>
       <div class="bottom">
         <div class="info">

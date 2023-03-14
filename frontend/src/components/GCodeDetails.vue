@@ -23,18 +23,18 @@
       <div v-else class="icon">
         <i class="fas fa-file-code"></i>
       </div>
-      <div class="info overflow-truncated-parent">
-        <div class="title overflow-truncated" :title="file.filename">
+      <div class="info truncated-wrapper">
+        <div class="title truncated" :title="file.filename">
           {{ file.filename }}
         </div>
         <div
           v-if="file.filesize && file.created_at"
-          class="subtitle text-secondary overflow-truncated-parent"
+          class="subtitle text-secondary truncated-wrapper"
         >
-          <div v-if="file.deleted" class="overflow-truncated">
+          <div v-if="file.deleted" class="truncated">
             <span class="text-danger">Deleted</span>
           </div>
-          <div v-else class="overflow-truncated">
+          <div v-else class="truncated">
             <span>{{ file.filesize }}</span>
           </div>
         </div>

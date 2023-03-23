@@ -41,7 +41,7 @@ OVER_FREE_LIMIT_HTML = """
             <h1>Over Free Limit</h1>
             <hr>
             <h3 style="color: red;">
-                Your month-to-date usage of {agent} Tunneling is over
+                Your month-to-date usage of Tunneling is over
                 the free limit. Support this project and get unlimited
                 tunneling by
                 <a target="_blank"
@@ -56,15 +56,9 @@ OVER_FREE_LIMIT_HTML = """
 """
 
 MIN_SUPPORTED_VERSION = {
-    'octoprint': packaging.version.parse('1.8.4'),
-    'moonraker': packaging.version.parse('1.2.2'),
+    'octoprint_obico': packaging.version.parse('1.8.4'),
+    'moonraker_obico': packaging.version.parse('1.2.2'),
 }
-
-def get_agent(s: str) -> str:
-    if 'moon' in s:
-        return 'moonraker'
-    return 'octoprint'
-
 
 NOT_CONNECTED_HTML = """
 <html>
@@ -73,7 +67,7 @@ NOT_CONNECTED_HTML = """
             <h1>Not Connected</h1>
             <hr>
             <h3 style="color: red;">
-                Either your {agent} is offline,
+                Either your printer is offline,
                 or the Obico plugin version is
                 lower than {min_version}.
             </h3>
@@ -194,7 +188,7 @@ def is_plugin_version_supported(agent: str, version: str) -> bool:
 
 
 def should_cache(agent, path):
-    if agent == 'moonraker':
+    if agent == 'moonraker_obico':
         return path.startswith('/assets/')
     return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path) is not None
 
@@ -205,9 +199,7 @@ def fix_etag(etag):
 
 def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
     path = request.get_full_path()
-
-    agent = get_agent(octoprinttunnel.printer.agent_name)
-    if should_cache(agent, path):
+    if should_cache(octoprinttunnel.printer.agent_name, path):
         cached_etag = cache.octoprinttunnel_get_etag(
             f'v2.octoprinttunnel_{octoprinttunnel.pk}', path)
         if cached_etag:
@@ -223,9 +215,7 @@ def save_static_etag(func):
 
         if response.status_code in (200, 304):
             path = request.get_full_path()
-
-            agent = get_agent(octoprinttunnel.printer.agent_name)
-            if should_cache(agent, path):
+            if should_cache(octoprinttunnel.printer.agent_name, path):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
@@ -251,24 +241,23 @@ def set_response_items(self):
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
 
-    agent = get_agent(octoprinttunnel.printer.agent_name)
-    min_version = MIN_SUPPORTED_VERSION[agent].public
+    min_version = MIN_SUPPORTED_VERSION[octoprinttunnel.printer.agent_name].public
     version = octoprinttunnel.printer.agent_version or '0.0'
 
     if user.tunnel_usage_over_cap():
         return HttpResponse(
-            OVER_FREE_LIMIT_HTML.format(agent=agent.title()),
+            OVER_FREE_LIMIT_HTML,
             status=OVER_FREE_LIMIT_STATUS_CODE)
 
     # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(agent=agent.title(), min_version=min_version),
+            NOT_CONNECTED_HTML.format(min_version=min_version),
             status=NOT_CONNECTED_STATUS_CODE)
 
     if not is_plugin_version_supported(agent, version):
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(agent=agent.title(), min_version=min_version),
+            NOT_CONNECTED_HTML.format(min_version=min_version),
             status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()
@@ -346,7 +335,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     if data is None:
         # request timed out
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(agent=agent.title(), min_version=min_version),
+            NOT_CONNECTED_HTML.format(min_version=min_version),
             status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None

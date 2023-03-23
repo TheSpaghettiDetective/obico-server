@@ -57,7 +57,7 @@ OVER_FREE_LIMIT_HTML = """
 
 MIN_SUPPORTED_VERSION = {
     'octoprint_obico': packaging.version.parse('1.8.4'),
-    'moonraker_obico': packaging.version.parse('1.2.2'),
+    'moonraker_obico': packaging.version.parse('1.3.0'),
 }
 
 NOT_CONNECTED_HTML = """
@@ -241,7 +241,8 @@ def set_response_items(self):
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
 
-    min_version = MIN_SUPPORTED_VERSION[octoprinttunnel.printer.agent_name].public
+    agent = octoprinttunnel.printer.agent_name
+    min_version = MIN_SUPPORTED_VERSION[agent].public
     version = octoprinttunnel.printer.agent_version or '0.0'
 
     if user.tunnel_usage_over_cap():
@@ -267,7 +268,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # an makes it impossible to return
     # proper error pages (not connected etc)
     # so we are disabling it.
-    if agent == 'moonraker' and path.startswith('/sw.js'):
+    if agent == 'moonraker_obico' and path.startswith('/sw.js'):
         raise Http404
 
     IGNORE_HEADERS = [

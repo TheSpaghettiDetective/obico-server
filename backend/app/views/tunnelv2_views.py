@@ -41,7 +41,7 @@ OVER_FREE_LIMIT_HTML = """
             <h1>Over Free Limit</h1>
             <hr>
             <h3 style="color: red;">
-                Your month-to-date usage of OctoPrint Tunneling is over
+                Your month-to-date usage of Tunneling is over
                 the free limit. Support this project and get unlimited
                 tunneling by
                 <a target="_blank"
@@ -55,18 +55,21 @@ OVER_FREE_LIMIT_HTML = """
 </html>
 """
 
-MIN_SUPPORTED_VERSION = packaging.version.parse('1.8.4')
+MIN_SUPPORTED_VERSION = {
+    'octoprint_obico': packaging.version.parse('1.8.4'),
+    'moonraker_obico': packaging.version.parse('1.3.0'),
+}
 
-NOT_CONNECTED_HTML = f"""
+NOT_CONNECTED_HTML = """
 <html>
     <body>
         <center>
             <h1>Not Connected</h1>
             <hr>
             <h3 style="color: red;">
-                Either your OctoPrint is offline,
+                Either your printer is offline,
                 or the Obico plugin version is
-                lower than {MIN_SUPPORTED_VERSION.public}.
+                lower than {min_version}.
             </h3>
         </center>
     </body>
@@ -77,6 +80,7 @@ NOT_CONNECTED_STATUS_CODE = 482
 TIMED_OUT_STATUS_CODE = 483
 OVER_FREE_LIMIT_STATUS_CODE = 481
 NOT_AVAILABLE_STATUS_CODE = 484
+
 
 def sanitize_app_name(app_name: str) -> str:
     return app_name.strip()[:64]
@@ -179,11 +183,13 @@ def tunnel_api(request, octoprinttunnel):
 # Helpers
 
 
-def is_plugin_version_supported(version: str) -> bool:
-    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION
+def is_plugin_version_supported(agent: str, version: str) -> bool:
+    return packaging.version.parse(version) >= MIN_SUPPORTED_VERSION[agent]
 
 
-def should_cache(path):
+def should_cache(agent, path):
+    if agent == 'moonraker_obico':
+        return path.startswith('/assets/')
     return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path) is not None
 
 
@@ -193,8 +199,7 @@ def fix_etag(etag):
 
 def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
     path = request.get_full_path()
-
-    if should_cache(path):
+    if should_cache(octoprinttunnel.printer.agent_name, path):
         cached_etag = cache.octoprinttunnel_get_etag(
             f'v2.octoprinttunnel_{octoprinttunnel.pk}', path)
         if cached_etag:
@@ -210,8 +215,7 @@ def save_static_etag(func):
 
         if response.status_code in (200, 304):
             path = request.get_full_path()
-
-            if should_cache(path):
+            if should_cache(octoprinttunnel.printer.agent_name, path):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
@@ -236,22 +240,36 @@ def set_response_items(self):
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
+
+    agent = octoprinttunnel.printer.agent_name
+    min_version = MIN_SUPPORTED_VERSION[agent].public
+    version = octoprinttunnel.printer.agent_version or '0.0'
+
     if user.tunnel_usage_over_cap():
-        return HttpResponse(OVER_FREE_LIMIT_HTML, status=OVER_FREE_LIMIT_STATUS_CODE)
+        return HttpResponse(
+            OVER_FREE_LIMIT_HTML,
+            status=OVER_FREE_LIMIT_STATUS_CODE)
 
     # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
-        return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
+        return HttpResponse(
+            NOT_CONNECTED_HTML.format(min_version=min_version),
+            status=NOT_CONNECTED_STATUS_CODE)
 
-    version = (
-        cache.printer_settings_get(octoprinttunnel.printer.pk) or {}
-    ).get('tsd_plugin_version', '')
-    is_v1 = version and not is_plugin_version_supported(version)
-    if is_v1:
-        return HttpResponse(NOT_CONNECTED_HTML, status=NOT_CONNECTED_STATUS_CODE)
+    if not is_plugin_version_supported(agent, version):
+        return HttpResponse(
+            NOT_CONNECTED_HTML.format(min_version=min_version),
+            status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()
     path = request.get_full_path()
+
+    # service worker messes with the loading
+    # an makes it impossible to return
+    # proper error pages (not connected etc)
+    # so we are disabling it.
+    if agent == 'moonraker_obico' and path.startswith('/sw.js'):
+        raise Http404
 
     IGNORE_HEADERS = [
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',  # better not to tell
@@ -299,7 +317,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     ref = f'v2.{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
-    channels.send_msg_to_printer(
+    msg = (
         octoprinttunnel.printer.id,
         {
             'http.tunnelv2': {
@@ -310,12 +328,16 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
                 'data': request.body
             },
             'as_binary': True,
-        })
+        }
+    )
+    channels.send_msg_to_printer(*msg)
 
     data = cache.octoprinttunnel_http_response_get(ref)
     if data is None:
         # request timed out
-        return HttpResponse(NOT_CONNECTED_HTML, status=TIMED_OUT_STATUS_CODE)
+        return HttpResponse(
+            NOT_CONNECTED_HTML.format(min_version=min_version),
+            status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None
     status_code = data['response']['status']

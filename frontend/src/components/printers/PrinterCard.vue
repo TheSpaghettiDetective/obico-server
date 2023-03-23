@@ -21,7 +21,7 @@
           <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
             <i class="fas fa-share-alt fa-lg"></i>Share
           </b-dropdown-item>
-          <b-dropdown-item v-if="!printer.isAgentMoonraker()" :href="octoPrintTunnelUrl()">
+          <b-dropdown-item :href="octoPrintTunnelUrl()">
             <svg class="menu-icon">
               <use href="#svg-octoprint-tunneling" />
             </svg>

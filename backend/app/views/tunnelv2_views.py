@@ -81,6 +81,8 @@ TIMED_OUT_STATUS_CODE = 483
 OVER_FREE_LIMIT_STATUS_CODE = 481
 NOT_AVAILABLE_STATUS_CODE = 484
 
+def get_agent_name(octoprinttunnel):
+    return octoprinttunnel.printer.agent_name or 'octoprint_obico'
 
 def sanitize_app_name(app_name: str) -> str:
     return app_name.strip()[:64]
@@ -199,7 +201,7 @@ def fix_etag(etag):
 
 def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
     path = request.get_full_path()
-    if should_cache(octoprinttunnel.printer.agent_name, path):
+    if should_cache(get_agent_name(octoprinttunnel), path):
         cached_etag = cache.octoprinttunnel_get_etag(
             f'v2.octoprinttunnel_{octoprinttunnel.pk}', path)
         if cached_etag:
@@ -215,7 +217,7 @@ def save_static_etag(func):
 
         if response.status_code in (200, 304):
             path = request.get_full_path()
-            if should_cache(octoprinttunnel.printer.agent_name, path):
+            if should_cache(get_agent_name(octoprinttunnel), path):
                 etag = fix_etag(response.get('Etag', ''))
                 if etag:
                     cache.octoprinttunnel_update_etag(
@@ -241,8 +243,7 @@ def set_response_items(self):
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
 
-    agent = octoprinttunnel.printer.agent_name
-    min_version = MIN_SUPPORTED_VERSION[agent].public
+    min_version = MIN_SUPPORTED_VERSION[get_agent_name(octoprinttunnel)].public
     version = octoprinttunnel.printer.agent_version or '0.0'
 
     if user.tunnel_usage_over_cap():
@@ -256,7 +257,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
             NOT_CONNECTED_HTML.format(min_version=min_version),
             status=NOT_CONNECTED_STATUS_CODE)
 
-    if not is_plugin_version_supported(agent, version):
+    if not is_plugin_version_supported(get_agent_name(octoprinttunnel), version):
         return HttpResponse(
             NOT_CONNECTED_HTML.format(min_version=min_version),
             status=NOT_CONNECTED_STATUS_CODE)
@@ -268,7 +269,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # an makes it impossible to return
     # proper error pages (not connected etc)
     # so we are disabling it.
-    if agent == 'moonraker_obico' and path.startswith('/sw.js'):
+    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path.startswith('/sw.js'):
         raise Http404
 
     IGNORE_HEADERS = [

@@ -10,7 +10,7 @@ django-allauth==0.44.0
 django-widget-tweaks==1.4.3
 djangorestframework==3.9.1
 django-extensions==2.1.4
-redis==3.2.0
+redis==4.5.3
 django-simple-history==2.7.0
 jsonfield==2.0.2
 django-bootstrap-pagination==1.7.0

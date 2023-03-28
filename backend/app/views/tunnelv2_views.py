@@ -209,9 +209,6 @@ def fetch_static_etag(request, octoprinttunnel, *args, **kwargs):
 
     return None
 
-def is_webcam_request(request):
-    accept_header = request.META.get('HTTP_ACCEPT', '')
-    return 'image' in accept_header.lower()
 
 def save_static_etag(func):
     @functools.wraps(func)
@@ -248,10 +245,6 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     min_version = MIN_SUPPORTED_VERSION[get_agent_name(octoprinttunnel)].public
     version = octoprinttunnel.printer.agent_version or '0.0'
-
-    # TODO: Simply return 404 to block webcam request. Need a more user-friendly design.
-    if is_webcam_request(request):
-        raise Http404
 
     if user.tunnel_usage_over_cap():
         return HttpResponse(

@@ -36,7 +36,7 @@ OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
 
 OVER_FREE_LIMIT_HTML = """
 <html>
-    <body>
+    <body style="background-color: white;">
         <center>
             <h1>Over Free Limit</h1>
             <hr>
@@ -62,7 +62,7 @@ MIN_SUPPORTED_VERSION = {
 
 NOT_CONNECTED_HTML = """
 <html>
-    <body>
+    <body style="background-color: white;">
         <center>
             <h1>Not Connected</h1>
             <hr>
@@ -114,7 +114,7 @@ def redirect_to_tunnel_url(request, pk):
     if not tunnel:
         return HttpResponse(f"""
             <html>
-                <body>
+                <body style="background-color: white;">
                     <center>
                         <h3 style="color: red;">Failed to create a new tunnel. Check https://obico.io/docs/server-guides/tunnel/ for details.</h3>
                     </center>

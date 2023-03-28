@@ -36,7 +36,7 @@ OCTOPRINT_COOKIE_PORT_RE = re.compile(r'^[_\w]+_P(\d+)')
 
 OVER_FREE_LIMIT_HTML = """
 <html>
-    <body style="background-color: white;">
+    <body>
         <center>
             <h1>Over Free Limit</h1>
             <hr>
@@ -62,7 +62,7 @@ MIN_SUPPORTED_VERSION = {
 
 NOT_CONNECTED_HTML = """
 <html>
-    <body style="background-color: white;">
+    <body>
         <center>
             <h1>Not Connected</h1>
             <hr>
@@ -114,7 +114,7 @@ def redirect_to_tunnel_url(request, pk):
     if not tunnel:
         return HttpResponse(f"""
             <html>
-                <body style="background-color: white;">
+                <body>
                     <center>
                         <h3 style="color: red;">Failed to create a new tunnel. Check https://obico.io/docs/server-guides/tunnel/ for details.</h3>
                     </center>
@@ -265,13 +265,6 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     method = request.method.lower()
     path = request.get_full_path()
 
-    # service worker messes with the loading
-    # an makes it impossible to return
-    # proper error pages (not connected etc)
-    # so we are disabling it.
-    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path.startswith('/sw.js'):
-        return HttpResponse('', content_type='text/javascript')
-
     IGNORE_HEADERS = [
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',  # better not to tell
         'HTTP_AUTHORIZATION',  # handled explicitely
@@ -404,7 +397,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     cache.octoprinttunnel_update_stats(user.id, len(content))
 
     if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/'):
-        # manifest file is fetched without cookie by default, forcing cookie here
+        # manifest file is fetched without cookie by default, forcing cookie here. https://stackoverflow.com/a/57184506
         content = content.replace(
             b'href="/manifest.webmanifest"',
             b'href="/manifest.webmanifest" crossorigin="use-credentials"'

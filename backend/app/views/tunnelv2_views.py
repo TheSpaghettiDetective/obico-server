@@ -191,7 +191,7 @@ def is_plugin_version_supported(agent: str, version: str) -> bool:
 
 def should_cache(agent, path):
     if agent == 'moonraker_obico':
-        return path.startswith('/assets/')
+        return path.startswith('/assets/') or path.startswith('/manifest.webmanifest')
     return path.startswith('/static/') or PLUGIN_STATIC_RE.match(path) is not None
 
 
@@ -270,7 +270,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # proper error pages (not connected etc)
     # so we are disabling it.
     if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path.startswith('/sw.js'):
-        raise Http404
+        return HttpResponse('', content_type='text/javascript')
 
     IGNORE_HEADERS = [
         'HTTP_HOST', 'HTTP_ORIGIN', 'HTTP_REFERER',  # better not to tell
@@ -402,6 +402,13 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         content = data['response']['content']
 
     cache.octoprinttunnel_update_stats(user.id, len(content))
+
+    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/'):
+        # manifest file is fetched without cookie by default, forcing cookie here
+        content = content.replace(
+            b'href="/manifest.webmanifest"',
+            b'href="/manifest.webmanifest" crossorigin="use-credentials"'
+        )
 
     resp.write(content)
     return resp

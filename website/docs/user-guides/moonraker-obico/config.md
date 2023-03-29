@@ -85,7 +85,7 @@ Set values in this section only when **Obico for Klipper** can't obtain these co
 - `path`: The path to the log file. Will be automatically rotated at 5MB size.
 - `level`: Default to `INFO`. Set to `DEBUG` to see _a lot_ more details in the logs
 
-## `[tunnel]` section
+## `[tunnel]` section {#tunnel-section}
 
 The configuration specifically for Klipper Tunnel. Most of the time you should just leave them as default.
 

@@ -2,7 +2,7 @@
 title: Advanced Server Configurations
 ---
 
-## Configure Obico Server using `.env`
+## Configure Obico Server using `.env` {#configure-obico-server-using-env}
 
 You can further configure Obico Server using the `.env` file.
 
@@ -21,7 +21,7 @@ The `.env` file name is NOT a typo. Please don't name the file `env`. Otherwise 
 
 3. Go through the lines in the file, and remove the leading `#` on the lines that you intend to change. Please do NOT remove the leading `#` on any line that you don't understand or don't intend to change. It may cause unexpected server behaviors.
 
-## Other advanced server setups
+## Other advanced server setups {#other-advanced-server-setups}
 
 ```mdx-code-block
 import DocCardList from '@theme/DocCardList';

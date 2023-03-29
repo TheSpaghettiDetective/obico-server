@@ -18,7 +18,7 @@ Orange Pi has become a popular choice to run OctoPrint, especially nowadays it's
 
 Until now. [The Obico team](https://obico.io/) has decided to take stab at this problem by figuring all it takes to build an image that you can just download and flash to an SD card to get OctoPrint up and running. This makes it just as easy to run OctoPrint on an Orange Pi as it's on a Raspberry Pi.
 
-## Hardwares required
+## Hardwares required {#hardwares-required}
 
 - An Orange Pi board. You can source the board from [Orange Pi's official website](http://www.orangepi.org/) yourself. If you are located in North America, you can also buy [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), which will come with 1-year Obico Pro plan as well as warranty and technical support from the Obico team.
 - A high quality SD card (class 10 or better) with at least 8GB of storage
@@ -29,14 +29,14 @@ Until now. [The Obico team](https://obico.io/) has decided to take stab at this 
 Currently only Orange Pi 3 LTS (recommended) and Orange Pi Zero 2, the 2 most-used boards, are supported. If you have a different board and you want us to build an image for it, please make suggestions in [our discord server](https://obico.io/discord/).
 :::
 
-## Steps to set up OctoPrint on an Orange Pi
+## Steps to set up OctoPrint on an Orange Pi {#steps-to-set-up-octoprint-on-an-orange-pi}
 
-### 1. Download the OctoPrint for Orange Pi SD card image
+### 1. Download the OctoPrint for Orange Pi SD card image {#1-download-the-octoprint-for-orange-pi-sd-card-image}
 
 - If you have an Orange Pi 3 LTS, download it [here](https://www.obico.io/download/orangepi_3_lts_images/Armbian_22.11.1_Orangepi3-lts_bullseye_OctoPrint_1.8.6-20221228.img.zip).
 - If you have an Orange Pi Zero 2, download it [here](https://www.obico.io/download/orangepi_zero2_images/Orangepizero2_3.0.6_debian_bullseye_OctoPrint_1.8.6-20221201.img.zip).
 
-### 2. Download Raspberry Pi Imager
+### 2. Download Raspberry Pi Imager {#2-download-raspberry-pi-imager}
 
 - Go to [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
 - Download the Raspberry Pi Imager software (available for Windows and Mac)
@@ -44,7 +44,7 @@ Currently only Orange Pi 3 LTS (recommended) and Orange Pi Zero 2, the 2 most-us
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/raspberry-pi-imager.png)
 
-### 3. Flash the SD card
+### 3. Flash the SD card {#3-flash-the-sd-card}
 
 - Open up the Raspberry Pi Imager
 
@@ -82,9 +82,9 @@ The SD card will be wiped, so be sure there are no important files on the card.
 The file is large, so it may take a while (up to 40 minutes but likely less) for the software to be installed on the SD card. Grab a coffee, and get the rest of the kit setup while the software is installed on the SD card.
 :::
 
-## Connect to OctoPrint
+## Connect to OctoPrint {#connect-to-octoprint}
 
-### 1. Access the OctoPrint User Interface
+### 1. Access the OctoPrint User Interface {#1-access-the-octoprint-user-interface}
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-setup-wizard-1.png)
 
@@ -92,7 +92,7 @@ The file is large, so it may take a while (up to 40 minutes but likely less) for
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-access-control.png)
 
-### 2. Complete the Setup Wizard
+### 2. Complete the Setup Wizard {#2-complete-the-setup-wizard}
 
 - Follow the instructions on the screen to complete the setup wizard such as creating an account.
 
@@ -108,19 +108,19 @@ The file is large, so it may take a while (up to 40 minutes but likely less) for
 
 That's it! You have successfully connected to OctoPrint!
 
-## Useful tips (not required by highly recommended)
+## Useful tips (not required by highly recommended) {#useful-tips-not-required-by-highly-recommended}
 
-### Install the heat sink
+### Install the heat sink {#install-the-heat-sink}
 
 It's almost always a good idea to install the heat sink on SBCs so that they won't overheat easily. If you bought [an Orange Pi kit from us](https://store.obico.io/collections/orange-pi-for-octoprint), the heat sink will be included.
 
-### Put the Orange Pi in a case
+### Put the Orange Pi in a case {#put-the-orange-pi-in-a-case}
 
 While putting your Orange Pi is not required, it is recommended to help keep it clean and safe.
 
 We don't recommend to use the official Orange Pi case, due to its pour cooling capabilities. You can [print the case we designed](https://www.printables.com/model/322614-orange-pi-zero-2-case). If you prefer a different case, we also made a [collection on Printables](https://www.printables.com/social/288649-obico/collections/346815) with a few other options that have been tested.
 
-### Connect a Camera
+### Connect a Camera {#connect-a-camera}
 
 You can mount your camera in many different ways depending on your printer. The best mounting solution depends on how you plan to use the camera with your 3D printer.
 
@@ -142,18 +142,18 @@ For example, If you are simply interested in casually monitoring your 3D prints 
 
 - Use a box, cup, or another surface to elevate the camera. Even a box can provide a nice camera view.
 
-### Configure Wifi
+### Configure Wifi {#configure-wifi}
 
 Once the Raspberry Pi Imager has finished flashing the OctoPrint software to your SD card, you can remove it from your computer and insert it into the Orange Pi.
 
-#### 1. Connect the Orange Pi to your router.
+#### 1. Connect the Orange Pi to your router. {#1-connect-the-orange-pi-to-your-router}
 
 We will assume most users will be connecting via Wifi although connection via ethernet is recommended whenever possible.
 
 - Connect one end of an ethernet cable to the Orange Pi, and connect the other end to a port on your wireless router. Assuming you will connect to wifi, this is only temporary, so do not worry if this is not where you plan to keep the device.
 - Connect the included power supply to the Orange Pi and plug it into an electrical outlet.
 
-#### 2. Find the Pi's Ip Address
+#### 2. Find the Pi's Ip Address {#2-find-the-pis-ip-address}
 
 - Now, you will need to find the IP address of your Orange Pi. This can be done in multiple ways. The easiest way is to connect to your router's admin portal.
 
@@ -179,7 +179,7 @@ If you are having trouble finding the IP address for your Orange Pi, there are a
 If you are not planning to configure wifi, you can skip the rest of this section and go to the **Connecting to OctoPrint** section.
 :::
 
-#### 3. SSH into Your Orange Pi
+#### 3. SSH into Your Orange Pi {#3-ssh-into-your-orange-pi}
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/ssh-orange-pi.png)
 
@@ -197,7 +197,7 @@ ssh pi@your-ip-address
 
 - Hit enter to confirm the password. You will then be greeted with the _Opi Zero2_ logo confirming you are logged in.
 
-#### 4. Connect to your wireless network
+#### 4. Connect to your wireless network {#4-connect-to-your-wireless-network}
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/nmtui-connect-wifi.png)
 
@@ -222,7 +222,7 @@ nmtui
 
 - You can verify your wifi has been connected successfully when the upper right indicator switches from \<activate\> to \<deactivate\>. Once confirmed, move the arrow key to back and hit enter.
 
-#### 5. Find your Wireless IP address
+#### 5. Find your Wireless IP address {#5-find-your-wireless-ip-address}
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/find-wlan.png)
 
@@ -234,7 +234,7 @@ sudo ifconfig -a
 
 - In the output, find the line that starts with _wlan0:_ and note the IP address next to _inet._ Write it down or store it in your notes for easy reference.
 
-### Configure Obico for OctoPrint - optional but encouraged :)
+### Configure Obico for OctoPrint - optional but encouraged :) {#configure-obico-for-octoprint---optional-but-encouraged}
 
 Obico for OctoPrint extends OctoPrint's capabilities:
 

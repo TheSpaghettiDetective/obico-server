@@ -41,9 +41,9 @@ OVER_FREE_LIMIT_HTML = """
             <h1>Over Free Limit</h1>
             <hr>
             <h3 style="color: red;">
-                Your month-to-date usage of Tunneling is over
+                Your month-to-date usage of tunnel data is over
                 the free limit. Support this project and get unlimited
-                tunneling by
+                tunnel data by
                 <a target="_blank"
                    href="https://app.obico.io/ent_pub/pricing/"
                 >upgrading to the Obico app Pro plan</a>,

@@ -1,9 +1,9 @@
 ---
-title: OctoPrint Tunneling
+title: OctoPrint/Klipper tunnel
 ---
 
 :::info
-Because of the nature of OctoPrint Tunneling, there is no point to set it up without a reverse proxy. Please make sure you have the [reverse proxy set up and properly configured](./advanced/reverse-proxy.md) before proceeding to setting up the server for OctoPrint Tunneling.
+Because of the nature of OctoPrint/Klipper tunnel, there is no point to set it up without a reverse proxy. Please make sure you have the [reverse proxy set up and properly configured](./advanced/reverse-proxy.md) before proceeding to setting up the server for OctoPrint/Klipper tunnel.
 :::
 
 ## Configure the Obico Server to serve OctoPrint tunnels {#configure-the-obico-server-to-serve-octoprint-tunnels}

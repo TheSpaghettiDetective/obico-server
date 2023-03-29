@@ -133,7 +133,7 @@
 
             <!-- tunneling-free-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-free-plan-on-pricing-page'">
-              <p>Securely tunnel to your OctoPrint from anywhere.</p>
+              <p>Securely tunnel to your OctoPrint/Klipper from anywhere.</p>
               <p>
                 Free plan is subject to 300MB/month data cap. Data usage is reset on the 1st day of
                 each month.
@@ -141,18 +141,18 @@
               <p>
                 Learn more about
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
-                  >OctoPrint Tunneling <i class="fas fa-external-link-alt"></i
+                  >OctoPrint/Klipper tunnel <i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
             </template>
 
             <!-- tunneling-pro-plan-on-pricing-page -->
             <template v-if="id === 'tunneling-pro-plan-on-pricing-page'">
-              <div>Securely tunnel to your OctoPrint from anywhere. Unlimited.</div>
+              <div>Securely tunnel to your OctoPrint/Klipper from anywhere. Unlimited.</div>
               <p>
                 Learn more about
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
-                  >OctoPrint Tunneling <i class="fas fa-external-link-alt"></i
+                  >OctoPrint/Klipper tunnel <i class="fas fa-external-link-alt"></i
                 ></a>
               </p>
             </template>

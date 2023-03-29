@@ -21,8 +21,7 @@ export default {
   border-radius: var(--border-radius-md)
   display: flex
   align-items: center
-  padding: 1rem 1.5rem
-  margin-bottom: var(--gap-between-blocks)
+  padding: 1em
 
   .icon
     color: var(--color-divider)
@@ -30,4 +29,8 @@ export default {
   .message
     margin: 0
     margin-left: 0.5em
+    line-height: 1.3
+
+  @media (max-width: 768px)
+    font-size: 0.8rem
 </style>

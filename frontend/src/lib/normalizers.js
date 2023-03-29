@@ -2,6 +2,7 @@ import moment from 'moment'
 import get from 'lodash/get'
 import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
+import { humanizedDuration } from '@src/lib/formatters'
 
 export const toMomentOrNull = (datetimeStr) => {
   if (!datetimeStr) {
@@ -26,8 +27,7 @@ export const normalizedPrint = (print) => {
   print.ended_at = toMomentOrNull(print.ended_at)
   if (print.ended_at) {
     const duration = moment.duration(print.ended_at.diff(print.started_at))
-    print.duration = duration.hours() ? `${duration.hours()}h ` : ''
-    print.duration += `${duration.minutes()}m`
+    print.duration = humanizedDuration(duration.asSeconds())
   }
   print.has_alerts = Boolean(print.alerted_at)
   print.printShotFeedbackEligible =
@@ -83,6 +83,30 @@ export const normalizedGcode = (gcode) => {
     gcode.failedPrints = gcode.print_set.filter((p) => p.cancelled_at).length
     gcode.successPrints = gcode.print_set.filter((p) => p.finished_at).length
     gcode.totalPrints = gcode.print_set.length
+  }
+
+  // Parse metadata and insert as separate fields
+  let parsedJSON
+  if (gcode.metadata_json) {
+    parsedJSON = JSON.parse(gcode.metadata_json)
+    gcode = { ...gcode, ...parsedJSON }
+  }
+  // Extract OctoPrint gcode metadata
+  if (gcode.analysis) {
+    gcode.object_height = gcode.analysis.dimensions?.height
+    gcode.estimated_time = gcode.analysis.estimatedPrintTime
+
+    let filament_total
+    if (gcode.analysis.filament) {
+      const tools = Object.keys(gcode.analysis.filament)
+      if (tools.length) {
+        filament_total = 0
+        tools.forEach((key) => {
+          filament_total += gcode.analysis.filament[key].length
+        })
+      }
+    }
+    gcode.filament_total = filament_total
   }
 
   return gcode

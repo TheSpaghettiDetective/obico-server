@@ -4,9 +4,12 @@
     class="print-container"
   >
     <div class="status-indicator" :class="print.status.key"></div>
-    <div class="main-content overflow-truncated-parent">
+    <div v-if="selectable" class="checkbox-wrapper">
+      <b-form-checkbox v-model="isSelected" size="md"></b-form-checkbox>
+    </div>
+    <div class="main-content truncated-wrapper">
       <div class="top">
-        <div class="title overflow-truncated">{{ fileName }}</div>
+        <div class="title truncated" :title="fileName">{{ fileName }}</div>
       </div>
       <div class="bottom">
         <div class="info">
@@ -49,17 +52,35 @@ export default {
       type: Number,
       default: null,
     },
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data: function () {
     return {
       PrintStatus,
+      isSelected: this.selected,
     }
   },
 
   computed: {
     fileName() {
       return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
+    },
+  },
+
+  watch: {
+    isSelected(newValue) {
+      this.$emit('selectedChanged', this.print.id, newValue)
+    },
+    selected(newValue) {
+      this.isSelected = newValue
     },
   },
 }
@@ -79,6 +100,7 @@ export default {
 
 .status-indicator
   flex: 0 0 5px
+  margin-right: 1rem
   &.finished
     background-color: var(--color-success)
   &.cancelled
@@ -86,8 +108,17 @@ export default {
   &.printing
     background-color: var(--color-text-primary)
 
+.checkbox-wrapper
+  display: flex
+  align-items: flex-start
+  justify-content: flex-end
+  padding-top: 1rem
+  ::v-deep .custom-checkbox .custom-control-label::before
+    border-radius: var(--border-radius-xs)
+
 .main-content
   padding: 1rem
+  padding-left: 0
   flex: 1
 
 .top

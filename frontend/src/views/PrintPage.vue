@@ -6,56 +6,84 @@
         <b-row>
           <b-col lg="5">
             <div class="print-info">
-              <!-- Pagination -->
-              <div
-                v-if="currentIndex || currentIndex === 0"
-                class="card-container navigation-container"
-              >
-                <b-button
-                  variant="outline-secondary"
-                  :disabled="!prevPrint"
-                  @click.prevent="switchToPrint(prevPrint)"
-                >
-                  <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Prev
-                </b-button>
-                <div class="summary overflow-truncated-parent">
-                  <div class="date overflow-truncated">
-                    {{ print.started_at.format(absoluteDateFormat) }}
-                  </div>
-                  <div class="print-status overflow-truncated" :class="print.status.key">
-                    {{ print.status.title }}
-                  </div>
-                </div>
-                <b-button
-                  variant="outline-secondary"
-                  :disabled="!nextPrint"
-                  @click.prevent="switchToPrint(nextPrint)"
-                >
-                  Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                </b-button>
-              </div>
-              <!-- File -->
-              <div class="card-container file">
-                <div class="icon">
-                  <i class="fas fa-file-code"></i>
-                </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ fileName }}</div>
-                  <div v-if="print.g_code_file" class="subtitle text-secondary overflow-truncated">
-                    <span>{{ print.g_code_file.filesize }}</span>
-                    <span v-if="print.g_code_file.created_at"
-                      >, created {{ print.g_code_file.created_at.fromNow() }}</span
-                    >
-                  </div>
-                </div>
-                <div v-if="print.g_code_file && !print.g_code_file.resident_printer" class="action">
-                  <a
-                    class="btn btn-secondary"
-                    :href="`/g_code_files/cloud/${print.g_code_file.id}/`"
-                    >Open file</a
+              <!-- Print details -->
+              <div class="card-container print-details">
+                <div v-if="currentIndex || currentIndex === 0" class="navigation-container">
+                  <b-button
+                    variant="outline-secondary"
+                    :disabled="!prevPrint"
+                    @click.prevent="switchToPrint(prevPrint)"
                   >
+                    <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Prev
+                  </b-button>
+                  <div class="summary truncated-wrapper">
+                    <div class="date truncated">
+                      {{ print.started_at.format(absoluteDateFormat) }}
+                    </div>
+                  </div>
+                  <b-button
+                    variant="outline-secondary"
+                    :disabled="!nextPrint"
+                    @click.prevent="switchToPrint(nextPrint)"
+                  >
+                    Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                  </b-button>
+                </div>
+                <div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-info"></i></div>
+                      <div class="title">Status</div>
+                    </div>
+                    <div class="value">
+                      <div class="print-status" :class="print.status.key">
+                        {{ print.status.title }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="far fa-clock"></i></div>
+                      <div class="title">Start time</div>
+                    </div>
+                    <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="far fa-clock"></i></div>
+                      <div class="title">End time</div>
+                    </div>
+                    <div class="value">
+                      {{ print.ended_at ? print.ended_at.format(absoluteDateFormat) : '-' }}
+                    </div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-clock"></i></div>
+                      <div class="title">Duration</div>
+                    </div>
+                    <div class="value">{{ print.duration || '-' }}</div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-ruler-horizontal"></i></div>
+                      <div class="title">Filament used</div>
+                    </div>
+                    <div class="value">
+                      {{ print.filament_used ? humanizedFilamentUsage(print.filament_used) : '-' }}
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- GCode details -->
+              <g-code-details
+                :file="print.g_code_file || { filename: print.filename }"
+                :show-open-button="
+                  print.g_code_file &&
+                  !print.g_code_file.resident_printer &&
+                  !print.g_code_file.deleted
+                "
+              />
               <!-- Printer -->
               <div class="card-container printer">
                 <div class="icon">
@@ -63,10 +91,12 @@
                     <use href="#svg-3d-printer" />
                   </svg>
                 </div>
-                <div class="info overflow-truncated-parent">
-                  <div class="title overflow-truncated">{{ print.printer.name }}</div>
+                <div class="info truncated-wrapper">
+                  <div class="title truncated" :title="print.printer.name">
+                    {{ print.printer.name }}
+                  </div>
                   <div
-                    class="subtitle overflow-truncated"
+                    class="subtitle truncated"
                     :class="[
                       printer
                         ? printer.isPrintable()
@@ -79,7 +109,12 @@
                   </div>
                 </div>
                 <div
-                  v-if="printer && print.g_code_file && !print.g_code_file.resident_printer"
+                  v-if="
+                    printer &&
+                    print.g_code_file &&
+                    !print.g_code_file.resident_printer &&
+                    !print.g_code_file.deleted
+                  "
                   class="action"
                 >
                   <button
@@ -88,37 +123,13 @@
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" small />
-                    <span v-else>Repeat print</span>
+                    <span v-else>Repeat Print</span>
                   </button>
-                </div>
-              </div>
-              <div class="card-container">
-                <div class="info-line">
-                  <div class="title">Status</div>
-                  <div class="value">
-                    <div class="print-status" :class="print.status.key">
-                      {{ print.status.title }}
-                    </div>
-                  </div>
-                </div>
-                <div class="info-line">
-                  <div class="title">Start time</div>
-                  <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
-                </div>
-                <div class="info-line">
-                  <div class="title">End time</div>
-                  <div class="value">
-                    {{ print.ended_at ? print.ended_at.format(absoluteDateFormat) : '-' }}
-                  </div>
-                </div>
-                <div class="info-line">
-                  <div class="title">Duration</div>
-                  <div class="value">{{ print.duration ? print.duration : '-' }}</div>
                 </div>
               </div>
             </div>
           </b-col>
-          <b-col lg="7" class="mt-3 mt-lg-0">
+          <b-col lg="7">
             <div class="time-lapse">
               <div v-if="print.video_archived_at" class="card-container">
                 <h2 class="title">Time-Lapse video deleted</h2>
@@ -314,6 +325,7 @@ import moment from 'moment'
 import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import { getLocalPref } from '@src/lib/pref'
+import { humanizedFilamentUsage } from '@src/lib/formatters'
 import { user } from '@src/lib/page-context'
 import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
@@ -329,6 +341,7 @@ import {
   SortingLocalStoragePrefix,
   SortingOptions,
 } from '@src/views/PrintHistoryPage'
+import GCodeDetails from '@src/components/GCodeDetails.vue'
 
 export default {
   name: 'PrintPage',
@@ -338,6 +351,7 @@ export default {
     VideoBox,
     DetectiveWorking,
     FailureDetectionGauge,
+    GCodeDetails,
   },
 
   props: {
@@ -442,6 +456,8 @@ export default {
 
   methods: {
     downloadFile,
+    humanizedFilamentUsage,
+
     async fetchData(clearPreviousData = true) {
       if (clearPreviousData) {
         this.print = null
@@ -600,43 +616,77 @@ export default {
 .print-info
   display: flex
   flex-direction: column
-  gap: 15px
+  gap: var(--gap-between-blocks)
 
-.printer, .file
+.print-details
+  overflow: hidden
+  display: flex
+  flex-direction: column
+  gap: 10px
+  .navigation-container
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: 1rem
+    margin: -1.5em
+    margin-bottom: .5em
+    padding: 1em 1.5em
+    background-color: var(--color-surface-primary)
+    .btn
+      flex-shrink: 0
+    .summary
+      text-align: center
+      @media (max-width: 576px)
+        display: none
+  .info-line
+    display: flex
+    align-items: center
+    justify-content: space-between
+    margin-bottm: 6px
+    padding: 6px 0
+    gap: .5rem
+    border-top: 1px solid var(--color-divider-muted)
+    &:first-of-type
+      border-top: none
+    .label
+      display: flex
+      align-items: center
+      flex: 1
+      gap: .5rem
+      line-height: 1.1
+      .icon
+        opacity: .5
+        width: 1rem
+        text-align: center
+    .value
+      font-weight: bold
+    .print-status
+      &.cancelled
+        color: var(--color-danger)
+      &.finished
+        color: var(--color-success)
+
+.printer
   display: flex
   align-items: center
-  gap: 6px
+  gap: .7rem
+  .title
+    font-weight: bold
   .info
     flex: 1
   .icon
-    flex: 0 0 50px
+    flex: 0 0 2rem
     text-align: center
     *
       font-size: 2rem
-
-.info-line
-  display: flex
-  flex-direction: row
-  justify-content: space-between
-  border-bottom: 1px solid var(--color-divider-muted)
-  padding: 4px 0
-  &:last-child
-    border-bottom: none
-.title
-  font-weight: bold
-
-.print-status
-  &.cancelled
-    color: var(--color-danger)
-  &.finished
-    color: var(--color-success)
 
 .time-lapse
   .title
     font-size: 1.5rem
     font-weight: normal
     margin-bottom: 1rem
-
+  @media (max-width: 991px)
+    margin-top: var(--gap-between-blocks)
   ::v-deep
     .card
       border-radius: var(--border-radius-lg)
@@ -724,15 +774,4 @@ export default {
       border-radius: 0
       ::v-deep .video-js
         height: 100vh !important
-
-.navigation-container
-  display: flex
-  justify-content: space-between
-  gap: 1rem
-  .btn
-    flex-shrink: 0
-  .summary
-    text-align: center
-    @media (max-width: 576px)
-      display: none
 </style>

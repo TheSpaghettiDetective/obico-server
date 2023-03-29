@@ -13,16 +13,53 @@
       </a>
     </template>
     <template #topBarRight>
-      <div>
-        <b-dropdown v-if="isCloud" right no-caret toggle-class="icon-btn">
+      <div class="action-panel">
+        <!-- Rename -->
+        <a
+          v-if="isCloud"
+          href="#"
+          class="btn shadow-none icon-btn action-btn"
+          title="Rename file"
+          @click.prevent="renameFile"
+        >
+          <i class="fas fa-edit"></i>
+        </a>
+        <!-- Delete -->
+        <a
+          v-if="isCloud"
+          href="#"
+          class="text-danger btn shadow-none icon-btn action-btn"
+          title="Delete file"
+          @click.prevent="deleteFile"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </a>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
           <template #button-content>
             <i class="fas fa-ellipsis-v"></i>
           </template>
-          <b-dropdown-item @click="renameFile"> <i class="fas fa-edit"></i>Rename </b-dropdown-item>
-          <b-dropdown-item @click="deleteFile">
-            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
-          </b-dropdown-item>
+          <cascaded-dropdown
+            ref="cascadedDropdown"
+            :menu-options="[
+              {
+                key: 'renameFile',
+                icon: 'fas fa-edit',
+                title: `Rename file`,
+                callback: true,
+              },
+              {
+                key: 'deleteFile',
+                icon: 'fas fa-trash-alt',
+                customMenuOptionClass: 'text-danger',
+                title: `Delete file`,
+                callback: true,
+              },
+            ]"
+            @menuOptionClicked="onMenuOptionClicked"
+          />
         </b-dropdown>
+
         <a
           v-if="onClose"
           href="#"
@@ -49,51 +86,16 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-container v-else fluid="xl">
+      <b-container v-else fluid>
         <b-row>
-          <b-col :lg="isDeleted ? 8 : 12" :offset-lg="isDeleted ? 2 : 0">
+          <b-col :lg="isPopup ? 12 : 5">
             <b-alert :show="isDeleted" variant="warning warning-block">
               This file is deleted and unavailable for print
             </b-alert>
 
-            <!-- File info -->
-            <div class="card-container file-info" :class="{ 'full-width': isPopup || isDeleted }">
-              <b-container fluid>
-                <b-row>
-                  <b-col>
-                    <h1 class="file-name overflow-truncated">
-                      {{ gcode.filename }}
-                    </h1>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col :sm="isCloud ? 6 : 12">
-                    <div class="file-info-line">
-                      <div><i class="fas fa-history"></i>Uploaded</div>
-                      <div class="value">{{ gcode.created_at.fromNow() }}</div>
-                    </div>
-                    <div class="file-info-line">
-                      <div><i class="far fa-file-code"></i>File size</div>
-                      <div class="value">{{ gcode.filesize }}</div>
-                    </div>
-                  </b-col>
-                  <b-col v-show="isCloud" sm="6">
-                    <div class="file-info-line">
-                      <div><i class="fas fa-circle"></i>Times printed</div>
-                      <div class="value">{{ gcode.totalPrints }}</div>
-                    </div>
-                    <div class="file-info-line">
-                      <div><i class="fas fa-circle text-success"></i>Finished</div>
-                      <div class="value">{{ gcode.successPrints }}/{{ gcode.totalPrints }}</div>
-                    </div>
-                    <div class="file-info-line">
-                      <div><i class="fas fa-circle text-danger"></i>Cancelled</div>
-                      <div class="value">{{ gcode.failedPrints }}/{{ gcode.totalPrints }}</div>
-                    </div>
-                  </b-col>
-                </b-row>
-              </b-container>
-            </div>
+            <!-- File details -->
+            <g-code-details :file="gcode" :show-print-stats="true" :compact-view="false" />
+
             <!-- Available printers -->
             <available-printers
               v-if="!isDeleted"
@@ -105,9 +107,11 @@
               :is-cloud="isCloud"
               @refresh="onRefresh"
             />
+          </b-col>
+          <b-col :lg="isPopup ? 12 : 7">
             <!-- Print history -->
             <div class="print-history" :class="{ 'full-width': isPopup || isDeleted }">
-              <h2 class="section-title">Print history</h2>
+              <h2 class="section-title mb-3">Print History</h2>
               <div v-if="gcode.print_set.length">
                 <print-history-item
                   v-for="print of gcode.print_set"
@@ -151,6 +155,8 @@ import {
   listPrinterLocalGCodesOctoPrint,
 } from '@src/lib/printer-local-comm'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
+import CascadedDropdown from '@src/components/CascadedDropdown'
+import GCodeDetails from '@src/components/GCodeDetails.vue'
 
 export default {
   name: 'GCodeFilePage',
@@ -161,6 +167,8 @@ export default {
     DeleteConfirmationModal,
     availablePrinters,
     PrintHistoryItem,
+    CascadedDropdown,
+    GCodeDetails,
   },
 
   props: {
@@ -215,6 +223,13 @@ export default {
   },
 
   methods: {
+    onMenuOptionClicked(menuOptionKey) {
+      if (menuOptionKey === 'renameFile') {
+        this.renameFile()
+      } else if (menuOptionKey === 'deleteFile') {
+        this.deleteFile()
+      }
+    },
     getRouteParam(name) {
       return this.isPopup ? this.routeParams[name] : this.$route.params[name]
     },
@@ -261,7 +276,7 @@ export default {
 
           const file = result?.files[0]
           this.gcode = {
-            ...file,
+            ...normalizedGcode(file),
             print_set: [],
           }
           if (file.path && file.hash && this.getRouteParam('printerId')) {
@@ -348,26 +363,16 @@ export default {
 .warning-block
   margin-bottom: var(--gap-between-blocks)
 
-.file-info, .print-history
-  width: 60%
-  display: inline-block
-  &.print-history
-    padding-top: 10px
-    margin-top: 30px
-
 .available-printers
-  width: calc(40% - 30px)
-  float: right
-
-.file-info, .print-history, .available-printers
+  margin-top: var(--gap-between-blocks)
   &.full-width
-    width: 100%
-    &.print-history, &.available-printers
-      margin-top: 15px
-  @media (max-width: 996px)
-    width: 100%
-    &.print-history, &.available-printers
-      margin-top: 15px
+    margin-top: 15px
+
+.print-history
+  &.full-width
+    margin-top: 30px
+  @media (max-width: 991px)
+    margin-top: 30px
 
 .file-name
   font-size: 1.25rem

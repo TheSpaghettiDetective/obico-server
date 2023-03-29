@@ -1,4 +1,3 @@
----
 title: OctoPrint/Klipper tunnel
 ---
 
@@ -38,6 +37,6 @@ services:
 
 Run `docker compose stop && docker compose up -d`
 
-## Configure the reverse proxy to forward *all the ports* in the range {#configure-the-reverse-proxy-to-forward-all-the-ports-in-the-range}
+## Configure the reverse proxy to forward _all the ports_ in the range {#configure-the-reverse-proxy-to-forward-all-the-ports-in-the-range}
 
 All the ports in the range above needs to be forwarded by your reverse proxy. The details depend on the reverse proxy of your choice and is beyond the scope of this guide.

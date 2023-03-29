@@ -16,11 +16,11 @@ rm -rf ~/moonraker-obico
 To remove the configuration:
 
 ```bash
-rm ~/klipper_config/moonraker-obico.cfg
-rm ~/klipper_config/moonraker-obico-update.cfg
+rm ~/printer_data/config/moonraker-obico.cfg
+rm ~/printer_data/config/moonraker-obico-update.cfg
 ```
 
-Also edit `~/klipper_config/moonraker.conf` to remote this line:
+Also edit `~/printer_data/config/moonraker.conf` to remote this line:
 
 `[include moonraker-obico-update.cfg]`
 

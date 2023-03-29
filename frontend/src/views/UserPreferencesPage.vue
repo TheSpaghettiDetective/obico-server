@@ -517,12 +517,6 @@ export default {
         font-size: .8rem
 ::v-deep section:not(:first-child) .section-title
   margin-top: 2rem
-::v-deep .section-title
-  font-weight: bold
-  font-size: 1.5rem
-  padding-bottom: .25rem
-  border-bottom: 1px solid var(--color-text-primary)
-  margin-bottom: 1.5rem
 ::v-deep .settings-nav
   width: 25%
   background-color: var(--color-surface-primary)

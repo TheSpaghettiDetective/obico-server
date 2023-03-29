@@ -621,7 +621,6 @@ export default {
           this._showErrorPopup(error)
         }
 
-        this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
         this.currentFoldersPage += 1
       }
 
@@ -649,10 +648,11 @@ export default {
           this._showErrorPopup(error)
         }
 
-        this.files.push(...files.map((data) => normalizedGcode(data)))
         this.currentFilesPage += 1
       }
 
+      this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
+      this.files.push(...files.map((data) => normalizedGcode(data)))
       this.loading = false
     },
     updateSearch(search) {

@@ -25,7 +25,6 @@ If possible, do NOT use the stock case included in the kit. The stock case doesn
 Use the printable version instead.
 :::
 
-
 **You will also need**
 
 - A high quality SD card (class 10 or better) with at least 8GB of storage
@@ -36,7 +35,7 @@ Use the printable version instead.
 
 ### **1. Download the OctoPrint for Orange Pi software**
 
-Download the OctoPrint for Orange Pi software [here](https://storage.googleapis.com/obico-public/orangepi_zero2_images/Orangepizero2_3.0.6_debian_bullseye_OctoPrint_1.8.3-20221129.img.zip)
+Download the OctoPrint for Orange Pi software [here](https://www.obico.io/download/orangepi_zero2_images/Orangepizero2_3.0.6_debian_bullseye_OctoPrint_1.8.6-20221201.img.zip)
 
 - (Mac) Double click the file once downloaded and drag it into the applications folder to install it. (Windows users can right click the file and click extract to unzip the file)
 
@@ -47,7 +46,6 @@ Download the OctoPrint for Orange Pi software [here](https://storage.googleapis.
 - Unzip the file
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/raspberry-pi-imager.png)
-
 
 ### **3. Flash the SD card**
 
@@ -108,7 +106,6 @@ Unbox your kit and lay out the components:
 - An Ethernet cable
 - A USB cable to connect the Orange Pi to your printer (comes with most printers)
 
-
 ### **2. Install the heat sink on the Orange Pi Zero 2**
 
 - Remove one side of the paper backing on the thermal pad and place the pad on the heat sink. Remove the other paper from the other side and place the heat sink on the CPU
@@ -131,18 +128,17 @@ For example, If you are simply interested in casually monitoring your 3D prints 
 
 - Print a mount: 3D printing a mount is a great option. Here are a few mounts tested to work with the camera included with the kit.
 
-| Webcam Mount                                                                | Description                                                             |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [Tripod adapter for all webcams](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter) | General tripod-mount (¼-20 thread)                                      |
-| [20-20 Extrusion Webcam Mount](https://www.thingiverse.com/thing:3147899)   | Works with printed [adapter](https://[www.thingiverse.com/thing:1729459](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)) |
-| [Ender 3 S1 Mount](https://www.thingiverse.com/thing:5476426)               | Works with printed [adapter](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter) |
+| Webcam Mount                                                                                              | Description                                                                                                                                          |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Tripod adapter for all webcams](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter) | General tripod-mount (¼-20 thread)                                                                                                                   |
+| [20-20 Extrusion Webcam Mount](https://www.thingiverse.com/thing:3147899)                                 | Works with printed [adapter](<https://[www.thingiverse.com/thing:1729459](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)>) |
+| [Ender 3 S1 Mount](https://www.thingiverse.com/thing:5476426)                                             | Works with printed [adapter](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)                                                |
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-camera-mount-2.jpg)
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-camera-mount-3.png)
 
 - Use a box, cup, or another surface to elevate the camera. Even a box can provide a nice camera view.
-
 
 ## **Configure Wifi**
 
@@ -209,12 +205,11 @@ ssh pi@your-ip-address
 nmtui
 ```
 
-
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/edit-connection-nmtui.png)
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/activate-connection-nmtui.png)
 
-- Use the arrow keys on your keyboard to highlight _Activate a connection_ and then use the cursor to highlight *OK* and click enter.
+- Use the arrow keys on your keyboard to highlight _Activate a connection_ and then use the cursor to highlight _OK_ and click enter.
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/activate-wifi.png)
 
@@ -234,7 +229,6 @@ nmtui
 ```
 sudo ifconfig -a
 ```
-
 
 - In the output, find the line that starts with _wlan0:_ and note the IP address next to _inet._ Write it down or store it in your notes for easy reference.
 
@@ -258,7 +252,6 @@ sudo ifconfig -a
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-setup-wizard-1.png)
 
-
 - Open an internet browser and enter the IP address you just found into the URL bar. You will be greeted with the OctoPrint Setup Wizard.
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-access-control.png)
@@ -269,13 +262,13 @@ sudo ifconfig -a
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-printer-profile.png)
 
-- Under *Defauilt Printer Profile*, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
+- Under _Defauilt Printer Profile_, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-webcam-view.png)
 
-- Click *Finish*, and you will be sent to the OctoPrint User interface.
-- Click *Connect* on the left to connect your 3D printer to your Orange Pi Zero 2.
-- Click *Control* on the upper tab to see your webcam view.
+- Click _Finish_, and you will be sent to the OctoPrint User interface.
+- Click _Connect_ on the left to connect your 3D printer to your Orange Pi Zero 2.
+- Click _Control_ on the upper tab to see your webcam view.
 
 That's it! You have successfully connected to OctoPrint!
 
@@ -288,9 +281,7 @@ Obico for OctoPrint extends OctoPrint's capabilities:
 - Start, stop pause and cancel prints on the go from anywhere.
 - Check in on your prints on the go with high quality webcam streaming
 
-
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/obico-plugin-wizard-1.png)
-
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -307,13 +298,11 @@ Before you start, make sure:
 - A webcam is set up for your printer and connected to OctoPrint. The 3D Printing Zone has an [excellent video](https://www.youtube.com/watch?v=uWsD2HoId9I) for it.
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
-
 ## Step 1: Access "Obico for OctoPrint" plugin wizard. {#step-1-access-obico-for-octoprint-plugin-wizard}
 
 1. Restart OctoPrint by clicking the **power button**
 1. Click **Restart OctoPrint**. Wait for OctoPrint to reload.
-1.The Obico plugin setup wizard should popup once OctoPrint reloads. If it doesn't open automatically, open up the OctoPrint settings menu by clicking the **gear** icon. Then find **Obico for OctoPrint** in the menu, and click **run setup wizard**
-
+   1.The Obico plugin setup wizard should popup once OctoPrint reloads. If it doesn't open automatically, open up the OctoPrint settings menu by clicking the **gear** icon. Then find **Obico for OctoPrint** in the menu, and click **run setup wizard**
 
 ![Install the Plugin](/img/user-guides/setupguide/install-plugin.png)
 
@@ -321,7 +310,7 @@ Before you start, make sure:
 
 :::tip
 
-Follow instructions in the "**📱  Mobile App**" tab if you are using the Obico mobile app, or the "**🌐  Web App**" tab if you are using the web app.
+Follow instructions in the "**📱 Mobile App**" tab if you are using the Obico mobile app, or the "**🌐 Web App**" tab if you are using the web app.
 
 :::
 
@@ -338,13 +327,13 @@ All functions are available equally in the mobile and the web app. However, with
 :::
 
 <Tabs
-  defaultValue="mobile"
-  groupId="app"
-  values={[
-    {label: '📱  Mobile App', value: 'mobile'},
-    {label: '🌐  Web App', value: 'web'},
-  ]}>
-  <TabItem value="mobile">
+defaultValue="mobile"
+groupId="app"
+values={[
+{label: '📱 Mobile App', value: 'mobile'},
+{label: '🌐 Web App', value: 'web'},
+]}>
+<TabItem value="mobile">
 
 1. Download the Obico app from the [Apple App Store](https://apps.apple.com/us/app/the-spaghetti-detective/id1540646623?ign-itsct=apps_box&ign-itscg=30200) or [Google Play Store](https://play.google.com/store/apps/details?id=com.thespaghettidetective.android).
 1. Open the mobile app. Click through the first time tour and then tap **“Let’s Go!”**.
@@ -366,7 +355,6 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**�
 
 ![Sign Up Account](/img/user-guides/setupguide/tsd-signup.png)
 
-
   </TabItem>
 </Tabs>
 
@@ -381,22 +369,22 @@ If you are phone or computer is one the **the same local network** as your OctoP
 :::
 
 <Tabs
-  defaultValue="mobile"
-  groupId="app"
-  values={[
-    {label: '📱  Mobile App', value: 'mobile'},
-    {label: '🌐  Web App', value: 'web'},
-  ]}>
-  <TabItem value="mobile">
+defaultValue="mobile"
+groupId="app"
+values={[
+{label: '📱 Mobile App', value: 'mobile'},
+{label: '🌐 Web App', value: 'web'},
+]}>
+<TabItem value="mobile">
 
 1. Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
 2. Choose "**OctoPrint**" on the next screen.
 3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Yes, plugin is installed**" button.
 4. The app will start scanning for the OctoPrint connected to the same local network.
 5. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
-  :::tip
-  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
-  :::
+   :::tip
+   **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
+   :::
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-mobile.gif" /></div>
 6. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
@@ -409,9 +397,9 @@ If you are phone or computer is one the **the same local network** as your OctoP
 3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Next**" button.
 4. The app will start scanning for the OctoPrint connected to the same local network.
 5. If the OctoPrint is found, simply click the "**Link**" button and the app will do the rest for you.
-  :::tip
-  **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
-  :::
+   :::tip
+   **If, however, the app can't find your OctoPrint after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.**
+   :::
 6. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your OctoPrint. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/octoprint-plugin-setup-manual-link) to link your OctoPrint using a 6-digit code.
 
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-web.gif" /></div>

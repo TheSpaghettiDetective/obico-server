@@ -83,11 +83,11 @@
                       <div class="value">{{ gcode.totalPrints }}</div>
                     </div>
                     <div class="file-info-line">
-                      <div><i class="fas fa-circle text-success"></i>Succeeded</div>
+                      <div><i class="fas fa-circle text-success"></i>Finished</div>
                       <div class="value">{{ gcode.successPrints }}/{{ gcode.totalPrints }}</div>
                     </div>
                     <div class="file-info-line">
-                      <div><i class="fas fa-circle text-danger"></i>Failed or cancelled</div>
+                      <div><i class="fas fa-circle text-danger"></i>Cancelled</div>
                       <div class="value">{{ gcode.failedPrints }}/{{ gcode.totalPrints }}</div>
                     </div>
                   </b-col>
@@ -267,16 +267,17 @@ export default {
           if (file.path && file.hash && this.getRouteParam('printerId')) {
             const safeFilename = file.path.replace(/^.*[\\/]/, '')
             try {
-              let response = await axios.get(
-                urls.gcodeFiles({
+              let response = await axios.get(urls.gcodeFiles(), {
+                params: {
                   resident_printer: this.getRouteParam('printerId'),
                   safe_filename: safeFilename,
                   agent_signature: `md5:${file.hash}`,
-                })
-              )
+                },
+              })
               const gcodeFileOnServer = get(response, 'data.results[0]')
               if (gcodeFileOnServer) {
-                this.gcode = { ...this.gcode, ...normalizedGcode(gcodeFileOnServer) }
+                const cloudCopy = normalizedGcode(gcodeFileOnServer)
+                this.gcode.print_set = cloudCopy.print_set
               }
             } catch (e) {
               console.error(e)

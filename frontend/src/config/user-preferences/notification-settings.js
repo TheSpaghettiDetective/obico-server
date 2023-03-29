@@ -21,7 +21,8 @@ export default [
       },
       {
         id: 'notify_on_filament_change',
-        title: 'When filament runs out or needs a change',
+        title: 'When printer needs attention',
+        description: 'Such as filament change or run-out',
         enabledByDefault: true,
       },
       {

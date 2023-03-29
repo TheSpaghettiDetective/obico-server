@@ -460,8 +460,8 @@ export default {
     width: $size
     height: $size
     position: absolute
-    left: calc(50% - #{$size / 2})
-    top: calc(50% - #{$size / 2} - 20px)
+    left: calc(50% - $size / 2)
+    top: calc(50% - $size / 2 - 20px)
 
 i.fas
   width: 1em

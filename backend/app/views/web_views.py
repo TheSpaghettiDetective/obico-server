@@ -176,6 +176,10 @@ def print_history(request, template_dir=None):
     return render(request, get_template_path('print_history', template_dir))
 
 @login_required
+def stats(request, template_dir=None):
+    return render(request, get_template_path('stats', template_dir))
+
+@login_required
 def prints(request, template_dir=None):
     return render(request, get_template_path('prints', template_dir))
 

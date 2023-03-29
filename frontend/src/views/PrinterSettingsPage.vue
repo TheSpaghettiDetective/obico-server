@@ -310,7 +310,7 @@
                     >
                   </div>
                 </div>
-                <div class="mt-4">
+                <div v-if="isEnt" class="mt-4">
                   <button class="btn btn-outline-warning" @click="archivePrinter">
                     Archive Printer
                   </button>
@@ -357,6 +357,7 @@ import urls from '@config/server-urls'
 import SavingAnimation from '@src/components/SavingAnimation.vue'
 import NumberInput from '@src/components/NumberInput.vue'
 import PageLayout from '@src/components/PageLayout.vue'
+import { settings } from '@src/lib/page-context'
 
 export default {
   components: {
@@ -368,6 +369,7 @@ export default {
 
   data() {
     return {
+      isEnt: false,
       printer: null,
       printerId: '',
       saving: {},
@@ -540,6 +542,8 @@ export default {
   },
 
   created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
     this.printerId = split(window.location.pathname, '/').slice(-2, -1).pop()
     this.fetchPrinter()
   },

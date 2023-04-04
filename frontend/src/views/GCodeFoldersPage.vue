@@ -633,7 +633,9 @@ export default {
               'Cache-Control': 'no-cache',
             },
             params: {
-              parent_folder: this.parentFolder || 'null',
+              // search is always global and we don't send parent_folder param at all in this case
+              // if `parentFolder` is null, it means we are in root folder (server needs '' or 'null')
+              parent_folder: this.searchQuery ? undefined : this.parentFolder || 'null',
               page: this.currentFilesPage,
               page_size: PAGE_SIZE,
               sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,

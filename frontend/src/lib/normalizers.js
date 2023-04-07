@@ -3,6 +3,7 @@ import get from 'lodash/get'
 import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
 import { humanizedDuration } from '@src/lib/formatters'
+import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 
 export const toMomentOrNull = (datetimeStr) => {
   if (!datetimeStr) {
@@ -85,16 +86,16 @@ export const normalizedGcode = (gcode) => {
     gcode.totalPrints = gcode.print_set.length
   }
 
-  // Parse metadata and insert as separate fields
-  let parsedJSON
+  // Normalize metadata
+  gcode.metadata = {}
+
   if (gcode.metadata_json) {
-    parsedJSON = JSON.parse(gcode.metadata_json)
-    gcode = { ...gcode, ...parsedJSON }
-  }
-  // Extract OctoPrint gcode metadata
-  if (gcode.analysis) {
-    gcode.object_height = gcode.analysis.dimensions?.height
-    gcode.estimated_time = gcode.analysis.estimatedPrintTime
+    // obico file with metadata
+    gcode.metadata = JSON.parse(gcode.metadata_json)
+  } else if (gcode.analysis) {
+    // octoprint file
+    gcode.metadata.object_height = gcode.analysis.dimensions?.height
+    gcode.metadata.estimated_time = gcode.analysis.estimatedPrintTime
 
     let filament_total
     if (gcode.analysis.filament) {
@@ -106,8 +107,22 @@ export const normalizedGcode = (gcode) => {
         })
       }
     }
-    gcode.filament_total = filament_total
+    gcode.metadata.filament_total = filament_total
+  } else {
+    // either obico file without metadata or klipper file
+    gcodeMetadata.forEach((v) => {
+      if (gcode[v.name]) {
+        gcode.medata[v.name] = gcode[v.name]
+      }
+    })
   }
+
+  // leave only non-null metadata
+  Object.keys(gcode.metadata).forEach((key) => {
+    if (gcode.metadata[key] === null || gcode.metadata[key] === undefined) {
+      delete gcode.metadata[key]
+    }
+  })
 
   return gcode
 }

@@ -1,6 +1,5 @@
 import moment from 'moment'
 
-// Possible result variants: 56s | 3m | 1h 56m | 2d 1h 56m
 export const humanizedDuration = (durationInSeconds) => {
   const seconds = Math.round(durationInSeconds || 0)
   const components = getDurationComponents(seconds)
@@ -45,7 +44,6 @@ export const getDurationComponents = (durationInSeconds) => {
   }
 }
 
-// Example values: 0m | 1.2m | 1.23m
 export const humanizedFilamentUsage = (millimeters) => {
   const meters = (millimeters || 0) / 1000
   const twoDecimal = Math.round(meters * 100) / 100

@@ -113,9 +113,9 @@
 </template>
 
 <script>
-import * as formatters from '@src/lib/formatters'
 import MutedAlert from '@src/components/MutedAlert.vue'
 import HelpWidget from '@src/components/HelpWidget.vue'
+import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 
 export default {
   name: 'GCodeDetails',
@@ -149,80 +149,6 @@ export default {
       numberOfVisibleLines: 3,
       extraDetailsVisible: false,
       thumbnailUrl: null,
-      fileDetailsConfig: [
-        {
-          name: 'created_at',
-          faIcon: 'fas fa-calendar-alt',
-          title: 'Uploaded',
-          formatter: (v) => v.fromNow(),
-        },
-        {
-          name: 'estimated_time',
-          faIcon: 'fas fa-clock',
-          title: 'Print duration estimate',
-          formatter: formatters.humanizedDuration,
-        },
-        {
-          name: 'filament_total',
-          faIcon: 'fas fa-ruler-horizontal',
-          title: 'Filament usage estimate',
-          formatter: formatters.humanizedFilamentUsage,
-        },
-        {
-          name: 'first_layer_bed_temp',
-          svgIcon: 'bed-temp',
-          title: 'First layer bed temperature',
-          formatter: (v) => `${v}°C`,
-        },
-        {
-          name: 'first_layer_extr_temp',
-          svgIcon: 'extruder',
-          title: 'First layer extruder temperature',
-          formatter: (v) => `${v}°C`,
-        },
-        {
-          name: 'first_layer_height',
-          faIcon: 'fas fa-layer-group',
-          title: 'First layer height',
-          formatter: (v) => `${v}mm`,
-        },
-        {
-          name: 'layer_height',
-          faIcon: 'fas fa-layer-group',
-          title: 'Layer height',
-          formatter: (v) => `${v}mm`,
-        },
-        {
-          name: 'object_height',
-          faIcon: 'fas fa-ruler-vertical',
-          title: 'Object height',
-          formatter: (v) => `${v}mm`,
-        },
-        {
-          name: 'filament_type',
-          svgIcon: 'filament',
-          title: 'Filament type',
-          formatter: (v) => v,
-        },
-        {
-          name: 'filament_name',
-          svgIcon: 'filament',
-          title: 'Filament name',
-          formatter: (v) => v,
-        },
-        {
-          name: 'slicer',
-          svgIcon: 'slicer-program',
-          title: 'Slicer',
-          formatter: (v) => v,
-        },
-        {
-          name: 'slicer_version',
-          svgIcon: 'slicer-version',
-          title: 'Slicer version',
-          formatter: (v) => v,
-        },
-      ],
     }
   },
 
@@ -231,19 +157,19 @@ export default {
       return !this.compactView || this.thumbnailUrl
     },
     fileDetailsToShow() {
-      let filtered = []
+      let result = []
       if (!this.file.deleted) {
-        filtered = this.fileDetailsConfig
-          .filter((item) => this.file[item.name])
+        result = gcodeMetadata
+          .filter((item) => this.file.metadata[item.name])
           .map((item) => {
             return {
               ...item,
-              value: item.formatter(this.file[item.name]),
+              value: item.formatter(this.file.metadata[item.name]),
             }
           })
       }
       if (this.showPrintStats) {
-        filtered.unshift({
+        result.unshift({
           name: 'total_prints',
           faIcon: 'fas fa-hashtag',
           title: 'Total prints',
@@ -254,14 +180,19 @@ export default {
           `,
         })
       }
-      return filtered
+      if (this.file.created_at) {
+        result.unshift({
+          name: 'created_at',
+          faIcon: 'fas fa-calendar-alt',
+          title: 'Uploaded',
+          value: this.file.created_at.fromNow(),
+        })
+      }
+      return result
     },
     shouldShowDataNotice() {
       return (
-        !this.file.analysis &&
-        (this.fileDetailsToShow.length > 1 ||
-          (this.fileDetailsToShow.length === 1 &&
-            this.fileDetailsToShow[0].name !== 'total_prints'))
+        !this.file.analysis && Object.keys(this.file.metadata).length !== 0 && !this.file.deleted
       )
     },
   },

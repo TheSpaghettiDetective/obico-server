@@ -48,6 +48,10 @@ export const normalizedPrint = (print) => {
 }
 
 export const normalizedGcode = (gcode) => {
+  if (!gcode) {
+    return
+  }
+
   gcode.created_at = toMomentOrNull(gcode.created_at)
   gcode.updated_at = toMomentOrNull(gcode.updated_at)
   gcode.deleted = toMomentOrNull(gcode.deleted)

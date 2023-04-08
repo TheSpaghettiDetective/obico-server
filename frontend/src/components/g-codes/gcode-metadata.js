@@ -41,7 +41,7 @@ export const gcodeMetadata = [
     name: 'object_height',
     faIcon: 'fas fa-ruler-vertical',
     title: 'Object height',
-    formatter: (v) => `${v}mm`,
+    formatter: (v) => `${Math.round(v)}mm`,
   },
   {
     name: 'filament_type',

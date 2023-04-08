@@ -116,7 +116,7 @@ export const normalizedGcode = (gcode) => {
     // either obico file without metadata or klipper file
     gcodeMetadata.forEach((v) => {
       if (gcode[v.name]) {
-        gcode.medata[v.name] = gcode[v.name]
+        gcode.metadata[v.name] = gcode[v.name]
       }
     })
   }

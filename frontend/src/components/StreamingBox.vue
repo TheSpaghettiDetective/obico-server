@@ -433,6 +433,96 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.webcam_container
+  width: 100%
+  position: relative
+  outline: none
+
+  background-color: rgb(0 0 0)
+
+  .webcam_rotated
+    position: relative
+    width: 100%
+    padding-bottom: 100%
+
+    .webcam_fixed_ratio
+      position: absolute
+      transform: rotate(-90deg)
+      top: 0
+      bottom: 0
+      left: 0
+      right: 0
+
+      &.ratio43
+        .thumbnail
+          img, video
+            height: 18.75%
+            top: initial
+            left: initial
+            bottom: 0px
+            right: 0px
+
+      &.ratio169
+        .thumbnail
+          img, video
+            height: 14.06%
+            left: initial
+            top: initial
+            bottom: 0px
+            right: 0px
+
+      .webcam_fixed_ratio_inner
+        width: 100%
+
+        &.full
+          height: 100%
+
+          &.ontop
+            position: absolute
+            top: 0
+
+  .webcam_unrotated
+    .webcam_fixed_ratio
+      width: 100%
+
+      padding-bottom: 100%
+      &.ratio43
+        padding-bottom: 75%
+
+      &.ratio169
+        padding-bottom: 56.25%
+
+      &.ratio1610
+        padding-bottom: 62.5%
+
+      position: relative
+
+      .webcam_fixed_ratio_inner
+        position: absolute
+        top: 0
+        bottom: 0
+        left: 0
+        right: 0
+
+  img, video
+    object-fit: contain
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1)
+
+  .full
+    img, video
+      width: 100%
+      height: 100%
+      z-index: initial
+
+  .thumbnail
+    img, video
+      width: 25%
+      height: 25%
+      position: absolute
+      left: 0px
+      top: 0px
+      z-index: 1
+
 .centered-element
   position: absolute
   width: 3rem

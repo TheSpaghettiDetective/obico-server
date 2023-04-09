@@ -437,4 +437,27 @@ export default {
     padding: 0
   .modal-footer
     display: none
+
+#new-printer
+  min-height: 25em
+  .new-printer-container
+    display: flex
+    flex-flow: column
+    align-items: center
+    justify-content: center
+    margin-top: 6em
+    a
+      text-align: center
+      border: thin dashed
+      color: var(--color-primary)
+      border-color: var(--color-primary)
+      padding: 4em 3em
+      border-radius: var(--border-radius-lg)
+      &:hover
+        text-decoration: none
+        background-color: var(--color-hover)
+    .icon
+      width: 2rem
+      height: 2rem
+      margin-bottom: 1rem
 </style>

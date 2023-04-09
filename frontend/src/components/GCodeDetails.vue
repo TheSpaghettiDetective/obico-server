@@ -192,7 +192,9 @@ export default {
     },
     shouldShowDataNotice() {
       return (
-        !this.file.analysis && Object.keys(this.file.metadata).length !== 0 && !this.file.deleted
+        !this.file.analysis &&
+        Object.keys(this.file.metadata || {}).length !== 0 &&
+        !this.file.deleted
       )
     },
   },

@@ -158,7 +158,7 @@ export default {
     },
     fileDetailsToShow() {
       let result = []
-      if (!this.file.deleted) {
+      if (!this.file.deleted && this.file.metadata) {
         result = gcodeMetadata
           .filter((item) => this.file.metadata[item.name])
           .map((item) => {

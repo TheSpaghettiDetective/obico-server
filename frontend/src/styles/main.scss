@@ -616,7 +616,7 @@ a {
   color: var(--color-text-primary);
 }
 
-input, input.form-control {
+input, input.form-control, select.form-control {
   background-color: var(--color-input-background);
   border: 1px solid var(--color-input-background);
   border-radius: var(--border-radius-sm);
@@ -959,4 +959,9 @@ div[id^="b-modal-"] {
   &:hover {
     opacity: 0.9;
   }
+}
+
+.btn-warning {
+  background-color: var(--color-warning);
+  color: var(--color-on-warning);
 }

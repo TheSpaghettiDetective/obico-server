@@ -63,7 +63,18 @@
       <loading-placeholder v-if="!printer" />
       <div v-else class="page-container" fluid>
         <div class="widgets-container">
-          <div class="widget"></div>
+          <div class="widget job-control">
+            <div class="widget-title">General</div>
+            <div class="widget-content">
+              <printer-actions-widget
+                :printer="printer"
+                @PrinterActionConnectClicked="onPrinterActionConnectClicked"
+                @PrinterActionPauseClicked="onPrinterActionPauseClicked"
+                @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
+                @PrinterActionCancelClicked="onPrinterActionCancelClicked"
+              />
+            </div>
+          </div>
           <div class="widget"></div>
           <div class="widget"></div>
           <div class="widget"></div>
@@ -91,6 +102,7 @@
 <script>
 import split from 'lodash/split'
 import urls from '@config/server-urls'
+import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer-comm'
@@ -99,6 +111,12 @@ import PageLayout from '@src/components/PageLayout.vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
+import PrinterActionsWidget from '@src/components/printers/PrinterActionsWidget'
+import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
+
+const PAUSE_PRINT = '/pause_print/'
+const RESUME_PRINT = '/resume_print/'
+const CANCEL_PRINT = '/cancel_print/'
 
 const AXIS = {
   x: 'x',
@@ -120,6 +138,7 @@ export default {
     StreamingBox,
     PageLayout,
     CascadedDropdown,
+    PrinterActionsWidget,
   },
 
   data() {
@@ -184,6 +203,96 @@ export default {
   },
 
   methods: {
+    sendPrinterAction(printerId, path, isOctoPrintCommand) {
+      axios.post(urls.printerAction(printerId, path)).then(() => {
+        let toastHtml = ''
+        if (isOctoPrintCommand) {
+          toastHtml +=
+            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+            '<p>It may take a while to be executed.</p>'
+        }
+        if (toastHtml != '') {
+          this.$swal.Toast.fire({
+            icon: 'success',
+            html: toastHtml,
+          })
+        }
+      })
+    },
+    onPrinterActionPauseClicked() {
+      this.$swal.Confirm.fire({
+        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+      }).then((result) => {
+        if (result.value) {
+          this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
+        }
+      })
+    },
+    onPrinterActionResumeClicked(ev) {
+      if (this.printer.alertUnacknowledged()) {
+        this.onNotAFailureClicked(ev, true)
+      } else {
+        this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+      }
+    },
+    onPrinterActionCancelClicked() {
+      this.$swal.Confirm.fire({
+        text: 'Once cancelled, the print can no longer be resumed.',
+      }).then((result) => {
+        if (result.value) {
+          // When it is confirmed
+          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
+        }
+      })
+    },
+    onPrinterActionConnectClicked() {
+      this.printerComm.passThruToPrinter(
+        { func: 'get_connection_options', target: '_printer' },
+        (err, connectionOptions) => {
+          if (err) {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: 'Failed to connect!',
+            })
+          } else {
+            if (connectionOptions.ports.length < 1) {
+              this.$swal.Toast.fire({
+                icon: 'error',
+                title: 'Uh-Oh. No printer is found on the serial port.',
+              })
+            } else {
+              this.$swal
+                .openModalWithComponent(
+                  ConnectPrinter,
+                  {
+                    connectionOptions: connectionOptions,
+                  },
+                  {
+                    confirmButtonText: 'Connect',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                      return {
+                        port: document.getElementById('connect-port').value,
+                        baudrate: document.getElementById('connect-baudrate').value,
+                      }
+                    },
+                  }
+                )
+                .then((result) => {
+                  if (result.value) {
+                    let args = [result.value.port, result.value.baudrate]
+                    this.printerComm.passThruToPrinter({
+                      func: 'connect',
+                      target: '_printer',
+                      args: args,
+                    })
+                  }
+                })
+            }
+          }
+        }
+      )
+    },
     onBitrateUpdated(bitrate) {
       this.currentBitrate = bitrate.value
     },
@@ -278,6 +387,8 @@ export default {
   display: flex
   flex: 1
   padding: 0 15px
+  @media (max-width: 768px)
+    flex: unset
 
 .widgets-container
   flex-shrink: 0
@@ -287,10 +398,14 @@ export default {
     background-color: var(--color-surface-secondary)
     border-radius: var(--border-radius-md)
     margin-bottom: 15px
-    height: 240px
     &:last-of-type
       margin-bottom: 0
-
+    .widget-title
+      padding: 6px 12px
+      font-size: 14px
+      color: var(--color-text-secondary)
+    .widget-content
+      padding: 15px
 .stream-container
   flex: 1
   position: fixed

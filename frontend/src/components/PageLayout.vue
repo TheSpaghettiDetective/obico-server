@@ -37,8 +37,8 @@
           :class="{ active: path.includes('/print_history/') || path.includes('/prints/') }"
         >
           <a href="/print_history/">
-            <i class="fas fa-history"></i>
-            Print History
+            <i class="fa-solid fa-calendar-days"></i>
+            Prints
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/stats/') }">
@@ -52,19 +52,19 @@
         <ul class="list-unstyled m-0">
           <li v-if="isEnt" :class="{ active: path === '/ent_pub/pricing/' }">
             <a href="/ent_pub/pricing/">
-              <i class="fas fa-dollar-sign"></i>
+              <i class="fa-solid fa-money-check-dollar"></i>
               Pricing
             </a>
           </li>
           <li>
             <a href="https://www.obico.io/help/" target="_blank">
-              <i class="fas fa-question"></i>
+              <i class="fa-solid fa-circle-question"></i>
               Help
             </a>
           </li>
           <li>
             <a href="https://obico.io/discord" target="_blank">
-              <i class="fas fa-comments"></i>
+              <i class="fa-brands fa-discord"></i>
               Community
             </a>
           </li>

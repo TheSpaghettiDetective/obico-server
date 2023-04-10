@@ -5,7 +5,7 @@ import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 const defaultSections = {
   ThemePreferences: {
     title: 'Appearance',
-    faIcon: 'fas fa-magic',
+    faIcon: 'fa-solid fa-wand-magic-sparkles',
     importComponent: () => import('@src/components/user-preferences/ThemePreferences'),
     route: routes.ThemePreferences,
     isHidden:

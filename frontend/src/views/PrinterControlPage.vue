@@ -1,7 +1,63 @@
 <template>
   <page-layout>
+    <template #topBarLeft>
+      <div class="back-btn d-none d-md-block">
+        <b-button variant="link" class="ghost" href="/printers/">
+          <i class="fa-solid fa-angle-left"></i>&nbsp; Back
+        </b-button>
+      </div>
+      <span class="divider d-none d-md-block"></span>
+      <div class="printer-name truncated">
+        {{ printer ? printer.name : '' }}
+      </div>
+    </template>
+
     <template #topBarRight>
-      <div class="action-panel"></div>
+      <div v-if="printer" class="action-panel">
+        <!-- Tunnel -->
+        <a
+          :href="`/tunnels/${printer.id}/`"
+          class="btn shadow-none action-btn icon-btn"
+          title="OctoPrint Tunnel"
+        >
+          <svg class="custom-svg-icon">
+            <use href="#svg-octoprint-tunneling" />
+          </svg>
+          <span class="sr-only">OctoPrint Tunnel</span>
+        </a>
+        <!-- Configure -->
+        <a
+          :href="`/printers/${printer.id}/`"
+          class="btn shadow-none action-btn icon-btn"
+          title="Configure"
+        >
+          <i class="fa-solid fa-wrench"></i>
+          <span class="sr-only">Configure</span>
+        </a>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <cascaded-dropdown
+            ref="cascadedDropdown"
+            :menu-options="[
+              {
+                key: 'tunnel',
+                svgIcon: 'svg-octoprint-tunneling',
+                title: 'OctoPrint Tunnel',
+                href: `/tunnels/${printer.id}/`,
+              },
+              {
+                key: 'settings',
+                icon: 'fa-solid fa-wrench',
+                title: 'Configure',
+                href: `/printers/${printer.id}/`,
+              },
+            ]"
+          />
+        </b-dropdown>
+      </div>
     </template>
     <template #content>
       <loading-placeholder v-if="!printer" />
@@ -42,6 +98,7 @@ import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page-context'
+import CascadedDropdown from '@src/components/CascadedDropdown'
 
 const AXIS = {
   x: 'x',
@@ -62,6 +119,7 @@ export default {
   components: {
     StreamingBox,
     PageLayout,
+    CascadedDropdown,
   },
 
   data() {
@@ -198,6 +256,23 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+// Navbar
+.printer-name
+  font-size: 1rem
+  max-width: 360px
+  font-weight: bold
+  @media (max-width: 768px)
+    max-width: 200px
+.divider
+  margin-right: 1rem
+  width: 1px
+  height: 1rem
+  display: inline-block
+  background-color: var(--color-divider)
+.custom-svg-icon
+  height: 1.125rem
+  width: 1.125rem
+
 .page-container
   --widget-width: 480px
   display: flex

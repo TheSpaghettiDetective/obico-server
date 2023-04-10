@@ -13,14 +13,21 @@
           @click.stop.prevent="menuExpanded = option.key"
         >
           <div>
-            <i :class="option.icon"></i>
+            <i v-if="option.icon" :class="option.icon"></i>
+            <svg v-else-if="option.svgIcon" class="custom-svg-icon">
+              <use :href="`#${option.svgIcon}`" />
+            </svg>
             <span>{{ option.title }}</span>
           </div>
           <div><i class="fas fa-chevron-right m-0"></i></div>
         </div>
         <div v-else class="d-flex justify-content-between clickable-area">
           <div :class="option.customMenuOptionClass">
-            <i :class="option.icon"></i>
+            <i v-if="option.icon" :class="option.icon"></i>
+            <svg v-else-if="option.svgIcon" class="custom-svg-icon">
+              <use :href="`#${option.svgIcon}`" />
+            </svg>
+
             <span>{{ option.title }}</span>
           </div>
         </div>
@@ -80,4 +87,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="sass">
+.custom-svg-icon
+  height: 1.125rem
+  width: 1.125rem
+</style>

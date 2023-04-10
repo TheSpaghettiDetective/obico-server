@@ -948,3 +948,15 @@ div[id^="b-modal-"] {
   background: none;
   font-size: 1rem;
 }
+
+
+.btn.ghost {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  outline: none;
+  box-shadow: none;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

@@ -639,7 +639,7 @@ export default {
   padding: 10px 0
 
 .poster-placeholder
-  $size: 150px
+  $size: 100px
   color: rgb(255 255 255 / .2)
   width: $size
   height: $size

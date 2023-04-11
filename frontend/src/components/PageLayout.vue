@@ -119,7 +119,9 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
-        <content-top v-if="layoutSections.contentTop"></content-top>
+        <content-top
+          v-if="layoutSections.contentTop && !path.match('\/printers\/[0-9]+\/control\/')"
+        ></content-top>
         <slot name="content"></slot>
       </div>
     </div>

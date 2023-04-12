@@ -965,3 +965,45 @@ div[id^="b-modal-"] {
   background-color: var(--color-warning);
   color: var(--color-on-warning);
 }
+
+
+.custom-button {
+  padding: 0.5rem 1.5rem;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-width: 1px;
+  flex-shrink: 0;
+}
+
+.print-status-bg {
+  &.finished {
+    background-color: var(--color-success);
+  }
+  &.cancelled {
+    background-color: var(--color-danger);
+  }
+  &.printing {
+    background-color: var(--color-text-primary);
+  }
+  &.paused {
+    background-color: var(--color-warning);
+  }
+}
+
+.print-status-color {
+  &.finished {
+    color: var(--color-success);
+  }
+  &.cancelled {
+    color: var(--color-danger);
+  }
+  &.printing {
+    color: var(--color-text-primary);
+  }
+  &.paused {
+    color: var(--color-warning);
+  }
+}

@@ -3,7 +3,7 @@
     <div
       class="file-header"
       :class="{
-        'mb-4': fileDetailsToShow.length > 0,
+        'mb-4': showDetails && fileDetailsToShow.length > 0,
         compact: compactView,
       }"
     >
@@ -27,10 +27,7 @@
         <div class="title truncated" :title="file.filename">
           {{ file.filename }}
         </div>
-        <div
-          v-if="file.filesize && file.created_at"
-          class="subtitle text-secondary truncated-wrapper"
-        >
+        <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
           <div v-if="file.deleted" class="truncated">
             <span class="text-danger">Deleted</span>
           </div>
@@ -40,38 +37,18 @@
         </div>
       </div>
       <div v-if="showOpenButton && file.id" class="action">
-        <a class="btn btn-secondary" :href="`/g_code_files/cloud/${file.id}/`">Open</a>
+        <b-button
+          :variant="openButtonVariant"
+          class="custom-button"
+          :href="`/g_code_files/cloud/${file.id}/`"
+        >
+          {{ openButtonText }}
+        </b-button>
       </div>
     </div>
-    <!-- First visible lines -->
-    <div v-for="item in fileDetailsToShow.slice(0, numberOfVisibleLines)" :key="item.name">
-      <div class="line">
-        <div class="label">
-          <div class="icon">
-            <i v-if="item.faIcon" :class="item.faIcon"></i>
-            <svg v-else-if="item.svgIcon" width="16" height="16">
-              <use :href="`#${item.svgIcon}`" />
-            </svg>
-          </div>
-          <div class="title">{{ item.title }}</div>
-        </div>
-        <div class="value">
-          <!-- eslint-disable-next-line vue/no-v-html -->
-          <span v-html="item.value"></span>
-        </div>
-      </div>
-    </div>
-    <muted-alert
-      v-if="shouldShowDataNotice && fileDetailsToShow.length <= numberOfVisibleLines"
-      class="mt-2 mb-1"
-    >
-      Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual if
-      some fields are not accurate or missing.
-    </muted-alert>
-
-    <!-- Hidden lines -->
-    <b-collapse id="g-code-details-collapsible" v-model="extraDetailsVisible">
-      <div v-for="item in fileDetailsToShow.slice(numberOfVisibleLines)" :key="item.name">
+    <template v-if="showDetails">
+      <!-- First visible lines -->
+      <div v-for="item in fileDetailsToShow.slice(0, numberOfVisibleLines)" :key="item.name">
         <div class="line">
           <div class="label">
             <div class="icon">
@@ -89,26 +66,54 @@
         </div>
       </div>
       <muted-alert
-        v-if="shouldShowDataNotice && fileDetailsToShow.length > numberOfVisibleLines"
+        v-if="shouldShowDataNotice && fileDetailsToShow.length <= numberOfVisibleLines"
         class="mt-2 mb-1"
       >
         Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
         if some fields are not accurate or missing.
       </muted-alert>
-    </b-collapse>
-    <!-- Collapse toggle -->
-    <button
-      v-if="fileDetailsToShow.length > numberOfVisibleLines"
-      class="collapse-toggle"
-      :class="extraDetailsVisible ? 'opened' : 'closed'"
-      :aria-expanded="extraDetailsVisible ? 'true' : 'false'"
-      aria-controls="g-code-details-collapsible"
-      @click="extraDetailsVisible = !extraDetailsVisible"
-    >
-      <span v-if="extraDetailsVisible">Show less</span>
-      <span v-else>Show more</span>
-      <i class="fas fa-chevron-down" :class="{ rotated: extraDetailsVisible }"></i>
-    </button>
+
+      <!-- Hidden lines -->
+      <b-collapse id="g-code-details-collapsible" v-model="extraDetailsVisible">
+        <div v-for="item in fileDetailsToShow.slice(numberOfVisibleLines)" :key="item.name">
+          <div class="line">
+            <div class="label">
+              <div class="icon">
+                <i v-if="item.faIcon" :class="item.faIcon"></i>
+                <svg v-else-if="item.svgIcon" width="16" height="16">
+                  <use :href="`#${item.svgIcon}`" />
+                </svg>
+              </div>
+              <div class="title">{{ item.title }}</div>
+            </div>
+            <div class="value">
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <span v-html="item.value"></span>
+            </div>
+          </div>
+        </div>
+        <muted-alert
+          v-if="shouldShowDataNotice && fileDetailsToShow.length > numberOfVisibleLines"
+          class="mt-2 mb-1"
+        >
+          Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
+          if some fields are not accurate or missing.
+        </muted-alert>
+      </b-collapse>
+      <!-- Collapse toggle -->
+      <button
+        v-if="fileDetailsToShow.length > numberOfVisibleLines"
+        class="collapse-toggle"
+        :class="extraDetailsVisible ? 'opened' : 'closed'"
+        :aria-expanded="extraDetailsVisible ? 'true' : 'false'"
+        aria-controls="g-code-details-collapsible"
+        @click="extraDetailsVisible = !extraDetailsVisible"
+      >
+        <span v-if="extraDetailsVisible">Show less</span>
+        <span v-else>Show more</span>
+        <i class="fas fa-chevron-down" :class="{ rotated: extraDetailsVisible }"></i>
+      </button>
+    </template>
   </div>
 </template>
 
@@ -134,6 +139,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showDetails: {
+      type: Boolean,
+      default: true,
+    },
     showOpenButton: {
       type: Boolean,
       default: false,
@@ -141,6 +150,14 @@ export default {
     compactView: {
       type: Boolean,
       default: true,
+    },
+    openButtonVariant: {
+      type: String,
+      default: 'outline-secondary',
+    },
+    openButtonText: {
+      type: String,
+      default: 'Open File',
     },
   },
 

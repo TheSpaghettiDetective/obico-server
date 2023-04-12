@@ -38,7 +38,7 @@
         >
           <a href="/print_history/">
             <i class="fa-solid fa-calendar-days"></i>
-            Prints
+            Print History
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/stats/') }">

@@ -3,7 +3,7 @@
     :href="`/prints/${print.id}/${index !== null ? '?index=' + index : ''}`"
     class="print-container"
   >
-    <div class="status-indicator" :class="print.status.key"></div>
+    <div class="status-indicator print-status-bg" :class="print.status.key"></div>
     <div v-if="selectable" class="checkbox-wrapper">
       <b-form-checkbox v-model="isSelected" size="md"></b-form-checkbox>
     </div>
@@ -101,12 +101,6 @@ export default {
 .status-indicator
   flex: 0 0 5px
   margin-right: 1rem
-  &.finished
-    background-color: var(--color-success)
-  &.cancelled
-    background-color: var(--color-danger)
-  &.printing
-    background-color: var(--color-text-primary)
 
 .checkbox-wrapper
   display: flex

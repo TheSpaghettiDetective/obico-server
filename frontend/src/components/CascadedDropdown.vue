@@ -87,7 +87,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .custom-svg-icon
   height: 1.125rem
   width: 1.125rem

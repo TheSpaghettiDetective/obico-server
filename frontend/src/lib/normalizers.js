@@ -14,6 +14,7 @@ export const toMomentOrNull = (datetimeStr) => {
 
 export const PrintStatus = {
   Printing: { key: 'printing', title: 'Printing...' },
+  Paused: { key: 'paused', title: 'Paused' },
   Finished: { key: 'finished', title: 'Finished' },
   Cancelled: { key: 'cancelled', title: 'Cancelled' },
 }
@@ -37,6 +38,8 @@ export const normalizedPrint = (print) => {
     ? print.cancelled_at
       ? PrintStatus.Cancelled
       : PrintStatus.Finished
+    : print.paused_at
+    ? PrintStatus.Paused
     : PrintStatus.Printing
   if (print.printer) {
     print.printer = normalizedPrinter(print.printer)
@@ -142,6 +145,9 @@ export const normalizedPrinter = (newData, oldData) => {
   const printerMixin = {
     createdAt: function () {
       return toMomentOrNull(this.created_at)
+    },
+    progressCompletion: function () {
+      return get(this, 'status.progress.completion', 0)
     },
     isOffline: function () {
       return get(this, 'status', null) === null

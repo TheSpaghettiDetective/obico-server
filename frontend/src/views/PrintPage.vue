@@ -14,7 +14,7 @@
                     :disabled="!prevPrint"
                     @click.prevent="switchToPrint(prevPrint)"
                   >
-                    <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Prev
+                    <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;{{ PrevPrintButtonTitle }}
                   </b-button>
                   <div class="summary truncated-wrapper">
                     <div class="date truncated">
@@ -26,7 +26,7 @@
                     :disabled="!nextPrint"
                     @click.prevent="switchToPrint(nextPrint)"
                   >
-                    Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                    {{ NextPrintButtonTitle }}&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
                   </b-button>
                 </div>
                 <div>
@@ -389,6 +389,12 @@ export default {
   },
 
   computed: {
+    PrevPrintButtonTitle() {
+      return this.sortingValue.direction.key === 'asc' ? 'Older' : 'Newer'
+    },
+    NextPrintButtonTitle() {
+      return this.sortingValue.direction.key === 'asc' ? 'Newer' : 'Older'
+    },
     fileName() {
       return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
     },

@@ -10,6 +10,10 @@ import TabItem from '@theme/TabItem';
 
 Most 3D printing slicers allow the ability to include preview thumbnails that can be shown in the Obico mobile and web app, as well as Mainsail and Klipperscreen.
 
+:::caution
+Obico shows thumbnails only for G-Codes, uploaded directly to the app. If you explore OctoPrint/Klipper files, you won't see file previews.
+:::
+
 Each slicer handles thumbnails differently. Select the slicer you use below to enable thunbnails.
 
 <Tabs groupId="operating-systems">
@@ -64,12 +68,12 @@ Follow the instructions in the [Cura2Moonraker Github Repository](https://github
 
 ![](/img/user-guides/gcode-thumbnails/ideamaker-thumbnails.png)
 
-1. Click *Printer* at the top of the screen, and then click *Printer Settings*. 
+1. Click *Printer* at the top of the screen, and then click *Printer Settings*.
 
 ![](/img/user-guides/gcode-thumbnails/ideamaker-thumbnails-1.png)
 
-2. Click the advanced tab. Check the box titled *Gcode thumbnails for OctoPrint and Mainsail* 
-3. Set the values to `300x300` or similar. Ensure the values are the same. 
+2. Click the advanced tab. Check the box titled *Gcode thumbnails for OctoPrint and Mainsail*
+3. Set the values to `300x300` or similar. Ensure the values are the same.
 
 
 

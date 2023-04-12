@@ -63,22 +63,21 @@
       <loading-placeholder v-if="!printer" />
       <div v-else class="page-container" fluid>
         <div class="widgets-container">
-          <div class="widget job-control">
-            <div class="widget-title">General</div>
-            <div class="widget-content">
-              <printer-actions-widget
-                :printer="printer"
-                @PrinterActionConnectClicked="onPrinterActionConnectClicked"
-                @PrinterActionPauseClicked="onPrinterActionPauseClicked"
-                @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
-                @PrinterActionCancelClicked="onPrinterActionCancelClicked"
-              />
-            </div>
-          </div>
-          <div class="widget"></div>
-          <div class="widget"></div>
-          <div class="widget"></div>
-          <div class="widget"></div>
+          <printer-actions-widget
+            :printer="printer"
+            @PrinterActionConnectClicked="onPrinterActionConnectClicked"
+            @PrinterActionPauseClicked="onPrinterActionPauseClicked"
+            @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
+            @PrinterActionCancelClicked="onPrinterActionCancelClicked"
+          />
+          <print-progress-widget
+            v-if="!printer.isOffline() && !printer.isDisconnected()"
+            ref="printProgressWidget"
+            :printer="printer"
+            :print="lastPrint"
+            :is-print-starting="isPrintStarting"
+            @PrintActionRepeatClicked="onPrintActionRepeatClicked"
+          />
         </div>
         <div class="stream-container">
           <div v-if="currentBitrate" class="streaming-info overlay-info small">
@@ -103,7 +102,7 @@
 import split from 'lodash/split'
 import urls from '@config/server-urls'
 import axios from 'axios'
-import { normalizedPrinter } from '@src/lib/normalizers'
+import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
@@ -111,8 +110,10 @@ import PageLayout from '@src/components/PageLayout.vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import PrinterActionsWidget from '@src/components/printers/PrinterActionsWidget'
+import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget'
+import PrintProgressWidget from '@src/components/printer-control/PrintProgressWidget'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
+import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -139,6 +140,7 @@ export default {
     PageLayout,
     CascadedDropdown,
     PrinterActionsWidget,
+    PrintProgressWidget,
   },
 
   data() {
@@ -151,6 +153,8 @@ export default {
       printer: null,
       webrtc: null,
       currentBitrate: null,
+      lastPrint: null,
+      isPrintStarting: false,
 
       // Current distance and possible options
       jogDistance: 10,
@@ -164,16 +168,29 @@ export default {
         localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
       }
     },
-    printer: function (newValue, oldValue) {
-      if (newValue && oldValue === null) {
-        this.$nextTick(this.resizeStream)
-      }
+    printer: {
+      handler(newValue, oldValue) {
+        if (newValue && oldValue === null) {
+          this.$nextTick(this.resizeStream)
+        }
+
+        if (newValue?.inTransientState() !== oldValue?.inTransientState()) {
+          this.fetchLastPrint()
+        }
+
+        if (newValue?.isActive() !== oldValue?.isActive()) {
+          // workaroud to fetch print after it's update when print is finished
+          setTimeout(this.fetchLastPrint, 3000)
+        }
+      },
+      deep: true,
     },
   },
 
   created() {
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
+    this.fetchLastPrint()
 
     // Get jogDistance from localStorage or set default value
     const storageValue = isLocalStorageSupported()
@@ -188,6 +205,9 @@ export default {
       urls.printerWebSocket(this.printerId),
       (data) => {
         this.printer = normalizedPrinter(data, this.printer)
+        if (this.$refs.printProgressWidget) {
+          this.$refs.printProgressWidget.updateState()
+        }
         if (this.webrtc && !this.webrtc.initialized) {
           this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
           this.printerComm.setWebRTC(this.webrtc)
@@ -203,6 +223,25 @@ export default {
   },
 
   methods: {
+    fetchLastPrint() {
+      axios
+        .get(urls.prints(), {
+          params: {
+            start: 0,
+            limit: 1,
+            filter_by_printer_ids: [this.printerId],
+            sorting: 'date_desc',
+          },
+        })
+        .then((response) => {
+          if (response.data.length) {
+            this.lastPrint = normalizedPrint(response.data[0])
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching last print: ', error)
+        })
+    },
     sendPrinterAction(printerId, path, isOctoPrintCommand) {
       axios.post(urls.printerAction(printerId, path)).then(() => {
         let toastHtml = ''
@@ -243,6 +282,34 @@ export default {
           // When it is confirmed
           this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
         }
+      })
+    },
+    onPrintActionRepeatClicked() {
+      if (!this.lastPrint) {
+        console.error("Can't repeat last print: no last print")
+        return
+      }
+      if (this.lastPrint.g_code_file.deleted) {
+        console.error("Can't repeat last print: G-Code deleted")
+        return
+      }
+      if (!this.lastPrint.g_code_file.url) {
+        // Usually OctoPrint/Klipper files
+        console.error("Can't repeat last print: no G-Code file in storage")
+        return
+      }
+
+      this.isPrintStarting = true
+
+      sendToPrint({
+        printerId: this.printer.id,
+        gcode: this.lastPrint.g_code_file,
+        isCloud: true,
+        isAgentMoonraker: this.printer.isAgentMoonraker(),
+        Swal: this.$swal,
+        onPrinterStatusChanged: () => {
+          this.isPrintStarting = false
+        },
       })
     },
     onPrinterActionConnectClicked() {
@@ -393,19 +460,6 @@ export default {
 .widgets-container
   flex-shrink: 0
   width: var(--widget-width)
-
-  .widget
-    background-color: var(--color-surface-secondary)
-    border-radius: var(--border-radius-md)
-    margin-bottom: 15px
-    &:last-of-type
-      margin-bottom: 0
-    .widget-title
-      padding: 6px 12px
-      font-size: 14px
-      color: var(--color-text-secondary)
-    .widget-content
-      padding: 15px
 .stream-container
   flex: 1
   position: fixed

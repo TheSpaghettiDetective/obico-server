@@ -84,6 +84,9 @@ export default {
       return this.normalizedP * 100
     },
     titleText() {
+      if (!this.isWatching) {
+        return 'Not Watching'
+      }
       switch (this.level()) {
         case 0:
           return 'Looking Good'
@@ -96,6 +99,9 @@ export default {
       }
     },
     titleColor() {
+      if (!this.isWatching) {
+        return 'var(--color-text-secondary)'
+      }
       switch (this.level()) {
         case 0:
           return '#5cb85c'

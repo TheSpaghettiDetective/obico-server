@@ -70,14 +70,20 @@
             @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
             @PrinterActionCancelClicked="onPrinterActionCancelClicked"
           />
-          <print-progress-widget
-            v-if="!printer.isOffline() && !printer.isDisconnected()"
-            ref="printProgressWidget"
-            :printer="printer"
-            :print="lastPrint"
-            :is-print-starting="isPrintStarting"
-            @PrintActionRepeatClicked="onPrintActionRepeatClicked"
-          />
+          <template v-if="!printer.isOffline() && !printer.isDisconnected()">
+            <print-progress-widget
+              ref="printProgressWidget"
+              :printer="printer"
+              :print="lastPrint"
+              :is-print-starting="isPrintStarting"
+              @PrintActionRepeatClicked="onPrintActionRepeatClicked"
+            />
+            <failure-detection-widget
+              v-if="!printer.isOffline() && !printer.isDisconnected()"
+              :printer="printer"
+              @updateSettings="onUpdateSettings"
+            />
+          </template>
         </div>
         <div class="stream-container">
           <div v-if="currentBitrate" class="streaming-info overlay-info small">
@@ -112,6 +118,7 @@ import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget'
 import PrintProgressWidget from '@src/components/printer-control/PrintProgressWidget'
+import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 
@@ -141,6 +148,7 @@ export default {
     CascadedDropdown,
     PrinterActionsWidget,
     PrintProgressWidget,
+    FailureDetectionWidget,
   },
 
   data() {
@@ -220,6 +228,18 @@ export default {
   },
 
   methods: {
+    onUpdateSettings(props) {
+      const { settingName, settingValue } = props
+      this.printer[settingName] = settingValue
+
+      axios
+        .patch(urls.printer(this.printer.id), {
+          [settingName]: settingValue,
+        })
+        .catch((err) => {
+          console.error('Failed to update printer settings: ', err)
+        })
+    },
     fetchLastPrint(props) {
       const defaultProps = { pollForCorrect: false }
       const { pollForCorrect } = props || defaultProps

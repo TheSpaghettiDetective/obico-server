@@ -17,6 +17,7 @@ export default {
 
 <style lang="sass" scoped>
 .widget
+  position: relative
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
   margin-bottom: 15px

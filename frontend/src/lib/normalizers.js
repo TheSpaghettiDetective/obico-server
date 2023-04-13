@@ -13,10 +13,10 @@ export const toMomentOrNull = (datetimeStr) => {
 }
 
 export const PrintStatus = {
-  Printing: { key: 'printing', title: 'Printing...' },
-  Paused: { key: 'paused', title: 'Paused' },
-  Finished: { key: 'finished', title: 'Finished' },
-  Cancelled: { key: 'cancelled', title: 'Cancelled' },
+  Printing: { key: 'printing', title: 'Printing...', isActive: true },
+  Paused: { key: 'paused', title: 'Paused', isActive: true },
+  Finished: { key: 'finished', title: 'Finished', isActive: false },
+  Cancelled: { key: 'cancelled', title: 'Cancelled', isActive: false },
 }
 
 // ––––––––––––––––––––––

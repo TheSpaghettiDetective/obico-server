@@ -155,6 +155,7 @@ export default {
       currentBitrate: null,
       lastPrint: null,
       isPrintStarting: false,
+      lastPrintFetchCounter: 0,
 
       // Current distance and possible options
       jogDistance: 10,
@@ -172,15 +173,11 @@ export default {
       handler(newValue, oldValue) {
         if (newValue && oldValue === null) {
           this.$nextTick(this.resizeStream)
-        }
-
-        if (newValue?.inTransientState() !== oldValue?.inTransientState()) {
-          this.fetchLastPrint()
-        }
-
-        if (newValue?.isActive() !== oldValue?.isActive()) {
-          // workaroud to fetch print after it's update when print is finished
-          setTimeout(this.fetchLastPrint, 3000)
+        } else {
+          if (newValue?.isActive() !== oldValue?.isActive()) {
+            // poll server for the last print with correct status on starting/cancelling/finishing print
+            this.fetchLastPrint({ pollForCorrect: true })
+          }
         }
       },
       deep: true,
@@ -223,7 +220,10 @@ export default {
   },
 
   methods: {
-    fetchLastPrint() {
+    fetchLastPrint(props) {
+      const defaultProps = { pollForCorrect: false }
+      const { pollForCorrect } = props || defaultProps
+
       axios
         .get(urls.prints(), {
           params: {
@@ -236,6 +236,21 @@ export default {
         .then((response) => {
           if (response.data.length) {
             this.lastPrint = normalizedPrint(response.data[0])
+
+            if (pollForCorrect) {
+              let retry = false
+              if (this.printer.isActive() !== this.lastPrint.status.isActive) {
+                retry = true
+              }
+
+              if (retry && this.lastPrintFetchCounter < 5) {
+                const newDelay = (this.lastPrintFetchCounter + 1) * 1000
+                setTimeout(() => this.fetchLastPrint({ pollForCorrect: true }), newDelay)
+                this.lastPrintFetchCounter += 1
+              } else {
+                this.lastPrintFetchCounter = 0
+              }
+            }
           }
         })
         .catch((error) => {

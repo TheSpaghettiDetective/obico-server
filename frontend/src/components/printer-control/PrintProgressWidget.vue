@@ -25,9 +25,17 @@
                   <div class="title">Status</div>
                 </div>
                 <div class="value">
-                  <div class="print-status-color" :class="print.status.key">
+                  <div v-if="isPrinting" :class="printer.isPaused() ? 'text-warning' : ''">
+                    {{ printer.status.state.text }}
+                  </div>
+                  <div
+                    v-else-if="!print.status.isActive"
+                    class="print-status-color"
+                    :class="print.status.key"
+                  >
                     {{ print.status.title }}
                   </div>
+                  <b-spinner v-else small></b-spinner>
                 </div>
               </div>
 
@@ -42,7 +50,7 @@
               <div v-if="isPrinting" class="info-line">
                 <div class="label">
                   <div class="icon"><i class="fas fa-clock"></i></div>
-                  <div class="title">Time remaining</div>
+                  <div class="title">Remaining</div>
                 </div>
                 <div class="value">
                   <span v-if="timeRemaining">{{ timeRemaining }}</span>
@@ -54,7 +62,10 @@
                   <div class="icon"><i class="fas fa-clock"></i></div>
                   <div class="title">Duration</div>
                 </div>
-                <div class="value">{{ print.duration || '-' }}</div>
+                <div v-if="!print.status.isActive" class="value">
+                  {{ print.duration || '-' }}
+                </div>
+                <b-spinner v-else small></b-spinner>
               </div>
             </div>
 

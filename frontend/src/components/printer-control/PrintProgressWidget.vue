@@ -75,9 +75,9 @@
               <div class="progress-bar-wrapper">
                 <div class="progress-bar-inner" :style="`width: ${printProgressPercentage}%`"></div>
               </div>
-              <div class="layer-progress">
+              <div v-if="printMillimetersTotal" class="layer-progress">
                 <span>{{ printProgressMillimeters }}</span>
-                <span v-if="printMillimetersTotal"> / {{ printMillimetersTotal }}</span>
+                <span> / {{ printMillimetersTotal }}</span>
                 <span> mm</span>
               </div>
             </div>
@@ -168,13 +168,19 @@ export default {
     },
   },
 
+  mounted() {
+    if (this.isPrinting) {
+      this.updatePrintProgress()
+    }
+  },
+
   methods: {
-    updateState() {
+    updatePrintProgress() {
       if (!this.isPrinting) return
 
       // Time remaining
       const remaining = this.printer.status?.progress?.printTimeLeft
-      this.timeRemaining = Number.isInteger(remaining) ? humanizedDuration(remaining) : null
+      this.timeRemaining = typeof remaining === 'number' ? humanizedDuration(remaining) : null
 
       // Progress bar
       this.printProgressPercentage = Math.round(this.printer.progressCompletion())

@@ -203,7 +203,7 @@ export default {
       (data) => {
         this.printer = normalizedPrinter(data, this.printer)
         if (this.$refs.printProgressWidget) {
-          this.$refs.printProgressWidget.updateState()
+          this.$refs.printProgressWidget.updatePrintProgress()
         }
         if (this.webrtc && !this.webrtc.initialized) {
           this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)

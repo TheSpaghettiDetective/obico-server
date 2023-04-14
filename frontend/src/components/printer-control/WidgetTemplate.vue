@@ -29,4 +29,6 @@ export default {
     color: var(--color-text-secondary)
   .widget-content
     padding: 1.5rem 2rem 1rem
+    @media (max-width: 510px)
+      padding: 1rem 1rem 0.5rem
 </style>

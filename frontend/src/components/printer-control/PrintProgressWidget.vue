@@ -50,6 +50,17 @@
               <div v-if="isPrinting" class="info-line">
                 <div class="label">
                   <div class="icon"><i class="fas fa-clock"></i></div>
+                  <div class="title">Elapsed</div>
+                </div>
+                <div class="value">
+                  <span v-if="timeElapsed">{{ timeElapsed }}</span>
+                  <b-spinner v-else small></b-spinner>
+                </div>
+              </div>
+
+              <div v-if="isPrinting" class="info-line">
+                <div class="label">
+                  <div class="icon"><i class="fas fa-clock"></i></div>
                   <div class="title">Remaining</div>
                 </div>
                 <div class="value">
@@ -112,6 +123,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration } from '@src/lib/formatters'
@@ -141,6 +153,7 @@ export default {
 
   data() {
     return {
+      timeElapsed: null,
       timeRemaining: null,
       printProgressPercentage: 0,
       printProgressMillimeters: 0,
@@ -177,6 +190,10 @@ export default {
   methods: {
     updatePrintProgress() {
       if (!this.isPrinting) return
+
+      // Time elapsed
+      const elapsed = moment.duration(moment().diff(this.print.started_at))
+      this.timeElapsed = this.print.status.isActive ? humanizedDuration(elapsed.asSeconds()) : null
 
       // Time remaining
       const remaining = this.printer.status?.progress?.printTimeLeft
@@ -253,7 +270,7 @@ export default {
     overflow: hidden
   .progress-bar-inner
     height: 100%
-    border-radius: 999px
+    // border-radius: 999px
     background-color: var(--color-primary)
 .empty-state-text
   text-align: center

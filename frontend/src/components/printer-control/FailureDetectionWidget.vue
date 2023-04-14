@@ -118,7 +118,7 @@ export default {
     notWatchingExplanation() {
       if (this.isWatching) return ''
       let reason = this.printer.not_watching_reason
-      return `Not watching, because ${reason}. `
+      return `${reason}`
     },
   },
 

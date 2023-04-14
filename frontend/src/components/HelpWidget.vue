@@ -255,14 +255,17 @@
 
             <!-- not-watching-reason -->
             <template v-if="id === 'not-watching-reason'">
-              <p>
-                {{ textBefore }}
-                <a
-                  href="https://www.obico.io/docs/user-guides/detective-not-watching/"
-                  target="_blank"
-                  >Learn more <i class="fas fa-external-link-alt"></i
-                ></a>
-              </p>
+              <h3>Why is it not watching?</h3>
+              <ul>
+                <li>
+                  {{ textBefore }}
+                </li>
+              </ul>
+              <a
+                href="https://www.obico.io/docs/user-guides/detective-not-watching/"
+                target="_blank"
+                >Learn more about possible reasons <i class="fas fa-external-link-alt"></i>
+              </a>
             </template>
           </div>
         </div>

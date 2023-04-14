@@ -17,7 +17,7 @@
             Upgrade to Pro
           </a>
         </li>
-        <li v-if="user" :class="{ active: path === '/printers/' }">
+        <li v-if="user" :class="{ active: path.includes('/printers/') }">
           <a href="/printers/">
             <svg width="1.4em" height="1.4em" style="margin-bottom: 5px">
               <use href="#svg-3d-printer" />

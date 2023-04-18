@@ -84,6 +84,7 @@
               @updateSettings="onUpdateSettings"
               @TempEditClicked="onTempEditClicked"
             />
+            <printer-control-widget :printer="printer" :printer-comm="printerComm" />
           </template>
         </div>
         <div class="stream-container">
@@ -115,13 +116,13 @@ import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
-import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget'
 import PrintProgressWidget from '@src/components/printer-control/PrintProgressWidget'
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
+import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
 import TempTargetEditor from '@src/components/printers/TempTargetEditor.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
@@ -130,19 +131,6 @@ import { temperatureDisplayName } from '@src/lib/utils'
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
 const CANCEL_PRINT = '/cancel_print/'
-
-const AXIS = {
-  x: 'x',
-  y: 'y',
-  z: 'z',
-  xy: ['x', 'y'],
-}
-
-const DIRECTIONS = {
-  up: 1,
-  down: -1,
-  home: 0,
-}
 
 export default {
   name: 'PrinterControlPage',
@@ -155,13 +143,11 @@ export default {
     PrintProgressWidget,
     FailureDetectionWidget,
     TemperatureWidget,
+    PrinterControlWidget,
   },
 
   data() {
     return {
-      axis: AXIS,
-      directions: DIRECTIONS,
-
       user: null,
       printerId: null,
       printer: null,
@@ -170,19 +156,10 @@ export default {
       lastPrint: null,
       isPrintStarting: false,
       lastPrintFetchCounter: 0,
-
-      // Current distance and possible options
-      jogDistance: 10,
-      jogDistanceOptions: [0.1, 1, 10, 100],
     }
   },
 
   watch: {
-    jogDistance: function (newValue) {
-      if (isLocalStorageSupported()) {
-        localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
-      }
-    },
     printer: {
       handler(newValue, oldValue) {
         if (newValue && oldValue === null) {
@@ -202,12 +179,6 @@ export default {
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
-
-    // Get jogDistance from localStorage or set default value
-    const storageValue = isLocalStorageSupported()
-      ? localStorage.getItem(`mm-per-step-${this.printerId}`)
-      : null
-    this.jogDistance = storageValue ? storageValue : this.jogDistance
 
     this.webrtc = WebRTCConnection()
 
@@ -311,20 +282,20 @@ export default {
         .then((response) => {
           if (response.data.length) {
             this.lastPrint = normalizedPrint(response.data[0])
+          }
 
-            if (pollForCorrect) {
-              let retry = false
-              if (this.printer.isActive() !== this.lastPrint.status.isActive) {
-                retry = true
-              }
+          if (pollForCorrect) {
+            let retry = false
+            if (!this.lastPrint || this.printer.isActive() !== this.lastPrint.status.isActive) {
+              retry = true
+            }
 
-              if (retry && this.lastPrintFetchCounter < 5) {
-                const newDelay = (this.lastPrintFetchCounter + 1) * 1000
-                setTimeout(() => this.fetchLastPrint({ pollForCorrect: true }), newDelay)
-                this.lastPrintFetchCounter += 1
-              } else {
-                this.lastPrintFetchCounter = 0
-              }
+            if (retry && this.lastPrintFetchCounter < 5) {
+              const newDelay = (this.lastPrintFetchCounter + 1) * 1000
+              setTimeout(() => this.fetchLastPrint({ pollForCorrect: true }), newDelay)
+              this.lastPrintFetchCounter += 1
+            } else {
+              this.lastPrintFetchCounter = 0
             }
           }
         })
@@ -495,28 +466,6 @@ export default {
       streamInner.style.width = innerWidth + 'px'
       streamInner.style.height = innerHeight + 'px'
     },
-    // Control request after button click
-    control(axis, direction) {
-      let args = []
-      let func = 'jog'
-
-      if (direction === this.directions.home) {
-        args.push(axis)
-        func = 'home'
-      } else {
-        args.push({ [axis]: direction * this.jogDistance })
-      }
-
-      const payload = { func: func, target: '_printer', args: args }
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (ret?.error) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: ret.error,
-          })
-        }
-      })
-    },
   },
 }
 </script>
@@ -569,6 +518,7 @@ export default {
 
 @media (max-width: 1024px)
   .page-container
+    box-sizing: content-box
     width: 100%
     max-width: var(--widget-width)
     margin: 0 auto
@@ -592,6 +542,7 @@ export default {
 
 .page-container
   @media (max-width: 510px)
+    box-sizing: border-box
     padding: 0 15px
 
     .widgets-container

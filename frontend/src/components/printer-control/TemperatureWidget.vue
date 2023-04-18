@@ -4,7 +4,7 @@
     <template #content>
       <slot name="content">
         <div class="wrapper">
-          <template v-if="Object.values(temperatures).length >= 2">
+          <template v-if="show">
             <div
               v-for="(item, key) in temperatures"
               :key="key"
@@ -19,11 +19,16 @@
               <div class="title">{{ temperatureDisplayName(key) }}</div>
               <div class="value-wrapper">
                 <div class="value">{{ parseFloat(item.actual).toFixed(1) }} °C</div>
-                <div class="target">/ {{ Math.round(item.target) }} °C</div>
+                <div v-show="item.target" class="target">/ {{ Math.round(item.target) }} °C</div>
               </div>
             </div>
           </template>
-          <b-spinner v-else></b-spinner>
+          <template v-else>
+            <div class="text-center mt-4">
+              <b-spinner></b-spinner>
+              <p class="mt-2">Loading temperature...</p>
+            </div>
+          </template>
         </div>
       </slot>
     </template>
@@ -65,7 +70,7 @@ export default {
       return get(this.printer, 'settings.temp_profiles') != undefined
     },
     show() {
-      return Object.keys(this.temperatures).length > 0
+      return Object.keys(this.temperatures).length >= 2
     },
   },
 

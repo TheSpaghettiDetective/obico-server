@@ -75,8 +75,6 @@
               ref="printProgressWidget"
               :printer="printer"
               :print="lastPrint"
-              :is-print-starting="isPrintStarting"
-              @PrintActionRepeatClicked="onPrintActionRepeatClicked"
             />
             <failure-detection-widget :printer="printer" @updateSettings="onUpdateSettings" />
             <temperature-widget :printer="printer" :printer-comm="printerComm" />
@@ -119,7 +117,6 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
-import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -147,7 +144,6 @@ export default {
       webrtc: null,
       currentBitrate: null,
       lastPrint: null,
-      isPrintStarting: false,
       lastPrintFetchCounter: 0,
     }
   },
@@ -287,34 +283,6 @@ export default {
           // When it is confirmed
           this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
         }
-      })
-    },
-    onPrintActionRepeatClicked() {
-      if (!this.lastPrint) {
-        console.error("Can't repeat last print: no last print")
-        return
-      }
-      if (this.lastPrint.g_code_file.deleted) {
-        console.error("Can't repeat last print: G-Code deleted")
-        return
-      }
-      if (!this.lastPrint.g_code_file.url) {
-        // Usually OctoPrint/Klipper files
-        console.error("Can't repeat last print: no G-Code file in storage")
-        return
-      }
-
-      this.isPrintStarting = true
-
-      sendToPrint({
-        printerId: this.printer.id,
-        gcode: this.lastPrint.g_code_file,
-        isCloud: true,
-        isAgentMoonraker: this.printer.isAgentMoonraker(),
-        Swal: this.$swal,
-        onPrinterStatusChanged: () => {
-          this.isPrintStarting = false
-        },
       })
     },
     onPrinterActionConnectClicked() {

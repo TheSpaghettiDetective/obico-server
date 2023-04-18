@@ -127,6 +127,7 @@ import moment from 'moment'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration } from '@src/lib/formatters'
+import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 
 export default {
   name: 'PrintProgressWidget',
@@ -145,10 +146,6 @@ export default {
       type: Object,
       default: null,
     },
-    isPrintStarting: {
-      type: Boolean,
-      default: false,
-    },
   },
 
   data() {
@@ -158,6 +155,7 @@ export default {
       printProgressPercentage: 0,
       printProgressMillimeters: 0,
       printMillimetersTotal: 0,
+      isPrintStarting: false,
     }
   },
 
@@ -208,8 +206,35 @@ export default {
       )
     },
 
-    onRepeatClicked(ev) {
-      this.$emit('PrintActionRepeatClicked', ev)
+    onRepeatClicked() {
+      if (this.isPrinting) return
+
+      if (!this.print) {
+        console.error("Can't repeat last print: no last print")
+        return
+      }
+      if (this.print.g_code_file.deleted) {
+        console.error("Can't repeat last print: G-Code deleted")
+        return
+      }
+      if (!this.print.g_code_file.url) {
+        // Usually OctoPrint/Klipper files
+        console.error("Can't repeat last print: no G-Code file in storage")
+        return
+      }
+
+      this.isPrintStarting = true
+
+      sendToPrint({
+        printerId: this.printer.id,
+        gcode: this.print.g_code_file,
+        isCloud: true,
+        isAgentMoonraker: this.printer.isAgentMoonraker(),
+        Swal: this.$swal,
+        onPrinterStatusChanged: () => {
+          this.isPrintStarting = false
+        },
+      })
     },
   },
 }

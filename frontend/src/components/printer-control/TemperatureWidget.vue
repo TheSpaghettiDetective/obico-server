@@ -13,9 +13,7 @@
             >
               <div class="icon">
                 <svg>
-                  <use
-                    :href="key.toLowerCase().includes('bed') ? '#svg-bed-temp' : '#svg-tool-temp'"
-                  />
+                  <use :href="key.toLowerCase().includes('bed') ? '#bed-temp' : '#extruder'" />
                 </svg>
               </div>
               <div class="title">{{ temperatureDisplayName(key) }}</div>
@@ -100,10 +98,17 @@ export default {
   align-items: center
   cursor: pointer
 .icon
+  width: 36px
+  height: 36px
+  display: flex
+  align-items: center
+  justify-content: center
+  background-color: var(--color-primary)
+  border-radius: var(--border-radius-sm)
   svg
-    width: 36px
-    height: 36px
-    border-radius: var(--border-radius-sm)
+    width: 20px
+    height: 20px
+    color: var(--color-on-primary)
 .title
 
 .value-wrapper

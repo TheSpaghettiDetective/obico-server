@@ -190,6 +190,7 @@ export default {
   methods: {
     updatePrintProgress() {
       if (!this.isPrinting) return
+      if (!this.print) return
 
       // Time elapsed
       const elapsed = moment.duration(moment().diff(this.print.started_at))

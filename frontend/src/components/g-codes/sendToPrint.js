@@ -94,7 +94,7 @@ export const sendToPrint = (args) => {
 }
 
 const REDIRECT_TIMER = 3000
-export const showRedirectModal = (Swal, onClose) => {
+export const showRedirectModal = (Swal, onClose, printerId) => {
   let timerInterval
   Swal.Prompt.fire({
     html: `
@@ -123,7 +123,7 @@ export const showRedirectModal = (Swal, onClose) => {
     },
   }).then((result) => {
     if (result.isConfirmed || result.dismiss === 'timer') {
-      window.location.assign('/printers/')
+      window.location.assign(`/printers/${printerId}/control/`)
     } else {
       onClose && onClose()
     }

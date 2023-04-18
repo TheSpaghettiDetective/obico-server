@@ -598,7 +598,7 @@ export default {
         Swal: this.$swal,
         onPrinterStatusChanged: () => {
           this.isSending = false
-          showRedirectModal(this.$swal, () => this.fetchData())
+          showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
         },
       })
     },

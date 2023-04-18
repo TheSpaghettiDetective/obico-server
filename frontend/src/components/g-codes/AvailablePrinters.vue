@@ -149,7 +149,7 @@ export default {
         },
         onPrinterStatusChanged: () => {
           if (!this.isPopup) {
-            showRedirectModal(this.$swal, () => this.$emit('refresh'))
+            showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
           }
 
           this.isSending = false

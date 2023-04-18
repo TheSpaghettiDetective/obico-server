@@ -43,11 +43,7 @@
                 <i class="fa-solid fa-circle-play"></i>
                 Resume
               </b-button>
-              <b-button
-                variant="danger"
-                class="custom-button"
-                @click="$emit('PrinterActionCancelClicked', $event)"
-              >
+              <b-button variant="danger" class="custom-button" @click="onCancelClicked">
                 <i class="fa-solid fa-circle-xmark"></i>
                 Cancel
               </b-button>
@@ -168,9 +164,18 @@
 </template>
 
 <script>
+import urls from '@config/server-urls'
+import axios from 'axios'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
+import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
+
+const PAUSE_PRINT = '/pause_print/'
+const RESUME_PRINT = '/resume_print/'
+const CANCEL_PRINT = '/cancel_print/'
+const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
+const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
 export default {
   name: 'PrinterActionsWidget',
@@ -183,6 +188,10 @@ export default {
 
   props: {
     printer: {
+      type: Object,
+      required: true,
+    },
+    printerComm: {
       type: Object,
       required: true,
     },
@@ -218,19 +227,122 @@ export default {
     resetGcodesModal() {
       this.selectedGcodeId = null
     },
-    onPauseToggled(ev) {
-      if (this.printer.isPaused()) {
-        this.$emit('PrinterActionResumeClicked', ev)
-      } else {
-        this.$emit('PrinterActionPauseClicked', ev)
-      }
-    },
-    onConnectClicked(ev) {
-      this.$emit('PrinterActionConnectClicked', ev)
+    onConnectClicked() {
+      this.printerComm.passThruToPrinter(
+        { func: 'get_connection_options', target: '_printer' },
+        (err, connectionOptions) => {
+          if (err) {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: 'Failed to connect!',
+            })
+          } else {
+            if (connectionOptions.ports.length < 1) {
+              this.$swal.Toast.fire({
+                icon: 'error',
+                title: 'Uh-Oh. No printer is found on the serial port.',
+              })
+            } else {
+              this.$swal
+                .openModalWithComponent(
+                  ConnectPrinter,
+                  {
+                    connectionOptions: connectionOptions,
+                  },
+                  {
+                    confirmButtonText: 'Connect',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                      return {
+                        port: document.getElementById('connect-port').value,
+                        baudrate: document.getElementById('connect-baudrate').value,
+                      }
+                    },
+                  }
+                )
+                .then((result) => {
+                  if (result.value) {
+                    let args = [result.value.port, result.value.baudrate]
+                    this.printerComm.passThruToPrinter({
+                      func: 'connect',
+                      target: '_printer',
+                      args: args,
+                    })
+                  }
+                })
+            }
+          }
+        }
+      )
+
       this.connectBtnClicked = true
       setTimeout(() => {
         this.connectBtnClicked = false
       }, 10 * 1000)
+    },
+    onPauseToggled(ev) {
+      if (this.printer.isPaused()) {
+        if (this.printer.alertUnacknowledged()) {
+          this.onNotAFailureClicked(ev, true)
+        } else {
+          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+        }
+      } else {
+        this.$swal.Confirm.fire({
+          html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
+        }).then((result) => {
+          if (result.value) {
+            this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
+          }
+        })
+      }
+    },
+    onCancelClicked() {
+      this.$swal.Confirm.fire({
+        text: 'Once cancelled, the print can no longer be resumed.',
+      }).then((result) => {
+        if (result.value) {
+          // When it is confirmed
+          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
+        }
+      })
+    },
+    onNotAFailureClicked(ev, resumePrint) {
+      this.$swal.Confirm.fire({
+        title: 'Noted!',
+        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.dismiss == 'cancel') {
+          // Hack: So that 2 APIs are not called at the same time
+          setTimeout(() => {
+            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+          }, 1000)
+        }
+        if (resumePrint) {
+          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+        } else {
+          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+        }
+      })
+      ev.preventDefault()
+    },
+    sendPrinterAction(printerId, path, isOctoPrintCommand) {
+      axios.post(urls.printerAction(printerId, path)).then(() => {
+        let toastHtml = ''
+        if (isOctoPrintCommand) {
+          toastHtml +=
+            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+            '<p>It may take a while to be executed.</p>'
+        }
+        if (toastHtml != '') {
+          this.$swal.Toast.fire({
+            icon: 'success',
+            html: toastHtml,
+          })
+        }
+      })
     },
   },
 }

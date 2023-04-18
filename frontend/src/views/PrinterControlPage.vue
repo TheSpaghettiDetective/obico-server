@@ -63,13 +63,7 @@
       <loading-placeholder v-if="!printer" />
       <div v-else class="page-container" fluid>
         <div class="widgets-container">
-          <printer-actions-widget
-            :printer="printer"
-            @PrinterActionConnectClicked="onPrinterActionConnectClicked"
-            @PrinterActionPauseClicked="onPrinterActionPauseClicked"
-            @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
-            @PrinterActionCancelClicked="onPrinterActionCancelClicked"
-          />
+          <printer-actions-widget :printer="printer" :printer-comm="printerComm" />
           <template v-if="!printer.isOffline() && !printer.isDisconnected()">
             <print-progress-widget
               ref="printProgressWidget"
@@ -116,11 +110,6 @@ import PrintProgressWidget from '@src/components/printer-control/PrintProgressWi
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
-import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
-
-const PAUSE_PRINT = '/pause_print/'
-const RESUME_PRINT = '/resume_print/'
-const CANCEL_PRINT = '/cancel_print/'
 
 export default {
   name: 'PrinterControlPage',
@@ -243,96 +232,7 @@ export default {
           console.error('Error fetching last print: ', error)
         })
     },
-    sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios.post(urls.printerAction(printerId, path)).then(() => {
-        let toastHtml = ''
-        if (isOctoPrintCommand) {
-          toastHtml +=
-            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-            '<p>It may take a while to be executed.</p>'
-        }
-        if (toastHtml != '') {
-          this.$swal.Toast.fire({
-            icon: 'success',
-            html: toastHtml,
-          })
-        }
-      })
-    },
-    onPrinterActionPauseClicked() {
-      this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
-      }).then((result) => {
-        if (result.value) {
-          this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionResumeClicked(ev) {
-      if (this.printer.alertUnacknowledged()) {
-        this.onNotAFailureClicked(ev, true)
-      } else {
-        this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
-      }
-    },
-    onPrinterActionCancelClicked() {
-      this.$swal.Confirm.fire({
-        text: 'Once cancelled, the print can no longer be resumed.',
-      }).then((result) => {
-        if (result.value) {
-          // When it is confirmed
-          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionConnectClicked() {
-      this.printerComm.passThruToPrinter(
-        { func: 'get_connection_options', target: '_printer' },
-        (err, connectionOptions) => {
-          if (err) {
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: 'Failed to connect!',
-            })
-          } else {
-            if (connectionOptions.ports.length < 1) {
-              this.$swal.Toast.fire({
-                icon: 'error',
-                title: 'Uh-Oh. No printer is found on the serial port.',
-              })
-            } else {
-              this.$swal
-                .openModalWithComponent(
-                  ConnectPrinter,
-                  {
-                    connectionOptions: connectionOptions,
-                  },
-                  {
-                    confirmButtonText: 'Connect',
-                    showCancelButton: true,
-                    preConfirm: () => {
-                      return {
-                        port: document.getElementById('connect-port').value,
-                        baudrate: document.getElementById('connect-baudrate').value,
-                      }
-                    },
-                  }
-                )
-                .then((result) => {
-                  if (result.value) {
-                    let args = [result.value.port, result.value.baudrate]
-                    this.printerComm.passThruToPrinter({
-                      func: 'connect',
-                      target: '_printer',
-                      args: args,
-                    })
-                  }
-                })
-            }
-          }
-        }
-      )
-    },
+
     onBitrateUpdated(bitrate) {
       this.currentBitrate = bitrate.value
     },

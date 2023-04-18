@@ -3,15 +3,16 @@
     <template #title>General</template>
     <template #content>
       <div class="wrapper">
-        <template v-if="!printer.isOffline() && printer.hasError()">
-          <i class="fa-solid fa-xmark big-icon danger"></i>
-          <p>{{ printer.status.state.error }}</p>
-        </template>
+        <div v-if="!printer.isOffline() && printer.hasError()" class="error-container">
+          <div class="title">{{ printer.agentDisplayName() }} Error</div>
+          <p class="text">
+            {{ printer.status.state.error }}
+          </p>
+        </div>
 
-        <template v-if="printer.inUserInteractionRequired()">
-          <i class="fa-solid fa-triangle-exclamation big-icon warning"></i>
-          <p>Filament Change or User Interaction Required</p>
-        </template>
+        <div v-if="printer.inUserInteractionRequired()" class="warning-container">
+          <p class="text">Filament Change or User Interaction Required</p>
+        </div>
 
         <template v-if="printer.inTransientState()">
           <b-spinner label="Processing..."></b-spinner>
@@ -354,11 +355,30 @@ export default {
   flex-direction: column
   align-items: center
   justify-content: center
-  height: 150px
   padding-bottom: 2rem
   gap: 1rem
   @media (max-width: 480px)
     height: auto
+
+.error-container, .warning-container
+  width: 100%
+  background-color: var(--color-danger)
+  color: var(--color-on-danger)
+  padding: 1rem
+  border-radius: var(--border-radius-sm)
+  text-align: center
+  font-weight: normal
+  margin-bottom: 1rem
+  .title
+    font-size: 1rem
+    font-weight: bold
+    margin-bottom: .5rem
+  p
+    font-size: 1rem
+    font-weight: normal
+  &.warning-container
+    background-color: var(--color-warning)
+    color: var(--color-on-warning)
 
 p
   margin: 0

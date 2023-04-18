@@ -63,14 +63,23 @@
       <loading-placeholder v-if="!printer" />
       <div v-else class="page-container" fluid>
         <div class="widgets-container">
-          <printer-actions-widget :printer="printer" :printer-comm="printerComm" />
+          <printer-actions-widget
+            :printer="printer"
+            :printer-comm="printerComm"
+            @sendPrinterAction="onSendPrinterAction"
+            @notAFailureClicked="onNotAFailureClicked"
+          />
           <template v-if="!printer.isOffline() && !printer.isDisconnected()">
             <print-progress-widget
               ref="printProgressWidget"
               :printer="printer"
               :print="lastPrint"
             />
-            <failure-detection-widget :printer="printer" @updateSettings="onUpdateSettings" />
+            <failure-detection-widget
+              :printer="printer"
+              @updateSettings="onUpdateSettings"
+              @notAFailureClicked="onNotAFailureClicked"
+            />
             <temperature-widget :printer="printer" :printer-comm="printerComm" />
             <printer-control-widget :printer="printer" :printer-comm="printerComm" />
           </template>
@@ -110,6 +119,10 @@ import PrintProgressWidget from '@src/components/printer-control/PrintProgressWi
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
+
+const RESUME_PRINT = '/resume_print/'
+const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
+const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
 export default {
   name: 'PrinterControlPage',
@@ -277,6 +290,43 @@ export default {
 
       streamInner.style.width = innerWidth + 'px'
       streamInner.style.height = innerHeight + 'px'
+    },
+    onNotAFailureClicked(ev, resumePrint) {
+      this.$swal.Confirm.fire({
+        title: 'Noted!',
+        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.dismiss == 'cancel') {
+          // Hack: So that 2 APIs are not called at the same time
+          setTimeout(() => {
+            this.onSendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+          }, 1000)
+        }
+        if (resumePrint) {
+          this.onSendPrinterAction(this.printer.id, RESUME_PRINT, true)
+        } else {
+          this.onSendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+        }
+      })
+      ev.preventDefault()
+    },
+    onSendPrinterAction(printerId, path, isOctoPrintCommand) {
+      axios.post(urls.printerAction(printerId, path)).then(() => {
+        let toastHtml = ''
+        if (isOctoPrintCommand) {
+          toastHtml +=
+            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+            '<p>It may take a while to be executed.</p>'
+        }
+        if (toastHtml != '') {
+          this.$swal.Toast.fire({
+            icon: 'success',
+            html: toastHtml,
+          })
+        }
+      })
     },
   },
 }

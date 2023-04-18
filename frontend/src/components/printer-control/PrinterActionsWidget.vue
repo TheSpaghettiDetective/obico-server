@@ -165,8 +165,6 @@
 </template>
 
 <script>
-import urls from '@config/server-urls'
-import axios from 'axios'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
@@ -175,8 +173,6 @@ import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
 const CANCEL_PRINT = '/cancel_print/'
-const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
-const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
 export default {
   name: 'PrinterActionsWidget',
@@ -284,16 +280,16 @@ export default {
     onPauseToggled(ev) {
       if (this.printer.isPaused()) {
         if (this.printer.alertUnacknowledged()) {
-          this.onNotAFailureClicked(ev, true)
+          this.$emit('notAFailureClicked', ev, true)
         } else {
-          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+          this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT, true)
         }
       } else {
         this.$swal.Confirm.fire({
           html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
         }).then((result) => {
           if (result.value) {
-            this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
+            this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT, true)
           }
         })
       }
@@ -304,44 +300,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           // When it is confirmed
-          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
-        }
-      })
-    },
-    onNotAFailureClicked(ev, resumePrint) {
-      this.$swal.Confirm.fire({
-        title: 'Noted!',
-        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.dismiss == 'cancel') {
-          // Hack: So that 2 APIs are not called at the same time
-          setTimeout(() => {
-            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
-          }, 1000)
-        }
-        if (resumePrint) {
-          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
-        } else {
-          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
-        }
-      })
-      ev.preventDefault()
-    },
-    sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios.post(urls.printerAction(printerId, path)).then(() => {
-        let toastHtml = ''
-        if (isOctoPrintCommand) {
-          toastHtml +=
-            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-            '<p>It may take a while to be executed.</p>'
-        }
-        if (toastHtml != '') {
-          this.$swal.Toast.fire({
-            icon: 'success',
-            html: toastHtml,
-          })
+          this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT, true)
         }
       })
     },

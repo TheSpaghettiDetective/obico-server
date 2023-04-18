@@ -69,6 +69,15 @@
             </div>
           </div>
         </div>
+        <div v-if="printer.alertUnacknowledged()" class="failure-detected-message">
+          <div class="warning-message">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Failure Detected!
+          </div>
+          <b-button variant="outline-warning custom-button" @click="onNotAFailureClicked($event)"
+            >Not a Failure?</b-button
+          >
+        </div>
       </div>
     </template>
   </widget-template>
@@ -143,6 +152,9 @@ export default {
         settingValue: this.pauseOnFailure ? 'PAUSE' : 'NONE',
       })
     },
+    onNotAFailureClicked(event) {
+      this.$emit('notAFailureClicked', event, false)
+    },
   },
 }
 </script>
@@ -202,4 +214,24 @@ export default {
   position: absolute
   top: 8px
   right: 12px
+
+.failure-detected-message
+  margin-top: 1rem
+  display: flex
+  gap: 1.5rem
+  align-items: center
+  @media (max-width: 510px)
+    flex-direction: column
+    gap: 0.75rem
+  .warning-message
+    background-color: var(--color-warning)
+    color: var(--color-on-warning)
+    padding: 0.625rem 1rem
+    border-radius: var(--border-radius-sm)
+    flex: 1
+    text-align: center
+    font-weight: bold
+    font-size: normal
+    i
+      margin-right: 0.25rem
 </style>

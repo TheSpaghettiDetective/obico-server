@@ -79,11 +79,7 @@
               @PrintActionRepeatClicked="onPrintActionRepeatClicked"
             />
             <failure-detection-widget :printer="printer" @updateSettings="onUpdateSettings" />
-            <temperature-widget
-              :printer="printer"
-              @updateSettings="onUpdateSettings"
-              @TempEditClicked="onTempEditClicked"
-            />
+            <temperature-widget :printer="printer" :printer-comm="printerComm" />
             <printer-control-widget :printer="printer" :printer-comm="printerComm" />
           </template>
         </div>
@@ -107,7 +103,6 @@
 </template>
 
 <script>
-import get from 'lodash/get'
 import split from 'lodash/split'
 import urls from '@config/server-urls'
 import axios from 'axios'
@@ -124,9 +119,7 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
-import TempTargetEditor from '@src/components/printers/TempTargetEditor.vue'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import { temperatureDisplayName } from '@src/lib/utils'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -205,55 +198,6 @@ export default {
   },
 
   methods: {
-    onTempEditClicked(key, item) {
-      let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
-      let presets
-      let maxTemp = 350
-
-      if (key.search(/bed|chamber/) > -1) {
-        maxTemp = 140
-      }
-      if (key.search(/tool/) > -1) {
-        // OctoPrint uses 'extruder' for toolx heaters
-        presets = tempProfiles.map((v) => {
-          return { name: v.name, target: v['extruder'] }
-        })
-      } else {
-        presets = tempProfiles.map((v) => {
-          return { name: v.name, target: v[key] }
-        })
-      }
-
-      this.$swal
-        .openModalWithComponent(
-          TempTargetEditor,
-          {
-            presets: presets,
-            maxTemp: maxTemp,
-            curTarget: item.target,
-          },
-          {
-            title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
-            confirmButtonText: 'Confirm',
-            showCancelButton: true,
-            preConfirm: () => {
-              return {
-                target: parseInt(document.getElementById('target-temp').value),
-              }
-            },
-          }
-        )
-        .then((result) => {
-          if (result.value) {
-            let targetTemp = result.value.target
-            this.printerComm.passThruToPrinter({
-              func: 'set_temperature',
-              target: '_printer',
-              args: [key, targetTemp],
-            })
-          }
-        })
-    },
     onUpdateSettings(props) {
       const { settingName, settingValue } = props
       this.printer[settingName] = settingValue

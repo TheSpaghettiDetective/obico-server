@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import TempTargetEditor from '@src/components/printers/TempTargetEditor.vue'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
@@ -49,6 +50,10 @@ export default {
 
   props: {
     printer: {
+      type: Object,
+      required: true,
+    },
+    printerComm: {
       type: Object,
       required: true,
     },
@@ -77,9 +82,57 @@ export default {
   methods: {
     temperatureDisplayName,
     onEditClicked(key, item) {
-      if (this.editable) {
-        this.$emit('TempEditClicked', key, item)
+      if (!this.editable) {
+        return
       }
+
+      let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
+      let presets
+      let maxTemp = 350
+
+      if (key.search(/bed|chamber/) > -1) {
+        maxTemp = 140
+      }
+      if (key.search(/tool/) > -1) {
+        // OctoPrint uses 'extruder' for toolx heaters
+        presets = tempProfiles.map((v) => {
+          return { name: v.name, target: v['extruder'] }
+        })
+      } else {
+        presets = tempProfiles.map((v) => {
+          return { name: v.name, target: v[key] }
+        })
+      }
+
+      this.$swal
+        .openModalWithComponent(
+          TempTargetEditor,
+          {
+            presets: presets,
+            maxTemp: maxTemp,
+            curTarget: item.target,
+          },
+          {
+            title: 'Set ' + temperatureDisplayName(key) + ' Temperature',
+            confirmButtonText: 'Confirm',
+            showCancelButton: true,
+            preConfirm: () => {
+              return {
+                target: parseInt(document.getElementById('target-temp').value),
+              }
+            },
+          }
+        )
+        .then((result) => {
+          if (result.value) {
+            let targetTemp = result.value.target
+            this.printerComm.passThruToPrinter({
+              func: 'set_temperature',
+              target: '_printer',
+              args: [key, targetTemp],
+            })
+          }
+        })
     },
   },
 }

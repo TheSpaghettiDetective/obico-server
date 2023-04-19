@@ -400,11 +400,11 @@ export default {
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
-        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        html: '<p>Do you want to mute failure detection on for this print?</p><small>If you select "Mute", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
+        confirmButtonText: 'Mute',
+        cancelButtonText: 'Cancel',
       }).then((result) => {
-        if (result.dismiss == 'cancel') {
+        if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
             this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)

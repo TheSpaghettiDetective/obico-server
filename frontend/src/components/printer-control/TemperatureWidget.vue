@@ -19,7 +19,7 @@
               <div class="title">{{ temperatureDisplayName(key) }}</div>
               <div class="value-wrapper">
                 <div class="value">{{ parseFloat(item.actual).toFixed(1) }} °C</div>
-                <div v-show="item.target" class="target">/ {{ Math.round(item.target) }} °C</div>
+                <div class="target">/ {{ Math.round(item.target) }} °C</div>
               </div>
             </div>
           </template>

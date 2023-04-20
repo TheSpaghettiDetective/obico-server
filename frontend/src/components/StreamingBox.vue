@@ -85,7 +85,7 @@
 
     <div :class="webcamRotateClass">
       <div class="webcam_fixed_ratio" :class="webcamRatioClass">
-        <div class="webcam_fixed_ratio_inner full">
+        <div class="webcam_fixed_ratio_inner">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
             class="tagged-jpg"
@@ -97,10 +97,10 @@
             <use :href="printerStockImgSrc" />
           </svg>
         </div>
-        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop full">
+        <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
         </div>
-        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop full">
+        <div v-show="showVideo" class="webcam_fixed_ratio_inner ontop">
           <video
             ref="video"
             class="remote-video"
@@ -183,6 +183,10 @@ export default {
     autoplay: {
       type: Boolean,
       required: true,
+    },
+    showBitrate: {
+      type: Boolean,
+      default: true,
     },
   },
 
@@ -280,7 +284,13 @@ export default {
         onSlowLink: this.onSlowLink,
         onTrackMuted: () => (this.trackMuted = true),
         onTrackUnmuted: () => (this.trackMuted = false),
-        onBitrateUpdated: (bitrate) => (this.currentBitrate = bitrate.value),
+        onBitrateUpdated: (bitrate) => {
+          if (this.showBitrate) {
+            this.currentBitrate = bitrate.value
+          } else {
+            this.$emit('onBitrateUpdated', bitrate)
+          }
+        },
         onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
       })
 
@@ -437,7 +447,6 @@ export default {
   width: 100%
   position: relative
   outline: none
-
   background-color: rgb(0 0 0)
 
   .webcam_rotated
@@ -453,33 +462,12 @@ export default {
       left: 0
       right: 0
 
-      &.ratio43
-        .thumbnail
-          img, video
-            height: 18.75%
-            top: initial
-            left: initial
-            bottom: 0px
-            right: 0px
-
-      &.ratio169
-        .thumbnail
-          img, video
-            height: 14.06%
-            left: initial
-            top: initial
-            bottom: 0px
-            right: 0px
-
       .webcam_fixed_ratio_inner
         width: 100%
-
-        &.full
-          height: 100%
-
-          &.ontop
-            position: absolute
-            top: 0
+        height: 100%
+        &.ontop
+          position: absolute
+          top: 0
 
   .webcam_unrotated
     .webcam_fixed_ratio
@@ -507,21 +495,9 @@ export default {
   img, video
     object-fit: contain
     transition: all 0.3s cubic-bezier(.25,.8,.25,1)
-
-  .full
-    img, video
-      width: 100%
-      height: 100%
-      z-index: initial
-
-  .thumbnail
-    img, video
-      width: 25%
-      height: 25%
-      position: absolute
-      left: 0px
-      top: 0px
-      z-index: 1
+    width: 100%
+    height: 100%
+    z-index: initial
 
 .centered-element
   position: absolute
@@ -663,11 +639,15 @@ export default {
   padding: 10px 0
 
 .poster-placeholder
-  $size: 150px
+  $size: 100px
   color: rgb(255 255 255 / .2)
   width: $size
   height: $size
   position: absolute
   left: calc(50% - $size / 2)
   top: calc(50% - $size / 2)
+
+.webcam_rotated
+  .poster-placeholder
+    transform: rotate(90deg)
 </style>

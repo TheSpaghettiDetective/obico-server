@@ -46,6 +46,7 @@
     "vue-video-player": "^5.0.2",
     "vue2-canvas-gauges": "^0.0.0",
     "vue2-dropzone": "^3.6.0",
+    "vuedraggable": "^2.24.3",
     "webrtc-adapter": "^8.0.0"
   },
   "devDependencies": {

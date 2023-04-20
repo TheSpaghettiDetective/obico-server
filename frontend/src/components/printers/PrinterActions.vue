@@ -56,31 +56,19 @@
 
       <div
         v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isActive()"
-        class="col-sm-6"
+        class="col-sm-12"
       >
         <button
           id="start-print"
           type="button"
-          class="btn btn-outline-primary btn-block mt-2"
+          class="btn btn-outline-primary btn-block my-2"
           @click="$emit('PrinterActionStartClicked', $event)"
         >
           <i class="fas fa-star"></i>&nbsp;&nbsp;Start Printing
         </button>
       </div>
-
-      <div
-        v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isActive()"
-        class="col-sm-6"
-      >
-        <button
-          type="button"
-          class="btn btn-outline-secondary btn-block mt-2 mb-2"
-          @click="$emit('PrinterActionControlClicked', $event)"
-        >
-          <i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;Control
-        </button>
-      </div>
     </div>
+
     <div v-if="!printer.isOffline() && printer.isDisconnected()" class="row my-2">
       <div class="col-12 text-center py-2 text-warning">
         <div>Printer not connected at the serial port.</div>
@@ -98,6 +86,7 @@
         </button>
       </div>
     </div>
+
     <div v-if="printer.isOffline()" class="row my-2">
       <div class="col-12 text-center py-3 text-warning">
         <div>

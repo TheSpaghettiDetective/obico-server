@@ -19,12 +19,7 @@
   <title>Obico</title>
 
   <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
-    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
-    crossorigin="anonymous"
-  >
+  <script src="https://kit.fontawesome.com/b12f22490e.js" crossorigin="anonymous"></script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,7 +61,9 @@
   </main>
 
   {% block footer %}
-    {% if not app_platform.platform %}
+    {% if request.path|slice:":10" == '/printers/' and request.path|slice:"-9:" == '/control/' %}
+      {% comment %} Do not render footer for printer control page {% endcomment %}
+    {% elif not app_platform.platform %}
       <footer id="global-footer">
         <div class="container">
           <p>&copy; Obico {% now "Y" %}. All Rights Reserved.</p>

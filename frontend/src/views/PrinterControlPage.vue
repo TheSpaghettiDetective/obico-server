@@ -1,129 +1,108 @@
 <template>
   <page-layout>
+    <template #topBarLeft>
+      <div class="back-btn d-none d-md-block">
+        <b-button variant="link" class="ghost" href="/printers/">
+          <i class="fa-solid fa-angle-left"></i>&nbsp; Back
+        </b-button>
+      </div>
+      <span class="divider d-none d-md-block"></span>
+      <div class="printer-name truncated">
+        {{ printer ? printer.name : '' }}
+      </div>
+    </template>
+
+    <template #topBarRight>
+      <div v-if="printer" class="action-panel">
+        <!-- Tunnel -->
+        <a
+          :href="`/tunnels/${printer.id}/`"
+          class="btn shadow-none action-btn icon-btn"
+          title="OctoPrint Tunnel"
+        >
+          <svg class="custom-svg-icon">
+            <use href="#svg-octoprint-tunneling" />
+          </svg>
+          <span class="sr-only">OctoPrint Tunnel</span>
+        </a>
+        <!-- Configure -->
+        <a
+          :href="`/printers/${printer.id}/`"
+          class="btn shadow-none action-btn icon-btn"
+          title="Configure"
+        >
+          <i class="fa-solid fa-wrench"></i>
+          <span class="sr-only">Configure</span>
+        </a>
+        <!-- Mobile Menu -->
+        <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
+          <template #button-content>
+            <i class="fas fa-ellipsis-v"></i>
+          </template>
+          <cascaded-dropdown
+            ref="cascadedDropdown"
+            :menu-options="[
+              {
+                key: 'tunnel',
+                svgIcon: 'svg-octoprint-tunneling',
+                title: 'OctoPrint Tunnel',
+                href: `/tunnels/${printer.id}/`,
+              },
+              {
+                key: 'settings',
+                icon: 'fa-solid fa-wrench',
+                title: 'Configure',
+                href: `/printers/${printer.id}/`,
+              },
+            ]"
+          />
+        </b-dropdown>
+      </div>
+    </template>
     <template #content>
-      <b-container>
-        <b-row class="justify-content-center">
-          <b-col lg="8">
-            <div v-if="printer" class="printer-card m-0">
-              <div class="card">
-                <div class="card-header">
-                  <div class="title-box">
-                    <div class="printer-name">{{ printer.name }}</div>
-                  </div>
-                </div>
-                <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="user.is_pro" />
-                <div class="card-body" :class="{ overlay: printer.isActive() }">
-                  <div
-                    v-show="printer.isActive()"
-                    class="overlay-top text-center"
-                    style="left: 0; width: 100%; top: 50%; margin-top: -85px"
-                  >
-                    <div>Printer controls are disabled</div>
-                    <div>because the printer is not idle.</div>
-                  </div>
-                  <div class="printer-controls">
-                    <div class="xy-controls">
-                      <button
-                        class="btn"
-                        type="button"
-                        data-axis="y"
-                        data-dir="up"
-                        @click="control(axis.y, directions.up)"
-                      >
-                        <i class="fas fa-angle-up fa-lg"></i>
-                      </button>
-                      <div class="x-controls">
-                        <button
-                          class="btn"
-                          type="button"
-                          data-axis="x"
-                          data-dir="down"
-                          @click="control(axis.x, directions.down)"
-                        >
-                          <i class="fas fa-angle-left fa-lg"></i>
-                        </button>
-                        <button
-                          class="btn"
-                          type="button"
-                          data-axis="xy"
-                          data-dir="home"
-                          @click="control(axis.xy, directions.home)"
-                        >
-                          <i class="fas fa-home fa-lg"></i>
-                        </button>
-                        <button
-                          class="btn"
-                          type="button"
-                          data-axis="x"
-                          data-dir="up"
-                          @click="control(axis.x, directions.up)"
-                        >
-                          <i class="fas fa-angle-right fa-lg"></i>
-                        </button>
-                      </div>
-                      <button
-                        class="btn"
-                        type="button"
-                        data-axis="y"
-                        data-dir="down"
-                        @click="control(axis.y, directions.down)"
-                      >
-                        <i class="fas fa-angle-down fa-lg"></i>
-                      </button>
-                    </div>
-                    <div class="z-controls">
-                      <button
-                        class="btn"
-                        type="button"
-                        data-axis="z"
-                        data-dir="up"
-                        @click="control(axis.z, directions.up)"
-                      >
-                        <i class="fas fa-angle-up fa-lg"></i>
-                      </button>
-                      <button
-                        class="btn"
-                        type="button"
-                        data-axis="z"
-                        data-dir="home"
-                        @click="control(axis.z, directions.home)"
-                      >
-                        <i class="fas fa-home fa-lg"></i>
-                      </button>
-                      <button
-                        class="btn"
-                        type="button"
-                        data-axis="z"
-                        data-dir="down"
-                        @click="control(axis.z, directions.down)"
-                      >
-                        <i class="fas fa-angle-down fa-lg"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <br />
-                  <div class="control-options">
-                    <b-form-group v-slot="{ ariaDescribedby }">
-                      <b-form-radio-group
-                        v-model="jogDistance"
-                        :options="
-                          jogDistanceOptions.map((val) => {
-                            return { text: val + 'mm', value: val }
-                          })
-                        "
-                        name="jogDistance"
-                        button-variant="default"
-                        :aria-describedby="ariaDescribedby"
-                        buttons
-                      ></b-form-radio-group>
-                    </b-form-group>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </b-col>
-        </b-row>
-      </b-container>
+      <loading-placeholder v-if="!printer" />
+      <div v-else class="page-container" fluid>
+        <div class="widgets-container">
+          <template v-for="widget in widgets">
+            <component
+              :is="widget.component"
+              v-if="
+                widget.enabled &&
+                ((!printer.isOffline() && !printer.isDisconnected()) ||
+                  widget.component === 'PrinterActionsWidget')
+              "
+              :key="widget.id"
+              :printer="printer"
+              :printer-comm="printerComm"
+              :print="lastPrint"
+              @sendPrinterAction="onSendPrinterAction"
+              @notAFailureClicked="onNotAFailureClicked"
+              @updateSettings="onUpdateSettings"
+            ></component>
+          </template>
+
+          <div class="reorder-button-wrapper">
+            <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
+              <i class="fa-solid fa-arrows-up-down"></i>
+              Reorder &amp; Hide
+            </b-button>
+          </div>
+        </div>
+        <div class="stream-container">
+          <div v-if="currentBitrate" class="streaming-info overlay-info small">
+            {{ currentBitrate }}
+          </div>
+          <div ref="streamInner" class="stream-inner">
+            <streaming-box
+              :printer="printer"
+              :webrtc="webrtc"
+              :autoplay="user.is_pro"
+              :show-bitrate="false"
+              @onBitrateUpdated="onBitrateUpdated"
+            />
+          </div>
+        </div>
+      </div>
     </template>
   </page-layout>
 </template>
@@ -131,26 +110,55 @@
 <script>
 import split from 'lodash/split'
 import urls from '@config/server-urls'
-import { normalizedPrinter } from '@src/lib/normalizers'
+import axios from 'axios'
+import { isLocalStorageSupported } from '@static/js/utils'
+import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
-import { isLocalStorageSupported } from '@static/js/utils'
 import { user } from '@src/lib/page-context'
+import CascadedDropdown from '@src/components/CascadedDropdown'
+import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget'
+import PrintProgressWidget from '@src/components/printer-control/PrintProgressWidget'
+import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
+import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
+import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
+import ReorderModal from '@src/components/ReorderModal'
 
-const AXIS = {
-  x: 'x',
-  y: 'y',
-  z: 'z',
-  xy: ['x', 'y'],
-}
+const RESUME_PRINT = '/resume_print/'
+const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
+const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
-const DIRECTIONS = {
-  up: 1,
-  down: -1,
-  home: 0,
-}
+// Widgets config (for local storage and params) format: [{id: 1, enabled: true}, ...]
+// WIDGETS below maps IDs to other useful info
+const WIDGETS = [
+  {
+    id: 1,
+    title: 'Print Job Control',
+    component: 'PrinterActionsWidget',
+  },
+  {
+    id: 2,
+    title: 'Last Print / Progress',
+    component: 'PrintProgressWidget',
+  },
+  {
+    id: 3,
+    title: 'Failure Detection',
+    component: 'FailureDetectionWidget',
+  },
+  {
+    id: 4,
+    title: 'Temperature Controls',
+    component: 'TemperatureWidget',
+  },
+  {
+    id: 5,
+    title: 'Printer Controls',
+    component: 'PrinterControlWidget',
+  },
+]
 
 export default {
   name: 'PrinterControlPage',
@@ -158,41 +166,58 @@ export default {
   components: {
     StreamingBox,
     PageLayout,
+    CascadedDropdown,
+    PrinterActionsWidget,
+    PrintProgressWidget,
+    FailureDetectionWidget,
+    TemperatureWidget,
+    PrinterControlWidget,
   },
 
   data() {
     return {
-      axis: AXIS,
-      directions: DIRECTIONS,
-
       user: null,
       printerId: null,
       printer: null,
       webrtc: null,
-
-      // Current distance and possible options
-      jogDistance: 10,
-      jogDistanceOptions: [0.1, 1, 10, 100],
+      currentBitrate: null,
+      lastPrint: null,
+      lastPrintFetchCounter: 0,
+      widgetsConfig: null,
     }
   },
 
+  computed: {
+    widgets() {
+      if (!this.widgetsConfig) return
+      return this.widgetsConfig.map((widget) => {
+        const configItem = WIDGETS.find((w) => w.id === widget.id)
+        return { ...widget, ...configItem }
+      })
+    },
+  },
+
   watch: {
-    jogDistance: function (newValue) {
-      if (isLocalStorageSupported()) {
-        localStorage.setItem(`mm-per-step-${this.printerId}`, newValue)
-      }
+    printer: {
+      handler(newValue, oldValue) {
+        if (newValue && oldValue === null) {
+          this.$nextTick(this.resizeStream)
+          this.widgetsConfig = this.restoreWidgets()
+        } else {
+          if (newValue?.isActive() !== oldValue?.isActive()) {
+            // poll server for the last print with correct status on starting/cancelling/finishing print
+            this.fetchLastPrint({ pollForCorrect: true })
+          }
+        }
+      },
+      deep: true,
     },
   },
 
   created() {
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
-
-    // Get jogDistance from localStorage or set default value
-    const storageValue = isLocalStorageSupported()
-      ? localStorage.getItem(`mm-per-step-${this.printerId}`)
-      : null
-    this.jogDistance = storageValue ? storageValue : this.jogDistance
+    this.fetchLastPrint()
 
     this.webrtc = WebRTCConnection()
 
@@ -210,39 +235,283 @@ export default {
     this.printerComm.connect()
   },
 
-  methods: {
-    // Control request after button click
-    control(axis, direction) {
-      let args = []
-      let func = 'jog'
+  mounted() {
+    document.querySelector('body').style.paddingBottom = 0
+    addEventListener('resize', this.resizeStream)
+  },
 
-      if (direction === this.directions.home) {
-        args.push(axis)
-        func = 'home'
-      } else {
-        args.push({ [axis]: direction * this.jogDistance })
+  methods: {
+    restoreWidgets() {
+      if (isLocalStorageSupported()) {
+        const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
+        if (widgets) {
+          return JSON.parse(widgets)
+        }
       }
 
-      const payload = { func: func, target: '_printer', args: args }
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (ret?.error) {
+      return WIDGETS.map((widget) => {
+        return { id: widget.id, enabled: true }
+      })
+    },
+    onUpdateSettings(props) {
+      const { settingName, settingValue } = props
+      this.printer[settingName] = settingValue
+
+      axios
+        .patch(urls.printer(this.printer.id), {
+          [settingName]: settingValue,
+        })
+        .catch((err) => {
+          console.error('Failed to update printer settings: ', err)
+        })
+    },
+    fetchLastPrint(props) {
+      const defaultProps = { pollForCorrect: false }
+      const { pollForCorrect } = props || defaultProps
+
+      axios
+        .get(urls.prints(), {
+          params: {
+            start: 0,
+            limit: 1,
+            filter_by_printer_ids: [this.printerId],
+            sorting: 'date_desc',
+          },
+        })
+        .then((response) => {
+          if (response.data.length) {
+            this.lastPrint = normalizedPrint(response.data[0])
+          }
+
+          if (pollForCorrect) {
+            let retry = false
+            if (!this.lastPrint || this.printer.isActive() !== this.lastPrint.status.isActive) {
+              retry = true
+            }
+
+            if (retry && this.lastPrintFetchCounter < 5) {
+              const newDelay = (this.lastPrintFetchCounter + 1) * 1000
+              setTimeout(() => this.fetchLastPrint({ pollForCorrect: true }), newDelay)
+              this.lastPrintFetchCounter += 1
+            } else {
+              this.lastPrintFetchCounter = 0
+            }
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching last print: ', error)
+        })
+    },
+
+    onBitrateUpdated(bitrate) {
+      this.currentBitrate = bitrate.value
+    },
+    resizeStream() {
+      const streamInner = this.$refs.streamInner
+      if (!streamInner) return
+      const streamContainer = streamInner.parentElement
+
+      const style = window.getComputedStyle(streamContainer)
+      const position = style.getPropertyValue('position')
+      if (position !== 'fixed') {
+        streamInner.style.width = '100%'
+        streamInner.style.height = 'auto'
+        return
+      }
+
+      const streamContainerRect = streamContainer.getBoundingClientRect()
+      const streamContainerWidth = streamContainerRect.width
+      const streamContainerHeight = streamContainerRect.height
+
+      const isVertical = this.printer.settings.webcam_rotate90
+      const isRatio169 = false
+      const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+
+      // 1. calc width as 100% of parent
+      let innerWidth = streamContainerWidth
+
+      // 2. calc height based on width, ratio and rotation
+      let innerHeight = innerWidth * multiplier
+
+      // 3. if height is bigger than parent height, calc height as 100% of parent
+      if (innerHeight > streamContainerHeight) {
+        innerHeight = streamContainerHeight
+        innerWidth = innerHeight / multiplier
+      }
+
+      // hack to make StreamBox fit container
+      if (isVertical) {
+        innerWidth = Math.max(innerWidth, innerHeight)
+        innerHeight = Math.max(innerWidth, innerHeight)
+      }
+
+      streamInner.style.width = innerWidth + 'px'
+      streamInner.style.height = innerHeight + 'px'
+    },
+    onNotAFailureClicked(ev, resumePrint) {
+      this.$swal.Confirm.fire({
+        title: 'Noted!',
+        html: '<p>Do you want to mute failure detection on for this print?</p><small>If you select "Mute", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
+        confirmButtonText: 'Mute',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Hack: So that 2 APIs are not called at the same time
+          setTimeout(() => {
+            this.onSendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+          }, 1000)
+        }
+        if (resumePrint) {
+          this.onSendPrinterAction(this.printer.id, RESUME_PRINT, true)
+        } else {
+          this.onSendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+        }
+      })
+      ev.preventDefault()
+    },
+    onSendPrinterAction(printerId, path, isOctoPrintCommand) {
+      axios.post(urls.printerAction(printerId, path)).then(() => {
+        let toastHtml = ''
+        if (isOctoPrintCommand) {
+          toastHtml +=
+            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
+            '<p>It may take a while to be executed.</p>'
+        }
+        if (toastHtml != '') {
           this.$swal.Toast.fire({
-            icon: 'error',
-            title: ret.error,
+            icon: 'success',
+            html: toastHtml,
           })
         }
       })
+    },
+    onReorderClicked() {
+      this.$swal
+        .openModalWithComponent(
+          ReorderModal,
+          {
+            items: [...this.widgetsConfig],
+            extraInfo: WIDGETS,
+          },
+          {
+            confirmButtonText: 'Save',
+            showCancelButton: true,
+            preConfirm: () => {
+              return {
+                config: document.getElementById('sorting-config').value,
+              }
+            },
+          }
+        )
+        .then((result) => {
+          if (result.value?.config) {
+            const config = JSON.parse(result.value.config)
+
+            this.widgetsConfig = config
+
+            if (isLocalStorageSupported()) {
+              localStorage.setItem(
+                'printer-control-widgets-' + this.printer.id,
+                JSON.stringify(config)
+              )
+            }
+          }
+        })
     },
   },
 }
 </script>
 
 <style lang="sass" scoped>
-::v-deep .control-options .btn
-  color: var(--color-primary)
-  &.active span
-    color: var(--color-on-primary)
+// Navbar
+.printer-name
+  font-size: 1rem
+  max-width: 360px
+  font-weight: bold
+  @media (max-width: 768px)
+    max-width: 200px
+.divider
+  margin-right: 1rem
+  width: 1px
+  height: 1rem
+  display: inline-block
+  background-color: var(--color-divider)
+.custom-svg-icon
+  height: 1.125rem
+  width: 1.125rem
 
-.card
-  border-radius: var(--border-radius-lg)
+.page-container
+  --widget-width: 480px
+  display: flex
+  flex: 1
+  padding: 0 15px
+  @media (max-width: 768px)
+    flex: unset
+
+.widgets-container
+  flex-shrink: 0
+  width: var(--widget-width)
+.stream-container
+  flex: 1
+  position: fixed
+  right: var(--gap-between-blocks)
+  top: calc(50px + var(--gap-between-blocks))
+  height: calc(100vh - 50px - var(--gap-between-blocks)*2)
+  width: calc(100vw - 100px - var(--gap-between-blocks)*3 - var(--widget-width))
+  background-color: #000
+  border-radius: var(--border-radius-md)
+  overflow: hidden
+
+  .stream-inner
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+
+@media (max-width: 1024px)
+  .page-container
+    box-sizing: content-box
+    width: 100%
+    max-width: var(--widget-width)
+    margin: 0 auto
+    flex-direction: column
+
+  .widgets-container
+    order: 2
+    width: 100%
+
+  .stream-container
+    order: 1
+    position: relative
+    top: 0
+    left: 0
+    width: 100%
+    margin-bottom: 15px
+
+    .stream-inner
+      position: static
+      transform: none
+
+.page-container
+  @media (max-width: 510px)
+    box-sizing: border-box
+    padding: 0 15px
+
+    .widgets-container
+      width: 100%
+
+.streaming-info
+  text-align: right
+.overlay-info
+  position: absolute
+  right: 0
+  top: 0
+  z-index: 99
+  background-color: rgb(0 0 0 / .5)
+  padding: 4px 8px
+
+.reorder-button-wrapper
+  display: flex
+  justify-content: center
+  margin-top: var(--gap-between-blocks)
 </style>

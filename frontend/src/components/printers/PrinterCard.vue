@@ -1,37 +1,42 @@
 <template>
-  <div :id="printer.id" class="col-sm-12 col-lg-6 printer-card">
+  <div :id="printer.id" class="col-sm-12 col-lg-6 col-xl-4 printer-card">
     <div class="card">
       <div class="card-header">
         <div class="title-box">
-          <div v-if="hasCurrentPrintFilename" class="primary-title print-filename">
+          <div class="printer-name">
+            {{ printer.name }}
+          </div>
+          <div v-if="hasCurrentPrintFilename" class="secondary-title print-filename">
             {{ printer.current_print.filename }}
           </div>
-          <div class="printer-name" :class="{ 'secondary-title': hasCurrentPrintFilename }">
-            {{ printer.name }} &nbsp; (<a
-              :href="'#printer-actions-' + printer.id"
-              :class="statusClass"
-              >{{ statusText }}</a
-            >)
-          </div>
+          <div v-else class="secondary-title" :class="statusClass">{{ statusText }}</div>
         </div>
-        <b-dropdown right no-caret toggle-class="icon-btn">
-          <template #button-content>
-            <i class="fas fa-ellipsis-v"></i>
-          </template>
-          <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
-            <i class="fas fa-share-alt fa-lg"></i>Share
-          </b-dropdown-item>
-          <b-dropdown-item :href="octoPrintTunnelUrl()">
-            <svg class="menu-icon">
-              <use href="#svg-octoprint-tunneling" />
-            </svg>
-            {{ printer.agentDisplayName() }} Tunnel
-          </b-dropdown-item>
-          <div class="dropdown-divider"></div>
-          <b-dropdown-item :href="settingsUrl()">
-            <i class="fas fa-wrench fa-lg"></i>Configure
-          </b-dropdown-item>
-        </b-dropdown>
+        <div class="d-flex ml-2">
+          <b-button
+            variant="outline-secondary"
+            :href="`/printers/${printer.id}/control/`"
+            class="px-4 mr-2"
+            >Open</b-button
+          >
+          <b-dropdown right no-caret toggle-class="icon-btn">
+            <template #button-content>
+              <i class="fas fa-ellipsis-v"></i>
+            </template>
+            <b-dropdown-item href="#" @click.prevent="onSharePrinter()">
+              <i class="fas fa-share-alt fa-lg"></i>Share
+            </b-dropdown-item>
+            <b-dropdown-item :href="octoPrintTunnelUrl()">
+              <svg class="menu-icon">
+                <use href="#svg-octoprint-tunneling" />
+              </svg>
+              {{ printer.agentDisplayName() }} Tunnel
+            </b-dropdown-item>
+            <div class="dropdown-divider"></div>
+            <b-dropdown-item :href="settingsUrl()">
+              <i class="fas fa-wrench fa-lg"></i>Configure
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
       </div>
       <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
       <div
@@ -400,11 +405,11 @@ export default {
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
         title: 'Noted!',
-        html: '<p>Do you want to keep failure detection on for this print?</p><small>If you select "No", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        html: '<p>Do you want to mute failure detection on for this print?</p><small>If you select "Mute", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
+        confirmButtonText: 'Mute',
+        cancelButtonText: 'Cancel',
       }).then((result) => {
-        if (result.dismiss == 'cancel') {
+        if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
             this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)

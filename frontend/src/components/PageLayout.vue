@@ -17,7 +17,7 @@
             Upgrade to Pro
           </a>
         </li>
-        <li v-if="user" :class="{ active: path === '/printers/' }">
+        <li v-if="user" :class="{ active: path.includes('/printers/') }">
           <a href="/printers/">
             <svg width="1.4em" height="1.4em" style="margin-bottom: 5px">
               <use href="#svg-3d-printer" />
@@ -37,7 +37,7 @@
           :class="{ active: path.includes('/print_history/') || path.includes('/prints/') }"
         >
           <a href="/print_history/">
-            <i class="fas fa-history"></i>
+            <i class="fa-solid fa-calendar-days"></i>
             Print History
           </a>
         </li>
@@ -52,19 +52,19 @@
         <ul class="list-unstyled m-0">
           <li v-if="isEnt" :class="{ active: path === '/ent_pub/pricing/' }">
             <a href="/ent_pub/pricing/">
-              <i class="fas fa-dollar-sign"></i>
+              <i class="fa-solid fa-money-check-dollar"></i>
               Pricing
             </a>
           </li>
           <li>
             <a href="https://www.obico.io/help/" target="_blank">
-              <i class="fas fa-question"></i>
+              <i class="fa-solid fa-circle-question"></i>
               Help
             </a>
           </li>
           <li>
             <a href="https://obico.io/discord" target="_blank">
-              <i class="fas fa-comments"></i>
+              <i class="fa-brands fa-discord"></i>
               Community
             </a>
           </li>
@@ -119,7 +119,9 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
-        <content-top v-if="layoutSections.contentTop"></content-top>
+        <content-top
+          v-if="layoutSections.contentTop && !path.match('\/printers\/[0-9]+\/control\/')"
+        ></content-top>
         <slot name="content"></slot>
       </div>
     </div>

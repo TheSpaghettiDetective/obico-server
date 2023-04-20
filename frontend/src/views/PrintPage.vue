@@ -36,7 +36,7 @@
                       <div class="title">Status</div>
                     </div>
                     <div class="value">
-                      <div class="print-status" :class="print.status.key">
+                      <div class="print-status-color" :class="print.status.key">
                         {{ print.status.title }}
                       </div>
                     </div>
@@ -604,7 +604,7 @@ export default {
         Swal: this.$swal,
         onPrinterStatusChanged: () => {
           this.isSending = false
-          showRedirectModal(this.$swal, () => this.fetchData())
+          showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
         },
       })
     },
@@ -666,11 +666,6 @@ export default {
         text-align: center
     .value
       font-weight: bold
-    .print-status
-      &.cancelled
-        color: var(--color-danger)
-      &.finished
-        color: var(--color-success)
 
 .printer
   display: flex

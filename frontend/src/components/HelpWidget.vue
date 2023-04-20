@@ -252,6 +252,21 @@
                 ></a>
               </p>
             </template>
+
+            <!-- not-watching-reason -->
+            <template v-if="id === 'not-watching-reason'">
+              <h3>Why is it not watching?</h3>
+              <ul>
+                <li>
+                  {{ textBefore }}
+                </li>
+              </ul>
+              <a
+                href="https://www.obico.io/docs/user-guides/detective-not-watching/"
+                target="_blank"
+                >Learn more about possible reasons <i class="fas fa-external-link-alt"></i>
+              </a>
+            </template>
           </div>
         </div>
       </transition>
@@ -291,6 +306,10 @@ export default {
     showCloseButton: {
       type: Boolean,
       default: false,
+    },
+    textBefore: {
+      type: String,
+      default: '',
     },
   },
 
@@ -375,7 +394,7 @@ export default {
     width: $widget-width
     z-index: 10
     position: absolute
-    box-shadow: 0px 3px 30px rgb(0 0 0 / .5)
+    box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.5)
     border-radius: 12px
     background-color: var(--color-surface-primary)
     display: flex

@@ -12,10 +12,15 @@
         <h5>Presets:</h5>
       </div>
       <div>
-        <b-form-select id="id_preset" v-model="preset" @change="onPresetChanged">
+        <b-form-select
+          id="id_preset"
+          v-model="preset"
+          class="form-control"
+          @change="onPresetChanged"
+        >
           <b-form-select-option
             v-for="pre in allPresets"
-            :key="pre.value"
+            :key="pre.name"
             :value="parseInt(pre.value)"
           >
             {{ pre.title }}
@@ -70,11 +75,15 @@ export default {
   computed: {
     allPresets() {
       let presets = []
-      presets.push({ value: -1, title: 'Manual' })
-      presets.push({ value: 0, title: 'OFF' })
+      presets.push({ value: -1, title: 'Manual', name: 'manual' })
+      presets.push({ value: 0, title: 'OFF', name: 'off' })
       this.presets.forEach((pre) => {
         if (pre.target) {
-          presets.push({ value: pre.target, title: `${pre.name} (${pre.target}°C)` })
+          presets.push({
+            value: pre.target,
+            name: pre.name,
+            title: `${pre.name} (${pre.target}°C)`,
+          })
         }
       })
       return presets

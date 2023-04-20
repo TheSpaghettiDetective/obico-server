@@ -15,7 +15,7 @@
       .title-box {
         display: flex;
         flex-flow: column nowrap;
-        max-width: 90%;
+        overflow: hidden;
 
         .printer-name, .print-filename {
           white-space: nowrap;
@@ -31,8 +31,7 @@
         font-weight: bolder;
       }
       .secondary-title {
-        font-weight: lighter;
-        font-size: 0.8em;
+        font-size: 0.875em;
       }
     }
     .card-body {

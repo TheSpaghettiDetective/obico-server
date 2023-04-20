@@ -179,6 +179,17 @@ export default {
     },
   },
 
+  watch: {
+    printer: {
+      handler: function (newValue, oldValue) {
+        if (this.isPrinting) {
+          this.updatePrintProgress()
+        }
+      },
+      deep: true,
+    },
+  },
+
   mounted() {
     if (this.isPrinting) {
       this.updatePrintProgress()

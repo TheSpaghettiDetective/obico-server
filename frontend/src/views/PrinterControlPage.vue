@@ -63,26 +63,30 @@
       <loading-placeholder v-if="!printer" />
       <div v-else class="page-container" fluid>
         <div class="widgets-container">
-          <printer-actions-widget
-            :printer="printer"
-            :printer-comm="printerComm"
-            @sendPrinterAction="onSendPrinterAction"
-            @notAFailureClicked="onNotAFailureClicked"
-          />
-          <template v-if="!printer.isOffline() && !printer.isDisconnected()">
-            <print-progress-widget
-              ref="printProgressWidget"
+          <template v-for="widget in widgets">
+            <component
+              :is="widget.component"
+              v-if="
+                widget.enabled &&
+                ((!printer.isOffline() && !printer.isDisconnected()) ||
+                  widget.component === 'PrinterActionsWidget')
+              "
+              :key="widget.id"
               :printer="printer"
+              :printer-comm="printerComm"
               :print="lastPrint"
-            />
-            <failure-detection-widget
-              :printer="printer"
-              @updateSettings="onUpdateSettings"
+              @sendPrinterAction="onSendPrinterAction"
               @notAFailureClicked="onNotAFailureClicked"
-            />
-            <temperature-widget :printer="printer" :printer-comm="printerComm" />
-            <printer-control-widget :printer="printer" :printer-comm="printerComm" />
+              @updateSettings="onUpdateSettings"
+            ></component>
           </template>
+
+          <div class="reorder-button-wrapper">
+            <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
+              <i class="fa-solid fa-arrows-up-down"></i>
+              Reorder &amp; Hide
+            </b-button>
+          </div>
         </div>
         <div class="stream-container">
           <div v-if="currentBitrate" class="streaming-info overlay-info small">
@@ -107,6 +111,7 @@
 import split from 'lodash/split'
 import urls from '@config/server-urls'
 import axios from 'axios'
+import { isLocalStorageSupported } from '@static/js/utils'
 import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
 import PrinterComm from '@src/lib/printer-comm'
@@ -119,10 +124,41 @@ import PrintProgressWidget from '@src/components/printer-control/PrintProgressWi
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
+import ReorderModal from '@src/components/ReorderModal'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
 const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
+
+// Widgets config (for local storage and params) format: [{id: 1, enabled: true}, ...]
+// WIDGETS below maps IDs to other useful info
+const WIDGETS = [
+  {
+    id: 1,
+    title: 'Print Job Control',
+    component: 'PrinterActionsWidget',
+  },
+  {
+    id: 2,
+    title: 'Last Print / Progress',
+    component: 'PrintProgressWidget',
+  },
+  {
+    id: 3,
+    title: 'Failure Detection',
+    component: 'FailureDetectionWidget',
+  },
+  {
+    id: 4,
+    title: 'Temperature Controls',
+    component: 'TemperatureWidget',
+  },
+  {
+    id: 5,
+    title: 'Printer Controls',
+    component: 'PrinterControlWidget',
+  },
+]
 
 export default {
   name: 'PrinterControlPage',
@@ -147,7 +183,18 @@ export default {
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
+      widgetsConfig: null,
     }
+  },
+
+  computed: {
+    widgets() {
+      if (!this.widgetsConfig) return
+      return this.widgetsConfig.map((widget) => {
+        const configItem = WIDGETS.find((w) => w.id === widget.id)
+        return { ...widget, ...configItem }
+      })
+    },
   },
 
   watch: {
@@ -155,6 +202,7 @@ export default {
       handler(newValue, oldValue) {
         if (newValue && oldValue === null) {
           this.$nextTick(this.resizeStream)
+          this.widgetsConfig = this.restoreWidgets()
         } else {
           if (newValue?.isActive() !== oldValue?.isActive()) {
             // poll server for the last print with correct status on starting/cancelling/finishing print
@@ -178,9 +226,6 @@ export default {
       urls.printerWebSocket(this.printerId),
       (data) => {
         this.printer = normalizedPrinter(data, this.printer)
-        if (this.$refs.printProgressWidget) {
-          this.$refs.printProgressWidget.updatePrintProgress()
-        }
         if (this.webrtc && !this.webrtc.initialized) {
           this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
           this.printerComm.setWebRTC(this.webrtc)
@@ -196,6 +241,18 @@ export default {
   },
 
   methods: {
+    restoreWidgets() {
+      if (isLocalStorageSupported()) {
+        const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
+        if (widgets) {
+          return JSON.parse(widgets)
+        }
+      }
+
+      return WIDGETS.map((widget) => {
+        return { id: widget.id, enabled: true }
+      })
+    },
     onUpdateSettings(props) {
       const { settingName, settingValue } = props
       this.printer[settingName] = settingValue
@@ -328,6 +385,39 @@ export default {
         }
       })
     },
+    onReorderClicked() {
+      this.$swal
+        .openModalWithComponent(
+          ReorderModal,
+          {
+            items: [...this.widgetsConfig],
+            extraInfo: WIDGETS,
+          },
+          {
+            confirmButtonText: 'Save',
+            showCancelButton: true,
+            preConfirm: () => {
+              return {
+                config: document.getElementById('sorting-config').value,
+              }
+            },
+          }
+        )
+        .then((result) => {
+          if (result.value?.config) {
+            const config = JSON.parse(result.value.config)
+
+            this.widgetsConfig = config
+
+            if (isLocalStorageSupported()) {
+              localStorage.setItem(
+                'printer-control-widgets-' + this.printer.id,
+                JSON.stringify(config)
+              )
+            }
+          }
+        })
+    },
   },
 }
 </script>
@@ -419,4 +509,9 @@ export default {
   z-index: 99
   background-color: rgb(0 0 0 / .5)
   padding: 4px 8px
+
+.reorder-button-wrapper
+  display: flex
+  justify-content: center
+  margin-top: var(--gap-between-blocks)
 </style>

@@ -1,6 +1,6 @@
 <template>
   <widget-template>
-    <template #title>General</template>
+    <template #title>Print Job Control</template>
     <template #content>
       <div class="wrapper">
         <div v-if="!printer.isOffline() && printer.hasError()" class="error-container">

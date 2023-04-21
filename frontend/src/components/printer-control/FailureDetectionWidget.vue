@@ -11,7 +11,7 @@
         ></help-widget>
         <div class="header">
           <div class="dh-balance">
-            <div class="label-line">Detective</div>
+            <div class="label-line">AI Detection</div>
             <div class="label-line">Hours Balance</div>
             <div class="value-wrapper">
               <svg><use href="#svg-hour-glass" /></svg>

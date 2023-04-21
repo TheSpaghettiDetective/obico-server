@@ -2,7 +2,7 @@
   <page-layout>
     <template #topBarRight>
       <div class="action-panel">
-        <!-- Detective Hours -->
+        <!-- Detection Hours -->
         <a
           v-if="isEnt"
           href="/user_preferences/dh/"

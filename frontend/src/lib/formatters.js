@@ -49,3 +49,13 @@ export const humanizedFilamentUsage = (millimeters) => {
   const twoDecimal = Math.round(meters * 100) / 100
   return `${twoDecimal}m`
 }
+
+export const timeFromNow = (duration) => {
+  if (!duration) {
+    return '-'
+  }
+  const timeFormat = 'h:mm a (MMM D, YYYY)'
+  let date = new Date()
+  let newDate = new Date(date.setSeconds(date.getSeconds() + duration))
+  return moment(newDate).format(timeFormat)
+}

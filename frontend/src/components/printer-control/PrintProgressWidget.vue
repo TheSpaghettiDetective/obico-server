@@ -19,65 +19,78 @@
 
           <div class="content">
             <div class="details">
-              <div class="info-line">
-                <div class="label">
-                  <div class="icon"><i class="fas fa-info"></i></div>
-                  <div class="title">Status</div>
+              <!-- Last Print -->
+              <template v-if="!isPrinting">
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fas fa-info"></i></div>
+                    <div class="title">Status</div>
+                  </div>
+                  <div class="value">
+                    <div
+                      v-if="!print.status.isActive"
+                      class="print-status-color"
+                      :class="print.status.key"
+                    >
+                      {{ print.status.title }}
+                    </div>
+                    <!-- Show loader if printer not marked as ended yet -->
+                    <b-spinner v-else small></b-spinner>
+                  </div>
                 </div>
-                <div class="value">
-                  <div v-if="isPrinting" :class="printer.isPaused() ? 'text-warning' : ''">
-                    {{ printer.status.state.text }}
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="far fa-clock"></i></div>
+                    <div class="title">Started</div>
                   </div>
-                  <div
-                    v-else-if="!print.status.isActive"
-                    class="print-status-color"
-                    :class="print.status.key"
-                  >
-                    {{ print.status.title }}
+                  <div class="value">{{ print.started_at.format('MMM D, YYYY h:mm a') }}</div>
+                </div>
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="title">Duration</div>
                   </div>
+                  <div v-if="!print.status.isActive" class="value">
+                    {{ print.duration || '-' }}
+                  </div>
+                  <!-- Show loader if printer not marked as ended yet -->
                   <b-spinner v-else small></b-spinner>
                 </div>
-              </div>
+              </template>
 
-              <div class="info-line">
-                <div class="label">
-                  <div class="icon"><i class="far fa-clock"></i></div>
-                  <div class="title">Started</div>
+              <!-- Print Progress -->
+              <template v-else>
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="title">Elapsed</div>
+                  </div>
+                  <div class="value">
+                    <span v-if="timeElapsed">{{ timeElapsed }}</span>
+                    <b-spinner v-else small></b-spinner>
+                  </div>
                 </div>
-                <div class="value">{{ print.started_at.format('MMM D, YYYY h:mm a') }}</div>
-              </div>
-
-              <div v-if="isPrinting" class="info-line">
-                <div class="label">
-                  <div class="icon"><i class="fas fa-clock"></i></div>
-                  <div class="title">Elapsed</div>
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fa-solid fa-stopwatch"></i></div>
+                    <div class="title">Remaining</div>
+                  </div>
+                  <div class="value">
+                    <span v-if="timeRemaining">{{ timeRemaining }}</span>
+                    <span v-else class="text-secondary">Calculating...</span>
+                  </div>
                 </div>
-                <div class="value">
-                  <span v-if="timeElapsed">{{ timeElapsed }}</span>
-                  <b-spinner v-else small></b-spinner>
+                <div class="info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fa-solid fa-flag-checkered"></i></div>
+                    <div class="title">Finishing At</div>
+                  </div>
+                  <div class="value">
+                    <span v-if="finishingAt">{{ finishingAt }}</span>
+                    <span v-else class="text-secondary">Calculating...</span>
+                  </div>
                 </div>
-              </div>
-
-              <div v-if="isPrinting" class="info-line">
-                <div class="label">
-                  <div class="icon"><i class="fas fa-clock"></i></div>
-                  <div class="title">Remaining</div>
-                </div>
-                <div class="value">
-                  <span v-if="timeRemaining">{{ timeRemaining }}</span>
-                  <span v-else class="text-secondary">Calculating...</span>
-                </div>
-              </div>
-              <div v-else class="info-line">
-                <div class="label">
-                  <div class="icon"><i class="fas fa-clock"></i></div>
-                  <div class="title">Duration</div>
-                </div>
-                <div v-if="!print.status.isActive" class="value">
-                  {{ print.duration || '-' }}
-                </div>
-                <b-spinner v-else small></b-spinner>
-              </div>
+              </template>
             </div>
 
             <div v-if="isPrinting" class="progress-container">
@@ -126,7 +139,7 @@
 import moment from 'moment'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import { humanizedDuration } from '@src/lib/formatters'
+import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
 
 export default {
@@ -152,6 +165,7 @@ export default {
     return {
       timeElapsed: null,
       timeRemaining: null,
+      finishingAt: null,
       printProgressPercentage: 0,
       printProgressMillimeters: 0,
       printMillimetersTotal: 0,
@@ -205,9 +219,10 @@ export default {
       const elapsed = moment.duration(moment().diff(this.print.started_at))
       this.timeElapsed = this.print.status.isActive ? humanizedDuration(elapsed.asSeconds()) : null
 
-      // Time remaining
+      // Time remaining and finishing at
       const remaining = this.printer.status?.progress?.printTimeLeft
       this.timeRemaining = typeof remaining === 'number' ? humanizedDuration(remaining) : null
+      this.finishingAt = typeof remaining === 'number' ? timeFromNow(remaining) : null
 
       // Progress bar
       this.printProgressPercentage = Math.round(this.printer.progressCompletion())
@@ -275,7 +290,6 @@ export default {
     gap: .5rem
     line-height: 1.1
     .icon
-      opacity: .5
       width: 1rem
       text-align: center
   .value

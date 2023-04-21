@@ -216,14 +216,26 @@ export default {
     },
   },
 
+  watch: {
+    file() {
+      this.updateThumbnail()
+    },
+  },
+
   created() {
-    let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
-    for (const t of thumbnailProps) {
-      if (this.file[t]) {
-        this.thumbnailUrl = this.file[t]
-        break
+    this.updateThumbnail()
+  },
+
+  methods: {
+    updateThumbnail() {
+      let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
+      for (const t of thumbnailProps) {
+        if (this.file[t]) {
+          this.thumbnailUrl = this.file[t]
+          break
+        }
       }
-    }
+    },
   },
 }
 </script>

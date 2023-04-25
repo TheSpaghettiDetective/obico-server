@@ -105,7 +105,7 @@ export default {
           html: `
           <h4 class="text-center p-2">
             <svg class="menu-icon" style="height: 1.1em; width: 1em; margin-right: 0.75em;">
-              <use href="#svg-octoprint-tunneling" />
+              <use href="#svg-tunnel" />
             </svg>
             OctoPrint Secure Tunnel
           </h4>

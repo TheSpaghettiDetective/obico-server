@@ -21,7 +21,7 @@
           title="OctoPrint Tunnel"
         >
           <svg class="custom-svg-icon">
-            <use href="#svg-octoprint-tunneling" />
+            <use href="#svg-tunnel" />
           </svg>
           <span class="sr-only">OctoPrint Tunnel</span>
         </a>
@@ -44,7 +44,7 @@
             :menu-options="[
               {
                 key: 'tunnel',
-                svgIcon: 'svg-octoprint-tunneling',
+                svgIcon: 'svg-tunnel',
                 title: 'OctoPrint Tunnel',
                 href: `/tunnels/${printer.id}/`,
               },
@@ -437,8 +437,8 @@ export default {
   display: inline-block
   background-color: var(--color-divider)
 .custom-svg-icon
-  height: 1.125rem
-  width: 1.125rem
+  height: 1.25rem
+  width: 1.25rem
 
 .page-container
   --widget-width: 480px

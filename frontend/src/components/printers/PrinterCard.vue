@@ -27,7 +27,7 @@
             </b-dropdown-item>
             <b-dropdown-item :href="octoPrintTunnelUrl()">
               <svg class="menu-icon">
-                <use href="#svg-octoprint-tunneling" />
+                <use href="#svg-tunnel" />
               </svg>
               {{ printer.agentDisplayName() }} Tunnel
             </b-dropdown-item>

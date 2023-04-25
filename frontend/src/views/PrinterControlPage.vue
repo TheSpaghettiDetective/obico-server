@@ -324,7 +324,7 @@ export default {
       const streamContainerHeight = streamContainerRect.height
 
       const isVertical = this.printer.settings.webcam_rotate90
-      const isRatio169 = false
+      const isRatio169 = this.printer.settings.ratio169
       const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
 
       // 1. calc width as 100% of parent

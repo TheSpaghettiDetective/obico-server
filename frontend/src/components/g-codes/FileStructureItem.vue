@@ -6,15 +6,18 @@
   >
     <div class="item-info">
       <div class="filename">
-        <span v-if="!isFolder">
-          <i class="fas fa-file-code mr-1"></i>
-          {{ item.filename }}
-        </span>
-        <span v-else-if="isFolder">
-          <i class="fas fa-folder mr-1"></i>
-          {{ item.name }}
-        </span>
+        <div class="thumbnail-wrapper" :class="{ folder: isFolder }">
+          <div v-if="thumbnailUrl" class="thumbnail">
+            <img :src="thumbnailUrl" />
+          </div>
+          <div v-else class="placeholder">
+            <i v-if="isFolder" class="fas fa-folder"></i>
+            <i v-else class="fas fa-file-code"></i>
+          </div>
+        </div>
+        <span class="truncated">{{ isFolder ? item.name : item.filename }}</span>
       </div>
+
       <div class="size">
         <span v-if="!isFolder">{{ item.filesize }}</span>
         <span v-if="isFolder">{{ item.numItems }} item(s)</span>
@@ -94,6 +97,10 @@ export default {
     },
   },
 
+  data: () => ({
+    thumbnailUrl: null,
+  }),
+
   computed: {
     isFolder() {
       return !this.item.filename
@@ -101,6 +108,16 @@ export default {
     isDisabled() {
       return (this.isMoveModal && !this.isFolder) || this.disabled
     },
+  },
+
+  created() {
+    let thumbnailProps = ['thumbnail3_url', 'thumbnail2_url', 'thumbnail1_url']
+    for (const t of thumbnailProps) {
+      if (this.item[t]) {
+        this.thumbnailUrl = this.item[t]
+        break
+      }
+    }
   },
 }
 </script>
@@ -141,7 +158,29 @@ export default {
         color: var(--color-text-primary)
         margin-left: 0
 
+    .thumbnail-wrapper
+      flex: 0 0 32px
+      display: inline-flex
+      height: 32px
+      border-radius: var(--border-radius-xs)
+      background-color: var(--color-surface-primary)
+      overflow: hidden
+      align-items: center
+      justify-content: center
+      .thumbnail
+        width: 100%
+        height: 100%
+        img
+          height: 100%
+          width: auto
+      &.folder
+        background: none
+        font-size: 1.25em
+
     .filename
+      display: flex
+      align-items: center
+      gap: .5rem
       text-overflow: ellipsis
       overflow: hidden
       white-space: nowrap

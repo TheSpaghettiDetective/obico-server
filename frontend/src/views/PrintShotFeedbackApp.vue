@@ -1,7 +1,7 @@
 <template>
   <page-layout>
     <template #content>
-      <b-container>
+      <b-container class="feedback-container">
         <b-row class="justify-content-center">
           <b-col lg="8">
             <div class="card">
@@ -159,4 +159,8 @@ export default {
 
 .page-unvisited
   color: var(--color-divider)
+
+.feedback-container
+  padding-left: 30px
+  padding-right: 30px
 </style>

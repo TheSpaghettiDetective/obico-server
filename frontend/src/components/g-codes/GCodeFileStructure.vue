@@ -8,7 +8,7 @@
       <div class="text">Name</div>
       <div class="text">Size</div>
       <div class="text">Created</div>
-      <div v-if="isCloud" class="text">Last printed</div>
+      <div v-if="isCloud" class="text">Last Printed</div>
     </div>
 
     <div class="gcode-items-wrapper">

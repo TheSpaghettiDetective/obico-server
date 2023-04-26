@@ -19,7 +19,7 @@
           <div><i class="fas fa-chevron-right m-0"></i></div>
         </div>
         <div v-else class="d-flex justify-content-between clickable-area">
-          <div>
+          <div :class="option.customMenuOptionClass">
             <i :class="option.icon"></i>
             <span>{{ option.title }}</span>
           </div>

@@ -903,11 +903,11 @@ div[id^="b-modal-"] {
   }
 }
 
-.overflow-truncated-parent {
+.truncated-wrapper {
   overflow: hidden;
 }
 
-.overflow-truncated {
+.truncated {
   max-width: 100%;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -942,4 +942,9 @@ div[id^="b-modal-"] {
   padding-bottom: .25rem;
   border-bottom: 1px solid var(--color-divider);
   margin-bottom: 1.5rem;
+}
+
+.swal2-checkbox {
+  background: none;
+  font-size: 1rem;
 }

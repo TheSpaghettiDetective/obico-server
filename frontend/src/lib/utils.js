@@ -2,7 +2,6 @@ import startCase from 'lodash/startCase'
 import toLower from 'lodash/toLower'
 import replace from 'lodash/replace'
 import get from 'lodash/get'
-import moment from 'moment'
 
 export function getNotificationSettingKey(notificationChannel, key) {
   return `${notificationChannel.channelName}_${key}`
@@ -53,35 +52,6 @@ export const downloadFile = (url, filename) => {
       aElement.click()
       URL.revokeObjectURL(href)
     })
-}
-
-export const getHumanizedDuration = (timeInSeconds) => {
-  const components = getDurationComponents(timeInSeconds)
-
-  let result = ''
-  if (components.days !== 0) {
-    result += `${components.days}d `
-  }
-  if (components.days !== 0 || components.hours !== 0) {
-    result += `${components.hours}h `
-  }
-
-  result += `${components.minutes}m`
-  return result
-}
-
-export const getDurationComponents = (timeInSeconds) => {
-  const duration = moment.duration(timeInSeconds, 'seconds')
-
-  const days = Math.floor(duration.asDays())
-  const hours = duration.hours()
-  const minutes = duration.minutes()
-
-  return {
-    days,
-    hours,
-    minutes,
-  }
 }
 
 export const formatWithoutDaylightSavingShift = (date, formattingStr) => {

@@ -1,6 +1,35 @@
 <template>
   <page-layout>
     <!-- Top bar -->
+    <template #topBarLeft>
+      <div class="actions-with-selected-desktop">
+        <b-form-group class="m-0">
+          <b-form-checkbox v-model="allPrintsSelected" size="md"></b-form-checkbox>
+        </b-form-group>
+        <div>
+          <span
+            v-show="!selectedPrintIds.size"
+            class="label"
+            @click="allPrintsSelected = !allPrintsSelected"
+            >Select all</span
+          >
+          <b-dropdown
+            v-show="selectedPrintIds.size"
+            toggle-class="btn btn-sm actions-with-selected-btn"
+          >
+            <template #button-content>
+              {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
+              selected
+            </template>
+            <b-dropdown-item>
+              <div class="text-danger" @click="onDeleteBtnClick">
+                <i class="far fa-trash-alt"></i>Delete
+              </div>
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </div>
+    </template>
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
@@ -127,7 +156,7 @@
                       Filament used
                     </help-widget>
                   </div>
-                  <div class="value">{{ totalFilamentUsedFormatted }}m</div>
+                  <div class="value">{{ totalFilamentUsedFormatted }}</div>
                 </div>
               </div>
               <div class="btn-wrapper">
@@ -146,7 +175,10 @@
               :key="print.id"
               :print="print"
               :index="index"
+              :selectable="true"
+              :selected="selectedPrintIds.has(print.id)"
               class="print-item"
+              @selectedChanged="onSelectedChanged"
             ></print-history-item>
             <mugen-scroll :handler="fetchMoreData" :should-handle="!loading">
               <loading-placeholder v-if="!noMoreData" />
@@ -182,7 +214,7 @@ import DatePickerModal from '@src/components/DatePickerModal.vue'
 import { user } from '@src/lib/page-context'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { queryBuilder } from '@src/lib/time-period-filtering'
-import { getHumanizedDuration } from '@src/lib/utils'
+import { humanizedFilamentUsage, humanizedDuration } from '@src/lib/formatters'
 
 const PAGE_SIZE = 24
 
@@ -261,6 +293,7 @@ export default {
       loading: false,
       noMoreData: false,
       user: null,
+      selectedPrintIds: new Set(),
 
       // Sorting
       sortingLocalStoragePrefix: SortingLocalStoragePrefix,
@@ -276,14 +309,10 @@ export default {
 
   computed: {
     totalPrintTimeFormatted() {
-      return getHumanizedDuration(this.stats.total_print_time)
+      return humanizedDuration(this.stats.total_print_time)
     },
     totalFilamentUsedFormatted() {
-      if (!this.stats?.total_filament_used) {
-        return 0
-      }
-      const meters = this.stats.total_filament_used / 1000
-      return Math.round(meters * 100) / 100
+      return humanizedFilamentUsage(this.stats?.total_filament_used)
     },
     defaultStatsParams() {
       return {
@@ -292,6 +321,20 @@ export default {
         to_date: moment(new Date()).format(DateParamFormat),
         group_by: 'year',
       }
+    },
+    allPrintsSelected: {
+      get: function () {
+        return this.selectedPrintIds.size >= this.prints.length && this.prints.length !== 0
+      },
+      set: function (newValue) {
+        if (newValue) {
+          this.selectedPrintIds = new Set(this.prints.map((p) => p.id))
+        } else {
+          if (this.selectedPrintIds.size === this.prints.length) {
+            this.selectedPrintIds = new Set()
+          }
+        }
+      },
     },
   },
 
@@ -357,6 +400,7 @@ export default {
     },
     refetchData() {
       this.prints = []
+      this.selectedPrintIds = new Set()
       this.noMoreData = false
       this.fetchMoreData()
       this.fetchStats()
@@ -379,6 +423,32 @@ export default {
         .catch((error) => {
           this._showErrorPopup(error)
         })
+    },
+
+    onSelectedChanged(printId, selected) {
+      const selectedPrintIdsClone = new Set(this.selectedPrintIds)
+      if (selected) {
+        selectedPrintIdsClone.add(printId)
+      } else {
+        selectedPrintIdsClone.delete(printId)
+      }
+      this.selectedPrintIds = selectedPrintIdsClone
+    },
+    onDeleteBtnClick() {
+      const selectedPrintIds = Array.from(this.selectedPrintIds)
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((userAction) => {
+        if (userAction.isConfirmed) {
+          axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
+            this.refetchData()
+          })
+        }
+      })
     },
 
     // Sorting
@@ -530,4 +600,12 @@ export default {
     .btn
       margin-top: 1rem
       font-size: .875rem
+
+.actions-with-selected-desktop
+  display: flex
+  align-items: center
+  .label
+    cursor: pointer
+  ::v-deep .custom-checkbox .custom-control-label::before
+    border-radius: var(--border-radius-xs)
 </style>

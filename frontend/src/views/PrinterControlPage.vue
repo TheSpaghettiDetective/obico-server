@@ -184,6 +184,9 @@ export default {
       lastPrint: null,
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
+
+      webcamRatioFixed: false,
+      isRealRatio169: undefined,
     }
   },
 
@@ -323,9 +326,28 @@ export default {
       const streamContainerWidth = streamContainerRect.width
       const streamContainerHeight = streamContainerRect.height
 
+      if (!this.webcamRatioFixed) {
+        this.webcamRatioFixed = true
+        const backupImg = document.querySelector('#backup-stream-image')
+        backupImg.onload = () => {
+          const width = backupImg.naturalWidth
+          const height = backupImg.naturalHeight
+          if (width !== 0 && height !== 0) {
+            this.isRealRatio169 = width / height === 16 / 9
+            this.resizeStream()
+            backupImg.onload = undefined
+          }
+        }
+      }
+
       const isVertical = this.printer.settings.webcam_rotate90
       const isRatio169 = this.printer.settings.ratio169
-      const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+      const isRatioWrong = this.isRealRatio169 !== undefined && this.isRealRatio169 !== isRatio169
+
+      let multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+      if (isRatioWrong) {
+        multiplier = !isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
+      }
 
       // 1. calc width as 100% of parent
       let innerWidth = streamContainerWidth
@@ -343,6 +365,10 @@ export default {
       if (isVertical) {
         innerWidth = Math.max(innerWidth, innerHeight)
         innerHeight = Math.max(innerWidth, innerHeight)
+      } else if (isRatioWrong) {
+        innerWidth = isRatio169 ? innerWidth * 1.333 : 1
+        // TODO: test fact 16:9 but OctoPrint 4:3
+        // TODO: test klipper for different use-cases
       }
 
       streamInner.style.width = innerWidth + 'px'
@@ -487,6 +513,7 @@ export default {
     left: 0
     width: 100%
     margin-bottom: 15px
+    flex: 0
 
     .stream-inner
       position: static

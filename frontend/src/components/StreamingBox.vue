@@ -88,7 +88,6 @@
         <div class="webcam_fixed_ratio_inner">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
-            id="backup-stream-image"
             class="tagged-jpg"
             :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             :src="taggedSrc"

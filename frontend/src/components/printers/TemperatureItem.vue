@@ -1,9 +1,10 @@
 <template>
   <div class="temp-item" :class="{ editable: editable }" @click="onEditClicked(tempKey, tempItem)">
     <div class="icon">
-      <svg>
-        <use :href="tempKey.toLowerCase().includes('bed') ? '#bed-temp' : '#extruder'" />
+      <svg v-if="heaterIcon">
+        <use :href="heaterIcon" />
       </svg>
+      <i v-else class="fa-solid fa-temperature-empty"></i>
     </div>
     <div class="title">{{ temperatureDisplayName(tempKey) }}</div>
     <div class="value-wrapper">
@@ -31,6 +32,18 @@ export default {
     editable: {
       type: Boolean,
       required: true,
+    },
+  },
+
+  computed: {
+    heaterIcon() {
+      const key = this.tempKey.toLowerCase()
+      if (key.includes('bed')) {
+        return '#bed-temp'
+      } else if (key.includes('tool') || key.includes('extruder')) {
+        return '#extruder'
+      }
+      return null
     },
   },
 
@@ -62,6 +75,7 @@ export default {
   align-items: center
   justify-content: center
   background-color: var(--color-primary)
+  color: var(--color-on-primary)
   border-radius: var(--border-radius-sm)
   svg
     width: 20px

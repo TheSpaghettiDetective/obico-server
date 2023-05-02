@@ -68,7 +68,7 @@ export default {
       return get(this.printer, 'settings.temp_profiles') != undefined
     },
     show() {
-      return Object.keys(this.temperatures).length >= 2
+      return Object.keys(this.temperatures).length > 0
     },
   },
 

@@ -60,7 +60,6 @@
                 </svg>
                 Obico Files
               </b-button>
-              <div class="divider"></div>
               <b-button
                 v-if="printer.isAgentMoonraker()"
                 variant="outline-secondary"
@@ -353,15 +352,6 @@ p
   @media (max-width: 480px)
     flex-direction: column
     gap: 1rem
-
-.divider
-  flex: 0 0 1px
-  height: 2rem
-  background-color: var(--color-divider)
-  margin: 0 .375rem
-  transform: rotate(15deg)
-  @media (max-width: 480px)
-    display: none
 
 .big-icon
   font-size: 2rem

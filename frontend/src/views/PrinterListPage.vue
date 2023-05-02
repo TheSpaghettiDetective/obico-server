@@ -11,7 +11,7 @@
           :title="dhBadgeNum + ' AI Detection Hours'"
         >
           <svg class="custom-svg-icon">
-            <use href="#svg-detective-hours"></use>
+            <use href="#svg-hour-glass"></use>
           </svg>
           <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
           <span class="sr-only">AI Detection Hours</span>
@@ -272,7 +272,7 @@ export default {
       if (this.isEnt) {
         options.unshift({
           key: 'dh',
-          icon: 'fas fa-hourglass-half',
+          svgIcon: 'svg-hour-glass',
           title: `${this.dhBadgeNum} AI Detection Hours`,
           href: '/user_preferences/dh/',
         })
@@ -421,8 +421,8 @@ export default {
     font-size: .625rem
 
 .custom-svg-icon
-  height: 1.125rem
-  width: 1.125rem
+  height: 1.3rem
+  width: 1.3rem
 
 ::v-deep .dropdown-item .clickable-area
   margin: -0.25rem -1.5rem

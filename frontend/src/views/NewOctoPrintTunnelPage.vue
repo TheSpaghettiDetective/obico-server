@@ -377,7 +377,7 @@ export default {
           })
           .catch((error) => {
             this.performingAuthRequest = false
-            this._showErrorPopup(error)
+            this._logError(error)
           })
       }
     },

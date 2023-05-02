@@ -583,7 +583,7 @@ export default {
           }
         })
         .catch((error) => {
-          this._showErrorPopup(error, 'Failed to update printer')
+          this._logError(error, 'Failed to update printer')
         })
     },
 

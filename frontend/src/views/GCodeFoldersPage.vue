@@ -618,7 +618,7 @@ export default {
           folders = response?.results || []
         } catch (error) {
           this.loading = false
-          this._showErrorPopup(error)
+          this._logError(error)
         }
 
         this.currentFoldersPage += 1
@@ -647,7 +647,7 @@ export default {
           files = response?.results || []
         } catch (error) {
           this.loading = false
-          this._showErrorPopup(error)
+          this._logError(error)
         }
 
         this.currentFilesPage += 1

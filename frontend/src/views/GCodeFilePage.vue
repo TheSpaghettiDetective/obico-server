@@ -243,7 +243,7 @@ export default {
           this.printer = normalizedPrinter(response.data)
         })
         .catch((error) => {
-          this._showErrorPopup(error, 'Host printer for this gcode not found')
+          this._logError(error, 'Host printer for this gcode not found')
         })
     },
     async fetchLocalFile() {

@@ -559,7 +559,7 @@ export default {
           this.printer = normalizedPrinter(response.data, this.printer)
         })
         .catch((error) => {
-          this._showErrorPopup(error, 'Printer not found')
+          this._logError(error, 'Printer not found')
         })
     },
 

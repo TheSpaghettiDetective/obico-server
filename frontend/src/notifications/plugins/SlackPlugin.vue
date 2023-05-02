@@ -140,8 +140,15 @@ export default {
         })
         .catch((err) => {
           event.target.classList.remove('disabled')
-          this.$emit('errorAlert', 'Slack test failed')
-          console.log(err)
+          this.$swal.Reject.fire({
+            title: 'Error',
+            html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
+              Slack test failed
+            </p>`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Close',
+          })
         })
     },
   },

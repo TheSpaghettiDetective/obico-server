@@ -156,7 +156,7 @@ export default {
           folders = response?.results || []
         } catch (error) {
           this.loading = false
-          this._showErrorPopup(error)
+          this._logError(error)
         }
 
         this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -178,7 +178,7 @@ export default {
           files = response?.results || []
         } catch (error) {
           this.loading = false
-          this._showErrorPopup(error)
+          this._logError(error)
         }
 
         this.files.push(...files.map((data) => normalizedGcode(data)))
@@ -222,7 +222,7 @@ export default {
         const url = this.itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
         await axios.patch(url, `parent_folder=${this.parentFolder || ''}`)
       } catch (error) {
-        this._showErrorPopup(error)
+        this._logError(error, 'Failed to move item')
       }
 
       this.patchLoading = false

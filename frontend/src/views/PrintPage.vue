@@ -491,7 +491,7 @@ export default {
             // Printer could be old and deleted from account (404 error)
             this.printer = null
             if (error?.response?.status !== 404) {
-              this._showErrorPopup(error, 'Failed to fetch printer information')
+              this._logError(error, 'Failed to fetch printer information')
             }
           })
           .finally(() => {
@@ -569,7 +569,7 @@ export default {
           this.nextPrint = next ? { id: next.id, index: this.currentIndex + 1 } : null
         })
         .catch((error) => {
-          this._showErrorPopup(error)
+          this._logError(error)
         })
     },
     onTimeUpdate(currentPosition) {

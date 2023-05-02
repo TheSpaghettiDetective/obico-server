@@ -127,8 +127,15 @@ export default {
         })
         .catch((err) => {
           event.target.classList.remove('disabled')
-          this.$emit('errorAlert', 'Telegram test failed')
-          console.log(err)
+          this.$swal.Reject.fire({
+            title: 'Error',
+            html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
+              Telegram test failed
+            </p>`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Close',
+          })
         })
     },
   },

@@ -511,7 +511,7 @@ export default {
               this.setSavingStatus('printer_name', false)
             })
             .catch((error) => {
-              this._showErrorPopup(error, 'Failed to update printer name')
+              this._logError(error, 'Failed to update printer name')
             })
         }, delayInfo['delay'])
         return

@@ -78,7 +78,7 @@
       <active-filter-notice :filter-values="filterValues" @onShowAllClicked="resetFilters" />
 
       <!-- Printers list -->
-      <b-container fluid class="printer-list-page">
+      <b-container class="printer-list-page">
         <b-row v-if="loading">
           <b-col class="text-center">
             <b-spinner class="my-5" label="Loading..."></b-spinner>

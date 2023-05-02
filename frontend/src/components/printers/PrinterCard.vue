@@ -1,5 +1,5 @@
 <template>
-  <div :id="printer.id" class="col-sm-12 col-lg-6 col-xl-4 printer-card">
+  <div :id="printer.id" class="col-sm-12 col-lg-6 printer-card">
     <div class="card">
       <div class="card-header">
         <div class="title-box">

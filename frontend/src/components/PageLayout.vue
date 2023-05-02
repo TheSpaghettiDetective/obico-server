@@ -94,7 +94,7 @@
     <div
       class="content-wrapper"
       :class="{
-        'hide-top-nav': !$slots.topBarLeft && !$slots.topBarRight,
+        'hide-top-nav': (!$slots.topBarLeft && !$slots.topBarRight) || hideHeader,
       }"
     >
       <!-- Top-bar -->
@@ -164,6 +164,10 @@ export default {
   computed: {
     inMobileWebView() {
       return inMobileWebView()
+    },
+    hideHeader() {
+      const urlParams = new URLSearchParams(window.location.search)
+      return urlParams.get('hide_header') === 'true'
     },
     hasUnseenPrinterEvents() {
       return get(this.user, 'unseen_printer_events', 0) > 0

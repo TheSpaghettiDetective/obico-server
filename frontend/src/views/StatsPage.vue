@@ -379,6 +379,26 @@ export default {
   },
 
   methods: {
+    getFilterParamsFromQuery() {
+      let params = {}
+      const urlParams = new URLSearchParams(window.location.search)
+      const entries = urlParams.entries()
+
+      // frontend params without need to be passed to backend
+      const excludeParams = ['hide_header']
+
+      for (const [key, value] of entries) {
+        if (key && value && !excludeParams.includes(key)) {
+          params[key] = params[key]
+            ? Array.isArray(params[key])
+              ? [...params[key], value]
+              : [params[key], value]
+            : value
+        }
+      }
+      console.log('params', params)
+      return params
+    },
     fetchStats() {
       axios
         .get(urls.stats(), {
@@ -390,6 +410,7 @@ export default {
               this.filterValues,
               this.customFilterParamsBuilder
             ),
+            ...this.getFilterParamsFromQuery(),
           },
         })
         .then((response) => {
@@ -487,7 +508,7 @@ export default {
       const xLabelsFormat = xAxisLabelsFormat(
         chartWidth,
         barsCount,
-        this.getActiveGrouping(),
+        this.getFilterParamsFromQuery()?.group_by || this.getActiveGrouping(),
         getDateTo(this.filterValues.timePeriod, this.getCurrentDateTo())
       )
 

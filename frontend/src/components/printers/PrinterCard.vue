@@ -16,8 +16,8 @@
             variant="outline-secondary"
             :href="`/printers/${printer.id}/control/`"
             class="px-4 mr-2"
-            >Open</b-button
-          >
+            >Open&nbsp;Details
+          </b-button>
           <b-dropdown right no-caret toggle-class="icon-btn">
             <template #button-content>
               <i class="fas fa-ellipsis-v"></i>

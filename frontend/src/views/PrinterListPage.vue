@@ -92,7 +92,6 @@
             :is-pro-account="user.is_pro"
             class="printer-card-wrapper"
             @PrinterUpdated="onPrinterUpdated"
-            @printModalOpened="() => (targetPrinter = printer)"
           ></printer-card>
         </b-row>
         <div class="row justify-content-center">
@@ -124,44 +123,6 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-modal id="b-modal-gcodes" size="lg" @hidden="resetGcodesModal">
-        <g-code-file-page
-          v-if="selectedGcodeId"
-          :is-popup="true"
-          :target-printer-id="targetPrinter.id"
-          :route-params="{
-            fileId: selectedGcodeId,
-            printerId: selectedPrinterId,
-          }"
-          :on-close="() => $bvModal.hide('b-modal-gcodes')"
-          @goBack="
-            () => {
-              selectedGcodeId = null
-              scrollToTop()
-            }
-          "
-        />
-        <g-code-folders-page
-          v-else
-          :is-popup="true"
-          :target-printer="targetPrinter"
-          :route-params="{
-            printerId: selectedPrinterId,
-            parentFolder: null,
-          }"
-          :on-close="() => $bvModal.hide('b-modal-gcodes')"
-          :saved-path="savedPath"
-          scroll-container-id="b-modal-gcodes"
-          @openFile="
-            (fileId, printerId, path) => {
-              selectedGcodeId = fileId
-              selectedPrinterId = printerId
-              savedPath = path
-              scrollToTop()
-            }
-          "
-        />
-      </b-modal>
     </template>
   </page-layout>
 </template>
@@ -178,8 +139,6 @@ import CascadedDropdown from '@src/components/CascadedDropdown'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import FilteringDropdown, { restoreFilterValues } from '@src/components/FilteringDropdown'
 import { user, settings } from '@src/lib/page-context'
-import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
-import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
 
 const SortingLocalStoragePrefix = 'printersSorting'
@@ -214,8 +173,6 @@ export default {
     CascadedDropdown,
     SortingDropdown,
     FilteringDropdown,
-    GCodeFoldersPage,
-    GCodeFilePage,
     ActiveFilterNotice,
   },
 
@@ -226,12 +183,6 @@ export default {
       loading: true,
       isEnt: false,
       archivedPrinterNum: 0,
-
-      // gcodes browse modal
-      selectedGcodeId: null,
-      selectedPrinterId: null,
-      targetPrinter: null,
-      savedPath: [null],
 
       // Sorting
       sortingLocalStoragePrefix: SortingLocalStoragePrefix,
@@ -353,9 +304,6 @@ export default {
 
       this.$set(this.printers, index, printer)
     },
-    scrollToTop() {
-      document.querySelector('#b-modal-gcodes').scrollTo(0, 0)
-    },
     resetGcodesModal() {
       this.selectedGcodeId = null
       this.targetPrinter = null
@@ -430,7 +378,7 @@ export default {
 </style>
 
 <style lang="sass">
-#b-modal-gcodes
+div[id^=b-modal-gcodes]
   .modal-header
     display: none
   .modal-body

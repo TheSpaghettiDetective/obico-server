@@ -73,17 +73,13 @@
         <failure-detection-gauge :normalized-p="printer.normalized_p" :is-watching="isWatching" />
         <hr />
       </div>
-      <printer-actions
-        :id="'printer-actions-' + printer.id"
-        class="container"
-        v-bind="actionsProps"
-        @PrinterActionPauseClicked="onPrinterActionPauseClicked"
-        @PrinterActionResumeClicked="onPrinterActionResumeClicked($event)"
-        @PrinterActionCancelClicked="onPrinterActionCancelClicked"
-        @PrinterActionConnectClicked="onPrinterActionConnectClicked"
-        @PrinterActionStartClicked="onPrinterActionStartClicked"
-        @PrinterActionControlClicked="onPrinterActionControlClicked"
-      ></printer-actions>
+      <printer-actions-widget
+        :inside-card="true"
+        :printer="printer"
+        :printer-comm="printerComm"
+        @notAFailureClicked="onNotAFailureClicked"
+        @sendPrinterAction="sendPrinterAction"
+      />
       <div class="info-section settings">
         <button
           type="button"
@@ -234,15 +230,12 @@ import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
 import StreamingBox from '@src/components/StreamingBox'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import DurationBlock from './DurationBlock.vue'
-import PrinterActions from './PrinterActions.vue'
 import StatusTemp from './StatusTemp.vue'
-import ConnectPrinter from './ConnectPrinter.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import SharePrinter from './SharePrinter.vue'
+import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget.vue'
 
-const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
-const CANCEL_PRINT = '/cancel_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
 const ACK_ALERT_NOT_FAILED = '/acknowledge_alert/?alert_overwrite=NOT_FAILED'
 
@@ -257,12 +250,13 @@ const LocalPrefNames = {
 
 export default {
   name: 'PrinterCard',
+
   components: {
     StreamingBox,
     FailureDetectionGauge,
     DurationBlock,
-    PrinterActions,
     StatusTemp,
+    PrinterActionsWidget,
   },
 
   props: {
@@ -436,88 +430,6 @@ export default {
       this.printer.action_on_failure = this.printer.action_on_failure == 'PAUSE' ? 'NONE' : 'PAUSE'
       this.updatePrinter(this.printer)
     },
-    onPrinterActionPauseClicked() {
-      this.$swal.Confirm.fire({
-        html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
-      }).then((result) => {
-        if (result.value) {
-          this.sendPrinterAction(this.printer.id, PAUSE_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionResumeClicked(ev) {
-      if (this.printer.alertUnacknowledged()) {
-        this.onNotAFailureClicked(ev, true)
-      } else {
-        this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
-      }
-    },
-    onPrinterActionCancelClicked() {
-      this.$swal.Confirm.fire({
-        text: 'Once cancelled, the print can no longer be resumed.',
-      }).then((result) => {
-        if (result.value) {
-          // When it is confirmed
-          this.sendPrinterAction(this.printer.id, CANCEL_PRINT, true)
-        }
-      })
-    },
-    onPrinterActionConnectClicked() {
-      this.printerComm.passThruToPrinter(
-        { func: 'get_connection_options', target: '_printer' },
-        (err, connectionOptions) => {
-          if (err) {
-            this.$swal.Toast.fire({
-              icon: 'error',
-              title: 'Failed to connect!',
-            })
-          } else {
-            if (connectionOptions.ports.length < 1) {
-              this.$swal.Toast.fire({
-                icon: 'error',
-                title: 'Uh-Oh. No printer is found on the serial port.',
-              })
-            } else {
-              this.$swal
-                .openModalWithComponent(
-                  ConnectPrinter,
-                  {
-                    connectionOptions: connectionOptions,
-                  },
-                  {
-                    confirmButtonText: 'Connect',
-                    showCancelButton: true,
-                    preConfirm: () => {
-                      return {
-                        port: document.getElementById('connect-port').value,
-                        baudrate: document.getElementById('connect-baudrate').value,
-                      }
-                    },
-                  }
-                )
-                .then((result) => {
-                  if (result.value) {
-                    let args = [result.value.port, result.value.baudrate]
-                    this.printerComm.passThruToPrinter({
-                      func: 'connect',
-                      target: '_printer',
-                      args: args,
-                    })
-                  }
-                })
-            }
-          }
-        }
-      )
-    },
-    onPrinterActionStartClicked() {
-      this.$emit('printModalOpened')
-      this.$bvModal.show('b-modal-gcodes')
-    },
-
-    onPrinterActionControlClicked() {
-      window.location = urls.printerControl(this.printer.id)
-    },
 
     onTempEditClicked(key, item) {
       let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
@@ -654,6 +566,9 @@ export default {
 .card
   border-radius: var(--border-radius-lg)
   overflow: hidden
+
+  .setting-item
+    border-bottom: none !important
 
 .menu-icon
   width: 20px

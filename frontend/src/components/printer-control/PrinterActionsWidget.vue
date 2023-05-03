@@ -1,5 +1,5 @@
 <template>
-  <widget-template>
+  <widget-template :inside-card="insideCard">
     <template #title>Print Job Control</template>
     <template #content>
       <div class="wrapper">
@@ -121,7 +121,7 @@
           </p>
         </template>
 
-        <b-modal v-if="printer" id="b-modal-gcodes" size="lg" @hidden="resetGcodesModal">
+        <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">
           <g-code-file-page
             v-if="selectedGcodeId"
             :is-popup="true"
@@ -130,7 +130,7 @@
               fileId: selectedGcodeId,
               printerId: printerFiles ? printer.id : null,
             }"
-            :on-close="() => $bvModal.hide('b-modal-gcodes')"
+            :on-close="() => $bvModal.hide(modalId)"
             @goBack="
               () => {
                 selectedGcodeId = null
@@ -146,9 +146,9 @@
               printerId: printerFiles ? printer.id : null,
               parentFolder: null,
             }"
-            :on-close="() => $bvModal.hide('b-modal-gcodes')"
+            :on-close="() => $bvModal.hide(modalId)"
             :saved-path="savedPath"
-            scroll-container-id="b-modal-gcodes"
+            :scroll-container-id="modalId"
             @openFile="
               (fileId, printerId, path) => {
                 selectedGcodeId = fileId
@@ -191,6 +191,10 @@ export default {
       type: Object,
       required: true,
     },
+    insideCard: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -206,19 +210,22 @@ export default {
     connecting() {
       return this.connectBtnClicked && this.printer.isDisconnected()
     },
+    modalId() {
+      return 'b-modal-gcodes' + this.printer.id
+    },
   },
 
   methods: {
     openObicoFiles() {
       this.printerFiles = false
-      this.$bvModal.show('b-modal-gcodes')
+      this.$bvModal.show(this.modalId)
     },
     openPrinterFiles() {
       this.printerFiles = true
-      this.$bvModal.show('b-modal-gcodes')
+      this.$bvModal.show(this.modalId)
     },
     scrollToTop() {
-      document.querySelector('#b-modal-gcodes').scrollTo(0, 0)
+      document.querySelector('#' + this.modalId).scrollTo(0, 0)
     },
     resetGcodesModal() {
       this.selectedGcodeId = null

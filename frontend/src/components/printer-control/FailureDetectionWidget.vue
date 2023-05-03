@@ -29,7 +29,12 @@
         </div>
         <div class="controls">
           <div class="line">
-            <div class="label">Enable AI failure detection</div>
+            <div class="label">
+              Enable AI failure detection
+              <div v-if="!enableFailureDetection" class="text-muted">
+                AI failure detection is disabled. You are on your own.
+              </div>
+            </div>
             <div class="switch">
               <div class="custom-control custom-switch">
                 <input
@@ -49,7 +54,12 @@
             </div>
           </div>
           <div class="line">
-            <div class="label">Pause on detected failures</div>
+            <div class="label">
+              Pause on detected failures
+              <div v-if="!pauseOnFailure" class="text-muted">
+                You will still be alerted via notifications.
+              </div>
+            </div>
             <div class="switch">
               <div class="custom-control custom-switch">
                 <input
@@ -209,6 +219,9 @@ export default {
     border-bottom: 1px solid var(--color-divider-muted)
     &:last-of-type
       border-bottom: none
+    .label
+      .text-muted
+        font-size: 0.875rem
 
 .help-message
   position: absolute

@@ -12,10 +12,11 @@
             class="custom-control-input"
           />
           <label class="custom-control-label" for="id_theme_system">
-            Use Printer Detail page as the landing page
+            Land directly on the printer control page if I have only 1 printer
             <br />
             <span class="text-muted setting-description"
-              >This option will be ignored if you have multiple printers.</span
+              >This option will be ignored if you have multiple printers. In this case, you will
+              always land on the printer overview page.</span
             >
           </label>
         </div>
@@ -47,7 +48,7 @@ export default {
 
   data() {
     return {
-      redirectEnabled: this.user.single_printer_redirect_enabled,
+      redirectEnabled: true,
     }
   },
 

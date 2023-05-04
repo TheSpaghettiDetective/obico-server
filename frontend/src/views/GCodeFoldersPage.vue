@@ -550,7 +550,7 @@ export default {
         }
       })
     },
-    async fetchFilesAndFolders(reset = false) {
+    async fetchFilesAndFolders(reset = false, printLastUploadedFile = false) {
       if (this.loading) {
         return
       }
@@ -651,6 +651,25 @@ export default {
         }
 
         this.currentFilesPage += 1
+
+        if (printLastUploadedFile) {
+          try {
+            let response = await axios.get(urls.gcodeFiles(), {
+              params: {
+                parent_folder: this.parentFolder || 'null',
+                page_size: 1,
+                sorting: `created_at_desc`,
+              },
+            })
+            response = response.data
+            if (response?.results && response.results[0]) {
+              this.onPrintClicked(response.results[0])
+            }
+          } catch (error) {
+            this.loading = false
+            this._logError(error)
+          }
+        }
       }
 
       this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -681,9 +700,14 @@ export default {
       }
     },
     gcodeUploadSuccess() {
+      const printAfterUpload =
+        this.targetPrinter &&
+        this.$refs.gcodesDropzone.getAcceptedFiles().length === 1 &&
+        this.$refs.gcodesDropzone.getRejectedFiles().length === 0
+
       this.$refs.gcodesDropzone.removeAllFiles()
       this.files = []
-      this.fetchFilesAndFolders(true)
+      this.fetchFilesAndFolders(true, printAfterUpload)
     },
     gcodeUploadError(file, message) {
       this.$swal.Reject.fire({

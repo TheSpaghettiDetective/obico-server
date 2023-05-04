@@ -218,7 +218,6 @@
                                     variant="outline-primary"
                                     size="sm"
                                     :href="`/prints/shot-feedback/${print.id}/`"
-                                    target="_blank"
                                   >
                                     <i
                                       v-if="!print.need_print_shot_feedback"

@@ -35,15 +35,12 @@
                       </template>
                     </vue-slick-carousel>
                   </div>
-                  <!-- FIXME: -->
-                  <!-- Commented this for now because this page temporary available both from legacy
-                  Time-Lapses page and new Print Page (not sure how Back should work here) -->
-                  <!-- <br />
+                  <br />
                   <div class="card-body p-3">
                     <a :href="`/print_history/${print.id}/`">
                       <i class="fas fa-chevron-left"></i> Print Page
                     </a>
-                  </div> -->
+                  </div>
                 </div>
               </div>
             </div>

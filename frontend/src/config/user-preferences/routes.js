@@ -1,6 +1,7 @@
 import notificationPlugins from '@src/notifications/plugins'
 
 const defaultRoutes = {
+  GeneralPreferences: '/user_preferences/general/',
   ThemePreferences: '/user_preferences/personalization/',
   ProfilePreferences: '/user_preferences/profile/',
   AuthorizedApps: '/user_preferences/authorized_apps/',

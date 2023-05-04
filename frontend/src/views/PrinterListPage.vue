@@ -130,7 +130,7 @@
 <script>
 import axios from 'axios'
 import sortBy from 'lodash/sortBy'
-import { setLocalPref } from '@src/lib/pref'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
@@ -290,6 +290,10 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
+
+          if (getLocalPref('single-printer-redirect-enabled', true) && this.printers.length == 1) {
+            window.location.href = `/printers/${this.printers[0].id}/control/`
+          }
         })
     },
     insertPrinter(printer) {

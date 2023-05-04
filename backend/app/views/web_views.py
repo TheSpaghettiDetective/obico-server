@@ -19,7 +19,7 @@ import requests
 
 from allauth.account.views import LoginView
 
-from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path, get_printers
+from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
 from app.forms import SocialAccountAwareLoginForm
@@ -46,10 +46,6 @@ class SocialAccountAwareLoginView(LoginView):
 
 @login_required
 def printers(request, template_name='printers.html'):
-    user = request.user
-    printers = get_printers(request)
-    if user.single_printer_redirect_enabled and printers.count() == 1 and (not printers.first().archived_at):
-        return redirect('/printers/' + str(printers.first().id) + '/control/')
     return render(request, template_name)
 
 

@@ -89,7 +89,6 @@ class User(AbstractUser):
     mobile_app_canary = models.BooleanField(null=False, blank=False, default=False)
     tunnel_cap_multiplier = models.FloatField(null=False, blank=False, default=1)
     notification_enabled = models.BooleanField(null=False, blank=False, default=True)
-    single_printer_redirect_enabled = models.BooleanField(null=False, blank=False, default=True)
     unseen_printer_events = models.IntegerField(null=False, blank=False, default=0)
 
     USERNAME_FIELD = 'email'

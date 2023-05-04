@@ -12,10 +12,10 @@
             class="custom-control-input"
           />
           <label class="custom-control-label" for="id_theme_system">
-            Skip dashboard view, if only one printer is available
+            Use Printer Detail page as the landing page
             <br />
             <span class="text-muted setting-description"
-              >Even enabled it won't take effect, if you have any archived printer(s)</span
+              >This option will be ignored if you have multiple printers.</span
             >
           </label>
         </div>
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
+
 export default {
   name: 'GeneralPreferences',
 
@@ -51,8 +53,12 @@ export default {
 
   watch: {
     redirectEnabled: function (newVal, prevVal) {
-      this.$emit('updateSetting', 'single_printer_redirect_enabled', newVal)
+      setLocalPref('single-printer-redirect-enabled', newVal)
     },
+  },
+
+  created() {
+    this.redirectEnabled = getLocalPref('single-printer-redirect-enabled', true)
   },
 }
 </script>

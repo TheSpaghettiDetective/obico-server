@@ -25,10 +25,6 @@
             <svg class="icon extruder"><use href="#extruder" /></svg>
             <div class="title">Extrude</div>
           </button>
-          <button class="menu-button" @click="activeMenu = 'baby-step-z'">
-            <svg class="icon move-z"><use href="#svg-move-z" /></svg>
-            <div class="title">Baby Step Z</div>
-          </button>
         </div>
 
         <!-- Move Head -->

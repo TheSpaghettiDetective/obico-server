@@ -13,7 +13,7 @@
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">
           <a href="/ent_pub/pricing/" class="primary">
-            <i class="fas fa-star"></i>
+            <font-awesome-icon icon="star" />
             Upgrade to Pro
           </a>
         </li>
@@ -28,7 +28,7 @@
         </li>
         <li v-if="user" :class="{ active: path.includes('/g_code_') }">
           <a href="/g_code_folders/cloud/">
-            <i class="fas fa-file-code"></i>
+            <font-awesome-icon icon="fa-file-code" />
             G-Codes
           </a>
         </li>
@@ -37,13 +37,13 @@
           :class="{ active: path.includes('/print_history/') || path.includes('/prints/') }"
         >
           <a href="/print_history/">
-            <i class="fa-solid fa-calendar-days"></i>
+            <font-awesome-icon icon="fa-calendar-days" />
             Print History
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/stats/') }">
           <a href="/stats/">
-            <i class="fas fa-chart-pie"></i>
+            <font-awesome-icon icon="fa-chart-pie" />
             Statistics
           </a>
         </li>
@@ -52,19 +52,19 @@
         <ul class="list-unstyled m-0">
           <li v-if="isEnt" :class="{ active: path === '/ent_pub/pricing/' }">
             <a href="/ent_pub/pricing/">
-              <i class="fa-solid fa-money-check-dollar"></i>
+              <font-awesome-icon icon="fa-money-check-dollar" />
               Pricing
             </a>
           </li>
           <li>
             <a href="https://www.obico.io/help/" target="_blank">
-              <i class="fa-solid fa-circle-question"></i>
+              <font-awesome-icon icon="fa-circle-question" />
               Help
             </a>
           </li>
           <li>
             <a href="https://obico.io/discord" target="_blank">
-              <i class="fa-brands fa-discord"></i>
+              <font-awesome-icon icon="fa-brands fa-discord" />
               Community
             </a>
           </li>
@@ -73,17 +73,18 @@
           </li>
           <li v-if="user" :class="{ active: path === '/printer_events/' }">
             <a href="/printer_events/">
-              <i class="fas fa-bell position-relative">
+              <div class="position-relative">
+                <font-awesome-icon icon="fas fa-bell" />
                 <span v-if="hasUnseenPrinterEvents" class="badge">{{
                   unseenPrinterEventsDisplay
                 }}</span>
-              </i>
+              </div>
               <span class="trim-text">Notifications</span>
             </a>
           </li>
           <li v-if="user" :class="{ active: path.includes('/user_preferences/') }">
             <a href="/user_preferences/">
-              <i class="fas fa-cog"></i>
+              <font-awesome-icon icon="fas fa-cog" />
               <span class="trim-text">Preferences</span>
             </a>
           </li>
@@ -280,11 +281,13 @@ export default {
         &.dropdown-toggle
           cursor: pointer
           padding-bottom: 20px
-        i
+        i, ::v-deep .svg-inline--fa
           margin-right: 0
           display: block
           font-size: 1.4em
           margin-bottom: 5px
+        ::v-deep .svg-inline--fa
+          margin: 0 auto 5px
         .badge
           border-radius: 2em
           position: absolute
@@ -292,7 +295,7 @@ export default {
           right: 2em
           padding: 0.25em 0.3em
           font-family: var(--default-font-family)
-          font-size: 60%
+          font-size: .714rem
           font-weight: bold
           color: var(--color-on-danger)
           background-color: var(--color-danger)

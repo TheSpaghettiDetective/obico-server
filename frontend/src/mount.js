@@ -13,6 +13,20 @@ import LoadScript from 'vue-plugin-load-script'
 import LoadingPlaceholder from '@src/components/LoadingPlaceholder.vue'
 import moment from 'moment'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {
+  faStar,
+  faFileCode,
+  faCalendarDays,
+  faChartPie,
+  faMoneyCheckDollar,
+  faCircleQuestion,
+  faBell,
+  faCog,
+} from '@fortawesome/free-solid-svg-icons'
+import { faDiscord } from '@fortawesome/free-brands-svg-icons'
+
 export default (router, components) => {
   initTheme()
   setupSentry(Vue)
@@ -46,6 +60,19 @@ export default (router, components) => {
   })
 
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)
+
+  library.add(
+    faStar,
+    faFileCode,
+    faCalendarDays,
+    faChartPie,
+    faMoneyCheckDollar,
+    faCircleQuestion,
+    faBell,
+    faCog,
+    faDiscord
+  )
+  Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 
   if (document.getElementById('app')) {
     new Vue({

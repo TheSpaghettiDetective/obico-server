@@ -94,7 +94,7 @@
             @PrinterUpdated="onPrinterUpdated"
           ></printer-card>
         </b-row>
-        <div class="row justify-content-center">
+        <div v-if="!loading" class="row justify-content-center">
           <div id="new-printer" class="col-sm-12 col-lg-6">
             <div class="new-printer-container">
               <a href="/printers/wizard/">
@@ -106,7 +106,7 @@
             </div>
           </div>
         </div>
-        <b-row v-show="shouldShowArchiveWarning" class="bottom-messages">
+        <b-row v-if="!loading" v-show="shouldShowArchiveWarning" class="bottom-messages">
           <b-col>
             <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
@@ -282,6 +282,16 @@ export default {
           },
         })
         .then((response) => {
+          const printers = response.data
+          if (
+            getLocalPref('single-printer-redirect-enabled', true) &&
+            printers.length == 1 &&
+            !printers[0].archived_at
+          ) {
+            window.location.href = `/printers/${printers[0].id}/control/`
+            return
+          }
+
           this.loading = false
           response.data.forEach((p) => {
             if (p.archived_at) {
@@ -290,10 +300,6 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
-
-          if (getLocalPref('single-printer-redirect-enabled', true) && this.printers.length == 1) {
-            window.location.href = `/printers/${this.printers[0].id}/control/`
-          }
         })
     },
     insertPrinter(printer) {

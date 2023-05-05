@@ -81,7 +81,6 @@ export default {
     width: 20px
     height: 20px
     color: var(--color-on-primary)
-.title
 
 .value-wrapper
   margin-left: auto

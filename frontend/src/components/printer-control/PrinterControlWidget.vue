@@ -578,7 +578,6 @@ export default {
   color: var(--color-text-primary)
   padding: .5rem 1rem
   font-size: 0.875rem
-  .label
   .value
     font-weight: bold
 

@@ -81,7 +81,7 @@
               <span class="trim-text">Notifications</span>
             </a>
           </li>
-          <li v-if="user" :class="{ active: path === '/user_preferences/' }">
+          <li v-if="user" :class="{ active: path.includes('/user_preferences/') }">
             <a href="/user_preferences/">
               <i class="fas fa-cog"></i>
               <span class="trim-text">Preferences</span>

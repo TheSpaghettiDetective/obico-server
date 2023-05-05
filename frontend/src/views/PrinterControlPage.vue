@@ -1,12 +1,6 @@
 <template>
   <page-layout>
     <template #topBarLeft>
-      <div class="back-btn d-none d-md-block">
-        <b-button variant="link" class="ghost" href="/printers/">
-          <i class="fa-solid fa-angle-left"></i>&nbsp; Back
-        </b-button>
-      </div>
-      <span class="divider d-none d-md-block"></span>
       <div class="printer-name truncated">
         {{ printer ? printer.name : '' }}
       </div>
@@ -85,6 +79,10 @@
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
               <i class="fa-solid fa-arrows-up-down"></i>
               Reorder &amp; Hide
+            </b-button>
+            <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
+              <i class="fa-solid fa-plus"></i>
+              Add Printer
             </b-button>
           </div>
         </div>
@@ -515,4 +513,7 @@ export default {
   display: flex
   justify-content: center
   margin-top: var(--gap-between-blocks)
+  gap: 1rem
+  @media (max-width: 510px)
+    flex-direction: column
 </style>

@@ -5,23 +5,14 @@
       <slot name="content">
         <div class="wrapper">
           <template v-if="show">
-            <div
+            <temperature-item
               v-for="(item, key) in temperatures"
               :key="key"
-              class="temp-item"
-              @click="onEditClicked(key, item)"
-            >
-              <div class="icon">
-                <svg>
-                  <use :href="key.toLowerCase().includes('bed') ? '#bed-temp' : '#extruder'" />
-                </svg>
-              </div>
-              <div class="title">{{ temperatureDisplayName(key) }}</div>
-              <div class="value-wrapper">
-                <div class="value">{{ parseFloat(item.actual).toFixed(1) }} °C</div>
-                <div class="target">/ {{ Math.round(item.target) }} °C</div>
-              </div>
-            </div>
+              :temp-key="key"
+              :temp-item="item"
+              :editable="editable"
+              @TempEditClicked="onEditClicked(key, item)"
+            />
           </template>
           <template v-else>
             <div class="text-center mt-4">
@@ -40,12 +31,14 @@ import TempTargetEditor from '@src/components/printers/TempTargetEditor.vue'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
+import TemperatureItem from '@src/components/printers/TemperatureItem.vue'
 
 export default {
   name: 'TemperatureWidget',
 
   components: {
     WidgetTemplate,
+    TemperatureItem,
   },
 
   props: {
@@ -75,7 +68,7 @@ export default {
       return get(this.printer, 'settings.temp_profiles') != undefined
     },
     show() {
-      return Object.keys(this.temperatures).length >= 2
+      return Object.keys(this.temperatures).length > 0
     },
   },
 
@@ -145,36 +138,4 @@ export default {
   align-items: center
   gap: .825rem
   padding-bottom: 1rem
-
-.temp-item
-  display: flex
-  width: 100%
-  background-color: var(--color-background)
-  padding: .8125rem
-  border-radius: var(--border-radius-md)
-  gap: 1rem
-  align-items: center
-  cursor: pointer
-.icon
-  width: 36px
-  height: 36px
-  display: flex
-  align-items: center
-  justify-content: center
-  background-color: var(--color-primary)
-  border-radius: var(--border-radius-sm)
-  svg
-    width: 20px
-    height: 20px
-    color: var(--color-on-primary)
-.title
-
-.value-wrapper
-  margin-left: auto
-  display: flex
-  gap: .375rem
-.value
-  font-weight: bold
-.target
-  color: var(--color-text-secondary)
 </style>

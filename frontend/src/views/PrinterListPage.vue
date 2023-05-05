@@ -78,7 +78,7 @@
       <active-filter-notice :filter-values="filterValues" @onShowAllClicked="resetFilters" />
 
       <!-- Printers list -->
-      <b-container fluid class="printer-list-page">
+      <b-container class="printer-list-page">
         <b-row v-if="loading">
           <b-col class="text-center">
             <b-spinner class="my-5" label="Loading..."></b-spinner>
@@ -92,10 +92,9 @@
             :is-pro-account="user.is_pro"
             class="printer-card-wrapper"
             @PrinterUpdated="onPrinterUpdated"
-            @printModalOpened="() => (targetPrinter = printer)"
           ></printer-card>
         </b-row>
-        <div class="row justify-content-center">
+        <div v-if="!loading" class="row justify-content-center">
           <div id="new-printer" class="col-sm-12 col-lg-6">
             <div class="new-printer-container">
               <a href="/printers/wizard/">
@@ -107,7 +106,7 @@
             </div>
           </div>
         </div>
-        <b-row v-show="shouldShowArchiveWarning" class="bottom-messages">
+        <b-row v-if="!loading" v-show="shouldShowArchiveWarning" class="bottom-messages">
           <b-col>
             <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
               <div class="warning">
@@ -124,44 +123,6 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-modal id="b-modal-gcodes" size="lg" @hidden="resetGcodesModal">
-        <g-code-file-page
-          v-if="selectedGcodeId"
-          :is-popup="true"
-          :target-printer-id="targetPrinter.id"
-          :route-params="{
-            fileId: selectedGcodeId,
-            printerId: selectedPrinterId,
-          }"
-          :on-close="() => $bvModal.hide('b-modal-gcodes')"
-          @goBack="
-            () => {
-              selectedGcodeId = null
-              scrollToTop()
-            }
-          "
-        />
-        <g-code-folders-page
-          v-else
-          :is-popup="true"
-          :target-printer="targetPrinter"
-          :route-params="{
-            printerId: selectedPrinterId,
-            parentFolder: null,
-          }"
-          :on-close="() => $bvModal.hide('b-modal-gcodes')"
-          :saved-path="savedPath"
-          scroll-container-id="b-modal-gcodes"
-          @openFile="
-            (fileId, printerId, path) => {
-              selectedGcodeId = fileId
-              selectedPrinterId = printerId
-              savedPath = path
-              scrollToTop()
-            }
-          "
-        />
-      </b-modal>
     </template>
   </page-layout>
 </template>
@@ -169,7 +130,7 @@
 <script>
 import axios from 'axios'
 import sortBy from 'lodash/sortBy'
-import { setLocalPref } from '@src/lib/pref'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import urls from '@config/server-urls'
 import PrinterCard from '@src/components/printers/PrinterCard.vue'
@@ -178,8 +139,6 @@ import CascadedDropdown from '@src/components/CascadedDropdown'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import FilteringDropdown, { restoreFilterValues } from '@src/components/FilteringDropdown'
 import { user, settings } from '@src/lib/page-context'
-import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
-import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import ActiveFilterNotice from '@src/components/ActiveFilterNotice'
 
 const SortingLocalStoragePrefix = 'printersSorting'
@@ -214,8 +173,6 @@ export default {
     CascadedDropdown,
     SortingDropdown,
     FilteringDropdown,
-    GCodeFoldersPage,
-    GCodeFilePage,
     ActiveFilterNotice,
   },
 
@@ -226,12 +183,6 @@ export default {
       loading: true,
       isEnt: false,
       archivedPrinterNum: 0,
-
-      // gcodes browse modal
-      selectedGcodeId: null,
-      selectedPrinterId: null,
-      targetPrinter: null,
-      savedPath: [null],
 
       // Sorting
       sortingLocalStoragePrefix: SortingLocalStoragePrefix,
@@ -331,6 +282,16 @@ export default {
           },
         })
         .then((response) => {
+          const printers = response.data
+          if (
+            getLocalPref('single-printer-redirect-enabled', true) &&
+            printers.length == 1 &&
+            !printers[0].archived_at
+          ) {
+            window.location.href = `/printers/${printers[0].id}/control/`
+            return
+          }
+
           this.loading = false
           response.data.forEach((p) => {
             if (p.archived_at) {
@@ -352,9 +313,6 @@ export default {
       }
 
       this.$set(this.printers, index, printer)
-    },
-    scrollToTop() {
-      document.querySelector('#b-modal-gcodes').scrollTo(0, 0)
     },
     resetGcodesModal() {
       this.selectedGcodeId = null
@@ -430,7 +388,7 @@ export default {
 </style>
 
 <style lang="sass">
-#b-modal-gcodes
+div[id^=b-modal-gcodes]
   .modal-header
     display: none
   .modal-body

@@ -3,33 +3,48 @@
     <template #title>Failure Detection</template>
     <template #content>
       <div class="wrapper">
-        <help-widget
-          v-if="!isWatching"
-          id="not-watching-reason"
-          class="help-message"
-          :text-before="notWatchingExplanation"
-        ></help-widget>
+        <div v-if="isEnt" class="dh-balance-wrapper">
+          <a
+            href="/user_preferences/dh/"
+            class="btn shadow-none action-btn icon-btn hours-btn"
+            :style="{ marginRight: `${String(dhBadgeNum).length * 0.25}rem` }"
+            :title="dhBadgeNum + ' AI Detection Hours'"
+          >
+            <svg class="custom-svg-icon">
+              <use href="#svg-hour-glass"></use>
+            </svg>
+            <span id="user-credits" class="badge badge-light">{{ dhBadgeNum }}</span>
+            <span class="sr-only">AI Detection Hours</span>
+          </a>
+        </div>
         <div class="header">
-          <div class="dh-balance">
-            <div class="label-line">AI Detection</div>
-            <div class="label-line">Hours Balance</div>
-            <div class="value-wrapper">
-              <svg><use href="#svg-hour-glass" /></svg>
-              <div class="value" :class="{ small: dhBadgeNum === 'Unlimited' }">
-                {{ dhBadgeNum }}
-              </div>
-            </div>
-          </div>
           <div class="gauge-wrapper">
             <failure-detection-gauge
               :normalized-p="printer.normalized_p"
               :is-watching="isWatching"
             />
           </div>
+          <div v-if="printer.not_watching_reason" class="overlay-info">
+            <muted-alert class="muted-alert">
+              <span
+                >Not watching ({{ printer.not_watching_reason }}).
+                <a
+                  href="https://www.obico.io/docs/user-guides/detective-not-watching/"
+                  target="_blank"
+                  >Learn all possible reasons
+                  <small><i class="fas fa-external-link-alt"></i></small></a
+              ></span>
+            </muted-alert>
+          </div>
         </div>
         <div class="controls">
           <div class="line">
-            <div class="label">Enable AI failure detection</div>
+            <label class="label" :for="'watching_enabled-toggle-' + printer.id">
+              Enable AI failure detection
+              <div v-if="!enableFailureDetection" class="text-muted">
+                AI failure detection is disabled. You are on your own.
+              </div>
+            </label>
             <div class="switch">
               <div class="custom-control custom-switch">
                 <input
@@ -49,7 +64,12 @@
             </div>
           </div>
           <div class="line">
-            <div class="label">Pause on detected failures</div>
+            <label class="label" :for="'pause_on_failure-toggle-' + printer.id">
+              Pause on detected failures
+              <div v-if="!pauseOnFailure" class="text-muted">
+                You will still be alerted via notifications.
+              </div>
+            </label>
             <div class="switch">
               <div class="custom-control custom-switch">
                 <input
@@ -84,10 +104,10 @@
 </template>
 
 <script>
-import { user } from '@src/lib/page-context'
+import { user, settings } from '@src/lib/page-context'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
-import HelpWidget from '@src/components/HelpWidget.vue'
+import MutedAlert from '@src/components/MutedAlert.vue'
 
 export default {
   name: 'FailureDetectionWidget',
@@ -95,7 +115,7 @@ export default {
   components: {
     WidgetTemplate,
     FailureDetectionGauge,
-    HelpWidget,
+    MutedAlert,
   },
 
   props: {
@@ -110,6 +130,7 @@ export default {
       user: null,
       enableFailureDetection: false,
       pauseOnFailure: false,
+      isEnt: false,
     }
   },
 
@@ -118,7 +139,7 @@ export default {
       if (this.user && this.user.is_dh_unlimited) {
         return 'Unlimited'
       } else {
-        return Math.round(this.user.dh_balance) + 'H'
+        return Math.round(this.user.dh_balance)
       }
     },
     isWatching() {
@@ -133,6 +154,8 @@ export default {
 
   created() {
     this.user = user()
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
     this.enableFailureDetection = this.printer.watching_enabled
     this.pauseOnFailure = this.printer.action_on_failure === 'PAUSE'
   },
@@ -164,40 +187,35 @@ export default {
   padding-bottom: 1rem
 
 .header
+  position: relative
   display: flex
-  justify-content: space-between
+  justify-content: center
   align-items: center
   @media (max-width: 510px)
     flex-direction: column
 
-.dh-balance
-  .label-line
-    color: var(--color-text-secondary)
-    line-height: 1.3
-    @media (max-width: 510px)
-      text-align: center
-  .value-wrapper
-    margin-top: .125rem
-    color: var(--color-text-primary)
+  .overlay-info
+    position: absolute
+    left: 0
+    bottom: 0
+    right: 0
+    top: 0
     display: flex
     align-items: center
-    gap: 0.25rem
-    svg
-      width: 1.5rem
-      height: 2rem
-    .value
-      font-size: 1.5rem
-      text-transform: uppercase
-      &.small
-        font-size: 1rem
-        text-transform: none
-        margin-top: 2px
-
-.gauge-wrapper
-  transform: scale(0.9)
-  transform-origin: right
-  @media (max-width: 510px)
-    transform-origin: center
+    justify-content: center
+    .muted-alert
+      position: relative
+      z-index: 2
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      bottom: 0
+      right: 0
+      top: 0
+      background: var(--color-surface-secondary)
+      z-index: 1
+      opacity: 0.97
 
 .controls
   margin-top: 1rem
@@ -209,11 +227,11 @@ export default {
     border-bottom: 1px solid var(--color-divider-muted)
     &:last-of-type
       border-bottom: none
-
-.help-message
-  position: absolute
-  top: 8px
-  right: 12px
+    .label
+      margin-bottom: 0
+      font-size: 1rem
+      .text-muted
+        font-size: 0.875rem
 
 .failure-detected-message
   margin-top: 1rem
@@ -234,4 +252,26 @@ export default {
     font-size: normal
     i
       margin-right: 0.25rem
+
+.dh-balance-wrapper
+  position: absolute
+  top: 8px
+  right: 12px
+.btn.hours-btn
+  padding-left: 0
+  padding-right: 0
+  width: 36px
+  position: relative
+  color: var(--color-text-primary)
+  .badge
+    position: absolute
+    left: 18px
+    top: 4px
+    border-radius: var(--border-radius-sm)
+    background-color: var(--color-primary)
+    height: auto
+    font-size: .625rem
+.custom-svg-icon
+  height: 1.3rem
+  width: 1.3rem
 </style>

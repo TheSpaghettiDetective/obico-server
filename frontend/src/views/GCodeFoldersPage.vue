@@ -835,7 +835,7 @@ export default {
         Swal: this.$swal,
         onCommandSent: () => {
           if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes')
+            this.$bvModal.hide('b-modal-gcodes' + this.targetPrinter.id)
           }
         },
       })

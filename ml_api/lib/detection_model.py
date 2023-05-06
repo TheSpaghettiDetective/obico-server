@@ -402,13 +402,23 @@ if __name__ == "__main__":
     parser.add_argument("--weights", type=str, default="model/model.weights", help="Model weights file")
     parser.add_argument("--det-threshold", type=float, default=0.25, help="Detection threshold")
     parser.add_argument("--nms-threshold", type=float, default=0.4, help="NMS threshold")
+    parser.add_argument("--preheat", action='store_true', help="Make a dry run of NN for initlalization")
+    parser.add_argument("--cpu", action='store_true', help="Force use CPU")
     opt = parser.parse_args()
 
     net_main_1, meta_main_1 = load_net("model/model.cfg", opt.weights, "model/model.meta")
 
+    # force use CPU, only implemented for ONNX
+    if opt.cpu and have_onnx and isinstance(net_main_1, onnxruntime.InferenceSession):
+        net_main_1.set_providers(['CPUExecutionProvider'])
+
     import cv2
     custom_image_bgr = cv2.imread(opt.image)  # use: detect(,,imagePath,)
-    # preheat
+
+    # this will make library initialize all the required resources at the first run
+    # then the following runs will be much faster
+    if opt.preheat:
+        detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
 
     started_at = time.time()
     detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)

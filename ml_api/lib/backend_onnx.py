@@ -96,10 +96,10 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
 
     box_x1x1x2y2_to_xcycwh_scaled = lambda b: \
         (
-            0.5 * width * (b[0] + b[2]), 
-            0.5 * height * (b[1] + b[3]), 
-            width * (b[2] - b[0]),
-            width * (b[3] - b[1])
+            float(0.5 * width * (b[0] + b[2])), 
+            float(0.5 * height * (b[1] + b[3])), 
+            float(width * (b[2] - b[0])),
+            float(width * (b[3] - b[1]))
          )
     dets_batch = []
     for i in range(box_array.shape[0]):

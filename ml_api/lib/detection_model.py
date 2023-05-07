@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     # force use CPU, only implemented for ONNX
     if opt.cpu and onnx_ready and isinstance(net_main_1, OnnxNet):
-        net_main_1.set_providers(['CPUExecutionProvider'])
+        net_main_1.force_cpu()
 
     import cv2
     from dataclasses import asdict
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     execution_time = finished_at - started_at
     print(f"Execution time: {execution_time:.3} sec")
 
-    detections = Detection.from_tuple_list(detections[0])
+    detections = Detection.from_tuple_list(detections)
     # dump detections into some file
     if opt.save_detections_to:
         with open(opt.save_detections_to, "w") as f:

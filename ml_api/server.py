@@ -26,9 +26,10 @@ app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
+MODEL_NAME = environ.get('MODEL_NAME') or 'model.weights'
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
+net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, MODEL_NAME), path.join(model_dir, 'model.meta'))
 
 @app.route('/p/', methods=['GET'])
 @token_required

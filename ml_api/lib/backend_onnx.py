@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import os
 
-from lib.meta import load_meta, Meta
+from lib.meta import Meta
 
 
 class OnnxNet:
@@ -17,7 +17,7 @@ class OnnxNet:
         if not os.path.exists(meta_path):
             raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
         self.session = onnxruntime.InferenceSession(onnx_path)
-        self.meta = load_meta(meta_path)
+        self.meta = Meta(meta_path)
 
     def detect(self, meta, image, alt_names, thresh=.5, hier_thresh=.5, nms=.45, debug=False) -> List[Tuple[str, float, Tuple[float, float, float, float]]]:
         input_h = self.session.get_inputs()[0].shape[2]

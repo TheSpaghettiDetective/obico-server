@@ -326,7 +326,6 @@ class Printer(SafeDeleteModel):
     def pause_print(self, initiator=None):
         if self.current_print is None:
             return False
-        self.current_print.paused() # Hack: print.paused_at is used to prevent pausing multiple times in case of detected failure. Set it right away to prevent it.
 
         args = {'retract': self.retract_on_pause, 'lift_z': self.lift_z_on_pause}
 
@@ -498,19 +497,9 @@ class Print(SafeDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def paused(self):
-        self.paused_at = timezone.now()
-        self.save()
-
-    def resumed(self):
-        self.paused_at = None
-        self.save()
-        self.alert_acknowledged(Print.NOT_FAILED)
-
     def cancelled(self):
         self.cancelled_at = timezone.now()
         self.save()
-        self.alert_acknowledged(Print.FAILED)
 
     def alert_acknowledged(self, alert_overwrite):
         if not self.alerted_at:   # Not even alerted. Shouldn't be here. Maybe user error?

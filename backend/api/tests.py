@@ -6,9 +6,9 @@ from django.test import Client
 from django.urls import reverse
 from safedelete.models import *
 
-from app.models import *
+from app.models import Printer, Print, User
 from api.octoprint_views import *
-from api.octoprint_messages import *
+from api.octoprint_messages import process_octoprint_status
 
 
 def init_data():
@@ -76,7 +76,10 @@ class AlertTestCase(TestCase):
             self.printer.current_print.alert_overwrite, Print.NOT_FAILED)
 
     def test_warning_twice(self, send_failure_alert):
-        alert_if_needed(self.printer, None)
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        with patch('django.utils.timezone.now', return_value=one_hour_ago):
+            alert_if_needed(self.printer, None)
+
         alert_if_needed(self.printer, None)
         send_failure_alert.assert_called_once_with(
             self.printer, None, is_warning=True, print_paused=False)
@@ -207,13 +210,14 @@ class AlertTestCase(TestCase):
             send_failure_alert.assert_called_with(
                 self.printer, None, is_warning=False, print_paused=True)
         with patch('django.utils.timezone.now', return_value=(timezone.now() - timedelta(minutes=30))):
-            process_octoprint_status(self.printer, status_msg(1, '1.gcode', 'PrintResumed'))
+            self.client.get(
+                '/api/v1/printers/{}/resume_print/'.format(self.printer.id))
 
         self.printer.refresh_from_db()
         self.assertIsNone(self.printer.current_print.alert_muted_at)
         self.assertTrue(self.printer.current_print.alert_acknowledged_at >
                         self.printer.current_print.alerted_at)
-        self.assertIsNone(self.printer.current_print.paused_at)
+        self.assertIsNotNone(self.printer.current_print.paused_at)
 
         alert_if_needed(self.printer, None)
         send_failure_alert.assert_called_with(
@@ -222,7 +226,7 @@ class AlertTestCase(TestCase):
         self.assertIsNone(self.printer.current_print.alert_muted_at)
         self.assertTrue(self.printer.current_print.alert_acknowledged_at <
                         self.printer.current_print.alerted_at)
-        self.assertIsNone(self.printer.current_print.paused_at)
+        self.assertIsNotNone(self.printer.current_print.paused_at)
 
     def test_error_resumed_then_warning_error_shortly_after(self, send_failure_alert):
         one_minute_ago = timezone.now() - timedelta(minutes=1)
@@ -267,30 +271,20 @@ class AlertTestCase(TestCase):
         self.assertIsNotNone(self.printer.current_print.alerted_at)
         self.assertIsNone(self.printer.current_print.paused_at)
 
-    def test_error_not_paused_afer_configured(self, send_failure_alert):
+
+@patch.object(Printer, 'pause_print')
+class PauseTestCase(TestCase):
+    def setUp(self):
+        (self.user, self.printer, self.client) = init_data()
+
+    def test_pause_resumed_in_octoprint_not_paused_again(self, pause_print):
         one_hour_ago = timezone.now() - timedelta(hours=1)
         with patch('django.utils.timezone.now', return_value=one_hour_ago):
             pause_if_needed(self.printer, None)
-            send_failure_alert.assert_called_with(
-                self.printer, None, is_warning=False, print_paused=True)
-            self.printer.refresh_from_db()
-            self.assertIsNotNone(self.printer.current_print.alerted_at)
-            self.assertIsNotNone(self.printer.current_print.paused_at)
-
-        with patch('django.utils.timezone.now', return_value=timezone.now() - timedelta(hours=0.5)):
             process_octoprint_status(self.printer, status_msg(1, '1.gcode', 'PrintResumed'))
 
-        self.printer.action_on_failure = Printer.NONE
-        self.printer.save()
-
-        self.printer.refresh_from_db()
         pause_if_needed(self.printer, None)
-        send_failure_alert.assert_called_with(
-            self.printer, None, is_warning=False, print_paused=False)
-
-        self.printer.refresh_from_db()
-        self.assertIsNotNone(self.printer.current_print.alerted_at)
-        self.assertIsNone(self.printer.current_print.paused_at)
+        pause_print.assert_called_once()
 
 
 EVENT_CALLS = [call('app.tasks.process_print_events', args=ANY)]

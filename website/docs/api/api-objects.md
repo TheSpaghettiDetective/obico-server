@@ -116,7 +116,7 @@ A dummy print object will be created when a timelapse video is uploaded to the s
 - `alerted_at`: The timestamp when a possible print failure is detected and alerted. Null if nothing is detected during the print. If multiple print failures are detected and alerted, only the last one is saved in this field. In ISO-8601 format.
 - `alert_acknowledged_at`: The timestamp when the user comes to the app to respond to the failure alert. Null if the user never responds. If multiple print failures are detected and the user responds multiple times, only the last one is saved in this field. In ISO-8601 format.
 - `alert_muted_at`: The timestamp when the user indicates the alert as a false, and tells the server to stop detection for the rest of the print. In ISO-8601 format.
-- `paused_at`: The timestamp when the print is paused, either because of a detected print failure, or because the user manually pauses it. If the print is paused (and resumed) multiple times before it ends, only the last one is saved in this field. In ISO-8601 format.
+- `paused_at`: The timestamp when the print is paused because of a detected print failure. If the print is paused (and resumed) multiple times before it ends, only the last one is saved in this field. In ISO-8601 format. Note: This field is not set if the user manually pauses the print.
 - `video_url`: The URL for the timelapse video.
 - `tagged_video_url`: The URL for the "tagged" timelapse video, i.e., the video with potential detected failures indicated in green boxes.
 - `poster_url`: The URL for the "poster" of the video, i.e., the image a video player shows before the video starts playing.

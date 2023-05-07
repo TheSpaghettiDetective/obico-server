@@ -102,10 +102,8 @@ def update_current_print_if_needed(msg, printer):
         update_print_stats_if_needed(printer_status, printer.current_print)
         printer.unset_current_print()
     elif op_event.get('event_type') == 'PrintPaused':
-        printer.current_print.paused()
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.PAUSED, task_handler=True)
     elif op_event.get('event_type') == 'PrintResumed':
-        printer.current_print.resumed()
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.RESUMED, task_handler=True)
     elif op_event.get('event_type') == 'FilamentChange':
         PrinterEvent.create(print=printer.current_print, event_type=PrinterEvent.FILAMENT_CHANGE, task_handler=True)

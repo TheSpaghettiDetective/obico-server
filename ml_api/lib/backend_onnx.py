@@ -128,7 +128,7 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
                 for k in range(ll_box_array.shape[0]):
                     bboxes.append([ll_box_array[k, 0], ll_box_array[k, 1], ll_box_array[k, 2], ll_box_array[k, 3], ll_max_conf[k], ll_max_conf[k], ll_max_id[k]])
         
-        detections = [(names[b[6]], b[4], box_x1x1x2y2_to_xcycwh_scaled((b[0], b[1], b[2], b[3]))) for b in bboxes]
+        detections = [(names[b[6]], float(b[4]), box_x1x1x2y2_to_xcycwh_scaled((b[0], b[1], b[2], b[3]))) for b in bboxes]
         dets_batch.append(detections)
 
     

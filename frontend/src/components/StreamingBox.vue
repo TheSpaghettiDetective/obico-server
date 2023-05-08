@@ -84,7 +84,11 @@
     </div>
 
     <div :class="webcamRotateClass">
-      <div class="webcam_fixed_ratio" :class="webcamRatioClass">
+      <div
+        class="webcam_fixed_ratio"
+        :class="webcamRatioClass"
+        :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
+      >
         <div class="webcam_fixed_ratio_inner">
           <img
             v-if="taggedSrc !== printerStockImgSrc"
@@ -93,7 +97,11 @@
             :src="taggedSrc"
             :alt="printer.name + ' current image'"
           />
-          <svg v-else class="poster-placeholder">
+          <svg
+            v-else
+            class="poster-placeholder"
+            :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
+          >
             <use :href="printerStockImgSrc" />
           </svg>
         </div>
@@ -117,12 +125,23 @@
         </div>
       </div>
     </div>
+
+    <div class="extra-controls">
+      <div
+        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        class="video-control-btn"
+        @click="onRotateLeftClicked"
+      >
+        <font-awesome-icon icon="fa-solid fa-rotate-left" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import get from 'lodash/get'
 import ifvisible from 'ifvisible'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
@@ -205,6 +224,7 @@ export default {
       videoLoading: false,
       printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
+      customRotationDeg: getLocalPref('webcamRotationDeg', 0),
     }
   },
 
@@ -218,15 +238,12 @@ export default {
     showMJpeg() {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
+    videoRotationDeg() {
+      const rotation = this.printer.settings.webcam_rotate90 ? 90 : 0 + this.customRotationDeg
+      return rotation % 360
+    },
     webcamRotateClass() {
-      switch (this.printer.settings.webcam_rotate90) {
-        case true:
-          return 'webcam_rotated'
-        case false:
-          return 'webcam_unrotated'
-        default:
-          return 'webcam_unrotated'
-      }
+      return `webcam_rotate_${this.videoRotationDeg}`
     },
     webcamRatioClass() {
       switch (this.printer.settings.ratio169) {
@@ -313,6 +330,11 @@ export default {
   },
 
   methods: {
+    onRotateLeftClicked() {
+      this.customRotationDeg = this.customRotationDeg + 90
+      setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)
+      this.$emit('onRotateLeftClicked', this.customRotationDeg)
+    },
     onCanPlay() {
       this.videoLoading = false
       if (!this.autoplay) {
@@ -449,14 +471,13 @@ export default {
   outline: none
   background-color: rgb(0 0 0)
 
-  .webcam_rotated
+  .webcam_rotate_90, .webcam_rotate_270
     position: relative
     width: 100%
     padding-bottom: 100%
 
     .webcam_fixed_ratio
       position: absolute
-      transform: rotate(-90deg)
       top: 0
       bottom: 0
       left: 0
@@ -469,7 +490,7 @@ export default {
           position: absolute
           top: 0
 
-  .webcam_unrotated
+  .webcam_rotate_0, .webcam_rotate_180
     .webcam_fixed_ratio
       width: 100%
 
@@ -647,7 +668,21 @@ export default {
   left: calc(50% - $size / 2)
   top: calc(50% - $size / 2)
 
-.webcam_rotated
-  .poster-placeholder
-    transform: rotate(90deg)
+.extra-controls
+  position: absolute
+  right: 0
+  bottom: 0
+  padding: .5rem
+  .video-control-btn
+    width: 2rem
+    height: 2rem
+    border-radius: 999px
+    background-color: var(--color-overlay)
+    color: var(--color-text-secondary)
+    display: flex
+    align-items: center
+    justify-content: center
+    &:hover
+      color: var(--color-text-primary)
+      cursor: pointer
 </style>

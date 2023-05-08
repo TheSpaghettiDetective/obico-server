@@ -97,6 +97,12 @@
               :autoplay="user.is_pro"
               :show-bitrate="false"
               @onBitrateUpdated="onBitrateUpdated"
+              @onRotateLeftClicked="
+                (val) => {
+                  customRotationDeg = val
+                  resizeStream()
+                }
+              "
             />
           </div>
         </div>
@@ -123,6 +129,7 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
+import { getLocalPref } from '@src/lib/pref'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -182,6 +189,7 @@ export default {
       lastPrint: null,
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
+      customRotationDeg: getLocalPref('webcamRotationDeg', 0),
     }
   },
 
@@ -192,6 +200,10 @@ export default {
         const configItem = WIDGETS.find((w) => w.id === widget.id)
         return { ...widget, ...configItem }
       })
+    },
+    videoRotationDeg() {
+      const rotation = this.printer.settings.webcam_rotate90 ? 90 : 0 + this.customRotationDeg
+      return rotation % 360
     },
   },
 
@@ -321,7 +333,7 @@ export default {
       const streamContainerWidth = streamContainerRect.width
       const streamContainerHeight = streamContainerRect.height
 
-      const isVertical = this.printer.settings.webcam_rotate90
+      const isVertical = this.videoRotationDeg % 180 !== 0
       const isRatio169 = this.printer.settings.ratio169
       const multiplier = isRatio169 ? (isVertical ? 16 / 9 : 9 / 16) : isVertical ? 4 / 3 : 3 / 4
 

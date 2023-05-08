@@ -24,6 +24,7 @@ import {
   faCircleQuestion,
   faBell,
   faCog,
+  faRotateLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
@@ -70,7 +71,8 @@ export default (router, components) => {
     faCircleQuestion,
     faBell,
     faCog,
-    faDiscord
+    faDiscord,
+    faRotateLeft
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 

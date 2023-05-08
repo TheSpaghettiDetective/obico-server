@@ -13,6 +13,14 @@
               :editable="editable"
               @TempEditClicked="onEditClicked(key, item)"
             />
+            <b-button
+              v-if="editable"
+              variant="outline-primary"
+              class="custom-button"
+              @click="onTemperaturePresetsClicked"
+            >
+              Temperature Presets
+            </b-button>
           </template>
           <template v-else>
             <div class="text-center mt-4">
@@ -28,6 +36,7 @@
 
 <script>
 import TempTargetEditor from '@src/components/printers/TempTargetEditor.vue'
+import TempPresets from '@src/components/printers/TempPresets.vue'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
@@ -119,13 +128,88 @@ export default {
         .then((result) => {
           if (result.value) {
             let targetTemp = result.value.target
-            this.printerComm.passThruToPrinter({
-              func: 'set_temperature',
-              target: '_printer',
-              args: [key, targetTemp],
-            })
+            this.handleSetTemp(key, targetTemp)
           }
         })
+    },
+    onTemperaturePresetsClicked() {
+      let tempProfiles = get(this.printer, 'settings.temp_profiles', [])
+
+      this.$swal
+        .openModalWithComponent(
+          TempPresets,
+          {
+            presets: tempProfiles,
+            printer: this.printer,
+          },
+          {
+            title: 'Temperature Presets',
+            confirmButtonText: 'Apply',
+            showCancelButton: true,
+            preConfirm: () => {
+              return {
+                preset: document.getElementById('selected-preset').value,
+              }
+            },
+          }
+        )
+        .then((result) => {
+          if (result.value?.preset) {
+            this.applyTempPreset(result.value.preset)
+          }
+        })
+    },
+    applyTempPreset(preset) {
+      const tempProfiles = get(this.printer, 'settings.temp_profiles', [])
+      let profile = tempProfiles.find((p) => p.name === preset)
+
+      const presetObj = {}
+
+      if (!profile) {
+        if (preset === 'OFF') {
+          presetObj.bed = 0
+          presetObj.extruder = 0
+          presetObj.chamber = 0
+        } else {
+          return
+        }
+      } else {
+        Object.entries(profile).forEach((p) => {
+          const presetName = p[0]
+          if (presetName.toLowerCase().includes('bed')) {
+            presetObj.bed = p[1]
+          } else if (
+            presetName.toLowerCase().includes('tool') ||
+            presetName.toLowerCase().includes('extruder')
+          ) {
+            presetObj.extruder = p[1]
+          } else if (presetName.toLowerCase().includes('chamber')) {
+            presetObj.chamber = p[1]
+          }
+        })
+      }
+
+      const temperatures = get(this.printer, 'status.temperatures', [])
+      Object.entries(temperatures).forEach((t) => {
+        const toolName = t[0]
+        if (toolName.toLowerCase().includes('bed')) {
+          this.handleSetTemp(toolName, presetObj.bed)
+        } else if (
+          toolName.toLowerCase().includes('tool') ||
+          toolName.toLowerCase().includes('extruder')
+        ) {
+          this.handleSetTemp(toolName, presetObj.extruder)
+        } else if (toolName.toLowerCase().includes('chamber') && presetObj.chamber) {
+          this.handleSetTemp(toolName, presetObj.chamber)
+        }
+      })
+    },
+    handleSetTemp(name, temp) {
+      this.printerComm.passThruToPrinter({
+        func: 'set_temperature',
+        target: '_printer',
+        args: [name, temp],
+      })
     },
   },
 }

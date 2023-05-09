@@ -72,7 +72,7 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
         elif notification_type == notification_types.HeaterTargetReached:
             text = (
                 f"Heater {self.b(extra_context['heater_name'])} "
-                f"has reached target temperature {self.b(str(extra_context['heater_actual']) + '℃')} "
+                f"has reached target temperature {self.b(str(extra_context['heater_target']) + '℃')} "
             )
         else:
             return ''

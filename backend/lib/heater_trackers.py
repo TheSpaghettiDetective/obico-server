@@ -13,7 +13,7 @@ from django.db import IntegrityError
 
 
 COOLDOWN_THRESHOLD = 35.0  # degree celsius
-TARGET_REACHED_DELTA = 3.0  # degree celsius
+TARGET_REACHED_DELTA = 0.25  # degree celsius
 
 LOGGER = logging.getLogger(__file__)
 

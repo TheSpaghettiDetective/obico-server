@@ -2,7 +2,7 @@
   <b-modal
     id="b-modal-move"
     title="Move item"
-    ok-title="Place here"
+    ok-title="Place Here"
     :ok-disabled="isSameDir || patchLoading"
     scrollable
     @ok="handleOk"
@@ -30,9 +30,9 @@
         :loading="loading"
         scroll-container-id="b-modal-move___BV_modal_body_"
         :no-more-folders="noMoreFolders"
-        :no-more-files="noMoreFiles"
+        :no-more-files="true"
         :is-move-modal="true"
-        :disabled-item="item"
+        :disabled-items="disabledItems"
         @openFolder="openFolder"
         @fetchMore="fetchFilesAndFolders"
       />
@@ -44,7 +44,7 @@
 import urls from '@config/server-urls'
 import axios from 'axios'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
-import { normalizedGcode, normalizedGcodeFolder } from '@src/lib/normalizers'
+import { normalizedGcodeFolder } from '@src/lib/normalizers'
 
 const PAGE_SIZE = 24
 
@@ -60,6 +60,10 @@ export default {
       type: Object,
       default: null,
     },
+    items: {
+      type: Object,
+      default: null,
+    },
     targetPrinter: {
       type: Object,
       default: null,
@@ -72,6 +76,10 @@ export default {
       type: Object,
       required: true,
     },
+    itemParentFolderId: {
+      type: String,
+      default: '',
+    },
   },
 
   data() {
@@ -83,23 +91,39 @@ export default {
       folders: [],
       files: [],
       noMoreFolders: false,
-      noMoreFiles: false,
       currentFoldersPage: 1,
       currentFilesPage: 1,
     }
   },
 
   computed: {
+    disabledItems() {
+      const items = {
+        files: [],
+        folders: [],
+      }
+
+      if (this.item && this.itemType === 'file') {
+        items.files = [this.item.id]
+      } else if (this.item && this.itemType === 'folder') {
+        items.folders = [this.item.id]
+      } else if (this.items) {
+        items.files = this.items.files
+        items.folders = this.items.folders
+      }
+
+      return items
+    },
     itemType() {
-      return this.item.filename ? 'file' : 'folder'
+      return this.item ? (this.item.filename ? 'file' : 'folder') : null
     },
     parentFolder() {
       return this.path && this.path.length > 0 ? this.path.at(-1) : null
     },
     isSameDir() {
-      if (this.parentFolder === null && !this.item?.parent_folder) {
+      if (this.parentFolder === null && !this.itemParentFolderId) {
         return true
-      } else if (this.item?.parent_folder && this.item?.parent_folder.id === this.parentFolder) {
+      } else if (parseInt(this.itemParentFolderId) === this.parentFolder) {
         return true
       }
       return false
@@ -119,7 +143,6 @@ export default {
       this.folders = []
       this.files = []
       this.noMoreFolders = false
-      this.noMoreFiles = false
       this.currentFoldersPage = 1
       this.currentFilesPage = 1
     },
@@ -132,13 +155,12 @@ export default {
         this.resetFiles()
       }
 
-      if (this.noMoreFolders && this.noMoreFiles) {
+      if (this.noMoreFolders) {
         return
       }
 
       this.loading = true
       let folders = []
-      let files = []
 
       if (!this.noMoreFolders) {
         try {
@@ -163,28 +185,6 @@ export default {
         this.currentFoldersPage += 1
       }
 
-      if (!this.noMoreFiles && folders.length < PAGE_SIZE) {
-        try {
-          let response = await axios.get(urls.gcodeFiles(), {
-            params: {
-              parent_folder: this.parentFolder || 'null',
-              page: this.currentFilesPage,
-              page_size: PAGE_SIZE,
-              sorting: `${this.sortingValue.sorting.key}_${this.sortingValue.direction.key}`,
-            },
-          })
-          response = response.data
-          this.noMoreFiles = response?.next === null
-          files = response?.results || []
-        } catch (error) {
-          this.loading = false
-          this._logError(error)
-        }
-
-        this.files.push(...files.map((data) => normalizedGcode(data)))
-        this.currentFilesPage += 1
-      }
-
       this.loading = false
     },
 
@@ -193,7 +193,7 @@ export default {
       this.fetchFilesAndFolders()
 
       this.$nextTick(() => {
-        if (!this.item) {
+        if (!this.item && !this.items) {
           this.isOpen = false
           return
         }
@@ -214,15 +214,28 @@ export default {
       this.handleSubmit()
     },
     async handleSubmit() {
-      const id = this.item.id
-
       this.patchLoading = true
+      const parentFolder = this.parentFolder || ''
 
       try {
-        const url = this.itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
-        await axios.patch(url, `parent_folder=${this.parentFolder || ''}`)
+        if (this.item) {
+          const id = this.item.id
+          const url = this.itemType === 'file' ? urls.gcodeFile(id) : urls.gcodeFolder(id)
+          await axios.patch(url, `parent_folder=${parentFolder}`)
+        } else if (this.items) {
+          if (this.items.folders.length)
+            await axios.post(urls.gcodeFolderBulkMove(), {
+              folder_ids: this.items.folders,
+              parent_folder: parentFolder,
+            })
+          if (this.items.files.length)
+            await axios.post(urls.gcodeFileBulkMove(), {
+              file_ids: this.items.files,
+              arent_folder: parentFolder,
+            })
+        }
       } catch (error) {
-        this._logError(error, 'Failed to move item')
+        this._logError(error, 'Failed to move item(s)')
       }
 
       this.patchLoading = false

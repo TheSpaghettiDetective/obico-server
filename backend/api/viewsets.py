@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from django.utils import timezone
 from django.conf import settings
@@ -417,10 +417,21 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['post'])
+    def bulk_delete(self, request):
+        folder_ids = request.data.get('folder_ids', [])
+        self.get_queryset().filter(id__in=folder_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=False, methods=['post'])
+    def bulk_move(self, request):
+        folder_ids = request.data.get('folder_ids', [])
+        self.get_queryset().filter(id__in=folder_ids).update(
+            parent_folder_id=request.data.get('parent_folder') or None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class GCodeFileViewSet(viewsets.ModelViewSet):
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     pagination_class = StandardResultsSetPagination
@@ -484,6 +495,19 @@ class GCodeFileViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def bulk_delete(self, request):
+        file_ids = request.data.get('file_ids', [])
+        self.get_queryset().filter(id__in=file_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['post'])
+    def bulk_move(self, request):
+        file_ids = request.data.get('file_ids', [])
+        self.get_queryset().filter(id__in=file_ids).update(
+            parent_folder_id=request.data.get('parent_folder') or None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)

@@ -4,7 +4,7 @@
     class="print-container"
   >
     <div class="status-indicator print-status-bg" :class="print.status.key"></div>
-    <div v-if="selectable" class="checkbox-wrapper">
+    <div v-if="selectable" class="checkbox-wrapper" :class="{ isSelected }">
       <b-form-checkbox v-model="isSelected" size="md"></b-form-checkbox>
     </div>
     <div class="main-content truncated-wrapper">
@@ -109,6 +109,10 @@ export default {
   padding-top: 1rem
   ::v-deep .custom-checkbox .custom-control-label::before
     border-radius: var(--border-radius-xs)
+    border-color: var(--color-divider)
+  &.isSelected
+    ::v-deep .custom-checkbox .custom-control-label::before
+      border-color: #00C4B4
 
 .main-content
   padding: 1rem

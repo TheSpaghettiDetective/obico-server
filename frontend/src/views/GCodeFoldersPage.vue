@@ -11,6 +11,40 @@
       >
         <i class="fas fa-chevron-left"></i>
       </a>
+      <div v-if="!isPopup && isCloud" class="actions-with-selected-desktop">
+        <b-form-group class="m-0">
+          <b-form-checkbox
+            :checked="allSelected"
+            size="md"
+            @click.native.capture.stop.prevent="toggleSelectAll"
+          ></b-form-checkbox>
+        </b-form-group>
+        <div>
+          <span v-show="!selectedItemsCount" class="label" @click="toggleSelectAll"
+            >Select all</span
+          >
+          <b-dropdown
+            v-show="selectedItemsCount"
+            toggle-class="btn btn-sm actions-with-selected-btn"
+          >
+            <template #button-content>
+              {{ selectedItemsCount }} item{{ selectedItemsCount === 1 ? '' : 's' }}
+              selected
+            </template>
+            <b-dropdown-item>
+              <div @click="moveSelectedItems">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>Move
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item>
+              <div class="text-danger" @click="deleteSelectedItems">
+                <i class="far fa-trash-alt"></i>Delete
+              </div>
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </div>
+
       <search-input class="search-input mr-3" @input="updateSearch"></search-input>
     </template>
     <template #topBarRight>
@@ -188,7 +222,9 @@
             </div>
 
             <g-code-file-structure
+              ref="gCodeFileStructure"
               :is-cloud="isCloud"
+              :is-popup="isPopup"
               :search-state-is-active="searchStateIsActive"
               :search-in-progress="searchInProgress"
               :folders="folders"
@@ -207,6 +243,8 @@
               @deleteItem="deleteItem"
               @print="onPrintClicked"
               @fetchMore="fetchFilesAndFolders"
+              @selectFiles="onSelectFiles"
+              @selectFolders="onSelectFolders"
             />
           </b-col>
         </b-row>
@@ -220,6 +258,8 @@
       <move-modal
         ref="moveModal"
         :item="activeItem"
+        :items="activeItems"
+        :item-parent-folder-id="parentFolder"
         :target-printer="targetPrinter"
         :scroll-container-id="scrollContainerId"
         :sorting-value="sortingValue"
@@ -357,16 +397,27 @@ export default {
       searchTimeoutId: null,
 
       activeItem: null,
+      activeItems: null,
 
       // local storage:
       printers: [],
       selectedPrinterId: undefined,
       selectedPrinterComm: undefined,
       localFilesLoading: false,
+
+      selectedFolders: new Set(),
+      selectedFiles: new Set(),
     }
   },
 
   computed: {
+    selectedItemsCount() {
+      return this.selectedFiles.size + this.selectedFolders.size
+    },
+    allSelected() {
+      const itemsCount = this.files.length + this.folders.length
+      return this.selectedItemsCount === itemsCount && itemsCount !== 0
+    },
     mobileMenuOptions() {
       const options = [
         {
@@ -454,6 +505,52 @@ export default {
   },
 
   methods: {
+    toggleSelectAll() {
+      if (this.allSelected) {
+        this.$refs.gCodeFileStructure.unselectAll()
+      } else {
+        this.$refs.gCodeFileStructure.selectAll()
+      }
+    },
+    onSelectFiles(items) {
+      this.selectedFiles = items
+    },
+    onSelectFolders(items) {
+      this.selectedFolders = items
+    },
+    moveSelectedItems() {
+      this.activeItems = {
+        files: Array.from(this.selectedFiles),
+        folders: Array.from(this.selectedFolders),
+      }
+      this.$refs.moveModal.show()
+    },
+    deleteSelectedItems() {
+      const selectedFolderIds = Array.from(this.selectedFolders)
+      const selectedFileIds = Array.from(this.selectedFiles)
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        text: `Delete ${
+          selectedFolderIds.length + selectedFileIds.length
+        } item(s)? This action can not be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then(async (userAction) => {
+        if (userAction.isConfirmed) {
+          try {
+            if (selectedFolderIds.length)
+              await axios.post(urls.gcodeFolderBulkDelete(), { folder_ids: selectedFolderIds })
+            if (selectedFileIds.length)
+              await axios.post(urls.gcodeFileBulkDelete(), { file_ids: selectedFileIds })
+          } catch (err) {
+            this._logError(err, 'Failed to delete files and folders')
+          } finally {
+            this.fetchFilesAndFolders(true)
+          }
+        }
+      })
+    },
     switchToCloudStorage() {
       this.parentFolder = null
       this.path = []
@@ -505,6 +602,7 @@ export default {
     resetFiles() {
       this.folders = []
       this.files = []
+      this.$refs.gCodeFileStructure.unselectAll()
       this.noMoreFolders = false
       this.noMoreFiles = false
       this.currentFoldersPage = 1
@@ -747,10 +845,11 @@ export default {
       this.$refs.moveModal.show()
     },
     onItemMoved() {
-      if (!this.activeItem) {
+      if (!this.activeItem && !this.activeItems) {
         return
       }
       this.activeItem = null
+      this.activeItems = null
       this.fetchFilesAndFolders(true)
     },
     deleteItem(item) {
@@ -871,4 +970,15 @@ export default {
   .message
     margin: 0
     margin-left: 1rem
+
+.actions-with-selected-desktop
+  display: flex
+  align-items: center
+  margin-right: 1rem
+  .label
+    cursor: pointer
+  ::v-deep .custom-checkbox .custom-control-label::before
+    border-radius: var(--border-radius-xs)
+  @media (max-width: 576px)
+    display: none
 </style>

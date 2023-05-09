@@ -23,12 +23,19 @@
           :is-cloud="isCloud"
           :target-printer="targetPrinter"
           :is-move-modal="isMoveModal"
-          :disabled="disabledItem && disabledItem.id === item.id"
+          :disabled="
+            isFolder(item)
+              ? disabledItems.folders.includes(item.id)
+              : disabledItems.files.includes(item.id)
+          "
+          :selectable="!isMoveModal && isCloud && !isPopup"
+          :selected="isFolder(item) ? selectedFolders.has(item.id) : selectedFiles.has(item.id)"
           @click="isFolder(item) ? $emit('openFolder', item) : $emit('openFile', item)"
           @renameItem="$emit('renameItem', item)"
           @moveItem="$emit('moveItem', item)"
           @deleteItem="$emit('deleteItem', item)"
           @print="$emit('print', item)"
+          @selectedChanged="onSelectedChanged"
         />
       </div>
 
@@ -102,6 +109,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    isPopup: {
+      type: Boolean,
+      default: false,
+    },
     searchStateIsActive: {
       type: Boolean,
       default: false,
@@ -126,10 +137,20 @@ export default {
       type: Boolean,
       default: false,
     },
-    disabledItem: {
+    disabledItems: {
       type: Object,
-      default: null,
+      default: () => ({
+        folders: [],
+        files: [],
+      }),
     },
+  },
+
+  data: function () {
+    return {
+      selectedFiles: new Set(),
+      selectedFolders: new Set(),
+    }
   },
 
   computed: {
@@ -141,8 +162,39 @@ export default {
   },
 
   methods: {
+    onSelectedChanged(item, selected) {
+      const selectedItemsCopy = this.isFolder(item)
+        ? new Set(this.selectedFolders)
+        : new Set(this.selectedFiles)
+
+      if (selected) {
+        selectedItemsCopy.add(item.id)
+      } else {
+        selectedItemsCopy.delete(item.id)
+      }
+
+      if (this.isFolder(item)) {
+        this.selectedFolders = selectedItemsCopy
+        this.$emit('selectFolders', this.selectedFolders)
+      } else {
+        this.selectedFiles = selectedItemsCopy
+        this.$emit('selectFiles', this.selectedFiles)
+      }
+    },
     isFolder(item) {
       return !item.filename
+    },
+    selectAll() {
+      this.selectedFolders = new Set(this.folders.map((f) => f.id))
+      this.selectedFiles = new Set(this.files.map((f) => f.id))
+      this.$emit('selectFolders', this.selectedFolders)
+      this.$emit('selectFiles', this.selectedFiles)
+    },
+    unselectAll() {
+      this.selectedFolders = new Set()
+      this.selectedFiles = new Set()
+      this.$emit('selectFolders', this.selectedFolders)
+      this.$emit('selectFiles', this.selectedFiles)
     },
   },
 }

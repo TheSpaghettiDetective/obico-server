@@ -4,6 +4,13 @@
     :class="{ disabled: isDisabled, 'move-modal': isMoveModal }"
     @click="() => !isDisabled && $emit('click')"
   >
+    <div v-if="selectable" class="checkbox-wrapper" :class="{ isSelected }">
+      <b-form-checkbox
+        size="md"
+        :checked="isSelected"
+        @click.native.capture.stop.prevent="isSelected = !isSelected"
+      ></b-form-checkbox>
+    </div>
     <div class="item-info">
       <div class="filename">
         <div class="thumbnail-wrapper" :class="{ folder: isFolder }">
@@ -95,11 +102,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  data: () => ({
-    thumbnailUrl: null,
-  }),
+  data: function () {
+    return {
+      thumbnailUrl: null,
+      isSelected: this.selected,
+    }
+  },
 
   computed: {
     isFolder() {
@@ -107,6 +125,15 @@ export default {
     },
     isDisabled() {
       return (this.isMoveModal && !this.isFolder) || this.disabled
+    },
+  },
+
+  watch: {
+    isSelected(newValue) {
+      this.$emit('selectedChanged', this.item, newValue)
+    },
+    selected(newValue) {
+      this.isSelected = newValue
     },
   },
 
@@ -232,4 +259,19 @@ export default {
     background: var(--color-danger)
   &.finished
     background: var(--color-success)
+
+.checkbox-wrapper
+  display: flex
+  align-items: flex-start
+  justify-content: flex-end
+  margin-left: -.5rem
+  margin-right: .5rem
+  ::v-deep .custom-checkbox .custom-control-label::before
+    border-radius: var(--border-radius-xs)
+    border-color: var(--color-divider)
+  &.isSelected
+    ::v-deep .custom-checkbox .custom-control-label::before
+      border-color: #00C4B4
+  @media (max-width: 576px)
+    display: none
 </style>

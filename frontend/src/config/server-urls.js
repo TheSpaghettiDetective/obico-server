@@ -44,4 +44,8 @@ export default {
   gcodeFolder: (id) => `/api/v1/g_code_folders/${id}/`,
   gcodeFolders: () => '/api/v1/g_code_folders/',
   gcode: (gcodeId) => `/api/v1/g_code_files/${gcodeId}/`,
+  gcodeFolderBulkDelete: () => '/api/v1/g_code_folders/bulk_delete/',
+  gcodeFileBulkDelete: () => '/api/v1/g_code_files/bulk_delete/',
+  gcodeFolderBulkMove: () => '/api/v1/g_code_folders/bulk_move/',
+  gcodeFileBulkMove: () => '/api/v1/g_code_files/bulk_move/',
 }

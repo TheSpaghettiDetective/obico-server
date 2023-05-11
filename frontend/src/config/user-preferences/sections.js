@@ -3,7 +3,7 @@ import notificationPlugins from '@src/notifications/plugins'
 import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 
 const defaultSections = {
-  GegeralPreferences: {
+  GeneralPreferences: {
     title: 'General',
     faIcon: 'fa-solid fa-gear',
     importComponent: () => import('@src/components/user-preferences/GeneralPreferences'),

@@ -10,16 +10,15 @@ Follow [this guide](https://support.google.com/accounts/answer/185839) to turn o
 
 ## 2. Add an "app password" for your self-hosted Obico server. {#2-add-an-app-password-for-your-self-hosted-obico-server}
 
-1. Go to the account page for the Gmail account you intend to use.
-1. Select "Security".
-1. Under "Signing in to Google," select "App Passwords".
-1. At the bottom, choose "Select app", and "Other (Custom name)".
-1. Choose a name for this app password, such as "My Obico server".
-1. Click "Generate".
-1. On the next screen, copy the text in the yellow box. This is the pass you will use in the next step.
+
+1. Go to the [Google app passwords](https://myaccount.google.com/apppasswords)
+2. sign in to the Gmail account you intend to use.
+3. At the bottom, choose "Select app", and "Other (Custom name)".
+4. Choose a name for this app password, such as "My Obico server".
+5.  Click "Generate".
+6. On the next screen, copy the text in the yellow box. This is the pass you will use in the next step.
 
 
-![Site configuration](/img/server-guides//gmail_setup_1.png)
 
 ![Site configuration](/img/server-guides//gmail_setup_2.png)
 

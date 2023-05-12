@@ -129,6 +129,7 @@ import FailureDetectionWidget from '@src/components/printer-control/FailureDetec
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import FanSpeedWidget from '@src/components/printer-control/FanSpeedWidget'
+import PrintSpeedWidget from '@src/components/printer-control/PrintSpeedWidget'
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
 
@@ -169,6 +170,11 @@ const WIDGETS = [
     title: 'Fan Speed',
     component: 'FanSpeedWidget',
   },
+  {
+    id: 7,
+    title: 'Print Speed',
+    component: 'PrintSpeedWidget',
+  },
 ]
 
 export default {
@@ -184,6 +190,7 @@ export default {
     TemperatureWidget,
     PrinterControlWidget,
     FanSpeedWidget,
+    PrintSpeedWidget,
   },
 
   data() {

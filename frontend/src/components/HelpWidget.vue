@@ -254,9 +254,26 @@
             </template>
 
             <template v-if="id === 'fan-speed-widget-help'">
-              <h3>Please, note:</h3>
               <p>
+                Adjust the speed of the cooling fan by setting a percentage value between 0 and 100.
+                The default value is usually 100, which means the fan will run at full speed.
+                Lowering the fan speed can reduce noise and save energy, but may also affect print
+                quality if the printer gets too hot.
+              </p>
+              <p class="text-secondary">
                 The fan speed can only be set, it cannot be read back from the firmware due to a
+                limitation of the communication protocol.
+              </p>
+            </template>
+            <template v-if="id === 'print-speed-widget-help'">
+              <p>
+                Adjust the speed of your 3D printer by changing the speed of all movement commands
+                by a specified factor. The default value is 100%, meaning that the printer will move
+                at its standard speed. Lowering the print speed factor will slow down your print,
+                while increasing it will speed it up. Value of 200% will double the speed.
+              </p>
+              <p class="text-secondary">
+                The print speed can only be set, it cannot be read back from the firmware due to a
                 limitation of the communication protocol.
               </p>
             </template>

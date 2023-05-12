@@ -1,12 +1,11 @@
 <template>
   <widget-template>
-    <template #title>Fan Speed</template>
+    <template #title>Print Speed Factor (Feed Rate)</template>
     <template #content>
       <slot name="content">
         <div class="wrapper">
-          <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+          <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
           <div class="controls">
-            <b-button class="off" variant="background" small @click="turnOff">0% (off)</b-button>
             <div class="custom">
               <b-input-group prepend="%">
                 <template #append>
@@ -14,8 +13,8 @@
                     variant="background"
                     :disabled="
                       customSpeed === null ||
-                      parseInt(customSpeed) > 100 ||
-                      parseInt(customSpeed) < 0
+                      parseInt(customSpeed) > maxValue ||
+                      parseInt(customSpeed) < 1
                     "
                     @click="setSpeed(customSpeed)"
                     >Apply</b-button
@@ -23,12 +22,11 @@
                 </template>
                 <b-form-input
                   v-model="customSpeed"
-                  placeholder="0-100"
+                  placeholder="1-200"
                   type="number"
                 ></b-form-input>
               </b-input-group>
             </div>
-            <b-button class="btn" variant="background" small @click="turnFull">100%</b-button>
           </div>
         </div>
       </slot>
@@ -41,7 +39,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import HelpWidget from '@src/components/HelpWidget.vue'
 
 export default {
-  name: 'FanSpeedWidget',
+  name: 'PrintSpeedWidget',
 
   components: {
     WidgetTemplate,
@@ -62,31 +60,18 @@ export default {
   data: function () {
     return {
       customSpeed: null,
+      maxValue: 200,
     }
   },
 
-  computed: {},
-
   methods: {
-    turnOff() {
-      this.setSpeed(0)
-    },
-    turnFull() {
-      this.setSpeed(100)
-    },
-
     setSpeed(value) {
-      if (value === null || value < 0 || value > 100) return
+      if (value === null || value < 1 || value > this.maxValue) return
 
       const payload = {
         func: 'commands',
         target: '_printer',
-        args: [`M107`],
-      }
-
-      if (value > 0) {
-        const val = Math.round((value / 100) * 255) // 255 equals to 100%
-        payload.args = [`M106 S${val}`]
+        args: [`M220 S${Math.round(value)}`],
       }
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
@@ -121,25 +106,11 @@ export default {
   top: 8px
   right: 12px
 
-.controls
-  width: 100%
-  display: flex
-  gap: .75rem
+.custom
+  border-radius: 100px
+  overflow: hidden
 
-  .off
-    flex-shrink: 0
-    width: 100px
-
-  .custom
-    border-radius: 100px
-    overflow: hidden
-
-  ::v-deep .input-group-text
-    background-color: var(--color-divider)
-    color: var(--color-text-primary)
-
-  @media (max-width: 510px)
-    flex-direction: column
-    .off
-      width: 100%
+::v-deep .input-group-text
+  background-color: var(--color-divider)
+  color: var(--color-text-primary)
 </style>

@@ -1007,3 +1007,13 @@ div[id^="b-modal-"] {
     color: var(--color-warning);
   }
 }
+
+
+.btn.btn-background {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+
+  &:hover {
+    opacity: .8;
+  }
+}

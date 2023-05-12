@@ -267,6 +267,15 @@
                 >Learn more about possible reasons <i class="fas fa-external-link-alt"></i>
               </a>
             </template>
+
+            <!-- not-watching-reason -->
+            <template v-if="id === 'fan-speed-widget-help'">
+              <h3>Please, note:</h3>
+              <p>
+                The fan speed can only be set, it cannot be read back from the firmware due to a
+                limitation of the communication protocol.
+              </p>
+            </template>
           </div>
         </div>
       </transition>

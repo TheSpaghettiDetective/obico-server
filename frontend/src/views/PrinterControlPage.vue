@@ -128,6 +128,7 @@ import PrintProgressWidget from '@src/components/printer-control/PrintProgressWi
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
+import FanSpeedWidget from '@src/components/printer-control/FanSpeedWidget'
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
 
@@ -163,6 +164,11 @@ const WIDGETS = [
     title: 'Printer Controls',
     component: 'PrinterControlWidget',
   },
+  {
+    id: 6,
+    title: 'Fan Speed',
+    component: 'FanSpeedWidget',
+  },
 ]
 
 export default {
@@ -177,6 +183,7 @@ export default {
     FailureDetectionWidget,
     TemperatureWidget,
     PrinterControlWidget,
+    FanSpeedWidget,
   },
 
   data() {
@@ -255,7 +262,13 @@ export default {
       if (isLocalStorageSupported()) {
         const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
         if (widgets) {
-          return JSON.parse(widgets)
+          const parsed = JSON.parse(widgets)
+          for (const widget of WIDGETS) {
+            if (!parsed.find((w) => w.id === widget.id)) {
+              parsed.push({ id: widget.id, enabled: true })
+            }
+          }
+          localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
         }
       }
 

@@ -253,22 +253,6 @@
               </p>
             </template>
 
-            <!-- not-watching-reason -->
-            <template v-if="id === 'not-watching-reason'">
-              <h3>Why is it not watching?</h3>
-              <ul>
-                <li>
-                  {{ textBefore }}
-                </li>
-              </ul>
-              <a
-                href="https://www.obico.io/docs/user-guides/detective-not-watching/"
-                target="_blank"
-                >Learn more about possible reasons <i class="fas fa-external-link-alt"></i>
-              </a>
-            </template>
-
-            <!-- not-watching-reason -->
             <template v-if="id === 'fan-speed-widget-help'">
               <h3>Please, note:</h3>
               <p>

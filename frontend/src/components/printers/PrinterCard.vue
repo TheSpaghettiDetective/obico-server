@@ -73,7 +73,7 @@
         <failure-detection-gauge :normalized-p="printer.normalized_p" :is-watching="isWatching" />
         <hr />
       </div>
-      <printer-actions-widget
+      <print-job-control-widget
         :inside-card="true"
         :printer="printer"
         :printer-comm="printerComm"
@@ -233,7 +233,7 @@ import DurationBlock from './DurationBlock.vue'
 import StatusTemp from './StatusTemp.vue'
 import TempTargetEditor from './TempTargetEditor.vue'
 import SharePrinter from './SharePrinter.vue'
-import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget.vue'
+import PrintJobControlWidget from '@src/components/printer-control/PrintJobControlWidget.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -256,7 +256,7 @@ export default {
     FailureDetectionGauge,
     DurationBlock,
     StatusTemp,
-    PrinterActionsWidget,
+    PrintJobControlWidget,
   },
 
   props: {

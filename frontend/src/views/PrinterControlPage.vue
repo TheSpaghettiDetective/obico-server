@@ -63,7 +63,7 @@
               v-if="
                 widget.enabled &&
                 ((!printer.isOffline() && !printer.isDisconnected()) ||
-                  widget.component === 'PrinterActionsWidget')
+                  widget.component === 'PrintJobControlWidget')
               "
               :key="widget.id"
               :printer="printer"
@@ -123,7 +123,7 @@ import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import PrinterActionsWidget from '@src/components/printer-control/PrinterActionsWidget'
+import PrintJobControlWidget from '@src/components/printer-control/PrintJobControlWidget'
 import PrintProgressWidget from '@src/components/printer-control/PrintProgressWidget'
 import FailureDetectionWidget from '@src/components/printer-control/FailureDetectionWidget'
 import TemperatureWidget from '@src/components/printer-control/TemperatureWidget'
@@ -141,7 +141,7 @@ const WIDGETS = [
   {
     id: 1,
     title: 'Print Job Control',
-    component: 'PrinterActionsWidget',
+    component: 'PrintJobControlWidget',
   },
   {
     id: 2,
@@ -172,7 +172,7 @@ export default {
     StreamingBox,
     PageLayout,
     CascadedDropdown,
-    PrinterActionsWidget,
+    PrintJobControlWidget,
     PrintProgressWidget,
     FailureDetectionWidget,
     TemperatureWidget,

@@ -174,7 +174,7 @@ const RESUME_PRINT = '/resume_print/'
 const CANCEL_PRINT = '/cancel_print/'
 
 export default {
-  name: 'PrinterActionsWidget',
+  name: 'PrintJobControlWidget',
 
   components: {
     WidgetTemplate,

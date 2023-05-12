@@ -14,9 +14,9 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="printer.inTransientState()">
+        <template v-if="isPrinterInTransientState">
           <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printer.status.state.text }}...</p>
+          <p>{{ transientStateName }}...</p>
         </template>
 
         <template v-else>
@@ -99,12 +99,9 @@
             <b-button
               v-if="!printer.isAgentMoonraker()"
               variant="outline-primary"
-              :disabled="connecting"
               @click="onConnectClicked"
             >
-              <b-spinner v-if="connecting" small></b-spinner>
-              <i v-else class="fa-brands fa-usb"></i>
-              {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
+              <i class="fa-brands fa-usb"></i> Connect
             </b-button>
           </div>
         </template>
@@ -168,6 +165,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import ConnectPrinter from '@src/components/printers/ConnectPrinter.vue'
+import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
 
 const PAUSE_PRINT = '/pause_print/'
 const RESUME_PRINT = '/resume_print/'
@@ -199,20 +197,29 @@ export default {
 
   data() {
     return {
-      connectBtnClicked: false,
       selectedGcodeId: null,
       savedPath: [null],
       printerFiles: false,
+
+      printerStateCheckInterval: null,
+      isPrinterInTransientState: false,
+      transientStateName: null,
     }
   },
 
   computed: {
-    connecting() {
-      return this.connectBtnClicked && this.printer.isDisconnected()
-    },
     modalId() {
       return 'b-modal-gcodes' + this.printer.id
     },
+  },
+
+  created() {
+    this.checkTransientState()
+    this.printerStateCheckInterval = setInterval(this.checkTransientState, 1000)
+  },
+
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -231,6 +238,9 @@ export default {
       this.selectedGcodeId = null
     },
     onConnectClicked() {
+      setTransientState(this.printer.id, 'Connecting')
+      this.checkTransientState()
+
       this.printerComm.passThruToPrinter(
         { func: 'get_connection_options', target: '_printer' },
         (err, connectionOptions) => {
@@ -277,17 +287,14 @@ export default {
           }
         }
       )
-
-      this.connectBtnClicked = true
-      setTimeout(() => {
-        this.connectBtnClicked = false
-      }, 10 * 1000)
     },
     onPauseToggled(ev) {
       if (this.printer.isPaused()) {
         if (this.printer.alertUnacknowledged()) {
           this.$emit('notAFailureClicked', ev, true)
         } else {
+          setTransientState(this.printer.id, 'Resuming')
+          this.checkTransientState()
           this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT, true)
         }
       } else {
@@ -295,6 +302,8 @@ export default {
           html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
         }).then((result) => {
           if (result.value) {
+            setTransientState(this.printer.id, 'Pausing')
+            this.checkTransientState()
             this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT, true)
           }
         })
@@ -305,10 +314,31 @@ export default {
         text: 'Once cancelled, the print can no longer be resumed.',
       }).then((result) => {
         if (result.value) {
-          // When it is confirmed
+          setTransientState(this.printer.id, 'Cancelling')
+          this.checkTransientState()
           this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT, true)
         }
       })
+    },
+    checkTransientState() {
+      const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
+      console.log('currentState', this.printer.status?.state?.text)
+
+      if (!savedValue) {
+        this.isPrinterInTransientState = false
+        this.transientStateName = null
+      } else if (savedValue === 'timeout') {
+        this.isPrinterInTransientState = false
+        this.transientStateName = null
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Printer State Timeout',
+          text: 'Why it may happen: [link]', // TODO:
+        })
+      } else {
+        this.isPrinterInTransientState = true
+        this.transientStateName = savedValue.transientStateName
+      }
     },
   },
 }

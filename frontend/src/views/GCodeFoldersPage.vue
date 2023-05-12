@@ -308,6 +308,7 @@ import {
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import CascadedDropdown from '@src/components/CascadedDropdown'
+import { setTransientState } from '@src/lib/printer-transient-state'
 
 // Waiting time (ms) before asking server for search results
 const SEARCH_API_CALL_DELAY = 1000
@@ -926,6 +927,8 @@ export default {
       }
     },
     onPrintClicked(gcode) {
+      setTransientState(this.targetPrinter.id, 'Starting')
+
       sendToPrint({
         printerId: this.targetPrinter.id,
         gcode: gcode,

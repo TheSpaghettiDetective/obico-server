@@ -45,6 +45,7 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal } from './sendToPrint'
+import { setTransientState } from '@src/lib/printer-transient-state'
 
 export default {
   name: 'AvailablePrinters',
@@ -136,6 +137,7 @@ export default {
       if (!this.selectedPrinter?.id) return
       this.isSending = true
 
+      setTransientState(this.selectedPrinter.id, 'Starting')
       sendToPrint({
         printerId: this.selectedPrinter.id,
         gcode: this.gcode,

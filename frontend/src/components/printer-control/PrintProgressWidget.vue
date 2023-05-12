@@ -141,6 +141,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
+import { setTransientState } from '@src/lib/printer-transient-state'
 
 export default {
   name: 'PrintProgressWidget',
@@ -251,6 +252,7 @@ export default {
 
       this.isPrintStarting = true
 
+      setTransientState(this.printer.id, 'Starting')
       sendToPrint({
         printerId: this.printer.id,
         gcode: this.print.g_code_file,

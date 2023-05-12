@@ -81,10 +81,7 @@ export default {
       }
 
       if (value > 0) {
-        let val = Math.round((value / 100) * 255) // 255 equals to 100% in marlin
-        if (this.printer.isAgentMoonraker()) {
-          val = Math.round(value)
-        }
+        const val = Math.round((value / 100) * 255) // 255 equals to 100%
         payload.args = [`M106 S${val}`]
       }
 

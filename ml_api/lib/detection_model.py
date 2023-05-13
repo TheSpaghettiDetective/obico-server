@@ -29,8 +29,6 @@ except:
 
 
 def load_net(config_path, weight_path, meta_path):
-    """Loads network from config files and weights. Automatically detects the backend."""
-    # nets are loaded only once and then reused
     global meta_main, net_main, alt_names  # pylint: disable=W0603
 
     if net_main is None:
@@ -58,7 +56,5 @@ def load_net(config_path, weight_path, meta_path):
     return net_main, meta_main
 
 def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
-    """Runs detection on some image content"""
-
     return net.detect(meta, image, alt_names, thresh, hier_thresh, nms, debug)
 

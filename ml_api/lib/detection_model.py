@@ -36,11 +36,11 @@ def load_net(config_path, weight_path, meta_path):
     if net_main is None:
         if onnx_ready and weight_path.endswith(".onnx"):
             net_main = OnnxNet(weight_path, meta_path)
-        elif darknet_ready:
+        elif darknet_ready and weight_path.endswith(".darknet"):
             net_main = YoloNet(config_path, weight_path, meta_path)
         else:
             raise Exception(f"Unable to load net. Onnx_ready={onnx_ready}, Darknet_ready={darknet_ready}")
-       
+
     meta_main = net_main.meta
 
     assert net_main is not None

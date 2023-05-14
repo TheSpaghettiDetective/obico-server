@@ -1,0 +1,13 @@
+version: '2.4'
+
+services:
+  ml_api:
+    image: thespaghettydetective/ml_api_x86_64_onnx_cpu
+    build:
+      dockerfile: Dockerfile.x86_64
+      target: ml_api_onnx_cpu
+      context: ml_api
+    environment:
+      HAS_GPU: 'False'
+      MODEL_FILE: 'model-weights.onnx' # Force darknet for now until we have a good docker image for ONNX.
+

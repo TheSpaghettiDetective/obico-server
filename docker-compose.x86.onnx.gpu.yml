@@ -1,0 +1,21 @@
+version: '2.4'
+
+services:
+  ml_api:
+    image: thespaghettydetective/ml_api_x86_64_onnx_gpu
+    build:
+      dockerfile: Dockerfile.x86_64
+      target: ml_api_onnx_gpu
+      context: ml_api
+    # enables GPU access for container
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      HAS_GPU: 'True'
+      MODEL_FILE: 'model-weights.onnx'
+

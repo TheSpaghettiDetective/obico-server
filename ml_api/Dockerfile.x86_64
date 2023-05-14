@@ -1,0 +1,100 @@
+# -----------------------------------------------------------------------------
+# Cuda image containing TensorRT libraries
+# not the latest one, but this should have tensorrt 8.3 which should be compatible with K40 GPU
+# this is also used for a Darknet backend to keep minimal set of docker images downloaded
+# -----------------------------------------------------------------------------
+FROM nvcr.io/nvidia/tensorrt:20.12-py3 as cuda
+WORKDIR /app
+RUN apt update && apt install -y ca-certificates
+
+RUN pip install --upgrade pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+RUN pip install opencv_python_headless
+
+# -----------------------------------------------------------------------------
+# Darknet-cuda image
+# -----------------------------------------------------------------------------
+FROM cuda as gpu_build_darknet
+WORKDIR /app
+RUN git clone https://github.com/AlexeyAB/darknet --depth 1
+RUN cd darknet \
+  && sed -i 's/GPU=0/GPU=1/' Makefile \
+  && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
+  && sed -i 's/CUDNN_HALF=0/CUDNN_HALF=1/' Makefile \
+  && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
+  && make
+
+# -----------------------------------------------------------------------------
+# Darknet ML-api image
+# -----------------------------------------------------------------------------
+FROM cuda as ml_api_darknet_gpu
+EXPOSE 3333
+WORKDIR /app
+EXPOSE 3333
+
+ADD . /app
+COPY --from=gpu_build_darknet /app/darknet/libdarknet.so bin/model_gpu_x86_64.so
+RUN wget --quiet -O model/model-weights.darknet $(cat model/model-weights.darknet.url | tr -d '\r')
+
+# -----------------------------------------------------------------------------
+# Onnx ML-api image
+# -----------------------------------------------------------------------------
+FROM cuda as ml_api_onnx_gpu
+EXPOSE 3333
+# There are newer versions, but this one is compatible with Tensorrt from base image
+RUN pip install onnxruntime-gpu==1.8.1
+WORKDIR /app
+EXPOSE 3333
+
+ADD . /app
+RUN wget --quiet -O model/model-weights.onnx $(cat model/model-weights.onnx.url | tr -d '\r')
+
+
+#==============================================================================
+# CPU
+#==============================================================================
+FROM debian:bullseye as cpu_base
+RUN apt update && \
+  apt install -y ca-certificates wget
+
+#------------------------------------------------------------------------------
+# CPU-build-darknet
+#------------------------------------------------------------------------------
+FROM cpu_base as cpu_build_darknet
+RUN apt install -y build-essential gcc g++ cmake git
+WORKDIR /app
+RUN git clone https://github.com/AlexeyAB/darknet --depth 1
+RUN cd darknet \
+  && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
+  && make
+
+#------------------------------------------------------------------------------
+# CPU-darknet
+#------------------------------------------------------------------------------
+FROM cpu_base as ml_api_darknet_cpu
+EXPOSE 3333
+RUN apt install -y python3-pip
+RUN pip install --upgrade pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+RUN pip install opencv_python_headless
+ADD . /app
+WORKDIR /app
+COPY --from=cpu_build_darknet /app/darknet/libdarknet.so bin/model_x86_64.so
+RUN wget --quiet -O model/model-weights.darknet $(cat model/model-weights.darknet.url | tr -d '\r')
+
+#------------------------------------------------------------------------------
+# CPU-onnx
+#------------------------------------------------------------------------------
+FROM cpu_base as ml_api_onnx_cpu
+EXPOSE 3333
+RUN apt install -y python3-pip
+RUN pip install --upgrade pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+RUN pip install opencv_python_headless onnxruntime
+ADD . /app
+WORKDIR /app
+RUN wget --quiet -O model/model-weights.onnx $(cat model/model-weights.onnx.url | tr -d '\r')
+

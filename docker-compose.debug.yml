@@ -1,0 +1,6 @@
+version: '2.4'
+
+services:
+  ml_api:
+    ports:
+      - 3333:3333

@@ -41,16 +41,19 @@ x-web-defaults: &web-defaults
 
 services:
   ml_api:
+    image: thespaghettydetective/ml_api:x86_64_darknet_cpu
     hostname: ml_api
     restart: unless-stopped
     build:
+      dockerfile: Dockerfile.x86_64
+      target: ml_api_darknet_cpu
       context: ml_api
     environment:
-        DEBUG: 'True'
-        FLASK_APP: 'server.py'
-        #ML_API_TOKEN:
-        #HAS_GPU: 'False'
-        MODEL_FILE: 'model-weights.darknet' # Force darknet for now until we have a good docker image for ONNX.
+      DEBUG: 'True'
+      FLASK_APP: 'server.py'
+      #ML_API_TOKEN:
+      HAS_GPU: 'False'
+      MODEL_FILE: 'model-weights.darknet' # Force darknet for now until we have a good docker image for ONNX.
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:

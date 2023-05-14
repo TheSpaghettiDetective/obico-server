@@ -6,7 +6,7 @@ from lib.geometry import compare_detections, Detection
 import os
 from lib.detection_model import *
 
-KNOWN_IMAGE_EXTENSIONS = ('.jpg', '.png') 
+KNOWN_IMAGE_EXTENSIONS = ('.jpg', '.png')
 KNOWN_VIDEO_EXTENSIONS = ('.mp4', '.avi')
 
 if __name__ == "__main__":
@@ -23,7 +23,6 @@ if __name__ == "__main__":
     parser.add_argument("--print", action='store_true', help="Print detections")
     opt = parser.parse_args()
 
-
     net_main_1, meta_main_1 = load_net("model/model.cfg", opt.weights, "model/model.meta")
 
     # force use CPU, only implemented for ONNX
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     filename, extension = os.path.splitext(filename)
 
     is_image = extension in KNOWN_IMAGE_EXTENSIONS
-    is_video = extension in KNOWN_VIDEO_EXTENSIONS 
+    is_video = extension in KNOWN_VIDEO_EXTENSIONS
     frame_number = 0
     vwr = None
     if is_video:
@@ -43,7 +42,7 @@ if __name__ == "__main__":
         fps = cap.get(cv2.CAP_PROP_FPS)
         frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        reading_success, custom_image_bgr = cap.read() 
+        reading_success, custom_image_bgr = cap.read()
         if opt.render_to:
             fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
             vwr = cv2.VideoWriter(opt.render_to, fourcc, fps, (frame_w, frame_h))
@@ -87,7 +86,7 @@ if __name__ == "__main__":
         # load detections from some file and compare with detection result
         if opt.compare_detections_with:
             if is_video:
-                read_file_name = os.path.join(opt.compare_detections_with, f"{filename}#{frame_number:04}.json") 
+                read_file_name = os.path.join(opt.compare_detections_with, f"{filename}#{frame_number:04}.json")
             else:
                 read_file_name = opt.compare_detections_with
 
@@ -99,8 +98,8 @@ if __name__ == "__main__":
                     print(f"Frame #{frame_number} loaded detections and resulting are different")
         if opt.render_to:
             for d in detections:
-                cv2.rectangle(custom_image_bgr, 
-                    (int(d.box.left()), int(d.box.top())), (int(d.box.right()), int(d.box.bottom())), 
+                cv2.rectangle(custom_image_bgr,
+                    (int(d.box.left()), int(d.box.top())), (int(d.box.right()), int(d.box.bottom())),
                     (0, 255, 0), 2)
             if vwr:
                 vwr.write(custom_image_bgr)

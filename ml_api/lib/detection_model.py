@@ -5,7 +5,7 @@ from enum import Enum
 import cv2
 import time
 import argparse
-from lib.meta import Meta 
+from lib.meta import Meta
 
 
 #GLOBALS
@@ -13,7 +13,7 @@ net_main = None
 meta_main = None
 alt_names = None
 
-# optional import for darknet 
+# optional import for darknet
 try:
     from lib.backend_darknet import YoloNet
     darknet_ready = True

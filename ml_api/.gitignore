@@ -1,2 +1,2 @@
-model/model.weights
 model/*.onnx
+model/*.darknet

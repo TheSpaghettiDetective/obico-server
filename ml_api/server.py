@@ -26,9 +26,12 @@ app = flask.Flask(__name__)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
+hasGPU = environ.get('HAS_GPU', 'False') == 'True'
+default_model_file = 'model-weights.darknet' if hasGPU else 'model-weights.onnx' # ONNX model is much faster on CPU but slower on GPU than Darknet
+model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.weights'), path.join(model_dir, 'model.meta'))
+net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
 
 @app.route('/p/', methods=['GET'])
 @token_required

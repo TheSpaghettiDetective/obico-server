@@ -43,11 +43,11 @@ x-web-defaults: &web-defaults
 
 services:
   ml_api:
-    image: "thespaghettydetective/ml_api_${ML_RUNTIME:-darknet}_${ML_PROCESSOR:-cpu}"
+    image: "thespaghettidetective/ml_api_${ML_RUNTIME:-darknet}_${ML_PROCESSOR:-cpu}"
     hostname: ml_api
     restart: unless-stopped
     build:
-      dockerfile: Dockerfile.x86_64
+      dockerfile: Dockerfile
       target: ml_api_${ML_RUNTIME:-darknet}_${ML_PROCESSOR:-cpu}
       context: ml_api
     environment:

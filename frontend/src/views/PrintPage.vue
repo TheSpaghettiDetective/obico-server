@@ -99,13 +99,19 @@
                     class="subtitle truncated"
                     :class="[
                       printer
-                        ? printer.isPrintable()
+                        ? printer.isPrintable() && !isPrinterInTransientState
                           ? 'text-success'
                           : 'text-warning'
                         : 'text-danger',
                     ]"
                   >
-                    {{ printer ? printer.printabilityText() : 'Deleted' }}
+                    {{
+                      printer
+                        ? isPrinterInTransientState
+                          ? transientStateName
+                          : printer.printabilityText()
+                        : 'Deleted'
+                    }}
                   </div>
                 </div>
                 <div
@@ -119,11 +125,11 @@
                 >
                   <button
                     class="btn btn-primary"
-                    :disabled="!printer.isPrintable()"
+                    :disabled="!printer.isPrintable() || isPrinterInTransientState"
                     @click="onRepeatPrintClicked"
                   >
-                    <b-spinner v-if="isSending" small />
-                    <span v-else>Repeat Print</span>
+                    <b-spinner v-if="isSending" class="mr-2" small />
+                    <span>Repeat Print</span>
                   </button>
                 </div>
               </div>
@@ -341,7 +347,8 @@ import {
   SortingOptions,
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import { setTransientState } from '@src/lib/printer-transient-state'
+import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
+import PrinterComm from '@src/lib/printer-comm'
 
 export default {
   name: 'PrintPage',
@@ -385,6 +392,10 @@ export default {
       filterLocalStoragePrefix: FilterLocalStoragePrefix,
       filterOptions: FilterOptions,
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
+
+      printerStateCheckInterval: null,
+      isPrinterInTransientState: false,
+      transientStateName: null,
     }
   },
 
@@ -460,6 +471,10 @@ export default {
     })
   },
 
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
+  },
+
   methods: {
     downloadFile,
     humanizedFilamentUsage,
@@ -486,6 +501,18 @@ export default {
           .get(urls.printer(this.print.printer.id), { params: { with_archived: true } })
           .then((response) => {
             this.printer = normalizedPrinter(response.data)
+
+            this.checkTransientState()
+            this.printerStateCheckInterval = setInterval(this.checkTransientState, 1000)
+
+            this.printerComm = PrinterComm(
+              this.printer.id,
+              urls.printerWebSocket(this.printer.id),
+              (data) => {
+                this.printer = normalizedPrinter(data, this.printer)
+              }
+            )
+            this.printerComm.connect()
           })
           .catch((error) => {
             // Printer could be old and deleted from account (404 error)
@@ -614,6 +641,31 @@ export default {
     },
     exitFullscreen() {
       this.fullscreenUrl = null
+    },
+    checkTransientState() {
+      const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
+
+      if (!savedValue) {
+        this.isPrinterInTransientState = false
+        this.transientStateName = null
+        this.isSending = false
+      } else if (savedValue === 'timeout') {
+        this.isPrinterInTransientState = false
+        this.transientStateName = null
+        this.isSending = false
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Printer State Timeout',
+          text: 'Why it may happen: [link]', // TODO:
+        })
+      } else {
+        this.isPrinterInTransientState = true
+        this.transientStateName = savedValue.transientStateName
+
+        if (savedValue.transientStateName === 'Starting') {
+          this.isSending = true
+        }
+      }
     },
   },
 }

@@ -322,7 +322,6 @@ export default {
     },
     checkTransientState() {
       const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
-      console.log('currentState', this.printer.status?.state?.text)
 
       if (!savedValue) {
         this.isPrinterInTransientState = false

@@ -35,7 +35,7 @@
 
       <button
         class="btn btn-primary mt-3"
-        :disabled="!selectedPrinter || isSending"
+        :disabled="!selectedPrinter || isSending || !selectedPrinter.isPrintable()"
         @click="onPrintClicked"
       >
         <b-spinner v-if="isSending" small />
@@ -84,12 +84,18 @@ export default {
   data() {
     return {
       printers: [],
-      selectedPrinter: null,
+      selectedPrinterId: null,
       printersLoading: true,
       isSending: false,
       printerStateCheckInterval: null,
       printerComms: {},
     }
+  },
+
+  computed: {
+    selectedPrinter() {
+      return this.printers.find((p) => p.id === this.selectedPrinterId)
+    },
   },
 
   created() {
@@ -124,11 +130,11 @@ export default {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
         if (selectedPrinter.isPrintable()) {
-          this.selectedPrinter = selectedPrinter
+          this.selectedPrinterId = selectedPrinter.id
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.find((p) => p.isPrintable())
+        this.selectedPrinterId = printers.find((p) => p.isPrintable()).id
       }
 
       this.checkTransientStates()
@@ -140,7 +146,7 @@ export default {
           urls.printerWebSocket(printer.id),
           (data) => {
             const index = this.printers.findIndex((p) => p.id === printer.id)
-            this.printers[index] = normalizedPrinter(data, this.printers[index])
+            this.$set(this.printers, index, normalizedPrinter(data, this.printers[index]))
           }
         )
         this.printerComms[printer.id].connect()
@@ -161,7 +167,7 @@ export default {
         return
       }
 
-      this.selectedPrinter = printer
+      this.selectedPrinterId = printer.id
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return
@@ -212,7 +218,7 @@ export default {
 
           if (savedValue.transientStateName === 'Starting') {
             oneIsStarting = true
-            this.selectedPrinter = null
+            this.selectedPrinterId = printer.id
           }
         }
       }

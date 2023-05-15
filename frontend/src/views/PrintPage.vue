@@ -622,8 +622,8 @@ export default {
     },
     onRepeatPrintClicked() {
       this.isSending = true
-
       setTransientState(this.printer.id, 'Starting')
+      this.checkTransientState()
       sendToPrint({
         printerId: this.printer.id,
         gcode: this.print.g_code_file,

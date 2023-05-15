@@ -53,16 +53,16 @@ export const getTransientState = (printerId, currentState) => {
   }
 
   if (currentState && !fromStates.includes(currentState)) {
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-from', null)
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-name', null)
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-timeout', null)
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-from')
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-name')
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-timeout')
     return null
   }
 
   if (new Date() > new Date(timeout)) {
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-from', null)
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-name', null)
-    localStorage.setItem('printer-' + printerId + '-state-transitioning-timeout', null)
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-from')
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-name')
+    localStorage.removeItem('printer-' + printerId + '-state-transitioning-timeout')
     return 'timeout'
   }
 

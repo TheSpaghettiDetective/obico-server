@@ -25,6 +25,14 @@
             <svg class="icon extruder"><use href="#extruder" /></svg>
             <div class="title">Extrude</div>
           </button>
+          <button
+            v-if="printer.isAgentMoonraker()"
+            class="menu-button"
+            @click="activeMenu = 'baby-step-z'"
+          >
+            <svg class="icon move-z"><use href="#svg-move-z" /></svg>
+            <div class="title">Baby Step Z</div>
+          </button>
         </div>
 
         <!-- Move Head -->
@@ -146,7 +154,14 @@
           <div class="additional">
             <div class="current-offset">
               <div class="label">Current Offset</div>
-              <div class="value">{{ currentZOffset }}</div>
+              <div class="value">
+                <span v-if="currentZOffset || typeof currentZOffset === 'number'">
+                  {{ currentZOffset }}
+                </span>
+                <span v-else>
+                  <b-spinner small></b-spinner>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -219,7 +234,7 @@ export default {
       },
       activeTool: 'tool0',
 
-      currentZOffset: 0.0,
+      currentZOffset: null,
     }
   },
 
@@ -275,6 +290,11 @@ export default {
       },
       deep: true,
     },
+    activeMenu(newValue, oldValue) {
+      if (newValue === 'baby-step-z') {
+        this.getCurrentZOffset()
+      }
+    },
   },
 
   created() {
@@ -322,6 +342,18 @@ export default {
             icon: 'error',
             title: ret.error,
           })
+        }
+      })
+    },
+    getCurrentZOffset() {
+      const moonrakerPayload = { func: 'printer/objects/query?gcode_move', target: 'moonraker_api' }
+      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
+        if (err || ret?.error) {
+          this.currentZOffset = 'no reading'
+        } else {
+          const offset = ret.status.gcode_move.homing_origin[2]
+          const cleanOffset = parseFloat(offset.toFixed(3))
+          this.currentZOffset = cleanOffset
         }
       })
     },
@@ -413,10 +445,10 @@ export default {
       const moonrakerPayload = {
         func: 'printer/gcode/script',
         target: 'moonraker_api',
-        kwargs: { script: `SET_GCODE_OFFSET Z_ADJUST=${moonrakerVal} MOVE=1` },
+        kwargs: { script: `SET_GCODE_OFFSET Z_ADJUST=${moonrakerVal}` },
       }
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-
+      this.currentZOffset = null
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
         if (err || ret?.error) {
           this.$swal.Toast.fire({
@@ -424,7 +456,7 @@ export default {
             title: ret.error,
           })
         } else {
-          this.currentZOffset = Math.round((this.currentZOffset + octoVal) * 10000) / 10000
+          this.getCurrentZOffset()
         }
       })
     },

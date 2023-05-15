@@ -14,12 +14,7 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="isPrinterInTransientState">
-          <b-spinner label="Processing..."></b-spinner>
-          <p>{{ transientStateName }}...</p>
-        </template>
-
-        <template v-else>
+        <template v-if="!isPrinterInTransientState">
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
               <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
@@ -106,7 +101,7 @@
           </div>
         </template>
 
-        <template v-if="printer.isOffline()">
+        <template v-else-if="printer.isOffline()">
           <i class="fa-solid fa-triangle-exclamation big-icon warning"></i>
           <p>
             Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
@@ -116,6 +111,10 @@
               >Why?</a
             >
           </p>
+        </template>
+        <template v-else-if="isPrinterInTransientState">
+          <b-spinner label="Processing..."></b-spinner>
+          <p>{{ transientStateName }}...</p>
         </template>
 
         <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">

@@ -15,9 +15,17 @@
         <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
         <div
           class="printer-status"
-          :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+          :class="[
+            printer.isPrintable() && !printer.isPrinterInTransientState
+              ? 'text-success'
+              : 'text-warning',
+          ]"
         >
-          {{ printer.printabilityText() }}
+          {{
+            printer.isPrinterInTransientState
+              ? printer.transientStateName
+              : printer.printabilityText()
+          }}
         </div>
       </div>
 
@@ -45,7 +53,8 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal } from './sendToPrint'
-import { setTransientState } from '@src/lib/printer-transient-state'
+import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
+import PrinterComm from '@src/lib/printer-comm'
 
 export default {
   name: 'AvailablePrinters',
@@ -78,11 +87,17 @@ export default {
       selectedPrinter: null,
       printersLoading: true,
       isSending: false,
+      printerStateCheckInterval: null,
+      printerComms: {},
     }
   },
 
   created() {
     this.fetchPrinters()
+  },
+
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -114,6 +129,21 @@ export default {
       } else {
         this.printers = printers
         this.selectedPrinter = printers.find((p) => p.isPrintable())
+      }
+
+      this.checkTransientStates()
+      this.printerStateCheckInterval = setInterval(this.checkTransientStates, 1000)
+
+      for (const printer of this.printers) {
+        this.printerComms[printer.id] = PrinterComm(
+          printer.id,
+          urls.printerWebSocket(printer.id),
+          (data) => {
+            const index = this.printers.findIndex((p) => p.id === printer.id)
+            this.printers[index] = normalizedPrinter(data, this.printers[index])
+          }
+        )
+        this.printerComms[printer.id].connect()
       }
 
       this.printersLoading = false
@@ -158,6 +188,36 @@ export default {
           this.fetchPrinters()
         },
       })
+    },
+    checkTransientStates() {
+      let oneIsStarting = false
+      for (const printer of this.printers) {
+        const index = this.printers.findIndex((p) => p.id === printer.id)
+        const savedValue = getTransientState(printer.id, printer.status?.state?.text)
+
+        if (!savedValue) {
+          this.printers[index].isPrinterInTransientState = false
+          this.printers[index].transientStateName = null
+        } else if (savedValue === 'timeout') {
+          this.printers[index].isPrinterInTransientState = false
+          this.printers[index].transientStateName = null
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Printer State Timeout',
+            text: 'Why it may happen: [link]', // TODO:
+          })
+        } else {
+          this.printers[index].isPrinterInTransientState = true
+          this.printers[index].transientStateName = savedValue.transientStateName
+
+          if (savedValue.transientStateName === 'Starting') {
+            oneIsStarting = true
+            this.selectedPrinter = null
+          }
+        }
+      }
+
+      this.isSending = oneIsStarting ? true : false
     },
   },
 }

@@ -1,0 +1,13 @@
+version: '2.4'
+
+services:
+  ml_api:
+    # enables GPU access for container
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+

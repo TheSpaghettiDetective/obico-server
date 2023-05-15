@@ -6,7 +6,7 @@ import os
 
 from lib.meta import Meta
 
-has_GPU = os.environ.get('HAS_GPU', 'False') == 'True'
+has_GPU = os.environ.get('ML_PROCESSOR', 'cpu').lower() == 'gpu'
 
 class OnnxNet:
     session: onnxruntime.InferenceSession
@@ -17,8 +17,7 @@ class OnnxNet:
             raise ValueError("Invalid weight path `"+os.path.abspath(onnx_path)+"`")
         if not os.path.exists(meta_path):
             raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
-        providers = ['TensorrtExecutionProvider', 'CUDAExecutionProvider'] \
-                if has_GPU else ['CPUExecutionProvider']
+        providers = ['CUDAExecutionProvider'] if has_GPU else ['CPUExecutionProvider']
         self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
         self.meta = Meta(meta_path)
 

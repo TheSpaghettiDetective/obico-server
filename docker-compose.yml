@@ -27,6 +27,8 @@ x-web-defaults: &web-defaults
     DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
     INTERNAL_MEDIA_HOST: '${INTERNAL_MEDIA_HOST-http://web:3334}'
     ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
+    ML_RUNTIME: '${ML_RUNTIME:-darknet}'
+    ML_PROCESSOR: '${ML_PROCESSOR:-cpu}'
     ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'
     WEBPACK_LOADER_ENABLED: '${WEBPACK_LOADER_ENABLED-False}'
     TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN-}'
@@ -41,19 +43,19 @@ x-web-defaults: &web-defaults
 
 services:
   ml_api:
-    image: thespaghettydetective/ml_api:x86_64_darknet_cpu
+    image: "thespaghettydetective/ml_api_${ML_RUNTIME:-darknet}_${ML_PROCESSOR:-cpu}"
     hostname: ml_api
     restart: unless-stopped
     build:
       dockerfile: Dockerfile.x86_64
-      target: ml_api_darknet_cpu
+      target: ml_api_${ML_RUNTIME:-darknet}_${ML_PROCESSOR:-cpu}
       context: ml_api
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
       #ML_API_TOKEN:
-      HAS_GPU: 'False'
-      MODEL_FILE: 'model-weights.darknet' # Force darknet for now until we have a good docker image for ONNX.
+      ML_PROCESSOR: ${ML_PROCESSOR:-cpu}
+      MODEL_FILE: model-weights.${ML_RUNTIME:-darknet} # Force darknet for now until we have a good docker image for ONNX.
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:

@@ -3,7 +3,7 @@
 # not the latest one, but this should have tensorrt 8.3 which should be compatible with K40 GPU
 # this is also used for a Darknet backend to keep minimal set of docker images downloaded
 # -----------------------------------------------------------------------------
-FROM nvcr.io/nvidia/tensorrt:20.12-py3 as cuda
+FROM nvcr.io/nvidia/tensorrt:20.12-py3 as tensorrt 
 WORKDIR /app
 RUN apt update && apt install -y ca-certificates
 
@@ -13,9 +13,29 @@ RUN pip install -r requirements.txt
 RUN pip install opencv_python_headless
 
 # -----------------------------------------------------------------------------
+# Cuda image without TensorRT libraries and with development headers
+# -----------------------------------------------------------------------------
+FROM nvcr.io/nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04 as cuda-dev 
+WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y ca-certificates build-essential gcc g++ cmake git
+
+# -----------------------------------------------------------------------------
+# Cuda image without TensorRT and without development headers (smaller)
+# -----------------------------------------------------------------------------
+FROM nvcr.io/nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu20.04 as cuda-runtime
+WORKDIR /app
+RUN apt update && apt install -y ca-certificates python3-pip wget
+
+RUN pip install --upgrade pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+RUN pip install opencv_python_headless
+
+# -----------------------------------------------------------------------------
 # Darknet-cuda image
 # -----------------------------------------------------------------------------
-FROM cuda as gpu_build_darknet
+FROM cuda-dev as gpu_build_darknet
 WORKDIR /app
 RUN git clone https://github.com/AlexeyAB/darknet --depth 1
 RUN cd darknet \
@@ -28,24 +48,22 @@ RUN cd darknet \
 # -----------------------------------------------------------------------------
 # Darknet ML-api image
 # -----------------------------------------------------------------------------
-FROM cuda as ml_api_darknet_gpu
+FROM cuda-runtime as ml_api_darknet_gpu
 EXPOSE 3333
 WORKDIR /app
-EXPOSE 3333
 
 ADD . /app
-COPY --from=gpu_build_darknet /app/darknet/libdarknet.so bin/model_gpu_x86_64.so
+COPY --from=gpu_build_darknet /app/darknet/libdarknet.so bin/libdarknet_gpu.so
 RUN wget --quiet -O model/model-weights.darknet $(cat model/model-weights.darknet.url | tr -d '\r')
 
 # -----------------------------------------------------------------------------
 # Onnx ML-api image
 # -----------------------------------------------------------------------------
-FROM cuda as ml_api_onnx_gpu
+FROM cuda-runtime as ml_api_onnx_gpu
 EXPOSE 3333
 # There are newer versions, but this one is compatible with Tensorrt from base image
 RUN pip install onnxruntime-gpu==1.8.1
 WORKDIR /app
-EXPOSE 3333
 
 ADD . /app
 RUN wget --quiet -O model/model-weights.onnx $(cat model/model-weights.onnx.url | tr -d '\r')
@@ -54,7 +72,7 @@ RUN wget --quiet -O model/model-weights.onnx $(cat model/model-weights.onnx.url 
 #==============================================================================
 # CPU
 #==============================================================================
-FROM debian:bullseye as cpu_base
+FROM debian:bullseye-slim as cpu_base
 RUN apt update && \
   apt install -y ca-certificates wget
 
@@ -81,7 +99,7 @@ RUN pip install -r requirements.txt
 RUN pip install opencv_python_headless
 ADD . /app
 WORKDIR /app
-COPY --from=cpu_build_darknet /app/darknet/libdarknet.so bin/model_x86_64.so
+COPY --from=cpu_build_darknet /app/darknet/libdarknet.so bin/libdarknet.so
 RUN wget --quiet -O model/model-weights.darknet $(cat model/model-weights.darknet.url | tr -d '\r')
 
 #------------------------------------------------------------------------------

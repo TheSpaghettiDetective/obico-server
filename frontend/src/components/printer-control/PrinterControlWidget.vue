@@ -33,6 +33,18 @@
             <svg class="icon move-z"><use href="#svg-move-z" /></svg>
             <div class="title">Baby Step Z</div>
           </button>
+          <button class="menu-button" @click="activeMenu = 'print-speed'">
+            <i class="fa-solid fa-gauge-high"></i>
+            <div class="title">Print Speed</div>
+          </button>
+          <button class="menu-button" @click="activeMenu = 'flow-rate'">
+            <i class="fa-solid fa-bars-staggered"></i>
+            <div class="title">Flow Rate</div>
+          </button>
+          <button class="menu-button" @click="activeMenu = 'fan-speed'">
+            <i class="fa-solid fa-fan"></i>
+            <div class="title">Fan Speed</div>
+          </button>
         </div>
 
         <!-- Move Head -->
@@ -165,6 +177,87 @@
             </div>
           </div>
         </div>
+        <!-- Print Speed -->
+        <div v-show="activeMenu === 'print-speed'" class="control-panel print-speed">
+          <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
+          <div class="controls">
+            <div class="custom">
+              <b-input-group prepend="%">
+                <template #append>
+                  <b-button
+                    variant="background"
+                    :disabled="
+                      customPrintSpeedFactor === null || parseInt(customPrintSpeedFactor) < 1
+                    "
+                    @click="setPrintSpeed(customPrintSpeedFactor)"
+                    >Apply</b-button
+                  >
+                </template>
+                <b-form-input
+                  v-model="customPrintSpeedFactor"
+                  placeholder="100"
+                  type="number"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </div>
+        </div>
+        <!-- Flow Rate -->
+        <div v-show="activeMenu === 'flow-rate'" class="control-panel flow-rate">
+          <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
+          <div class="controls">
+            <div class="custom">
+              <b-input-group prepend="%">
+                <template #append>
+                  <b-button
+                    variant="background"
+                    :disabled="customFlowRateFactor === null || parseInt(customFlowRateFactor) < 1"
+                    @click="setFlowRate(customFlowRateFactor)"
+                    >Apply</b-button
+                  >
+                </template>
+                <b-form-input
+                  v-model="customFlowRateFactor"
+                  placeholder="100"
+                  type="number"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </div>
+        </div>
+        <!-- Fan Speed -->
+        <div v-show="activeMenu === 'fan-speed'" class="control-panel fan-speed">
+          <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+          <div class="controls">
+            <b-button class="off" variant="background" small @click="setFanSpeed(0)"
+              >0% (off)</b-button
+            >
+            <div class="custom">
+              <b-input-group prepend="%">
+                <template #append>
+                  <b-button
+                    variant="background"
+                    :disabled="
+                      customFanSpeed === null ||
+                      parseInt(customFanSpeed) > 100 ||
+                      parseInt(customFanSpeed) < 0
+                    "
+                    @click="setFanSpeed(customFanSpeed)"
+                    >Apply</b-button
+                  >
+                </template>
+                <b-form-input
+                  v-model="customFanSpeed"
+                  placeholder="0-100"
+                  type="number"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+            <b-button class="btn" variant="background" small @click="setFanSpeed(100)"
+              >100%</b-button
+            >
+          </div>
+        </div>
       </div>
     </template>
   </widget-template>
@@ -175,6 +268,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import { isLocalStorageSupported } from '@static/js/utils'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
+import HelpWidget from '@src/components/HelpWidget.vue'
 
 const AXIS = {
   x: 'x',
@@ -199,6 +293,7 @@ export default {
 
   components: {
     WidgetTemplate,
+    HelpWidget,
   },
 
   props: {
@@ -235,6 +330,10 @@ export default {
       activeTool: 'tool0',
 
       currentZOffset: null,
+
+      customPrintSpeedFactor: null,
+      customFlowRateFactor: null,
+      customFanSpeed: null,
     }
   },
 
@@ -460,6 +559,80 @@ export default {
         }
       })
     },
+
+    // Print Speed / Flow Rate / Fan Speed
+    setPrintSpeed(value) {
+      if (value === null || value < 1) return
+      this.sendCommandToPrinter(`M220 S${Math.round(value)}`, {
+        onSuccess: () => {
+          this.customPrintSpeedFactor = null
+          this.$swal.Toast.fire({
+            icon: 'success',
+            title: 'Command successfully sent!',
+          })
+        },
+      })
+    },
+    setFlowRate(value) {
+      if (value === null || value < 1) return
+      this.sendCommandToPrinter(`M221 S${Math.round(value)}`, {
+        onSuccess: () => {
+          this.customFlowRateFactor = null
+          this.$swal.Toast.fire({
+            icon: 'success',
+            title: 'Command successfully sent!',
+          })
+        },
+      })
+    },
+    setFanSpeed(value) {
+      if (value === null || value < 0 || value > 100) return
+      let command = value === 0 ? 'M107' : `M106 S${Math.round((value / 100) * 255)}`
+      this.sendCommandToPrinter(command, {
+        onSuccess: () => {
+          this.customFanSpeed = null
+          this.$swal.Toast.fire({
+            icon: 'success',
+            title: 'Command successfully sent!',
+          })
+        },
+      })
+    },
+    sendCommandToPrinter(command, { onError, onSuccess }) {
+      const payload = this.printer.isAgentMoonraker()
+        ? {
+            func: 'printer/gcode/script',
+            target: 'moonraker_api',
+            kwargs: { script: command },
+          }
+        : {
+            func: 'commands',
+            target: '_printer',
+            args: [command],
+          }
+
+      this.printerComm.passThruToPrinter(payload, (err, ret) => {
+        if (err || ret?.error) {
+          if (onError) {
+            onError(err, ret)
+          } else {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: ret.error,
+            })
+          }
+        } else {
+          if (onSuccess) {
+            onSuccess(err, ret)
+          } else {
+            this.$swal.Toast.fire({
+              icon: 'success',
+              title: 'Command successfully sent!',
+            })
+          }
+        }
+      })
+    },
   },
 }
 </script>
@@ -472,7 +645,7 @@ export default {
 
 .wrapper
   padding-bottom: 1.5rem
-  height: 240px
+  min-height: 260px
   display: flex
   justify-content: center
   align-items: center
@@ -483,6 +656,8 @@ export default {
   justify-content: center
   align-items: center
   gap: 1rem
+  width: 100%
+  flex-wrap: wrap
   @media (max-width: 510px)
     flex-direction: column
     align-items: stretch
@@ -492,6 +667,7 @@ export default {
 .menu-button
   height: 110px
   width: 110px
+  flex-shrink: 0
   background-color: var(--color-background)
   color: var(--color-text-primary)
   border: none
@@ -511,6 +687,10 @@ export default {
   &:disabled
     opacity: .5
     cursor: not-allowed
+  i
+    font-size: 1.75rem
+    @media (max-width: 510px)
+      font-size: 1.2rem
 .icon
   --icon-size: 42px
   width: var(--icon-size)
@@ -521,7 +701,7 @@ export default {
   &.extruder
     --icon-size: 36px
   @media (max-width: 510px)
-    --icon-size: 24px
+    --icon-size: 24px !important
 .title
   font-size: 0.875rem
 
@@ -602,6 +782,10 @@ export default {
     &:hover
       opacity: .8
 
+  &.extrude
+    .main
+      margin-bottom: 0
+
 .current-offset
   display: flex
   gap: 1rem
@@ -624,4 +808,55 @@ export default {
 
 .tool-select
   width: 80%
+
+.print-speed, .flow-rate
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: .825rem
+  padding-bottom: 1rem
+  .help-message
+    position: absolute
+    top: 8px
+    right: 12px
+  .custom
+    border-radius: 100px
+    overflow: hidden
+  ::v-deep .input-group-text
+    background-color: var(--color-divider)
+    color: var(--color-text-primary)
+
+.fan-speed
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: .825rem
+  padding-bottom: 1rem
+
+  .help-message
+    position: absolute
+    top: 8px
+    right: 12px
+
+  .controls
+    width: 100%
+    display: flex
+    gap: .75rem
+
+    .off
+      flex-shrink: 0
+      width: 100px
+
+    .custom
+      border-radius: 100px
+      overflow: hidden
+
+    ::v-deep .input-group-text
+      background-color: var(--color-divider)
+      color: var(--color-text-primary)
+
+    @media (max-width: 510px)
+      flex-direction: column
+      .off
+        width: 100%
 </style>

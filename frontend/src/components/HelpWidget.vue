@@ -277,6 +277,19 @@
                 limitation of the communication protocol.
               </p>
             </template>
+            <template v-if="id === 'flow-rate-widget-help'">
+              <p>
+                Flow rate is the speed at which the printer extrudes plastic. If the flow rate is
+                too high, the printer may extrude too much plastic and create blobs or stringing,
+                while too low flow rate may result in weak and brittle prints. Adjusting the flow
+                rate can help achieve the optimal balance between speed and quality. The default
+                value is 100%.
+              </p>
+              <p class="text-secondary">
+                The flow rate can only be set, it cannot be read back from the firmware due to a
+                limitation of the communication protocol.
+              </p>
+            </template>
           </div>
         </div>
       </transition>

@@ -1,6 +1,7 @@
-import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import { isLocalStorageSupported } from '@static/js/utils'
 
 export const setTransientState = (printerId, transientState) => {
+  if (!isLocalStorageSupported()) return
   let fromStates = []
 
   switch (transientState) {
@@ -25,34 +26,43 @@ export const setTransientState = (printerId, transientState) => {
       break
   }
 
-  setLocalPref('printer-' + printerId + '-state-transitioning-from', JSON.stringify(fromStates))
-  setLocalPref('printer-' + printerId + '-state-transitioning-name', transientState)
+  localStorage.setItem(
+    'printer-' + printerId + '-state-transitioning-from',
+    JSON.stringify(fromStates)
+  )
+  localStorage.setItem('printer-' + printerId + '-state-transitioning-name', transientState)
 
   const timeout = new Date()
   timeout.setMinutes(timeout.getMinutes() + 5)
-  setLocalPref('printer-' + printerId + '-state-transitioning-timeout', timeout)
+  localStorage.setItem('printer-' + printerId + '-state-transitioning-timeout', timeout)
 }
 
 export const getTransientState = (printerId, currentState) => {
-  const fromStates = getLocalPref('printer-' + printerId + '-state-transitioning-from')
-  const transientStateName = getLocalPref('printer-' + printerId + '-state-transitioning-name')
-  const timeout = getLocalPref('printer-' + printerId + '-state-transitioning-timeout')
+  if (!isLocalStorageSupported()) return
+
+  let fromStates = JSON.parse(
+    localStorage.getItem('printer-' + printerId + '-state-transitioning-from')
+  )
+  const transientStateName = localStorage.getItem(
+    'printer-' + printerId + '-state-transitioning-name'
+  )
+  const timeout = localStorage.getItem('printer-' + printerId + '-state-transitioning-timeout')
 
   if (!fromStates || !transientStateName || !timeout) {
     return null
   }
 
   if (currentState && !fromStates.includes(currentState)) {
-    setLocalPref('printer-' + printerId + '-state-transitioning-from', null)
-    setLocalPref('printer-' + printerId + '-state-transitioning-name', null)
-    setLocalPref('printer-' + printerId + '-state-transitioning-timeout', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-from', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-name', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-timeout', null)
     return null
   }
 
   if (new Date() > new Date(timeout)) {
-    setLocalPref('printer-' + printerId + '-state-transitioning-from', null)
-    setLocalPref('printer-' + printerId + '-state-transitioning-name', null)
-    setLocalPref('printer-' + printerId + '-state-transitioning-timeout', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-from', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-name', null)
+    localStorage.setItem('printer-' + printerId + '-state-transitioning-timeout', null)
     return 'timeout'
   }
 

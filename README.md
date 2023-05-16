@@ -42,6 +42,8 @@ git clone -b release https://github.com/TheSpaghettiDetective/obico-server.git
     - If you are on Mac: `cd obico-server && docker-compose up -d`
     - If you are on Windows: `cd obico-server; docker-compose up -d`
 
+[Other options, like running on GPU, are described here](docs/running_ml_api.md)
+
 3. Go grab a coffee. Step 2 will take 15-30 minutes.
 
 4. There is no step 4. This is how easy it is to get Obico up and running (thanks to Docker and Docker-compose).

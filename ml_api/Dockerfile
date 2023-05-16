@@ -98,6 +98,8 @@ RUN apt install -y python3-pip
 RUN pip install --upgrade pip
 ADD requirements.txt ./
 RUN pip install -r requirements.txt
+RUN echo 4
+RUN uname -a
 RUN pip install opencv_python_headless onnxruntime
 ADD . /app
 WORKDIR /app
@@ -137,37 +139,9 @@ RUN pip install --upgrade pip
 ADD requirements.txt ./
 RUN pip install -r requirements.txt
 RUN pip install opencv_python_headless
+# https://elinux.org/Jetson_Zoo#ONNX_Runtime
 RUN wget https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl -O onnxruntime_gpu-1.11.0-cp38-none-any.whl
 RUN pip3 install onnxruntime_gpu-1.11.0-cp38-none-any.whl
-ADD . /app
-COPY --from=models /app/model-weights.onnx /app/model/
-
-#==============================================================================
-# Builder: Arm32-specific, Onnx-cpu version
-#==============================================================================
-FROM cpu_base as onnx_build 
-RUN apt install -y wget build-essential gcc g++ cmake git python3-pip ninja-build
-RUN apt install -y libssl-dev
-
-WORKDIR /app
-RUN pip3 install cmake
-RUN git clone --recursive https://github.com/Microsoft/onnxruntime.git \
-    && cd onnxruntime \
-    && ./build.sh --config RelWithDebInfo --build_shared_lib --parallel --build_wheel --skip_tests --cmake_extra_defines onnxruntime_BUILD_UNIT_TESTS=OFF \
-    && cp build/Linux/RelWithDebInfo/dist/onnxruntime*.whl /app/ \
-    && rm -rf onnxruntime
-
-# Output
-FROM cpu_base as ml_api_onnx_cpu_arm32
-RUN apt install -y python3-pip 
-EXPOSE 3333
-WORKDIR /app
-RUN pip install --upgrade pip
-ADD requirements.txt ./
-RUN pip install -r requirements.txt
-RUN pip install opencv_python_headless
-COPY --from=onnx_build /app/*.whl /app/
-RUN pip3 install *.whl
 ADD . /app
 COPY --from=models /app/model-weights.onnx /app/model/
 

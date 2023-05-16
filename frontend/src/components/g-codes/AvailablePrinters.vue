@@ -134,7 +134,7 @@ export default {
         }
       } else {
         this.printers = printers
-        this.selectedPrinterId = printers.find((p) => p.isPrintable()).id
+        this.selectedPrinterId = printers.find((p) => p.isPrintable())?.id || null
       }
 
       this.checkTransientStates()

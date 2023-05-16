@@ -44,53 +44,59 @@ export const sendToPrint = (args) => {
     (data) => {},
     (printerStatus) => {}
   )
+
   printerComm.connect(() => {
     const printGCode = isCloud
       ? printCloudGCode
       : isAgentMoonraker
       ? printPrinterLocalGCodeMoonraker
       : printPrinterLocalGCodeOctoPrint
-    printGCode(printerComm, gcode).catch((err) => {
-      Swal.Toast.fire({
-        icon: 'error',
-        title: err,
+
+    printGCode(printerComm, gcode)
+      .then(() => {
+        if (isCloud) {
+          Swal.Prompt.fire({
+            html: `
+                <div class="text-center">
+                  <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
+                  <h5 class="pt-3">
+                    Uploading G-Code to the printer...
+                  </h5>
+                </div>
+              `,
+            showConfirmButton: false,
+          })
+
+          const checkPrinterStatus = async () => {
+            let printer
+            try {
+              printer = await axios.get(urls.printer(printerId))
+              printer = printer.data
+            } catch (e) {
+              console.error(e)
+              return
+            }
+
+            if (get(printer, 'status.state.text') === 'Operational') {
+              setTimeout(checkPrinterStatus, 1000)
+            } else {
+              Swal.close()
+              onPrinterStatusChanged && onPrinterStatusChanged()
+            }
+          }
+
+          checkPrinterStatus()
+        }
       })
-    })
+      .catch((err) => {
+        Swal.Toast.fire({
+          icon: 'error',
+          title: err,
+        })
+      })
   })
 
   onCommandSent && onCommandSent()
-
-  Swal.Prompt.fire({
-    html: `
-        <div class="text-center">
-          <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-          <h5 class="pt-3">
-            Starting the print...
-          </h5>
-        </div>
-      `,
-    showConfirmButton: false,
-  })
-
-  const checkPrinterStatus = async () => {
-    let printer
-    try {
-      printer = await axios.get(urls.printer(printerId))
-      printer = printer.data
-    } catch (e) {
-      console.error(e)
-      return
-    }
-
-    if (get(printer, 'status.state.text') === 'Operational') {
-      setTimeout(checkPrinterStatus, 1000)
-    } else {
-      Swal.close()
-      onPrinterStatusChanged && onPrinterStatusChanged()
-    }
-  }
-
-  checkPrinterStatus()
 }
 
 const REDIRECT_TIMER = 3000

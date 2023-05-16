@@ -33,17 +33,9 @@
             <svg class="icon move-z"><use href="#svg-move-z" /></svg>
             <div class="title">Baby Step Z</div>
           </button>
-          <button class="menu-button" @click="activeMenu = 'print-speed'">
-            <i class="fa-solid fa-gauge-high"></i>
-            <div class="title">Print Speed</div>
-          </button>
-          <button class="menu-button" @click="activeMenu = 'flow-rate'">
-            <i class="fa-solid fa-bars-staggered"></i>
-            <div class="title">Flow Rate</div>
-          </button>
-          <button class="menu-button" @click="activeMenu = 'fan-speed'">
-            <i class="fa-solid fa-fan"></i>
-            <div class="title">Fan Speed</div>
+          <button class="menu-button" @click="activeMenu = 'tune-printer'">
+            <i class="fa-solid fa-gear"></i>
+            <div class="title">Tune Printer</div>
           </button>
         </div>
 
@@ -177,9 +169,12 @@
             </div>
           </div>
         </div>
-        <!-- Print Speed -->
-        <div v-show="activeMenu === 'print-speed'" class="control-panel print-speed">
-          <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
+        <!-- Tune Printer -->
+        <div v-show="activeMenu === 'tune-printer'" class="control-panel tune-printer">
+          <div class="controls-title">
+            <span>Feed Rate / Speed</span>
+            <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
+          </div>
           <div class="controls">
             <div class="custom">
               <b-input-group prepend="%">
@@ -197,14 +192,16 @@
                   v-model="customPrintSpeedFactor"
                   placeholder="100"
                   type="number"
+                  @focus="$event.target.select()"
                 ></b-form-input>
               </b-input-group>
             </div>
           </div>
-        </div>
-        <!-- Flow Rate -->
-        <div v-show="activeMenu === 'flow-rate'" class="control-panel flow-rate">
-          <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
+
+          <div class="controls-title">
+            <span>Flow Rate</span>
+            <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
+          </div>
           <div class="controls">
             <div class="custom">
               <b-input-group prepend="%">
@@ -220,17 +217,29 @@
                   v-model="customFlowRateFactor"
                   placeholder="100"
                   type="number"
+                  @focus="$event.target.select()"
                 ></b-form-input>
               </b-input-group>
             </div>
           </div>
-        </div>
-        <!-- Fan Speed -->
-        <div v-show="activeMenu === 'fan-speed'" class="control-panel fan-speed">
-          <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+
+          <div class="controls-title">
+            <span>Fan Speed</span>
+            <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+          </div>
+
           <div class="controls">
-            <b-button class="off" variant="background" small @click="setFanSpeed(0)"
-              >0% (off)</b-button
+            <b-button
+              class="off"
+              variant="background"
+              small
+              @click="
+                {
+                  customFanSpeed = 0
+                  setFanSpeed(0)
+                }
+              "
+              >0% (Off)</b-button
             >
             <div class="custom">
               <b-input-group prepend="%">
@@ -250,13 +259,27 @@
                   v-model="customFanSpeed"
                   placeholder="0-100"
                   type="number"
+                  @focus="$event.target.select()"
                 ></b-form-input>
               </b-input-group>
             </div>
-            <b-button class="btn" variant="background" small @click="setFanSpeed(100)"
+            <b-button
+              class="btn"
+              variant="background"
+              small
+              @click="
+                {
+                  customFanSpeed = 100
+                  setFanSpeed(100)
+                }
+              "
               >100%</b-button
             >
           </div>
+
+          <muted-alert v-if="printerTuneUserMessage !== null" class="info-block">
+            {{ printerTuneUserMessage }}
+          </muted-alert>
         </div>
       </div>
     </template>
@@ -269,6 +292,7 @@ import { isLocalStorageSupported } from '@static/js/utils'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
 import HelpWidget from '@src/components/HelpWidget.vue'
+import MutedAlert from '@src/components/MutedAlert.vue'
 
 const AXIS = {
   x: 'x',
@@ -294,6 +318,7 @@ export default {
   components: {
     WidgetTemplate,
     HelpWidget,
+    MutedAlert,
   },
 
   props: {
@@ -358,6 +383,40 @@ export default {
     showToolsSelector() {
       return Object.keys(this.tools).length > 1
     },
+    currentFeedRate() {
+      const val = this.printer.status?.currentFeedRate
+      return val !== undefined ? val : null
+    },
+    currentFlowRate() {
+      const val = this.printer.status?.currentFlowRate
+      return val !== undefined ? val : null
+    },
+    currentFanSpeed() {
+      const val = this.printer.status?.currentFanSpeed
+      return val !== undefined ? val : null
+    },
+    printerTuneUserMessage() {
+      if (this.printer.isAgentMoonraker()) {
+        if (
+          this.currentFlowRate === null &&
+          this.currentFanSpeed === null &&
+          this.currentFeedRate === null
+        ) {
+          return 'Upgrade to the newest version of moonraker-obico to see current values.'
+        } else if (this.currentFanSpeed === null) {
+          return 'Include [fan] in you printer.cfg file to see current Fan Speed.'
+        }
+      } else {
+        if (
+          this.currentFlowRate === null &&
+          this.currentFanSpeed === null &&
+          this.currentFeedRate === null
+        ) {
+          return "These settings can only be set. They can't be read back from the firmware due to a limitation of the communication protocol."
+        }
+      }
+      return null
+    },
   },
 
   watch: {
@@ -396,6 +455,14 @@ export default {
     activeMenu(newValue, oldValue) {
       if (newValue === 'baby-step-z') {
         this.getCurrentZOffset()
+      } else if (newValue === 'tune-printer') {
+        this.customPrintSpeedFactor = this.currentFeedRate
+          ? Math.round(this.currentFeedRate * 100)
+          : null
+        this.customFlowRateFactor = this.currentFlowRate
+          ? Math.round(this.currentFlowRate * 100)
+          : null
+        this.customFanSpeed = this.currentFanSpeed ? Math.round(this.currentFanSpeed * 100) : null
       }
     },
   },
@@ -567,42 +634,18 @@ export default {
     // Print Speed / Flow Rate / Fan Speed
     setPrintSpeed(value) {
       if (value === null || value < 1) return
-      this.sendCommandToPrinter(`M220 S${Math.round(value)}`, {
-        onSuccess: () => {
-          this.customPrintSpeedFactor = null
-          this.$swal.Toast.fire({
-            icon: 'success',
-            title: 'Command successfully sent!',
-          })
-        },
-      })
+      this.sendCommandToPrinter(`M220 S${Math.round(value)}`)
     },
     setFlowRate(value) {
       if (value === null || value < 1) return
-      this.sendCommandToPrinter(`M221 S${Math.round(value)}`, {
-        onSuccess: () => {
-          this.customFlowRateFactor = null
-          this.$swal.Toast.fire({
-            icon: 'success',
-            title: 'Command successfully sent!',
-          })
-        },
-      })
+      this.sendCommandToPrinter(`M221 S${Math.round(value)}`)
     },
     setFanSpeed(value) {
       if (value === null || value < 0 || value > 100) return
       let command = value === 0 ? 'M107' : `M106 S${Math.round((value / 100) * 255)}`
-      this.sendCommandToPrinter(command, {
-        onSuccess: () => {
-          this.customFanSpeed = null
-          this.$swal.Toast.fire({
-            icon: 'success',
-            title: 'Command successfully sent!',
-          })
-        },
-      })
+      this.sendCommandToPrinter(command)
     },
-    sendCommandToPrinter(command, { onError, onSuccess }) {
+    sendCommandToPrinter(command, { onError, onSuccess } = {}) {
       const payload = this.printer.isAgentMoonraker()
         ? {
             func: 'printer/gcode/script',
@@ -667,7 +710,7 @@ export default {
 .menu-button
   width: calc((100% - 3rem) / 3)
   flex-shrink: 0
-  padding: 1.5rem
+  padding: 1.5rem 1rem
   background-color: var(--color-background)
   color: var(--color-text-primary)
   border: none
@@ -680,7 +723,7 @@ export default {
   cursor: pointer
   @media (max-width: 510px)
     width: calc((100% - 2rem) / 3)
-    padding: 1rem
+    padding: 1rem 0.5rem
   &:hover
     opacity: .8
   &:disabled
@@ -805,39 +848,22 @@ export default {
 .tool-select
   width: 80%
 
-.print-speed, .flow-rate
+.tune-printer
   display: flex
   flex-direction: column
   align-items: center
   gap: .825rem
-  padding-bottom: 1rem
-  .help-message
-    position: absolute
-    top: 8px
-    right: 12px
-  .custom
-    border-radius: 100px
-    overflow: hidden
-  ::v-deep .input-group-text
-    background-color: var(--color-divider)
-    color: var(--color-text-primary)
 
-.fan-speed
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: .825rem
-  padding-bottom: 1rem
-
-  .help-message
-    position: absolute
-    top: 8px
-    right: 12px
-
+  .controls-title
+    font-size: 1rem
+    width: 100%
+    display: flex
+    gap: .375rem
   .controls
     width: 100%
     display: flex
     gap: .75rem
+    margin-bottom: 1rem
 
     .off
       flex-shrink: 0
@@ -846,6 +872,7 @@ export default {
     .custom
       border-radius: 100px
       overflow: hidden
+      flex: 1
 
     ::v-deep .input-group-text
       background-color: var(--color-divider)
@@ -855,4 +882,7 @@ export default {
       flex-direction: column
       .off
         width: 100%
+
+  .info-block
+    width: 100%
 </style>

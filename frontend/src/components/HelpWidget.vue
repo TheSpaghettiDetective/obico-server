@@ -260,10 +260,6 @@
                 Lowering the fan speed can reduce noise and save energy, but may also affect print
                 quality if the printer gets too hot.
               </p>
-              <p class="text-secondary">
-                The fan speed can only be set, it cannot be read back from the firmware due to a
-                limitation of the communication protocol.
-              </p>
             </template>
             <template v-if="id === 'print-speed-widget-help'">
               <p>
@@ -271,10 +267,6 @@
                 by a specified factor. The default value is 100%, meaning that the printer will move
                 at its standard speed. Lowering the print speed factor will slow down your print,
                 while increasing it will speed it up. Value of 200% will double the speed.
-              </p>
-              <p class="text-secondary">
-                The print speed can only be set, it cannot be read back from the firmware due to a
-                limitation of the communication protocol.
               </p>
             </template>
             <template v-if="id === 'flow-rate-widget-help'">
@@ -284,10 +276,6 @@
                 while too low flow rate may result in weak and brittle prints. Adjusting the flow
                 rate can help achieve the optimal balance between speed and quality. The default
                 value is 100%.
-              </p>
-              <p class="text-secondary">
-                The flow rate can only be set, it cannot be read back from the firmware due to a
-                limitation of the communication protocol.
               </p>
             </template>
           </div>

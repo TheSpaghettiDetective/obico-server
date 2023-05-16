@@ -782,10 +782,6 @@ export default {
     &:hover
       opacity: .8
 
-  &.extrude
-    .main
-      margin-bottom: 0
-
 .current-offset
   display: flex
   gap: 1rem

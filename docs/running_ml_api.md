@@ -22,7 +22,17 @@ versions of TSD. Changing the library and hardware usage can be done with enviro
 Assuming, the default (Darknet + CPU) is run with `cd obico-server && docker-compose up -d`, to run
 a different version you can use:
 
-* Darknet + *GPU* (for both x86 and Jetson platforms): `cd obico-server && ML_PROCESSOR=gpu docker-compose up -d`
-* ONNX + *CPU* (for both x86 and Raspberry Pi-like platforms): `cd obico-server && ML_RUNTIME=onnx docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
-* ONNX + *GPU* (for both x76 and Jetson platforms): `cd obico-server && ML_RUNTIME=onnx ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
+* Darknet + *GPU* for x86: `cd obico-server && ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.gpureservation.yml up -d`
+* ONNX + *GPU* for x86: `cd obico-server && ML_RUNTIME=onnx ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.gpureservation.yml up -d`
+* Darknet + *GPU* for Jetson: `cd obico-server && ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.jetson.yml up -d`
+* ONNX + *GPU* for Jetson: `cd obico-server && ML_RUNTIME=onnx ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.jetson.yml up -d`
+* ONNX + *CPU* (for both x86 and Raspberry Pi-like platforms): `cd obico-server && ML_RUNTIME=onnx docker-compose up -d`
+
+
+# Debugging if ML container works
+If something bad happens and ML container does not work, try these steps:
+* check logs for any errors: `docker logs obico-server_ml_api`
+* try adding `-f docker-compose.debug.yml` which will open 3333 port and will allow you to execute sample request:
+```time curl http://localhost:3333/p/?img=https://github.com/TheSpaghettiDetective/obico-server/blob/master/ml_api/test_data/1.jpg?raw=true```
+* try using a different library/processor 
 

@@ -5,7 +5,7 @@
       :key="key"
       :temp-key="key"
       :temp-item="item"
-      :editable="editable"
+      :is-plugin-version-sufficient="isPluginVersionSufficient"
       @TempEditClicked="onEditClicked(key, item)"
     />
   </div>
@@ -25,14 +25,14 @@ export default {
       type: Object,
       required: true,
     },
-    editable: {
+    isPluginVersionSufficient: {
       type: Boolean,
       required: true,
     },
   },
   methods: {
     onEditClicked(key, item) {
-      if (this.editable) {
+      if (this.isPluginVersionSufficient && item.target !== null) {
         this.$emit('TempEditClicked', key, item)
       }
     },

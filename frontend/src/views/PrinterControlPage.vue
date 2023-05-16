@@ -75,15 +75,25 @@
             ></component>
           </template>
 
-          <div class="reorder-button-wrapper">
+          <div class="extra-actions">
+            <h2 class="section-title">Additional Actions</h2>
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
               <i class="fa-solid fa-arrows-up-down"></i>
               Reorder &amp; Hide
             </b-button>
+            <div class="text-muted extra-actions-explanation">
+              <small
+                >Customize this page for each of your printers by reodering or hiding cards
+                above.</small
+              >
+            </div>
             <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
               <i class="fa-solid fa-plus"></i>
               Add Printer
             </b-button>
+            <div class="text-muted extra-actions-explanation">
+              <small>Link another printer to Obico.</small>
+            </div>
           </div>
         </div>
         <div class="stream-container">
@@ -527,11 +537,23 @@ export default {
   background-color: rgb(0 0 0 / .5)
   padding: 4px 8px
 
-.reorder-button-wrapper
+.extra-actions
   display: flex
   justify-content: center
   margin-top: var(--gap-between-blocks)
   gap: 1rem
+  .extra-actions-explanation, .section-title
+    display: none
   @media (max-width: 510px)
+    margin-top: 2rem
     flex-direction: column
+    .extra-actions-explanation
+      display: block
+      text-align: center
+      margin-top: -0.5rem
+      margin-bottom: 1rem
+    .section-title
+      display: block
+      text-align: center
+      margin-bottom: 1rem
 </style>

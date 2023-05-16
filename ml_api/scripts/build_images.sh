@@ -38,9 +38,11 @@ VERSION_BASE=${PREFIX}/ml_api_${VARIANT}:${VERSION}
 echo Building $VERSION_BASE
 docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_${VARIANT} .
 docker push ${VERSION_BASE}-linux-amd64
-docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT}_l4t .
-docker push ${VERSION_BASE}-linux-arm64v8
-docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64v8
+# Does not work for now
+# docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT}_l4t .
+# docker push ${VERSION_BASE}-linux-arm64v8
+docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64
+#--amend ${VERSION_BASE}-linux-arm64v8
 docker manifest push ${VERSION_BASE}
 
 VARIANT=onnx_cpu

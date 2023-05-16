@@ -404,7 +404,7 @@ export default {
         ) {
           return 'Upgrade to the newest version of moonraker-obico to see current values.'
         } else if (this.currentFanSpeed === null) {
-          return 'Include [fan] in you printer.cfg file to see current Fan Speed.'
+          return 'Include [fan] in you printer.cfg file to see current fan speed.'
         }
       } else {
         if (

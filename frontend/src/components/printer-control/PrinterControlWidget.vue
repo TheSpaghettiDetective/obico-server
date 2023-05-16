@@ -658,20 +658,16 @@ export default {
   display: flex
   flex-direction: row
   justify-content: center
-  align-items: center
   gap: 1rem
   width: 100%
   flex-wrap: wrap
   @media (max-width: 510px)
-    flex-direction: column
-    align-items: stretch
-    width: 100%
-    gap: 1rem
+    gap: .5rem
 
 .menu-button
-  height: 110px
-  width: 110px
+  width: calc((100% - 3rem) / 3)
   flex-shrink: 0
+  padding: 1.5rem
   background-color: var(--color-background)
   color: var(--color-text-primary)
   border: none
@@ -683,9 +679,8 @@ export default {
   gap: .5rem
   cursor: pointer
   @media (max-width: 510px)
-    width: 100%
-    height: 60px
-    flex-direction: row
+    width: calc((100% - 2rem) / 3)
+    padding: 1rem
   &:hover
     opacity: .8
   &:disabled
@@ -708,6 +703,7 @@ export default {
     --icon-size: 24px !important
 .title
   font-size: 0.875rem
+  line-height: 1.2
 
 
 .control-panel

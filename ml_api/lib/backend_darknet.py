@@ -121,7 +121,7 @@ DIRNAME = os.path.abspath(
 # Loads darknet shared library. May fail if some dependencies like OpenCV not installed
 
 hasGPU = os.environ.get('ML_PROCESSOR', 'cpu').lower() == 'gpu'
-so_path = os.path.join(DIRNAME, "libdarknet{}.so".format('_gpu' if hasGPU else ''))
+so_path = os.path.join(DIRNAME, "libdarknet.so")
 
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]

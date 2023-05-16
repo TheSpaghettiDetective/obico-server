@@ -51,7 +51,7 @@ EXPOSE 3333
 WORKDIR /app
 
 ADD . /app
-COPY --from=gpu_build_darknet /app/darknet/libdarknet.so bin/libdarknet_gpu.so
+COPY --from=gpu_build_darknet /app/darknet/libdarknet.so bin/libdarknet.so
 COPY --from=models /app/model-weights.darknet /app/model/
 
 # -----------------------------------------------------------------------------
@@ -108,21 +108,23 @@ COPY --from=models /app/model-weights.onnx /app/model/
 #==============================================================================
 # Builder: Jetson-specific, Darknet-gpu version
 #==============================================================================
-FROM nvcr.io/nvidia/l4t-tensorrt:r8.5.2.2-devel as l4t-devel
+# this will not use cuDNN because no headers included
+# should be compatible with Jetpack 4xx
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as l4t-devel
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y ca-certificates build-essential gcc g++ cmake git
 WORKDIR /app
 RUN git clone https://github.com/AlexeyAB/darknet --depth 1
+ENV LIBRARY_PATH="${LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib:/usr/local/cuda/targets/aarch64-linux/lib/stubs"
 RUN cd darknet \
   && sed -i 's/GPU=0/GPU=1/' Makefile \
-  && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
-  && sed -i 's/CUDNN_HALF=0/CUDNN_HALF=1/' Makefile \
   && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
-  && make
+  && sed -i 's/lcudart/lcudart_static -ldl -lrt/' Makefile \
+  && make -j 4
+# no cudnn headers in 8.0.1
+#  && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
 
-FROM nvcr.io/nvidia/l4t-tensorrt:r8.5.2-runtime as ml_api_darknet_gpu_l4t
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install -y python3-pip
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as ml_api_darknet_gpu_l4t
 WORKDIR /app
 EXPOSE 3333
 RUN pip install --upgrade pip
@@ -130,17 +132,21 @@ ADD requirements.txt ./
 RUN pip install -r requirements.txt
 RUN pip install opencv_python_headless
 ADD . /app
-COPY --from=l4t-devel /app/darknet/libdarknet.so bin/libdarknet_gpu.so
+COPY --from=l4t-devel /app/darknet/libdarknet.so bin/libdarknet.so
 COPY --from=models /app/model-weights.darknet /app/model/
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib"
+RUN cp /usr/local/cuda/targets/aarch64-linux/lib/stubs/libcuda.so /usr/local/cuda/targets/aarch64-linux/lib/libcuda.so.1
 
 #==============================================================================
 # Output: Jetson-specific, Onnx-gpu version
 #==============================================================================
-# 8.4.1 version has Cuda 10, and onnxruntime 1.11 needs Cuda 10.
-# for a modern cuda, need to recompile onnxruntime from source
-FROM nvcr.io/nvidia/l4t-tensorrt:r8.4.1-runtime as ml_api_onnx_gpu_l4t
+# 8.0.1 version has Cuda 10, and onnxruntime 1.11 needs Cuda 10 
+# and jetpack 4 has cuda 10
+# for a modern cuda, need to recompile onnxruntime from source and have Jetpack 5 
+# (AGX Xavier)
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as ml_api_onnx_gpu_l4t
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install -y python3-pip wget
+RUN apt update && apt install -y wget
 EXPOSE 3333
 WORKDIR /app
 RUN pip install --upgrade pip

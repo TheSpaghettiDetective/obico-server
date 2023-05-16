@@ -121,8 +121,14 @@ RUN cd darknet \
   && make
 
 FROM nvcr.io/nvidia/l4t-tensorrt:r8.5.2-runtime as ml_api_darknet_gpu_l4t
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y python3-pip
 WORKDIR /app
 EXPOSE 3333
+RUN pip install --upgrade pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+RUN pip install opencv_python_headless
 ADD . /app
 COPY --from=l4t-devel /app/darknet/libdarknet.so bin/libdarknet_gpu.so
 COPY --from=models /app/model-weights.darknet /app/model/
@@ -130,7 +136,9 @@ COPY --from=models /app/model-weights.darknet /app/model/
 #==============================================================================
 # Output: Jetson-specific, Onnx-gpu version
 #==============================================================================
-FROM nvcr.io/nvidia/l4t-tensorrt:r8.5.2-runtime as ml_api_onnx_gpu_l4t
+# 8.4.1 version has Cuda 10, and onnxruntime 1.11 needs Cuda 10.
+# for a modern cuda, need to recompile onnxruntime from source
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.4.1-runtime as ml_api_onnx_gpu_l4t
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y python3-pip wget
 EXPOSE 3333

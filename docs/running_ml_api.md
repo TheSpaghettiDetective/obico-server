@@ -1,4 +1,4 @@
-#Running ML_api container
+# Running ML_api container
 
 ML algorithms can be executed with different hardware and software options:
 
@@ -11,6 +11,8 @@ Darknet is written by Yolo2 author and you can find more details [here](https://
 ONNX is Microsft-powered set of libraries and standards to execute neural networks on a different hardware.
 More details about ONNX can be found [here](https://onnxruntime.ai/).
 
+Darknet is now stable implementation of TSD, while ONNX support is in beta stage now and may have some issues.
+
 All suitable containers are build and now stored at docker.io registry, so you 
 probably don't need to compile them (takes hours). But if that is needed, you can 
 use [this script](building_docker_images.md).
@@ -20,7 +22,7 @@ versions of TSD. Changing the library and hardware usage can be done with enviro
 Assuming, the default (Darknet + CPU) is run with `cd obico-server && docker-compose up -d`, to run
 a different version you can use:
 
-* Darknet + *GPU*: `cd obico-server && ML_PROCESSOR=gpu docker-compose up -d`
-* ONNX + *CPU*: `cd obico-server && ML_RUNTIME=onnx docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
-* ONNX + *GPU*: `cd obico-server && ML_RUNTIME=onnx ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
+* Darknet + *GPU* (for both x86 and Jetson platforms): `cd obico-server && ML_PROCESSOR=gpu docker-compose up -d`
+* ONNX + *CPU* (for both x86 and Raspberry Pi-like platforms): `cd obico-server && ML_RUNTIME=onnx docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
+* ONNX + *GPU* (for both x76 and Jetson platforms): `cd obico-server && ML_RUNTIME=onnx ML_PROCESSOR=gpu docker-compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d`
 

@@ -356,9 +356,7 @@ p
   justify-content: center
   gap: 1rem
   margin-top: .5rem
-  @media (max-width: 480px)
-    flex-direction: column
-    gap: 1rem
+  flex-wrap: wrap
 
 .big-icon
   font-size: 2rem

@@ -339,14 +339,18 @@ export default {
 
   computed: {
     tools() {
-      const temperatures = {}
+      const extruders = {}
       for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
-        if (Boolean(value.actual) && !isNaN(value.actual) && !key.includes('bed')) {
+        if (
+          Boolean(value.actual) &&
+          !isNaN(value.actual) &&
+          (key.toLowerCase().includes('tool') || key.toLowerCase().includes('extruder'))
+        ) {
           // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
-          temperatures[key] = value
+          extruders[key] = value
         }
       }
-      return temperatures
+      return extruders
     },
     showExtrudeControl() {
       return Object.keys(this.tools).length > 0

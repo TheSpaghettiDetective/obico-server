@@ -10,11 +10,11 @@
               :key="key"
               :temp-key="key"
               :temp-item="item"
-              :editable="editable"
+              :is-plugin-version-sufficient="isPluginVersionSufficient"
               @TempEditClicked="onEditClicked(key, item)"
             />
             <b-button
-              v-if="editable"
+              v-if="isPluginVersionSufficient"
               variant="outline-primary"
               class="custom-button"
               @click="onTemperaturePresetsClicked"
@@ -72,7 +72,7 @@ export default {
       }
       return temperatures
     },
-    editable() {
+    isPluginVersionSufficient() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
       return get(this.printer, 'settings.temp_profiles') != undefined
     },
@@ -84,7 +84,7 @@ export default {
   methods: {
     temperatureDisplayName,
     onEditClicked(key, item) {
-      if (!this.editable) {
+      if (!this.isPluginVersionSufficient || item.target === null) {
         return
       }
 

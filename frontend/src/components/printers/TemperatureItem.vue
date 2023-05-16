@@ -1,5 +1,5 @@
 <template>
-  <div class="temp-item" :class="{ editable: editable }" @click="onEditClicked(tempKey, tempItem)">
+  <div class="temp-item" :class="{ editable }" @click="onEditClicked(tempKey, tempItem)">
     <div class="icon">
       <svg v-if="heaterIcon">
         <use :href="heaterIcon" />
@@ -9,7 +9,7 @@
     <div class="title">{{ temperatureDisplayName(tempKey) }}</div>
     <div class="value-wrapper">
       <div class="value">{{ parseFloat(tempItem.actual).toFixed(1) }} °C</div>
-      <div class="target">/ {{ Math.round(tempItem.target) }} °C</div>
+      <div v-if="editable" class="target">/ {{ Math.round(tempItem.target) }} °C</div>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default {
       type: String,
       required: true,
     },
-    editable: {
+    isPluginVersionSufficient: {
       type: Boolean,
       required: true,
     },
@@ -44,6 +44,9 @@ export default {
         return '#extruder'
       }
       return null
+    },
+    editable() {
+      return this.isPluginVersionSufficient && this.tempItem.target !== null
     },
   },
 
@@ -67,7 +70,8 @@ export default {
   border-radius: var(--border-radius-md)
   gap: 1rem
   align-items: center
-  cursor: pointer
+  &.editable
+    cursor: pointer
 .icon
   width: 36px
   height: 36px

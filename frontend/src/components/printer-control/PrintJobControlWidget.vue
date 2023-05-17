@@ -14,7 +14,7 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="!isPrinterInTransientState">
+        <template v-if="!printerTransientState">
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
               <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
@@ -112,9 +112,9 @@
             >
           </p>
         </template>
-        <template v-else-if="isPrinterInTransientState">
+        <template v-else-if="printerTransientState">
           <b-spinner label="Processing..."></b-spinner>
-          <p>{{ transientStateName }}...</p>
+          <p>{{ printerTransientState.title }}...</p>
         </template>
 
         <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">
@@ -201,8 +201,7 @@ export default {
       printerFiles: false,
 
       printerStateCheckInterval: null,
-      isPrinterInTransientState: false,
-      transientStateName: null,
+      printerTransientState: null,
     }
   },
 
@@ -323,19 +322,16 @@ export default {
       const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
 
       if (!savedValue) {
-        this.isPrinterInTransientState = false
-        this.transientStateName = null
+        this.printerTransientState = null
       } else if (savedValue === 'timeout') {
-        this.isPrinterInTransientState = false
-        this.transientStateName = null
+        this.printerTransientState = null
         this.$swal.fire({
           icon: 'error',
           title: 'Printer State Timeout',
           text: 'Why it may happen: [link]', // TODO:
         })
       } else {
-        this.isPrinterInTransientState = true
-        this.transientStateName = savedValue.transientStateName
+        this.printerTransientState = savedValue
       }
     },
   },

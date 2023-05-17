@@ -99,7 +99,7 @@
                     class="subtitle truncated"
                     :class="[
                       printer
-                        ? printer.isPrintable() && !isPrinterInTransientState
+                        ? printer.isPrintable() && !printerTransientState
                           ? 'text-success'
                           : 'text-warning'
                         : 'text-danger',
@@ -107,8 +107,8 @@
                   >
                     {{
                       printer
-                        ? isPrinterInTransientState
-                          ? transientStateName
+                        ? printerTransientState
+                          ? printerTransientState.title
                           : printer.printabilityText()
                         : 'Deleted'
                     }}
@@ -125,7 +125,7 @@
                 >
                   <button
                     class="btn btn-primary"
-                    :disabled="!printer.isPrintable() || isPrinterInTransientState"
+                    :disabled="!printer.isPrintable() || printerTransientState"
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" class="mr-2" small />
@@ -394,8 +394,7 @@ export default {
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
 
       printerStateCheckInterval: null,
-      isPrinterInTransientState: false,
-      transientStateName: null,
+      printerTransientState: null,
     }
   },
 
@@ -646,23 +645,17 @@ export default {
       const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
 
       if (!savedValue) {
-        this.isPrinterInTransientState = false
-        this.transientStateName = null
-        this.isSending = false
+        this.printerTransientState = null
       } else if (savedValue === 'timeout') {
-        this.isPrinterInTransientState = false
-        this.transientStateName = null
-        this.isSending = false
+        this.printerTransientState = null
         this.$swal.fire({
           icon: 'error',
           title: 'Printer State Timeout',
           text: 'Why it may happen: [link]', // TODO:
         })
       } else {
-        this.isPrinterInTransientState = true
-        this.transientStateName = savedValue.transientStateName
-
-        if (savedValue.transientStateName === 'Starting') {
+        this.printerTransientState = savedValue
+        if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
           this.isSending = true
         }
       }

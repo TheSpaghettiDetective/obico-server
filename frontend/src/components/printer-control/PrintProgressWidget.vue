@@ -141,7 +141,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import { setTransientState } from '@src/lib/printer-transient-state'
+import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
 
 export default {
   name: 'PrintProgressWidget',
@@ -171,6 +171,8 @@ export default {
       printProgressMillimeters: 0,
       printMillimetersTotal: 0,
       isPrintStarting: false,
+      printerStateCheckInterval: null,
+      printerTransientState: null,
     }
   },
 
@@ -209,6 +211,13 @@ export default {
     if (this.isPrinting) {
       this.updatePrintProgress()
     }
+
+    this.checkTransientState()
+    this.printerStateCheckInterval = setInterval(this.checkTransientState, 1000)
+  },
+
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -263,6 +272,27 @@ export default {
           this.isPrintStarting = false
         },
       })
+    },
+    checkTransientState() {
+      const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
+
+      if (!savedValue) {
+        this.printerTransientState = null
+      } else if (savedValue === 'timeout') {
+        this.printerTransientState = null
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Printer State Timeout',
+          text: 'Why it may happen: [link]', // TODO:
+        })
+      } else {
+        this.printerTransientState = savedValue
+        if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
+          this.isPrintStarting = true
+        } else {
+          this.isPrintStarting = false
+        }
+      }
     },
   },
 }

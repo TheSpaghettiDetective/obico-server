@@ -16,16 +16,10 @@
         <div
           class="printer-status"
           :class="[
-            printer.isPrintable() && !printer.isPrinterInTransientState
-              ? 'text-success'
-              : 'text-warning',
+            printer.isPrintable() && !printer.transientState ? 'text-success' : 'text-warning',
           ]"
         >
-          {{
-            printer.isPrinterInTransientState
-              ? printer.transientStateName
-              : printer.printabilityText()
-          }}
+          {{ printer.transientState ? printer.transientState.title : printer.printabilityText() }}
         </div>
       </div>
 
@@ -202,21 +196,18 @@ export default {
         const savedValue = getTransientState(printer.id, printer.status?.state?.text)
 
         if (!savedValue) {
-          this.printers[index].isPrinterInTransientState = false
-          this.printers[index].transientStateName = null
+          this.printers[index].transientState = null
         } else if (savedValue === 'timeout') {
-          this.printers[index].isPrinterInTransientState = false
-          this.printers[index].transientStateName = null
+          this.printers[index].transientState = null
           this.$swal.fire({
             icon: 'error',
             title: 'Printer State Timeout',
             text: 'Why it may happen: [link]', // TODO:
           })
         } else {
-          this.printers[index].isPrinterInTransientState = true
-          this.printers[index].transientStateName = savedValue.transientStateName
+          this.printers[index].transientState = savedValue
 
-          if (savedValue.transientStateName === 'Starting') {
+          if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
             oneIsStarting = true
             this.selectedPrinterId = printer.id
           }

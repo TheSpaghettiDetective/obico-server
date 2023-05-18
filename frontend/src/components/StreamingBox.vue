@@ -344,15 +344,15 @@ export default {
     onLoadStart() {
       this.videoLoading = true
     },
-    onStreamAvailable() {
+    onStreamAvailable(webrtcConn) {
       if (this.autoplay) {
-        this.webrtc.startStream()
+        webrtcConn.startStream()
       } else {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
         }
         if (!this.autoplay && this.isBasicStreamingInProgress) {
-          this.webrtc.startStream()
+          webrtcConn.startStream()
         }
         this.videoLimit.resumeVideoCycle()
       }

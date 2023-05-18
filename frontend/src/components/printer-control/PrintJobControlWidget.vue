@@ -14,7 +14,7 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="!printerTransientState">
+        <template v-if="!printerTransientState && !printer.inTransientState()">
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
               <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
@@ -112,9 +112,11 @@
             >
           </p>
         </template>
-        <template v-else-if="printerTransientState">
+        <template v-else-if="printerTransientState || printer.inTransientState()">
           <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printerTransientState.title }}...</p>
+          <p>
+            {{ printerTransientState ? printerTransientState.title : printer.status.state.text }}...
+          </p>
         </template>
 
         <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">

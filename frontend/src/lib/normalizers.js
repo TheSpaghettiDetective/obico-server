@@ -166,8 +166,9 @@ export const normalizedPrinter = (newData, oldData) => {
     inTransientState: function () {
       return (
         !this.hasError() &&
-        get(this, 'status.state.text', '').includes('ing') &&
-        !get(this, 'status.state.text', '').includes('Printing')
+        ((get(this, 'status.state.text', '').includes('ing') &&
+          !get(this, 'status.state.text', '').includes('Printing')) ||
+          get(this, 'status.state.text', '') === 'Downloading G-Code')
       )
     },
     inUserInteractionRequired: function () {

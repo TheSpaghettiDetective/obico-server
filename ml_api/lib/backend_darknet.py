@@ -19,11 +19,17 @@ class BOX(Structure):
 class DETECTION(Structure):
     _fields_ = [("bbox", BOX),
                 ("classes", c_int),
+                ("best_class_idx", c_int),
                 ("prob", POINTER(c_float)),
                 ("mask", POINTER(c_float)),
                 ("objectness", c_float),
-                ("sort_class", c_int)]
-
+                ("sort_class", c_int),
+                ("uc", POINTER(c_float)),
+                ("points", c_int),
+                ("embeddings", POINTER(c_float)),
+                ("embedding_size", c_int),
+                ("sim", c_float),
+                ("track_id", c_int)]
 
 class IMAGE(Structure):
     _fields_ = [("w", c_int),
@@ -114,8 +120,8 @@ DIRNAME = os.path.abspath(
 )
 # Loads darknet shared library. May fail if some dependencies like OpenCV not installed
 
-hasGPU = os.environ.get('HAS_GPU', 'False') == 'True'
-so_path = os.path.join(DIRNAME, "model_{}{}.so".format('gpu_' if hasGPU else '', platform.machine()))
+hasGPU = os.environ.get('ML_PROCESSOR', 'cpu').lower() == 'gpu'
+so_path = os.path.join(DIRNAME, "libdarknet.so")
 
 lib = CDLL(so_path, RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]

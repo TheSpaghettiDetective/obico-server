@@ -99,10 +99,8 @@
               <div class="progress-bar-wrapper">
                 <div class="progress-bar-inner" :style="`width: ${printProgressPercentage}%`"></div>
               </div>
-              <div v-if="printMillimetersTotal" class="layer-progress">
-                <span>{{ printProgressMillimeters }}</span>
-                <span> / {{ printMillimetersTotal }}</span>
-                <span> mm</span>
+              <div class="layer-progress" @click="toggleZHeightProgressType">
+                {{ zHeightProgress }}
               </div>
             </div>
             <div v-else class="actions">
@@ -141,6 +139,7 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
+import { getLocalPref, setLocalPref } from '@src/lib/pref'
 
 export default {
   name: 'PrintProgressWidget',
@@ -167,8 +166,7 @@ export default {
       timeRemaining: null,
       finishingAt: null,
       printProgressPercentage: 0,
-      printProgressMillimeters: 0,
-      printMillimetersTotal: 0,
+      preferZHeightProgressInLayers: getLocalPref('preferZHeightProgressInLayers', true),
       isPrintStarting: false,
     }
   },
@@ -191,6 +189,30 @@ export default {
     isPrinting() {
       return this.printer.isActive() && this.printer.progressCompletion() < 100
     },
+    zHeightProgress() {
+      let progressInMillimeters, progressInLayers
+
+      const progressMillimeters = this.printer.status?.currentZ
+      const totalMillimeters = this.printer.status?.file_metadata?.analysis?.printingArea?.maxZ
+
+      if (progressMillimeters || (progressMillimeters == 0 && totalMillimeters)) {
+        progressInMillimeters = `${Math.round(progressMillimeters)}/${Math.round(
+          totalMillimeters
+        )} mm`
+      }
+
+      const progressLayers = this.printer.status?.currentLayerHeight
+      const totalLayers = this.printer.status?.file_metadata?.obico?.totalLayerCount
+      if (progressLayers || (progressLayers == 0 && typeof totalLayers)) {
+        progressInLayers = `Layer ${Math.round(progressLayers)}/${Math.round(totalLayers)}`
+      }
+
+      if (this.preferZHeightProgressInLayers) {
+        return progressInLayers || 'Layer --/--'
+      } else {
+        return progressInMillimeters || '--/-- mm'
+      }
+    },
   },
 
   watch: {
@@ -211,6 +233,10 @@ export default {
   },
 
   methods: {
+    toggleZHeightProgressType() {
+      this.preferZHeightProgressInLayers = !this.preferZHeightProgressInLayers
+      setLocalPref('preferZHeightProgressInLayers', this.preferZHeightProgressInLayers)
+    },
     updatePrintProgress() {
       if (!this.isPrinting) return
       if (!this.print) return
@@ -326,4 +352,7 @@ export default {
 .empty-state-text
   text-align: center
   font-size: 1.125rem
+
+.layer-progress:hover
+  cursor: pointer
 </style>

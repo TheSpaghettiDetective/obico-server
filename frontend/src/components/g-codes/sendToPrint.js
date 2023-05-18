@@ -64,18 +64,6 @@ export const sendToPrint = (args) => {
 
   onCommandSent && onCommandSent()
 
-  Swal.Prompt.fire({
-    html: `
-        <div class="text-center">
-          <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-          <h5 class="pt-3">
-            Starting the print...
-          </h5>
-        </div>
-      `,
-    showConfirmButton: false,
-  })
-
   const checkPrinterStatus = async () => {
     let printer
     try {
@@ -92,7 +80,6 @@ export const sendToPrint = (args) => {
     ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {
-      Swal.close()
       onPrinterStatusChanged && onPrinterStatusChanged()
     }
   }

@@ -33,7 +33,7 @@
             <svg class="icon move-z"><use href="#svg-move-z" /></svg>
             <div class="title">Baby Step Z</div>
           </button>
-          <button class="menu-button" @click="activeMenu = 'tune-printer'">
+          <button v-if="!hideTunePrinter" class="menu-button" @click="activeMenu = 'tune-printer'">
             <i class="fa-solid fa-gear"></i>
             <div class="title">Tune Printer</div>
           </button>
@@ -171,114 +171,122 @@
         </div>
         <!-- Tune Printer -->
         <div v-show="activeMenu === 'tune-printer'" class="control-panel tune-printer">
-          <div class="controls-title">
-            <span>Feed Rate / Speed</span>
-            <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
-          </div>
-          <div class="controls">
-            <div class="custom">
-              <b-input-group prepend="%">
-                <template #append>
-                  <b-button
-                    variant="background"
-                    :disabled="
-                      customPrintSpeedFactor === null || parseInt(customPrintSpeedFactor) < 1
-                    "
-                    @click="setPrintSpeed(customPrintSpeedFactor)"
-                    >Apply</b-button
-                  >
-                </template>
-                <b-form-input
-                  v-model="customPrintSpeedFactor"
-                  placeholder="100"
-                  type="number"
-                  @focus="$event.target.select()"
-                ></b-form-input>
-              </b-input-group>
+          <template v-if="!printer.isAgentMoonraker() || currentFeedRate !== null">
+            <div class="controls-title">
+              <span>Feed Rate / Speed</span>
+              <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
             </div>
-          </div>
-
-          <div class="controls-title">
-            <span>Flow Rate</span>
-            <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
-          </div>
-          <div class="controls">
-            <div class="custom">
-              <b-input-group prepend="%">
-                <template #append>
-                  <b-button
-                    variant="background"
-                    :disabled="customFlowRateFactor === null || parseInt(customFlowRateFactor) < 1"
-                    @click="setFlowRate(customFlowRateFactor)"
-                    >Apply</b-button
-                  >
-                </template>
-                <b-form-input
-                  v-model="customFlowRateFactor"
-                  placeholder="100"
-                  type="number"
-                  @focus="$event.target.select()"
-                ></b-form-input>
-              </b-input-group>
+            <div class="controls">
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFeedRateFactor === null || parseInt(customFeedRateFactor) < 1
+                      "
+                      @click="setPrintSpeed(customFeedRateFactor)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFeedRateFactor"
+                    placeholder="100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
             </div>
-          </div>
+          </template>
 
-          <div class="controls-title">
-            <span>Fan Speed</span>
-            <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
-          </div>
-
-          <div class="controls">
-            <b-button
-              class="off"
-              variant="background"
-              small
-              @click="
-                {
-                  customFanSpeed = 0
-                  setFanSpeed(0)
-                }
-              "
-              >0% (Off)</b-button
-            >
-            <div class="custom">
-              <b-input-group prepend="%">
-                <template #append>
-                  <b-button
-                    variant="background"
-                    :disabled="
-                      customFanSpeed === null ||
-                      parseInt(customFanSpeed) > 100 ||
-                      parseInt(customFanSpeed) < 0
-                    "
-                    @click="setFanSpeed(customFanSpeed)"
-                    >Apply</b-button
-                  >
-                </template>
-                <b-form-input
-                  v-model="customFanSpeed"
-                  placeholder="0-100"
-                  type="number"
-                  @focus="$event.target.select()"
-                ></b-form-input>
-              </b-input-group>
+          <template v-if="!printer.isAgentMoonraker() || currentFlowRate !== null">
+            <div class="controls-title">
+              <span>Flow Rate</span>
+              <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
             </div>
-            <b-button
-              class="btn"
-              variant="background"
-              small
-              @click="
-                {
-                  customFanSpeed = 100
-                  setFanSpeed(100)
-                }
-              "
-              >100%</b-button
-            >
-          </div>
+            <div class="controls">
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFlowRateFactor === null || parseInt(customFlowRateFactor) < 1
+                      "
+                      @click="setFlowRate(customFlowRateFactor)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFlowRateFactor"
+                    placeholder="100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
+            </div>
+          </template>
 
-          <muted-alert v-if="printerTuneUserMessage !== null" class="info-block">
-            {{ printerTuneUserMessage }}
+          <template v-if="!printer.isAgentMoonraker() || currentFanSpeed !== null">
+            <div class="controls-title">
+              <span>Fan Speed</span>
+              <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+            </div>
+            <div class="controls">
+              <b-button
+                class="off"
+                variant="background"
+                small
+                @click="
+                  {
+                    customFanSpeed = 0
+                    setFanSpeed(0)
+                  }
+                "
+                >0% (Off)</b-button
+              >
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFanSpeed === null ||
+                        parseInt(customFanSpeed) > 100 ||
+                        parseInt(customFanSpeed) < 0
+                      "
+                      @click="setFanSpeed(customFanSpeed)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFanSpeed"
+                    placeholder="0-100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
+              <b-button
+                class="btn"
+                variant="background"
+                small
+                @click="
+                  {
+                    customFanSpeed = 100
+                    setFanSpeed(100)
+                  }
+                "
+                >100%</b-button
+              >
+            </div>
+          </template>
+
+          <muted-alert v-if="!printer.isAgentMoonraker()" class="info-block">
+            These settings can only be set. They can't be read back from the firmware due to a
+            limitation of the communication protocol.
           </muted-alert>
         </div>
       </div>
@@ -356,7 +364,7 @@ export default {
 
       currentZOffset: null,
 
-      customPrintSpeedFactor: null,
+      customFeedRateFactor: null,
       customFlowRateFactor: null,
       customFanSpeed: null,
     }
@@ -395,27 +403,13 @@ export default {
       const val = this.printer.status?.currentFanSpeed
       return val !== undefined ? val : null
     },
-    printerTuneUserMessage() {
-      if (this.printer.isAgentMoonraker()) {
-        if (
-          this.currentFlowRate === null &&
-          this.currentFanSpeed === null &&
-          this.currentFeedRate === null
-        ) {
-          return 'Upgrade to the newest version of moonraker-obico to see current values.'
-        } else if (this.currentFanSpeed === null) {
-          return 'Include [fan] in you printer.cfg file to see current fan speed.'
-        }
-      } else {
-        if (
-          this.currentFlowRate === null &&
-          this.currentFanSpeed === null &&
-          this.currentFeedRate === null
-        ) {
-          return "These settings can only be set. They can't be read back from the firmware due to a limitation of the communication protocol."
-        }
-      }
-      return null
+    hideTunePrinter() {
+      return (
+        this.printer.isAgentMoonraker() &&
+        this.currentFlowRate === null &&
+        this.currentFanSpeed === null &&
+        this.currentFeedRate === null
+      )
     },
   },
 
@@ -456,13 +450,12 @@ export default {
       if (newValue === 'baby-step-z') {
         this.getCurrentZOffset()
       } else if (newValue === 'tune-printer') {
-        this.customPrintSpeedFactor = this.currentFeedRate
-          ? Math.round(this.currentFeedRate * 100)
-          : null
-        this.customFlowRateFactor = this.currentFlowRate
-          ? Math.round(this.currentFlowRate * 100)
-          : null
-        this.customFanSpeed = this.currentFanSpeed ? Math.round(this.currentFanSpeed * 100) : null
+        this.customFeedRateFactor =
+          this.currentFeedRate !== null ? Math.round(this.currentFeedRate * 100) : null
+        this.customFlowRateFactor =
+          this.currentFlowRate !== null ? Math.round(this.currentFlowRate * 100) : null
+        this.customFanSpeed =
+          this.currentFanSpeed !== null ? Math.round(this.currentFanSpeed * 100) : null
       }
     },
   },

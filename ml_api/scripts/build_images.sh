@@ -23,44 +23,23 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 
-VARIANT=darknet_cpu
-VERSION_BASE=${PREFIX}/ml_api_${VARIANT}:${VERSION}
+# CPU + GPU image for both amd64 and arm64(jetson)
+VERSION_BASE=${PREFIX}/ml_api:${VERSION}
 echo Building $VERSION_BASE
-docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_${VARIANT} .
+docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api .
 docker push ${VERSION_BASE}-linux-amd64
-docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT} .
+# jetson-specific
+docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_jetson .
 docker push ${VERSION_BASE}-linux-arm64v8
 docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64v8
-docker manifest push ${VERSION_BASE}
+docker manifest push ${INSECURE} ${VERSION_BASE}
 
-VARIANT=darknet_gpu
-VERSION_BASE=${PREFIX}/ml_api_${VARIANT}:${VERSION}
+# CPU only, for amd64 and arm64 (Raspberry)
+VERSION_BASE=${PREFIX}/ml_api:${VERSION}-cpu
 echo Building $VERSION_BASE
-docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_${VARIANT} .
+docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_cpu .
 docker push ${VERSION_BASE}-linux-amd64
-# Does not work for now
-# docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT}_l4t .
-# docker push ${VERSION_BASE}-linux-arm64v8
-docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64
-#--amend ${VERSION_BASE}-linux-arm64v8
-docker manifest push ${VERSION_BASE}
-
-VARIANT=onnx_cpu
-VERSION_BASE=${PREFIX}/ml_api_${VARIANT}:${VERSION}
-echo Building $VERSION_BASE
-docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_${VARIANT} .
-docker push ${VERSION_BASE}-linux-amd64
-docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT} .
-docker push ${VERSION_BASE}-linux-arm64v8
-docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64v8 
-docker manifest push ${VERSION_BASE}
-
-VARIANT=onnx_gpu
-VERSION_BASE=${PREFIX}/ml_api_${VARIANT}:${VERSION}
-echo Building $VERSION_BASE
-docker build --platform linux/amd64 -t ${VERSION_BASE}-linux-amd64 --target ml_api_${VARIANT} .
-docker push ${VERSION_BASE}-linux-amd64
-docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_${VARIANT}_l4t .
+docker build --platform linux/arm64/v8 -t ${VERSION_BASE}-linux-arm64v8 --target ml_api_cpu .
 docker push ${VERSION_BASE}-linux-arm64v8
 docker manifest create ${INSECURE} ${VERSION_BASE} --amend ${VERSION_BASE}-linux-amd64 --amend ${VERSION_BASE}-linux-arm64v8
-docker manifest push ${VERSION_BASE}
+docker manifest push ${INSECURE} ${VERSION_BASE}

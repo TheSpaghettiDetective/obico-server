@@ -24,14 +24,27 @@ if environ.get('SENTRY_DSN'):
 
 app = flask.Flask(__name__)
 
+status = dict()
+
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
-hasGPU = environ.get('HAS_GPU', 'False') == 'True'
-default_model_file = 'model-weights.darknet' if hasGPU else 'model-weights.onnx' # ONNX model is much faster on CPU but slower on GPU than Darknet
+hasGPU = environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
+status["gpu_use_requested"] = hasGPU
+# setting HAS_ONNX will make it prefer using the Onnx over Darknet
+# but will still have Darknet as a fallback scenario
+has_ONNX = environ.get('HAS_ONNX', '0') == '1'
+status["onnx_use_requested"] = has_ONNX
+default_model_file = 'model-weights.onnx' if has_ONNX else 'model-weights.darknet' # ONNX model is much faster on CPU but slower on GPU than Darknet
 model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
+net_main, meta_main, net_errors = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
+if len(net_errors) != 0:
+    status["nn_errors"] = net_errors
+
+status["has_nn_loaded"] = net_main is not None
+status["nn_runtime"] = net_main.get_runtime_type() if net_main is not None else "Null"
+status["nn_has_gpu"] = net_main.has_gpu_enabled() if net_main is not None else False
 
 @app.route('/p/', methods=['GET'])
 @token_required
@@ -49,11 +62,16 @@ def get_p():
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 
+    # todo, not a correct way to report an error if exception 
     return jsonify({'detections': []})
 
 @app.route('/hc/', methods=['GET'])
 def health_check():
-    return 'ok'
+    return 'ok' if net_main is not None else 'error'
+
+@app.route('/status', methods=['GET'])
+def get_status():
+    return jsonify(status)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3333, threaded=False)

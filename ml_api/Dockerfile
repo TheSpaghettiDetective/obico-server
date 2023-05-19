@@ -122,7 +122,6 @@ COPY --from=models /app/model-weights.onnx /app/model/
 # Some hacks to make darknet see cuda libraries. May fail easily
 # this is only needed for Jetpack 4x and will not be needed for Jetpack 5
 ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib"
-RUN cp /usr/local/cuda/targets/aarch64-linux/lib/stubs/libcuda.so /usr/local/cuda/targets/aarch64-linux/lib/libcuda.so.1
 # https://elinux.org/Jetson_Zoo#ONNX_Runtime
 # May be unsafe to use such files, Todo: recompile onnx runtime
 RUN wget https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl -O onnxruntime_gpu-1.11.0-cp38-none-any.whl

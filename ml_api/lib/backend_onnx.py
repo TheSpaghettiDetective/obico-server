@@ -7,6 +7,7 @@ import os
 from lib.meta import Meta
 
 has_GPU = os.environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
+ONNX_NUM_THREADS = int(os.environ.get('ONNX_NUM_THREADS', '1'))
 
 class OnnxNet:
     session: onnxruntime.InferenceSession
@@ -21,15 +22,29 @@ class OnnxNet:
         if not os.path.exists(meta_path):
             raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
         providers = ['CUDAExecutionProvider'] if has_GPU else ['CPUExecutionProvider']
+
+        sess_options = None
+        if not has_GPU and ONNX_NUM_THREADS > 0:
+            sess_options = onnxruntime.SessionOptions()
+            sess_options.intra_op_num_threads = ONNX_NUM_THREADS 
+            sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
+            sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+
         try:
-            self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
+            self.session = onnxruntime.InferenceSession(onnx_path, sess_options, providers=providers)
         except Exception as e:
             print(f"Unable to create ONNX session. HAS_GPU={has_GPU}, error={e}")
             if has_GPU:
                 print("Trying to fallback into CPU execution")
                 has_GPU = False
-                providers = ['CUDAExecutionProvider'] if has_GPU else ['CPUExecutionProvider']
-                self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
+                sess_options = None
+                if ONNX_NUM_THREADS > 0:
+                    sess_options = onnxruntime.SessionOptions()
+                    sess_options.intra_op_num_threads = ONNX_NUM_THREADS 
+                    sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
+                    sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+                providers = ['CPUExecutionProvider']
+                self.session = onnxruntime.InferenceSession(onnx_path, sess_options, providers=providers)
 
         self.meta = Meta(meta_path)
         self.has_gpu = has_GPU

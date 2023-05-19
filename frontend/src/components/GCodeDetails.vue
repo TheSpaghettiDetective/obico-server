@@ -229,12 +229,14 @@ export default {
   methods: {
     updateThumbnail() {
       let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
+      let thumbnailUrl = null
       for (const t of thumbnailProps) {
         if (this.file[t]) {
-          this.thumbnailUrl = this.file[t]
+          thumbnailUrl = this.file[t]
           break
         }
       }
+      this.thumbnailUrl = thumbnailUrl
     },
   },
 }

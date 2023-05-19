@@ -6,6 +6,7 @@ import cv2
 import platform
 from typing import List, Tuple
 
+DARKNET_LOAD_ERRORS=[]
 
 # C-structures from Darknet lib
 
@@ -46,6 +47,7 @@ class YoloNet:
     """Darknet-based detector implementation"""
     net: c_void_p
     meta: METADATA
+    has_gpu: bool
 
     def __init__(self, config_path: str, weight_path: str, meta_path: str):
         if not os.path.exists(config_path):
@@ -54,8 +56,19 @@ class YoloNet:
             raise ValueError("Invalid weight path `"+os.path.abspath(weight_path)+"`")
         if not os.path.exists(meta_path):
             raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
+        if not lib:
+            raise ImportError(f"Unable to load darknet module: {DARKNET_LOAD_ERRORS}")
+
         self.net = load_net_custom(config_path.encode("ascii"), weight_path.encode("ascii"), 0, 1)  # batch size = 1
         self.meta = load_meta(meta_path.encode("ascii"))
+        global hasGPU
+        self.has_gpu = hasGPU
+
+    def get_runtime_type(self) -> str:
+        return "Darknet"
+
+    def has_gpu_enabled(self):
+        return self.has_gpu
 
     def detect(self, meta, image, alt_names, thresh=.5, hier_thresh=.5, nms=.45, debug=False) -> List[Tuple[str, float, Tuple[float, float, float, float]]]:
         #pylint: disable= C0321
@@ -119,83 +132,101 @@ DIRNAME = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin")
 )
 # Loads darknet shared library. May fail if some dependencies like OpenCV not installed
+# if GPU was requests, it tries to load libdarknet_gpu.so, but thay may need
+# Cuda + Cudnn and other libraries in path, which may not exist
+# For the such case, it will try to fallback into CPU mode
+hasGPU = os.environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
+so_path = os.path.join(DIRNAME, "libdarknet_gpu.so" if hasGPU else "libdarknet.so")
+lib = None
+try:
+    lib = CDLL(so_path, RTLD_GLOBAL)
+except Exception as e:
+    print(f"Error loading Darknet module. HAS_GPU={hasGPU}, erors={e}")
+    DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
+    # fallback into CPU if unable to load a requested GPU version
+    if hasGPU:
+        print("Trying to fallback into CPU execution")
+        hasGPU = False
+        so_path = os.path.join(DIRNAME, "libdarknet_gpu.so" if hasGPU else "libdarknet.so")
+        try:
+            lib = CDLL(so_path, RTLD_GLOBAL)
+        except Exception as e:
+            print(f"Error loading Darknet module. HAS_GPU={hasGPU}, erors={e}")
+            DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
 
-hasGPU = os.environ.get('ML_PROCESSOR', 'cpu').lower() == 'gpu'
-so_path = os.path.join(DIRNAME, "libdarknet.so")
+if lib:
+    lib.network_width.argtypes = [c_void_p]
+    lib.network_width.restype = c_int
+    lib.network_height.argtypes = [c_void_p]
+    lib.network_height.restype = c_int
 
-lib = CDLL(so_path, RTLD_GLOBAL)
-lib.network_width.argtypes = [c_void_p]
-lib.network_width.restype = c_int
-lib.network_height.argtypes = [c_void_p]
-lib.network_height.restype = c_int
+    predict = lib.network_predict
+    predict.argtypes = [c_void_p, POINTER(c_float)]
+    predict.restype = POINTER(c_float)
 
-predict = lib.network_predict
-predict.argtypes = [c_void_p, POINTER(c_float)]
-predict.restype = POINTER(c_float)
+    if hasGPU:
+        set_gpu = lib.cuda_set_device
+        set_gpu.argtypes = [c_int]
 
-if hasGPU:
-    set_gpu = lib.cuda_set_device
-    set_gpu.argtypes = [c_int]
+    make_image = lib.make_image
+    make_image.argtypes = [c_int, c_int, c_int]
+    make_image.restype = IMAGE
 
-make_image = lib.make_image
-make_image.argtypes = [c_int, c_int, c_int]
-make_image.restype = IMAGE
+    get_network_boxes = lib.get_network_boxes
+    get_network_boxes.argtypes = [c_void_p, c_int, c_int, c_float, c_float, POINTER(c_int), c_int, POINTER(c_int), c_int]
+    get_network_boxes.restype = POINTER(DETECTION)
 
-get_network_boxes = lib.get_network_boxes
-get_network_boxes.argtypes = [c_void_p, c_int, c_int, c_float, c_float, POINTER(c_int), c_int, POINTER(c_int), c_int]
-get_network_boxes.restype = POINTER(DETECTION)
+    make_network_boxes = lib.make_network_boxes
+    make_network_boxes.argtypes = [c_void_p]
+    make_network_boxes.restype = POINTER(DETECTION)
 
-make_network_boxes = lib.make_network_boxes
-make_network_boxes.argtypes = [c_void_p]
-make_network_boxes.restype = POINTER(DETECTION)
+    free_detections = lib.free_detections
+    free_detections.argtypes = [POINTER(DETECTION), c_int]
 
-free_detections = lib.free_detections
-free_detections.argtypes = [POINTER(DETECTION), c_int]
+    free_ptrs = lib.free_ptrs
+    free_ptrs.argtypes = [POINTER(c_void_p), c_int]
 
-free_ptrs = lib.free_ptrs
-free_ptrs.argtypes = [POINTER(c_void_p), c_int]
+    network_predict = lib.network_predict
+    network_predict.argtypes = [c_void_p, POINTER(c_float)]
 
-network_predict = lib.network_predict
-network_predict.argtypes = [c_void_p, POINTER(c_float)]
+    reset_rnn = lib.reset_rnn
+    reset_rnn.argtypes = [c_void_p]
 
-reset_rnn = lib.reset_rnn
-reset_rnn.argtypes = [c_void_p]
+    load_net = lib.load_network
+    load_net.argtypes = [c_char_p, c_char_p, c_int]
+    load_net.restype = c_void_p
 
-load_net = lib.load_network
-load_net.argtypes = [c_char_p, c_char_p, c_int]
-load_net.restype = c_void_p
+    load_net_custom = lib.load_network_custom
+    load_net_custom.argtypes = [c_char_p, c_char_p, c_int, c_int]
+    load_net_custom.restype = c_void_p
 
-load_net_custom = lib.load_network_custom
-load_net_custom.argtypes = [c_char_p, c_char_p, c_int, c_int]
-load_net_custom.restype = c_void_p
+    do_nms_obj = lib.do_nms_obj
+    do_nms_obj.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
 
-do_nms_obj = lib.do_nms_obj
-do_nms_obj.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
+    do_nms_sort = lib.do_nms_sort
+    do_nms_sort.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
 
-do_nms_sort = lib.do_nms_sort
-do_nms_sort.argtypes = [POINTER(DETECTION), c_int, c_int, c_float]
+    free_image = lib.free_image
+    free_image.argtypes = [IMAGE]
 
-free_image = lib.free_image
-free_image.argtypes = [IMAGE]
+    letterbox_image = lib.letterbox_image
+    letterbox_image.argtypes = [IMAGE, c_int, c_int]
+    letterbox_image.restype = IMAGE
 
-letterbox_image = lib.letterbox_image
-letterbox_image.argtypes = [IMAGE, c_int, c_int]
-letterbox_image.restype = IMAGE
+    load_meta = lib.get_metadata
+    lib.get_metadata.argtypes = [c_char_p]
+    lib.get_metadata.restype = METADATA
 
-load_meta = lib.get_metadata
-lib.get_metadata.argtypes = [c_char_p]
-lib.get_metadata.restype = METADATA
+    load_image = lib.load_image_color
+    load_image.argtypes = [c_char_p, c_int, c_int]
+    load_image.restype = IMAGE
 
-load_image = lib.load_image_color
-load_image.argtypes = [c_char_p, c_int, c_int]
-load_image.restype = IMAGE
+    rgbgr_image = lib.rgbgr_image
+    rgbgr_image.argtypes = [IMAGE]
 
-rgbgr_image = lib.rgbgr_image
-rgbgr_image.argtypes = [IMAGE]
-
-predict_image = lib.network_predict_image
-predict_image.argtypes = [c_void_p, IMAGE]
-predict_image.restype = POINTER(c_float)
+    predict_image = lib.network_predict_image
+    predict_image.argtypes = [c_void_p, IMAGE]
+    predict_image.restype = POINTER(c_float)
 
 def sample(probs):
     s = sum(probs)

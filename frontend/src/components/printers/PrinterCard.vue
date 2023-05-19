@@ -223,7 +223,7 @@ import axios from 'axios'
 
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
@@ -354,7 +354,7 @@ export default {
     },
   },
   created() {
-    this.printerComm = PrinterComm(
+    this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
       (data) => {

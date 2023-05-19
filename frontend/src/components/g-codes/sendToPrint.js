@@ -2,7 +2,7 @@ import axios from 'axios'
 import get from 'lodash/get'
 import { clearTransientState } from '@src/lib/printer-transient-state'
 
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import {
   printPrinterLocalGCodeOctoPrint,
   printPrinterLocalGCodeMoonraker,
@@ -39,7 +39,7 @@ export const sendToPrint = (args) => {
     isAgentMoonraker = false,
   } = args
 
-  const printerComm = PrinterComm(
+  const printerComm = printerCommManager.getOrCreatePrinterComm(
     printerId,
     urls.printerWebSocket(printerId),
     (data) => {},

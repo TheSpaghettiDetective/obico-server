@@ -6,48 +6,6 @@ import pako from 'pako'
 import { toArrayBuffer } from '@src/lib/utils'
 import { clearTransientState } from '@src/lib/printer-transient-state'
 
-class PrinterCommManager {
-  constructor() {
-    if (!PrinterCommManager.instance) {
-      this.printerCommMap = new Map()
-      PrinterCommManager.instance = this
-    }
-    return PrinterCommManager.instance
-  }
-
-  setPrinterComm(printerId, printerComm) {
-    this.printerCommMap.set(printerId, printerComm)
-  }
-
-  getPrinterComm(printerId) {
-    return this.printerCommMap.get(printerId)
-  }
-
-  getOrCreatePrinterComm(...props) {
-    const printerId = String(props[0]) // assuming same args as for PrinterComm function
-    if (!this.getPrinterComm(printerId)) {
-      this.setPrinterComm(printerId, PrinterComm(...props))
-    }
-    return this.getPrinterComm(printerId)
-  }
-
-  closeConnection(printerId) {
-    const printerComm = this.getPrinterComm(printerId)
-    if (printerComm) {
-      printerComm.closeServerWebSocket()
-      if (printerComm.webrtc) printerComm.webrtc.close()
-      this.printerCommMap.delete(printerId)
-    }
-  }
-
-  closeAllConnections() {
-    this.printerCommMap.forEach((_, token) => this.closeConnection(token))
-  }
-}
-
-export const printerCommManager = new PrinterCommManager()
-Object.freeze(printerCommManager)
-
 export default function PrinterComm(
   printerId,
   wsUri,

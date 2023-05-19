@@ -38,7 +38,7 @@
 import split from 'lodash/split'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import urls from '@config/server-urls'
-import { printerCommManager } from '@src/lib/printer-comm'
+import PrinterComm from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import StreamingBox from '@src/components/StreamingBox'
 import NavBar from '@src/components/NavBar.vue'
@@ -60,7 +60,7 @@ export default {
   },
   created() {
     this.shareToken = split(window.location.pathname, '/').slice(-2, -1).pop()
-    this.printerComm = printerCommManager.getOrCreatePrinterComm(
+    this.printerComm = PrinterComm(
       this.shareToken,
       urls.printerSharedWebSocket(this.shareToken),
       (data) => {

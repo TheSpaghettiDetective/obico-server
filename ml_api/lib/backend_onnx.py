@@ -3,6 +3,7 @@ import onnxruntime
 import numpy as np
 import cv2
 import os
+import logging
 
 from lib.meta import Meta
 
@@ -31,9 +32,10 @@ class OnnxNet:
             sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
 
         try:
+            logging.warning(f'Trying to load ONNX from {onnx_path} - options: {sess_options} - providers: {providers}')
             self.session = onnxruntime.InferenceSession(onnx_path, sess_options, providers=providers)
         except Exception as e:
-            print(f"Unable to create ONNX session. HAS_GPU={has_GPU}, error={e}")
+            logging.warning(f"Unable to create ONNX session. HAS_GPU={has_GPU}, error={e}")
             if has_GPU:
                 print("Trying to fallback into CPU execution")
                 has_GPU = False

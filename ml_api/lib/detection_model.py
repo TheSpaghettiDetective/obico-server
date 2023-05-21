@@ -4,7 +4,7 @@
 from enum import Enum
 from lib.meta import Meta
 import os
-
+import logging
 
 #GLOBALS
 net_main = None
@@ -29,6 +29,7 @@ except:
 def load_net(config_path, weight_path, meta_path):
     global meta_main, net_main, alt_names  # pylint: disable=W0603
 
+    logging.warning(f'Trying to load a workable net... config_path: {config_path} - weight_path: {weight_path} - meta_path: {meta_path}')
     errors = []
 
     if net_main is None:
@@ -36,11 +37,13 @@ def load_net(config_path, weight_path, meta_path):
         if prefer_onnx:
             if onnx_ready:
                 try:
+                    logging.warning('Trying ONNX module...')
                     net_main = OnnxNet(weight_path, meta_path)
+                    logging.warning('Succeeded!')
                 except Exception as e:
-                    error = f"Unable to load ONNX module: {e}" 
+                    error = f"Unable to load ONNX module: {e}"
                     errors.append(error)
-                    print(error)
+                    logging.warning(error)
             else:
                 errors.append("Onnx is not ready")
 
@@ -48,11 +51,13 @@ def load_net(config_path, weight_path, meta_path):
         if net_main is None:
             if darknet_ready:
                 try:
+                    logging.warning('Trying YoloNet...')
                     net_main = YoloNet(config_path, weight_path, meta_path)
+                    logging.warning('Succeeded!')
                 except Exception as e:
                     error = f"Unable to load Darknet module: {e}"
                     errors.append(e)
-                    print(error)
+                    logging.warning(error)
             else:
                 errors.append("Darknet is not ready")
 

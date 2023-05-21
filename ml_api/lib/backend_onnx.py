@@ -6,55 +6,14 @@ import os
 
 from lib.meta import Meta
 
-has_GPU = os.environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
-ONNX_NUM_THREADS = int(os.environ.get('ONNX_NUM_THREADS', '1'))
-
 class OnnxNet:
     session: onnxruntime.InferenceSession
     meta: Meta
-    has_gpu: bool
 
-    def __init__(self, onnx_path: str, meta_path: str):
-        global has_GPU
-
-        if not os.path.exists(onnx_path):
-            raise ValueError("Invalid weight path `"+os.path.abspath(onnx_path)+"`")
-        if not os.path.exists(meta_path):
-            raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
-        providers = ['CUDAExecutionProvider'] if has_GPU else ['CPUExecutionProvider']
-
-        sess_options = None
-        if not has_GPU and ONNX_NUM_THREADS > 0:
-            sess_options = onnxruntime.SessionOptions()
-            sess_options.intra_op_num_threads = ONNX_NUM_THREADS
-            sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
-            sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-
-        try:
-            print(f'Trying to load ONNX from {onnx_path} - options: {sess_options} - providers: {providers}')
-            self.session = onnxruntime.InferenceSession(onnx_path, sess_options, providers=providers)
-        except Exception as e:
-            print(f"Unable to create ONNX session. HAS_GPU={has_GPU}, error={e}")
-            if has_GPU:
-                print("Trying to fallback into CPU execution")
-                has_GPU = False
-                sess_options = None
-                if ONNX_NUM_THREADS > 0:
-                    sess_options = onnxruntime.SessionOptions()
-                    sess_options.intra_op_num_threads = ONNX_NUM_THREADS
-                    sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
-                    sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-                providers = ['CPUExecutionProvider']
-                self.session = onnxruntime.InferenceSession(onnx_path, sess_options, providers=providers)
-
+    def __init__(self, onnx_path: str, meta_path: str, use_gpu: bool):
+        providers = ['CUDAExecutionProvider'] if use_gpu else ['CPUExecutionProvider']
+        self.session = onnxruntime.InferenceSession(onnx_path, providers=providers)
         self.meta = Meta(meta_path)
-        self.has_gpu = has_GPU
-
-    def get_runtime_type(self) -> str:
-        return "ONNX"
-
-    def has_gpu_enabled(self) -> bool:
-        return self.has_gpu
 
     def detect(self, meta, image, alt_names, thresh=.5, hier_thresh=.5, nms=.45, debug=False) -> List[Tuple[str, float, Tuple[float, float, float, float]]]:
         input_h = self.session.get_inputs()[0].shape[2]
@@ -75,8 +34,6 @@ class OnnxNet:
         detections = post_processing(outputs, width, height, thresh, nms, meta.names)
         return detections[0]
 
-    def force_cpu(self):
-        self.session.set_providers(['CPUExecutionProvider'])
 
 def nms_cpu(boxes, confs, nms_thresh=0.5, min_mode=False):
     # print(boxes.shape)

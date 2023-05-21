@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--print", action='store_true', help="Print detections")
     opt = parser.parse_args()
 
-    net_main_1 = load_net("model/model.cfg", opt.weights, "model/model.meta")
+    net_main_1 = load_net("model/model.cfg", "model/model.meta", weight_path=opt.weights)
 
     # force use CPU, only implemented for ONNX
     if opt.cpu and onnx_ready and isinstance(net_main_1, OnnxNet):

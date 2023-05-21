@@ -3,61 +3,57 @@
 # pylint: disable=R, W0401, W0614, W0703
 from enum import Enum
 from lib.meta import Meta
-import os
+from os import path
 
 alt_names = None
 
-# optional import for darknet
+darknet_ready = True
 try:
     from lib.backend_darknet import YoloNet
-    darknet_ready = True
 except:
     darknet_ready = False
 
-# optional import for onnx
+onnx_ready = True
 try:
     from lib.backend_onnx import OnnxNet
-    onnx_ready = True
 except:
     onnx_ready = False
 
 
-def load_net(config_path, weight_path, meta_path):
+def load_net(config_path, meta_path, weight_path=None):
+
+    def try_loading_net(config_path_inner, meta_path_inner, weight_paths_to_try):
+        for use_gpu in [True, False]:
+            for weight in weight_paths_to_try:
+                net_main = None
+                try:
+                    print(f'Trying to load weight: {weight} - use_gpu = {use_gpu} ...')
+                    if weight.endswith(".onnx"):
+                        if not onnx_ready:
+                            raise Exception('OnnxNet failed to be imported')
+                        net_main = OnnxNet(weight, meta_path_inner, use_gpu)
+
+                    elif weight.endswith(".darknet"):
+                        if not darknet_ready:
+                            raise Exception('YoloNet failed to be imported')
+                        net_main = YoloNet(config_path, weight, meta_path)
+
+                    else:
+                        raise Exception(f'Can not recognize net from weight file surfix: {weight}')
+
+                    print('Succeeded!')
+                    return net_main
+                except Exception as e:
+                    print(f'Failed! - {e}')
+
+        raise Exception(f'Failed to load any of these weights: {weight_paths_to_try}')
+
     global alt_names  # pylint: disable=W0603
 
-    print(f'Trying to load a workable net... config_path: {config_path} - weight_path: {weight_path} - meta_path: {meta_path}')
-
-    net_main = None
-    prefer_onnx = weight_path.endswith(".onnx")
-    if prefer_onnx:
-        if onnx_ready:
-            try:
-                print('Trying ONNX module...')
-                net_main = OnnxNet(weight_path, meta_path)
-                print('Succeeded!')
-            except Exception as e:
-                error = f"Unable to load ONNX module: {e}"
-                print(error)
-        else:
-            print("Onnx is not ready")
-
-    # if darknet requested or if unable to load the onnx
-    if net_main is None:
-        if darknet_ready:
-            try:
-                print('Trying YoloNet...')
-                net_main = YoloNet(config_path, weight_path, meta_path)
-                print('Succeeded!')
-            except Exception as e:
-                error = f"Unable to load Darknet module: {e}"
-                print(error)
-        else:
-            print("Darknet is not ready")
-
-    if net_main is None:
-        return None
-
-    meta_main = net_main.meta
+    model_dir = path.join(path.dirname(path.realpath(__file__)), '..', 'model')
+    default_weight_paths = [ path.join(model_dir, model_file) for model_file in ['model-weights.darknet', 'model-weights.onnx'] ] # TODO: Darknet has higher piroity now before ONNX accuracy is verified
+    weight_paths_to_try = [weight_path,] if weight_path is not None else default_weight_paths
+    net_main = try_loading_net(config_path, meta_path, weight_paths_to_try)
 
     if alt_names is None:
         # In Python 3, the metafile default access craps out on Windows (but not Linux)

@@ -38,7 +38,7 @@ default_model_file = 'model-weights.onnx' if has_ONNX else 'model-weights.darkne
 model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
+net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.meta'))
 
 @app.route('/p/', methods=['GET'])
 @token_required

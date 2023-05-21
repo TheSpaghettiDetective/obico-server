@@ -6,8 +6,6 @@ import cv2
 import platform
 from typing import List, Tuple
 
-DARKNET_LOAD_ERRORS=[]
-
 # C-structures from Darknet lib
 
 class BOX(Structure):
@@ -47,9 +45,8 @@ class YoloNet:
     """Darknet-based detector implementation"""
     net: c_void_p
     meta: METADATA
-    has_gpu: bool
 
-    def __init__(self, config_path: str, weight_path: str, meta_path: str):
+    def __init__(self, weight_path: str, meta_path: str, config_path: str, asked_to_use_gpu: bool):
         if not os.path.exists(config_path):
             raise ValueError("Invalid config path `"+os.path.abspath(config_path)+"`")
         if not os.path.exists(weight_path):
@@ -57,18 +54,13 @@ class YoloNet:
         if not os.path.exists(meta_path):
             raise ValueError("Invalid data file path `"+os.path.abspath(meta_path)+"`")
         if not lib:
-            raise ImportError(f"Unable to load darknet module: {DARKNET_LOAD_ERRORS}")
+            raise ImportError(f"Unable to load darknet module.")
+
+        if asked_to_use_gpu and not using_gpu:
+            raise Exception('I respectfully decline to load the net as I am asked to use GPU but the loaded darknet module does NOT have GPU support')
 
         self.net = load_net_custom(config_path.encode("ascii"), weight_path.encode("ascii"), 0, 1)  # batch size = 1
         self.meta = load_meta(meta_path.encode("ascii"))
-        global hasGPU
-        self.has_gpu = hasGPU
-
-    def get_runtime_type(self) -> str:
-        return "Darknet"
-
-    def has_gpu_enabled(self):
-        return self.has_gpu
 
     def detect(self, meta, image, alt_names, thresh=.5, hier_thresh=.5, nms=.45, debug=False) -> List[Tuple[str, float, Tuple[float, float, float, float]]]:
         #pylint: disable= C0321
@@ -131,30 +123,30 @@ class YoloNet:
 DIRNAME = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin")
 )
+
 # Loads darknet shared library. May fail if some dependencies like OpenCV not installed
-# if GPU was requests, it tries to load libdarknet_gpu.so, but thay may need
-# Cuda + Cudnn and other libraries in path, which may not exist
-# For the such case, it will try to fallback into CPU mode
-hasGPU = os.environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
-so_path = os.path.join(DIRNAME, "libdarknet_gpu.so" if hasGPU else "libdarknet.so")
+# libdarknet_gpu.so needs Cuda + Cudnn and other libraries in path, which may not exist
+# For the such case, it will try to load libdarknet.so instead
 lib = None
+using_gpu = False
+
+print('\n')
 try:
-    print(f'Trying to load darknet module {so_path}')
+    so_path = os.path.join(DIRNAME, "libdarknet_gpu.so")
+    print(f"Let's try darknet lib built with GPU support - {so_path}")
     lib = CDLL(so_path, RTLD_GLOBAL)
+    print(f"Done! Hooray! Now we have darknet with GPU support.")
+    using_gpu = True
+
 except Exception as e:
-    print(f"Failed! erors={e}")
-    DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
-    # fallback into CPU if unable to load a requested GPU version
-    if hasGPU:
-        print("Falling back to darknet CPU module")
-        hasGPU = False
-        so_path = os.path.join(DIRNAME, "libdarknet.so")
-        try:
-            print(f'Trying to load darknet module {so_path}')
-            lib = CDLL(so_path, RTLD_GLOBAL)
-        except Exception as e:
-            print(f"Failed! erors={e}")
-            DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
+    print(f"Nope! Failed to load darknet lib built with GPU support. erors={e}")
+
+    so_path = os.path.join(DIRNAME, "libdarknet.so")
+    print(f"Now let's try darknet lib on CPU - {so_path}")
+    lib = CDLL(so_path, RTLD_GLOBAL)
+    print(f"Done! Darknet is now running on CPU.")
+
+print('\n')
 
 if lib:
     lib.network_width.argtypes = [c_void_p]
@@ -166,7 +158,7 @@ if lib:
     predict.argtypes = [c_void_p, POINTER(c_float)]
     predict.restype = POINTER(c_float)
 
-    if hasGPU:
+    if using_gpu:
         set_gpu = lib.cuda_set_device
         set_gpu.argtypes = [c_int]
 

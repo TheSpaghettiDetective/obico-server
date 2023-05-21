@@ -10,50 +10,61 @@ alt_names = None
 darknet_ready = True
 try:
     from lib.backend_darknet import YoloNet
-except:
+except Exception as e:
+    print(f'Error during importing YoloNet! - {e}')
     darknet_ready = False
 
 onnx_ready = True
 try:
     from lib.backend_onnx import OnnxNet
-except:
+except Exception as e:
+    print(f'Error during importing OnnxNet! - {e}')
     onnx_ready = False
 
 
-def load_net(config_path, meta_path, weight_path=None):
+def load_net(config_path, meta_path, weights_path=None):
 
-    def try_loading_net(config_path_inner, meta_path_inner, weight_paths_to_try):
-        for use_gpu in [True, False]:
-            for weight in weight_paths_to_try:
-                net_main = None
-                try:
-                    print(f'Trying to load weight: {weight} - use_gpu = {use_gpu} ...')
-                    if weight.endswith(".onnx"):
-                        if not onnx_ready:
-                            raise Exception('OnnxNet failed to be imported')
-                        net_main = OnnxNet(weight, meta_path_inner, use_gpu)
+    def try_loading_net(net_config_priority):
+        for net_config in net_config_priority:
+            weights = net_config['weights_path']
+            use_gpu = net_config['use_gpu']
 
-                    elif weight.endswith(".darknet"):
-                        if not darknet_ready:
-                            raise Exception('YoloNet failed to be imported')
-                        net_main = YoloNet(config_path, weight, meta_path)
+            net_main = None
+            try:
+                print(f'----- Trying to load weights: {weights} - use_gpu = {use_gpu} -----')
+                if weights.endswith(".onnx"):
+                    if not onnx_ready:
+                        raise Exception('Not loading ONNX net due to previous import failure. Check earlier log for errors.')
+                    net_main = OnnxNet(weights, meta_path, use_gpu)
 
-                    else:
-                        raise Exception(f'Can not recognize net from weight file surfix: {weight}')
+                elif weights.endswith(".darknet"):
+                    if not darknet_ready:
+                        raise Exception('Not loading darknet net due to previous import failure. Check earlier log for errors.')
+                    net_main = YoloNet(weights, meta_path, config_path, use_gpu)
 
-                    print('Succeeded!')
-                    return net_main
-                except Exception as e:
-                    print(f'Failed! - {e}')
+                else:
+                    raise Exception(f'Can not recognize net from weights file surfix: {weights}')
 
-        raise Exception(f'Failed to load any of these weights: {weight_paths_to_try}')
+                print('Succeeded!')
+                return net_main
+            except Exception as e:
+                print(f'Failed! - {e}')
+
+        raise Exception(f'Failed to load any net after trying: {net_config_priority}')
 
     global alt_names  # pylint: disable=W0603
 
     model_dir = path.join(path.dirname(path.realpath(__file__)), '..', 'model')
-    default_weight_paths = [ path.join(model_dir, model_file) for model_file in ['model-weights.darknet', 'model-weights.onnx'] ] # TODO: Darknet has higher piroity now before ONNX accuracy is verified
-    weight_paths_to_try = [weight_path,] if weight_path is not None else default_weight_paths
-    net_main = try_loading_net(config_path, meta_path, weight_paths_to_try)
+    net_config_priority = [
+            dict(weights_path=path.join(model_dir, 'model-weights.darknet'), use_gpu=True),
+            dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=True),
+            dict(weights_path=path.join(model_dir, 'model-weights.onnx'), use_gpu=False),
+            dict(weights_path=path.join(model_dir, 'model-weights.darknet'), use_gpu=False),
+        ]
+    if weights_path is not None:
+        net_config_priority = [ dict(weights_path=weights_path, use_gpu=True), dict(weights_path=weights_path, use_gpu=False) ]
+
+    net_main = try_loading_net(net_config_priority)
 
     if alt_names is None:
         # In Python 3, the metafile default access craps out on Windows (but not Linux)

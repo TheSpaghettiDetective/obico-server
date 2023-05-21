@@ -146,11 +146,11 @@ except Exception as e:
     DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
     # fallback into CPU if unable to load a requested GPU version
     if hasGPU:
-        print(("Falling back to darknet CPU module")
+        print("Falling back to darknet CPU module")
         hasGPU = False
         so_path = os.path.join(DIRNAME, "libdarknet.so")
         try:
-            print((f'Trying to load darknet module {so_path}')
+            print(f'Trying to load darknet module {so_path}')
             lib = CDLL(so_path, RTLD_GLOBAL)
         except Exception as e:
             print(f"Failed! erors={e}")

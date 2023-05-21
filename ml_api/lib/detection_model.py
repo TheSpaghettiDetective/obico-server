@@ -29,7 +29,6 @@ def load_net(config_path, weight_path, meta_path):
     global meta_main, net_main, alt_names  # pylint: disable=W0603
 
     print(f'Trying to load a workable net... config_path: {config_path} - weight_path: {weight_path} - meta_path: {meta_path}')
-    errors = []
 
     if net_main is None:
         prefer_onnx = weight_path.endswith(".onnx")
@@ -41,10 +40,9 @@ def load_net(config_path, weight_path, meta_path):
                     print('Succeeded!')
                 except Exception as e:
                     error = f"Unable to load ONNX module: {e}"
-                    errors.append(error)
                     print(error)
             else:
-                errors.append("Onnx is not ready")
+                print("Onnx is not ready")
 
         # if darknet requested or if unable to load the onnx
         if net_main is None:
@@ -55,13 +53,12 @@ def load_net(config_path, weight_path, meta_path):
                     print('Succeeded!')
                 except Exception as e:
                     error = f"Unable to load Darknet module: {e}"
-                    errors.append(e)
                     print(error)
             else:
-                errors.append("Darknet is not ready")
+                print("Darknet is not ready")
 
     if net_main is None:
-        return None, None, errors
+        return None
 
     meta_main = net_main.meta
 
@@ -77,8 +74,8 @@ def load_net(config_path, weight_path, meta_path):
         except Exception:
             pass
 
-    return net_main, meta_main, errors
+    return net_main
 
-def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
-    return net.detect(meta, image, alt_names, thresh, hier_thresh, nms, debug)
+def detect(net, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
+    return net.detect(net.meta, image, alt_names, thresh, hier_thresh, nms, debug)
 

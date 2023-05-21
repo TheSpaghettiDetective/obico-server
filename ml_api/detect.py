@@ -25,13 +25,12 @@ if __name__ == "__main__":
     parser.add_argument("--print", action='store_true', help="Print detections")
     opt = parser.parse_args()
 
-    net_main_1, meta_main_1, _ = load_net("model/model.cfg", opt.weights, "model/model.meta")
+    net_main_1 = load_net("model/model.cfg", opt.weights, "model/model.meta")
 
     # force use CPU, only implemented for ONNX
     if opt.cpu and onnx_ready and isinstance(net_main_1, OnnxNet):
         net_main_1.force_cpu()
 
-    assert os.path.exists(opt.image)
     filename = os.path.basename(opt.image)
     filename, extension = os.path.splitext(filename)
 
@@ -58,11 +57,11 @@ if __name__ == "__main__":
     # this will make library initialize all the required resources at the first run
     # then the following runs will be much faster
     if opt.preheat:
-        detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
+        detections = detect(net_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
 
     while reading_success:
         started_at = time.time()
-        detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
+        detections = detect(net_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
         finished_at = time.time()
         execution_time = finished_at - started_at
         print(f"Frame #{frame_number} execution time: {execution_time:.3} sec, detection count: {len(detections)}")

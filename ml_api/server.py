@@ -38,13 +38,7 @@ default_model_file = 'model-weights.onnx' if has_ONNX else 'model-weights.darkne
 model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main, meta_main, net_errors = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
-if len(net_errors) != 0:
-    status["nn_errors"] = net_errors
-
-status["has_nn_loaded"] = net_main is not None
-status["nn_runtime"] = net_main.get_runtime_type() if net_main is not None else "Null"
-status["nn_has_gpu"] = net_main.has_gpu_enabled() if net_main is not None else False
+net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
 
 @app.route('/p/', methods=['GET'])
 @token_required
@@ -55,7 +49,7 @@ def get_p():
             resp.raise_for_status()
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)
-            detections = detect(net_main, meta_main, img, thresh=THRESH)
+            detections = detect(net_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
         except:
             sentry_sdk.capture_exception()
@@ -68,10 +62,6 @@ def get_p():
 @app.route('/hc/', methods=['GET'])
 def health_check():
     return 'ok' if net_main is not None else 'error'
-
-@app.route('/status', methods=['GET'])
-def get_status():
-    return jsonify(status)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3333, threaded=False)

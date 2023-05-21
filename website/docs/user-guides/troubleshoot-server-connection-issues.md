@@ -131,7 +131,7 @@ If the server test button shows "succeeded" but the "Connection to sever" row in
 
 The cause for this rare situation can be complicated. A common one is some firewalls would block WebSocket connection but allow HTTP connection to the same port.
 
-This is probably a situation in which you will have fun with your "Google-fu". However, if Google fails to come to the rescue, you can [get help from a human in the TSD community](/docs/user-guides/contact-us-for-support).
+This is probably a situation in which you will have fun with your "Google-fu". However, if Google fails to come to the rescue, you can [get help from a human in the Obico community](/docs/user-guides/contact-us-for-support).
 
 :::info
 The plugin connects to the server via 2 connections: HTTP and WebSocket. 99% of the time when one connection works, so will the other. But there are rare situations when HTTP connection works but the WebSocket connection doesn't.

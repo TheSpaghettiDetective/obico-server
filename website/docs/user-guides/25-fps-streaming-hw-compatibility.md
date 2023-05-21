@@ -5,7 +5,7 @@ title: Webcams supported in advanced mode streaming
 
 Please note that all webcams we have tested so far are compatible when it is streaming in ["compatibility mode"](/docs/user-guides/streaming-compatibility-mode).
 
-The list below only applies when you configured TSD plugin to "never stream in compatibility mode".
+The list below only applies when you configured Obico plugin to "never stream in compatibility mode".
 
 ## Webcams known to work with premium video streaming (advanced mode) {#webcams-known-to-work-with-premium-video-streaming-advanced-mode}
 

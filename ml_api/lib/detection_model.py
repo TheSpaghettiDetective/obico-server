@@ -5,9 +5,6 @@ from enum import Enum
 from lib.meta import Meta
 import os
 
-#GLOBALS
-net_main = None
-meta_main = None
 alt_names = None
 
 # optional import for darknet
@@ -26,44 +23,41 @@ except:
 
 
 def load_net(config_path, weight_path, meta_path):
-    global meta_main, net_main, alt_names  # pylint: disable=W0603
+    global alt_names  # pylint: disable=W0603
 
     print(f'Trying to load a workable net... config_path: {config_path} - weight_path: {weight_path} - meta_path: {meta_path}')
 
-    if net_main is None:
-        prefer_onnx = weight_path.endswith(".onnx")
-        if prefer_onnx:
-            if onnx_ready:
-                try:
-                    print('Trying ONNX module...')
-                    net_main = OnnxNet(weight_path, meta_path)
-                    print('Succeeded!')
-                except Exception as e:
-                    error = f"Unable to load ONNX module: {e}"
-                    print(error)
-            else:
-                print("Onnx is not ready")
+    net_main = None
+    prefer_onnx = weight_path.endswith(".onnx")
+    if prefer_onnx:
+        if onnx_ready:
+            try:
+                print('Trying ONNX module...')
+                net_main = OnnxNet(weight_path, meta_path)
+                print('Succeeded!')
+            except Exception as e:
+                error = f"Unable to load ONNX module: {e}"
+                print(error)
+        else:
+            print("Onnx is not ready")
 
-        # if darknet requested or if unable to load the onnx
-        if net_main is None:
-            if darknet_ready:
-                try:
-                    print('Trying YoloNet...')
-                    net_main = YoloNet(config_path, weight_path, meta_path)
-                    print('Succeeded!')
-                except Exception as e:
-                    error = f"Unable to load Darknet module: {e}"
-                    print(error)
-            else:
-                print("Darknet is not ready")
+    # if darknet requested or if unable to load the onnx
+    if net_main is None:
+        if darknet_ready:
+            try:
+                print('Trying YoloNet...')
+                net_main = YoloNet(config_path, weight_path, meta_path)
+                print('Succeeded!')
+            except Exception as e:
+                error = f"Unable to load Darknet module: {e}"
+                print(error)
+        else:
+            print("Darknet is not ready")
 
     if net_main is None:
         return None
 
     meta_main = net_main.meta
-
-    assert net_main is not None
-    assert meta_main is not None
 
     if alt_names is None:
         # In Python 3, the metafile default access craps out on Windows (but not Linux)

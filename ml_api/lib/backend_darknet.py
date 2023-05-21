@@ -5,7 +5,6 @@ import os
 import cv2
 import platform
 from typing import List, Tuple
-import logging
 
 DARKNET_LOAD_ERRORS=[]
 
@@ -140,21 +139,21 @@ hasGPU = os.environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on'
 so_path = os.path.join(DIRNAME, "libdarknet_gpu.so" if hasGPU else "libdarknet.so")
 lib = None
 try:
-    logging.warning(f'Trying to load darknet module {so_path}')
+    print(f'Trying to load darknet module {so_path}')
     lib = CDLL(so_path, RTLD_GLOBAL)
 except Exception as e:
-    logging.warning(f"Failed! erors={e}")
+    print(f"Failed! erors={e}")
     DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
     # fallback into CPU if unable to load a requested GPU version
     if hasGPU:
-        logginginfo("Falling back to darknet CPU module")
+        print(("Falling back to darknet CPU module")
         hasGPU = False
         so_path = os.path.join(DIRNAME, "libdarknet.so")
         try:
-            logginginfo(f'Trying to load darknet module {so_path}')
+            print((f'Trying to load darknet module {so_path}')
             lib = CDLL(so_path, RTLD_GLOBAL)
         except Exception as e:
-            logging.warning(f"Failed! erors={e}")
+            print(f"Failed! erors={e}")
             DARKNET_LOAD_ERRORS.append({"has_gpu": hasGPU, "so_path": so_path, "error": str(e)})
 
 if lib:

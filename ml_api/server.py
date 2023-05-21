@@ -62,7 +62,7 @@ def get_p():
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 
-    # todo, not a correct way to report an error if exception 
+    # todo, not a correct way to report an error if exception
     return jsonify({'detections': []})
 
 @app.route('/hc/', methods=['GET'])

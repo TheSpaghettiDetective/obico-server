@@ -27,7 +27,7 @@ class OnnxNet:
         sess_options = None
         if not has_GPU and ONNX_NUM_THREADS > 0:
             sess_options = onnxruntime.SessionOptions()
-            sess_options.intra_op_num_threads = ONNX_NUM_THREADS 
+            sess_options.intra_op_num_threads = ONNX_NUM_THREADS
             sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
             sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
 
@@ -42,7 +42,7 @@ class OnnxNet:
                 sess_options = None
                 if ONNX_NUM_THREADS > 0:
                     sess_options = onnxruntime.SessionOptions()
-                    sess_options.intra_op_num_threads = ONNX_NUM_THREADS 
+                    sess_options.intra_op_num_threads = ONNX_NUM_THREADS
                     sess_options.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
                     sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
                 providers = ['CPUExecutionProvider']
@@ -112,7 +112,7 @@ def nms_cpu(boxes, confs, nms_thresh=0.5, min_mode=False):
 
         inds = np.where(over <= nms_thresh)[0]
         order = order[inds + 1]
-    
+
     return np.array(keep)
 
 def post_processing(output, width, height, conf_thresh, nms_thresh, names):
@@ -134,14 +134,14 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
 
     box_x1x1x2y2_to_xcycwh_scaled = lambda b: \
         (
-            float(0.5 * width * (b[0] + b[2])), 
-            float(0.5 * height * (b[1] + b[3])), 
+            float(0.5 * width * (b[0] + b[2])),
+            float(0.5 * height * (b[1] + b[3])),
             float(width * (b[2] - b[0])),
             float(width * (b[3] - b[1]))
          )
     dets_batch = []
     for i in range(box_array.shape[0]):
-       
+
         argwhere = max_conf[i] > conf_thresh
         l_box_array = box_array[i, argwhere, :]
         l_max_conf = max_conf[i, argwhere]
@@ -157,7 +157,7 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
             ll_max_id = l_max_id[cls_argwhere]
 
             keep = nms_cpu(ll_box_array, ll_max_conf, nms_thresh)
-            
+
             if (keep.size > 0):
                 ll_box_array = ll_box_array[keep, :]
                 ll_max_conf = ll_max_conf[keep]
@@ -165,11 +165,11 @@ def post_processing(output, width, height, conf_thresh, nms_thresh, names):
 
                 for k in range(ll_box_array.shape[0]):
                     bboxes.append([ll_box_array[k, 0], ll_box_array[k, 1], ll_box_array[k, 2], ll_box_array[k, 3], ll_max_conf[k], ll_max_conf[k], ll_max_id[k]])
-        
+
         detections = [(names[b[6]], float(b[4]), box_x1x1x2y2_to_xcycwh_scaled((b[0], b[1], b[2], b[3]))) for b in bboxes]
         dets_batch.append(detections)
 
-    
+
     return dets_batch
 
 

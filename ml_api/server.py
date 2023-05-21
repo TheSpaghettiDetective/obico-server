@@ -28,14 +28,6 @@ status = dict()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
-hasGPU = environ.get('HAS_GPU', 'False').lower() in ('true', '1', 'yes', 'on')
-status["gpu_use_requested"] = hasGPU
-# setting HAS_ONNX will make it prefer using the Onnx over Darknet
-# but will still have Darknet as a fallback scenario
-has_ONNX = environ.get('HAS_ONNX', '0') == '1'
-status["onnx_use_requested"] = has_ONNX
-default_model_file = 'model-weights.onnx' if has_ONNX else 'model-weights.darknet' # ONNX model is much faster on CPU but slower on GPU than Darknet
-model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
 net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.meta'))

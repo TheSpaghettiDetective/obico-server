@@ -120,10 +120,6 @@ class YoloNet:
             print("freed detections")
         return res
 
-DIRNAME = os.path.abspath(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "bin")
-)
-
 # Loads darknet shared library. May fail if some dependencies like OpenCV not installed
 # libdarknet_gpu.so needs Cuda + Cudnn and other libraries in path, which may not exist
 # For the such case, it will try to load libdarknet.so instead
@@ -132,7 +128,7 @@ using_gpu = False
 
 print('\n')
 try:
-    so_path = os.path.join(DIRNAME, "libdarknet_gpu.so")
+    so_path = os.path.join('/darknet', "libdarknet_gpu.so")
     print(f"Let's try darknet lib built with GPU support - {so_path}")
     lib = CDLL(so_path, RTLD_GLOBAL)
     print(f"Done! Hooray! Now we have darknet with GPU support.")
@@ -141,7 +137,7 @@ try:
 except Exception as e:
     print(f"Nope! Failed to load darknet lib built with GPU support. erors={e}")
 
-    so_path = os.path.join(DIRNAME, "libdarknet.so")
+    so_path = os.path.join('/darknet', "libdarknet_cpu.so")
     print(f"Now let's try darknet lib on CPU - {so_path}")
     lib = CDLL(so_path, RTLD_GLOBAL)
     print(f"Done! Darknet is now running on CPU.")

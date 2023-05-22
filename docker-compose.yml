@@ -49,6 +49,7 @@ services:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
       # ML_API_TOKEN:
+    tty: true
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:

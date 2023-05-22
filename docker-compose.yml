@@ -41,15 +41,14 @@ x-web-defaults: &web-defaults
 
 services:
   ml_api:
-    image: "${DOCKER_PREFIX:-thespaghettidetective}/ml_api:${VERSION:-latest}"
     hostname: ml_api
     restart: unless-stopped
+    build:
+      context: ml_api
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'
-      #ML_API_TOKEN:
-      HAS_GPU: ${HAS_GPU:-0}
-      HAS_ONNX: ${HAS_ONNX:-0}
+      # ML_API_TOKEN:
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi"
 
   web:

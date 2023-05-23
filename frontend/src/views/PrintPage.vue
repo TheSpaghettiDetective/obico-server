@@ -99,7 +99,7 @@
                     class="subtitle truncated"
                     :class="[
                       printer
-                        ? printer.isPrintable() && !printerTransientState
+                        ? printer.isPrintable() && !printer.inTransientState()
                           ? 'text-success'
                           : 'text-warning'
                         : 'text-danger',
@@ -107,8 +107,8 @@
                   >
                     {{
                       printer
-                        ? printerTransientState
-                          ? printerTransientState.title
+                        ? printer.inTransientState()
+                          ? printer.transientState().title
                           : printer.printabilityText()
                         : 'Deleted'
                     }}
@@ -125,7 +125,7 @@
                 >
                   <button
                     class="btn btn-primary"
-                    :disabled="!printer.isPrintable() || printerTransientState"
+                    :disabled="!printer.isPrintable() || printer.inTransientState()"
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" class="mr-2" small />
@@ -347,7 +347,6 @@ import {
   SortingOptions,
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
 import PrinterComm from '@src/lib/printer-comm'
 
 export default {
@@ -376,7 +375,6 @@ export default {
       predictions: [],
       printer: null,
       isLoading: true,
-      isSending: false,
       currentPosition: 0,
       inflightAlertOverwrite: null,
       fullscreenUrl: null,
@@ -394,7 +392,6 @@ export default {
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
 
       printerStateCheckInterval: null,
-      printerTransientState: null,
     }
   },
 
@@ -453,6 +450,10 @@ export default {
       }
       return this.print.has_alerts ^ (this.print.alert_overwrite === 'FAILED')
     },
+    isSending() {
+      const transientStateName = this.printer?.transientState()?.name
+      return transientStateName && ['Downloading G-Code', 'Starting'].includes(transientStateName)
+    },
   },
 
   created() {
@@ -500,9 +501,6 @@ export default {
           .get(urls.printer(this.print.printer.id), { params: { with_archived: true } })
           .then((response) => {
             this.printer = normalizedPrinter(response.data)
-
-            this.checkTransientState()
-            this.printerStateCheckInterval = setInterval(this.checkTransientState, 1000)
 
             this.printerComm = PrinterComm(
               this.printer.id,
@@ -620,9 +618,7 @@ export default {
         })
     },
     onRepeatPrintClicked() {
-      this.isSending = true
-      setTransientState(this.printer.id, 'Starting')
-      this.checkTransientState()
+      this.printer.setTransientState('Downloading G-Code') // FIXME: set conditionally (Downloading or Starting) when Repeat feature will be available for local g-codes as well
       sendToPrint({
         printerId: this.printer.id,
         gcode: this.print.g_code_file,
@@ -630,7 +626,6 @@ export default {
         isAgentMoonraker: this.printer.isAgentMoonraker(),
         Swal: this.$swal,
         onPrinterStatusChanged: () => {
-          this.isSending = false
           showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
         },
       })
@@ -640,25 +635,6 @@ export default {
     },
     exitFullscreen() {
       this.fullscreenUrl = null
-    },
-    checkTransientState() {
-      const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
-
-      if (!savedValue) {
-        this.printerTransientState = null
-      } else if (savedValue === 'timeout') {
-        this.printerTransientState = null
-        this.$swal.fire({
-          icon: 'error',
-          title: 'Printer State Timeout',
-          text: 'Why it may happen: [link]', // TODO:
-        })
-      } else {
-        this.printerTransientState = savedValue
-        if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
-          this.isSending = true
-        }
-      }
     },
   },
 }

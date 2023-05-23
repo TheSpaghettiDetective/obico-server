@@ -141,7 +141,6 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
 import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
 
 export default {
   name: 'PrintProgressWidget',
@@ -170,9 +169,6 @@ export default {
       printProgressPercentage: 0,
       printProgressMillimeters: 0,
       printMillimetersTotal: 0,
-      isPrintStarting: false,
-      printerStateCheckInterval: null,
-      printerTransientState: null,
     }
   },
 
@@ -194,6 +190,9 @@ export default {
     isPrinting() {
       return this.printer.isActive() && this.printer.progressCompletion() < 100
     },
+    isPrintStarting() {
+      return this.printer.inTransientState()
+    },
   },
 
   watch: {
@@ -211,9 +210,6 @@ export default {
     if (this.isPrinting) {
       this.updatePrintProgress()
     }
-
-    this.checkTransientState()
-    this.printerStateCheckInterval = setInterval(this.checkTransientState, 1000)
   },
 
   unmounted() {
@@ -259,40 +255,14 @@ export default {
         return
       }
 
-      this.isPrintStarting = true
-
-      setTransientState(this.printer.id, 'Starting')
+      this.printer.setTransientState('Downloading G-Code')
       sendToPrint({
         printerId: this.printer.id,
         gcode: this.print.g_code_file,
         isCloud: true,
         isAgentMoonraker: this.printer.isAgentMoonraker(),
         Swal: this.$swal,
-        onPrinterStatusChanged: () => {
-          this.isPrintStarting = false
-        },
       })
-    },
-    checkTransientState() {
-      const savedValue = getTransientState(this.printer.id, this.printer.status?.state?.text)
-
-      if (!savedValue) {
-        this.printerTransientState = null
-      } else if (savedValue === 'timeout') {
-        this.printerTransientState = null
-        this.$swal.fire({
-          icon: 'error',
-          title: 'Printer State Timeout',
-          text: 'Why it may happen: [link]', // TODO:
-        })
-      } else {
-        this.printerTransientState = savedValue
-        if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
-          this.isPrintStarting = true
-        } else {
-          this.isPrintStarting = false
-        }
-      }
     },
   },
 }

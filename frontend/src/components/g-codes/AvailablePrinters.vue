@@ -16,10 +16,12 @@
         <div
           class="printer-status"
           :class="[
-            printer.isPrintable() && !printer.transientState ? 'text-success' : 'text-warning',
+            printer.isPrintable() && !printer.inTransientState() ? 'text-success' : 'text-warning',
           ]"
         >
-          {{ printer.transientState ? printer.transientState.title : printer.printabilityText() }}
+          {{
+            printer.inTransientState() ? printer.transientState().title : printer.printabilityText()
+          }}
         </div>
       </div>
 
@@ -28,12 +30,12 @@
       </p>
 
       <button
-        class="btn btn-primary mt-3"
+        class="btn btn-primary mt-3 d-flex align-items-center justify-content-center"
         :disabled="!selectedPrinter || isSending || !selectedPrinter.isPrintable()"
         @click="onPrintClicked"
       >
-        <b-spinner v-if="isSending" small />
-        <div v-else>
+        <b-spinner v-if="isSending" small class="mr-1" />
+        <div>
           <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
           <div v-else class="truncated">Print</div>
         </div>
@@ -47,7 +49,6 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal } from './sendToPrint'
-import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
 import PrinterComm from '@src/lib/printer-comm'
 
 export default {
@@ -78,26 +79,25 @@ export default {
   data() {
     return {
       printers: [],
-      selectedPrinterId: null,
+      selectedPrinter: null,
       printersLoading: true,
-      isSending: false,
       printerStateCheckInterval: null,
       printerComms: {},
     }
   },
 
   computed: {
-    selectedPrinter() {
-      return this.printers.find((p) => p.id === this.selectedPrinterId)
+    isSending() {
+      return this.printers.some(
+        (p) =>
+          p.transientState()?.name === 'Starting' ||
+          p.transientState()?.name === 'Downloading G-Code'
+      )
     },
   },
 
   created() {
     this.fetchPrinters()
-  },
-
-  unmounted() {
-    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -124,15 +124,12 @@ export default {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
         if (selectedPrinter.isPrintable()) {
-          this.selectedPrinterId = selectedPrinter.id
+          this.selectedPrinter = selectedPrinter
         }
       } else {
         this.printers = printers
-        this.selectedPrinterId = printers.find((p) => p.isPrintable())?.id || null
+        this.selectedPrinter = printers.find((p) => p.isPrintable()) || null
       }
-
-      this.checkTransientStates()
-      this.printerStateCheckInterval = setInterval(this.checkTransientStates, 1000)
 
       for (const printer of this.printers) {
         this.printerComms[printer.id] = PrinterComm(
@@ -161,13 +158,11 @@ export default {
         return
       }
 
-      this.selectedPrinterId = printer.id
+      this.selectedPrinter = printer
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return
-      this.isSending = true
-
-      setTransientState(this.selectedPrinter.id, 'Starting')
+      this.selectedPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
       sendToPrint({
         printerId: this.selectedPrinter.id,
         gcode: this.gcode,
@@ -184,37 +179,9 @@ export default {
             showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
           }
 
-          this.isSending = false
           this.fetchPrinters()
         },
       })
-    },
-    checkTransientStates() {
-      let oneIsStarting = false
-      for (const printer of this.printers) {
-        const index = this.printers.findIndex((p) => p.id === printer.id)
-        const savedValue = getTransientState(printer.id, printer.status?.state?.text)
-
-        if (!savedValue) {
-          this.printers[index].transientState = null
-        } else if (savedValue === 'timeout') {
-          this.printers[index].transientState = null
-          this.$swal.fire({
-            icon: 'error',
-            title: 'Printer State Timeout',
-            text: 'Why it may happen: [link]', // TODO:
-          })
-        } else {
-          this.printers[index].transientState = savedValue
-
-          if (savedValue.name === 'Starting' || savedValue.name === 'Downloading G-Code') {
-            oneIsStarting = true
-            this.selectedPrinterId = printer.id
-          }
-        }
-      }
-
-      this.isSending = oneIsStarting ? true : false
     },
   },
 }

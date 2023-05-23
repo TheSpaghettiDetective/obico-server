@@ -130,7 +130,6 @@ import TemperatureWidget from '@src/components/printer-control/TemperatureWidget
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
-import { setTransientState } from '@src/lib/printer-transient-state'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -373,7 +372,7 @@ export default {
           }, 1000)
         }
         if (resumePrint) {
-          setTransientState(this.printer.id, 'Resuming')
+          this.printer.setTransientState('Resuming')
           this.onSendPrinterAction(this.printer.id, RESUME_PRINT, true)
         } else {
           this.onSendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)

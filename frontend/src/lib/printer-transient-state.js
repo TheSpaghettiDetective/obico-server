@@ -1,5 +1,4 @@
 import { isLocalStorageSupported } from '@static/js/utils'
-import isEqual from 'lodash/isEqual'
 
 const TRANSIENT_STATES = {
   Connecting: {
@@ -7,28 +6,28 @@ const TRANSIENT_STATES = {
     title: 'Connecting',
     timeoutSeconds: 10,
   },
-  Starting: {
-    fromStates: ['Operational', 'Starting'],
-    title: 'Starting',
-    timeoutSeconds: 10,
-  },
   'Downloading G-Code': {
-    fromStates: ['Downloading G-Code'],
+    fromStates: ['Operational'],
     title: 'Downloading G-Code',
     timeoutSeconds: 10 * 60,
   },
+  Starting: {
+    fromStates: ['Operational', 'Downloading G-Code'],
+    title: 'Starting',
+    timeoutSeconds: 10,
+  },
   Pausing: {
-    fromStates: ['Printing', 'Pausing'],
+    fromStates: ['Printing'],
     title: 'Pausing',
     timeoutSeconds: 2 * 60,
   },
   Resuming: {
-    fromStates: ['Paused', 'Resuming'],
+    fromStates: ['Paused'],
     title: 'Resuming',
     timeoutSeconds: 5 * 60,
   },
   Cancelling: {
-    fromStates: ['Printing', 'Paused', 'Cancelling'],
+    fromStates: ['Printing', 'Paused'],
     title: 'Cancelling',
     timeoutSeconds: 2 * 60,
   },
@@ -47,13 +46,13 @@ export const setTransientState = (printerId, transientStateName) => {
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }
 
-export const getTransientState = (printerId, currentState) => {
+export const getTransientState = (printerId, nextState) => {
   if (!isLocalStorageSupported()) return
 
-  if (!currentState) {
+  if (!nextState) {
     // Printer is offline or disconnected, clear transient state if any
     clearTransientState(printerId)
-    return null
+    return
   }
 
   const prefix = `printer-${printerId}-state-transitioning`
@@ -63,20 +62,25 @@ export const getTransientState = (printerId, currentState) => {
 
   if (!fromStates || !transientStateName || !timeout) {
     // No transient state in storage
-    return null
+    return
   }
 
-  if (!fromStates.includes(currentState)) {
-    // Printer is moved to the next state, clear transient state
-
-    // Special case: if printer is in 'GCodeDownloading' state, move it there
-    if (currentState === 'Downloading G-Code' && isEqual(fromStates, ['Operational', 'Starting'])) {
-      setTransientState(printerId, 'Downloading G-Code')
-      return getTransientState(printerId, currentState)
+  if (!fromStates.includes(nextState)) {
+    if (nextState === transientStateName) {
+      // Printer is still in the transient state, return it
+      return {
+        ...TRANSIENT_STATES[transientStateName],
+        name: transientStateName,
+        timeout: new Date(timeout),
+      }
+    } else if (transientStateName === 'Downloading G-Code' && nextState === 'Starting') {
+      // Special case for OctoPrint (move from Downloading to Starting)
+      setTransientState(printerId, 'Starting')
+      return getTransientState(printerId, nextState)
+    } else {
+      clearTransientState(printerId)
+      return
     }
-
-    clearTransientState(printerId)
-    return null
   }
 
   if (new Date() > new Date(timeout)) {

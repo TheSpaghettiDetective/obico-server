@@ -4,7 +4,11 @@ import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
 import { humanizedDuration } from '@src/lib/formatters'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
-import { setTransientState, getTransientState } from '@src/lib/printer-transient-state'
+import {
+  setTransientState,
+  getTransientState,
+  showTimeoutError,
+} from '@src/lib/printer-transient-state'
 
 export const toMomentOrNull = (datetimeStr) => {
   if (!datetimeStr) {
@@ -172,15 +176,10 @@ export const normalizedPrinter = (newData, oldData) => {
         return
       }
       const savedTransientState = getTransientState(this.id, this.status?.state?.text)
-
       if (!savedTransientState) {
         return
       } else if (savedTransientState === 'timeout') {
-        this.$swal.fire({
-          icon: 'error',
-          title: 'Printer State Timeout',
-          text: 'Why it may happen: [link]', // TODO:
-        })
+        showTimeoutError(this)
         return
       } else {
         return savedTransientState

@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 
 const TRANSIENT_STATES = {
@@ -101,4 +102,23 @@ export const clearTransientState = (printerId) => {
   localStorage.removeItem('printer-' + printerId + '-state-transitioning-from')
   localStorage.removeItem('printer-' + printerId + '-state-transitioning-name')
   localStorage.removeItem('printer-' + printerId + '-state-transitioning-timeout')
+}
+
+export const showTimeoutError = (printer) => {
+  window.Sentry?.captureException({
+    message: 'Printer state timeout error',
+    printerId: printer.id,
+  })
+
+  Vue.swal
+    .fire({
+      icon: 'error',
+      title: 'Timeout Error',
+      html: `Haven't received "${
+        printer.name
+      }" state update within proper timeframe. You can restart your ${printer.agentDisplayName()} and try again.<br><br>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</div>`,
+    })
+    .then(() => {
+      window.location.reload()
+    })
 }

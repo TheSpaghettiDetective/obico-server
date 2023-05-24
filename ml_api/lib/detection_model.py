@@ -9,14 +9,14 @@ alt_names = None
 
 darknet_ready = True
 try:
-    from lib.backend_darknet import YoloNet
+    from lib.darknet import YoloNet
 except Exception as e:
     print(f'Error during importing YoloNet! - {e}')
     darknet_ready = False
 
 onnx_ready = True
 try:
-    from lib.backend_onnx import OnnxNet
+    from lib.onnx import OnnxNet
 except Exception as e:
     print(f'Error during importing OnnxNet! - {e}')
     onnx_ready = False

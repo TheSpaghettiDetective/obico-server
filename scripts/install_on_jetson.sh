@@ -11,8 +11,6 @@ version: '2.4'
 services:
   ml_api:
     runtime: nvidia
-    environment:
-        HAS_GPU: 'True'
 EOT
 
 sudo docker-compose up -d

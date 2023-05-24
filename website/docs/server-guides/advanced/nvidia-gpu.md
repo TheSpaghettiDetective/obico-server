@@ -47,3 +47,57 @@ services:
 :::tip
 Don't forget to restart the docker cluster by running `docker compose down && docker-compose up -d`.
 :::
+
+## Determine if GPU is being used
+
+The best way to determine if GPU is being used is by checking the `ml_api` container log:
+
+```
+cd obico-server
+docker compose logs ml_api
+```
+
+If you see:
+
+```
+...
+obico-server-ml_api-1  | ----- Trying to load weights: /app/lib/../model/model-weights.xxxx - **use_gpu = True** -----
+...
+Succeeded!
+...
+```
+
+Then your self-hosted Obico server is using your GPU.
+
+If, instead, you see:
+
+```
+...
+obico-server-ml_api-1  | ----- Trying to load weights: /app/lib/../model/model-weights.xxxx - **use_gpu = True** -----
+...
+Failed! ... some reason why it failed ...
+...
+obico-server-ml_api-1  | ----- Trying to load weights: /app/lib/../model/model-weights.xxxx - **use_gpu = False** -----
+...
+Succeeded!
+...
+```
+
+Then somehow the Obico server failed to load the GPU driver and hence fell back to using CPU.
+
+## More details about the ML model and their supports of GPU
+
+ML algorithms can be executed with different hardware and software options:
+
+* x86_64 with CPU hardware without GPU, with `Darknet` or `ONNX` runtime.
+* x86_64 with GPU (CUDA), with `Darknet` or `ONNX` runtime.
+* ARM with GPU (CDUA), i.e. `Nvidia Jetson` devices with `Darknet` or `ONNX` runtime.
+
+Darknet is written by Yolo2 author and you can find more details [here](https://github.com/AlexeyAB/darknet).
+ONNX is Microsft-powered set of libraries and standards to execute neural networks on a different hardware.
+More details about ONNX can be found [here](https://onnxruntime.ai/).
+
+Darknet is now stable implementation of TSD, while ONNX support is in beta stage now and may have some issues.
+
+All suitable containers are build and now stored at docker.io registry, so you
+probably don't need to compile them (takes hours).

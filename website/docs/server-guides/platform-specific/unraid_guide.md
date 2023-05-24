@@ -107,7 +107,6 @@ services:
         DEBUG: 'True'
         FLASK_APP: 'server.py'
         #ML_API_TOKEN:
-        #HAS_GPU: 'False'
     command: bash -c "gunicorn --bind 0.0.0.0:3333 --workers 2 wsgi"
     cpus: 4
 

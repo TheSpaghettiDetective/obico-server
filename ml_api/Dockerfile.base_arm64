@@ -1,0 +1,51 @@
+# Jetson-specific since we don't have a use case on ARM oustide Jetson (maybe Mac? But who uses Mac for Obico server?)
+
+# This will not use cuDNN because no headers included
+# should be compatible with Jetpack 4xx
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as darknet_builder_jetson
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt install -y ca-certificates build-essential gcc g++ cmake git
+WORKDIR /
+# Lock darknet version for reproducibility
+RUN git clone https://github.com/AlexeyAB/darknet --depth 1 && cd darknet && git checkout 59c86222c5387bffd9108a21885f80e980ece234
+ENV LIBRARY_PATH="${LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib:/usr/local/cuda/targets/aarch64-linux/lib/stubs"
+# compile CPU version
+RUN cd darknet \
+  && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
+  && make -j 4 && mv libdarknet.so libdarknet_cpu.so
+# compile GPU version
+RUN cd darknet \
+  && sed -i 's/GPU=0/GPU=1/' Makefile \
+  && sed -i 's/lcudart/lcudart_static -ldl -lrt/' Makefile \
+  && make -j 4 && mv libdarknet.so libdarknet_gpu.so
+
+  # these options do not work in 8.0.1 unfortunately
+  # && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
+  # && sed -i 's/CUDNN_HALF=0/CUDNN_HALF=1/' Makefile \
+  # && sed -i 's/CUDNN=1/CUDNN=0/' Makefile \
+  # && sed -i 's/CUDNN_HALF=1/CUDNN_HALF=0/' Makefile \
+
+# Output image will not have darknet compilation layers to make it smaller
+FROM nvcr.io/nvidia/l4t-tensorrt:r8.0.1-runtime as ml_api_base_jetson
+
+COPY --from=darknet_builder_jetson /darknet /darknet
+
+WORKDIR /
+RUN wget https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl -O onnxruntime_gpu-1.11.0-cp38-none-any.whl
+RUN pip3 install onnxruntime_gpu-1.11.0-cp38-none-any.whl
+
+# Some hacks to make darknet see cuda libraries. May fail easily
+# this is only needed for Jetpack 4x and will not be needed for Jetpack 5
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib"
+# https://elinux.org/Jetson_Zoo#ONNX_Runtime
+# May be unsafe to use such files, Todo: recompile onnx runtime
+
+WORKDIR /app
+RUN apt update && apt install --no-install-recommends -y ca-certificates python3-pip wget
+RUN pip install --upgrade pip
+RUN pip install opencv_python_headless
+
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+
+EXPOSE 3333

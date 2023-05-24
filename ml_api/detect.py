@@ -4,6 +4,8 @@ from dataclasses import asdict
 import json
 from lib.geometry import compare_detections, Detection
 import os
+import argparse
+import time
 from lib.detection_model import *
 
 KNOWN_IMAGE_EXTENSIONS = ('.jpg', '.png')
@@ -12,7 +14,7 @@ KNOWN_VIDEO_EXTENSIONS = ('.mp4', '.avi')
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("image", type=str, help="Image file path")
-    parser.add_argument("--weights", type=str, default="model/model.weights", help="Model weights file")
+    parser.add_argument("--weights", type=str, help="Model weights file")
     parser.add_argument("--det-threshold", type=float, default=0.25, help="Detection threshold")
     parser.add_argument("--nms-threshold", type=float, default=0.4, help="NMS threshold")
     parser.add_argument("--preheat", action='store_true', help="Make a dry run of NN for initlalization")
@@ -23,13 +25,12 @@ if __name__ == "__main__":
     parser.add_argument("--print", action='store_true', help="Print detections")
     opt = parser.parse_args()
 
-    net_main_1, meta_main_1 = load_net("model/model.cfg", opt.weights, "model/model.meta")
+    net_main_1 = load_net("model/model.cfg", "model/model.meta", weights_path=opt.weights)
 
     # force use CPU, only implemented for ONNX
     if opt.cpu and onnx_ready and isinstance(net_main_1, OnnxNet):
         net_main_1.force_cpu()
 
-    assert os.path.exists(opt.image)
     filename = os.path.basename(opt.image)
     filename, extension = os.path.splitext(filename)
 
@@ -56,11 +57,11 @@ if __name__ == "__main__":
     # this will make library initialize all the required resources at the first run
     # then the following runs will be much faster
     if opt.preheat:
-        detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
+        detections = detect(net_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
 
     while reading_success:
         started_at = time.time()
-        detections = detect(net_main_1, meta_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
+        detections = detect(net_main_1, custom_image_bgr, thresh=opt.det_threshold, nms=opt.nms_threshold)
         finished_at = time.time()
         execution_time = finished_at - started_at
         print(f"Frame #{frame_number} execution time: {execution_time:.3} sec, detection count: {len(detections)}")

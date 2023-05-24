@@ -24,14 +24,13 @@ if environ.get('SENTRY_DSN'):
 
 app = flask.Flask(__name__)
 
+status = dict()
+
 # SECURITY WARNING: don't run with debug turned on in production!
 app.config['DEBUG'] = environ.get('DEBUG') == 'True'
-hasGPU = environ.get('HAS_GPU', 'False') == 'True'
-default_model_file = 'model-weights.darknet' if hasGPU else 'model-weights.onnx' # ONNX model is much faster on CPU but slower on GPU than Darknet
-model_file = environ.get('MODEL_FILE') or default_model_file
 
 model_dir = path.join(path.dirname(path.realpath(__file__)), 'model')
-net_main, meta_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, model_file), path.join(model_dir, 'model.meta'))
+net_main = load_net(path.join(model_dir, 'model.cfg'), path.join(model_dir, 'model.meta'))
 
 @app.route('/p/', methods=['GET'])
 @token_required
@@ -42,18 +41,19 @@ def get_p():
             resp.raise_for_status()
             img_array = np.array(bytearray(resp.content), dtype=np.uint8)
             img = cv2.imdecode(img_array, -1)
-            detections = detect(net_main, meta_main, img, thresh=THRESH)
+            detections = detect(net_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
         except:
             sentry_sdk.capture_exception()
     else:
         app.logger.warn("Invalid request params: {}".format(request.args))
 
+    # todo, not a correct way to report an error if exception
     return jsonify({'detections': []})
 
 @app.route('/hc/', methods=['GET'])
 def health_check():
-    return 'ok'
+    return 'ok' if net_main is not None else 'error'
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3333, threaded=False)

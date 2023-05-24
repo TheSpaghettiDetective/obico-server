@@ -360,7 +360,7 @@ export default {
         value: 0.01,
         options: [0.005, 0.01, 0.05, 0.1],
       },
-      activeTool: 'tool0',
+      activeTool: null,
 
       currentZOffset: null,
 
@@ -414,6 +414,14 @@ export default {
   },
 
   watch: {
+    tools: {
+      handler: function (newValue, prevValue) {
+        if (newValue) {
+          this.activeTool = Object.keys(newValue)[0]
+        }
+      },
+      immediate: true,
+    },
     printer: {
       handler: function (newValue, oldValue) {
         if (newValue.isActive() && ['move-head', 'extrude'].includes(this.activeMenu)) {

@@ -8,6 +8,16 @@
 
     <template #topBarRight>
       <div v-if="printer" class="action-panel">
+        <!-- Share Feed -->
+        <a
+          href="#"
+          class="btn shadow-none action-btn icon-btn"
+          title="Share"
+          @click.prevent="onSharePrinter()"
+        >
+          <i class="fas fa-share-alt fa-lg"></i>
+          <span class="sr-only">Share</span>
+        </a>
         <!-- Tunnel -->
         <a
           :href="`/tunnels/${printer.id}/`"
@@ -37,6 +47,12 @@
             ref="cascadedDropdown"
             :menu-options="[
               {
+                key: 'share',
+                icon: 'fas fa-share-alt fa-lg',
+                title: 'Share',
+                callback: true,
+              },
+              {
                 key: 'tunnel',
                 svgIcon: 'svg-tunnel',
                 title: 'OctoPrint Tunnel',
@@ -49,6 +65,7 @@
                 href: `/printers/${printer.id}/`,
               },
             ]"
+            @menuOptionClicked="onMenuOptionClicked"
           />
         </b-dropdown>
       </div>
@@ -140,6 +157,7 @@ import TemperatureWidget from '@src/components/printer-control/TemperatureWidget
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
+import SharePrinter from '@src/components/printers/SharePrinter.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -261,6 +279,23 @@ export default {
   },
 
   methods: {
+    onMenuOptionClicked(menuOptionKey) {
+      if (menuOptionKey === 'share') {
+        this.onSharePrinter()
+      }
+    },
+    onSharePrinter() {
+      this.$swal.openModalWithComponent(
+        SharePrinter,
+        {
+          isProAccount: this.user.is_pro,
+          printer: this.printer,
+        },
+        {
+          confirmButtonText: 'Close',
+        }
+      )
+    },
     restoreWidgets() {
       if (isLocalStorageSupported()) {
         const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)

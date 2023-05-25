@@ -8,8 +8,8 @@
       }"
     >
       <div v-if="showThumbnail">
-        <div v-if="thumbnailUrl" class="thumbnail">
-          <img :src="thumbnailUrl" />
+        <div v-if="file.getBigThumbnailUrl()" class="thumbnail">
+          <img :src="file.getBigThumbnailUrl()" />
         </div>
         <div v-else class="thumbnail-placeholder">
           <span class="help">
@@ -165,13 +165,12 @@ export default {
     return {
       numberOfVisibleLines: 3,
       extraDetailsVisible: false,
-      thumbnailUrl: null,
     }
   },
 
   computed: {
     showThumbnail() {
-      return !this.compactView || this.thumbnailUrl
+      return !this.compactView || this.file.getBigThumbnailUrl()
     },
     fileDetailsToShow() {
       let result = []
@@ -213,30 +212,6 @@ export default {
         Object.keys(this.file.metadata || {}).length !== 0 &&
         !this.file.deleted
       )
-    },
-  },
-
-  watch: {
-    file() {
-      this.updateThumbnail()
-    },
-  },
-
-  created() {
-    this.updateThumbnail()
-  },
-
-  methods: {
-    updateThumbnail() {
-      let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
-      let thumbnailUrl = null
-      for (const t of thumbnailProps) {
-        if (this.file[t]) {
-          thumbnailUrl = this.file[t]
-          break
-        }
-      }
-      this.thumbnailUrl = thumbnailUrl
     },
   },
 }

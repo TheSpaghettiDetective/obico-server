@@ -138,7 +138,7 @@ import moment from 'moment'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
-import { sendToPrint } from '@src/components/g-codes/sendToPrint'
+import { sendToPrint, confirmPrint } from '@src/components/g-codes/sendToPrint'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 
 export default {
@@ -174,17 +174,6 @@ export default {
     file() {
       return this.print?.g_code_file || {}
     },
-    thumbnailUrl() {
-      let thumbnailProps = ['thumbnail3_url', 'thumbnail2_url', 'thumbnail1_url']
-      let result = null
-      for (const t of thumbnailProps) {
-        if (this.file && this.file[t]) {
-          result = this.file[t]
-          break
-        }
-      }
-      return result
-    },
     isPrinting() {
       return this.printer.isActive() && this.printer.progressCompletion() < 100
     },
@@ -197,7 +186,7 @@ export default {
       const progressMillimeters = this.printer.status?.currentZ
       const totalMillimeters = this.printer.status?.file_metadata?.analysis?.printingArea?.maxZ
 
-      if (progressMillimeters || (progressMillimeters == 0 && totalMillimeters)) {
+      if ((progressMillimeters || progressMillimeters == 0) && totalMillimeters) {
         progressInMillimeters = `${Math.round(progressMillimeters)}/${Math.round(
           totalMillimeters
         )} mm`
@@ -205,7 +194,7 @@ export default {
 
       const progressLayers = this.printer.status?.currentLayerHeight
       const totalLayers = this.printer.status?.file_metadata?.obico?.totalLayerCount
-      if (progressLayers || (progressLayers == 0 && typeof totalLayers)) {
+      if ((progressLayers || progressLayers == 0) && totalLayers) {
         progressInLayers = `Layer ${Math.round(progressLayers)}/${Math.round(totalLayers)}`
       }
 
@@ -281,13 +270,15 @@ export default {
         return
       }
 
-      this.printer.setTransientState('Downloading G-Code')
-      sendToPrint({
-        printerId: this.printer.id,
-        gcode: this.print.g_code_file,
-        isCloud: true,
-        isAgentMoonraker: this.printer.isAgentMoonraker(),
-        Swal: this.$swal,
+      confirmPrint(this.print.g_code_file, this.printer).then(() => {
+        this.printer.setTransientState('Downloading G-Code')
+        sendToPrint({
+          printerId: this.printer.id,
+          gcode: this.print.g_code_file,
+          isCloud: true,
+          isAgentMoonraker: this.printer.isAgentMoonraker(),
+          Swal: this.$swal,
+        })
       })
     },
   },

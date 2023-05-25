@@ -299,7 +299,7 @@ import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
-import { sendToPrint } from '@src/components/g-codes/sendToPrint'
+import { sendToPrint, confirmPrint } from '@src/components/g-codes/sendToPrint'
 import PrinterComm from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesOctoPrint,
@@ -926,19 +926,20 @@ export default {
       }
     },
     onPrintClicked(gcode) {
-      this.targetPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
-
-      sendToPrint({
-        printerId: this.targetPrinter.id,
-        gcode: gcode,
-        isCloud: this.isCloud,
-        isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
-        Swal: this.$swal,
-        onCommandSent: () => {
-          if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes' + this.targetPrinter.id)
-          }
-        },
+      confirmPrint(gcode, this.targetPrinter).then(() => {
+        this.targetPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
+        sendToPrint({
+          printerId: this.targetPrinter.id,
+          gcode: gcode,
+          isCloud: this.isCloud,
+          isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
+          Swal: this.$swal,
+          onCommandSent: () => {
+            if (this.isPopup) {
+              this.$bvModal.hide('b-modal-gcodes' + this.targetPrinter.id)
+            }
+          },
+        })
       })
     },
 

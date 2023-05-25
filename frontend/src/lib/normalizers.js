@@ -137,6 +137,14 @@ export const normalizedGcode = (gcode) => {
     }
   })
 
+  // Normalize thumbnail
+  gcode.getBigThumbnailUrl = () => {
+    return gcode.thumbnail1_url || gcode.thumbnail2_url || gcode.thumbnail3_url
+  }
+  gcode.getSmallThumbnailUrl = () => {
+    return gcode.thumbnail3_url || gcode.thumbnail2_url || gcode.thumbnail1_url
+  }
+
   return gcode
 }
 

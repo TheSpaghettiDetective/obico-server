@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import axios from 'axios'
 import get from 'lodash/get'
 import { clearTransientState } from '@src/lib/printer-transient-state'
@@ -8,6 +9,25 @@ import {
   printPrinterLocalGCodeMoonraker,
 } from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
+
+export const confirmPrint = (gcode, printer) => {
+  return new Promise((resolve, reject) => {
+    Vue.swal
+      .fire({
+        html: `<h5 style="text-align: center; line-height: 1.5;">Print "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
+        imageUrl: gcode.getBigThumbnailUrl && gcode.getBigThumbnailUrl(),
+        showCancelButton: true,
+        confirmButtonText: 'Print!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.value) {
+          resolve()
+        }
+      })
+  })
+}
 
 export function printCloudGCode(printerComm, gcode) {
   return new Promise((resolve, reject) => {

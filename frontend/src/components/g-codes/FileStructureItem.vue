@@ -14,8 +14,8 @@
     <div class="item-info">
       <div class="filename">
         <div class="thumbnail-wrapper" :class="{ folder: isFolder }">
-          <div v-if="thumbnailUrl" class="thumbnail">
-            <img :src="thumbnailUrl" />
+          <div v-if="!isFolder && item.getSmallThumbnailUrl()" class="thumbnail">
+            <img :src="item.getSmallThumbnailUrl()" />
           </div>
           <div v-else class="placeholder">
             <i v-if="isFolder" class="fas fa-folder"></i>
@@ -114,7 +114,6 @@ export default {
 
   data: function () {
     return {
-      thumbnailUrl: null,
       isSelected: this.selected,
     }
   },
@@ -135,16 +134,6 @@ export default {
     selected(newValue) {
       this.isSelected = newValue
     },
-  },
-
-  created() {
-    let thumbnailProps = ['thumbnail3_url', 'thumbnail2_url', 'thumbnail1_url']
-    for (const t of thumbnailProps) {
-      if (this.item[t]) {
-        this.thumbnailUrl = this.item[t]
-        break
-      }
-    }
   },
 }
 </script>

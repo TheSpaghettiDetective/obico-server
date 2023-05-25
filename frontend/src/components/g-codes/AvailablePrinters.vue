@@ -3,42 +3,46 @@
     <div v-if="printersLoading || !gcode" class="my-5 text-center">
       <b-spinner />
     </div>
-    <div v-else>
-      <div
-        v-for="printer in printers"
-        :key="`printer_${printer.id}`"
-        class="printer-item"
-        :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
-        @click="selectPrinter(printer)"
-      >
-        <div class="selected-indicator"></div>
-        <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
+    <div v-else class="text-center">
+      <div v-if="!targetPrinterId" class="mb-3">
         <div
-          class="printer-status"
-          :class="[
-            printer.isPrintable() && !printer.inTransientState() ? 'text-success' : 'text-warning',
-          ]"
+          v-for="printer in printers"
+          :key="`printer_${printer.id}`"
+          class="printer-item"
+          :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
+          @click="selectPrinter(printer)"
         >
-          {{
-            printer.inTransientState() ? printer.transientState().title : printer.printabilityText()
-          }}
+          <div class="selected-indicator"></div>
+          <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
+          <div
+            class="printer-status"
+            :class="[
+              printer.isPrintable() && !printer.inTransientState()
+                ? 'text-success'
+                : 'text-warning',
+            ]"
+          >
+            {{
+              printer.inTransientState()
+                ? printer.transientState().title
+                : printer.printabilityText()
+            }}
+          </div>
         </div>
+
+        <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
+          No available printers
+        </p>
       </div>
 
-      <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
-        No available printers
-      </p>
-
       <button
-        class="btn btn-primary mt-3 d-flex align-items-center justify-content-center"
+        class="btn btn-primary d-inline-flex align-items-center justify-content-center"
         :disabled="!selectedPrinter || isSending || !selectedPrinter.isPrintable()"
         @click="onPrintClicked"
       >
         <b-spinner v-if="isSending" small class="mr-1" />
-        <div>
-          <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
-          <div v-else class="truncated">Print</div>
-        </div>
+        <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
+        <div v-else class="truncated">Print</div>
       </button>
     </div>
   </div>
@@ -48,7 +52,7 @@
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import { sendToPrint, showRedirectModal } from './sendToPrint'
+import { sendToPrint, showRedirectModal, confirmPrint } from './sendToPrint'
 import PrinterComm from '@src/lib/printer-comm'
 
 export default {
@@ -162,26 +166,30 @@ export default {
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return
-      this.selectedPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
-      sendToPrint({
-        printerId: this.selectedPrinter.id,
-        gcode: this.gcode,
-        isCloud: this.isCloud,
-        isAgentMoonraker: this.selectedPrinter.isAgentMoonraker(),
-        Swal: this.$swal,
-        onCommandSent: () => {
-          if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes' + this.selectedPrinter.id)
-          }
-        },
-        onPrinterStatusChanged: () => {
-          if (!this.isPopup) {
-            showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
-          }
 
-          this.fetchPrinters()
-        },
+      confirmPrint(this.gcode, this.selectedPrinter).then(() => {
+        this.selectedPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
+        sendToPrint({
+          printerId: this.selectedPrinter.id,
+          gcode: this.gcode,
+          isCloud: this.isCloud,
+          isAgentMoonraker: this.selectedPrinter.isAgentMoonraker(),
+          Swal: this.$swal,
+          onCommandSent: () => {
+            if (this.isPopup) {
+              this.$bvModal.hide('b-modal-gcodes' + this.selectedPrinter.id)
+            }
+          },
+          onPrinterStatusChanged: () => {
+            if (!this.isPopup) {
+              showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
+            }
+
+            this.fetchPrinters()
+          },
+        })
       })
+      return
     },
   },
 }
@@ -191,6 +199,7 @@ export default {
 .printer-item
   display: flex
   align-items: center
+  text-align: left
   border-radius: var(--border-radius-sm)
   border: 1px solid var(--color-divider)
   margin-bottom: 0.5rem
@@ -221,5 +230,5 @@ export default {
   margin-left: 0.5rem
 
 .btn
-  width: 100%
+  max-width: 100%
 </style>

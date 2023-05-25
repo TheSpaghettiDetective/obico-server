@@ -337,7 +337,7 @@ import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
-import { sendToPrint, showRedirectModal } from '@src/components/g-codes/sendToPrint'
+import { sendToPrint, showRedirectModal, confirmPrint } from '@src/components/g-codes/sendToPrint'
 import { restoreFilterValues, getFilterParams } from '@src/components/FilteringDropdown'
 import { restoreSortingValue } from '@src/components/SortingDropdown'
 import {
@@ -618,16 +618,18 @@ export default {
         })
     },
     onRepeatPrintClicked() {
-      this.printer.setTransientState('Downloading G-Code') // FIXME: set conditionally (Downloading or Starting) when Repeat feature will be available for local g-codes as well
-      sendToPrint({
-        printerId: this.printer.id,
-        gcode: this.print.g_code_file,
-        isCloud: true,
-        isAgentMoonraker: this.printer.isAgentMoonraker(),
-        Swal: this.$swal,
-        onPrinterStatusChanged: () => {
-          showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
-        },
+      confirmPrint(this.print.g_code_file, this.printer).then(() => {
+        this.printer.setTransientState('Downloading G-Code') // FIXME: set conditionally (Downloading or Starting) when Repeat feature will be available for local g-codes as well
+        sendToPrint({
+          printerId: this.printer.id,
+          gcode: this.print.g_code_file,
+          isCloud: true,
+          isAgentMoonraker: this.printer.isAgentMoonraker(),
+          Swal: this.$swal,
+          onPrinterStatusChanged: () => {
+            showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
+          },
+        })
       })
     },
     enterFullscreen(url) {

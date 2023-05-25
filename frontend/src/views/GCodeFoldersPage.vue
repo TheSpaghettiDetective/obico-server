@@ -300,7 +300,7 @@ import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import { sendToPrint, confirmPrint } from '@src/components/g-codes/sendToPrint'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesOctoPrint,
   listPrinterLocalGCodesMoonraker,
@@ -675,7 +675,7 @@ export default {
         this.localFilesLoading = true
 
         if (!this.selectedPrinterComm) {
-          this.selectedPrinterComm = PrinterComm(
+          this.selectedPrinterComm = printerCommManager.getOrCreatePrinterComm(
             this.selectedPrinterId,
             urls.printerWebSocket(this.selectedPrinterId),
             (data) => {},

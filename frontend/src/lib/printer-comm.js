@@ -6,6 +6,51 @@ import pako from 'pako'
 import { toArrayBuffer } from '@src/lib/utils'
 import { clearTransientState } from '@src/lib/printer-transient-state'
 
+// PrinterCommManager is a singleton: https://www.sitepoint.com/javascript-design-patterns-singleton/
+class PrinterCommManager {
+  constructor() {
+    if (!PrinterCommManager.instance) {
+      this.printerCommMap = new Map()
+      PrinterCommManager.instance = this
+    }
+    return PrinterCommManager.instance
+  }
+
+  setPrinterComm(printerId, printerComm) {
+    this.printerCommMap.set(printerId, printerComm)
+  }
+
+  getPrinterComm(printerId) {
+    return this.printerCommMap.get(printerId)
+  }
+
+  getOrCreatePrinterComm(...props) {
+    const printerId = String(props[0]) // assuming same args as for PrinterComm function
+    if (!this.getPrinterComm(printerId)) {
+      console.log('[di] Creating new PrinterComm for printerId: ' + printerId)
+      this.setPrinterComm(printerId, PrinterComm(...props))
+    }
+    console.log('[di] Returning PrinterComm for printerId: ' + printerId)
+    return this.getPrinterComm(printerId)
+  }
+
+  closeConnection(printerId) {
+    const printerComm = this.getPrinterComm(printerId)
+    if (printerComm) {
+      printerComm.closeServerWebSocket()
+      if (printerComm.webrtc) printerComm.webrtc.close()
+      this.printerCommMap.delete(printerId)
+    }
+  }
+
+  closeAllConnections() {
+    this.printerCommMap.forEach((_, token) => this.closeConnection(token))
+  }
+}
+
+export const printerCommManager = new PrinterCommManager()
+Object.freeze(printerCommManager)
+
 export default function PrinterComm(
   printerId,
   wsUri,
@@ -53,6 +98,11 @@ export default function PrinterComm(
   }
 
   self.connect = function (onOpenCallback = null) {
+    if (self.ws && self.ws.readyState === WebSocket.OPEN) {
+      onOpenCallback && onOpenCallback()
+      return
+    }
+
     self.ws = new WebSocket(
       window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri
     )

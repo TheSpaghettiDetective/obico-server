@@ -190,6 +190,7 @@ export default {
     },
     isPrintStarting() {
       return this.printer.inTransientState()
+    },
     zHeightProgress() {
       let progressInMillimeters, progressInLayers
 

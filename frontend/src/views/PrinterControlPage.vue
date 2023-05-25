@@ -8,6 +8,16 @@
 
     <template #topBarRight>
       <div v-if="printer" class="action-panel">
+        <!-- Share Feed -->
+        <a
+          href="#"
+          class="btn shadow-none action-btn icon-btn"
+          title="Share"
+          @click.prevent="onSharePrinter()"
+        >
+          <i class="fas fa-share-alt fa-lg"></i>
+          <span class="sr-only">Share</span>
+        </a>
         <!-- Tunnel -->
         <a
           :href="`/tunnels/${printer.id}/`"
@@ -37,6 +47,12 @@
             ref="cascadedDropdown"
             :menu-options="[
               {
+                key: 'share',
+                icon: 'fas fa-share-alt fa-lg',
+                title: 'Share',
+                callback: true,
+              },
+              {
                 key: 'tunnel',
                 svgIcon: 'svg-tunnel',
                 title: 'OctoPrint Tunnel',
@@ -49,6 +65,7 @@
                 href: `/printers/${printer.id}/`,
               },
             ]"
+            @menuOptionClicked="onMenuOptionClicked"
           />
         </b-dropdown>
       </div>
@@ -75,15 +92,25 @@
             ></component>
           </template>
 
-          <div class="reorder-button-wrapper">
+          <div class="extra-actions">
+            <h2 class="section-title">Additional Actions</h2>
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
               <i class="fa-solid fa-arrows-up-down"></i>
               Reorder &amp; Hide
             </b-button>
+            <div class="text-muted extra-actions-explanation">
+              <small
+                >Customize this page for each of your printers by reodering or hiding cards
+                above.</small
+              >
+            </div>
             <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
               <i class="fa-solid fa-plus"></i>
               Add Printer
             </b-button>
+            <div class="text-muted extra-actions-explanation">
+              <small>Link another printer to Obico.</small>
+            </div>
           </div>
         </div>
         <div class="stream-container">
@@ -130,6 +157,7 @@ import TemperatureWidget from '@src/components/printer-control/TemperatureWidget
 import PrinterControlWidget from '@src/components/printer-control/PrinterControlWidget'
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
+import SharePrinter from '@src/components/printers/SharePrinter.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -251,11 +279,34 @@ export default {
   },
 
   methods: {
+    onMenuOptionClicked(menuOptionKey) {
+      if (menuOptionKey === 'share') {
+        this.onSharePrinter()
+      }
+    },
+    onSharePrinter() {
+      this.$swal.openModalWithComponent(
+        SharePrinter,
+        {
+          isProAccount: this.user.is_pro,
+          printer: this.printer,
+        },
+        {
+          confirmButtonText: 'Close',
+        }
+      )
+    },
     restoreWidgets() {
       if (isLocalStorageSupported()) {
         const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
         if (widgets) {
-          return JSON.parse(widgets)
+          const parsed = JSON.parse(widgets)
+          for (const widget of WIDGETS) {
+            if (!parsed.find((w) => w.id === widget.id)) {
+              parsed.push({ id: widget.id, enabled: true })
+            }
+          }
+          localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
         }
       }
 
@@ -522,11 +573,23 @@ export default {
   background-color: rgb(0 0 0 / .5)
   padding: 4px 8px
 
-.reorder-button-wrapper
+.extra-actions
   display: flex
   justify-content: center
   margin-top: var(--gap-between-blocks)
   gap: 1rem
+  .extra-actions-explanation, .section-title
+    display: none
   @media (max-width: 510px)
+    margin-top: 2rem
     flex-direction: column
+    .extra-actions-explanation
+      display: block
+      text-align: center
+      margin-top: -0.5rem
+      margin-bottom: 1rem
+    .section-title
+      display: block
+      text-align: center
+      margin-bottom: 1rem
 </style>

@@ -10,7 +10,7 @@ When you run into an issue in The Spaghetti Detective mobile app, or even have a
 1. Press "**settings**" (⚙️) at the bottom of the screen.
 1. Press "**About**".
 1. Press "**Developer Options**".
-1. Press "**Send log to TSD Developers**".
+1. Press "**Send log to Obico Developers**".
 1. Send the email, along with the attached files, to [support@obico.io](mailto:support@obico.io).
 
 ![](/img/user-guides/helpdocs/submit-mobile-app-log-files.gif)

@@ -17,7 +17,7 @@ If you have the Pro plan, you can get a guaranteed technical support by [emailin
 
 ## If you have the Free plan {#if-you-have-the-free-plan}
 
-If you don't have the Pro plan, the fastest way to get help is to [join TSD discord forum](https://obico.io/discord) and ask your question there. Although there is no guarantee how quickly your question will be answered, there is a good chance that one of the very helpful Obico community members will jump in to help you.
+If you don't have the Pro plan, the fastest way to get help is to [join Obico discord forum](https://obico.io/discord) and ask your question there. Although there is no guarantee how quickly your question will be answered, there is a good chance that one of the very helpful Obico community members will jump in to help you.
 
 :::info
 Obico has become so popular that the number of users has outgrown our capacity to answer questions from all users. To make sure the team members can still spend enough time to improve the product, instead of being overwhelmed by emails, we had to make a tough decision to limit our technical support only to the Pro subscribers.

@@ -231,7 +231,7 @@ export default {
           if (this.items.files.length)
             await axios.post(urls.gcodeFileBulkMove(), {
               file_ids: this.items.files,
-              arent_folder: parentFolder,
+              parent_folder: parentFolder,
             })
         }
       } catch (error) {

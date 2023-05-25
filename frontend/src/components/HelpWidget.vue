@@ -253,19 +253,30 @@
               </p>
             </template>
 
-            <!-- not-watching-reason -->
-            <template v-if="id === 'not-watching-reason'">
-              <h3>Why is it not watching?</h3>
-              <ul>
-                <li>
-                  {{ textBefore }}
-                </li>
-              </ul>
-              <a
-                href="https://www.obico.io/docs/user-guides/detective-not-watching/"
-                target="_blank"
-                >Learn more about possible reasons <i class="fas fa-external-link-alt"></i>
-              </a>
+            <template v-if="id === 'fan-speed-widget-help'">
+              <p>
+                Adjust the speed of the cooling fan by setting a percentage value between 0 and 100.
+                The default value is usually 100, which means the fan will run at full speed.
+                Lowering the fan speed can reduce noise and save energy, but may also affect print
+                quality if the printer gets too hot.
+              </p>
+            </template>
+            <template v-if="id === 'print-speed-widget-help'">
+              <p>
+                Adjust the speed of your 3D printer by changing the speed of all movement commands
+                by a specified factor. The default value is 100%, meaning that the printer will move
+                at its standard speed. Lowering the print speed factor will slow down your print,
+                while increasing it will speed it up. Value of 200% will double the speed.
+              </p>
+            </template>
+            <template v-if="id === 'flow-rate-widget-help'">
+              <p>
+                Flow rate is the speed at which the printer extrudes plastic. If the flow rate is
+                too high, the printer may extrude too much plastic and create blobs or stringing,
+                while too low flow rate may result in weak and brittle prints. Adjusting the flow
+                rate can help achieve the optimal balance between speed and quality. The default
+                value is 100%.
+              </p>
             </template>
           </div>
         </div>

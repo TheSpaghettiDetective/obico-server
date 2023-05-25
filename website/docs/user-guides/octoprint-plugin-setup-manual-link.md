@@ -64,7 +64,7 @@ Follow instructions in the "**📱  Mobile App**" tab if you are using The Spagh
   :::
 1. Now you should see a page that asks you for a 6-digit verification code. Keep this browser tab open while you obtain the 6-digit code in The Spaghetti Detective app.
 
-![TSD Wizard Page](/img/user-guides/setupguide/octoprint-plugin-verification-code.png)
+![Obico Wizard Page](/img/user-guides/setupguide/octoprint-plugin-verification-code.png)
 
   </TabItem>
   <TabItem value="web">
@@ -77,7 +77,7 @@ Follow instructions in the "**📱  Mobile App**" tab if you are using The Spagh
   :::
 1. Now you should see a page that asks you for a 6-digit verification code.
 
-![TSD Wizard Page](/img/user-guides/setupguide/octoprint-plugin-verification-code.png)
+![Obico Wizard Page](/img/user-guides/setupguide/octoprint-plugin-verification-code.png)
 
   </TabItem>
 </Tabs>

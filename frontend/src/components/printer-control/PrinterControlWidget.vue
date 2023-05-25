@@ -25,6 +25,18 @@
             <svg class="icon extruder"><use href="#extruder" /></svg>
             <div class="title">Extrude</div>
           </button>
+          <button
+            v-if="printer.isAgentMoonraker()"
+            class="menu-button"
+            @click="activeMenu = 'baby-step-z'"
+          >
+            <svg class="icon move-z"><use href="#svg-move-z" /></svg>
+            <div class="title">Baby Step Z</div>
+          </button>
+          <button v-if="!hideTunePrinter" class="menu-button" @click="activeMenu = 'tune-printer'">
+            <i class="fa-solid fa-gear"></i>
+            <div class="title">Tune Printer</div>
+          </button>
         </div>
 
         <!-- Move Head -->
@@ -146,9 +158,136 @@
           <div class="additional">
             <div class="current-offset">
               <div class="label">Current Offset</div>
-              <div class="value">{{ currentZOffset }}</div>
+              <div class="value">
+                <span v-if="currentZOffset || typeof currentZOffset === 'number'">
+                  {{ currentZOffset }}
+                </span>
+                <span v-else>
+                  <b-spinner small></b-spinner>
+                </span>
+              </div>
             </div>
           </div>
+        </div>
+        <!-- Tune Printer -->
+        <div v-show="activeMenu === 'tune-printer'" class="control-panel tune-printer">
+          <template v-if="!printer.isAgentMoonraker() || currentFeedRate !== null">
+            <div class="controls-title">
+              <span>Feed Rate / Speed</span>
+              <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
+            </div>
+            <div class="controls">
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFeedRateFactor === null || parseInt(customFeedRateFactor) < 1
+                      "
+                      @click="setPrintSpeed(customFeedRateFactor)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFeedRateFactor"
+                    placeholder="100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
+            </div>
+          </template>
+
+          <template v-if="!printer.isAgentMoonraker() || currentFlowRate !== null">
+            <div class="controls-title">
+              <span>Flow Rate</span>
+              <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
+            </div>
+            <div class="controls">
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFlowRateFactor === null || parseInt(customFlowRateFactor) < 1
+                      "
+                      @click="setFlowRate(customFlowRateFactor)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFlowRateFactor"
+                    placeholder="100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
+            </div>
+          </template>
+
+          <template v-if="!printer.isAgentMoonraker() || currentFanSpeed !== null">
+            <div class="controls-title">
+              <span>Fan Speed</span>
+              <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
+            </div>
+            <div class="controls">
+              <b-button
+                class="off"
+                variant="background"
+                small
+                @click="
+                  {
+                    customFanSpeed = 0
+                    setFanSpeed(0)
+                  }
+                "
+                >0% (Off)</b-button
+              >
+              <div class="custom">
+                <b-input-group prepend="%">
+                  <template #append>
+                    <b-button
+                      variant="background"
+                      :disabled="
+                        customFanSpeed === null ||
+                        parseInt(customFanSpeed) > 100 ||
+                        parseInt(customFanSpeed) < 0
+                      "
+                      @click="setFanSpeed(customFanSpeed)"
+                      >Apply</b-button
+                    >
+                  </template>
+                  <b-form-input
+                    v-model="customFanSpeed"
+                    placeholder="0-100"
+                    type="number"
+                    @focus="$event.target.select()"
+                  ></b-form-input>
+                </b-input-group>
+              </div>
+              <b-button
+                class="btn"
+                variant="background"
+                small
+                @click="
+                  {
+                    customFanSpeed = 100
+                    setFanSpeed(100)
+                  }
+                "
+                >100%</b-button
+              >
+            </div>
+          </template>
+
+          <muted-alert v-if="!printer.isAgentMoonraker()" class="info-block">
+            These settings can only be set. They can't be read back from the firmware due to a
+            limitation of the communication protocol.
+          </muted-alert>
         </div>
       </div>
     </template>
@@ -160,6 +299,8 @@ import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import { isLocalStorageSupported } from '@static/js/utils'
 import get from 'lodash/get'
 import { temperatureDisplayName } from '@src/lib/utils'
+import HelpWidget from '@src/components/HelpWidget.vue'
+import MutedAlert from '@src/components/MutedAlert.vue'
 
 const AXIS = {
   x: 'x',
@@ -184,6 +325,8 @@ export default {
 
   components: {
     WidgetTemplate,
+    HelpWidget,
+    MutedAlert,
   },
 
   props: {
@@ -217,22 +360,30 @@ export default {
         value: 0.01,
         options: [0.005, 0.01, 0.05, 0.1],
       },
-      activeTool: 'tool0',
+      activeTool: null,
 
-      currentZOffset: 0.0,
+      currentZOffset: null,
+
+      customFeedRateFactor: null,
+      customFlowRateFactor: null,
+      customFanSpeed: null,
     }
   },
 
   computed: {
     tools() {
-      const temperatures = {}
+      const extruders = {}
       for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
-        if (Boolean(value.actual) && !isNaN(value.actual) && !key.includes('bed')) {
+        if (
+          Boolean(value.actual) &&
+          !isNaN(value.actual) &&
+          (key.toLowerCase().includes('tool') || key.toLowerCase().includes('extruder'))
+        ) {
           // Take out NaN, 0, null. Apparently printers like Prusa throws random temperatures here.
-          temperatures[key] = value
+          extruders[key] = value
         }
       }
-      return temperatures
+      return extruders
     },
     showExtrudeControl() {
       return Object.keys(this.tools).length > 0
@@ -240,9 +391,37 @@ export default {
     showToolsSelector() {
       return Object.keys(this.tools).length > 1
     },
+    currentFeedRate() {
+      const val = this.printer.status?.currentFeedRate
+      return val !== undefined ? val : null
+    },
+    currentFlowRate() {
+      const val = this.printer.status?.currentFlowRate
+      return val !== undefined ? val : null
+    },
+    currentFanSpeed() {
+      const val = this.printer.status?.currentFanSpeed
+      return val !== undefined ? val : null
+    },
+    hideTunePrinter() {
+      return (
+        this.printer.isAgentMoonraker() &&
+        this.currentFlowRate === null &&
+        this.currentFanSpeed === null &&
+        this.currentFeedRate === null
+      )
+    },
   },
 
   watch: {
+    tools: {
+      handler: function (newValue, prevValue) {
+        if (newValue) {
+          this.activeTool = Object.keys(newValue)[0]
+        }
+      },
+      immediate: true,
+    },
     printer: {
       handler: function (newValue, oldValue) {
         if (newValue.isActive() && ['move-head', 'extrude'].includes(this.activeMenu)) {
@@ -274,6 +453,18 @@ export default {
         }
       },
       deep: true,
+    },
+    activeMenu(newValue, oldValue) {
+      if (newValue === 'baby-step-z') {
+        this.getCurrentZOffset()
+      } else if (newValue === 'tune-printer') {
+        this.customFeedRateFactor =
+          this.currentFeedRate !== null ? Math.round(this.currentFeedRate * 100) : null
+        this.customFlowRateFactor =
+          this.currentFlowRate !== null ? Math.round(this.currentFlowRate * 100) : null
+        this.customFanSpeed =
+          this.currentFanSpeed !== null ? Math.round(this.currentFanSpeed * 100) : null
+      }
     },
   },
 
@@ -322,6 +513,18 @@ export default {
             icon: 'error',
             title: ret.error,
           })
+        }
+      })
+    },
+    getCurrentZOffset() {
+      const moonrakerPayload = { func: 'printer/objects/query?gcode_move', target: 'moonraker_api' }
+      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
+        if (err || ret?.error) {
+          this.currentZOffset = 'no reading'
+        } else {
+          const offset = ret.status.gcode_move.homing_origin[2]
+          const cleanOffset = parseFloat(offset.toFixed(3))
+          this.currentZOffset = cleanOffset
         }
       })
     },
@@ -413,10 +616,10 @@ export default {
       const moonrakerPayload = {
         func: 'printer/gcode/script',
         target: 'moonraker_api',
-        kwargs: { script: `SET_GCODE_OFFSET Z_ADJUST=${moonrakerVal} MOVE=1` },
+        kwargs: { script: `SET_GCODE_OFFSET Z_ADJUST=${moonrakerVal}` },
       }
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-
+      this.currentZOffset = null
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
         if (err || ret?.error) {
           this.$swal.Toast.fire({
@@ -424,7 +627,57 @@ export default {
             title: ret.error,
           })
         } else {
-          this.currentZOffset = Math.round((this.currentZOffset + octoVal) * 10000) / 10000
+          this.getCurrentZOffset()
+        }
+      })
+    },
+
+    // Print Speed / Flow Rate / Fan Speed
+    setPrintSpeed(value) {
+      if (value === null || value < 1) return
+      this.sendCommandToPrinter(`M220 S${Math.round(value)}`)
+    },
+    setFlowRate(value) {
+      if (value === null || value < 1) return
+      this.sendCommandToPrinter(`M221 S${Math.round(value)}`)
+    },
+    setFanSpeed(value) {
+      if (value === null || value < 0 || value > 100) return
+      let command = value === 0 ? 'M107' : `M106 S${Math.round((value / 100) * 255)}`
+      this.sendCommandToPrinter(command)
+    },
+    sendCommandToPrinter(command, { onError, onSuccess } = {}) {
+      const payload = this.printer.isAgentMoonraker()
+        ? {
+            func: 'printer/gcode/script',
+            target: 'moonraker_api',
+            kwargs: { script: command },
+          }
+        : {
+            func: 'commands',
+            target: '_printer',
+            args: [command],
+          }
+
+      this.printerComm.passThruToPrinter(payload, (err, ret) => {
+        if (err || ret?.error) {
+          if (onError) {
+            onError(err, ret)
+          } else {
+            this.$swal.Toast.fire({
+              icon: 'error',
+              title: ret.error,
+            })
+          }
+        } else {
+          if (onSuccess) {
+            onSuccess(err, ret)
+          } else {
+            this.$swal.Toast.fire({
+              icon: 'success',
+              title: 'Command successfully sent!',
+            })
+          }
         }
       })
     },
@@ -440,7 +693,7 @@ export default {
 
 .wrapper
   padding-bottom: 1.5rem
-  height: 240px
+  min-height: 260px
   display: flex
   justify-content: center
   align-items: center
@@ -449,17 +702,16 @@ export default {
   display: flex
   flex-direction: row
   justify-content: center
-  align-items: center
   gap: 1rem
+  width: 100%
+  flex-wrap: wrap
   @media (max-width: 510px)
-    flex-direction: column
-    align-items: stretch
-    width: 100%
-    gap: 1rem
+    gap: .5rem
 
 .menu-button
-  height: 110px
-  width: 110px
+  width: calc((100% - 3rem) / 3)
+  flex-shrink: 0
+  padding: 1.5rem 1rem
   background-color: var(--color-background)
   color: var(--color-text-primary)
   border: none
@@ -471,14 +723,17 @@ export default {
   gap: .5rem
   cursor: pointer
   @media (max-width: 510px)
-    width: 100%
-    height: 60px
-    flex-direction: row
+    width: calc((100% - 2rem) / 3)
+    padding: 1rem 0.5rem
   &:hover
     opacity: .8
   &:disabled
     opacity: .5
     cursor: not-allowed
+  i
+    font-size: 1.75rem
+    @media (max-width: 510px)
+      font-size: 1.2rem
 .icon
   --icon-size: 42px
   width: var(--icon-size)
@@ -489,9 +744,10 @@ export default {
   &.extruder
     --icon-size: 36px
   @media (max-width: 510px)
-    --icon-size: 24px
+    --icon-size: 24px !important
 .title
   font-size: 0.875rem
+  line-height: 1.2
 
 
 .control-panel
@@ -592,4 +848,42 @@ export default {
 
 .tool-select
   width: 80%
+
+.tune-printer
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: .825rem
+
+  .controls-title
+    font-size: 1rem
+    width: 100%
+    display: flex
+    gap: .375rem
+  .controls
+    width: 100%
+    display: flex
+    gap: .75rem
+    margin-bottom: 1rem
+
+    .off
+      flex-shrink: 0
+      width: 100px
+
+    .custom
+      border-radius: 100px
+      overflow: hidden
+      flex: 1
+
+    ::v-deep .input-group-text
+      background-color: var(--color-divider)
+      color: var(--color-text-primary)
+
+    @media (max-width: 510px)
+      flex-direction: column
+      .off
+        width: 100%
+
+  .info-block
+    width: 100%
 </style>

@@ -1,5 +1,5 @@
 ---
-title: Run TSD server on NVIDIA Jetson Nano
+title: Run Obico server on NVIDIA Jetson Nano
 ---
 
 
@@ -9,7 +9,7 @@ title: Run TSD server on NVIDIA Jetson Nano
 
 ### Hardware requirements {#hardware-requirements}
 
-TSD private server can only run on Jetson Nano 4GB model. The 2GB model doesn't have enough memory to run both the program and load the AI model in the memory.
+Obico private server can only run on Jetson Nano 4GB model. The 2GB model doesn't have enough memory to run both the program and load the AI model in the memory.
 
 ### Software requirements {#software-requirements}
 

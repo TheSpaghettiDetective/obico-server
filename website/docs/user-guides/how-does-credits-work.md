@@ -27,13 +27,13 @@ Once you are in, the Focused Feedback will walk you through all the snapshots Th
 
 ![Focused Feedback options](/img/user-guides/focused-feedback.png)
 
-### You need to grant permission to TSD team to review your time-lapse {#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse}
+### You need to grant permission to Obico team to review your time-lapse {#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse}
 
 Before you can start the Focused Feedback for a print, you will need to grant The Spaghetti Detective team the permission to review your time-lapse.
 
 Once granted, The Spaghetti Detective team will have the option to review this particular time-lapse (but not any other time-lapse that you didn't grant permission for), and the Focused Feedback you gave.
 
-This is necessary because we want to ensure that all TSD users use consistent criteria in these Focused Feedbacks. The Focused Feedbacks users give us will serve as the most important input to train (teach) The Detective's AI. If The Detective receives inconsistent input from different users, she will be confused and make the wrong calls more often.
+This is necessary because we want to ensure that all Obico users use consistent criteria in these Focused Feedbacks. The Focused Feedbacks users give us will serve as the most important input to train (teach) The Detective's AI. If The Detective receives inconsistent input from different users, she will be confused and make the wrong calls more often.
 
 ### You earn AI Detection Hours for giving Focused Feedback {#you-earn-ai-detection-hours-for-giving-focused-feedback}
 

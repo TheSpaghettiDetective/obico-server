@@ -239,7 +239,7 @@ export default {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     videoRotationDeg() {
-      const rotation = this.printer.settings.webcam_rotate90 ? 90 : 0 + this.customRotationDeg
+      const rotation = (this.printer.settings.webcam_rotate90 ? 90 : 0) + this.customRotationDeg
       return rotation % 360
     },
     webcamRotateClass() {
@@ -344,15 +344,15 @@ export default {
     onLoadStart() {
       this.videoLoading = true
     },
-    onStreamAvailable() {
+    onStreamAvailable(webrtcConn) {
       if (this.autoplay) {
-        this.webrtc.startStream()
+        webrtcConn.startStream()
       } else {
         if (!this.printer.basicStreamingInWebrtc()) {
           return
         }
         if (!this.autoplay && this.isBasicStreamingInProgress) {
-          this.webrtc.startStream()
+          webrtcConn.startStream()
         }
         this.videoLimit.resumeVideoCycle()
       }

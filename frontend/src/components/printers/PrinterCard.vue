@@ -321,7 +321,7 @@ export default {
     },
     tempProps() {
       // If temp_profiles is missing, it's a plugin version too old to change temps
-      let editable = get(this.printer, 'settings.temp_profiles') != undefined
+      let isPluginVersionSufficient = get(this.printer, 'settings.temp_profiles') != undefined
       const temperatures = {}
       for (const [key, value] of Object.entries(get(this.printer, 'status.temperatures', {}))) {
         if (Boolean(value.actual) && !isNaN(value.actual)) {
@@ -332,7 +332,7 @@ export default {
       return {
         temperatures: temperatures,
         show: Object.keys(temperatures).length > 0,
-        editable: editable,
+        isPluginVersionSufficient,
       }
     },
     statusText() {

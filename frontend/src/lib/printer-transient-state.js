@@ -86,8 +86,12 @@ export const getTransientState = (printerId, nextState) => {
 
   if (new Date() > new Date(timeout)) {
     // Transient state has timed out, clear it
-    clearTransientState(printerId)
-    return 'timeout'
+    return {
+      overTimeout: true,
+      ...TRANSIENT_STATES[transientStateName],
+      name: transientStateName,
+      timeout: new Date(timeout),
+    }
   }
 
   return {
@@ -104,11 +108,10 @@ export const clearTransientState = (printerId) => {
   localStorage.removeItem('printer-' + printerId + '-state-transitioning-timeout')
 }
 
-export const showTimeoutError = (printer) => {
-  window.Sentry?.captureException({
-    message: 'Printer state timeout error',
-    printerId: printer.id,
-  })
+export const showTimeoutError = (printer, localTransientState, newPrinterState) => {
+  window.Sentry?.captureMessage(
+    `Transient state timeout: "${localTransientState}" -> "${newPrinterState}" (printer ID: ${printer.id})`
+  )
 
   Vue.swal
     .fire({

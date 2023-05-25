@@ -7,6 +7,7 @@ import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 import {
   setTransientState,
   getTransientState,
+  clearTransientState,
   showTimeoutError,
 } from '@src/lib/printer-transient-state'
 
@@ -178,8 +179,9 @@ export const normalizedPrinter = (newData, oldData) => {
       const savedTransientState = getTransientState(this.id, this.status?.state?.text)
       if (!savedTransientState) {
         return
-      } else if (savedTransientState === 'timeout') {
-        showTimeoutError(this)
+      } else if (savedTransientState.overTimeout) {
+        showTimeoutError(this, savedTransientState.name, this.status?.state?.text)
+        clearTransientState(this.id)
         return
       } else {
         return savedTransientState

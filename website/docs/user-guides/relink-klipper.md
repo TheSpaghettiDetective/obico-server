@@ -1,20 +1,16 @@
 ---
-id: relink-klipper
 title: Re-link Klipper-based printer
 ---
 
-## Why would you re-link your printer? {#why-would-you-re-link-your-printer}
+Re-linking process is very similar to [the initial setup process](/user-guides/klipper-setup.md).
 
-Consider re-linking in one of the following cases:
+1. SSH to the Raspberry Pi your Klipper runs on.
+2. Run:
 
-* You accidentally deleted a printer in the Obico app.
-* Your printer is always showing "**offline**" in the app, and you have gone through [all the trouble-shooting steps](/docs/user-guides/troubleshoot-server-connection-issues).
-* You don't remember the password of your old the Obico account so you have to sign up for a new account. Now you want to re-link your printer to the new account.
+```bash
+    cd ~/moonraker-obico
+    ./install.sh
+```
 
-## How to re-link? {#how-to-re-link}
-
-Follow [this guide](/docs/user-guides/octoprint-plugin-setup-manual-link/) to re-link printer with a 6-digit code.
-
-:::note
-Your printer can't be automatically identified during the re-linking process. 6-digit code is required to re-link your printer.
-:::
+3. You will be asked to confirm your Moonraker host and port, exactly the same the initial setup process.
+4. The installation script will bring you to the final step to enter the 6-digit code. Find the code in the same way as in the  initial setup process.

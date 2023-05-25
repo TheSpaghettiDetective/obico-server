@@ -76,6 +76,7 @@ module.exports = {
         'user-guides/connectivity-error-report',
         'user-guides/turn-on-debug-logging',
         'user-guides/send-mobile-app-log-files',
+        'user-guides/relink-printer',
       ],
     },
     {

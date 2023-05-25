@@ -6,10 +6,11 @@ title: Re-link printer to Obico server
 
 Consider re-linking in one of the following cases:
 
-* [The authentication token is being used by multiple printers](/docs/user-guides/warnings/shared-auth-token-error/).
 * You accidentally deleted a printer in the Obico app.
 * Your printer is always showing "**offline**" in the app, and you have gone through [all the trouble-shooting steps](/docs/user-guides/troubleshoot-server-connection-issues).
 * You don't remember the password of your old the Obico account so you have to sign up for a new account. Now you want to re-link your printer to the new account.
+* [The authentication token is being used by multiple printers](/docs/user-guides/warnings/shared-auth-token-error/).
+* You want to switch from the Obico cloud to your own self-hosted Obico server, or the other way around.
 
 ## How to re-link? {#how-to-re-link}
 

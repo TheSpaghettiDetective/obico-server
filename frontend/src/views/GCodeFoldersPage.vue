@@ -926,6 +926,8 @@ export default {
       }
     },
     onPrintClicked(gcode) {
+      this.targetPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
+
       sendToPrint({
         printerId: this.targetPrinter.id,
         gcode: gcode,

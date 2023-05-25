@@ -14,12 +14,7 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="printer.inTransientState()">
-          <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printer.status.state.text }}...</p>
-        </template>
-
-        <template v-else>
+        <template v-if="!printer.inTransientState()">
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
               <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
@@ -99,17 +94,14 @@
             <b-button
               v-if="!printer.isAgentMoonraker()"
               variant="outline-primary"
-              :disabled="connecting"
               @click="onConnectClicked"
             >
-              <b-spinner v-if="connecting" small></b-spinner>
-              <i v-else class="fa-brands fa-usb"></i>
-              {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
+              <i class="fa-brands fa-usb"></i> Connect
             </b-button>
           </div>
         </template>
 
-        <template v-if="printer.isOffline()">
+        <template v-else-if="printer.isOffline()">
           <i class="fa-solid fa-triangle-exclamation big-icon warning"></i>
           <p>
             Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
@@ -119,6 +111,10 @@
               >Why?</a
             >
           </p>
+        </template>
+        <template v-else-if="printer.inTransientState()">
+          <b-spinner label="Processing..."></b-spinner>
+          <p>{{ printer.transientState().title }}...</p>
         </template>
 
         <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">
@@ -199,7 +195,6 @@ export default {
 
   data() {
     return {
-      connectBtnClicked: false,
       selectedGcodeId: null,
       savedPath: [null],
       printerFiles: false,
@@ -207,9 +202,6 @@ export default {
   },
 
   computed: {
-    connecting() {
-      return this.connectBtnClicked && this.printer.isDisconnected()
-    },
     modalId() {
       return 'b-modal-gcodes' + this.printer.id
     },
@@ -231,6 +223,8 @@ export default {
       this.selectedGcodeId = null
     },
     onConnectClicked() {
+      this.printer.setTransientState('Connecting')
+
       this.printerComm.passThruToPrinter(
         { func: 'get_connection_options', target: '_printer' },
         (err, connectionOptions) => {
@@ -277,11 +271,6 @@ export default {
           }
         }
       )
-
-      this.connectBtnClicked = true
-      setTimeout(() => {
-        this.connectBtnClicked = false
-      }, 10 * 1000)
     },
     onPauseToggled(ev) {
       if (this.printer.isPaused()) {
@@ -289,6 +278,7 @@ export default {
           this.$emit('notAFailureClicked', ev, true)
         } else {
           this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT, true)
+          this.printer.setTransientState('Resuming')
         }
       } else {
         this.$swal.Confirm.fire({
@@ -296,6 +286,7 @@ export default {
         }).then((result) => {
           if (result.value) {
             this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT, true)
+            this.printer.setTransientState('Pausing')
           }
         })
       }
@@ -305,8 +296,8 @@ export default {
         text: 'Once cancelled, the print can no longer be resumed.',
       }).then((result) => {
         if (result.value) {
-          // When it is confirmed
           this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT, true)
+          this.printer.setTransientState('Cancelling')
         }
       })
     },

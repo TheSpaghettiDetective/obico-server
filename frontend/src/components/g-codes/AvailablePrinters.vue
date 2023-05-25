@@ -15,9 +15,13 @@
         <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
         <div
           class="printer-status"
-          :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+          :class="[
+            printer.isPrintable() && !printer.inTransientState() ? 'text-success' : 'text-warning',
+          ]"
         >
-          {{ printer.printabilityText() }}
+          {{
+            printer.inTransientState() ? printer.transientState().title : printer.printabilityText()
+          }}
         </div>
       </div>
 
@@ -26,12 +30,12 @@
       </p>
 
       <button
-        class="btn btn-primary mt-3"
-        :disabled="!selectedPrinter || isSending"
+        class="btn btn-primary mt-3 d-flex align-items-center justify-content-center"
+        :disabled="!selectedPrinter || isSending || !selectedPrinter.isPrintable()"
         @click="onPrintClicked"
       >
-        <b-spinner v-if="isSending" small />
-        <div v-else>
+        <b-spinner v-if="isSending" small class="mr-1" />
+        <div>
           <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
           <div v-else class="truncated">Print</div>
         </div>
@@ -45,6 +49,7 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal } from './sendToPrint'
+import PrinterComm from '@src/lib/printer-comm'
 
 export default {
   name: 'AvailablePrinters',
@@ -76,8 +81,19 @@ export default {
       printers: [],
       selectedPrinter: null,
       printersLoading: true,
-      isSending: false,
+      printerStateCheckInterval: null,
+      printerComms: {},
     }
+  },
+
+  computed: {
+    isSending() {
+      return this.printers.some(
+        (p) =>
+          p.transientState()?.name === 'Starting' ||
+          p.transientState()?.name === 'Downloading G-Code'
+      )
+    },
   },
 
   created() {
@@ -112,7 +128,19 @@ export default {
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.find((p) => p.isPrintable())
+        this.selectedPrinter = printers.find((p) => p.isPrintable()) || null
+      }
+
+      for (const printer of this.printers) {
+        this.printerComms[printer.id] = PrinterComm(
+          printer.id,
+          urls.printerWebSocket(printer.id),
+          (data) => {
+            const index = this.printers.findIndex((p) => p.id === printer.id)
+            this.$set(this.printers, index, normalizedPrinter(data, this.printers[index]))
+          }
+        )
+        this.printerComms[printer.id].connect()
       }
 
       this.printersLoading = false
@@ -134,8 +162,7 @@ export default {
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return
-      this.isSending = true
-
+      this.selectedPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
       sendToPrint({
         printerId: this.selectedPrinter.id,
         gcode: this.gcode,
@@ -152,7 +179,6 @@ export default {
             showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
           }
 
-          this.isSending = false
           this.fetchPrinters()
         },
       })

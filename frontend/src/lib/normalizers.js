@@ -4,6 +4,12 @@ import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
 import { humanizedDuration } from '@src/lib/formatters'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
+import {
+  setTransientState,
+  getTransientState,
+  clearTransientState,
+  showTimeoutError,
+} from '@src/lib/printer-transient-state'
 
 export const toMomentOrNull = (datetimeStr) => {
   if (!datetimeStr) {
@@ -164,11 +170,26 @@ export const normalizedPrinter = (newData, oldData) => {
       return Boolean(flags && flags.operational && (!flags.ready || flags.paused))
     },
     inTransientState: function () {
-      return (
-        !this.hasError() &&
-        get(this, 'status.state.text', '').includes('ing') &&
-        !get(this, 'status.state.text', '').includes('Printing')
-      )
+      return !!this.transientState()
+    },
+    transientState: function () {
+      if (this.hasError()) {
+        return
+      }
+      const savedTransientState = getTransientState(this.id, this.status?.state?.text)
+      if (!savedTransientState) {
+        return
+      } else if (savedTransientState.overTimeout) {
+        showTimeoutError(this, savedTransientState.name, this.status?.state?.text)
+        clearTransientState(this.id)
+        return
+      } else {
+        return savedTransientState
+      }
+    },
+    setTransientState: function (stateText) {
+      setTransientState(this.id, stateText)
+      this.status.state.text = stateText // this triggers a re-render immideaately
     },
     inUserInteractionRequired: function () {
       return get(this, 'status.user_interaction_required', false)

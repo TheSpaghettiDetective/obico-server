@@ -167,7 +167,6 @@ export default {
       finishingAt: null,
       printProgressPercentage: 0,
       preferZHeightProgressInLayers: getLocalPref('preferZHeightProgressInLayers', true),
-      isPrintStarting: false,
     }
   },
 
@@ -189,6 +188,8 @@ export default {
     isPrinting() {
       return this.printer.isActive() && this.printer.progressCompletion() < 100
     },
+    isPrintStarting() {
+      return this.printer.inTransientState()
     zHeightProgress() {
       let progressInMillimeters, progressInLayers
 
@@ -230,6 +231,10 @@ export default {
     if (this.isPrinting) {
       this.updatePrintProgress()
     }
+  },
+
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -275,17 +280,13 @@ export default {
         return
       }
 
-      this.isPrintStarting = true
-
+      this.printer.setTransientState('Downloading G-Code')
       sendToPrint({
         printerId: this.printer.id,
         gcode: this.print.g_code_file,
         isCloud: true,
         isAgentMoonraker: this.printer.isAgentMoonraker(),
         Swal: this.$swal,
-        onPrinterStatusChanged: () => {
-          this.isPrintStarting = false
-        },
       })
     },
   },

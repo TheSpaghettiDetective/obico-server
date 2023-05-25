@@ -4,6 +4,7 @@ import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
 import { toArrayBuffer } from '@src/lib/utils'
+import { clearTransientState } from '@src/lib/printer-transient-state'
 
 export default function PrinterComm(
   printerId,
@@ -123,6 +124,7 @@ export default function PrinterComm(
         self.passthruQueue.set(refId, callback)
         setTimeout(function () {
           if (self.passthruQueue.has(refId)) {
+            clearTransientState(self.printerId)
             Vue.swal.Toast.fire({
               icon: 'error',
               title:
@@ -137,6 +139,7 @@ export default function PrinterComm(
       self.ws.send(JSON.stringify({ passthru: msg }))
     } else {
       if (callback) {
+        clearTransientState(self.printerId)
         callback('Message not passed through. No suitable WebSocket.')
       }
     }

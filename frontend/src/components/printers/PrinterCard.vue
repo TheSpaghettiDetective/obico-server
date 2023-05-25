@@ -410,6 +410,7 @@ export default {
           }, 1000)
         }
         if (resumePrint) {
+          this.printer.setTransientState('Resuming')
           this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
         } else {
           this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)

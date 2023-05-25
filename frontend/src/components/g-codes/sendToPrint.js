@@ -1,5 +1,6 @@
 import axios from 'axios'
 import get from 'lodash/get'
+import { clearTransientState } from '@src/lib/printer-transient-state'
 
 import PrinterComm from '@src/lib/printer-comm'
 import {
@@ -44,13 +45,16 @@ export const sendToPrint = (args) => {
     (data) => {},
     (printerStatus) => {}
   )
+
   printerComm.connect(() => {
     const printGCode = isCloud
       ? printCloudGCode
       : isAgentMoonraker
       ? printPrinterLocalGCodeMoonraker
       : printPrinterLocalGCodeOctoPrint
+
     printGCode(printerComm, gcode).catch((err) => {
+      clearTransientState(printerId)
       Swal.Toast.fire({
         icon: 'error',
         title: err,
@@ -59,18 +63,6 @@ export const sendToPrint = (args) => {
   })
 
   onCommandSent && onCommandSent()
-
-  Swal.Prompt.fire({
-    html: `
-        <div class="text-center">
-          <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-          <h5 class="pt-3">
-            Starting the print...
-          </h5>
-        </div>
-      `,
-    showConfirmButton: false,
-  })
 
   const checkPrinterStatus = async () => {
     let printer
@@ -82,10 +74,12 @@ export const sendToPrint = (args) => {
       return
     }
 
-    if (get(printer, 'status.state.text') === 'Operational') {
+    if (
+      get(printer, 'status.state.text') === 'Operational' ||
+      get(printer, 'status.state.text') === 'Downloading G-Code'
+    ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {
-      Swal.close()
       onPrinterStatusChanged && onPrinterStatusChanged()
     }
   }

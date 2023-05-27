@@ -64,7 +64,7 @@ I have used the following to setup NGINX Proxy Manager:
 
 https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-setup-the-Nginx-Proxy-Manager-example#:~:text=Login%20to%20the%20Nginx%20Proxy,Nginx%20Proxy%20Manager%20has%20configured
 
-My docker compose file contains the following:
+The docker file `docker-compose.yml` contains the following:
 
 ```
 version: '3.8'
@@ -105,11 +105,11 @@ Once completed you should have under SSL certificates the following:
 
 The hidden part should be domain.com
 
-In the “Hosts” section you will need to create to port forwarding to the Obico self-hosted server at 192.168.2.1 and port 3334 for **.tunnels.obico.domain.com**
+In the “Hosts” section you will need to create to port forwarding to the Obico self-hosted server at 192.168.2.1 and port 3334 for ***.tunnels.obico.domain.com**
 
 ![](/img/server-guides/nginx-proxy-manager/new-proxy-host.jpg)
 
-In the SSL Option you will need to select the previous created wildcard SSL certificate for the ***.tunnels.obico.domain.com** with these settings.
+In the SSL Option you will need to select the wildcard SSL certificate previously created for the ***.tunnels.obico.domain.com** with these settings.
 
 Click Save.
 

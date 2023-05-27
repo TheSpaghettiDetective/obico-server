@@ -149,6 +149,7 @@ class Printer(SafeDeleteModel):
         (NONE, 'Just notify me'),
         (PAUSE, 'Pause the printer and notify me'),
     )
+    DEFAULT_WEBCAM_SETTINGS = {'flipV': False, 'flipH': False, 'rotate90': False, 'streamRatio': '16:9'}
 
     name = models.CharField(max_length=256, null=False)
     auth_token = models.CharField(max_length=256, unique=True, null=False, blank=False)
@@ -191,9 +192,15 @@ class Printer(SafeDeleteModel):
     def settings(self):
         p_settings = cache.printer_settings_get(self.id)
 
+        # TODO: Remove these fields when mobile app version 1.94 and earlier account for less than 3% of the total mobile users
         for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'):
             p_settings[key] = p_settings.get(key, 'False') == 'True'
-        p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '4:3') == '16:9'
+        p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
+
+        if p_settings.get('webcam'):
+            webcam_settings = dict(self.DEFAULT_WEBCAM_SETTINGS)
+            webcam_settings.update(json.loads(p_settings.get('webcam')))
+            p_settings['webcam'] = webcam_settings
 
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))

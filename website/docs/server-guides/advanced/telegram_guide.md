@@ -2,6 +2,10 @@
 title: Telegram Setup Guide
 ---
 
+:::note
+This is a community-contributed guide. This guide is based on certain Obico community members' own setup and hence may not work for you.
+:::
+
 My Base: Fresh Install Ubuntu 20.04.
 
 You need to open a terminal with your device. I am doing this via SSH (I'm using Putty on windows).

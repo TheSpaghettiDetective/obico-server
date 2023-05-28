@@ -5,9 +5,9 @@ import semverGte from 'semver/functions/gte'
 import { humanizedDuration } from '@src/lib/formatters'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 import {
-  setTransientState,
-  getTransientState,
-  clearTransientState,
+  setPrinterTransientState,
+  getPrinterTransientState,
+  clearPrinterTransientState,
   showTimeoutError,
 } from '@src/lib/printer-transient-state'
 
@@ -184,19 +184,19 @@ export const normalizedPrinter = (newData, oldData) => {
       if (this.hasError()) {
         return
       }
-      const savedTransientState = getTransientState(this.id, this.status?.state?.text)
+      const savedTransientState = getPrinterTransientState(this.id, this.status?.state?.text)
       if (!savedTransientState) {
         return
       } else if (savedTransientState.overTimeout) {
         showTimeoutError(this, savedTransientState.name, this.status?.state?.text)
-        clearTransientState(this.id)
+        clearPrinterTransientState(this.id)
         return
       } else {
         return savedTransientState
       }
     },
     setTransientState: function (stateText) {
-      setTransientState(this.id, stateText)
+      setPrinterTransientState(this.id, stateText)
       this.status.state.text = stateText // this triggers a re-render immideaately
     },
     inUserInteractionRequired: function () {

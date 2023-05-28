@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import get from 'lodash/get'
-import { clearTransientState } from '@src/lib/printer-transient-state'
+import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
 import PrinterComm from '@src/lib/printer-comm'
 import {
@@ -72,7 +72,7 @@ export const sendToPrint = (args) => {
       : printPrinterLocalGCodeOctoPrint
 
     printGCode(printerComm, gcode).catch((err) => {
-      clearTransientState(printerId)
+      clearPrinterTransientState(printerId)
       Swal.Toast.fire({
         icon: 'error',
         title: err,

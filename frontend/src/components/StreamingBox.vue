@@ -287,7 +287,7 @@ export default {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
     basicStreamingInWebrtc() {
-      return this.printer.isAgentVersionGreaterThan('2.1.0', '0.3.0')
+      return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
   },
   created() {

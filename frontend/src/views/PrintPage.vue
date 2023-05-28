@@ -108,7 +108,7 @@
                     {{
                       printer
                         ? printer.inTransientState()
-                          ? printer.transientState().title
+                          ? printer.transientState()
                           : printer.printabilityText()
                         : 'Deleted'
                     }}

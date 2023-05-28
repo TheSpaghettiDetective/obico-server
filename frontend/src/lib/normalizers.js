@@ -7,8 +7,6 @@ import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 import {
   setPrinterTransientState,
   getPrinterTransientState,
-  clearPrinterTransientState,
-  showTimeoutError,
 } from '@src/lib/printer-transient-state'
 
 export const toMomentOrNull = (datetimeStr) => {
@@ -181,23 +179,10 @@ export const normalizedPrinter = (newData, oldData) => {
       return !!this.transientState()
     },
     transientState: function () {
-      if (this.hasError()) {
-        return
-      }
-      const savedTransientState = getPrinterTransientState(this, this.status?.state?.text)
-      if (!savedTransientState) {
-        return
-      } else if (savedTransientState.overTimeout) {
-        showTimeoutError(this, savedTransientState.name, this.status?.state?.text)
-        clearPrinterTransientState(this.id)
-        return
-      } else {
-        return savedTransientState
-      }
+      return getPrinterTransientState(this, this.status?.state?.text)
     },
     setTransientState: function (stateText) {
       setPrinterTransientState(this, stateText)
-      this.status.state.text = stateText // this triggers a re-render immideaately
     },
     inUserInteractionRequired: function () {
       return get(this, 'status.user_interaction_required', false)
@@ -214,7 +199,7 @@ export const normalizedPrinter = (newData, oldData) => {
     agentDisplayName: function () {
       return this.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'
     },
-    isAgentVersionGreaterThan: function (minOctoPrintAgentVersion, minMoonrakerAgentVersion) {
+    isAgentVersionGte: function (minOctoPrintAgentVersion, minMoonrakerAgentVersion) {
       return (
         (get(this, 'settings.agent_name', '') === 'octoprint_obico' &&
           semverGte(get(this, 'settings.agent_version', '0.0.0'), minOctoPrintAgentVersion)) ||

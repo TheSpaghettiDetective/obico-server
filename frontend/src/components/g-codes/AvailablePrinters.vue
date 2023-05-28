@@ -22,11 +22,7 @@
                 : 'text-warning',
             ]"
           >
-            {{
-              printer.inTransientState()
-                ? printer.transientState().title
-                : printer.printabilityText()
-            }}
+            {{ printer.inTransientState() ? printer.transientState() : printer.printabilityText() }}
           </div>
         </div>
 

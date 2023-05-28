@@ -286,6 +286,9 @@ export default {
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
+    basicStreamingInWebrtc() {
+      return this.printer.isAgentVersionGreaterThan('2.1.0', '0.3.0')
+    },
   },
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
@@ -348,7 +351,7 @@ export default {
       if (this.autoplay) {
         webrtcConn.startStream()
       } else {
-        if (!this.printer.basicStreamingInWebrtc()) {
+        if (!this.basicStreamingInWebrtc) {
           return
         }
         if (!this.autoplay && this.isBasicStreamingInProgress) {

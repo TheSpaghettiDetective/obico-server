@@ -184,7 +184,7 @@ export const normalizedPrinter = (newData, oldData) => {
       if (this.hasError()) {
         return
       }
-      const savedTransientState = getPrinterTransientState(this.id, this.status?.state?.text)
+      const savedTransientState = getPrinterTransientState(this, this.status?.state?.text)
       if (!savedTransientState) {
         return
       } else if (savedTransientState.overTimeout) {
@@ -196,7 +196,7 @@ export const normalizedPrinter = (newData, oldData) => {
       }
     },
     setTransientState: function (stateText) {
-      setPrinterTransientState(this.id, stateText)
+      setPrinterTransientState(this, stateText)
       this.status.state.text = stateText // this triggers a re-render immideaately
     },
     inUserInteractionRequired: function () {
@@ -214,12 +214,12 @@ export const normalizedPrinter = (newData, oldData) => {
     agentDisplayName: function () {
       return this.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'
     },
-    basicStreamingInWebrtc: function () {
+    isAgentVersionGreaterThan: function (minOctoPrintAgentVersion, minMoonrakerAgentVersion) {
       return (
         (get(this, 'settings.agent_name', '') === 'octoprint_obico' &&
-          semverGte(get(this, 'settings.agent_version', '0.0.0'), '2.1.0')) ||
+          semverGte(get(this, 'settings.agent_version', '0.0.0'), minOctoPrintAgentVersion)) ||
         (get(this, 'settings.agent_name', '') === 'moonraker_obico' &&
-          semverGte(get(this, 'settings.agent_version', '0.0.0'), '0.3.0'))
+          semverGte(get(this, 'settings.agent_version', '0.0.0'), minMoonrakerAgentVersion))
       )
     },
     alertUnacknowledged: function () {

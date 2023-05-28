@@ -29,7 +29,8 @@ const TRANSIENT_STATES = {
   },
 }
 
-export const setPrinterTransientState = (printerId, transientStateName) => {
+export const setPrinterTransientState = (printer, transientStateName) => {
+  const printerId = printer.id
   if (!isLocalStorageSupported()) return
   const transientState = TRANSIENT_STATES[transientStateName]
   const prefix = `printer-${printerId}-state-transitioning`
@@ -42,7 +43,9 @@ export const setPrinterTransientState = (printerId, transientStateName) => {
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }
 
-export const getPrinterTransientState = (printerId, nextState) => {
+export const getPrinterTransientState = (printer, nextState) => {
+  const printerId = printer.id
+
   if (!isLocalStorageSupported()) return
 
   if (!nextState) {
@@ -72,7 +75,7 @@ export const getPrinterTransientState = (printerId, nextState) => {
     } else if (transientStateName === 'Downloading G-Code' && nextState === 'Starting') {
       // Special case for OctoPrint (move from Downloading to Starting)
       setPrinterTransientState(printerId, 'Starting')
-      return getPrinterTransientState(printerId, nextState)
+      return getPrinterTransientState(printer, nextState)
     } else {
       clearPrinterTransientState(printerId)
       return

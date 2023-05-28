@@ -63,6 +63,8 @@ export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword
               num_bytes: item.size,
               filesize: filesize(item.size),
               created_at: toMomentOrNull(new Date(item.date * 1000)),
+              getBigThumbnailUrl: () => null,
+              getSmallThumbnailUrl: () => null,
             })
           }
         }

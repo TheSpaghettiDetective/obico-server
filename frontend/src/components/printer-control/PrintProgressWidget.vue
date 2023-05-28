@@ -271,12 +271,10 @@ export default {
       }
 
       confirmPrint(this.print.g_code_file, this.printer).then(() => {
-        this.printer.setTransientState('Downloading G-Code')
         sendToPrint({
-          printerId: this.printer.id,
+          printer: this.printer,
           gcode: this.print.g_code_file,
           isCloud: true,
-          isAgentMoonraker: this.printer.isAgentMoonraker(),
           Swal: this.$swal,
         })
       })

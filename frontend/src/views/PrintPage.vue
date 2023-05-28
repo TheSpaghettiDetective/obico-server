@@ -619,12 +619,10 @@ export default {
     },
     onRepeatPrintClicked() {
       confirmPrint(this.print.g_code_file, this.printer).then(() => {
-        this.printer.setTransientState('Downloading G-Code') // FIXME: set conditionally (Downloading or Starting) when Repeat feature will be available for local g-codes as well
         sendToPrint({
-          printerId: this.printer.id,
+          printer: this.printer,
           gcode: this.print.g_code_file,
           isCloud: true,
-          isAgentMoonraker: this.printer.isAgentMoonraker(),
           Swal: this.$swal,
           onPrinterStatusChanged: () => {
             showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)

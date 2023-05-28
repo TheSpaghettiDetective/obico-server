@@ -49,15 +49,13 @@ export function printCloudGCode(printerComm, gcode) {
 }
 
 export const sendToPrint = (args) => {
-  const {
-    printerId,
-    gcode,
-    isCloud,
-    Swal,
-    onCommandSent,
-    onPrinterStatusChanged,
-    isAgentMoonraker = false,
-  } = args
+  const { printer, gcode, isCloud, Swal, onCommandSent, onPrinterStatusChanged } = args
+
+  const printerId = printer.id
+  const isAgentMoonraker = printer.isAgentMoonraker()
+
+  // TODO: Simplify how the transientState is handled
+  printer.setTransientState(isCloud ? 'Downloading G-Code' : 'Starting')
 
   const printerComm = PrinterComm(
     printerId,

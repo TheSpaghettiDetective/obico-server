@@ -927,12 +927,10 @@ export default {
     },
     onPrintClicked(gcode) {
       confirmPrint(gcode, this.targetPrinter).then(() => {
-        this.targetPrinter.setTransientState(this.isCloud ? 'Downloading G-Code' : 'Starting')
         sendToPrint({
-          printerId: this.targetPrinter.id,
+          printer: this.targetPrinter,
           gcode: gcode,
           isCloud: this.isCloud,
-          isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
           Swal: this.$swal,
           onCommandSent: () => {
             if (this.isPopup) {

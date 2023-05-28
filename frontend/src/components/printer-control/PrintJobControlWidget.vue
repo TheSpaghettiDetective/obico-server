@@ -14,7 +14,12 @@
           <p class="text">Filament Change or User Interaction Required</p>
         </div>
 
-        <template v-if="!printer.inTransientState()">
+        <template v-if="printer.inTransientState()">
+          <b-spinner label="Processing..."></b-spinner>
+          <p>{{ printer.status.state.text }}...</p>
+        </template>
+
+        <template v-else>
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
               <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
@@ -94,9 +99,12 @@
             <b-button
               v-if="!printer.isAgentMoonraker()"
               variant="outline-primary"
+              :disabled="connecting"
               @click="onConnectClicked"
             >
-              <i class="fa-brands fa-usb"></i> Connect
+              <b-spinner v-if="connecting" small></b-spinner>
+              <i v-else class="fa-brands fa-usb"></i>
+              {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
             </b-button>
           </div>
         </template>
@@ -111,10 +119,6 @@
               >Why?</a
             >
           </p>
-        </template>
-        <template v-else-if="printer.inTransientState()">
-          <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printer.transientState().title }}...</p>
         </template>
 
         <b-modal v-if="printer" :id="modalId" size="lg" @hidden="resetGcodesModal">
@@ -195,6 +199,7 @@ export default {
 
   data() {
     return {
+      connectBtnClicked: false,
       selectedGcodeId: null,
       savedPath: [null],
       printerFiles: false,
@@ -202,6 +207,9 @@ export default {
   },
 
   computed: {
+    connecting() {
+      return this.connectBtnClicked && this.printer.isDisconnected()
+    },
     modalId() {
       return 'b-modal-gcodes' + this.printer.id
     },
@@ -223,8 +231,6 @@ export default {
       this.selectedGcodeId = null
     },
     onConnectClicked() {
-      this.printer.setTransientState('Connecting')
-
       this.printerComm.passThruToPrinter(
         { func: 'get_connection_options', target: '_printer' },
         (err, connectionOptions) => {
@@ -271,6 +277,11 @@ export default {
           }
         }
       )
+
+      this.connectBtnClicked = true
+      setTimeout(() => {
+        this.connectBtnClicked = false
+      }, 10 * 1000)
     },
     onPauseToggled(ev) {
       if (this.printer.isPaused()) {

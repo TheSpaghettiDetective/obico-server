@@ -2,11 +2,6 @@ import Vue from 'vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 
 const TRANSIENT_STATES = {
-  Connecting: {
-    fromStates: ['Offline'],
-    title: 'Connecting',
-    timeoutSeconds: 10,
-  },
   'Downloading G-Code': {
     fromStates: ['Operational'],
     title: 'Downloading G-Code',

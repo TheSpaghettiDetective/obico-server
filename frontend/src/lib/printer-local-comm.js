@@ -123,6 +123,8 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
               filesize: filesize(f.size),
               created_at: toMomentOrNull(new Date(f.modified * 1000)),
               path: `${pathPrefix}${f.filename}`,
+              getBigThumbnailUrl: () => null,
+              getSmallThumbnailUrl: () => null,
             }
           }
         )

@@ -34,7 +34,7 @@ def process_octoprint_status(printer: Printer, msg: Dict) -> None:
         cache.printer_status_delete(printer.id)
     elif (printer_status or {}).get('_ts'):   # data format for plugin 1.6.0 and higher
         cache.printer_status_set(printer.id, json.dumps((printer_status or {})), ex=STATUS_TTL_SECONDS)
-    else:
+    else: # TODO: retire this part after 7/1/2023
         octoprint_data: Dict = dict()
         set_as_str_if_present(octoprint_data, (printer_status or {}), 'state')
         set_as_str_if_present(octoprint_data, (printer_status or {}), 'progress')

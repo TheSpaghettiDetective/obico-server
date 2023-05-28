@@ -91,7 +91,7 @@ export default {
       return this.printers.some(
         (p) =>
           p.transientState()?.name === 'Starting' ||
-          p.transientState()?.name === 'Downloading G-Code'
+          p.transientState()?.name === 'G-Code Downloading'
       )
     },
   },

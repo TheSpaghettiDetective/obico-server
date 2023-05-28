@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { isLocalStorageSupported } from '@static/js/utils'
 
 const TRANSIENT_STATES = {
-  'Downloading G-Code': {
+  'G-Code Downloading': {
     fromStates: ['Operational'],
   },
   Starting: {
@@ -32,7 +32,7 @@ export const setPrinterTransientState = (printer, transientStateName) => {
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }
 
-export const getPrinterTransientState = (printer, underlinedState, timeoutCallback) => {
+export const getPrinterTransientState = (printer, underlinedState) => {
   const printerId = printer.id
 
   if (!isLocalStorageSupported()) return
@@ -48,23 +48,30 @@ export const getPrinterTransientState = (printer, underlinedState, timeoutCallba
   const timeout = localStorage.getItem(`${prefix}-timeout`)
   const fromStates = TRANSIENT_STATES[persistedTransientState]?.fromStates
 
-  if (!persistedTransientState || !timeout || !fromStates) {
-    // No persistedTransientState. Return underlinedState if it is a transient state
-    return underlinedState in TRANSIENT_STATES ? underlinedState : null
+  let calculatedState = underlinedState
+  if (persistedTransientState && timeout && fromStates) {
+    if (new Date() > new Date(timeout)) {
+      clearPrinterTransientState(printerId)
+      showTimeoutError(printer, persistedTransientState, underlinedState)
+    }
+
+    if (fromStates.includes(underlinedState)) {
+      // underlinedState is still the previous state. Transition not finished
+      calculatedState = persistedTransientState
+    } else {
+      clearPrinterTransientState(printerId)
+    }
   }
 
-  if (new Date() > new Date(timeout)) {
-    clearPrinterTransientState(printerId)
-    showTimeoutError(printer, persistedTransientState, underlinedState)
-    return null
+  // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
+  if (calculatedState === 'Downloading G-Code') {
+    return calculatedState
   }
 
-  if (fromStates.includes(underlinedState)) {
-    // underlinedState is still the previous state. Transition not finished
-    return persistedTransientState
+  if (calculatedState.endsWith('ing') && calculatedState !== 'Printing') {
+    return calculatedState
   } else {
-    clearPrinterTransientState(printerId)
-    return underlinedState in TRANSIENT_STATES ? underlinedState : null
+    return null
   }
 }
 

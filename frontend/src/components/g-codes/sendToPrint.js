@@ -55,7 +55,7 @@ export const sendToPrint = (args) => {
   const isAgentMoonraker = printer.isAgentMoonraker()
 
   // TODO: Simplify how the transientState is handled
-  printer.setTransientState(isCloud ? 'Downloading G-Code' : 'Starting')
+  printer.setTransientState(isCloud ? 'G-Code Downloading' : 'Starting')
 
   const printerComm = PrinterComm(
     printerId,
@@ -94,7 +94,7 @@ export const sendToPrint = (args) => {
 
     if (
       get(printer, 'status.state.text') === 'Operational' ||
-      get(printer, 'status.state.text') === 'Downloading G-Code'
+      get(printer, 'status.state.text') === 'G-Code Downloading'
     ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {

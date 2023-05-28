@@ -452,7 +452,7 @@ export default {
     },
     isSending() {
       const transientStateName = this.printer?.transientState()?.name
-      return transientStateName && ['Downloading G-Code', 'Starting'].includes(transientStateName)
+      return transientStateName && ['G-Code Downloading', 'Starting'].includes(transientStateName)
     },
   },
 

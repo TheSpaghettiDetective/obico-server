@@ -16,7 +16,7 @@
 
         <template v-if="printer.inTransientState()">
           <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printer.status.state.text }}...</p>
+          <p>{{ printer.calculatedState() }}...</p>
         </template>
 
         <template v-else>

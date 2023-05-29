@@ -185,7 +185,7 @@ export const normalizedPrinter = (newData, oldData) => {
         return true
       }
 
-      return calculatedState.endsWith('ing') && calculatedState !== 'Printing'
+      return calculatedState && calculatedState.endsWith('ing') && calculatedState !== 'Printing'
     },
     calculatedState: function () {
       return getPrinterCalculatedState(this, this.status?.state?.text)

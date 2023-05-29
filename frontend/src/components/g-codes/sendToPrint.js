@@ -54,9 +54,6 @@ export const sendToPrint = (args) => {
   const printerId = printer.id
   const isAgentMoonraker = printer.isAgentMoonraker()
 
-  // TODO: Simplify how the transientState is handled
-  printer.setTransientState(isCloud ? 'G-Code Downloading' : 'Starting')
-
   const printerComm = PrinterComm(
     printerId,
     urls.printerWebSocket(printerId),
@@ -71,6 +68,7 @@ export const sendToPrint = (args) => {
       ? printPrinterLocalGCodeMoonraker
       : printPrinterLocalGCodeOctoPrint
 
+    printer.setTransientState(isCloud ? 'G-Code Downloading' : 'Starting')
     printGCode(printerComm, gcode).catch((err) => {
       clearPrinterTransientState(printerId)
       Swal.Toast.fire({

@@ -105,13 +105,7 @@
                         : 'text-danger',
                     ]"
                   >
-                    {{
-                      printer
-                        ? printer.inTransientState()
-                          ? printer.transientState()
-                          : printer.printabilityText()
-                        : 'Deleted'
-                    }}
+                    {{ printer ? printer.printabilityText() : 'Deleted' }}
                   </div>
                 </div>
                 <div
@@ -451,8 +445,8 @@ export default {
       return this.print.has_alerts ^ (this.print.alert_overwrite === 'FAILED')
     },
     isSending() {
-      const transientStateName = this.printer?.transientState()?.name
-      return transientStateName && ['G-Code Downloading', 'Starting'].includes(transientStateName)
+      const printerState = this.printer?.calculatedState()
+      return printerState && ['G-Code Downloading', 'Starting'].includes(printerState)
     },
   },
 

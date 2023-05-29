@@ -6,7 +6,7 @@ import { humanizedDuration } from '@src/lib/formatters'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
 import {
   setPrinterTransientState,
-  getPrinterTransientState,
+  getPrinterCalculatedState,
 } from '@src/lib/printer-transient-state'
 
 export const toMomentOrNull = (datetimeStr) => {
@@ -173,13 +173,22 @@ export const normalizedPrinter = (newData, oldData) => {
     isActive: function () {
       const flags = get(this, 'status.state.flags')
       // https://discord.com/channels/704958479194128507/705047010641838211/1013193281280159875
-      return Boolean(flags && flags.operational && (!flags.ready || flags.paused))
+      return (
+        Boolean(flags && flags.operational && (!flags.ready || flags.paused)) ||
+        this.inTransientState()
+      )
     },
     inTransientState: function () {
-      return !!this.transientState()
+      const calculatedState = this.calculatedState()
+      // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
+      if (calculatedState === 'Downloading G-Code') {
+        return true
+      }
+
+      return calculatedState.endsWith('ing') && calculatedState !== 'Printing'
     },
-    transientState: function () {
-      return getPrinterTransientState(this, this.status?.state?.text)
+    calculatedState: function () {
+      return getPrinterCalculatedState(this, this.status?.state?.text)
     },
     setTransientState: function (stateText) {
       setPrinterTransientState(this, stateText)

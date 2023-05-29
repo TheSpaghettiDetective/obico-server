@@ -32,10 +32,10 @@ export const setPrinterTransientState = (printer, transientStateName) => {
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }
 
-export const getPrinterTransientState = (printer, underlinedState) => {
+export const getPrinterCalculatedState = (printer, underlinedState) => {
   const printerId = printer.id
 
-  if (!isLocalStorageSupported()) return
+  if (!isLocalStorageSupported()) return underlinedState
 
   if (!underlinedState) {
     // Printer is offline or disconnected, clear transient state if any
@@ -63,16 +63,7 @@ export const getPrinterTransientState = (printer, underlinedState) => {
     }
   }
 
-  // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
-  if (calculatedState === 'Downloading G-Code') {
-    return calculatedState
-  }
-
-  if (calculatedState.endsWith('ing') && calculatedState !== 'Printing') {
-    return calculatedState
-  } else {
-    return null
-  }
+  return calculatedState
 }
 
 export const clearPrinterTransientState = (printerId) => {

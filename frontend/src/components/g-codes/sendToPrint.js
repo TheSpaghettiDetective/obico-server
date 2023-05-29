@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import axios from 'axios'
-import get from 'lodash/get'
 import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
 import PrinterComm from '@src/lib/printer-comm'
@@ -93,8 +92,8 @@ export const sendToPrint = (args) => {
     }
 
     if (
-      get(printer, 'status.state.text') === 'Operational' ||
-      get(printer, 'status.state.text') === 'G-Code Downloading'
+      printer.calculatedState() === 'Operational' ||
+      printer.calculatedState() === 'G-Code Downloading'
     ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {

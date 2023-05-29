@@ -336,7 +336,7 @@ export default {
       }
     },
     statusText() {
-      return get(this.printer, 'status.state.text', 'Offline')
+      return this.printer.calculatedState() || 'Offline'
     },
     statusClass() {
       if (this.printer.hasError()) {

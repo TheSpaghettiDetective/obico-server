@@ -16,13 +16,9 @@
           <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
           <div
             class="printer-status"
-            :class="[
-              printer.isPrintable() && !printer.inTransientState()
-                ? 'text-success'
-                : 'text-warning',
-            ]"
+            :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
           >
-            {{ printer.inTransientState() ? printer.transientState() : printer.printabilityText() }}
+            {{ printer.printabilityText() }}
           </div>
         </div>
 
@@ -89,9 +85,7 @@ export default {
   computed: {
     isSending() {
       return this.printers.some(
-        (p) =>
-          p.transientState()?.name === 'Starting' ||
-          p.transientState()?.name === 'G-Code Downloading'
+        (p) => p.calculatedState() === 'Starting' || p.calculatedState() === 'G-Code Downloading'
       )
     },
   },

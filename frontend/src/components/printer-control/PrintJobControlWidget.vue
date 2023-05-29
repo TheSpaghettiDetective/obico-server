@@ -22,7 +22,7 @@
         <template v-else>
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
-              <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
+              <span v-if="!printer.isPaused()">Printer is Currently Printing</span>
               <span v-else>Print is Paused</span>
             </p>
             <div class="buttons">

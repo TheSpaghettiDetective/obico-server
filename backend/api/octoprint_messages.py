@@ -11,7 +11,7 @@ from app.models import PrinterEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
 LOGGER = logging.getLogger(__name__)
-STATUS_TTL_SECONDS = 240
+STATUS_TTL_SECONDS = 120
 
 def process_octoprint_status(printer: Printer, msg: Dict) -> None:
     # Backward compatibility: octoprint_settings is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier

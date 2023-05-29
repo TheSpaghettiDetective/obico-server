@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
+import get from 'lodash/get'
 import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
 import PrinterComm from '@src/lib/printer-comm'
@@ -92,8 +93,9 @@ export const sendToPrint = (args) => {
     }
 
     if (
-      printer.calculatedState() === 'Operational' ||
-      printer.calculatedState() === 'G-Code Downloading'
+      get(printer, 'status.state.text') === 'Operational' ||
+      get(printer, 'status.state.text') === 'G-Code Downloading' ||
+      get(printer, 'status.state.text') === 'Downloading G-Code' // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
     ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {

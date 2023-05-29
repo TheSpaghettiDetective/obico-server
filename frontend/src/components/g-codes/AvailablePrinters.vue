@@ -98,22 +98,13 @@ export default {
     async fetchPrinters() {
       this.printersLoading = true
 
-      let printers
-      try {
-        printers = await axios.get(urls.printers())
-      } catch (e) {
-        this.printersLoading = false
-        console.error(e)
-      }
-
-      if (!printers?.data) {
+      const resp = await axios.get(urls.printers())
+      if (!resp?.data) {
         this.printersLoading = false
         return
       }
 
-      printers = printers?.data
-      printers = printers.map((p) => normalizedPrinter(p))
-
+      const printers = resp?.data.map((p) => normalizedPrinter(p))
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]

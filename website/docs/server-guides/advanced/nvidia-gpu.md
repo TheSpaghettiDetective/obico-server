@@ -34,6 +34,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+```
 
 ### For JetPack based SBCs
 
@@ -43,6 +44,7 @@ version: '2.4'
 services:
   ml_api:
     runtime: nvidia
+```
 
 :::tip
 Don't forget to restart the docker cluster by running `docker compose down && docker-compose up -d`.

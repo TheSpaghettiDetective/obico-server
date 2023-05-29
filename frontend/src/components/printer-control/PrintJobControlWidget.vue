@@ -288,7 +288,7 @@ export default {
         if (this.printer.alertUnacknowledged()) {
           this.$emit('notAFailureClicked', ev, true)
         } else {
-          this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT, true)
+          this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT)
           this.printer.setTransientState('Resuming')
         }
       } else {
@@ -296,7 +296,7 @@ export default {
           html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
         }).then((result) => {
           if (result.value) {
-            this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT, true)
+            this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT)
             this.printer.setTransientState('Pausing')
           }
         })
@@ -307,7 +307,7 @@ export default {
         text: 'Once cancelled, the print can no longer be resumed.',
       }).then((result) => {
         if (result.value) {
-          this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT, true)
+          this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT)
           this.printer.setTransientState('Cancelling')
         }
       })

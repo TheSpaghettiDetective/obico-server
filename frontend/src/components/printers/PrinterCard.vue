@@ -406,14 +406,14 @@ export default {
         if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
-            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT)
           }, 1000)
         }
         if (resumePrint) {
           this.printer.setTransientState('Resuming')
-          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+          this.sendPrinterAction(this.printer.id, RESUME_PRINT)
         } else {
-          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED)
         }
       })
 
@@ -500,21 +500,8 @@ export default {
         })
     },
 
-    sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios.post(urls.printerAction(printerId, path)).then(() => {
-        let toastHtml = ''
-        if (isOctoPrintCommand) {
-          toastHtml +=
-            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-            '<p>It may take a while to be executed.</p>'
-        }
-        if (toastHtml != '') {
-          this.$swal.Toast.fire({
-            icon: 'success',
-            html: toastHtml,
-          })
-        }
-      })
+    sendPrinterAction(printerId, path) {
+      axios.post(urls.printerAction(printerId, path))
     },
 
     shouldVideoBeFull(printer) {

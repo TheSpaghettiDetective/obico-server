@@ -27,7 +27,7 @@ export const setPrinterTransientState = (printer, transientStateName) => {
 
   const currentTime = new Date()
   // Agents in older versions didn't have all transient states implemented. So we make it more forgiving even if it increases the chance for app to be stuck in a transient state.
-  const timeOutInSeconds = printer.isAgentVersionGte('2.3.7', '1.3.7') ? 10 : 5 * 60
+  const timeOutInSeconds = printer.isAgentVersionGte('2.3.7', '1.4.2') ? 10 : 5 * 60
   const timeout = new Date(currentTime.getTime() + timeOutInSeconds * 1000)
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }

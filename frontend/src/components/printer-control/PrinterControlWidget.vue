@@ -146,10 +146,10 @@
             </div>
             <div class="z-move">
               <div class="up" @click="controlZOffset(directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="controlZOffset(directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
             </div>
           </div>

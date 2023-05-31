@@ -121,7 +121,7 @@
                 @click="onRepeatClicked"
               >
                 <b-spinner v-if="isPrintStarting" small></b-spinner>
-                <i v-else class="fa-solid fa-rotate-right"></i>
+                <i v-else class="fas fa-redo"></i>
                 Repeat
               </b-button>
             </div>

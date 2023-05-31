@@ -95,7 +95,7 @@
           <div class="extra-actions">
             <h2 class="section-title">Additional Actions</h2>
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
-              <i class="fa-solid fa-arrows-up-down"></i>
+              <i class="fas fa-arrows-alt-v"></i>
               Reorder &amp; Hide
             </b-button>
             <div class="text-muted extra-actions-explanation">

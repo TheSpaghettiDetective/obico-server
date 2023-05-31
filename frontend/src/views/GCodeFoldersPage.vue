@@ -32,9 +32,7 @@
               selected
             </template>
             <b-dropdown-item>
-              <div @click="moveSelectedItems">
-                <i class="fa-solid fa-arrows-up-down-left-right"></i>Move
-              </div>
+              <div @click="moveSelectedItems"><i class="fas fa-arrows-alt"></i>Move</div>
             </b-dropdown-item>
             <b-dropdown-item>
               <div class="text-danger" @click="deleteSelectedItems">

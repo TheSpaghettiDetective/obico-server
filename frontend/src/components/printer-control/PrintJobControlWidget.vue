@@ -32,7 +32,7 @@
                 class="custom-button"
                 @click="onPauseToggled($event)"
               >
-                <i class="fa-solid fa-circle-pause"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-pause" />
                 Pause
               </b-button>
               <b-button
@@ -41,11 +41,11 @@
                 class="custom-button"
                 @click="onPauseToggled($event)"
               >
-                <i class="fa-solid fa-circle-play"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-play" />
                 Resume
               </b-button>
               <b-button variant="danger" class="custom-button" @click="onCancelClicked">
-                <i class="fa-solid fa-circle-xmark"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-xmark" />
                 Cancel
               </b-button>
             </div>
@@ -110,7 +110,7 @@
         </template>
 
         <template v-else-if="printer.isOffline()">
-          <i class="fa-solid fa-triangle-exclamation big-icon warning"></i>
+          <i class="fas fa-exclamation-triangle big-icon warning"></i>
           <p>
             Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
             <a

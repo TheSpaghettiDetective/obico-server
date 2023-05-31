@@ -514,7 +514,7 @@ export default {
       if (seconds == null || seconds == 0) {
         return {
           valid: false,
-          printing: isActive,
+          printing: Boolean(isActive),
         }
       } else {
         var d = moment.duration(seconds, 'seconds')
@@ -523,7 +523,7 @@ export default {
         var s = d.seconds()
         return {
           valid: true,
-          printing: isActive,
+          printing: Boolean(isActive),
           hours: h,
           showHours: h > 0,
           minutes: m,

@@ -107,10 +107,10 @@ export default {
             <svg class="menu-icon" style="height: 1.1em; width: 1em; margin-right: 0.75em;">
               <use href="#svg-tunnel" />
             </svg>
-            OctoPrint Secure Tunnel
+            OctoPrint/Klipper Secure Tunnel
           </h4>
           <div class="p-1">
-            It may take long time for OctoPrint page to load as it is securely tunneled via the Obico app server.
+            It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the Obico app server.
           </div>
           <div class="p-1">
             <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">

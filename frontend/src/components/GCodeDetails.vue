@@ -8,8 +8,8 @@
       }"
     >
       <div v-if="showThumbnail">
-        <div v-if="file.getBigThumbnailUrl()" class="thumbnail">
-          <img :src="file.getBigThumbnailUrl()" />
+        <div v-if="bigThumbnailUrl" class="thumbnail">
+          <img :src="bigThumbnailUrl" />
         </div>
         <div v-else class="thumbnail-placeholder">
           <span class="help">
@@ -169,8 +169,11 @@ export default {
   },
 
   computed: {
+    bigThumbnailUrl() {
+      return this.file.getBigThumbnailUrl && this.file.getBigThumbnailUrl()
+    },
     showThumbnail() {
-      return !this.compactView || this.file.getBigThumbnailUrl()
+      return !this.compactView || this.bigThumbnailUrl
     },
     fileDetailsToShow() {
       let result = []

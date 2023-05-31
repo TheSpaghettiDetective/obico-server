@@ -5,14 +5,14 @@ import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
 const defaultSections = {
   GeneralPreferences: {
     title: 'General',
-    faIcon: 'fa-solid fa-gear',
+    faIcon: 'fas fa-cog',
     importComponent: () => import('@src/components/user-preferences/GeneralPreferences'),
     route: routes.GeneralPreferences,
     isHidden: inMobileWebView() || onlyNotifications(),
   },
   ThemePreferences: {
     title: 'Appearance',
-    faIcon: 'fa-solid fa-wand-magic-sparkles',
+    faIcon: 'fas fa-magic',
     importComponent: () => import('@src/components/user-preferences/ThemePreferences'),
     route: routes.ThemePreferences,
     isHidden:

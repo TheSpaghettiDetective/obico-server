@@ -103,7 +103,7 @@
               @click="onConnectClicked"
             >
               <b-spinner v-if="connecting" small></b-spinner>
-              <i v-else class="fa-brands fa-usb"></i>
+              <i v-else class="fab fa-usb"></i>
               {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
             </b-button>
           </div>

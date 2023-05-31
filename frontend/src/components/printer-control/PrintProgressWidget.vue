@@ -72,7 +72,9 @@
                 </div>
                 <div class="info-line">
                   <div class="label">
-                    <div class="icon"><i class="fa-solid fa-stopwatch"></i></div>
+                    <div class="icon">
+                      <i class="fas fa-stopwatch"></i>
+                    </div>
                     <div class="title">Remaining</div>
                   </div>
                   <div class="value">
@@ -82,7 +84,7 @@
                 </div>
                 <div class="info-line">
                   <div class="label">
-                    <div class="icon"><i class="fa-solid fa-flag-checkered"></i></div>
+                    <div class="icon"><i class="fas fa-flag-checkered"></i></div>
                     <div class="title">Finishing At</div>
                   </div>
                   <div class="value">

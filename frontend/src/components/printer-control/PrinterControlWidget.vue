@@ -2,7 +2,7 @@
   <widget-template>
     <template #title>
       <div v-if="activeMenu" class="nav-btn" @click="activeMenu = null">
-        <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Back
+        <i class="fas fa-arrow-left"></i>&nbsp;&nbsp;Back
       </div>
       <span v-else>Printer Controls</span>
     </template>
@@ -34,7 +34,7 @@
             <div class="title">Baby Step Z</div>
           </button>
           <button v-if="!hideTunePrinter" class="menu-button" @click="activeMenu = 'tune-printer'">
-            <i class="fa-solid fa-gear"></i>
+            <i class="fas fa-cog"></i>
             <div class="title">Tune Printer</div>
           </button>
         </div>
@@ -55,39 +55,37 @@
             </div>
             <div class="xy-move">
               <div class="left" @click="xyzControl(axis.x, directions.down)">
-                <i class="fa-solid fa-arrow-left"></i>
+                <i class="fas fa-arrow-left"></i>
               </div>
               <div class="right" @click="xyzControl(axis.x, directions.up)">
-                <i class="fa-solid fa-arrow-right"></i>
+                <i class="fas fa-arrow-right"></i>
               </div>
               <div class="up" @click="xyzControl(axis.y, directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="xyzControl(axis.y, directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
               <div class="home" @click="xyzControl(axis.xy, directions.home)">
-                <i class="fa-solid fa-house"></i>
+                <i class="fas fa-home"></i>
               </div>
             </div>
             <div class="z-move">
               <div class="up" @click="xyzControl(axis.z, directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="xyzControl(axis.z, directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
               <div class="home" @click="xyzControl(axis.z, directions.home)">
-                <i class="fa-solid fa-house"></i>
+                <i class="fas fa-home"></i>
               </div>
             </div>
           </div>
           <div class="additional">
-            <div class="control-btn" @click="homeAll">
-              <i class="fa-solid fa-house"></i> Home All
-            </div>
+            <div class="control-btn" @click="homeAll"><i class="fas fa-home"></i> Home All</div>
             <div class="control-btn" @click="disableSteppers">
-              <i class="fa-solid fa-power-off"></i> Disable Steppers
+              <i class="fas fa-power-off"></i> Disable Steppers
             </div>
           </div>
         </div>
@@ -109,10 +107,10 @@
               </div>
               <div class="main-buttons">
                 <div class="control-btn" @click="handleFilament(filamentDirections.retract)">
-                  <i class="fa-solid fa-minus"></i> Retract
+                  <i class="fas fa-minus"></i> Retract
                 </div>
                 <div class="control-btn" @click="handleFilament(filamentDirections.extrude)">
-                  <i class="fa-solid fa-plus"></i> Extrude
+                  <i class="fas fa-plus"></i> Extrude
                 </div>
               </div>
             </template>

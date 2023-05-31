@@ -35,7 +35,7 @@
           class="btn shadow-none action-btn icon-btn"
           title="Configure"
         >
-          <i class="fa-solid fa-wrench"></i>
+          <i class="fas fa-wrench"></i>
           <span class="sr-only">Configure</span>
         </a>
         <!-- Mobile Menu -->
@@ -60,7 +60,7 @@
               },
               {
                 key: 'settings',
-                icon: 'fa-solid fa-wrench',
+                icon: 'fas fa-wrench',
                 title: 'Configure',
                 href: `/printers/${printer.id}/`,
               },
@@ -105,7 +105,7 @@
               >
             </div>
             <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
-              <i class="fa-solid fa-plus"></i>
+              <i class="fas fa-plus"></i>
               Add Printer
             </b-button>
             <div class="text-muted extra-actions-explanation">

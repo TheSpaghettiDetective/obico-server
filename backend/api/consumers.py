@@ -26,7 +26,7 @@ from .serializers import PublicPrinterSerializer, PrinterSerializer
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
-STATUS_UPDATE_MIN_SECS = 15
+STATUS_UPDATE_MIN_SECS = 45
 
 
 def report_error(

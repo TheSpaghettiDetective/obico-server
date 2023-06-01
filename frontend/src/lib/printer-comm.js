@@ -127,8 +127,7 @@ export default function PrinterComm(
             clearPrinterTransientState(self.printerId)
             Vue.swal.Toast.fire({
               icon: 'error',
-              title:
-                'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
+              title: 'Failed to contact printer. Is it powered on and connected to Internet?',
             })
           }
         }, 10 * 1000)

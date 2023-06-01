@@ -27,7 +27,7 @@ export const setPrinterTransientState = (printer, transientStateName) => {
 
   const currentTime = new Date()
   // Agents in older versions didn't have all transient states implemented. So we make it more forgiving even if it increases the chance for app to be stuck in a transient state.
-  const timeOutInSeconds = printer.isAgentVersionGte('2.3.7', '1.4.2') ? 10 : 5 * 60
+  const timeOutInSeconds = printer.isAgentVersionGte('2.3.7', '1.4.2') ? 15 : 5 * 60
   const timeout = new Date(currentTime.getTime() + timeOutInSeconds * 1000)
   localStorage.setItem(`${prefix}-timeout`, timeout)
 }
@@ -80,10 +80,8 @@ export const showTimeoutError = (printer, localTransientState, newPrinterState) 
   Vue.swal
     .fire({
       icon: 'error',
-      title: 'Timeout Error',
-      html: `Haven't received "${
-        printer.name
-      }" state update within proper timeframe. You can restart your ${printer.agentDisplayName()} and try again.<br><br>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</div>`,
+      title: 'Printer not responding',
+      html: `The printer doesn't seem to be responding. Is it powered on and connected to the Internet?`,
     })
     .then(() => {
       window.location.reload()

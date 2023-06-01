@@ -81,7 +81,7 @@ export const showTimeoutError = (printer, localTransientState, newPrinterState) 
     .fire({
       icon: 'error',
       title: 'Printer not responding',
-      html: `The printer doesn't seem to be responding. Is it powered on and connected to the Internet?`,
+      html: `The printer doesn't seem to be responding. Is it powered on and connected to the Internet? Please <a href="mailto:support@obico.io">report the problem to us</a> if this error repeats multiple times.`,
     })
     .then(() => {
       window.location.reload()

@@ -45,7 +45,7 @@ import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { sendToPrint, showRedirectModal, confirmPrint } from './sendToPrint'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 
 export default {
   name: 'AvailablePrinters',
@@ -117,7 +117,7 @@ export default {
       }
 
       for (const printer of this.printers) {
-        this.printerComms[printer.id] = PrinterComm(
+        this.printerComms[printer.id] = printerCommManager.getOrCreatePrinterComm(
           printer.id,
           urls.printerWebSocket(printer.id),
           (data) => {

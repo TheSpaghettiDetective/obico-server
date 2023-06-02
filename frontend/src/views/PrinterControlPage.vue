@@ -145,7 +145,7 @@ import axios from 'axios'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
@@ -259,7 +259,7 @@ export default {
 
     this.webrtc = WebRTCConnection()
 
-    this.printerComm = PrinterComm(
+    this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),
       (data) => {

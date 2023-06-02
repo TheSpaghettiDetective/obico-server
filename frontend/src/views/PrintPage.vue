@@ -347,7 +347,7 @@ import {
   SortingOptions,
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 
 export default {
   name: 'PrintPage',
@@ -502,7 +502,7 @@ export default {
           .then((response) => {
             this.printer = normalizedPrinter(response.data)
 
-            this.printerComm = PrinterComm(
+            this.printerComm = printerCommManager.getOrCreatePrinterComm(
               this.printer.id,
               urls.printerWebSocket(this.printer.id),
               (data) => {

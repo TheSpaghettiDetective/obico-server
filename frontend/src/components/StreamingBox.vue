@@ -203,10 +203,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    showBitrate: {
-      type: Boolean,
-      default: true,
-    },
   },
 
   data() {
@@ -305,11 +301,7 @@ export default {
         onTrackMuted: () => (this.trackMuted = true),
         onTrackUnmuted: () => (this.trackMuted = false),
         onBitrateUpdated: (bitrate) => {
-          if (this.showBitrate) {
-            this.currentBitrate = bitrate.value
-          } else {
-            this.$emit('onBitrateUpdated', bitrate)
-          }
+          this.currentBitrate = bitrate.value
         },
         onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
       })

@@ -114,16 +114,11 @@
           </div>
         </div>
         <div class="stream-container">
-          <div v-if="currentBitrate" class="streaming-info overlay-info small">
-            {{ currentBitrate }}
-          </div>
           <div ref="streamInner" class="stream-inner">
             <streaming-box
               :printer="printer"
               :webrtc="webrtc"
               :autoplay="user.is_pro"
-              :show-bitrate="false"
-              @onBitrateUpdated="onBitrateUpdated"
               @onRotateLeftClicked="
                 (val) => {
                   customRotationDeg = val
@@ -364,9 +359,6 @@ export default {
         })
     },
 
-    onBitrateUpdated(bitrate) {
-      this.currentBitrate = bitrate.value
-    },
     resizeStream() {
       const streamInner = this.$refs.streamInner
       if (!streamInner) return
@@ -549,16 +541,6 @@ export default {
 
     .widgets-container
       width: 100%
-
-.streaming-info
-  text-align: right
-.overlay-info
-  position: absolute
-  right: 0
-  top: 0
-  z-index: 99
-  background-color: rgb(0 0 0 / .5)
-  padding: 4px 8px
 
 .extra-actions
   display: flex

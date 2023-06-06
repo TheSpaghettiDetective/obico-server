@@ -50,14 +50,14 @@ export const getPrinterCalculatedState = (printer, underlinedState) => {
 
   let calculatedState = underlinedState
   if (persistedTransientState && timeout && fromStates) {
-    if (new Date() > new Date(timeout)) {
-      clearPrinterTransientState(printerId)
-      showTimeoutError(printer, persistedTransientState, underlinedState)
-    }
-
     if (fromStates.includes(underlinedState)) {
-      // underlinedState is still the previous state. Transition not finished
-      calculatedState = persistedTransientState
+      if (new Date() > new Date(timeout)) {
+        clearPrinterTransientState(printerId)
+        showTimeoutError(printer, persistedTransientState, underlinedState)
+      } else {
+        // underlinedState is still the previous state. Transition not finished
+        calculatedState = persistedTransientState
+      }
     } else {
       clearPrinterTransientState(printerId)
     }

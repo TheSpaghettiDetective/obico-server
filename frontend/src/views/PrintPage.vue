@@ -123,7 +123,7 @@
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" class="mr-2" small />
-                    <span>Repeat Print</span>
+                    <span>Reprint</span>
                   </button>
                 </div>
               </div>

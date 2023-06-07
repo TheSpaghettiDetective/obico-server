@@ -122,7 +122,7 @@
               >
                 <b-spinner v-if="isPrintStarting" small></b-spinner>
                 <i v-else class="fas fa-redo"></i>
-                Repeat
+                Reprint
               </b-button>
             </div>
           </div>

@@ -56,11 +56,9 @@ def process_octoprint_status(printer: Printer, msg: Dict) -> None:
 def settings_dict(octoprint_settings):
     webcam_settings = dict(Printer.DEFAULT_WEBCAM_SETTINGS)
 
-    # TODO: Remove these fields when mobile app version 1.94 and earlier account for less than 3% of the total mobile users
     webcam_settings.update(octoprint_settings.get('webcam', {}))
     settings = dict(('webcam_' + k, str(v)) for k, v in webcam_settings.items())
 
-    settings.update(dict(webcam=json.dumps(webcam_settings)))
     settings.update(dict(temp_profiles=json.dumps(octoprint_settings.get('temperature', {}).get('profiles', []))))
     settings.update(dict(printer_metadata=json.dumps(octoprint_settings.get('printer_metadata', {}))))
     settings.update(

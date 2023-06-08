@@ -197,11 +197,6 @@ class Printer(SafeDeleteModel):
             p_settings[key] = p_settings.get(key, 'False') == 'True'
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
 
-        if p_settings.get('webcam'):
-            webcam_settings = dict(self.DEFAULT_WEBCAM_SETTINGS)
-            webcam_settings.update(json.loads(p_settings.get('webcam')))
-            p_settings['webcam'] = webcam_settings
-
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))
 

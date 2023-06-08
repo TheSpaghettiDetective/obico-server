@@ -192,7 +192,6 @@ class Printer(SafeDeleteModel):
     def settings(self):
         p_settings = cache.printer_settings_get(self.id)
 
-        # TODO: Remove these fields when mobile app version 1.94 and earlier account for less than 3% of the total mobile users
         for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'):
             p_settings[key] = p_settings.get(key, 'False') == 'True'
         p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'

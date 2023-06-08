@@ -87,7 +87,7 @@
       <div
         class="webcam_fixed_ratio"
         :class="webcamRatioClass"
-        :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
+        :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
       >
         <div class="webcam_fixed_ratio_inner">
           <img
@@ -100,7 +100,7 @@
           <svg
             v-else
             class="poster-placeholder"
-            :style="{ transform: `rotate(${videoRotationDeg}deg)` }"
+            :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
           >
             <use :href="printerStockImgSrc" />
           </svg>
@@ -130,9 +130,9 @@
       <div
         v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
         class="video-control-btn"
-        @click="onRotateLeftClicked"
+        @click="onRotateRightClicked"
       >
-        <font-awesome-icon icon="fa-solid fa-rotate-left" />
+        <font-awesome-icon icon="fa-solid fa-rotate-right" />
       </div>
     </div>
   </div>
@@ -235,7 +235,7 @@ export default {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     videoRotationDeg() {
-      const rotation = (this.printer.settings.webcam_rotate90 ? 90 : 0) + this.customRotationDeg
+      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
     webcamRotateClass() {
@@ -325,10 +325,10 @@ export default {
   },
 
   methods: {
-    onRotateLeftClicked() {
+    onRotateRightClicked() {
       this.customRotationDeg = this.customRotationDeg + 90
       setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)
-      this.$emit('onRotateLeftClicked', this.customRotationDeg)
+      this.$emit('onRotateRightClicked', this.customRotationDeg)
     },
     onCanPlay() {
       this.videoLoading = false

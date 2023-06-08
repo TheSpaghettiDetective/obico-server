@@ -225,7 +225,7 @@ export default {
       })
     },
     videoRotationDeg() {
-      const rotation = this.printer.settings.webcam_rotate90 ? 90 : 0 + this.customRotationDeg
+      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
   },

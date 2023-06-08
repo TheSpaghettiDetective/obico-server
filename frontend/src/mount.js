@@ -24,12 +24,12 @@ import {
   faCircleQuestion,
   faBell,
   faCog,
-  faRotateLeft,
   faCirclePause,
   faCirclePlay,
   faCircleXmark,
   faPowerOff,
   faGear,
+  faRotateRight,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
@@ -77,7 +77,7 @@ export default (router, components) => {
     faBell,
     faCog,
     faDiscord,
-    faRotateLeft,
+    faRotateRight,
     faCirclePause,
     faCirclePlay,
     faCircleXmark,

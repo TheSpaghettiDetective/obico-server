@@ -192,6 +192,7 @@ export const normalizedPrinter = (newData, oldData) => {
     },
     setTransientState: function (stateText) {
       setPrinterTransientState(this, stateText)
+      if (this.status) this.status = { ...this.status } // clone status to trigger immidiate UI update
     },
     inUserInteractionRequired: function () {
       return get(this, 'status.user_interaction_required', false)

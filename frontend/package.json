@@ -6,13 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "npx eslint --ext .js,vue src/ --fix",
-    "postinstall": "patch-package",
-    "prepare": "cd .. && husky install frontend/.husky"
-  },
-  "lint-staged": {
-    "**/src/**/*.{js,vue}": [
-      "npx eslint --fix"
-    ]
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
@@ -57,17 +51,15 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
+    "sass": "^1.19.0",
+    "sass-loader": "^8.0.0",
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-tracker": "^0.4.3",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.8.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
-    "prettier": "2.8.1",
-    "sass": "^1.19.0",
-    "sass-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-tracker": "^0.4.3"
+    "prettier": "2.8.1"
   },
   "browserslist": [
     "> 1%",

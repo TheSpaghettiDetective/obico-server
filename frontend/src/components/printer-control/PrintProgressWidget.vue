@@ -272,7 +272,7 @@ export default {
       const progressLayers = this.printer.status?.currentLayerHeight
       const totalLayers = this.printer.status?.file_metadata?.obico?.totalLayerCount
       if ((progressLayers || progressLayers == 0) && totalLayers) {
-        progressInLayers = `Layer ${Math.round(progressLayers)}/${Math.round(totalLayers)}`
+        progressInLayers = `${Math.round(progressLayers)}/${Math.round(totalLayers)}`
       }
 
       return progressInLayers || '--/--'

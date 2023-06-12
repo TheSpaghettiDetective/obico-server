@@ -21,7 +21,7 @@
             <div class="details">
               <!-- Last Print -->
               <template v-if="!isPrinting">
-                <div class="info-line">
+                <div class="info-line no-border">
                   <div class="label">
                     <div class="icon"><i class="fas fa-info"></i></div>
                     <div class="title">Status</div>
@@ -153,7 +153,7 @@
                     <div v-if="timeTotal" class="value">
                       {{ timeTotal }}
                     </div>
-                    <b-spinner v-else small></b-spinner>
+                    <span v-else class="text-secondary">Calculating...</span>
                   </div>
                   <div class="info-line" v-if="print.filament_used">
                     <div class="label">
@@ -387,7 +387,7 @@ export default {
   padding: 6px 0
   gap: .5rem
   border-top: 1px solid var(--color-divider-muted)
-  &:first-of-type, &.no-border
+  &.no-border
     border-top: none
   .label
     display: flex

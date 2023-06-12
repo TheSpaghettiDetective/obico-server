@@ -60,14 +60,34 @@
 
               <!-- Print Progress -->
               <template v-else>
+                <div v-if="isPrinting" class="progress-container">
+                  <div class="progress-bar-wrapper">
+                    <div
+                      class="progress-bar-inner"
+                      :style="`width: ${printProgressPercentage}%`"
+                    ></div>
+                  </div>
+                  <div class="percentage-progress">{{ printProgressPercentage }}%</div>
+                </div>
+
+                <div class="info-line no-border">
+                  <div class="label">
+                    <div class="icon"><i class="fas fa-info"></i></div>
+                    <div class="title">Status</div>
+                  </div>
+                  <div class="value" :class="'text-' + printer.calculatedStateColor()">
+                    {{ printer.calculatedState() }}
+                  </div>
+                </div>
                 <div class="info-line">
                   <div class="label">
-                    <div class="icon"><i class="fas fa-clock"></i></div>
-                    <div class="title">Elapsed</div>
+                    <div class="icon">
+                      <font-awesome-icon :icon="['fas', 'layer-group']" />
+                    </div>
+                    <div class="title">Layer progress</div>
                   </div>
                   <div class="value">
-                    <span v-if="timeElapsed">{{ timeElapsed }}</span>
-                    <b-spinner v-else small></b-spinner>
+                    {{ layerProgress }}
                   </div>
                 </div>
                 <div class="info-line">
@@ -78,34 +98,79 @@
                     <div class="title">Remaining</div>
                   </div>
                   <div class="value">
-                    <span v-if="timeRemaining">{{ timeRemaining }}</span>
+                    <span v-if="secondsLeft">{{ humanizedDuration(secondsLeft) }}</span>
                     <span v-else class="text-secondary">Calculating...</span>
                   </div>
                 </div>
                 <div class="info-line">
                   <div class="label">
                     <div class="icon"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="title">Finishing At</div>
+                    <div class="title">Finishing at</div>
                   </div>
                   <div class="value">
                     <span v-if="finishingAt">{{ finishingAt }}</span>
                     <span v-else class="text-secondary">Calculating...</span>
                   </div>
                 </div>
+                <collapsable-details>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-clock"></i></div>
+                      <div class="title">Started</div>
+                    </div>
+                    <div class="value">
+                      {{ print.started_at.format(DATE_TIME_FORMAT) }}
+                    </div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-clock"></i></div>
+                      <div class="title">Elapsed</div>
+                    </div>
+                    <div class="value">
+                      <span v-if="timeElapsed">{{ timeElapsed }}</span>
+                      <b-spinner v-else small></b-spinner>
+                    </div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon">
+                        <font-awesome-icon :icon="['fas', 'ruler-vertical']" />
+                      </div>
+                      <div class="title">Progress in millimeters</div>
+                    </div>
+                    <div class="value">
+                      {{ mmProgress }}
+                    </div>
+                  </div>
+                  <div class="info-line">
+                    <div class="label">
+                      <div class="icon">
+                        <i class="fas fa-clock"></i>
+                      </div>
+                      <div class="title">Total time</div>
+                    </div>
+                    <div v-if="timeTotal" class="value">
+                      {{ timeTotal }}
+                    </div>
+                    <b-spinner v-else small></b-spinner>
+                  </div>
+                  <div class="info-line" v-if="print.filament_used">
+                    <div class="label">
+                      <div class="icon">
+                        <font-awesome-icon :icon="['fas', 'ruler-vertical']" />
+                      </div>
+                      <div class="title">Total filament</div>
+                    </div>
+                    <div class="value">
+                      {{ humanizedFilamentUsage(print.filament_used) }}
+                    </div>
+                  </div>
+                </collapsable-details>
               </template>
             </div>
 
-            <div v-if="isPrinting" class="progress-container">
-              <div class="percentage-progress">{{ printProgressPercentage }}%</div>
-
-              <div class="progress-bar-wrapper">
-                <div class="progress-bar-inner" :style="`width: ${printProgressPercentage}%`"></div>
-              </div>
-              <div class="layer-progress" @click="toggleZHeightProgressType">
-                {{ zHeightProgress }}
-              </div>
-            </div>
-            <div v-else class="actions">
+            <div v-if="!isPrinting" class="actions">
               <b-button
                 variant="outline-secondary"
                 class="custom-button"
@@ -139,9 +204,12 @@
 import moment from 'moment'
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
-import { humanizedDuration, timeFromNow } from '@src/lib/formatters'
+import { humanizedDuration, timeFromNow, humanizedFilamentUsage } from '@src/lib/formatters'
 import { sendToPrint, confirmPrint } from '@src/components/g-codes/sendToPrint'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import CollapsableDetails from '@src/components/CollapsableDetails.vue'
+
+const DATE_TIME_FORMAT = 'MMM D, h:mm a'
 
 export default {
   name: 'PrintProgressWidget',
@@ -149,6 +217,7 @@ export default {
   components: {
     WidgetTemplate,
     GCodeDetails,
+    CollapsableDetails,
   },
 
   props: {
@@ -164,11 +233,12 @@ export default {
 
   data() {
     return {
+      DATE_TIME_FORMAT,
       timeElapsed: null,
-      timeRemaining: null,
       finishingAt: null,
+      startedAt: null,
       printProgressPercentage: 0,
-      preferZHeightProgressInLayers: getLocalPref('preferZHeightProgressInLayers', true),
+      extraVisible: false,
     }
   },
 
@@ -182,8 +252,8 @@ export default {
     isPrintStarting() {
       return this.printer.inTransientState()
     },
-    zHeightProgress() {
-      let progressInMillimeters, progressInLayers
+    mmProgress() {
+      let progressInMillimeters
 
       const progressMillimeters = this.printer.status?.currentZ
       const totalMillimeters = this.printer.status?.file_metadata?.analysis?.printingArea?.maxZ
@@ -194,17 +264,32 @@ export default {
         )} mm`
       }
 
+      return progressInMillimeters || '--/--'
+    },
+    layerProgress() {
+      let progressInLayers
+
       const progressLayers = this.printer.status?.currentLayerHeight
       const totalLayers = this.printer.status?.file_metadata?.obico?.totalLayerCount
       if ((progressLayers || progressLayers == 0) && totalLayers) {
         progressInLayers = `Layer ${Math.round(progressLayers)}/${Math.round(totalLayers)}`
       }
 
-      if (this.preferZHeightProgressInLayers) {
-        return progressInLayers || 'Layer --/--'
-      } else {
-        return progressInMillimeters || '--/-- mm'
+      return progressInLayers || '--/--'
+    },
+    timeTotal() {
+      let secs = null
+      if (this.secondsPrinted && this.secondsLeft) {
+        secs = this.secondsPrinted + this.secondsLeft
+        return humanizedDuration(secs)
       }
+      return null
+    },
+    secondsPrinted() {
+      return this.printer?.status?.progress?.printTime ?? null
+    },
+    secondsLeft() {
+      return this.printer?.status?.progress?.printTimeLeft ?? null
     },
   },
 
@@ -230,6 +315,8 @@ export default {
   },
 
   methods: {
+    humanizedDuration,
+    humanizedFilamentUsage,
     toggleZHeightProgressType() {
       this.preferZHeightProgressInLayers = !this.preferZHeightProgressInLayers
       setLocalPref('preferZHeightProgressInLayers', this.preferZHeightProgressInLayers)
@@ -242,10 +329,10 @@ export default {
       const elapsed = moment.duration(moment().diff(this.print.started_at))
       this.timeElapsed = this.print.status.isActive ? humanizedDuration(elapsed.asSeconds()) : null
 
-      // Time remaining and finishing at
-      const remaining = this.printer.status?.progress?.printTimeLeft
-      this.timeRemaining = typeof remaining === 'number' ? humanizedDuration(remaining) : null
-      this.finishingAt = typeof remaining === 'number' ? timeFromNow(remaining) : null
+      this.finishingAt =
+        typeof this.secondsLeft === 'number'
+          ? timeFromNow(this.secondsLeft, DATE_TIME_FORMAT)
+          : null
 
       // Progress bar
       this.printProgressPercentage = Math.round(this.printer.progressCompletion())
@@ -290,7 +377,7 @@ export default {
   padding-bottom: 1rem
 
 .header
-  margin-bottom: 1.5rem
+  margin-bottom: 1rem
 
 .info-line
   display: flex
@@ -300,7 +387,7 @@ export default {
   padding: 6px 0
   gap: .5rem
   border-top: 1px solid var(--color-divider-muted)
-  &:first-of-type
+  &:first-of-type, &.no-border
     border-top: none
   .label
     display: flex
@@ -326,7 +413,7 @@ export default {
 
 .progress-container
   font-weight: bold
-  margin-top: 1.5rem
+  margin-bottom: 1rem
   display: flex
   gap: 1rem
   align-items: center
@@ -345,7 +432,4 @@ export default {
 .empty-state-text
   text-align: center
   font-size: 1.125rem
-
-.layer-progress:hover
-  cursor: pointer
 </style>

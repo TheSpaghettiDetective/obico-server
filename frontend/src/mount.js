@@ -30,6 +30,9 @@ import {
   faPowerOff,
   faGear,
   faRotateRight,
+  faLayerGroup,
+  faChevronDown,
+  faRulerVertical,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
@@ -82,7 +85,10 @@ export default (router, components) => {
     faCirclePlay,
     faCircleXmark,
     faPowerOff,
-    faGear
+    faGear,
+    faLayerGroup,
+    faChevronDown,
+    faRulerVertical
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 

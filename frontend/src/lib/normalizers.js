@@ -250,6 +250,9 @@ export const normalizedPrinter = (newData, oldData) => {
     browsabilityText: function () {
       return this.isBrowsable() ? 'Available to browse files' : 'Unable to browse files'
     },
+    terminalFeed: function () {
+      return get(this, 'terminal_feed')
+    },
   }
   if (oldData) {
     if (

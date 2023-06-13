@@ -103,6 +103,10 @@ def printer_shared(request, share_token=None):
 def printer_control(request, pk):
     return render(request, 'printer_control.html')
 
+@login_required
+def printer_terminal(request, pk):
+    return render(request, 'printer_terminal.html')
+
 
 # User preferences
 

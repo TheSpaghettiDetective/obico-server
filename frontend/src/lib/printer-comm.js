@@ -117,6 +117,7 @@ export default function PrinterComm(
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
       } else {
+        console.log(msg)
         onPrinterUpdateReceived(msg)
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <widget-template>
+  <widget-template v-if="isPluginCompatible">
     <template #title>Printer Terminal</template>
     <template #content>
       <div class="actionWrap">
@@ -34,7 +34,7 @@
                     :style="{ visibility: hideTempMessages ? 'visible' : 'hidden' }"
                   ></i>
                   <div class="filterItemH">
-                    <i class="fa-brands fa-hotjar"></i>
+                    <i class="fas fa-fire"></i>
                     <div class="text">Suppress Temperature</div>
                   </div>
                 </div>
@@ -58,15 +58,21 @@
         </b-dropdown>
       </div>
       <div class="wrapper">
-        <div ref="scrollDiv" class="feedWrap" colorScheme="background">
-          <div v-for="(feed, index) in terminalFeedArray" :key="index">
-            <p v-if="feed?.msg" class="terminalText">
-              {{ feed.msg }}
-            </p>
+        <div class="feedWrap" colorScheme="background">
+          <div v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">
+            <div v-if="feed?.msg" class="terminalText">
+              <p class="messageTimeStamp messageText">
+                {{ feed.normalTimeStamp }}
+              </p>
+              <p class="messageText">
+                {{ feed.msg }}
+              </p>
+            </div>
+            <div class="divider"></div>
           </div>
         </div>
         <div class="inputWrap">
-          <input v-model="inputValue" type="text" class="textInput" />
+          <input v-model="inputValue" type="text" class="textInput" placeholder="Enter code..." />
           <b-button variant="outline-primary" class="sendBtn" @click="sendMessage"> Send </b-button>
         </div>
       </div>
@@ -76,6 +82,7 @@
 
 <script>
 import WidgetTemplate from '@src/components/printer-control/WidgetTemplate'
+import moment from 'moment'
 
 export default {
   name: 'TerminalWidget',
@@ -105,12 +112,8 @@ export default {
   },
 
   computed: {
-    // isPluginVersionSufficient() {
-    //   // If temp_profiles is missing, it's a plugin version too old to change temps
-    //   return get(this.printer, 'settings.temp_profiles') != undefined
-    // },
-    show() {
-      return this.printer?.derivedStatus?.isAgentMoonraker
+    isPluginCompatible() {
+      return this.printer.isTerminalCompatible() && !this.printer.isAgentMoonraker()
     },
   },
 
@@ -122,24 +125,29 @@ export default {
         const newMsg = newTerminalFeed?.msg
 
         const temperatureRegex =
-          /Recv:\s*T:\d+\.\d+\/\s*\d+\.\d+(?:\s+B:\d+\.\d+\/\s*\d+\.\d+)?\s+@:\d+/g
-        const SDRegex = /Recv: Not SD printing/
+          /.*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*@:\d+.*/g
+        const SDRegex = /Not SD printing/
+        const bRegex = /^B:\d+(\.\d+)?$/
+        const tRegex = /^T:\d+(\.\d+)?$/
 
         if (this.hideSDMessages && SDRegex.test(newMsg)) return
-        if (this.hideTempMessages && temperatureRegex.test(newMsg)) return
+        if (
+          this.hideTempMessages &&
+          (temperatureRegex.test(newMsg) || bRegex.test(newMsg) || tRegex.test(newMsg))
+        ) {
+          return
+        }
 
         if (!sameMsg && !same_ts) {
-          this.terminalFeedArray.push(newTerminalFeed)
+          newTerminalFeed.normalTimeStamp = moment().format('h:mma')
+          this.terminalFeedArray.unshift(newTerminalFeed)
         }
-        this.scrollDivToBottom()
       },
       immediate: true, // Trigger the watcher immediately when the component is created
     },
   },
 
-  updated() {
-    this.scrollDivToBottom()
-  },
+  updated() {},
 
   methods: {
     sendMessage() {
@@ -159,12 +167,15 @@ export default {
       }
 
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-      this.printerComm.passThruToPrinter(payload)
+      this.printerComm.passThruToPrinter(payload, (err, ret) => {
+        if (err || ret?.error) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: ret.error,
+          })
+        }
+      })
       this.inputValue = ''
-    },
-    scrollDivToBottom() {
-      const scrollView = this.$refs.scrollDiv
-      scrollView.scrollTop = scrollView.scrollHeight
     },
     clearFeed() {
       this.terminalFeedArray = []
@@ -203,7 +214,10 @@ export default {
   border-radius:  var(--border-radius-md)
 
 .terminalText
-  width: 100%
+  display: flex
+  align-items: center
+  flex-direction: row
+
 
 .inputWrap
   display: flex
@@ -242,7 +256,7 @@ export default {
   justify-content: center
   background-color: var(--color-surface-primary)
   border-radius: var(--border-radius-sm)
-  z-index: 100
+  z-index: 1
   &:hover
     cursor: pointer
 
@@ -266,4 +280,21 @@ export default {
   display: flex
   flex-direction: row
   align-items: center
+
+.messageTimeStamp
+  opacity: 0.8
+  margin-right: 10px
+  font-size: 0.7rem
+.divider
+  width: 100%
+  background-color: var(--color-divider)
+  height: 1px
+
+.itemWrap
+  display: flex
+  flex-direction: column
+  width: 100%
+.messageText
+  margin-top: 7px
+  margin-bottom: 7px
 </style>

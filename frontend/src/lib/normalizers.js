@@ -247,6 +247,18 @@ export const normalizedPrinter = (newData, oldData) => {
         )
       )
     },
+    // Printer terminal availability
+    terminalMinPluginVersion: function () {
+      const MIN_OCTOPRINT_PLUGIN_VERSION = '2.3.10'
+      const MIN_MOONRAKER_PLUGIN_VERSION = '1.4.3'
+      return this.isAgentMoonraker() ? MIN_MOONRAKER_PLUGIN_VERSION : MIN_OCTOPRINT_PLUGIN_VERSION
+    },
+    isTerminalCompatible: function () {
+      return !(
+        this.isOffline() ||
+        !semverGte(get(this, 'settings.agent_version', '0.0.0'), this.terminalMinPluginVersion())
+      )
+    },
     browsabilityText: function () {
       return this.isBrowsable() ? 'Available to browse files' : 'Unable to browse files'
     },

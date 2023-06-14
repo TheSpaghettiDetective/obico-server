@@ -288,7 +288,7 @@ class OctoPrintConsumer(WebsocketConsumer):
                 channels.octoprinttunnel_group_name(self.printer.id),
                 data['ws.tunnel'],
             )
-        elif 'passthru' in data or 'terminal_feed' in data:
+        elif 'passthru' in data:
             channels.send_message_to_web(self.printer.id, data)
         else:
             self.printer.refresh_from_db()

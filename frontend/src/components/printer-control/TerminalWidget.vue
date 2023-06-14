@@ -5,7 +5,7 @@
       <div class="actionWrap">
         <a :href="`/printers/${printer.id}/terminal/`">
           <div class="actionBtn">
-            <i class="fas fa-arrows-alt actionIcon"></i>
+            <i class="fas fa-expand actionIcon"></i>
           </div>
         </a>
         <div class="actionBtn" @click="clearFeed">

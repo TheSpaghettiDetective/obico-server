@@ -82,11 +82,9 @@ export default function PrinterComm(
       const callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
       callback(null, msg.ret)
+    } else if ('terminal_feed' in msg) {
+      onPrinterUpdateReceived(msg)
     } else if ('printer_event' in msg) {
-      if (msg.printer_event?.terminal_feed) {
-        onPrinterUpdateReceived(msg.printer_event)
-        return
-      }
       const printerEvent = msg.printer_event
       Vue.swal.Toast.fire({
         icon: printerEvent.event_class.toLowerCase(),

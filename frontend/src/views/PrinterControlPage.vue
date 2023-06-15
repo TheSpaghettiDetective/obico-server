@@ -309,6 +309,7 @@ export default {
             }
           }
           localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
+          return parsed
         }
       }
 

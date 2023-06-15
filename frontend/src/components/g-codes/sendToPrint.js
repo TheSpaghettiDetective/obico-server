@@ -35,7 +35,14 @@ export function printCloudGCode(printerComm, gcode) {
       {
         func: 'download',
         target: 'file_downloader',
-        args: [gcode],
+        args: [
+          {
+            id: gcode.id,
+            url: gcode.url,
+            filename: gcode.filename,
+            safe_filename: gcode.safe_filename,
+          },
+        ],
       },
       (err, ret) => {
         if (err || ret?.error) {

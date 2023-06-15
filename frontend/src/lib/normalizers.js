@@ -190,6 +190,23 @@ export const normalizedPrinter = (newData, oldData) => {
     calculatedState: function () {
       return getPrinterCalculatedState(this, this.status?.state?.text)
     },
+    calculatedStateColor: function () {
+      const calcState = this.calculatedState()
+      const colorMapping = {
+        secondary: ['Offline', undefined, null],
+        success: ['Operational'],
+        neutral: ['Printing', 'G-Code Downloading', 'Downloading G-Code', 'Starting'],
+        warning: ['Paused', 'Pausing', 'Resuming'],
+        danger: ['Cancelling'],
+      }
+
+      for (const [color, states] of Object.entries(colorMapping)) {
+        if (states.includes(calcState)) {
+          return color
+        }
+      }
+      return 'neutral' // fallback
+    },
     setTransientState: function (stateText) {
       setPrinterTransientState(this, stateText)
       if (this.status) this.status = { ...this.status } // clone status to trigger immidiate UI update

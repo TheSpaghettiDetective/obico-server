@@ -27,10 +27,8 @@ class PrinterCommManager {
   getOrCreatePrinterComm(...props) {
     const printerId = String(props[0]) // assuming same args as for PrinterComm function
     if (!this.getPrinterComm(printerId)) {
-      console.log('[di] Creating new PrinterComm for printerId: ' + printerId)
       this.setPrinterComm(printerId, PrinterComm(...props))
     }
-    console.log('[di] Returning PrinterComm for printerId: ' + printerId)
     return this.getPrinterComm(printerId)
   }
 

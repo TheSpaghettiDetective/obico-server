@@ -732,7 +732,7 @@ export default {
             title: ret.error,
           })
         } else {
-          this.powerDevices = ret.devices
+          this.powerDevices = ret?.devices || []
         }
       })
     },

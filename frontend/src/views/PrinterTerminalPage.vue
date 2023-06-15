@@ -115,19 +115,7 @@
             </b-dropdown>
           </div>
         </div>
-        <div class="feedWrap" colorScheme="background">
-          <div v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">
-            <div v-if="feed?.msg" class="terminalText">
-              <p class="messageTimeStamp messageText">
-                {{ feed.normalTimeStamp }}
-              </p>
-              <p class="messageText">
-                {{ feed.msg }}
-              </p>
-            </div>
-            <div class="divider"></div>
-          </div>
-        </div>
+        <terminal-window class="feedWrap" :terminal-feed-array="terminalFeedArray" />
       </div>
     </template>
   </page-layout>
@@ -141,7 +129,8 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page-context'
 import split from 'lodash/split'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import moment from 'moment'
+import terminalMixin from '@src/components/terminal/terminal-mixin.js'
+import TerminalWindow from '@src/components/terminal/TerminalWindow'
 
 export default {
   name: 'PrinterTerminalPage',
@@ -149,7 +138,10 @@ export default {
   components: {
     PageLayout,
     CascadedDropdown,
+    TerminalWindow,
   },
+
+  mixins: [terminalMixin],
 
   data: function () {
     return {
@@ -161,38 +153,6 @@ export default {
       hideSDMessages: false,
       terminalFeedArray: [],
     }
-  },
-
-  computed: {},
-
-  watch: {
-    'printer.terminal_feed': {
-      handler(newTerminalFeed, oldTerminalFeed) {
-        const sameMsg = newTerminalFeed?.msg === oldTerminalFeed?.msg
-        const same_ts = newTerminalFeed?._ts === oldTerminalFeed?._ts
-        const newMsg = newTerminalFeed?.msg
-
-        const temperatureRegex =
-          /.*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*@:\d+.*/g
-        const SDRegex = /Not SD printing/
-        const bRegex = /^B:\d+(\.\d+)?$/
-        const tRegex = /^T:\d+(\.\d+)?$/
-
-        if (this.hideSDMessages && SDRegex.test(newMsg)) return
-        if (
-          this.hideTempMessages &&
-          (temperatureRegex.test(newMsg) || bRegex.test(newMsg) || tRegex.test(newMsg))
-        ) {
-          return
-        }
-
-        if (!sameMsg && !same_ts) {
-          newTerminalFeed.normalTimeStamp = moment().format('h:mma')
-          this.terminalFeedArray.unshift(newTerminalFeed)
-        }
-      },
-      immediate: true, // Trigger the watcher immediately when the component is created
-    },
   },
 
   created() {
@@ -217,36 +177,6 @@ export default {
       if (menuOptionKey === 'share') {
         this.onSharePrinter()
       }
-    },
-    clearFeed() {
-      this.terminalFeedArray = []
-    },
-    sendMessage() {
-      if (!this.inputValue.length) return
-      const newString = this.inputValue.toUpperCase()
-
-      const moonrakerPayload = {
-        func: 'printer/gcode/script',
-        target: 'moonraker_api',
-        kwargs: { script: `${newString}` },
-      }
-      const octoPayload = {
-        func: 'commands',
-        target: '_printer',
-        args: [`${newString}`],
-        force: true,
-      }
-
-      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: ret.error,
-          })
-        }
-      })
-      this.inputValue = ''
     },
   },
 }
@@ -326,7 +256,6 @@ export default {
     cursor: pointer
     background-color: var(--color-surface-primary)
 
-
 .actionBtnNoP
   height: 100%
   margin-left: 10px
@@ -346,45 +275,9 @@ export default {
   max-height: 65vh
   margin-top: 15px
   padding: 20px
-  display: flex
-  align-items: flex-start
-  flex-direction: column
-  overflow-y: scroll
-  background-color: var(--color-surface-secondary)
-  border-radius: var(--border-radius-md)
-
-.feedWrap::-webkit-scrollbar
-  background-color: var(--color-surface-secondary)
-  border-radius: var(--border-radius-md)
-
-.feedWrap::-webkit-scrollbar-thumb
-  background-color: var(--color-surface-primary)
-  border-radius:  var(--border-radius-md)
 
 .filterItemH
   display: flex
   flex-direction: row
   align-items: center
-
-.terminalText
-    display: flex
-    align-items: center
-    flex-direction: row
-
-.messageTimeStamp
-  opacity: 0.8
-  margin-right: 20px
-  font-size: 0.7rem
-.divider
-  width: 100%
-  background-color: var(--color-divider)
-  height: 1px
-
-.itemWrap
-  display: flex
-  flex-direction: column
-  width: 100%
-.messageText
-  margin-top: 7px
-  margin-bottom: 7px
 </style>

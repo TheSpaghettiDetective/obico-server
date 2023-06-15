@@ -296,12 +296,21 @@ export default {
         const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
         if (widgets) {
           const parsed = JSON.parse(widgets)
+          // add any new widgets
           for (const widget of WIDGETS) {
             if (!parsed.find((w) => w.id === widget.id)) {
               parsed.push({ id: widget.id, enabled: true })
             }
           }
+          // remove any old widgets which are no longer supported
+          for (const widget of parsed) {
+            if (!WIDGETS.find((w) => w.id === widget.id)) {
+              // remove it from parsed
+              parsed.splice(parsed.indexOf(widget), 1)
+            }
+          }
           localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
+          return parsed
         }
       }
 

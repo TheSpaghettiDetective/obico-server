@@ -218,22 +218,23 @@ export default {
   align-items: center
   flex-direction: row
 
-
 .inputWrap
   display: flex
   flex-direction: row
   justify-content: space-between
   height: 50px
   width: 100%
+  gap: 1rem
 
 .textInput
   height: 100%
-  width: 75%
+  flex: 1
   padding: 10px
 
 .sendBtn
   height: 100%
-  width: 20%
+  width: auto
+
 .actionBtn
   margin-left: 5px
   margin-right: 5px

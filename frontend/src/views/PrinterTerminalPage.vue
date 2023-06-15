@@ -253,67 +253,65 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-
 .printer-name
-    font-size: 1rem
-    max-width: 360px
-    font-weight: bold
-    @media (max-width: 768px)
-      max-width: 200px
+  font-size: 1rem
+  max-width: 360px
+  font-weight: bold
+  @media (max-width: 768px)
+    max-width: 200px
 
 .custom-svg-icon
-    height: 1.25rem
-    width: 1.25rem
+  height: 1.25rem
+  width: 1.25rem
 
 .contentWrap
-    flex: 1
+  flex: 1
 
 .controlsWrap
-    width: 100%
-    display: flex
-    flex-direction: row
-    align-items: center
-    margin-top: 0
-    flex: 0 1 auto
-    height: 3rem
+  width: 100%
+  display: flex
+  flex-direction: row
+  align-items: center
+  margin-top: 0
+  flex: 0 1 auto
+  height: 3rem
 
 .inputWrap
-    flex: 1
-    height: 100%
-    margin-right: 10px
-    display: flex
-    flex-direction: row
-    align-items: center
-    background-color: var(--color-surface-secondary)
-    border-radius: var(--border-radius-md)
-
+  flex: 1
+  height: 100%
+  margin-right: 10px
+  display: flex
+  flex-direction: row
+  align-items: center
+  background-color: var(--color-surface-secondary)
+  border-radius: var(--border-radius-md)
 
 .textInput
-    width: 90%
-    height: 100%
-    border: none
-    padding: 0px 20px
-    background-color: var(--color-surface-secondary)
+  flex: 1
+  height: 100%
+  border: none
+  padding: 0px 20px
+  background-color: var(--color-surface-secondary)
 
 .sendBtn
-    width: 10%
-    height: 100%
-    display: flex
-    flex-direction: row
-    align-items: center
-    justify-content: center
-    border-radius: var(--border-radius-md)
-    transition: all 0.2s ease-in-out
-    &:hover
-        opacity: 0.8
-        cursor: pointer
-        background-color: var(--color-surface-primary)
+  width: 3rem
+  height: 100%
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: center
+  border-radius: var(--border-radius-md)
+  transition: all 0.2s ease-in-out
+  &:hover
+    opacity: 0.8
+    cursor: pointer
+    background-color: var(--color-surface-primary)
 
 .buttonWrap
-    display: flex
-    align-items: center
-    justify-content: flex-start
-    height: 100%
+  display: flex
+  align-items: center
+  justify-content: flex-start
+  height: 100%
 
 .buttonHolder
   padding: 10px 16px

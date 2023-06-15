@@ -153,6 +153,7 @@ import PrinterControlWidget from '@src/components/printer-control/PrinterControl
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
+import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -186,6 +187,11 @@ const WIDGETS = [
     title: 'Printer Controls',
     component: 'PrinterControlWidget',
   },
+  {
+    id: 6,
+    title: 'Terminal Widget',
+    component: 'TerminalWidget',
+  },
 ]
 
 export default {
@@ -200,6 +206,7 @@ export default {
     FailureDetectionWidget,
     TemperatureWidget,
     PrinterControlWidget,
+    TerminalWidget,
   },
 
   data() {

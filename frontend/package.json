@@ -9,11 +9,6 @@
     "postinstall": "patch-package",
     "prepare": "cd .. && husky install frontend/.husky"
   },
-  "lint-staged": {
-    "**/src/**/*.{js,vue}": [
-      "npx eslint --fix"
-    ]
-  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-brands-svg-icons": "^6.4.0",

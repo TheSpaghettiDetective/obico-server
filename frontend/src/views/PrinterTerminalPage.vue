@@ -148,10 +148,6 @@ export default {
       user: null,
       printerId: null,
       printer: null,
-      inputValue: '',
-      hideTempMessages: false,
-      hideSDMessages: false,
-      terminalFeedArray: [],
     }
   },
 

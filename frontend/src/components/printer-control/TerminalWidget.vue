@@ -94,15 +94,6 @@ export default {
     },
   },
 
-  data() {
-    return {
-      terminalFeedArray: [],
-      inputValue: '',
-      hideTempMessages: false,
-      hideSDMessages: false,
-    }
-  },
-
   computed: {
     isPluginCompatible() {
       return this.printer.isTerminalCompatible() && !this.printer.isAgentMoonraker()

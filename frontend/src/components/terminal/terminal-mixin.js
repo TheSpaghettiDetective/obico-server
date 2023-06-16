@@ -4,6 +4,10 @@ export default {
   data() {
     return {
       oldTerminalFeed: null,
+      terminalFeedArray: [],
+      inputValue: '',
+      hideTempMessages: false,
+      hideSDMessages: false,
     }
   },
 

@@ -49,23 +49,12 @@ class PrinterCommManager {
 export const printerCommManager = new PrinterCommManager()
 Object.freeze(printerCommManager)
 
-export default function PrinterComm(
-  printerId,
-  wsUri,
-  onPrinterUpdateReceived,
-  onStatusReceived = null
-) {
-  var self = {}
-
-  self.printerId = printerId
-  self.wsUri = wsUri
-  self.onPrinterUpdateReceived = onPrinterUpdateReceived
-  self.onStatusReceived = onStatusReceived
+export default function PrinterComm(printerId, wsUri, callbacks) {
+  const self = { printerId, wsUri, ...callbacks }
 
   self.ws = null
   self.webrtc = null
   self.passthruQueue = new Map()
-
   ifvisible.on('blur', function () {
     self.closeWebSocket()
   })
@@ -81,7 +70,7 @@ export default function PrinterComm(
       self.passthruQueue.delete(refId)
       callback(null, msg.ret)
     } else if ('terminal_feed' in msg) {
-      onPrinterUpdateReceived(msg)
+      self.onTerminalFeedReceived && self.onTerminalFeedReceived(msg.terminal_feed)
     } else if ('printer_event' in msg) {
       const printerEvent = msg.printer_event
       Vue.swal.Toast.fire({
@@ -117,7 +106,7 @@ export default function PrinterComm(
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
       } else {
-        onPrinterUpdateReceived(msg)
+        self.onPrinterUpdateReceived && self.onPrinterUpdateReceived(msg)
       }
     }
 
@@ -148,9 +137,7 @@ export default function PrinterComm(
         return
       }
 
-      if (self.onStatusReceived) {
-        self.onStatusReceived(msg)
-      }
+      self.onStatusReceived && self.onStatusReceived(msg)
     }
 
     self.webrtc.setCallbacks({

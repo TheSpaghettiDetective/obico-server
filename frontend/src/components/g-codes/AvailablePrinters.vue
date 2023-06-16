@@ -120,9 +120,11 @@ export default {
         this.printerComms[printer.id] = printerCommManager.getOrCreatePrinterComm(
           printer.id,
           urls.printerWebSocket(printer.id),
-          (data) => {
-            const index = this.printers.findIndex((p) => p.id === printer.id)
-            this.$set(this.printers, index, normalizedPrinter(data, this.printers[index]))
+          {
+            onPrinterUpdateReceived: (data) => {
+              const index = this.printers.findIndex((p) => p.id === printer.id)
+              this.$set(this.printers, index, normalizedPrinter(data, this.printers[index]))
+            },
           }
         )
         this.printerComms[printer.id].connect()

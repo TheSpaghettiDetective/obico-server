@@ -499,8 +499,10 @@ export default {
             this.printerComm = printerCommManager.getOrCreatePrinterComm(
               this.printer.id,
               urls.printerWebSocket(this.printer.id),
-              (data) => {
-                this.printer = normalizedPrinter(data, this.printer)
+              {
+                onPrinterUpdateReceived: (data) => {
+                  this.printer = normalizedPrinter(data, this.printer)
+                },
               }
             )
             this.printerComm.connect()

@@ -307,9 +307,7 @@ export default {
       if (this.selectedPrinterId) {
         this.printerComm = printerCommManager.getOrCreatePrinterComm(
           this.selectedPrinterId,
-          urls.printerWebSocket(this.selectedPrinterId),
-          (data) => {},
-          (printerStatus) => {}
+          urls.printerWebSocket(this.selectedPrinterId)
         )
         this.printerComm.connect(this.fetchLocalFile)
         return

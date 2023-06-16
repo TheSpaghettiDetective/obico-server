@@ -108,6 +108,10 @@ export default {
       return this.printer.isTerminalCompatible() && !this.printer.isAgentMoonraker()
     },
   },
+
+  created() {
+    this.printerComm.onTerminalFeedReceived = this.onNextTerminalFeed
+  },
 }
 </script>
 

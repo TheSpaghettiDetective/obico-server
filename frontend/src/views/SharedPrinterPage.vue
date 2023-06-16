@@ -63,14 +63,16 @@ export default {
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.shareToken,
       urls.printerSharedWebSocket(this.shareToken),
-      (data) => {
-        this.printer = normalizedPrinter(data, this.printer)
-        this.loading = false
+      {
+        onPrinterUpdateReceived: (data) => {
+          this.printer = normalizedPrinter(data, this.printer)
+          this.loading = false
 
-        if (!this.isWebrtcOpened) {
-          this.webrtc.openForShareToken(this.shareToken)
-          this.isWebrtcOpened = true
-        }
+          if (!this.isWebrtcOpened) {
+            this.webrtc.openForShareToken(this.shareToken)
+            this.isWebrtcOpened = true
+          }
+        },
       }
     )
     this.printerComm.connect()

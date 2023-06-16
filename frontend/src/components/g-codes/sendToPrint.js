@@ -63,9 +63,7 @@ export const sendToPrint = (args) => {
 
   const printerComm = printerCommManager.getOrCreatePrinterComm(
     printerId,
-    urls.printerWebSocket(printerId),
-    (data) => {},
-    (printerStatus) => {}
+    urls.printerWebSocket(printerId)
   )
 
   printerComm.connect(() => {

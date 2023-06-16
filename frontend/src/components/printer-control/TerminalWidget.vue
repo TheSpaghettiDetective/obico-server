@@ -96,7 +96,7 @@ export default {
 
   computed: {
     isPluginCompatible() {
-      return this.printer.isTerminalCompatible() && !this.printer.isAgentMoonraker()
+      return this.printer.isAgentVersionGte('2.3.10', '1.4.3') && !this.printer.isAgentMoonraker()
     },
   },
 

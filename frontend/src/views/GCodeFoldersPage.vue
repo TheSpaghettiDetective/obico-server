@@ -88,9 +88,9 @@
                 <div class="title">{{ printer.name }}</div>
                 <div
                   class="subtitle"
-                  :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
+                  :class="[isPrinterBrowsable(printer) ? 'text-success' : 'text-warning']"
                 >
-                  {{ printer.browsabilityText() }}
+                  {{ printerBrowsabilityText(printer) }}
                 </div>
               </div>
             </div>
@@ -166,9 +166,9 @@
                     <div class="title">{{ printer.name }}</div>
                     <div
                       class="subtitle"
-                      :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
+                      :class="[isPrinterBrowsable(printer) ? 'text-success' : 'text-warning']"
                     >
-                      {{ printer.browsabilityText() }}
+                      {{ printerBrowsabilityText(printer) }}
                     </div>
                   </div>
                 </div>
@@ -503,6 +503,14 @@ export default {
   },
 
   methods: {
+    isPrinterBrowsable(printer) {
+      return !(printer.isOffline() || !printer.isAgentVersionGte('2.3.0', '1.2.0'))
+    },
+    printerBrowsabilityText(printer) {
+      return this.isPrinterBrowsable(printer)
+        ? 'Available to browse files'
+        : 'Unable to browse files'
+    },
     toggleSelectAll() {
       if (this.allSelected) {
         this.$refs.gCodeFileStructure.unselectAll()
@@ -563,7 +571,7 @@ export default {
       }
     },
     switchToPrinterStorage(printer) {
-      if (!printer.isBrowsable()) {
+      if (!this.isPrinterBrowsable(printer)) {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't available for browsing files for one of the following reasons:`,
           html: `<ul style="text-align: left">
@@ -619,7 +627,9 @@ export default {
       }
       printers = printers.map((p) => normalizedPrinter(p))
       // bring browsable printers at the top of the list
-      printers = printers.sort((a, b) => Number(b.isBrowsable()) - Number(a.isBrowsable()))
+      printers = printers.sort(
+        (a, b) => Number(this.isPrinterBrowsable(b)) - Number(this.isPrinterBrowsable(a))
+      )
       this.printers = this.targetPrinter
         ? printers.filter((p) => p.id === this.targetPrinter.id)
         : printers

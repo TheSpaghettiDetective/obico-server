@@ -169,6 +169,7 @@ export default {
             this.printerComm.setWebRTC(this.webrtc)
           }
         },
+        onTerminalFeedReceived: this.onNextTerminalFeed,
       }
     )
     this.printerComm.connect()

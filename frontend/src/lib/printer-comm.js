@@ -68,7 +68,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
     if (refId && self.passthruQueue.get(refId)) {
       const callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
-      callback(null, msg.ret)
+      callback(msg.error, msg.ret)
     } else if ('terminal_feed' in msg) {
       self.onTerminalFeedReceived && self.onTerminalFeedReceived(msg.terminal_feed)
     } else if ('printer_event' in msg) {

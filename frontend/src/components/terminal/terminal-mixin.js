@@ -57,10 +57,10 @@ export default {
 
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })

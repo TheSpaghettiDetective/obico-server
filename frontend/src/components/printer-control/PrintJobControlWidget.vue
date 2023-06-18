@@ -237,7 +237,7 @@ export default {
           if (err) {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: 'Failed to connect!',
+              title: err,
             })
           } else {
             if (connectionOptions.ports.length < 1) {

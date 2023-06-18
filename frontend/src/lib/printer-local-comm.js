@@ -31,8 +31,8 @@ export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword
         kwargs,
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(err || ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         }
 
         let folders = []
@@ -87,8 +87,8 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
         },
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(err || ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         }
         // subdirs should be ignored when user is searching
         const dirsInServerFormat = searchKeyword
@@ -145,8 +145,8 @@ export function printPrinterLocalGCodeOctoPrint(printerComm, gcode) {
         kwargs: { printAfterSelect: 'true' },
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         } else {
           resolve()
         }
@@ -168,8 +168,8 @@ export function printPrinterLocalGCodeMoonraker(printerComm, gcode) {
         },
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         } else {
           resolve()
         }

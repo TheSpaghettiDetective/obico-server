@@ -543,10 +543,10 @@ export default {
       }
       const payload = { func: func, target: '_printer', args: args }
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -554,7 +554,7 @@ export default {
     getCurrentZOffset() {
       const moonrakerPayload = { func: 'printer/objects/query?gcode_move', target: 'moonraker_api' }
       this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.currentZOffset = 'no reading'
         } else {
           const offset = ret.status.gcode_move.homing_origin[2]
@@ -577,10 +577,10 @@ export default {
 
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -601,10 +601,10 @@ export default {
             this.printerComm.passThruToPrinter(
               { func: 'set_temperature', target: '_printer', args: [this.activeTool, 180] },
               (err, ret) => {
-                if (err || ret?.error) {
+                if (err) {
                   this.$swal.Toast.fire({
                     icon: 'error',
-                    title: ret.error,
+                    title: err,
                   })
                 }
               }
@@ -628,10 +628,10 @@ export default {
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -656,10 +656,10 @@ export default {
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.currentZOffset = null
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         } else {
           this.getCurrentZOffset()
@@ -695,13 +695,13 @@ export default {
           }
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           if (onError) {
             onError(err, ret)
           } else {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: ret.error,
+              title: err,
             })
           }
         } else {
@@ -726,10 +726,10 @@ export default {
         args: [],
       }
       this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        if (ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         } else {
           this.powerDevices = ret?.devices || []
@@ -747,10 +747,10 @@ export default {
       }
       this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
         this.getPowerDevices()
-        if (ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -765,10 +765,10 @@ export default {
       }
       this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
         this.getPowerDevices()
-        if (ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })

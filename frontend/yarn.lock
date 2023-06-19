@@ -2546,9 +2546,9 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001502:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001503.tgz#88b6ff1b2cf735f1f3361dc1a15b59f0561aa398"
   integrity sha512-Sf9NiF+wZxPfzv8Z3iS0rXM1Do+iOy2Lxvib38glFX+08TCYYYGR5fRJXk4d77C4AYwhUjgYgMsMudbh2TqCKw==
 
-"canvas-gauges@github:mikhus/canvas-gauges":
+canvas-gauges@Mikhus/canvas-gauges:
   version "2.1.7"
-  resolved "https://codeload.github.com/mikhus/canvas-gauges/tar.gz/6b179f83b7f03926a4d58ac09e15525d19fad3d1"
+  resolved "https://codeload.github.com/Mikhus/canvas-gauges/tar.gz/6b179f83b7f03926a4d58ac09e15525d19fad3d1"
 
 case-sensitive-paths-webpack-plugin@^2.3.0:
   version "2.4.0"

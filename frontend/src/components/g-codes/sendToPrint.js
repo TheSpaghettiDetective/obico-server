@@ -47,7 +47,7 @@ export function printCloudGCode(printerComm, gcode) {
       },
       (err, ret) => {
         if (err) {
-          reject(ret)
+          reject(err)
         } else {
           resolve()
         }

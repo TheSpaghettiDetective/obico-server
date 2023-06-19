@@ -6,8 +6,19 @@ export default {
       oldTerminalFeed: null,
       terminalFeedArray: [],
       inputValue: '',
-      hideTempMessages: false,
-      hideSDMessages: false,
+      hideTempMessages: true,
+      hideSDMessages: true,
+    }
+  },
+
+  mounted() {
+    const hideTempPref = localStorage.getItem(`printer-terminal-filter-prefs-temperature`)
+    const hideSDPref = localStorage.getItem(`printer-terminal-filter-prefs-sd`)
+    if (hideTempPref) {
+      this.hideTempMessages = JSON.parse(hideTempPref)
+    }
+    if (hideSDPref) {
+      this.hideSDMessages = JSON.parse(hideSDPref)
     }
   },
 
@@ -34,7 +45,7 @@ export default {
       }
 
       if (!sameMsg && !same_ts) {
-        newTerminalFeed.normalTimeStamp = moment().format('h:mma')
+        newTerminalFeed.normalTimeStamp = moment().format('h:mm:ssa')
         this.terminalFeedArray.unshift(newTerminalFeed)
       }
     },
@@ -68,6 +79,14 @@ export default {
     },
     clearFeed() {
       this.terminalFeedArray = []
+    },
+    updateFilterPrefs(str, val) {
+      localStorage.setItem(`printer-terminal-filter-prefs-${str}`, JSON.stringify(val))
+      if (str === 'temperature') {
+        this.hideTempMessages = val
+      } else {
+        this.hideSDMessages = val
+      }
     },
   },
 }

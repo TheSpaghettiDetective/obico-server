@@ -59,7 +59,13 @@
       <div class="contentWrap">
         <div class="controlsWrap">
           <div class="inputWrap">
-            <input v-model="inputValue" type="text" class="textInput" placeholder="Enter code..." />
+            <input
+              v-model="inputValue"
+              type="text"
+              class="textInput"
+              placeholder="Enter code..."
+              @keyup.enter="sendMessage"
+            />
             <div class="sendBtn" @click="sendMessage">
               <i class="fas fa-chevron-right sendIcon"></i>
             </div>
@@ -83,7 +89,9 @@
                 <div>
                   <b-dropdown-text class="small text-secondary">Filter</b-dropdown-text>
                   <b-dropdown-item
-                    @click.native.capture.stop.prevent="hideTempMessages = !hideTempMessages"
+                    @click.native.capture.stop.prevent="
+                      updateFilterPrefs('temperature', !hideTempMessages)
+                    "
                   >
                     <div class="dropdown-text-group">
                       <i
@@ -97,7 +105,7 @@
                     </div>
                   </b-dropdown-item>
                   <b-dropdown-item
-                    @click.native.capture.stop.prevent="hideSDMessages = !hideSDMessages"
+                    @click.native.capture.stop.prevent="updateFilterPrefs('sd', !hideSDMessages)"
                   >
                     <div class="dropdown-text-group">
                       <i

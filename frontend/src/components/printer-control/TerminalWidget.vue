@@ -26,7 +26,9 @@
             <div>
               <b-dropdown-text class="small text-secondary">Filter</b-dropdown-text>
               <b-dropdown-item
-                @click.native.capture.stop.prevent="hideTempMessages = !hideTempMessages"
+                @click.native.capture.stop.prevent="
+                  updateFilterPrefs('temperature', !hideTempMessages)
+                "
               >
                 <div class="dropdown-text-group">
                   <i
@@ -40,7 +42,7 @@
                 </div>
               </b-dropdown-item>
               <b-dropdown-item
-                @click.native.capture.stop.prevent="hideSDMessages = !hideSDMessages"
+                @click.native.capture.stop.prevent="updateFilterPrefs('sd', !hideSDMessages)"
               >
                 <div class="dropdown-text-group">
                   <i
@@ -60,7 +62,13 @@
       <div class="wrapper">
         <terminal-window class="feedWrap" :terminal-feed-array="terminalFeedArray" />
         <div class="inputWrap">
-          <input v-model="inputValue" type="text" class="textInput" placeholder="Enter code..." />
+          <input
+            v-model="inputValue"
+            type="text"
+            class="textInput"
+            placeholder="Enter code..."
+            @keyup.enter="sendMessage"
+          />
           <b-button variant="outline-primary" class="sendBtn" @click="sendMessage"> Send </b-button>
         </div>
       </div>

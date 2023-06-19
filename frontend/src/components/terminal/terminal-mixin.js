@@ -29,20 +29,11 @@ export default {
       const newMsg = newTerminalFeed?.msg
 
       this.oldTerminalFeed = newTerminalFeed
-
-      const temperatureRegex =
-        /.*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*[TB]:\d+(\.\d+)?\/\s*\d+(\.\d+)?\s*@:\d+.*/g
-      const SDRegex = /Not SD printing/
-      const bRegex = /^B:\d+(\.\d+)?$/
-      const tRegex = /^T:\d+(\.\d+)?$/
+      const tempRegex = /((N\d+\s+)?M105)|((ok\s+([PBN]\d+\s+)*)?([BCLPR]|T\d*):-?\d+)/g
+      const SDRegex = /((N\d+\s+)?M27)|(SD printing byte)|(Not SD printing)/g
 
       if (this.hideSDMessages && SDRegex.test(newMsg)) return
-      if (
-        this.hideTempMessages &&
-        (temperatureRegex.test(newMsg) || bRegex.test(newMsg) || tRegex.test(newMsg))
-      ) {
-        return
-      }
+      if (this.hideTempMessages && tempRegex.test(newMsg)) return
 
       if (!sameMsg && !same_ts) {
         newTerminalFeed.normalTimeStamp = moment().format('h:mm:ssa')

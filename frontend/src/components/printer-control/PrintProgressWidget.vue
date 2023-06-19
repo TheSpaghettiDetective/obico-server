@@ -363,7 +363,7 @@ export default {
         sendToPrint({
           printer: this.printer,
           gcode: this.print.g_code_file,
-          isCloud: true,
+          isCloud: this.print.g_code_file?.resident_printer === null,
           Swal: this.$swal,
         })
       })

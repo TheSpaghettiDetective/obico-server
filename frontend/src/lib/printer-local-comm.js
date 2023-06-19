@@ -177,3 +177,22 @@ export function printPrinterLocalGCodeMoonraker(printerComm, gcode) {
     )
   })
 }
+
+export function repeatPrinterLocalGCode(printerComm, gcode) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      {
+        target: 'file_operations',
+        func: 'start_printer_local_print',
+        args: [gcode],
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(err || ret?.error)
+        } else {
+          resolve()
+        }
+      }
+    )
+  })
+}

@@ -109,12 +109,7 @@
                   </div>
                 </div>
                 <div
-                  v-if="
-                    printer &&
-                    print.g_code_file &&
-                    !print.g_code_file.resident_printer &&
-                    !print.g_code_file.deleted
-                  "
+                  v-if="printer && print.g_code_file && !print.g_code_file.deleted"
                   class="action"
                 >
                   <button
@@ -618,7 +613,7 @@ export default {
         sendToPrint({
           printer: this.printer,
           gcode: this.print.g_code_file,
-          isCloud: true,
+          isCloud: this.print.g_code_file?.resident_printer === null,
           Swal: this.$swal,
           onPrinterStatusChanged: () => {
             showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)

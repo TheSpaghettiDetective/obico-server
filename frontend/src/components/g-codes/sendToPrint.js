@@ -9,6 +9,7 @@ import {
   printPrinterLocalGCodeMoonraker,
 } from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
+import { repeatPrinterLocalGCode } from '../../lib/printer-local-comm'
 
 export const confirmPrint = (gcode, printer) => {
   return new Promise((resolve, reject) => {
@@ -69,6 +70,8 @@ export const sendToPrint = (args) => {
   printerComm.connect(() => {
     const printGCode = isCloud
       ? printCloudGCode
+      : !gcode.path
+      ? repeatPrinterLocalGCode
       : isAgentMoonraker
       ? printPrinterLocalGCodeMoonraker
       : printPrinterLocalGCodeOctoPrint

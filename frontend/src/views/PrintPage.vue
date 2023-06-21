@@ -109,7 +109,12 @@
                   </div>
                 </div>
                 <div
-                  v-if="printer && print.g_code_file && !print.g_code_file.deleted"
+                  v-if="
+                    printer &&
+                    print.g_code_file &&
+                    !print.g_code_file.deleted &&
+                    print.g_code_file.url
+                  "
                   class="action"
                 >
                   <button

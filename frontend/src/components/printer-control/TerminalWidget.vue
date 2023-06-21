@@ -1,5 +1,5 @@
 <template>
-  <widget-template v-if="isPluginCompatible">
+  <widget-template>
     <template #title>Printer Terminal</template>
     <template #content>
       <div class="actionWrap">
@@ -99,12 +99,6 @@ export default {
     printerComm: {
       type: Object,
       required: true,
-    },
-  },
-
-  computed: {
-    isPluginCompatible() {
-      return this.printer.isAgentVersionGte('2.3.11', '1.4.3') && !this.printer.isAgentMoonraker()
     },
   },
 

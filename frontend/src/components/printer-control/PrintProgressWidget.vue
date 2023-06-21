@@ -84,7 +84,7 @@
                     <div class="icon">
                       <font-awesome-icon :icon="['fas', 'layer-group']" />
                     </div>
-                    <div class="title">Layer progress</div>
+                    <div class="title">Layer</div>
                   </div>
                   <div class="value">
                     {{ layerProgress }}
@@ -124,7 +124,7 @@
                   </div>
                   <div class="info-line">
                     <div class="label">
-                      <div class="icon"><i class="fas fa-clock"></i></div>
+                      <div class="icon"><i class="fas fa-stopwatch"></i></div>
                       <div class="title">Elapsed</div>
                     </div>
                     <div class="value">
@@ -137,7 +137,7 @@
                       <div class="icon">
                         <font-awesome-icon :icon="['fas', 'ruler-vertical']" />
                       </div>
-                      <div class="title">Progress in millimeters</div>
+                      <div class="title">Z-height</div>
                     </div>
                     <div class="value">
                       {{ mmProgress }}
@@ -146,7 +146,7 @@
                   <div class="info-line">
                     <div class="label">
                       <div class="icon">
-                        <i class="fas fa-clock"></i>
+                        <i class="fas fa-stopwatch"></i>
                       </div>
                       <div class="title">Total time</div>
                     </div>
@@ -259,8 +259,8 @@ export default {
       const totalMillimeters = this.printer.status?.file_metadata?.analysis?.printingArea?.maxZ
 
       if ((progressMillimeters || progressMillimeters == 0) && totalMillimeters) {
-        progressInMillimeters = `${Math.round(progressMillimeters)}/${Math.round(
-          totalMillimeters
+        progressInMillimeters = `${progressMillimeters.toFixed(2)}/${totalMillimeters.toFixed(
+          2
         )} mm`
       }
 

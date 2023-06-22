@@ -119,10 +119,9 @@
               :printer="printer"
               :webrtc="webrtc"
               :autoplay="user.is_pro"
-              @onRotateLeftClicked="
+              @onRotateRightClicked="
                 (val) => {
                   customRotationDeg = val
-                  resizeStream()
                 }
               "
             />
@@ -232,7 +231,7 @@ export default {
       })
     },
     videoRotationDeg() {
-      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
+      const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
   },
@@ -251,6 +250,9 @@ export default {
         }
       },
       deep: true,
+    },
+    videoRotationDeg() {
+      this.resizeStream()
     },
   },
 

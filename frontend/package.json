@@ -32,7 +32,7 @@
     "pako": "^2.0.3",
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
-    "semver": "^7.3.5",
+    "semver": "^7.5.2",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
     "vue-form-wizard": "^0.8.4",

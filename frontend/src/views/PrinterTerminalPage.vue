@@ -203,6 +203,8 @@ export default {
 
 .contentWrap
   flex: 1
+  display: flex
+  flex-direction: column
 
 .controlsWrap
   width: 100%
@@ -278,10 +280,10 @@ export default {
     background-color: var(--color-surface-primary)
 
 .feedWrap
-  min-height: 65vh
-  max-height: 65vh
   margin-top: 15px
   padding: 20px
+  flex: 1
+  margin-bottom: -68px
 
 .filterItemH
   display: flex

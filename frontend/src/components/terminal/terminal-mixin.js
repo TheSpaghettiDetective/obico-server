@@ -46,7 +46,7 @@ export default {
       const newString = this.inputValue.toUpperCase()
 
       if (this.printer.isAgentMoonraker()) {
-        this.onNextTerminalFeed({ msg: newString, _ts: new Date() }) // klipper websocket does not give us messages that user has sent
+        this.onNextTerminalFeed({ msg: newString, _ts: new Date() }) // Moonraker doesn't echo the gcodes user enters. Hence we need to insert them to the terminal
       }
 
       const moonrakerPayload = {

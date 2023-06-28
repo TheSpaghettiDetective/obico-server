@@ -45,6 +45,10 @@ export default {
       if (!this.inputValue.length) return
       const newString = this.inputValue.toUpperCase()
 
+      if (this.printer.isAgentMoonraker()) {
+        this.onNextTerminalFeed({ msg: newString, _ts: new Date() }) // klipper websocket does not give us messages that user has sent
+      }
+
       const moonrakerPayload = {
         func: 'printer/gcode/script',
         target: 'moonraker_api',

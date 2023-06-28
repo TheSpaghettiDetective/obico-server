@@ -80,4 +80,6 @@ export default {
 .messageText
   margin-top: 7px
   margin-bottom: 7px
+  white-space: pre-wrap
+  word-break: break-all
 </style>

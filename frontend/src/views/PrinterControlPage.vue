@@ -119,10 +119,9 @@
               :printer="printer"
               :webrtc="webrtc"
               :autoplay="user.is_pro"
-              @onRotateLeftClicked="
+              @onRotateRightClicked="
                 (val) => {
                   customRotationDeg = val
-                  resizeStream()
                 }
               "
             />
@@ -232,7 +231,7 @@ export default {
       })
     },
     videoRotationDeg() {
-      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
+      const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
   },
@@ -251,6 +250,9 @@ export default {
         }
       },
       deep: true,
+    },
+    videoRotationDeg() {
+      this.resizeStream()
     },
   },
 
@@ -301,31 +303,40 @@ export default {
       )
     },
     restoreWidgets() {
+      let widgets = WIDGETS.map((w) => ({ id: w.id, enabled: true }))
+
       if (isLocalStorageSupported()) {
-        const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
-        if (widgets) {
-          const parsed = JSON.parse(widgets)
-          // add any new widgets
-          for (const widget of WIDGETS) {
-            if (!parsed.find((w) => w.id === widget.id)) {
-              parsed.push({ id: widget.id, enabled: true })
-            }
-          }
-          // remove any old widgets which are no longer supported
-          for (const widget of parsed) {
-            if (!WIDGETS.find((w) => w.id === widget.id)) {
-              // remove it from parsed
-              parsed.splice(parsed.indexOf(widget), 1)
-            }
-          }
-          localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
-          return parsed
+        widgets =
+          JSON.parse(localStorage.getItem('printer-control-widgets-' + this.printer.id)) || widgets
+      }
+
+      // add any new widgets
+      for (const WIDGET of WIDGETS) {
+        if (!widgets.find((w) => w.id === WIDGET.id)) {
+          widgets.push({ id: WIDGET.id, enabled: true })
         }
       }
 
-      return WIDGETS.map((widget) => {
-        return { id: widget.id, enabled: true }
-      })
+      // remove any old widgets which are no longer supported
+      for (const widget of widgets) {
+        if (!WIDGETS.find((w) => w.id === widget.id)) {
+          widgets.splice(widgets.indexOf(widget), 1)
+        }
+      }
+
+      // delete terminal widget if it's not supported
+      const terminalWidget = widgets.find((w) => w.id === 6)
+      if (
+        terminalWidget &&
+        (!this.printer.isAgentVersionGte('2.3.11', '1.4.3') || this.printer.isAgentMoonraker())
+      ) {
+        widgets.splice(widgets.indexOf(terminalWidget), 1)
+      }
+
+      if (isLocalStorageSupported()) {
+        localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(widgets))
+      }
+      return widgets
     },
     onUpdateSettings(props) {
       const { settingName, settingValue } = props

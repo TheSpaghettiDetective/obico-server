@@ -68,6 +68,8 @@
   {% block footer %}
     {% if request.path|slice:":10" == '/printers/' and request.path|slice:"-9:" == '/control/' %}
       {% comment %} Do not render footer for printer control page {% endcomment %}
+    {% elif request.path|slice:":10" == '/printers/' and request.path|slice:"-10:" == '/terminal/' %}
+      {% comment %} Do not render footer for terminal page {% endcomment %}
     {% elif not app_platform.platform %}
       <footer id="global-footer">
         <div class="container">

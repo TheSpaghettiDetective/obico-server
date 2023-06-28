@@ -1,5 +1,5 @@
 <template>
-  <widget-template v-if="isPluginCompatible">
+  <widget-template>
     <template #title>Printer Terminal</template>
     <template #content>
       <div class="actionWrap">

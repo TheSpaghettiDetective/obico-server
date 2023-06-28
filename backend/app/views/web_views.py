@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 
-from allauth.account.views import LoginView
+from allauth.account.views import LoginView, SignupView
 
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
@@ -43,6 +43,11 @@ def index(request):
 class SocialAccountAwareLoginView(LoginView):
     form_class = SocialAccountAwareLoginForm
 
+class SocialAccountAwareSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        if settings.ACCOUNT_ALLOW_SIGN_UP:
+            return super().dispatch(request, *args, **kwargs)
+        return redirect('/accounts/login/')
 
 @login_required
 def printers(request, template_name='printers.html'):

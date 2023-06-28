@@ -326,10 +326,7 @@ export default {
 
       // delete terminal widget if it's not supported
       const terminalWidget = widgets.find((w) => w.id === 6)
-      if (
-        terminalWidget &&
-        (!this.printer.isAgentVersionGte('2.3.11', '1.4.3') || this.printer.isAgentMoonraker())
-      ) {
+      if (terminalWidget && !this.printer.isAgentVersionGte('2.3.11', '1.4.4')) {
         widgets.splice(widgets.indexOf(terminalWidget), 1)
       }
 

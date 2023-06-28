@@ -102,12 +102,6 @@ export default {
     },
   },
 
-  computed: {
-    isPluginCompatible() {
-      return this.printer.isAgentVersionGte('2.3.11', '1.4.4')
-    },
-  },
-
   created() {
     this.printerComm.onTerminalFeedReceived = this.onNextTerminalFeed
   },

@@ -131,9 +131,9 @@ export const showRedirectModal = (Swal, onClose, printerId) => {
     confirmButtonText: 'Redirect now',
     onOpen: () => {
       timerInterval = setInterval(() => {
-        Swal.getHtmlContainer().querySelector('strong').textContent = (
-          Swal.getTimerLeft() / 1000
-        ).toFixed(0)
+        const htmlContainer = Swal.getHtmlContainer()
+        if (!htmlContainer) return
+        htmlContainer.querySelector('strong').textContent = (Swal.getTimerLeft() / 1000).toFixed(0)
       }, 1000)
     },
     onClose: () => {

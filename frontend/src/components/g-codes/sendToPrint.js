@@ -132,8 +132,9 @@ export const showRedirectModal = (Swal, onClose, printerId) => {
     onOpen: () => {
       timerInterval = setInterval(() => {
         const htmlContainer = Swal.getHtmlContainer()
-        if (!htmlContainer) return
-        htmlContainer.querySelector('strong').textContent = (Swal.getTimerLeft() / 1000).toFixed(0)
+        const timerElement = htmlContainer?.querySelector('strong')
+        if (!htmlContainer || !timerElement) return
+        timerElement.textContent = (Swal.getTimerLeft() / 1000).toFixed(0)
       }, 1000)
     },
     onClose: () => {

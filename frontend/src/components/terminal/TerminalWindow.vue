@@ -2,7 +2,7 @@
   <div class="feedWrap" colorScheme="background">
     <div v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">
       <div v-if="feed?.msg" class="terminalText">
-        <p class="messageTimeStamp messageText">
+        <p class="messageTimeStamp">
           {{ feed.normalTimeStamp }}
         </p>
         <p class="messageText">
@@ -68,6 +68,8 @@ export default {
   opacity: 0.8
   margin-right: 20px
   font-size: 0.7rem
+  margin-top: 7px
+  margin-bottom: 7px
 .divider
   width: 100%
   background-color: var(--color-divider)

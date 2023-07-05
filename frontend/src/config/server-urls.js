@@ -2,7 +2,6 @@ import entries from 'lodash/entries'
 import map from 'lodash/map'
 
 export default {
-  // APIs
   printShotFeedback: (shotId, printId) =>
     `/api/v1/printshotfeedbacks/${shotId}/?print_id=${printId}`,
   print: (printId) => `/api/v1/prints/${printId}/`,
@@ -25,18 +24,16 @@ export default {
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
   printerDiscovery: () => '/api/v1/printer_discovery/',
   printerEvents: () => '/api/v1/printer_events/',
+  printerControl: (printerId) => `/printers/${printerId}/control/`,
+  printerWebSocket: (printerId) => `/ws/web/${printerId}/`,
+  printerSharedWebSocket: (token) => `/ws/share_token/web/${token}/`,
+  printerWizard: (printerId) => `/printers/wizard/?printerId=${printerId}`,
 
   // Notifications
   notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',
   notificationChannels: () => '/api/v1/notification_settings/',
   updateNotificationChannel: (id) => `/api/v1/notification_settings/${id}/`,
   testNotificationChannel: (id) => `/api/v1/notification_settings/${id}/send_test_message/`,
-
-  // App urls
-  printerControl: (printerId) => `/printers/${printerId}/control/`,
-  printerWebSocket: (printerId) => `/ws/web/${printerId}/`,
-  printerSharedWebSocket: (token) => `/ws/share_token/web/${token}/`,
-  printerWizard: (printerId) => `/printers/wizard/?printerId=${printerId}`,
 
   // Gcodes
   gcodeFile: (id) => `/api/v1/g_code_files/${id}/`,

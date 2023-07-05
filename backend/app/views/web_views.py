@@ -112,6 +112,10 @@ def printer_control(request, pk):
 def printer_terminal(request, pk):
     return render(request, 'printer_terminal.html')
 
+@login_required
+def printer_webcam_setup(request, pk):
+    return render(request, 'printer_webcam_setup.html')
+
 
 # User preferences
 

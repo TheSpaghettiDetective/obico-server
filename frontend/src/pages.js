@@ -20,6 +20,7 @@ import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
 import PrinterTerminalPage from '@src/views/PrinterTerminalPage.vue'
+import PrinterWebcamSetupPage from '@src/views/PrinterWebcamSetupPage.vue'
 
 const router = new VueRouter({
   mode: 'history',
@@ -75,6 +76,7 @@ const components = {
   UserPreferencesPage,
   PrinterEventsPage,
   PrinterTerminalPage,
+  PrinterWebcamSetupPage,
 }
 
 export { router, components }

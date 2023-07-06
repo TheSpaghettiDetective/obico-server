@@ -14,6 +14,7 @@
             {{ webcam.name }}
           </option>
         </select>
+        <b-button @click="saveCameraButtonPress">Save Camera</b-button>
       </div>
     </template>
   </page-layout>
@@ -106,6 +107,12 @@ export default {
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
         console.log(err, ret)
+      })
+    },
+    async saveCameraButtonPress() {
+      axios.post(urls.cameraSetup(this.printer.id), {
+        printer_id: this.printer.id,
+        name: this.selectedWebcam,
       })
     },
   },

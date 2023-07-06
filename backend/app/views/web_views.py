@@ -113,8 +113,8 @@ def printer_terminal(request, pk):
     return render(request, 'printer_terminal.html')
 
 @login_required
-def printer_webcam_setup(request, pk):
-    return render(request, 'printer_webcam_setup.html')
+def printer_camera_setup(request, pk):
+    return render(request, 'printer_camera_setup.html')
 
 
 # User preferences

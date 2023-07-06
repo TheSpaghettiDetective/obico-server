@@ -30,7 +30,7 @@ import WebRTCConnection from '@src/lib/webrtc'
 import { printerCommManager } from '@src/lib/printer-comm'
 
 export default {
-  name: 'PrinterWebcamSetupPage',
+  name: 'PrinterCameraSetupPage',
 
   components: {
     PageLayout,

@@ -975,3 +975,16 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
+
+
+class Camera(models.Model):
+    printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
+    name = models.TextField()
+    config_json = models.TextField(default='', blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def config(self) -> Dict:
+        return json.loads(self.config_json) if self.config_json else {}

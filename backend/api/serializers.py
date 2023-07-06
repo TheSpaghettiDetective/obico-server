@@ -11,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent, GCodeFolder
+    NotificationSetting, PrinterEvent, GCodeFolder, Camera
 )
 
 from notifications.handlers import handler
@@ -304,6 +304,28 @@ class PrinterEventSerializer(serializers.ModelSerializer):
         model = PrinterEvent
         fields = '__all__'
         read_only_fields = ('printer', 'print')
+
+
+class CameraSerializer(serializers.ModelSerializer):
+    config = serializers.DictField(required=False)
+    printer = serializers.HiddenField(default=None)
+
+    class Meta:
+        model = Camera
+        fields = (
+            'id', 'printer', 'created_at', 'updated_at',
+            'name', 'config',
+        )
+
+        read_only_fields = (
+            'id', 'printer', 'created_at', 'updated_at',
+        )
+
+    def save(self):
+        config = self.validated_data.pop('config', None)
+        if config:
+            self.validated_data['config_json'] = json.dumps(config)
+        return super().save()
 
 
 # For public APIs

@@ -308,21 +308,22 @@ class PrinterEventSerializer(serializers.ModelSerializer):
 
 class CameraSerializer(serializers.ModelSerializer):
     config = serializers.DictField(required=False)
-    printer = serializers.HiddenField(default=None)
+    printer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Camera
         fields = (
-            'id', 'printer', 'created_at', 'updated_at',
+            'id', 'printer_id', 'created_at', 'updated_at',
             'name', 'config',
         )
 
         read_only_fields = (
-            'id', 'printer', 'created_at', 'updated_at',
+            'id', 'created_at', 'updated_at',
         )
 
     def save(self):
         config = self.validated_data.pop('config', None)
+        self.validated_data['printer'] = Printer.objects.get(id=self.validated_data.pop('printer_id'), user=self.context['request'].user)
         if config:
             self.validated_data['config_json'] = json.dumps(config)
         return super().save()

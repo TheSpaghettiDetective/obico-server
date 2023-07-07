@@ -110,7 +110,7 @@ export default {
       })
     },
     async saveCameraButtonPress() {
-      axios.post(urls.cameraSetup(this.printer.id), {
+      axios.post(urls.cameras(), {
         printer_id: this.printer.id,
         name: this.selectedWebcam,
       })

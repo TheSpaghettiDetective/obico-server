@@ -988,3 +988,6 @@ class Camera(models.Model):
     @property
     def config(self) -> Dict:
         return json.loads(self.config_json) if self.config_json else {}
+
+    class Meta:
+            unique_together = ('printer', 'name')

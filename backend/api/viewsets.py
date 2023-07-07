@@ -875,9 +875,9 @@ class PrinterEventViewSet(
 
 class CameraViewSet(
     mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
@@ -886,22 +886,9 @@ class CameraViewSet(
     serializer_class = CameraSerializer
 
     def get_queryset(self):
-        printer_id = int(self.request.query_params.get('printer_id'))
-        return Camera.objects.filter(printer__user=self.request.user).filter(printer=printer_id).first()
+        return Camera.objects.filter(printer__user=self.request.user)
 
-    @action(detail=False, methods=['get', 'post'])
-    def get_or_set_camera(self, request):
-        camera = self.get_queryset()
-        if request.method == 'POST':
-            camera = camera if camera is not None else Camera()
-            printer_id = request.data.get('printer_id')
-            printer = get_printer_or_404(printer_id, request)
-            print(printer)
-            camera.printer=printer
-            camera.name=request.data.get('name')
-            camera.save()
-            serializer = self.serializer_class(camera, many=False)
-            return Response(serializer.data)
-        else:
-            serializer = self.serializer_class(camera, many=False)
-            return Response(serializer.data)
+    def list(self, request):
+        queryset = self.get_queryset().filter(printer=int(request.query_params.get('printer_id')))
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)

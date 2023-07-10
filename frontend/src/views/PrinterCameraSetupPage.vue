@@ -16,40 +16,28 @@
         </select>
         <!-- camera settings editor -->
         <div v-if="selectedWebcamData">
+          <p>{{ selectedWebcamData.service }}</p>
+          <p>{{ selectedWebcamData.stream_url }}</p>
+          <p>{{ selectedWebcamData.snapshot_url }}</p>
           <input
-            :placeholder="selectedWebcamData.snapshot_url"
-            :value="newSnapshotURL"
-            @input="(event) => (newSnapshotURL = event.target.value)"
+            :placeholder="'RTSP Port'"
+            :value="newPort"
+            @input="(event) => (newPort = event.target.value)"
           />
-          <input
-            :placeholder="selectedWebcamData.stream_url"
-            :value="newStreamURL"
-            @input="(event) => (newStreamURL = event.target.value)"
-          />
-          <select class="custom-select">
-            <option :value="null" selected disabled>Please select streaming type</option>
-            <option v-for="service in services" :key="service" :value="service">
-              {{ service }}
-            </option>
-          </select>
-          <input id="checkbox0" v-model="flipHorizontal" type="checkbox" />
-          <label for="checkbox0">Flip Horizontal</label>
-          <input id="checkbox1" v-model="flipVertical" type="checkbox" />
-          <label for="checkbox1">Flip Vertical</label>
+          <div v-if="printer" class="streaming-wrap">
+            <streaming-box
+              :printer="printer"
+              :webrtc="webrtc"
+              :autoplay="true"
+              @onRotateRightClicked="
+                (val) => {
+                  customRotationDeg = val
+                }
+              "
+            />
+          </div>
+          <b-button @click="saveCameraButtonPress">Save Camera</b-button>
         </div>
-        <div v-if="printer" class="streaming-wrap">
-          <streaming-box
-            :printer="printer"
-            :webrtc="webrtc"
-            :autoplay="true"
-            @onRotateRightClicked="
-              (val) => {
-                customRotationDeg = val
-              }
-            "
-          />
-        </div>
-        <b-button @click="saveCameraButtonPress">Save Camera</b-button>
       </div>
     </template>
   </page-layout>
@@ -80,23 +68,7 @@ export default {
       webcams: [],
       selectedWebcam: null,
       selectedWebcamData: null,
-      // camera form values
-      services: [
-        'mjpegstreamer',
-        'mjpegstreamer-adaptive',
-        'uv4l-mjpeg',
-        'ipstream',
-        'hlsstream',
-        'jmuxer-stream',
-        'webrtc-camerastreamer',
-        'webrtc-janus',
-        'webrtc-mediamtx',
-      ],
-      newStreamURL: '',
-      newSnapshotURL: '',
-      newServiceValue: null,
-      flipHorizontal: false,
-      flipVertical: true,
+      newPort: '',
     }
   },
 
@@ -147,19 +119,12 @@ export default {
           })
         } else {
           this.webcams = ret?.webcams || []
-          this.selectedWebcam = this.webcams[0].name
-          this.selectedWebcamData = this.webcams[0]
         }
       })
     },
 
     webcamSelectionChanged() {
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
-      this.newSnapshotURL = this.selectedWebcamData.snapshot_url
-      this.newStreamURL = this.selectedWebcamData.stream_url
-      this.newServiceValue = this.selectedWebcamData.service
-      this.flipHorizontal = this.selectedWebcamData.flip_horizontal
-      this.flipVertical = this.selectedWebcamData.flip_vertical
 
       const octoPayload = null // TODO
       const moonrakerPayload = {
@@ -174,9 +139,6 @@ export default {
       })
     },
     async saveCameraButtonPress() {
-      if (this.printer.isAgentMoonraker()) {
-        //TODO: passthru command - update moonraker api with new values
-      }
       axios.post(urls.cameras(), {
         printer_id: this.printer.id,
         name: this.selectedWebcam,

@@ -37,6 +37,18 @@
           <input id="checkbox1" v-model="flipVertical" type="checkbox" />
           <label for="checkbox1">Flip Vertical</label>
         </div>
+        <div v-if="printer" class="streaming-wrap">
+          <streaming-box
+            :printer="printer"
+            :webrtc="webrtc"
+            :autoplay="true"
+            @onRotateRightClicked="
+              (val) => {
+                customRotationDeg = val
+              }
+            "
+          />
+        </div>
         <b-button @click="saveCameraButtonPress">Save Camera</b-button>
       </div>
     </template>
@@ -52,12 +64,14 @@ import split from 'lodash/split'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import WebRTCConnection from '@src/lib/webrtc'
 import { printerCommManager } from '@src/lib/printer-comm'
+import StreamingBox from '@src/components/StreamingBox'
 
 export default {
   name: 'PrinterCameraSetupPage',
 
   components: {
     PageLayout,
+    StreamingBox,
   },
   data: function () {
     return {
@@ -172,4 +186,8 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+.streaming-wrap
+  width: 500px
+  height: 500px
+</style>

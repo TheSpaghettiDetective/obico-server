@@ -118,6 +118,22 @@
                       </div>
                     </div>
                   </b-dropdown-item>
+                  <b-dropdown-item
+                    @click.native.capture.stop.prevent="
+                      updateFilterPrefs('gcode', !hideGCodeMessages)
+                    "
+                  >
+                    <div class="dropdown-text-group">
+                      <i
+                        class="fas fa-check text-primary"
+                        :style="{ visibility: hideGCodeMessages ? 'visible' : 'hidden' }"
+                      ></i>
+                      <div class="filterItemH">
+                        <i class="fas fa-code"></i>
+                        <div class="text">Suppress GCode Messages</div>
+                      </div>
+                    </div>
+                  </b-dropdown-item>
                 </div>
               </div>
             </b-dropdown>

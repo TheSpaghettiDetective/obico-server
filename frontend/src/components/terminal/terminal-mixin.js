@@ -8,17 +8,22 @@ export default {
       inputValue: '',
       hideTempMessages: true,
       hideSDMessages: true,
+      hideGCodeMessages: false,
     }
   },
 
   mounted() {
     const hideTempPref = localStorage.getItem(`printer-terminal-filter-prefs-temperature`)
     const hideSDPref = localStorage.getItem(`printer-terminal-filter-prefs-sd`)
+    const hideGCodePref = localStorage.getItem(`printer-terminal-filter-prefs-gcode`)
     if (hideTempPref) {
       this.hideTempMessages = JSON.parse(hideTempPref)
     }
     if (hideSDPref) {
       this.hideSDMessages = JSON.parse(hideSDPref)
+    }
+    if (hideGCodePref) {
+      this.hideGCodeMessages = JSON.parse(hideGCodePref)
     }
   },
 
@@ -31,9 +36,11 @@ export default {
       this.oldTerminalFeed = newTerminalFeed
       const tempRegex = /((N\d+\s+)?M105)|((ok\s+([PBN]\d+\s+)*)?([BCLPR]|T\d*):-?\d+)/g
       const SDRegex = /((N\d+\s+)?M27)|(SD printing byte)|(Not SD printing)/g
+      const gCodeRegex = /^G[0-3].*$/g
 
       if (this.hideSDMessages && SDRegex.test(newMsg)) return
       if (this.hideTempMessages && tempRegex.test(newMsg)) return
+      if (this.hideGCodeMessages && gCodeRegex.test(newMsg)) return
 
       if (!sameMsg && !same_ts) {
         newTerminalFeed.normalTimeStamp = moment().format('h:mm:ssa')
@@ -79,6 +86,8 @@ export default {
       localStorage.setItem(`printer-terminal-filter-prefs-${str}`, JSON.stringify(val))
       if (str === 'temperature') {
         this.hideTempMessages = val
+      } else if (str === 'gcode') {
+        this.hideGCodeMessages = val
       } else {
         this.hideSDMessages = val
       }

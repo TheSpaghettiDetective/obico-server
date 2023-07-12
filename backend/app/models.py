@@ -980,7 +980,7 @@ class NotificationSetting(models.Model):
 class Camera(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     name = models.TextField()
-    config_json = models.TextField(default='', blank=True)
+    config_json = models.TextField(default='{}', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

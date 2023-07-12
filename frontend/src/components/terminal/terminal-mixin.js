@@ -8,7 +8,7 @@ export default {
       inputValue: '',
       hideTempMessages: true,
       hideSDMessages: true,
-      hideGCodeMessages: false,
+      hideGCodeMessages: true,
     }
   },
 

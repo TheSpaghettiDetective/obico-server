@@ -65,7 +65,21 @@
                   ></i>
                   <div class="filterItemH">
                     <i class="fas fa-code"></i>
-                    <div class="text">Suppress GCode Messages</div>
+                    <div class="text">Suppress Position Messages</div>
+                  </div>
+                </div>
+              </b-dropdown-item>
+              <b-dropdown-item
+                @click.native.capture.stop.prevent="updateFilterPrefs('ok', !hideOKMessages)"
+              >
+                <div class="dropdown-text-group">
+                  <i
+                    class="fas fa-check text-primary"
+                    :style="{ visibility: hideOKMessages ? 'visible' : 'hidden' }"
+                  ></i>
+                  <div class="filterItemH">
+                    <i class="fas fa-thumbs-up"></i>
+                    <div class="text">Suppress 'OK' Messages</div>
                   </div>
                 </div>
               </b-dropdown-item>

@@ -8,6 +8,7 @@ export default {
       inputValue: '',
       hideTempMessages: true,
       hideSDMessages: true,
+      hideOKMessages: true,
       hideGCodeMessages: true,
     }
   },
@@ -15,6 +16,7 @@ export default {
   mounted() {
     const hideTempPref = localStorage.getItem(`printer-terminal-filter-prefs-temperature`)
     const hideSDPref = localStorage.getItem(`printer-terminal-filter-prefs-sd`)
+    const hideOKPref = localStorage.getItem(`printer-terminal-filter-prefs-ok`)
     const hideGCodePref = localStorage.getItem(`printer-terminal-filter-prefs-gcode`)
     if (hideTempPref) {
       this.hideTempMessages = JSON.parse(hideTempPref)
@@ -24,6 +26,9 @@ export default {
     }
     if (hideGCodePref) {
       this.hideGCodeMessages = JSON.parse(hideGCodePref)
+    }
+    if (hideOKPref) {
+      this.hideOKMessages = JSON.parse(hideOKPref)
     }
   },
 
@@ -41,9 +46,10 @@ export default {
       if (this.hideSDMessages && SDRegex.test(newMsg)) return
       if (this.hideTempMessages && tempRegex.test(newMsg)) return
       if (this.hideGCodeMessages && gCodeRegex.test(newMsg)) return
-
+      if (this.hideOKMessages && newMsg.toLowerCase().trim() === 'ok') return
       if (!sameMsg && !same_ts) {
         newTerminalFeed.normalTimeStamp = moment().format('h:mm:ssa')
+        newTerminalFeed.msg = newMsg.trim() // remove unnecessary whitespace
         this.terminalFeedArray.unshift(newTerminalFeed)
       }
     },
@@ -88,6 +94,8 @@ export default {
         this.hideTempMessages = val
       } else if (str === 'gcode') {
         this.hideGCodeMessages = val
+      } else if (str === 'ok') {
+        this.hideOKMessages = val
       } else {
         this.hideSDMessages = val
       }

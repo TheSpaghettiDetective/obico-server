@@ -146,6 +146,7 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing-throttle'
+import { getCurrentInstance } from 'vue'
 
 function MJpegStreamDecoder(onFrame) {
   const self = {
@@ -455,6 +456,12 @@ export default {
       })
     },
     /** End of video warning handling */
+    restartStream() {
+      this.webrtc.stopStream()
+      const instance = getCurrentInstance()
+      instance?.proxy?.$forceUpdate()
+      this.webrtc.startStream()
+    },
   },
 }
 </script>

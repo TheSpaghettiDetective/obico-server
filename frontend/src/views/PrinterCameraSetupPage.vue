@@ -2,7 +2,8 @@
   <page-layout>
     <!-- Page content -->
     <template #content>
-      <div>
+      <loading-placeholder v-if="!printer" />
+      <div v-else>
         <select
           v-if="webcams.length > 1"
           v-model="selectedWebcam"
@@ -24,19 +25,20 @@
             :value="newPort"
             @input="(event) => (newPort = event.target.value)"
           />
-          <div v-if="printer" class="streaming-wrap">
-            <streaming-box
-              :printer="printer"
-              :webrtc="webrtc"
-              :autoplay="true"
-              @onRotateRightClicked="
-                (val) => {
-                  customRotationDeg = val
-                }
-              "
-            />
-          </div>
           <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+        </div>
+        <div class="streaming-wrap">
+          <streaming-box
+            ref="streamingBox"
+            :printer="printer"
+            :webrtc="webrtc"
+            :autoplay="true"
+            @onRotateRightClicked="
+              (val) => {
+                customRotationDeg = val
+              }
+            "
+          />
         </div>
       </div>
     </template>
@@ -134,9 +136,12 @@ export default {
       }
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
 
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        console.log(err, ret)
-      })
+      this.$refs.streamingBox.restartStream()
+
+      // TODO: update stream with selected camera settings
+      // this.printerComm.passThruToPrinter(payload, (err, ret) => {
+      //   console.log(err, ret)
+      // })
     },
     async saveCameraButtonPress() {
       axios.post(urls.cameras(), {

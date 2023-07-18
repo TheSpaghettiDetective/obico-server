@@ -2,7 +2,7 @@
   <page-layout>
     <!-- Page content -->
     <template #content>
-      <loading-placeholder v-if="!printer" />
+      <loading-placeholder v-if="pageLoading" />
       <div v-else>
         <select
           v-if="webcams.length > 1"
@@ -27,19 +27,19 @@
           />
           <b-button @click="saveCameraButtonPress">Save Camera</b-button>
         </div>
-        <div class="streaming-wrap">
-          <streaming-box
-            ref="streamingBox"
-            :printer="printer"
-            :webrtc="webrtc"
-            :autoplay="true"
-            @onRotateRightClicked="
-              (val) => {
-                customRotationDeg = val
-              }
-            "
-          />
-        </div>
+      </div>
+      <div v-if="webrtc" class="streaming-wrap">
+        <streaming-box
+          ref="streamingBox"
+          :printer="printer"
+          :webrtc="webrtc"
+          :autoplay="true"
+          @onRotateRightClicked="
+            (val) => {
+              customRotationDeg = val
+            }
+          "
+        />
       </div>
     </template>
   </page-layout>
@@ -65,8 +65,9 @@ export default {
   },
   data: function () {
     return {
+      pageLoading: true,
       printer: null,
-      webrtc: WebRTCConnection(),
+      webrtc: null,
       webcams: [],
       selectedWebcam: null,
       selectedWebcamData: null,
@@ -86,10 +87,7 @@ export default {
           onStatusReceived: null,
         }
       )
-      this.printerComm.connect(this.fetchWebcamSettings)
-
-      this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-      this.printerComm.setWebRTC(this.webrtc)
+      this.printerComm.connect(this.handlePageSetup)
     })
   },
 
@@ -105,20 +103,36 @@ export default {
         })
     },
 
-    async fetchWebcamSettings() {
-      const octoPayload = null // TODO
-      const moonrakerPayload = {
+    async handlePageSetup() {
+      const webcamFetchOctoPayload = null // TODO
+      const webcamFetchMoonrakerPayload = {
         func: 'server/webcams/list',
         target: 'moonraker_api',
       }
 
-      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-      this.printerComm.passThruToPrinter(payload, (err, ret) => {
+      const shutdownOctoPayload = null // TODO
+      const shutdownMoonrakerPayload = {
+        func: 'shutdown',
+        target: 'webcam_streamer',
+        args: [[{}]],
+      }
+      const webcamPayload = this.printer.isAgentMoonraker()
+        ? webcamFetchMoonrakerPayload
+        : webcamFetchOctoPayload
+      const shutdownPayload = this.printer.isAgentMoonraker()
+        ? shutdownMoonrakerPayload
+        : shutdownOctoPayload
+
+      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
         if (err) {
-          this.$swal.Toast.fire({
-            icon: 'error',
-            title: err,
-          })
+          console.log(err, ret, '*****')
+        }
+        this.pageLoading = false
+      })
+
+      this.printerComm.passThruToPrinter(webcamPayload, (err, ret) => {
+        if (err) {
+          console.log(err, ret, '*****2')
         } else {
           this.webcams = ret?.webcams || []
         }
@@ -126,22 +140,44 @@ export default {
     },
 
     webcamSelectionChanged() {
+      this.webrtc = null
+      this.pageLoading = true
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
 
-      const octoPayload = null // TODO
-      const moonrakerPayload = {
-        func: 'start',
+      const shutdownOctoPayload = null // TODO
+      const shutdownMoonrakerPayload = {
+        func: 'shutdown',
         target: 'webcam_streamer',
-        args: [[{ name: this.selectedWebcam, config: { mode: 'h264-recode' } }]],
+        args: [[{}]],
       }
-      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
+      const shutdownPayload = this.printer.isAgentMoonraker()
+        ? shutdownMoonrakerPayload
+        : shutdownOctoPayload
 
-      this.$refs.streamingBox.restartStream()
-
-      // TODO: update stream with selected camera settings
-      // this.printerComm.passThruToPrinter(payload, (err, ret) => {
-      //   console.log(err, ret)
-      // })
+      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
+        if (err) {
+          console.log(err, ret, '*****')
+        }
+        const octoPayload = null // TODO
+        const moonrakerPayload = {
+          func: 'start',
+          target: 'webcam_streamer',
+          args: [[{ name: this.selectedWebcam, config: { mode: 'h264-recode' } }]],
+        }
+        const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
+        // TODO: update stream with selected camera settings
+        this.printerComm.passThruToPrinter(payload, (err, ret) => {
+          if (err) {
+            console.log(err, ret)
+          } else {
+            this.webrtc = WebRTCConnection()
+            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            this.printerComm.setWebRTC(this.webrtc)
+            this.$refs?.streamingBox?.restartStream()
+          }
+          this.pageLoading = false
+        })
+      })
     },
     async saveCameraButtonPress() {
       axios.post(urls.cameras(), {

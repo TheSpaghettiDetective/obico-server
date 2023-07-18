@@ -457,10 +457,10 @@ export default {
     },
     /** End of video warning handling */
     restartStream() {
-      this.webrtc.stopStream()
+      // this.webrtc.stopStream()
       const instance = getCurrentInstance()
       instance?.proxy?.$forceUpdate()
-      this.webrtc.startStream()
+      // this.webrtc.startStream()
     },
   },
 }

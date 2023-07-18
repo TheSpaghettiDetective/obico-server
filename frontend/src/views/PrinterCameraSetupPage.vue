@@ -72,6 +72,7 @@ export default {
       selectedWebcam: null,
       selectedWebcamData: null,
       newPort: '',
+      useRTSP: false,
     }
   },
 
@@ -162,7 +163,7 @@ export default {
         const moonrakerPayload = {
           func: 'start',
           target: 'webcam_streamer',
-          args: [[{ name: this.selectedWebcam, config: { mode: 'h264-recode' } }]],
+          args: [[{ name: this.selectedWebcam, config: { mode: this.getModeValue() } }]],
         }
         const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
         // TODO: update stream with selected camera settings
@@ -184,6 +185,14 @@ export default {
         printer_id: this.printer.id,
         name: this.selectedWebcam,
       })
+    },
+    getModeValue() {
+      if (this.selectedWebcamData.service.includes('mjpeg')) return 'h264-recode'
+      else if (this.selectedWebcamData.service.includes('webrtc') && this.useRTSP)
+        return 'h264-rtsp'
+      else if (this.selectedWebcamData.service.includes('webrtc') && !this.useRTSP)
+        return 'h264-copy'
+      else return 'h264-recode'
     },
   },
 }

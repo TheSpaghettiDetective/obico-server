@@ -162,7 +162,9 @@ export default {
         const moonrakerPayload = {
           func: 'start',
           target: 'webcam_streamer',
-          args: [[{ name: this.selectedWebcam, config: { mode: 'h264-recode' } }]],
+          args: [
+            [{ name: this.selectedWebcam, config: { mode: this.selectedWebcamData.service } }],
+          ],
         }
         const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
         // TODO: update stream with selected camera settings

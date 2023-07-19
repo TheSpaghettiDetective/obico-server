@@ -200,7 +200,6 @@ export default {
       const shutdownMoonrakerPayload = {
         func: 'shutdown',
         target: 'webcam_streamer',
-        args: [[{}]],
       }
       const shutdownPayload = this.printer.isAgentMoonraker()
         ? shutdownMoonrakerPayload

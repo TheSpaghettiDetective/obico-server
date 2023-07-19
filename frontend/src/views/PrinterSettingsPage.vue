@@ -294,6 +294,23 @@
                   </saving-animation>
                 </div>
               </section>
+              <section class="mt-5">
+                <h2 class="section-title">Webcam Wizard</h2>
+                <div class="mt-4">
+                  <a class="btn btn-outline-secondary" :href="webcamWizardUrl">
+                    Configure Video Streaming
+                  </a>
+                  <div class="text-muted mt-1">
+                    <small
+                      >* Opening video configuration will stop all current video streams. For more
+                      information please visit our
+                      <a href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/"
+                        >webcam help docs.</a
+                      >
+                    </small>
+                  </div>
+                </div>
+              </section>
               <section class="danger mt-5">
                 <h2 class="section-title">Danger Zone</h2>
                 <div class="mt-4">
@@ -491,6 +508,9 @@ export default {
     },
     printerWizardUrl() {
       return urls.printerWizard(this.printer.id)
+    },
+    webcamWizardUrl() {
+      return urls.webcamWizard(this.printer.id)
     },
     printerName: {
       get: function () {

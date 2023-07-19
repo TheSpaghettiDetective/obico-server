@@ -134,6 +134,13 @@
       >
         <font-awesome-icon icon="fa-solid fa-rotate-right" />
       </div>
+      <div
+        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        class="video-control-btn"
+        @click="onConfigureIconClicked"
+      >
+        <font-awesome-icon icon="fa-solid fa-gear" />
+      </div>
     </div>
   </div>
 </template>
@@ -462,6 +469,21 @@ export default {
       instance?.proxy?.$forceUpdate()
       // this.webrtc.startStream()
     },
+    onConfigureIconClicked() {
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        html: `
+        <p style="text-align:center">Opening webcam configuration will stop all current video streams. \nFor more information please visit <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/">our help docs</a>.</p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then(async (userAction) => {
+        if (userAction.isConfirmed) {
+          window.location.href = `/printers/${this.printer.id}/camera_setup`
+        }
+      })
+    },
   },
 }
 </script>
@@ -672,12 +694,15 @@ export default {
 
 .extra-controls
   position: absolute
+  display: flex
+  flex-direction: row
   right: 0
   bottom: 0
   padding: .5rem
   .video-control-btn
     width: 2rem
     height: 2rem
+    margin: 0.1rem
     border-radius: 999px
     background-color: var(--color-overlay)
     color: var(--color-text-secondary)

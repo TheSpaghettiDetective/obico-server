@@ -230,26 +230,36 @@ export default {
       })
     },
     async saveCameraButtonPress() {
-      axios.get(urls.cameras(this.printer.id)).then((resp) => {
-        if (resp.data.length > 0) {
-          axios
-            .put(urls.newCamera(resp.data[0].id), {
-              printer_id: this.printer.id,
-              name: this.selectedWebcam,
-              config: {
-                mode: this.getModeValue(),
-                h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-              },
-            })
-            .then((resp) => console.log(resp))
-        } else {
-          axios.post(urls.newCamera(), {
-            printer_id: this.printer.id,
-            name: this.selectedWebcam,
-            config: {
-              mode: this.getModeValue(),
-              h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-            },
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        html: `
+        <p style="text-align:center">Please verify stream is working as expected. <br/> For more information please visit <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/">our help docs</a>.</p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then(async (userAction) => {
+        if (userAction.isConfirmed) {
+          axios.get(urls.cameras(this.printer.id)).then((resp) => {
+            if (resp.data.length > 0) {
+              axios.put(urls.newCamera(resp.data[0].id), {
+                printer_id: this.printer.id,
+                name: this.selectedWebcam,
+                config: {
+                  mode: this.getModeValue(),
+                  h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+                },
+              })
+            } else {
+              axios.post(urls.newCamera(), {
+                printer_id: this.printer.id,
+                name: this.selectedWebcam,
+                config: {
+                  mode: this.getModeValue(),
+                  h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+                },
+              })
+            }
           })
         }
       })

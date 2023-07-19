@@ -131,7 +131,7 @@ For example, If you are simply interested in casually monitoring your 3D prints 
 | Webcam Mount                                                                                              | Description                                                                                                                                          |
 | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Tripod adapter for all webcams](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter) | General tripod-mount (¼-20 thread)                                                                                                                   |
-| [20-20 Extrusion Webcam Mount](https://www.thingiverse.com/thing:3147899)                                 | Works with printed [adapter](<https://[www.thingiverse.com/thing:1729459](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)>) |
+| [20-20 Extrusion Webcam Mount](https://www.thingiverse.com/thing:3147899)                                 | Works with printed [adapter](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)                                                |
 | [Ender 3 S1 Mount](https://www.thingiverse.com/thing:5476426)                                             | Works with printed [adapter](https://www.printables.com/model/322584-usb-webcam-tripod-mount-adapter)                                                |
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-camera-mount-2.jpg)

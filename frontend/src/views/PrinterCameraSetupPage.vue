@@ -95,7 +95,7 @@ export default {
       webcams: [],
       selectedWebcam: null,
       selectedWebcamData: null,
-      newPort: '',
+      newPort: '8080',
       useRTSP: false,
       isRaspi: false,
     }
@@ -230,12 +230,32 @@ export default {
       })
     },
     async saveCameraButtonPress() {
-      axios.post(urls.cameras(), {
-        printer_id: this.printer.id,
-        name: this.selectedWebcam,
+      axios.get(urls.cameras(this.printer.id)).then((resp) => {
+        if (resp.data.length > 0) {
+          axios
+            .put(urls.newCamera(resp.data[0].id), {
+              printer_id: this.printer.id,
+              name: this.selectedWebcam,
+              config: {
+                mode: this.getModeValue(),
+                h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+              },
+            })
+            .then((resp) => console.log(resp))
+        } else {
+          axios.post(urls.newCamera(), {
+            printer_id: this.printer.id,
+            name: this.selectedWebcam,
+            config: {
+              mode: this.getModeValue(),
+              h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+            },
+          })
+        }
       })
     },
     getModeValue() {
+      if (!this.selectedWebcamData) return
       if (this.selectedWebcamData.service.includes('mjpeg')) {
         if (this.isRaspi) {
           return 'h264-recode'

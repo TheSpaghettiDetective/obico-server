@@ -297,9 +297,7 @@
               <section class="mt-5">
                 <h2 class="section-title">Webcam Wizard</h2>
                 <div class="mt-4">
-                  <a class="btn btn-outline-secondary" :href="webcamWizardUrl">
-                    Configure Video Streaming
-                  </a>
+                  <a class="btn btn-outline-secondary" :href="webcamWizardUrl">Configure Video</a>
                   <div class="text-muted mt-1">
                     <small
                       >* Opening video configuration will stop all current video streams. For more

@@ -4,42 +4,66 @@
     <template #content>
       <loading-placeholder v-if="pageLoading" />
       <div v-else>
-        <select
+        <b-form-select
           v-if="webcams.length > 1"
           v-model="selectedWebcam"
-          class="custom-select"
+          class="form-control"
           @change="webcamSelectionChanged"
         >
           <option :value="null" selected disabled>Please select a Webcam to configure</option>
           <option v-for="webcam in webcams" :key="webcam.name" :value="webcam.name">
             {{ webcam.name }}
           </option>
-        </select>
+        </b-form-select>
         <!-- camera settings editor -->
-        <div v-if="selectedWebcamData">
-          <p>{{ selectedWebcamData.service }}</p>
-          <p>{{ selectedWebcamData.stream_url }}</p>
-          <p>{{ selectedWebcamData.snapshot_url }}</p>
-          <input
-            :placeholder="'RTSP Port'"
-            :value="newPort"
-            @input="(event) => (newPort = event.target.value)"
-          />
-          <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+        <div v-if="selectedWebcamData" class="webcam-data-wrap">
+          <div class="content-column">
+            <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
+            <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
+            <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
+            <div v-if="selectedWebcamData?.service.includes('webrtc')">
+              <b-form-group class="m-0">
+                <b-form-checkbox v-model="useRTSP" size="md">RTSP Enabled</b-form-checkbox>
+              </b-form-group>
+              <input
+                :placeholder="'RTSP Port'"
+                :value="newPort"
+                @input="(event) => (newPort = event.target.value)"
+              />
+            </div>
+            <div v-else>
+              <b-form-group class="m-0">
+                <b-form-checkbox v-model="isRaspi" size="md"
+                  >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
+                >
+              </b-form-group>
+            </div>
+            <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+          </div>
+          <div class="content-column">
+            <small>*Please allow 10-15s between each modification for new stream to load.</small>
+            <div class="streaming-wrap">
+              <div v-if="!webrtc" class="loading-wrap">
+                <loading-placeholder />
+                <small class="creating-stream-text">Creating Stream...</small>
+              </div>
+              <div v-else>
+                <streaming-box
+                  ref="streamingBox"
+                  :printer="printer"
+                  :webrtc="webrtc"
+                  :autoplay="true"
+                  :show-settings-icon="false"
+                  @onRotateRightClicked="
+                    (val) => {
+                      customRotationDeg = val
+                    }
+                  "
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div v-if="webrtc" class="streaming-wrap">
-        <streaming-box
-          ref="streamingBox"
-          :printer="printer"
-          :webrtc="webrtc"
-          :autoplay="true"
-          @onRotateRightClicked="
-            (val) => {
-              customRotationDeg = val
-            }
-          "
-        />
       </div>
     </template>
   </page-layout>
@@ -73,7 +97,20 @@ export default {
       selectedWebcamData: null,
       newPort: '',
       useRTSP: false,
+      isRaspi: false,
     }
+  },
+
+  watch: {
+    useRTSP: function (newValue, oldValue) {
+      this.webcamSelectionChanged()
+    },
+    isRaspi: function (newValue, oldValue) {
+      this.webcamSelectionChanged()
+    },
+    newPort: function (newValue, oldValue) {
+      this.webcamSelectionChanged()
+    },
   },
 
   created() {
@@ -117,18 +154,24 @@ export default {
         target: 'webcam_streamer',
         args: [[{}]],
       }
+
+      const infoOctoPayload = null // TODO
+      const infoMoonrakerPayload = {
+        func: 'machine/system_info',
+        target: 'moonraker_api',
+      }
       const webcamPayload = this.printer.isAgentMoonraker()
         ? webcamFetchMoonrakerPayload
         : webcamFetchOctoPayload
       const shutdownPayload = this.printer.isAgentMoonraker()
         ? shutdownMoonrakerPayload
         : shutdownOctoPayload
+      const infoPayload = this.printer.isAgentMoonraker() ? infoMoonrakerPayload : infoOctoPayload
 
       this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
         if (err) {
           console.log(err, ret, '*****')
         }
-        this.pageLoading = false
       })
 
       this.printerComm.passThruToPrinter(webcamPayload, (err, ret) => {
@@ -138,11 +181,19 @@ export default {
           this.webcams = ret?.webcams || []
         }
       })
+
+      this.printerComm.passThruToPrinter(infoPayload, (err, ret) => {
+        if (err) {
+          console.log(err, ret, '*****3')
+        } else {
+          this.isRaspi = ret.system_info.cpu_info.model.toLowerCase().includes('raspberry')
+          this.pageLoading = false
+        }
+      })
     },
 
     webcamSelectionChanged() {
       this.webrtc = null
-      this.pageLoading = true
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
 
       const shutdownOctoPayload = null // TODO
@@ -166,7 +217,6 @@ export default {
           args: [[{ name: this.selectedWebcam, config: { mode: this.getModeValue() } }]],
         }
         const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-        // TODO: update stream with selected camera settings
         this.printerComm.passThruToPrinter(payload, (err, ret) => {
           if (err) {
             console.log(err, ret)
@@ -176,7 +226,6 @@ export default {
             this.printerComm.setWebRTC(this.webrtc)
             this.$refs?.streamingBox?.restartStream()
           }
-          this.pageLoading = false
         })
       })
     },
@@ -187,12 +236,19 @@ export default {
       })
     },
     getModeValue() {
-      if (this.selectedWebcamData.service.includes('mjpeg')) return 'h264-recode'
-      else if (this.selectedWebcamData.service.includes('webrtc') && this.useRTSP)
-        return 'h264-rtsp'
-      else if (this.selectedWebcamData.service.includes('webrtc') && !this.useRTSP)
-        return 'h264-copy'
-      else return 'h264-recode'
+      if (this.selectedWebcamData.service.includes('mjpeg')) {
+        if (this.isRaspi) {
+          return 'h264-recode'
+        } else {
+          return 'mjpeg-webrtc'
+        }
+      } else if (this.selectedWebcamData.service.includes('webrtc')) {
+        if (this.useRTSP) {
+          return 'h264-rtsp'
+        } else {
+          return 'h264-copy'
+        }
+      } else return 'h264-recode'
     },
   },
 }
@@ -201,5 +257,37 @@ export default {
 <style lang="sass" scoped>
 .streaming-wrap
   width: 500px
-  height: 500px
+  height: 300px
+  display: relative
+
+.loading-wrap
+  display: flex
+  flex-direction: column
+  position: absolute
+  justify-content: center
+  align-items: center
+  width: 500px
+  height: 300px
+  background-color: black
+  z-index: 2
+
+.webcam-data-wrap
+   width: 100wv
+   height: 100%
+   display: flex
+   flex-direction: row
+   align-items: flex-start
+   padding-top: 20px
+   justify-content: space-between
+
+.content-column
+   display: flex
+   flex-direction: column
+   flex-wrap: wrap
+   max-width: 50%
+
+.creating-stream-text
+  position: absolute
+  bottom: 0
+  padding-bottom: 10px
 </style>

@@ -135,7 +135,7 @@
         <font-awesome-icon icon="fa-solid fa-rotate-right" />
       </div>
       <div
-        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        v-if="(showVideo || showVideo || taggedSrc !== printerStockImgSrc) && showSettingsIcon"
         class="video-control-btn"
         @click="onConfigureIconClicked"
       >
@@ -210,6 +210,10 @@ export default {
     autoplay: {
       type: Boolean,
       required: true,
+    },
+    showSettingsIcon: {
+      type: Boolean,
+      default: true,
     },
   },
 

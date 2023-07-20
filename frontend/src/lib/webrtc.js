@@ -45,6 +45,10 @@ export default function WebRTCConnection() {
       self.mainWebRTCConn.connect(wsUri, token)
       self.mjpegWebRTCConn.connect(wsUri, token)
     },
+    disconnect() {
+      self.mainWebRTCConn.janus.destroy()
+      self.mjpegWebRTCConn.janus.destroy()
+    },
     stopStream() {
       self.mainWebRTCConn.stopStream()
       self.mjpegWebRTCConn.stopStream()
@@ -85,13 +89,13 @@ function MJpegtWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      var janus = new Janus({
+      self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers(token),
         ipv6: true,
         success: () => {
-          janus.attach({
+          self.janus.attach({
             plugin: 'janus.plugin.streaming',
             opaqueId: 'streamingtest-' + Janus.randomString(12),
             success: function (pluginHandle) {
@@ -115,14 +119,14 @@ function MJpegtWebRTCConnection() {
                       self.callbacks.onStreamAvailable(self)
                     }
                   } else {
-                    janus.destroy()
+                    self.janus.destroy()
                   }
                 },
               })
             },
             error: function (error) {
               Janus.error('  -- Error attaching plugin... ', error)
-              janus.destroy()
+              self.janus.destroy()
             },
             onmessage: function (msg, jsep) {
               self.onMessage(msg, jsep)
@@ -139,7 +143,7 @@ function MJpegtWebRTCConnection() {
         },
         error(e) {
           Janus.error('  -- Error -- ', e)
-          janus.destroy()
+          self.janus.destroy()
         },
         destroyed() {
           self.streaming = undefined
@@ -224,13 +228,13 @@ function MainWebRTCConnection() {
     },
 
     connectJanusWebSocket(wsUri, token) {
-      var janus = new Janus({
+      self.janus = new Janus({
         server:
           window.location.protocol.replace('http', 'ws') + '//' + window.location.host + wsUri,
         iceServers: iceServers(token),
         ipv6: true,
         success: () => {
-          janus.attach({
+          self.janus.attach({
             plugin: 'janus.plugin.streaming',
             opaqueId: 'streamingtest-' + Janus.randomString(12),
             success: function (pluginHandle) {
@@ -263,7 +267,7 @@ function MainWebRTCConnection() {
             },
             error: function (error) {
               Janus.error('  -- Error attaching plugin... ', error)
-              janus.destroy()
+              self.janus.destroy()
             },
             onmessage: function (msg, jsep) {
               self.onMessage(msg, jsep)
@@ -305,7 +309,7 @@ function MainWebRTCConnection() {
         },
         error(e) {
           Janus.error('  -- Error -- ', e)
-          janus.destroy()
+          self.janus.destroy()
         },
         destroyed() {
           self.streaming = undefined

@@ -30,8 +30,8 @@ export default function WebRTCConnection() {
   let self = {
     callbacks: {},
     initialized: false,
-    mainWebRTCConn: MainWebRTCConnection(),
-    mjpegWebRTCConn: MJpegtWebRTCConnection(),
+    h264WebRTCConn: H264WebRTCConnection(),
+    mjpegWebRTCConn: MJpegWebRTCConnection(),
 
     openForShareToken(shareToken) {
       self.connect(printerSharedWebRTCUrl(shareToken), shareToken)
@@ -42,34 +42,34 @@ export default function WebRTCConnection() {
     },
     connect(wsUri, token) {
       self.initialized = true
-      self.mainWebRTCConn.connect(wsUri, token)
+      self.h264WebRTCConn.connect(wsUri, token)
       self.mjpegWebRTCConn.connect(wsUri, token)
     },
     disconnect() {
-      self.mainWebRTCConn.janus.destroy()
+      self.h264WebRTCConn.janus.destroy()
       self.mjpegWebRTCConn.janus.destroy()
     },
     stopStream() {
-      self.mainWebRTCConn.stopStream()
+      self.h264WebRTCConn.stopStream()
       self.mjpegWebRTCConn.stopStream()
     },
     sendData(data) {
-      self.mainWebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
+      self.h264WebRTCConn.sendData(data) // Data channel in the default stream is used to pass data from client to agent
     },
     startStream() {
-      self.mainWebRTCConn.startStream()
+      self.h264WebRTCConn.startStream()
       self.mjpegWebRTCConn.startStream()
     },
     setCallbacks(callbacks) {
       self.callbacks = { ...self.callbacks, ...callbacks }
-      self.mainWebRTCConn.callbacks = self.callbacks
+      self.h264WebRTCConn.callbacks = self.callbacks
       self.mjpegWebRTCConn.callbacks = self.callbacks
     },
   }
   return self
 }
 
-function MJpegtWebRTCConnection() {
+function MJpegWebRTCConnection() {
   let self = {
     callbacks: {},
     streamId: undefined,
@@ -208,7 +208,7 @@ function MJpegtWebRTCConnection() {
   return self
 }
 
-function MainWebRTCConnection() {
+function H264WebRTCConnection() {
   let self = {
     callbacks: {},
     streamId: undefined,

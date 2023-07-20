@@ -207,7 +207,6 @@ export default {
             this.webrtc = WebRTCConnection()
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             this.printerComm.setWebRTC(this.webrtc)
-            this.$refs?.streamingBox?.restartStream()
           }
         },
         60

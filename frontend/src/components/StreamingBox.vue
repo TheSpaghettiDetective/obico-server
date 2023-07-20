@@ -466,27 +466,8 @@ export default {
         showCloseButton: true,
       })
     },
-    /** End of video warning handling */
-    restartStream() {
-      // this.webrtc.stopStream()
-      const instance = getCurrentInstance()
-      instance?.proxy?.$forceUpdate()
-      // this.webrtc.startStream()
-    },
     onConfigureIconClicked() {
-      this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        html: `
-        <p style="text-align:center">Opening webcam configuration will stop all current video streams. \nFor more information please visit <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/">our help docs</a>.</p>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then(async (userAction) => {
-        if (userAction.isConfirmed) {
-          window.location.href = `/printers/${this.printer.id}/camera_setup`
-        }
-      })
+      window.location.href = `/printers/${this.printer.id}/camera_setup`
     },
   },
 }

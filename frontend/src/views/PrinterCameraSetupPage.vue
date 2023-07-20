@@ -5,6 +5,8 @@
       <div v-if="webcamStreamShutdown">
         <loading-placeholder v-if="pageLoading" />
         <div v-else>
+          <h2>{{ webcams.length }} Webcams Found</h2>
+          <div>{{ configuredCameras.length }}/{{ webcams.length }} configured for Obico</div>
           <b-form-select
             v-if="webcams.length > 1"
             v-model="selectedWebcam"
@@ -63,16 +65,26 @@
                   />
                 </div>
               </div>
+              <b-button @click="$router.go(-1)">Close Setup page</b-button>
             </div>
+          </div>
+          <div v-else>
+            <b-button @click="$router.go(-1)">Close Setup page</b-button>
           </div>
         </div>
       </div>
       <div v-else>
+        <h1>Webcam Setup Wizard</h1>
         <div>
           Note: We need to shut down your current webcam streams to go through the set up process
           again.
         </div>
-        <b-button @click="shutdownStreamButtonPressed">Re-setup webcam</b-button>
+        <div>
+          Note: Please make sure streaming in OctoPrint / Mainsail look good before continuing.
+        </div>
+        <div>Note: Klipper may need a restart for changes to appear here.</div>
+        <b-button @click="$router.go(-1)">Go Back</b-button>
+        <b-button @click="shutdownStreamButtonPressed">Continue To Webcam Setup</b-button>
       </div>
     </template>
   </page-layout>
@@ -108,6 +120,7 @@ export default {
       newPort: '8080',
       useRTSP: false,
       isRaspi: false,
+      configuredCameras: [],
     }
   },
 
@@ -126,6 +139,10 @@ export default {
   async created() {
     const printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.printer = await this.fetchPrinter(printerId)
+
+    axios.get(urls.cameras(this.printer.id)).then((resp) => {
+      this.configuredCameras = resp.data
+    })
 
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       printerId,
@@ -294,9 +311,10 @@ export default {
 
 <style lang="sass" scoped>
 .streaming-wrap
-  width: 500px
-  height: 300px
+  width: 600px
+  height: 350px
   display: relative
+  margin: 2rem 0rem 2rem 0rem
 
 .loading-wrap
   display: flex
@@ -304,8 +322,8 @@ export default {
   position: absolute
   justify-content: center
   align-items: center
-  width: 500px
-  height: 300px
+  width: 600px
+  height: 360px
   background-color: black
   z-index: 2
 
@@ -316,7 +334,7 @@ export default {
    flex-direction: row
    align-items: flex-start
    padding-top: 20px
-   justify-content: space-between
+   justify-content: space-around
 
 .content-column
    display: flex

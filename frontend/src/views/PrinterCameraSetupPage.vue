@@ -184,37 +184,22 @@ export default {
     webcamSelectionChanged() {
       this.webrtc = null
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
-
-      const shutdownOctoPayload = null // TODO
-      const shutdownMoonrakerPayload = {
-        func: 'shutdown',
+      const octoPayload = null // TODO
+      const moonrakerPayload = {
+        func: 'start',
         target: 'webcam_streamer',
+        args: [[{ name: this.selectedWebcam, config: { mode: this.getModeValue() } }]],
       }
-      const shutdownPayload = this.printer.isAgentMoonraker()
-        ? shutdownMoonrakerPayload
-        : shutdownOctoPayload
-
-      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
+      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
+      this.printerComm.passThruToPrinter(payload, (err, ret) => {
         if (err) {
-          console.log(err, ret, '*****')
+          console.log(err, ret)
+        } else {
+          this.webrtc = WebRTCConnection()
+          this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+          this.printerComm.setWebRTC(this.webrtc)
+          this.$refs?.streamingBox?.restartStream()
         }
-        const octoPayload = null // TODO
-        const moonrakerPayload = {
-          func: 'start',
-          target: 'webcam_streamer',
-          args: [[{ name: this.selectedWebcam, config: { mode: this.getModeValue() } }]],
-        }
-        const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
-        this.printerComm.passThruToPrinter(payload, (err, ret) => {
-          if (err) {
-            console.log(err, ret)
-          } else {
-            this.webrtc = WebRTCConnection()
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-            this.printerComm.setWebRTC(this.webrtc)
-            this.$refs?.streamingBox?.restartStream()
-          }
-        })
       })
     },
 

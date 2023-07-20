@@ -198,13 +198,15 @@ export default {
       this.printerComm.passThruToPrinter(
         payload,
         (err, ret) => {
-          if (err) {
+          const streamId = ret?.[0]?.runtime?.stream_id
+          const streamMode = ret?.[0]?.config?.mode
+          if (err || streamId === undefined || streamMode === undefined) {
             console.log(err, ret)
           } else {
             if (this.webrtc) {
               this.webrtc.disconnect()
             }
-            this.webrtc = WebRTCConnection()
+            this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             this.printerComm.setWebRTC(this.webrtc)
           }

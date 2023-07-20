@@ -6,7 +6,6 @@
         <loading-placeholder v-if="pageLoading" />
         <div v-else>
           <h2>{{ webcams.length }} Webcams Found</h2>
-          <div>{{ configuredCameras.length }}/{{ webcams.length }} configured for Obico</div>
           <b-form-select
             v-if="webcams.length > 1"
             v-model="selectedWebcam"
@@ -86,6 +85,15 @@
         <b-button @click="$router.go(-1)">Go Back</b-button>
         <b-button @click="shutdownStreamButtonPressed">Continue To Webcam Setup</b-button>
       </div>
+      <div>
+        {{ configuredCameras.length }} camera(s) saved in Obico
+        <div>
+          <div v-for="webcam in configuredCameras" :key="webcam.name">
+            <i class="fas fa-trash" @click="deleteWebcamConfiguration(webcam)"></i>
+            {{ webcam.name }}
+          </div>
+        </div>
+      </div>
     </template>
   </page-layout>
 </template>
@@ -140,9 +148,7 @@ export default {
     const printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.printer = await this.fetchPrinter(printerId)
 
-    axios.get(urls.cameras(this.printer.id)).then((resp) => {
-      this.configuredCameras = resp.data
-    })
+    this.getConfiguredWebcams()
 
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       printerId,
@@ -267,23 +273,27 @@ export default {
         if (userAction.isConfirmed) {
           axios.get(urls.cameras(this.printer.id)).then((resp) => {
             if (resp.data.length > 0) {
-              axios.put(urls.newCamera(resp.data[0].id), {
-                printer_id: this.printer.id,
-                name: this.selectedWebcam,
-                config: {
-                  mode: this.getModeValue(),
-                  h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-                },
-              })
+              axios
+                .put(urls.newCamera(resp.data[0].id), {
+                  printer_id: this.printer.id,
+                  name: this.selectedWebcam,
+                  config: {
+                    mode: this.getModeValue(),
+                    h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+                  },
+                })
+                .then(() => this.getConfiguredWebcams())
             } else {
-              axios.post(urls.newCamera(), {
-                printer_id: this.printer.id,
-                name: this.selectedWebcam,
-                config: {
-                  mode: this.getModeValue(),
-                  h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-                },
-              })
+              axios
+                .post(urls.newCamera(), {
+                  printer_id: this.printer.id,
+                  name: this.selectedWebcam,
+                  config: {
+                    mode: this.getModeValue(),
+                    h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
+                  },
+                })
+                .then(() => this.getConfiguredWebcams())
             }
           })
         }
@@ -304,6 +314,16 @@ export default {
           return 'h264-copy'
         }
       } else return 'h264-recode'
+    },
+    deleteWebcamConfiguration(webcam) {
+      axios.delete(urls.newCamera(webcam.id)).then(() => {
+        this.getConfiguredWebcams()
+      })
+    },
+    getConfiguredWebcams() {
+      axios.get(urls.cameras(this.printer.id)).then((resp) => {
+        this.configuredCameras = resp.data
+      })
     },
   },
 }
@@ -328,7 +348,6 @@ export default {
   z-index: 2
 
 .webcam-data-wrap
-   width: 100wv
    height: 100%
    display: flex
    flex-direction: row

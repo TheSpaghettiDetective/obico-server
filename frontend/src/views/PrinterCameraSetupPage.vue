@@ -2,68 +2,77 @@
   <page-layout>
     <!-- Page content -->
     <template #content>
-      <loading-placeholder v-if="pageLoading" />
-      <div v-else>
-        <b-form-select
-          v-if="webcams.length > 1"
-          v-model="selectedWebcam"
-          class="form-control"
-          @change="webcamSelectionChanged"
-        >
-          <option :value="null" selected disabled>Please select a Webcam to configure</option>
-          <option v-for="webcam in webcams" :key="webcam.name" :value="webcam.name">
-            {{ webcam.name }}
-          </option>
-        </b-form-select>
-        <!-- camera settings editor -->
-        <div v-if="selectedWebcamData" class="webcam-data-wrap">
-          <div class="content-column">
-            <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
-            <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
-            <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
-            <div v-if="selectedWebcamData?.service.includes('webrtc')">
-              <b-form-group class="m-0">
-                <b-form-checkbox v-model="useRTSP" size="md">RTSP Enabled</b-form-checkbox>
-              </b-form-group>
-              <input
-                :placeholder="'RTSP Port'"
-                :value="newPort"
-                @input="(event) => (newPort = event.target.value)"
-              />
-            </div>
-            <div v-else>
-              <b-form-group class="m-0">
-                <b-form-checkbox v-model="isRaspi" size="md"
-                  >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
-                >
-              </b-form-group>
-            </div>
-            <b-button @click="saveCameraButtonPress">Save Camera</b-button>
-          </div>
-          <div class="content-column">
-            <small>*Please allow 10-15s between each modification for new stream to load.</small>
-            <div class="streaming-wrap">
-              <div v-if="!webrtc" class="loading-wrap">
-                <loading-placeholder />
-                <small class="creating-stream-text">Creating Stream...</small>
+      <div v-if="webcamStreamShutdown">
+        <loading-placeholder v-if="pageLoading" />
+        <div v-else>
+          <b-form-select
+            v-if="webcams.length > 1"
+            v-model="selectedWebcam"
+            class="form-control"
+            @change="webcamSelectionChanged"
+          >
+            <option :value="null" selected disabled>Please select a Webcam to configure</option>
+            <option v-for="webcam in webcams" :key="webcam.name" :value="webcam.name">
+              {{ webcam.name }}
+            </option>
+          </b-form-select>
+          <!-- camera settings editor -->
+          <div v-if="selectedWebcamData" class="webcam-data-wrap">
+            <div class="content-column">
+              <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
+              <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
+              <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
+              <div v-if="selectedWebcamData?.service.includes('webrtc')">
+                <b-form-group class="m-0">
+                  <b-form-checkbox v-model="useRTSP" size="md">RTSP Enabled</b-form-checkbox>
+                </b-form-group>
+                <input
+                  :placeholder="'RTSP Port'"
+                  :value="newPort"
+                  @input="(event) => (newPort = event.target.value)"
+                />
               </div>
               <div v-else>
-                <streaming-box
-                  ref="streamingBox"
-                  :printer="printer"
-                  :webrtc="webrtc"
-                  :autoplay="true"
-                  :show-settings-icon="false"
-                  @onRotateRightClicked="
-                    (val) => {
-                      customRotationDeg = val
-                    }
-                  "
-                />
+                <b-form-group class="m-0">
+                  <b-form-checkbox v-model="isRaspi" size="md"
+                    >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
+                  >
+                </b-form-group>
+              </div>
+              <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+            </div>
+            <div class="content-column">
+              <small>*Please allow 10-15s between each modification for new stream to load.</small>
+              <div class="streaming-wrap">
+                <div v-if="!webrtc" class="loading-wrap">
+                  <loading-placeholder />
+                  <small class="creating-stream-text">Creating Stream...</small>
+                </div>
+                <div v-else>
+                  <streaming-box
+                    ref="streamingBox"
+                    :printer="printer"
+                    :webrtc="webrtc"
+                    :autoplay="true"
+                    :show-settings-icon="false"
+                    @onRotateRightClicked="
+                      (val) => {
+                        customRotationDeg = val
+                      }
+                    "
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div v-else>
+        <div>
+          Note: We need to shut down your current webcam streams to go through the set up process
+          again.
+        </div>
+        <b-button @click="shutdownStreamButtonPressed">Re-setup webcam</b-button>
       </div>
     </template>
   </page-layout>
@@ -89,6 +98,7 @@ export default {
   },
   data: function () {
     return {
+      webcamStreamShutdown: false,
       pageLoading: true,
       printer: null,
       webrtc: null,
@@ -113,66 +123,38 @@ export default {
     },
   },
 
-  created() {
+  async created() {
     const printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
+    this.printer = await this.fetchPrinter(printerId)
 
-    this.fetchPrinter(printerId).then(() => {
-      this.printerComm = printerCommManager.getOrCreatePrinterComm(
-        printerId,
-        urls.printerWebSocket(printerId),
-        {
-          onPrinterUpdateReceived: null,
-          onStatusReceived: null,
-        }
-      )
-      this.printerComm.connect(this.handlePageSetup)
-    })
+    this.printerComm = printerCommManager.getOrCreatePrinterComm(
+      printerId,
+      urls.printerWebSocket(printerId),
+      {
+        onPrinterUpdateReceived: null,
+        onStatusReceived: null,
+      }
+    )
+    this.printerComm.connect()
   },
 
   methods: {
     async fetchPrinter(printerId) {
-      return axios
-        .get(urls.printer(printerId))
-        .then((response) => {
-          this.printer = normalizedPrinter(response.data)
-        })
-        .catch((error) => {
-          this._logError(error)
-        })
+      return axios.get(urls.printer(printerId)).then((response) => {
+        return normalizedPrinter(response.data)
+      })
     },
 
-    async handlePageSetup() {
+    fetchAgentWebcams() {
       const webcamFetchOctoPayload = null // TODO
       const webcamFetchMoonrakerPayload = {
         func: 'server/webcams/list',
         target: 'moonraker_api',
       }
 
-      const shutdownOctoPayload = null // TODO
-      const shutdownMoonrakerPayload = {
-        func: 'shutdown',
-        target: 'webcam_streamer',
-        args: [[{}]],
-      }
-
-      const infoOctoPayload = null // TODO
-      const infoMoonrakerPayload = {
-        func: 'machine/system_info',
-        target: 'moonraker_api',
-      }
       const webcamPayload = this.printer.isAgentMoonraker()
         ? webcamFetchMoonrakerPayload
         : webcamFetchOctoPayload
-      const shutdownPayload = this.printer.isAgentMoonraker()
-        ? shutdownMoonrakerPayload
-        : shutdownOctoPayload
-      const infoPayload = this.printer.isAgentMoonraker() ? infoMoonrakerPayload : infoOctoPayload
-
-      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
-        if (err) {
-          console.log(err, ret, '*****')
-        }
-      })
 
       this.printerComm.passThruToPrinter(webcamPayload, (err, ret) => {
         if (err) {
@@ -181,6 +163,13 @@ export default {
           this.webcams = ret?.webcams || []
         }
       })
+
+      const infoOctoPayload = null // TODO
+      const infoMoonrakerPayload = {
+        func: 'machine/system_info',
+        target: 'moonraker_api',
+      }
+      const infoPayload = this.printer.isAgentMoonraker() ? infoMoonrakerPayload : infoOctoPayload
 
       this.printerComm.passThruToPrinter(infoPayload, (err, ret) => {
         if (err) {
@@ -228,6 +217,29 @@ export default {
         })
       })
     },
+
+    shutdownStreamButtonPressed() {
+      const shutdownOctoPayload = null // TODO
+      const shutdownMoonrakerPayload = {
+        func: 'shutdown',
+        target: 'webcam_streamer',
+      }
+
+      const shutdownPayload = this.printer.isAgentMoonraker()
+        ? shutdownMoonrakerPayload
+        : shutdownOctoPayload
+
+      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
+        if (err) {
+          console.log(err, ret, '*****')
+        } else {
+          this.webcamStreamShutdown = true
+
+          this.fetchAgentWebcams()
+        }
+      })
+    },
+
     async saveCameraButtonPress() {
       this.$swal.Prompt.fire({
         title: 'Are you sure?',

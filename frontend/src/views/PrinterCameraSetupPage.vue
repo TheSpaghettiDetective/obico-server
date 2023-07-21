@@ -153,7 +153,6 @@ export default {
       streamMode: null,
       h264HttpUrl: null,
       rtspPort: null,
-      useRTSP: false,
       isRaspi: false,
       configuredCameras: [],
     }
@@ -180,9 +179,6 @@ export default {
   },
 
   watch: {
-    useRTSP: function (newValue, oldValue) {
-      this.webcamSelectionChanged()
-    },
     isRaspi: function (newValue, oldValue) {
       this.webcamSelectionChanged()
     },
@@ -252,7 +248,6 @@ export default {
         return
       }
 
-      this.webrtc = null
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
       if (this.isWebRTCCameraStreamer) {
         this.streamMode = 'h264_copy'
@@ -284,7 +279,9 @@ export default {
     startWebcamStream() {
       if (this.webrtc) {
         this.webrtc.disconnect()
+        this.webrtc = null
       }
+
       this.streamStarting = true
 
       const octoPayload = null // TODO
@@ -361,7 +358,7 @@ export default {
       })
     },
     deleteWebcamConfiguration(webcam) {
-      axios.delete(urls.newCamera(webcam.id)).then(() => {
+      axios.delete(urls.camera(webcam.id)).then(() => {
         this.getConfiguredWebcams()
       })
     },

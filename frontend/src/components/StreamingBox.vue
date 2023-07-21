@@ -134,13 +134,6 @@
       >
         <font-awesome-icon icon="fa-solid fa-rotate-right" />
       </div>
-      <div
-        v-if="(showVideo || showVideo || taggedSrc !== printerStockImgSrc) && showSettingsIcon"
-        class="video-control-btn"
-        @click="onConfigureIconClicked"
-      >
-        <font-awesome-icon icon="fa-solid fa-gear" />
-      </div>
     </div>
   </div>
 </template>
@@ -209,10 +202,6 @@ export default {
     autoplay: {
       type: Boolean,
       required: true,
-    },
-    showSettingsIcon: {
-      type: Boolean,
-      default: true,
     },
   },
 
@@ -468,9 +457,6 @@ export default {
         `,
         showCloseButton: true,
       })
-    },
-    onConfigureIconClicked() {
-      window.location.href = `/printers/${this.printer.id}/camera_setup`
     },
   },
 }

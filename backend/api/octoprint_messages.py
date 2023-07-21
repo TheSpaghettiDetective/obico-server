@@ -54,12 +54,19 @@ def process_printer_status(printer: Printer, msg: Dict) -> None:
 
 
 def settings_dict(printer_settings):
-    webcam_settings = dict(Printer.DEFAULT_WEBCAM_SETTINGS)
+    # Backward compatibility: octoprint_data is for old agent versions, ie, OctoPrint-Obico 2.4.1 or earlier, or moonraker-obico 1.4.6 or earlier
+    if printer_settings.get('webcam'):
+        webcam_settings = Printer.DEFAULT_WEBCAM_SETTINGS
+        webcam_settings.update(printer_settings.get('webcam'))
+        webcams = [webcam_settings]
+    else:
+        webcams = printer_settings.get('webcams')
 
-    webcam_settings.update(printer_settings.get('webcam', {}))
-    settings = dict(('webcam_' + k, str(v)) for k, v in webcam_settings.items())
+    # settings = dict(('webcam_' + k, str(v)) for k, v in webcam_settings.items())
 
-    settings.update(dict(temp_profiles=json.dumps(printer_settings.get('temperature', {}).get('profiles', []))))
+    settings = dict(temp_profiles=json.dumps(printer_settings.get('temperature', {}).get('profiles', [])))
+    if webcams is not None:
+         settings.update(dict(webcams=json.dumps(webcams)))
     settings.update(dict(printer_metadata=json.dumps(printer_settings.get('printer_metadata', {}))))
     settings.update(
         tsd_plugin_version=printer_settings.get('tsd_plugin_version', ''),

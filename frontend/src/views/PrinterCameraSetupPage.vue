@@ -284,13 +284,11 @@ export default {
 
       this.streamStarting = true
 
-      const octoPayload = null // TODO
-      const moonrakerPayload = {
+      const payload = {
         func: 'start',
         target: 'webcam_streamer',
         args: [[{ name: this.selectedWebcam, config: this.streamConfig }]],
       }
-      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.printerComm.passThruToPrinter(
         payload,
         (err, ret) => {
@@ -311,15 +309,10 @@ export default {
     },
 
     shutdownStreamButtonPressed() {
-      const shutdownOctoPayload = null // TODO
-      const shutdownMoonrakerPayload = {
+      const shutdownPayload = {
         func: 'shutdown',
         target: 'webcam_streamer',
       }
-
-      const shutdownPayload = this.printer.isAgentMoonraker()
-        ? shutdownMoonrakerPayload
-        : shutdownOctoPayload
 
       this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
         if (err) {
@@ -343,16 +336,16 @@ export default {
         cancelButtonText: 'No',
       }).then(async (userAction) => {
         if (userAction.isConfirmed) {
-          const payload = {
+          const camera_config = {
             printer_id: this.printer.id,
             name: this.selectedWebcam,
             config: this.streamConfig,
           }
           const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
           if (configuredCamera) {
-            axios.patch(urls.camera(configuredCamera.id), payload)
+            axios.patch(urls.camera(configuredCamera.id), camera_config)
           } else {
-            axios.post(urls.cameras(), payload)
+            axios.post(urls.cameras(), camera_config)
           }
         }
       })

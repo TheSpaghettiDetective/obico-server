@@ -153,7 +153,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
     })
   }
 
-  self.passThruToPrinter = function (msg, callback) {
+  self.passThruToPrinter = function (msg, callback, timeoutSeconds = 10) {
     if (self.canSend()) {
       var refId = Math.random().toString()
       assign(msg, { ref: refId })
@@ -167,7 +167,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
               title: 'Failed to contact printer. Is it powered on and connected to Internet?',
             })
           }
-        }, 10 * 1000)
+        }, timeoutSeconds * 1000)
       }
       if (self.webrtc) {
         self.webrtc.sendData(JSON.stringify(msg))

@@ -3,7 +3,7 @@
     <!-- Page content -->
     <template #content>
       <div v-if="webcamStreamShutdown">
-        <loading-placeholder v-if="pageLoading" />
+        <loading-placeholder v-if="streamStarting" />
         <div v-else>
           <h2>{{ webcams.length }} Webcams Found</h2>
           <b-form-select
@@ -23,17 +23,40 @@
               <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
               <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
               <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
-              <div v-if="selectedWebcamData?.service.includes('webrtc')">
-                <b-form-group class="m-0">
-                  <b-form-checkbox v-model="useRTSP" size="md">RTSP Enabled</b-form-checkbox>
-                </b-form-group>
-                <input
-                  :placeholder="'RTSP Port'"
-                  :value="newPort"
-                  @input="(event) => (newPort = event.target.value)"
-                />
+
+              <div v-if="isWebRTCCameraStreamer">
+                <b-form-select
+                  id="streamMode"
+                  v-model="streamMode"
+                  class="form-control"
+                  @change="setInitStreamConfig"
+                >
+                  <option key="h264_copy" value="h264_copy">Stream from the MP4 source</option>
+                  <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
+                </b-form-select>
+                <div v-if="streamMode === 'h264_copy'">
+                  <input :placeholder="'MP4 source URL'" :value="h264HttpUrl" />
+                  <div>
+                    You may want to turn on RTSP in OctoPrint/Crowsnest, and switch to the "RTSP
+                    source" option. You will have a better streaming experience including lower
+                    latency when Obico streams from RTSP source. <a href="#">Learn more</a>
+                  </div>
+                </div>
+                <div v-if="streamMode === 'h264_rtsp'">
+                  <input
+                    v-if="streamMode === 'h264_rtsp'"
+                    :placeholder="'RTSP Port'"
+                    :value="rtspPort"
+                  />
+                  <div>
+                    Please note that, due to an known bug, RTSP stream may fail after a few hours on
+                    some Raspberry Pi devices. If this happen to you, please turn off RTSP in
+                    OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
+                    source".
+                  </div>
+                </div>
               </div>
-              <div v-else>
+              <div>
                 <b-form-group class="m-0">
                   <b-form-checkbox v-model="isRaspi" size="md"
                     >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
@@ -51,6 +74,7 @@
                 </div>
                 <div v-else>
                   <streaming-box
+                    v-if="webrtc && !streamStarting"
                     ref="streamingBox"
                     :printer="printer"
                     :webrtc="webrtc"
@@ -103,6 +127,7 @@ import PageLayout from '@src/components/PageLayout.vue'
 import urls from '@config/server-urls'
 import axios from 'axios'
 import split from 'lodash/split'
+import find from 'lodash/find'
 
 import { normalizedPrinter } from '@src/lib/normalizers'
 import WebRTCConnection from '@src/lib/webrtc'
@@ -119,17 +144,39 @@ export default {
   data: function () {
     return {
       webcamStreamShutdown: false,
-      pageLoading: true,
+      streamStarting: false,
       printer: null,
       webrtc: null,
       webcams: [],
       selectedWebcam: null,
       selectedWebcamData: null,
-      newPort: '8080',
+      streamMode: null,
+      h264HttpUrl: null,
+      rtspPort: null,
       useRTSP: false,
       isRaspi: false,
       configuredCameras: [],
     }
+  },
+
+  computed: {
+    isWebRTCCameraStreamer() {
+      if (!this.selectedWebcamData) return false
+      return this.selectedWebcamData.service === 'webrtc-camerastreamer'
+    },
+
+    streamConfig() {
+      if (!this.selectedWebcamData) return null
+
+      const config = { mode: this.streamMode }
+      if (this.streamMode === 'h264_copy') {
+        config.h264_http_url = this.h264HttpUrl
+      } else if (this.streamMode === 'h264_rtsp') {
+        config.rtsp_port = this.rtspPort
+      }
+
+      return config
+    },
   },
 
   watch: {
@@ -137,9 +184,6 @@ export default {
       this.webcamSelectionChanged()
     },
     isRaspi: function (newValue, oldValue) {
-      this.webcamSelectionChanged()
-    },
-    newPort: function (newValue, oldValue) {
       this.webcamSelectionChanged()
     },
   },
@@ -199,7 +243,6 @@ export default {
           console.log(err, ret, '*****3')
         } else {
           this.isRaspi = ret.system_info.cpu_info.model.toLowerCase().includes('raspberry')
-          this.pageLoading = false
         }
       })
     },
@@ -211,11 +254,44 @@ export default {
 
       this.webrtc = null
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
+      if (this.isWebRTCCameraStreamer) {
+        this.streamMode = 'h264_copy'
+      } else {
+        this.streamMode = 'h264_recode'
+      }
+      this.setInitStreamConfig()
+    },
+
+    setInitStreamConfig() {
+      if (this.isWebRTCCameraStreamer) {
+        if (this.streamMode === 'h264_copy') {
+          const streamUrl = this.webcamFullUrl(this.selectedWebcamData?.stream_url)
+
+          // TODO: Is there a more robust way to figure out the mp4 url?
+          if (streamUrl.endsWith('webrtc')) {
+            this.h264HttpUrl = streamUrl.replace(/webrtc$/, 'video.mp4')
+          } else {
+            this.h264HttpUrl = 'http://127.0.0.1:8080/video.mp4'
+          }
+        } else if (this.streamMode === 'h264_rtsp') {
+          this.rtspPort = 8554
+        }
+      }
+
+      this.startWebcamStream()
+    },
+
+    startWebcamStream() {
+      if (this.webrtc) {
+        this.webrtc.disconnect()
+      }
+      this.streamStarting = true
+
       const octoPayload = null // TODO
       const moonrakerPayload = {
         func: 'start',
         target: 'webcam_streamer',
-        args: [[{ name: this.selectedWebcam, config: { mode: this.getModeValue() } }]],
+        args: [[{ name: this.selectedWebcam, config: this.streamConfig }]],
       }
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.printerComm.passThruToPrinter(
@@ -226,12 +302,11 @@ export default {
           if (err || streamId === undefined || streamMode === undefined) {
             console.log(err, ret)
           } else {
-            if (this.webrtc) {
-              this.webrtc.disconnect()
-            }
             this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
             this.printerComm.setWebRTC(this.webrtc)
+
+            this.streamStarting = false
           }
         },
         60
@@ -271,31 +346,17 @@ export default {
         cancelButtonText: 'No',
       }).then(async (userAction) => {
         if (userAction.isConfirmed) {
-          axios.get(urls.cameras(this.printer.id)).then((resp) => {
-            if (resp.data.length > 0) {
-              axios
-                .put(urls.newCamera(resp.data[0].id), {
-                  printer_id: this.printer.id,
-                  name: this.selectedWebcam,
-                  config: {
-                    mode: this.getModeValue(),
-                    h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-                  },
-                })
-                .then(() => this.getConfiguredWebcams())
-            } else {
-              axios
-                .post(urls.newCamera(), {
-                  printer_id: this.printer.id,
-                  name: this.selectedWebcam,
-                  config: {
-                    mode: this.getModeValue(),
-                    h264_http_url: `http://127.0.0.1:${this.newPort}/video.mp4`,
-                  },
-                })
-                .then(() => this.getConfiguredWebcams())
-            }
-          })
+          const payload = {
+            printer_id: this.printer.id,
+            name: this.selectedWebcam,
+            config: this.streamConfig,
+          }
+          const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
+          if (configuredCamera) {
+            axios.patch(urls.camera(configuredCamera.id), payload)
+          } else {
+            axios.post(urls.cameras(), payload)
+          }
         }
       })
     },
@@ -315,15 +376,32 @@ export default {
         }
       } else return 'h264-recode'
     },
+
     deleteWebcamConfiguration(webcam) {
       axios.delete(urls.newCamera(webcam.id)).then(() => {
         this.getConfiguredWebcams()
       })
     },
+
     getConfiguredWebcams() {
       axios.get(urls.cameras(this.printer.id)).then((resp) => {
         this.configuredCameras = resp.data
       })
+    },
+
+    webcamFullUrl(url) {
+      const properSchemes = ['http://', 'https://']
+      url = url.trim()
+      const startsWithProperScheme = properSchemes.some((scheme) => url.startsWith(scheme))
+      const startsWithSlash = url.startsWith('/')
+
+      if (!startsWithProperScheme && !startsWithSlash) {
+        url = 'http://localhost/' + url
+      } else if (startsWithSlash) {
+        url = 'http://localhost' + url
+      }
+
+      return url
     },
   },
 }

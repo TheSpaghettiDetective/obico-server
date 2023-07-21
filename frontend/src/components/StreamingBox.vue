@@ -153,7 +153,6 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing-throttle'
-import { getCurrentInstance } from 'vue'
 
 function MJpegStreamDecoder(onFrame) {
   const self = {
@@ -298,45 +297,49 @@ export default {
       return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
     },
   },
+
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
       this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
       this.onCanPlay()
     })
-
-    if (this.webrtc) {
-      this.webrtc.setCallbacks({
-        onStreamAvailable: this.onStreamAvailable,
-        onRemoteStream: this.onWebRTCRemoteStream,
-        onDefaultStreamCleanup: () => (this.isVideoVisible = false),
-        onSlowLink: this.onSlowLink,
-        onTrackMuted: () => (this.trackMuted = true),
-        onTrackUnmuted: () => (this.trackMuted = false),
-        onBitrateUpdated: (bitrate) => {
-          this.currentBitrate = bitrate.value
-        },
-        onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
-      })
-
-      if (!this.autoplay) {
-        this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
-      }
-
-      ifvisible.on('blur', () => {
-        if (this.webrtc) {
-          this.webrtc.stopStream()
-        }
-      })
-
-      ifvisible.on('focus', () => {
-        if (this.webrtc && this.autoplay) {
-          this.webrtc.startStream()
-        }
-      })
+    if (!this.autoplay) {
+      this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
+
+    this.initWebRTC()
+
+    ifvisible.on('blur', () => {
+      if (this.webrtc) {
+        this.webrtc.stopStream()
+      }
+    })
+
+    ifvisible.on('focus', () => {
+      if (this.webrtc && this.autoplay) {
+        this.webrtc.startStream()
+      }
+    })
   },
 
   methods: {
+    initWebRTC() {
+      if (this.webrtc) {
+        this.webrtc.setCallbacks({
+          onStreamAvailable: this.onStreamAvailable,
+          onRemoteStream: this.onWebRTCRemoteStream,
+          onDefaultStreamCleanup: () => (this.isVideoVisible = false),
+          onSlowLink: this.onSlowLink,
+          onTrackMuted: () => (this.trackMuted = true),
+          onTrackUnmuted: () => (this.trackMuted = false),
+          onBitrateUpdated: (bitrate) => {
+            this.currentBitrate = bitrate.value
+          },
+          onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
+        })
+      }
+    },
+
     onRotateRightClicked() {
       this.customRotationDeg = this.customRotationDeg + 90
       setLocalPref('webcamRotationDeg', this.customRotationDeg % 360)

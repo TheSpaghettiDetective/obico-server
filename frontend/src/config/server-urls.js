@@ -29,8 +29,9 @@ export default {
   printerSharedWebSocket: (token) => `/ws/share_token/web/${token}/`,
   printerWizard: (printerId) => `/printers/wizard/?printerId=${printerId}`,
   webcamWizard: (printerId) => `/printers/${printerId}/camera_setup`,
-  cameras: (printerId) => `/api/v1/cameras/?printer_id=${printerId}`,
-  newCamera: (cameraId) => (cameraId ? `/api/v1/cameras/${cameraId}/` : `/api/v1/cameras/`),
+  cameras: (printerId) =>
+    printerId ? `/api/v1/cameras/?printer_id=${printerId}` : '/api/v1/cameras/',
+  camera: (cameraId) => `/api/v1/cameras/${cameraId}/`,
 
   // Notifications
   notificationPlugins: () => '/api/v1/notification_settings/available_plugins/',

@@ -981,6 +981,8 @@ class Camera(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     name = models.TextField()
     config_json = models.TextField(default='{}', blank=True)
+    snapshot_enabled = models.BooleanField(blank=False, default=True)
+    watching_enabled = models.BooleanField(blank=False, default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

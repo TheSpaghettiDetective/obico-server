@@ -52,7 +52,7 @@
                     Please note that, due to an known bug, RTSP stream may fail after a few hours on
                     some Raspberry Pi devices. If this happen to you, please turn off RTSP in
                     OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
-                    source".
+                    source". <a href="#">Learn more</a>
                   </div>
                 </div>
               </div>
@@ -360,23 +360,6 @@ export default {
         }
       })
     },
-    getModeValue() {
-      if (!this.selectedWebcamData) return
-      if (this.selectedWebcamData.service.includes('mjpeg')) {
-        if (this.isRaspi) {
-          return 'h264-recode'
-        } else {
-          return 'mjpeg-webrtc'
-        }
-      } else if (this.selectedWebcamData.service.includes('webrtc')) {
-        if (this.useRTSP) {
-          return 'h264-rtsp'
-        } else {
-          return 'h264-copy'
-        }
-      } else return 'h264-recode'
-    },
-
     deleteWebcamConfiguration(webcam) {
       axios.delete(urls.newCamera(webcam.id)).then(() => {
         this.getConfiguredWebcams()

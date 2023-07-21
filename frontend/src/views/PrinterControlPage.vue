@@ -243,7 +243,10 @@ export default {
           this.$nextTick(this.resizeStream)
           this.widgetsConfig = this.restoreWidgets()
         } else {
-          if (newValue?.isActive() !== oldValue?.isActive()) {
+          if (
+            newValue?.isActive() !== oldValue?.isActive() ||
+            newValue?.current_print?.started_at !== oldValue?.current_print?.started_at
+          ) {
             // poll server for the last print with correct status on starting/cancelling/finishing print
             this.fetchLastPrint({ pollForCorrect: true })
           }

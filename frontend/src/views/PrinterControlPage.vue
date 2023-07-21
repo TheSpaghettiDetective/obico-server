@@ -113,11 +113,11 @@
             </div>
           </div>
         </div>
-        <div class="stream-container">
+        <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
           <div ref="streamInner" class="stream-inner">
             <streaming-box
               :printer="printer"
-              :webrtc="webrtc"
+              :webrtc="webcam.webrtc"
               :autoplay="user.is_pro"
               @onRotateRightClicked="
                 (val) => {
@@ -213,7 +213,7 @@ export default {
       user: null,
       printerId: null,
       printer: null,
-      webrtc: null,
+      webcams: [],
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
@@ -261,17 +261,21 @@ export default {
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
 
-    this.webrtc = WebRTCConnection()
-
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webrtc && !this.webrtc.initialized) {
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-            this.printerComm.setWebRTC(this.webrtc)
+          if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
+            const webcams = this.printer?.settings?.webcams
+            for (const webcam of webcams) {
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+              webcam.webrtc = webrtc
+              // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+            }
+            this.webcams = webcams
           }
         },
       }

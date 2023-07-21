@@ -307,14 +307,14 @@ class PrinterEventSerializer(serializers.ModelSerializer):
 
 
 class CameraSerializer(serializers.ModelSerializer):
-    config = serializers.DictField(required=False)
+    streaming_params = serializers.DictField(required=False)
     printer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Camera
         fields = (
             'id', 'printer_id', 'created_at', 'updated_at',
-            'name', 'config',
+            'name', 'streaming_params',
         )
 
         read_only_fields = (
@@ -322,10 +322,10 @@ class CameraSerializer(serializers.ModelSerializer):
         )
 
     def save(self):
-        config = self.validated_data.pop('config', None)
+        streaming_params = self.validated_data.pop('streaming_params', None)
         self.validated_data['printer'] = Printer.objects.get(id=self.validated_data.pop('printer_id'), user=self.context['request'].user)
-        if config:
-            self.validated_data['config_json'] = json.dumps(config)
+        if streaming_params:
+            self.validated_data['streaming_params_json'] = json.dumps(streaming_params)
         return super().save()
 
 

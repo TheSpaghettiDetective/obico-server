@@ -164,17 +164,17 @@ export default {
       return this.selectedWebcamData.service === 'webrtc-camerastreamer'
     },
 
-    streamConfig() {
+    streamingParams() {
       if (!this.selectedWebcamData) return null
 
-      const config = { mode: this.streamMode }
+      const params = { mode: this.streamMode }
       if (this.streamMode === 'h264_copy') {
-        config.h264_http_url = this.h264HttpUrl
+        params.h264_http_url = this.h264HttpUrl
       } else if (this.streamMode === 'h264_rtsp') {
-        config.rtsp_port = this.rtspPort
+        params.rtsp_port = this.rtspPort
       }
 
-      return config
+      return params
     },
   },
 
@@ -287,13 +287,13 @@ export default {
       const payload = {
         func: 'start',
         target: 'webcam_streamer',
-        args: [[{ name: this.selectedWebcam, config: this.streamConfig }]],
+        args: [[{ name: this.selectedWebcam, streaming_params: this.streamingParams }]],
       }
       this.printerComm.passThruToPrinter(
         payload,
         (err, ret) => {
           const streamId = ret?.[0]?.runtime?.stream_id
-          const streamMode = ret?.[0]?.config?.mode
+          const streamMode = ret?.[0]?.streaming_params?.mode
           if (err || streamId === undefined || streamMode === undefined) {
             console.log(err, ret)
           } else {
@@ -339,7 +339,7 @@ export default {
           const camera_config = {
             printer_id: this.printer.id,
             name: this.selectedWebcam,
-            config: this.streamConfig,
+            streaming_params: this.streamingParams,
           }
           const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
           if (configuredCamera) {

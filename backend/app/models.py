@@ -980,7 +980,7 @@ class NotificationSetting(models.Model):
 class Camera(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     name = models.TextField()
-    config_json = models.TextField(default='{}', blank=True)
+    streaming_params_json = models.TextField(default='{}', blank=True)
     snapshot_enabled = models.BooleanField(blank=False, default=True)
     watching_enabled = models.BooleanField(blank=False, default=True)
 
@@ -988,8 +988,8 @@ class Camera(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
-    def config(self) -> Dict:
-        return json.loads(self.config_json) if self.config_json else {}
+    def streaming_params(self) -> Dict:
+        return json.loads(self.streaming_params_json) if self.streaming_params_json else {}
 
     class Meta:
-            unique_together = ('printer', 'name')
+        unique_together = ('printer', 'name')

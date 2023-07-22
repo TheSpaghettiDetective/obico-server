@@ -7,9 +7,9 @@ import { printerCommManager } from '@src/lib/printer-comm'
 import {
   printPrinterLocalGCodeOctoPrint,
   printPrinterLocalGCodeMoonraker,
-} from '@src/lib/printer-local-comm'
+} from '@src/lib/printer-passthru'
 import urls from '@config/server-urls'
-import { repeatPrinterLocalGCode } from '../../lib/printer-local-comm'
+import { repeatPrinterLocalGCode } from '../../lib/printer-passthru'
 
 export const confirmPrint = (gcode, printer) => {
   return new Promise((resolve, reject) => {

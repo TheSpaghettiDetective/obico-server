@@ -2,119 +2,134 @@
   <page-layout>
     <!-- Page content -->
     <template #content>
-      <div v-if="webcamStreamShutdown">
-        <loading-placeholder v-if="streamStarting" />
-        <div v-else>
-          <h2>{{ webcams.length }} Webcams Found</h2>
-          <b-form-select
-            v-if="webcams.length > 1"
-            v-model="selectedWebcam"
-            class="form-control"
-            @change="webcamSelectionChanged"
-          >
-            <option :value="null" selected disabled>Please select a Webcam to configure</option>
-            <option v-for="webcam in webcams" :key="webcam.name" :value="webcam.name">
-              {{ webcam.name }}
-            </option>
-          </b-form-select>
-          <!-- camera settings editor -->
-          <div v-if="selectedWebcamData" class="webcam-data-wrap">
-            <div class="content-column">
-              <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
-              <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
-              <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
+      <div v-if="stage === 'fetch_printer'">
+        <loading-placeholder />
+      </div>
+      <div v-else>
+        <div v-if="stage === 'intro'">
+          <h1>Webcam Setup Wizard</h1>
+          <div>
+            We need to shut down your current webcam stream(s) in the Obico app to go through the
+            set up process again.
+          </div>
+          <div>
+            Note: Your webcam stream(s) in {{ printer.agentDisplayName() }} won't be affected.
+          </div>
+          <b-button @click="$router.go(-1)">Go Back</b-button>
+          <b-button @click="shutdownStreamButtonPressed">Continue To Webcam Setup</b-button>
+        </div>
+        <div v-if="stage === 'shutdown_streamer'">
+          <loading-placeholder />
+          <div>Shutting down Obico webcam stream(s).</div>
+        </div>
+        <div v-if="stage === 'shutdown_streamer_failed'">
+          Failed to connect to your printer. Please make sure your printer is powered up and Obico
+          for {{ printer.agentDisplayName() }} is linked and running correctly.
+          <a href="mailto:support@obico.io">Contact us</a>
+        </div>
+        <div v-if="stage === 'xxxxxx'">
+          <loading-placeholder v-if="streamStarting" />
+          <div v-else>
+            <h2>{{ webcams.length }} Webcams Found</h2>
+            <b-form-select
+              v-if="webcams.length > 1"
+              v-model="selectedWebcam"
+              class="form-control"
+              @change="webcamSelectionChanged"
+            >
+              <option :value="null" selected disabled>Please select a Webcam to configure</option>
+              <option v-for="webcam in webcams" :key="webcam.name" :value="webcam.name">
+                {{ webcam.name }}
+              </option>
+            </b-form-select>
+            <!-- camera settings editor -->
+            <div v-if="selectedWebcamData" class="webcam-data-wrap">
+              <div class="content-column">
+                <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
+                <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
+                <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
 
-              <div v-if="isWebRTCCameraStreamer">
-                <b-form-select
-                  id="streamMode"
-                  v-model="streamMode"
-                  class="form-control"
-                  @change="setInitStreamConfig"
-                >
-                  <option key="h264_copy" value="h264_copy">Stream from the MP4 source</option>
-                  <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
-                </b-form-select>
-                <div v-if="streamMode === 'h264_copy'">
-                  <input :placeholder="'MP4 source URL'" :value="h264HttpUrl" />
-                  <div>
-                    You may want to turn on RTSP in OctoPrint/Crowsnest, and switch to the "RTSP
-                    source" option. You will have a better streaming experience including lower
-                    latency when Obico streams from RTSP source. <a href="#">Learn more</a>
-                  </div>
-                </div>
-                <div v-if="streamMode === 'h264_rtsp'">
-                  <input
-                    v-if="streamMode === 'h264_rtsp'"
-                    :placeholder="'RTSP Port'"
-                    :value="rtspPort"
-                  />
-                  <div>
-                    Please note that, due to an known bug, RTSP stream may fail after a few hours on
-                    some Raspberry Pi devices. If this happen to you, please turn off RTSP in
-                    OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
-                    source". <a href="#">Learn more</a>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <b-form-group class="m-0">
-                  <b-form-checkbox v-model="isRaspi" size="md"
-                    >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
+                <div v-if="isWebRTCCameraStreamer">
+                  <b-form-select
+                    id="streamMode"
+                    v-model="streamMode"
+                    class="form-control"
+                    @change="setInitStreamConfig"
                   >
-                </b-form-group>
+                    <option key="h264_copy" value="h264_copy">Stream from the MP4 source</option>
+                    <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
+                  </b-form-select>
+                  <div v-if="streamMode === 'h264_copy'">
+                    <input :placeholder="'MP4 source URL'" :value="h264HttpUrl" />
+                    <div>
+                      You may want to turn on RTSP in OctoPrint/Crowsnest, and switch to the "RTSP
+                      source" option. You will have a better streaming experience including lower
+                      latency when Obico streams from RTSP source. <a href="#">Learn more</a>
+                    </div>
+                  </div>
+                  <div v-if="streamMode === 'h264_rtsp'">
+                    <input
+                      v-if="streamMode === 'h264_rtsp'"
+                      :placeholder="'RTSP Port'"
+                      :value="rtspPort"
+                    />
+                    <div>
+                      Please note that, due to an known bug, RTSP stream may fail after a few hours
+                      on some Raspberry Pi devices. If this happen to you, please turn off RTSP in
+                      OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
+                      source". <a href="#">Learn more</a>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <b-form-group class="m-0">
+                    <b-form-checkbox v-model="isRaspi" size="md"
+                      >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
+                    >
+                  </b-form-group>
+                </div>
+                <b-button @click="saveCameraButtonPress">Save Camera</b-button>
               </div>
-              <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+              <div class="content-column">
+                <small
+                  >*Please allow 10-15s between each modification for new stream to load.</small
+                >
+                <div class="streaming-wrap">
+                  <div v-if="!webrtc" class="loading-wrap">
+                    <loading-placeholder />
+                    <small class="creating-stream-text">Creating Stream...</small>
+                  </div>
+                  <div v-else>
+                    <streaming-box
+                      v-if="webrtc && !streamStarting"
+                      ref="streamingBox"
+                      :printer="printer"
+                      :webrtc="webrtc"
+                      :autoplay="true"
+                      :show-settings-icon="false"
+                      @onRotateRightClicked="
+                        (val) => {
+                          customRotationDeg = val
+                        }
+                      "
+                    />
+                  </div>
+                </div>
+                <b-button @click="$router.go(-1)">Close Setup page</b-button>
+              </div>
             </div>
-            <div class="content-column">
-              <small>*Please allow 10-15s between each modification for new stream to load.</small>
-              <div class="streaming-wrap">
-                <div v-if="!webrtc" class="loading-wrap">
-                  <loading-placeholder />
-                  <small class="creating-stream-text">Creating Stream...</small>
-                </div>
-                <div v-else>
-                  <streaming-box
-                    v-if="webrtc && !streamStarting"
-                    ref="streamingBox"
-                    :printer="printer"
-                    :webrtc="webrtc"
-                    :autoplay="true"
-                    :show-settings-icon="false"
-                    @onRotateRightClicked="
-                      (val) => {
-                        customRotationDeg = val
-                      }
-                    "
-                  />
-                </div>
-              </div>
+            <div v-else>
               <b-button @click="$router.go(-1)">Close Setup page</b-button>
             </div>
           </div>
-          <div v-else>
-            <b-button @click="$router.go(-1)">Close Setup page</b-button>
-          </div>
         </div>
-      </div>
-      <div v-else>
-        <h1>Webcam Setup Wizard</h1>
-        <div>
-          Note: We need to shut down your current webcam streams to go through the set up process
-          again.
-        </div>
-        <div>
-          Note: Please make sure streaming in OctoPrint / Mainsail look good before continuing.
-        </div>
-        <div>Note: Klipper may need a restart for changes to appear here.</div>
-        <b-button @click="$router.go(-1)">Go Back</b-button>
-        <b-button @click="shutdownStreamButtonPressed">Continue To Webcam Setup</b-button>
-      </div>
-      <div>
-        {{ configuredCameras.length }} camera(s) saved in Obico
-        <div>
-          <div v-for="webcam in configuredCameras" :key="webcam.name">
-            <i class="fas fa-trash" @click="deleteWebcamConfiguration(webcam)"></i>
-            {{ webcam.name }}
+        <div v-if="stage === 'xxxxxxxx'">
+          {{ configuredCameras.length }} camera(s) saved in Obico
+          <div>
+            <div v-for="webcam in configuredCameras" :key="webcam.name">
+              <i class="fas fa-trash" @click="deleteWebcamConfiguration(webcam)"></i>
+              {{ webcam.name }}
+            </div>
           </div>
         </div>
       </div>
@@ -133,6 +148,7 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import WebRTCConnection from '@src/lib/webrtc'
 import { printerCommManager } from '@src/lib/printer-comm'
 import StreamingBox from '@src/components/StreamingBox'
+import { shutdownWebcamStreamer } from '@src/lib/printer-passthru'
 
 export default {
   name: 'PrinterCameraSetupPage',
@@ -143,7 +159,7 @@ export default {
   },
   data: function () {
     return {
-      webcamStreamShutdown: false,
+      stage: 'fetch_printer',
       streamStarting: false,
       printer: null,
       webrtc: null,
@@ -187,6 +203,7 @@ export default {
   async created() {
     const printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.printer = await this.fetchPrinter(printerId)
+    this.stage = 'intro'
 
     this.getConfiguredWebcams()
 
@@ -309,20 +326,14 @@ export default {
     },
 
     shutdownStreamButtonPressed() {
-      const shutdownPayload = {
-        func: 'shutdown',
-        target: 'webcam_streamer',
-      }
-
-      this.printerComm.passThruToPrinter(shutdownPayload, (err, ret) => {
-        if (err) {
-          console.log(err, ret, '*****')
-        } else {
-          this.webcamStreamShutdown = true
-
-          this.fetchAgentWebcams()
-        }
-      })
+      this.stage = 'shutdown_streamer'
+      shutdownWebcamStreamer(this.printerComm)
+        .then(() => {
+          this.stage = 'fetch_webcams'
+        })
+        .catch(() => {
+          this.stage = 'shutdown_streamer_failed'
+        })
     },
 
     async saveCameraButtonPress() {

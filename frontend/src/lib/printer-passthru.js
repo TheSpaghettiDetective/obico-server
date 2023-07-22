@@ -2,6 +2,32 @@ import { toMomentOrNull } from '@src/lib/normalizers'
 import filesize from 'filesize'
 import _ from 'lodash'
 
+export function passThruPromise(printerComm, payload, timeout = 10) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      payload,
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(err || ret?.error)
+        } else {
+          resolve()
+        }
+      },
+      timeout,
+      () => {
+        reject('Timeout')
+      }
+    )
+  })
+}
+
+export function shutdownWebcamStreamer(printerComm, gcode) {
+  return passThruPromise(printerComm, {
+    func: 'shutdown',
+    target: 'webcam_streamer',
+  })
+}
+
 export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword) {
   const listRecoursively = (fileObj) => {
     const fileList = []

@@ -302,7 +302,7 @@ import { printerCommManager } from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesOctoPrint,
   listPrinterLocalGCodesMoonraker,
-} from '@src/lib/printer-local-comm'
+} from '@src/lib/printer-passthru'
 import GCodeFileStructure from '@src/components/g-codes/GCodeFileStructure.vue'
 import SortingDropdown, { restoreSortingValue } from '@src/components/SortingDropdown'
 import CascadedDropdown from '@src/components/CascadedDropdown'

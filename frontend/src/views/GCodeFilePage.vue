@@ -153,7 +153,7 @@ import { printerCommManager } from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesMoonraker,
   listPrinterLocalGCodesOctoPrint,
-} from '@src/lib/printer-local-comm'
+} from '@src/lib/printer-passthru'
 import PrintHistoryItem from '@src/components/prints/PrintHistoryItem.vue'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import GCodeDetails from '@src/components/GCodeDetails.vue'

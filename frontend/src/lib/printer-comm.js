@@ -153,7 +153,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
     })
   }
 
-  self.passThruToPrinter = function (msg, callback, timeoutSeconds = 10) {
+  self.passThruToPrinter = function (msg, callback, timeoutSeconds = 10, timeoutCallback = null) {
     if (self.canSend()) {
       var refId = Math.random().toString()
       assign(msg, { ref: refId })
@@ -162,10 +162,14 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
         setTimeout(function () {
           if (self.passthruQueue.has(refId)) {
             clearPrinterTransientState(self.printerId)
-            Vue.swal.Toast.fire({
-              icon: 'error',
-              title: 'Failed to contact printer. Is it powered on and connected to Internet?',
-            })
+            if (timeoutCallback) {
+              timeoutCallback()
+            } else {
+              Vue.swal.Toast.fire({
+                icon: 'error',
+                title: 'Failed to contact printer. Is it powered on and connected to Internet?',
+              })
+            }
           }
         }, timeoutSeconds * 1000)
       }

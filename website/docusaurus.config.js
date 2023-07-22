@@ -394,5 +394,13 @@ module.exports = {
         fromExtensions: ['html'],
       },
     ],
+    [
+      "posthog-docusaurus",
+      {
+        apiKey: "kktZn3QvanN_phgjvRER9v8CCGwFcgz9dmjkCIQjOYA",
+        appUrl: "https://app.posthog.com", // optional
+        enableInDevelopment: false, // optional
+      },
+    ],
   ],
 };

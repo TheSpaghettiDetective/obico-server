@@ -9,9 +9,11 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import styles from './styles.module.css';
 import {translate} from '@docusaurus/Translate';
+import BlogAd from '../../components/BlogAd';
+
 export default function BlogSidebar({sidebar, tags}) {
   if (sidebar.items.length === 0) {
-    return null;
+    return <BlogAd />;
   }
 
   return (
@@ -71,6 +73,8 @@ export default function BlogSidebar({sidebar, tags}) {
           })}
         </ul>
       </nav>
+
+      <BlogAd />
     </>
   );
 }

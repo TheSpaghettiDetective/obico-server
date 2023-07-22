@@ -149,7 +149,7 @@ class Printer(SafeDeleteModel):
         (NONE, 'Just notify me'),
         (PAUSE, 'Pause the printer and notify me'),
     )
-    DEFAULT_WEBCAM_SETTINGS = {'flipV': False, 'flipH': False, 'rotation': 0, 'streamRatio': '16:9'}
+    DEFAULT_WEBCAM_SETTINGS = {'flipV': False, 'flipH': False, 'rotation': 0, 'streamRatio': '16:9', 'name': 'Default'}
 
     name = models.CharField(max_length=256, null=False)
     auth_token = models.CharField(max_length=256, unique=True, null=False, blank=False)

@@ -2,6 +2,8 @@ import { toMomentOrNull } from '@src/lib/normalizers'
 import filesize from 'filesize'
 import _ from 'lodash'
 
+export class PassThruTimeOutError extends Error {}
+
 export function passThruPromise(printerComm, payload, timeout = 10) {
   return new Promise((resolve, reject) => {
     printerComm.passThruToPrinter(
@@ -15,17 +17,31 @@ export function passThruPromise(printerComm, payload, timeout = 10) {
       },
       timeout,
       () => {
-        reject('Timeout')
+        reject(new PassThruTimeOutError())
       }
     )
   })
 }
 
-export function shutdownWebcamStreamer(printerComm, gcode) {
+export function shutdownWebcamStreamer(printerComm) {
   return passThruPromise(printerComm, {
     func: 'shutdown',
     target: 'webcam_streamer',
   })
+}
+
+export function fetchAgentWebcams(printerComm, printer) {
+  const webcamFetchOctoPayload = null // TODO
+  const webcamFetchMoonrakerPayload = {
+    func: 'server/webcams/list',
+    target: 'moonraker_api',
+  }
+
+  const webcamPayload = printer.isAgentMoonraker()
+    ? webcamFetchMoonrakerPayload
+    : webcamFetchOctoPayload
+
+  return passThruPromise(printerComm, webcamPayload)
 }
 
 export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword) {

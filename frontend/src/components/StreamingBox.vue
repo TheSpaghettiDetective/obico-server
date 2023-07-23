@@ -91,7 +91,7 @@
       >
         <div class="webcam_fixed_ratio_inner">
           <img
-            v-if="taggedSrc !== printerStockImgSrc"
+            v-if="taggedSrc"
             class="tagged-jpg"
             :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             :src="taggedSrc"
@@ -115,7 +115,7 @@
             :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
             width="960"
             :height="webcamVideoHeight"
-            :poster="taggedSrc !== printerStockImgSrc ? taggedSrc : ''"
+            :poster="taggedSrc"
             autoplay
             muted
             playsinline
@@ -128,7 +128,7 @@
 
     <div class="extra-controls">
       <div
-        v-if="showVideo || showVideo || taggedSrc !== printerStockImgSrc"
+        v-if="showVideo || showVideo || taggedSrc"
         class="video-control-btn"
         @click="onRotateRightClicked"
       >
@@ -225,9 +225,6 @@ export default {
   },
 
   computed: {
-    taggedImgAvailable() {
-      return this.taggedSrc !== this.printerStockImgSrc
-    },
     showVideo() {
       return this.isVideoVisible && this.stickyStreamingSrc !== 'IMAGE'
     },
@@ -262,7 +259,7 @@ export default {
       }
     },
     taggedSrc() {
-      return get(this.printer, 'pic.img_url', this.printerStockImgSrc)
+      return get(this.printer, 'pic.img_url')
     },
 
     // streaming timeline

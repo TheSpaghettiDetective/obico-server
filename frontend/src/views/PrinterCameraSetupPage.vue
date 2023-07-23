@@ -54,8 +54,11 @@
           </div>
           <div v-else>
             <i class="fas fa-times-circle fa-2x"></i>
-            <h3>No webcams are found for your {{printer.agentDisplayName()}} printer.</h3>
-            <div>Please set them up in {{agentUIDisplayName}} first. Once webcams are properly working in {{agentUIDisplayName}}, come back here and try it again.</div>
+            <h3>No webcams are found for your {{ printer.agentDisplayName() }} printer.</h3>
+            <div>
+              Please set them up in {{ agentUIDisplayName }} first. Once webcams are properly
+              working in {{ agentUIDisplayName }}, come back here and try it again.
+            </div>
             <div>For details, please refer to <a href="#">the Obico webcam setup guide</a></div>
           </div>
           <!-- camera settings editor -->
@@ -63,9 +66,9 @@
             <div class="content-column">
               <b-card class="mb-3">
                 <template #header>
-                  <b-button variant="link" >
+                  <b-button variant="link">
                     Webcam details. Default to be collapsed
-                      <i class="fas fa-chevron-up"></i>
+                    <i class="fas fa-chevron-up"></i>
                   </b-button>
                 </template>
                 <b-collapse visible>
@@ -73,7 +76,7 @@
                     <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
                     <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
                     <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
-                    <p>Probably more... </p>
+                    <p>Probably more...</p>
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -84,7 +87,7 @@
                 <input
                   id="flipHCheckbox"
                   v-model="selectedWebcamData.flip_horizontal"
-                  disabled=true
+                  disabled="true"
                   type="checkbox"
                 />
               </div>
@@ -93,29 +96,42 @@
                 <input
                   id="flipVCheckbox"
                   v-model="selectedWebcamData.flip_vertical"
-                  disabled=true
+                  disabled="true"
                   type="checkbox"
                 />
               </div>
               <div>
                 <label for="rotationInput">Rotation:</label>
-                  <input
-                    id="rotationInput"
-                    type="text"
-                    :value="selectedWebcamData.rotation"
-                    disabled
-                  />
+                <input
+                  id="rotationInput"
+                  type="text"
+                  :value="selectedWebcamData.rotation"
+                  disabled
+                />
               </div>
               <p class="text-warning">
-                The settings above are retrieved from {{ agentUIDisplayName }}. If they are not correct, change them in {{ agentUIDisplayName }} and restart the system.
+                The settings above are retrieved from {{ agentUIDisplayName }}. If they are not
+                correct, change them in {{ agentUIDisplayName }} and restart the system.
               </p>
               <hr />
               <div v-if="isWebRTCCameraStreamer">
                 <h3>Source</h3>
-                <div>It looks like you are using WebRTC to stream your webcam. Good call! WebRTC is much more efficient than the legacy MJPEG format and we have been using it in the Obico app since day one! </div>
-                <div>Your WebRTC stream may provide 2 sources that we can use: MP4 and RTSP. RTSP is a more advanced one as it has much smaller latency. But it's also new and hence may not be stable.</div>
-                <div>You can try both sources to see which one works for you. <a href="#">Learn more.</a></div>
+                <div>
+                  It looks like you are using WebRTC to stream your webcam. Good call! WebRTC is
+                  much more efficient than the legacy MJPEG format and we have been using it in the
+                  Obico app since day one!
+                </div>
+                <div>
+                  Your WebRTC stream may provide 2 sources that we can use: MP4 and RTSP. RTSP is a
+                  more advanced one as it has much smaller latency. But it's also new and hence may
+                  not be stable.
+                </div>
+                <div>
+                  You can try both sources to see which one works for you.
+                  <a href="#">Learn more.</a>
+                </div>
                 <br />
+
                 <b-form-select
                   id="streamMode"
                   v-model="streamMode"
@@ -126,36 +142,57 @@
                   <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
                 </b-form-select>
                 <div v-if="streamMode === 'h264_copy'">
-                  <b-form-input :placeholder="'MP4 source URL'" v-model="h264HttpUrl" />
-                  <div>
-                    You may want to turn on RTSP in OctoPrint/Crowsnest, and switch to the "RTSP
-                    source" option. You will have a better streaming experience including lower
-                    latency when Obico streams from RTSP source. <a href="#">Learn more.</a>
-                  </div>
+                  You are currently using the MP4 source. Consider turning on RTSP in
+                  OctoPrint/Crowsnest, and switch to the "Stream from the RTSP source" option. You
+                  will have a better streaming experience including lower latency when Obico streams
+                  from RTSP source. <a href="#">Learn more.</a>
                 </div>
                 <div v-if="streamMode === 'h264_rtsp'">
+                  You are currently using the RTSP source. Please note that, due to an known bug,
+                  RTSP stream may fail <i>after a few hours</i> on some Raspberry Pi devices. If
+                  this happen to you, please turn off RTSP in OctoPrint/Crowsnest, come back to this
+                  page, and select "Stream from the MP4 source". <a href="#">Learn more</a>
+                </div>
+                <hr />
+                <div v-if="streamMode === 'h264_copy'">
+                  <label for="h264HttpUrlInput">MP4 Source URL:</label>
+                  <b-form-input
+                    id="h264HttpUrlInput"
+                    :placeholder="'MP4 source URL'"
+                    v-model="h264HttpUrl"
+                  />
+                </div>
+                <div v-if="streamMode === 'h264_rtsp'">
+                  <label for="h264HttpUrlInput">RTSP Port:</label>
                   <b-input
                     v-if="streamMode === 'h264_rtsp'"
                     v-model="rtspPort"
                     :placeholder="'RTSP Port'"
                   />
-                  <div>
-                    Please note that, due to an known bug, RTSP stream may fail <i>after a few hours</i>
-                    on some Raspberry Pi devices. If this happen to you, please turn off RTSP in
-                    OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
-                    source". <a href="#">Learn more</a>
-                  </div>
                 </div>
+                <small
+                  >You only need to change
+                  {{ streamMode === 'h264_rtsp' ? 'RTSP Port' : 'MP4 Source URL' }} if you have a
+                  custom OctoPrint/Crowsnest installation. If the webcam is working in the preview,
+                  don't change it. <a href="#">Learn more</a></small
+                >
               </div>
               <hr />
-              <b-button class="mb-3" :disabled="!untestedSettingChanges" @click="testCameraButtonPress">Test Streaming Settings</b-button>
-              <b-button variant="primary" class="mb-3"
- @click="saveCameraButtonPress">Save</b-button>
+              <b-button
+                class="mb-3"
+                :disabled="!untestedSettingChanges"
+                @click="testCameraButtonPress"
+                >Test Streaming Settings</b-button
+              >
+              <b-button variant="primary" class="mb-3" @click="saveCameraButtonPress"
+                >Save</b-button
+              >
             </div>
             <div class="content-column">
-              <small
-                >*Please allow 10-15s between each modification for new stream to load.</small
-              >
+              <h2>Webcam Preview</h2>
+              <div>
+                Use this preview to check if the webcam works correctly.
+              </div>
               <div class="streaming-wrap">
                 <div v-if="!webrtc" class="loading-wrap">
                   <loading-placeholder />
@@ -178,8 +215,8 @@
                 </div>
               </div>
               <b-button @click="$router.go(-1)">Close Setup page</b-button>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -339,11 +376,11 @@ export default {
         this.webrtc = null
       }
       startWebcamStreamer(this.printerComm, this.selectedWebcam, this.streamingParams)
-      .then((ret) => {
+        .then((ret) => {
           const streamId = ret?.[0]?.runtime?.stream_id
           const streamMode = ret?.[0]?.streaming_params?.mode
           if (streamId === undefined || streamMode === undefined) {
-              throw 'Webcam start failed to start for unknown reason. You can trouble-shoot the problem by following this guide.'
+            throw 'Webcam start failed to start for unknown reason. You can trouble-shoot the problem by following this guide.'
           } else {
             this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
@@ -351,16 +388,14 @@ export default {
 
             this.streamStarting = false
           }
-        },
-        60
-      )
-      .catch( err => {
-        this.errorMessage = err
-      })
-      .finally( () => {
-        this.actionMessage = null
-        this.untestedSettingChanges = false
-      })
+        }, 60)
+        .catch((err) => {
+          this.errorMessage = err
+        })
+        .finally(() => {
+          this.actionMessage = null
+          this.untestedSettingChanges = false
+        })
     },
 
     shutdownStreamButtonPressed() {
@@ -410,7 +445,9 @@ export default {
       }
       confirmPrompt.then(async (userAction) => {
         // When untestedSettingChanges, we switch the confirm and cancel buttons
-        const willSave = this.untestedSettingChanges ? !userAction.isConfirmed : userAction.isConfirmed
+        const willSave = this.untestedSettingChanges
+          ? !userAction.isConfirmed
+          : userAction.isConfirmed
         if (willSave) {
           this.saveWebcamConfig()
         }
@@ -419,10 +456,10 @@ export default {
 
     async saveWebcamConfig() {
       const camera_config = {
-            printer_id: this.printer.id,
-            name: this.selectedWebcam,
-            streaming_params: this.streamingParams,
-          }
+        printer_id: this.printer.id,
+        name: this.selectedWebcam,
+        streaming_params: this.streamingParams,
+      }
       const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
       if (configuredCamera) {
         await axios.patch(urls.camera(configuredCamera.id), camera_config)

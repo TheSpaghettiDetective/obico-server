@@ -97,13 +97,6 @@
                   </div>
                 </div>
               </div>
-              <div>
-                <b-form-group class="m-0">
-                  <b-form-checkbox v-model="isRaspi" size="md"
-                    >Raspberry Pi Device <small>(Unsure? Leave as is.)</small></b-form-checkbox
-                  >
-                </b-form-group>
-              </div>
               <b-button @click="saveCameraButtonPress">Save Camera</b-button>
             </div>
             <div class="content-column">
@@ -178,7 +171,6 @@ export default {
       streamMode: null,
       h264HttpUrl: null,
       rtspPort: null,
-      isRaspi: false,
       configuredCameras: [],
     }
   },
@@ -200,12 +192,6 @@ export default {
       }
 
       return params
-    },
-  },
-
-  watch: {
-    isRaspi: function (newValue, oldValue) {
-      this.webcamSelectionChanged()
     },
   },
 
@@ -241,23 +227,6 @@ export default {
         .finally(() => {
           this.actionMessage = null
         })
-    },
-
-    async fetchAgentWebcams() {
-      const infoOctoPayload = null // TODO
-      const infoMoonrakerPayload = {
-        func: 'machine/system_info',
-        target: 'moonraker_api',
-      }
-      const infoPayload = this.printer.isAgentMoonraker() ? infoMoonrakerPayload : infoOctoPayload
-
-      this.printerComm.passThruToPrinter(infoPayload, (err, ret) => {
-        if (err) {
-          console.log(err, ret, '*****3')
-        } else {
-          this.isRaspi = ret.system_info.cpu_info.model.toLowerCase().includes('raspberry')
-        }
-      })
     },
 
     webcamSelectionChanged() {

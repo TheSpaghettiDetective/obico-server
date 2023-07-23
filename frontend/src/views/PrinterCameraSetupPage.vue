@@ -40,7 +40,7 @@
         </div>
         <div v-else>
           <div v-if="webcams.length > 0">
-            <h2>{{ webcams.length }} Webcams Found</h2>
+            <h3>{{ webcams.length }} Webcams Found</h3>
             <b-form-select
               v-model="selectedWebcam"
               class="form-control"
@@ -54,18 +54,68 @@
           </div>
           <div v-else>
             <i class="fas fa-times-circle fa-2x"></i>
-            <h2>No webcams are found for your {{printer.agentDisplayName()}} printer.</h2>
-            <div>Please set them up in {{printer.agentDisplayName()}} first. Once webcams are properly working in {{printer.agentDisplayName()}}, come back here and try it again.</div>
+            <h3>No webcams are found for your {{printer.agentDisplayName()}} printer.</h3>
+            <div>Please set them up in {{agentUIDisplayName}} first. Once webcams are properly working in {{agentUIDisplayName}}, come back here and try it again.</div>
             <div>For details, please refer to <a href="#">the Obico webcam setup guide</a></div>
           </div>
           <!-- camera settings editor -->
           <div v-if="selectedWebcamData" class="webcam-data-wrap">
             <div class="content-column">
-              <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
-              <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
-              <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
-
+              <b-card class="mb-3">
+                <template #header>
+                  <b-button variant="link" >
+                    Webcam details. Default to be collapsed
+                      <i class="fas fa-chevron-up"></i>
+                  </b-button>
+                </template>
+                <b-collapse visible>
+                  <b-card-body>
+                    <p>Stream URL: {{ selectedWebcamData.stream_url ?? '' }}</p>
+                    <p>Snapshot URL: {{ selectedWebcamData.snapshot_url ?? '' }}</p>
+                    <p>Target FPS: {{ selectedWebcamData.target_fps ?? '' }}</p>
+                    <p>Probably more... </p>
+                  </b-card-body>
+                </b-collapse>
+              </b-card>
+              <hr />
+              <h3>Orientation</h3>
+              <div>
+                <label for="flipHCheckbox">Flip Horizontally:</label>
+                <input
+                  id="flipHCheckbox"
+                  v-model="selectedWebcamData.flip_horizontal"
+                  disabled=true
+                  type="checkbox"
+                />
+              </div>
+              <div>
+                <label for="flipVCheckbox">Flip Horizontally:</label>
+                <input
+                  id="flipVCheckbox"
+                  v-model="selectedWebcamData.flip_vertical"
+                  disabled=true
+                  type="checkbox"
+                />
+              </div>
+              <div>
+                <label for="rotationInput">Rotation:</label>
+                  <input
+                    id="rotationInput"
+                    type="text"
+                    :value="selectedWebcamData.rotation"
+                    disabled
+                  />
+              </div>
+              <p class="text-warning">
+                The settings above are retrieved from {{ agentUIDisplayName }}. If they are not correct, change them in {{ agentUIDisplayName }} and restart the system.
+              </p>
+              <hr />
               <div v-if="isWebRTCCameraStreamer">
+                <h3>Source</h3>
+                <div>It looks like you are using WebRTC to stream your webcam. Good call! WebRTC is much more efficient than the legacy MJPEG format and we have been using it in the Obico app since day one! </div>
+                <div>Your WebRTC stream may provide 2 sources that we can use: MP4 and RTSP. RTSP is a more advanced one as it has much smaller latency. But it's also new and hence may not be stable.</div>
+                <div>You can try both sources to see which one works for you. <a href="#">Learn more.</a></div>
+                <br />
                 <b-form-select
                   id="streamMode"
                   v-model="streamMode"
@@ -76,28 +126,31 @@
                   <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
                 </b-form-select>
                 <div v-if="streamMode === 'h264_copy'">
-                  <input :placeholder="'MP4 source URL'" :value="h264HttpUrl" />
+                  <b-form-input :placeholder="'MP4 source URL'" v-model="h264HttpUrl" />
                   <div>
                     You may want to turn on RTSP in OctoPrint/Crowsnest, and switch to the "RTSP
                     source" option. You will have a better streaming experience including lower
-                    latency when Obico streams from RTSP source. <a href="#">Learn more</a>
+                    latency when Obico streams from RTSP source. <a href="#">Learn more.</a>
                   </div>
                 </div>
                 <div v-if="streamMode === 'h264_rtsp'">
-                  <input
+                  <b-input
                     v-if="streamMode === 'h264_rtsp'"
+                    v-model="rtspPort"
                     :placeholder="'RTSP Port'"
-                    :value="rtspPort"
                   />
                   <div>
-                    Please note that, due to an known bug, RTSP stream may fail after a few hours
+                    Please note that, due to an known bug, RTSP stream may fail <i>after a few hours</i>
                     on some Raspberry Pi devices. If this happen to you, please turn off RTSP in
                     OctoPrint/Crowsnest, come back to this page, and select "Stream from the MP4
                     source". <a href="#">Learn more</a>
                   </div>
                 </div>
               </div>
-              <b-button @click="saveCameraButtonPress">Save Camera</b-button>
+              <hr />
+              <b-button class="mb-3" :disabled="!untestedSettingChanges" @click="testCameraButtonPress">Test Streaming Settings</b-button>
+              <b-button variant="primary" class="mb-3"
+ @click="saveCameraButtonPress">Save</b-button>
             </div>
             <div class="content-column">
               <small
@@ -149,6 +202,7 @@ import {
   shutdownWebcamStreamer,
   PassThruTimeOutError,
   fetchAgentWebcams,
+  startWebcamStreamer,
 } from '@src/lib/printer-passthru'
 
 export default {
@@ -160,9 +214,6 @@ export default {
   },
   data: function () {
     return {
-      errorMessage: null,
-      actionMessage: 'Fetching printer info',
-      streamStarting: false,
       printer: null,
       webrtc: null,
       webcams: null,
@@ -172,6 +223,9 @@ export default {
       h264HttpUrl: null,
       rtspPort: null,
       configuredCameras: [],
+      errorMessage: null,
+      actionMessage: 'Fetching printer info',
+      untestedSettingChanges: false,
     }
   },
 
@@ -193,6 +247,17 @@ export default {
 
       return params
     },
+
+    agentUIDisplayName() {
+      return this.printer.isAgentMoonraker() ? 'Mainsail/Fluidd' : 'OctoPrint'
+    },
+  },
+
+  watch: {
+    selectedWebcam: 'streamSettingsChanged',
+    rtspPort: 'streamSettingsChanged',
+    streamMode: 'streamSettingsChanged',
+    h264HttpUrl: 'streamSettingsChanged',
   },
 
   async created() {
@@ -229,6 +294,10 @@ export default {
         })
     },
 
+    streamSettingsChanged() {
+      this.untestedSettingChanges = true
+    },
+
     webcamSelectionChanged() {
       if (!this.selectedWebcam) {
         return
@@ -259,29 +328,22 @@ export default {
         }
       }
 
-      this.startWebcamStream()
+      this.testWebcamStream()
     },
 
-    startWebcamStream() {
+    testWebcamStream() {
+      this.actionMessage = `Starting webcam stream for ${this.selectedWebcam}`
+
       if (this.webrtc) {
         this.webrtc.disconnect()
         this.webrtc = null
       }
-
-      this.streamStarting = true
-
-      const payload = {
-        func: 'start',
-        target: 'webcam_streamer',
-        args: [[{ name: this.selectedWebcam, streaming_params: this.streamingParams }]],
-      }
-      this.printerComm.passThruToPrinter(
-        payload,
-        (err, ret) => {
+      startWebcamStreamer(this.printerComm, this.selectedWebcam, this.streamingParams)
+      .then((ret) => {
           const streamId = ret?.[0]?.runtime?.stream_id
           const streamMode = ret?.[0]?.streaming_params?.mode
-          if (err || streamId === undefined || streamMode === undefined) {
-            console.log(err, ret)
+          if (streamId === undefined || streamMode === undefined) {
+              throw 'Webcam start failed to start for unknown reason. You can trouble-shoot the problem by following this guide.'
           } else {
             this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
@@ -292,13 +354,20 @@ export default {
         },
         60
       )
+      .catch( err => {
+        this.errorMessage = err
+      })
+      .finally( () => {
+        this.actionMessage = null
+        this.untestedSettingChanges = false
+      })
     },
 
     shutdownStreamButtonPressed() {
       this.actionMessage = 'Shutting down Obico webcam stream(s)...'
       shutdownWebcamStreamer(this.printerComm)
         .then(() => {
-          this.actionMessage = `Retrieving webcam configuration in ${this.printer.agentDisplayName()}...`
+          this.actionMessage = `Retrieving webcam configuration in ${this.agentUIDisplayName}...`
           return fetchAgentWebcams(this.printerComm, this.printer)
         })
         .then((ret) => {
@@ -312,31 +381,56 @@ export default {
         })
     },
 
+    testCameraButtonPress() {
+      this.testWebcamStream()
+    },
+
     async saveCameraButtonPress() {
-      this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        html: `
-        <p style="text-align:center">Please verify stream is working as expected. <br/> For more information please visit <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/">our help docs</a>.</p>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then(async (userAction) => {
-        if (userAction.isConfirmed) {
-          const camera_config = {
+      let confirmPrompt
+      if (this.untestedSettingChanges) {
+        confirmPrompt = this.$swal.Prompt.fire({
+          title: 'Are you sure?',
+          html: `
+          <p style="text-align:center">You haven't tested current webcam configuration. Please test it to verify your webcam works first.</p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Okay',
+          cancelButtonText: 'Save it Anyway!!!',
+        })
+      } else {
+        confirmPrompt = this.$swal.Prompt.fire({
+          title: 'Are you sure?',
+          html: `
+          <p style="text-align:center">Please verify stream is working as expected. <br/> For more information please visit <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-not-showing/">our help docs</a>.</p>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
+      }
+      confirmPrompt.then(async (userAction) => {
+        // When untestedSettingChanges, we switch the confirm and cancel buttons
+        const willSave = this.untestedSettingChanges ? !userAction.isConfirmed : userAction.isConfirmed
+        if (willSave) {
+          this.saveWebcamConfig()
+        }
+      })
+    },
+
+    async saveWebcamConfig() {
+      const camera_config = {
             printer_id: this.printer.id,
             name: this.selectedWebcam,
             streaming_params: this.streamingParams,
           }
-          const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
-          if (configuredCamera) {
-            axios.patch(urls.camera(configuredCamera.id), camera_config)
-          } else {
-            axios.post(urls.cameras(), camera_config)
-          }
-        }
-      })
+      const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
+      if (configuredCamera) {
+        await axios.patch(urls.camera(configuredCamera.id), camera_config)
+      } else {
+        await axios.post(urls.cameras(), camera_config)
+      }
     },
+
     deleteWebcamConfiguration(webcam) {
       axios.delete(urls.camera(webcam.id)).then(() => {
         this.getConfiguredWebcams()

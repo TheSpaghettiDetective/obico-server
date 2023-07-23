@@ -44,6 +44,16 @@ export function fetchAgentWebcams(printerComm, printer) {
   return passThruPromise(printerComm, webcamPayload)
 }
 
+export function startWebcamStreamer(printerComm, webcamName, streamingParams) {
+  const payload = {
+    func: 'start',
+    target: 'webcam_streamer',
+    args: [[{ name: webcamName, streaming_params: streamingParams }]],
+  }
+
+  return passThruPromise(printerComm, payload, 60)
+}
+
 export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword) {
   const listRecoursively = (fileObj) => {
     const fileList = []

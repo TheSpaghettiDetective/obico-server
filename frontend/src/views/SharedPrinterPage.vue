@@ -9,7 +9,11 @@
           <div class="card-header">
             <div>{{ printer.name }}</div>
           </div>
-          <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
+          <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
+            <div ref="streamInner" class="stream-inner">
+              <streaming-box :webcam="webcam" :webrtc="webcam.webrtc"> </streaming-box>
+            </div>
+          </div>
           <div class="p-3 p-md-5">
             <p class="text-center">
               You are viewing an awesome 3D print your friend shared specifically with you on
@@ -51,11 +55,10 @@ export default {
   data: function () {
     return {
       printer: null,
+      webcams: [],
       shareToken: null,
       videoAvailable: {},
       loading: true,
-      isWebrtcOpened: false,
-      webrtc: WebRTCConnection(),
     }
   },
   created() {
@@ -67,10 +70,14 @@ export default {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
           this.loading = false
-
-          if (!this.isWebrtcOpened) {
-            this.webrtc.openForShareToken(this.shareToken)
-            this.isWebrtcOpened = true
+          if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
+            const webcams = this.printer?.settings?.webcams
+            for (const webcam of webcams) {
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              webrtc.openForShareToken(this.shareToken)
+              webcam.webrtc = webrtc
+            }
+            this.webcams = webcams
           }
         },
       }

@@ -1,5 +1,8 @@
 <template>
   <div class="card-img-top webcam_container">
+    <div class="fallback">
+      <slot name="fallback"></slot>
+    </div>
     <div
       v-show="slowLinkLoss > 50"
       ref="slowLinkWrapper"
@@ -91,19 +94,11 @@
       >
         <div class="webcam_fixed_ratio_inner">
           <img
-            v-if="taggedSrc"
+            v-if="posterSrc"
             class="tagged-jpg"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
-            :src="taggedSrc"
-            :alt="printer.name + ' current image'"
+            :class="{ flipH: webcam.flipH, flipV: webcam.flipV }"
+            :src="posterSrc"
           />
-          <svg
-            v-else
-            class="poster-placeholder"
-            :style="{ transform: `rotate(-${videoRotationDeg}deg)` }"
-          >
-            <use :href="printerStockImgSrc" />
-          </svg>
         </div>
         <div v-show="showMJpeg" class="webcam_fixed_ratio_inner ontop">
           <img class="tagged-jpg" :src="mjpgSrc" />
@@ -112,10 +107,10 @@
           <video
             ref="video"
             class="remote-video"
-            :class="{ flipH: printer.settings.webcam_flipH, flipV: printer.settings.webcam_flipV }"
+            :class="{ flipH: webcam.flipH, flipV: webcam.flipV }"
             width="960"
             :height="webcamVideoHeight"
-            :poster="taggedSrc"
+            :poster="posterSrc"
             autoplay
             muted
             playsinline
@@ -128,7 +123,7 @@
 
     <div class="extra-controls">
       <div
-        v-if="showVideo || showVideo || taggedSrc"
+        v-if="showVideo || showVideo || posterSrc"
         class="video-control-btn"
         @click="onRotateRightClicked"
       >
@@ -139,7 +134,6 @@
 </template>
 
 <script>
-import get from 'lodash/get'
 import ifvisible from 'ifvisible'
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
 
@@ -191,17 +185,23 @@ export default {
   name: 'StreamingBox',
 
   props: {
-    printer: {
-      type: Object,
-      required: true,
-    },
     webrtc: {
       type: Object,
       default: null,
     },
-    autoplay: {
-      type: Boolean,
+    webcam: {
+      type: Object,
       required: true,
+    },
+    posterSrc: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    throttleId: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
 
@@ -218,7 +218,6 @@ export default {
       slowLinkHiding: false, // hide on moseleave
       trackMuted: false,
       videoLoading: false,
-      printerStockImgSrc: '#svg-3d-printer',
       mjpgSrc: null,
       customRotationDeg: getLocalPref('webcamRotationDeg', 0),
     }
@@ -232,14 +231,14 @@ export default {
       return this.mjpgSrc && this.stickyStreamingSrc !== 'IMAGE'
     },
     videoRotationDeg() {
-      const rotation = +(this.printer.settings.webcam_rotation ?? 0) + this.customRotationDeg
+      const rotation = +(this.webcam.rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
     webcamRotateClass() {
       return `webcam_rotate_${this.videoRotationDeg}`
     },
     webcamRatioClass() {
-      switch (this.printer.settings.ratio169) {
+      switch (this.webcam.ratio169) {
         case true:
           return 'ratio169'
         case false:
@@ -249,7 +248,7 @@ export default {
       }
     },
     webcamVideoHeight() {
-      switch (this.printer.settings.ratio169) {
+      switch (this.webcam.ratio169) {
         case true:
           return 540
         case false:
@@ -257,9 +256,6 @@ export default {
         default:
           return 720
       }
-    },
-    taggedSrc() {
-      return get(this.printer, 'pic.img_url')
     },
 
     // streaming timeline
@@ -279,8 +275,8 @@ export default {
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
-    basicStreamingInWebrtc() {
-      return this.printer.isAgentVersionGte('2.1.0', '0.3.0')
+    autoplay() {
+      return !this.throttleId
     },
   },
 
@@ -290,7 +286,7 @@ export default {
       this.onCanPlay()
     })
     if (!this.autoplay) {
-      this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
+      this.videoLimit = ViewingThrottle(this.throttleId, this.countDownCallback)
     }
 
     this.initWebRTC()
@@ -344,9 +340,6 @@ export default {
       if (this.autoplay) {
         webrtcConn.startStream()
       } else {
-        if (!this.basicStreamingInWebrtc) {
-          return
-        }
         if (!this.autoplay && this.isBasicStreamingInProgress) {
           webrtcConn.startStream()
         }
@@ -654,14 +647,11 @@ export default {
   text-align: center
   padding: 10px 0
 
-.poster-placeholder
-  $size: 100px
-  color: rgb(255 255 255 / .2)
-  width: $size
-  height: $size
+.fallback
   position: absolute
-  left: calc(50% - $size / 2)
-  top: calc(50% - $size / 2)
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
 
 .extra-controls
   position: absolute

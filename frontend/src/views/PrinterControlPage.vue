@@ -116,15 +116,22 @@
         <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
           <div ref="streamInner" class="stream-inner">
             <streaming-box
-              :printer="printer"
+              :webcam="webcam"
               :webrtc="webcam.webrtc"
-              :autoplay="user.is_pro"
+              :throttle-id="user.is_pro ? null : printer.id"
+              :poster-src="printer?.pic?.img_url"
               @onRotateRightClicked="
                 (val) => {
                   customRotationDeg = val
                 }
               "
-            />
+            >
+              <template #fallback>
+                <svg style="color: rgb(255 255 255 / 0.2)">
+                  <use href="#svg-3d-printer" />
+                </svg>
+              </template>
+            </streaming-box>
           </div>
         </div>
       </div>

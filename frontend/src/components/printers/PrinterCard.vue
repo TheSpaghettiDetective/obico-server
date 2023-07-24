@@ -38,7 +38,21 @@
           </b-dropdown>
         </div>
       </div>
-      <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="isProAccount" />
+
+      <streaming-box
+        v-for="webcam of webcams"
+        :key="webcam.name"
+        :webcam="webcam"
+        :webrtc="webcam.webrtc"
+        :throttle-id="isProAccount ? null : printer.id"
+        :poster-src="printer?.pic?.img_url"
+      >
+        <template #fallback>
+          <svg style="color: rgb(255 255 255 / 0.2)">
+            <use href="#svg-3d-printer" />
+          </svg>
+        </template>
+      </streaming-box>
       <div
         v-if="printer.alertUnacknowledged()"
         class="failure-alert card-body bg-warning px-2 py-1"
@@ -276,7 +290,7 @@ export default {
         time: getLocalPref(LocalPrefNames.Time + String(this.printer.id), Hide),
         statusTemp: getLocalPref(LocalPrefNames.StatusTemp + String(this.printer.id), Show),
       },
-      webrtc: WebRTCConnection(),
+      webcams: [],
     }
   },
   computed: {
@@ -358,7 +372,18 @@ export default {
       urls.printerWebSocket(this.printer.id),
       {
         onPrinterUpdateReceived: (data) => {
-          this.$emit('PrinterUpdated', this.updatedPrinter(data))
+          const printer = this.updatedPrinter(data)
+          if (this.webcams.length === 0 && printer?.settings?.webcams.length > 0) {
+            const webcams = printer?.settings?.webcams
+            for (const webcam of webcams) {
+              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+              webrtc.openForPrinter(printer.id, printer.auth_token)
+              webcam.webrtc = webrtc
+              // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+            }
+            this.webcams = webcams
+          }
+          this.$emit('PrinterUpdated', printer)
         },
         onStatusReceived: (printerStatus) => {
           // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
@@ -368,9 +393,6 @@ export default {
       }
     )
     this.printerComm.connect()
-
-    this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-    this.printerComm.setWebRTC(this.webrtc)
   },
 
   methods: {

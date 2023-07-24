@@ -498,7 +498,7 @@ export default {
           }
         })
         .catch((error) => {
-          this._logError(error, 'Failed to update printer')
+          this.errorDialog(error, 'Failed to update printer')
         })
     },
 

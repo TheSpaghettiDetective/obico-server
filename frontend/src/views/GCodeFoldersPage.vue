@@ -550,7 +550,7 @@ export default {
             if (selectedFileIds.length)
               await axios.post(urls.gcodeFileBulkDelete(), { file_ids: selectedFileIds })
           } catch (err) {
-            this._logError(err, 'Failed to delete files and folders')
+            this.errorDialog(err, 'Failed to delete files and folders')
           } finally {
             this.fetchFilesAndFolders(true)
           }
@@ -722,7 +722,7 @@ export default {
           folders = response?.results || []
         } catch (error) {
           this.loading = false
-          this._logError(error)
+          this.errorDialog(error)
         }
 
         this.currentFoldersPage += 1
@@ -751,7 +751,7 @@ export default {
           files = response?.results || []
         } catch (error) {
           this.loading = false
-          this._logError(error)
+          this.errorDialog(error)
         }
 
         this.currentFilesPage += 1
@@ -771,7 +771,7 @@ export default {
             }
           } catch (error) {
             this.loading = false
-            this._logError(error)
+            this.errorDialog(error)
           }
         }
       }

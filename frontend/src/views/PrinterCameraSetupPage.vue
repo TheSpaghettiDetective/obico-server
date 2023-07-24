@@ -190,31 +190,26 @@
             </div>
             <div class="content-column">
               <h2>Webcam Preview</h2>
-              <div>
-                Use this preview to check if the webcam works correctly.
-              </div>
+              <div>Use this preview to check if the webcam works correctly.</div>
               <div class="streaming-wrap">
                 <div v-if="!webrtc" class="loading-wrap">
                   <loading-placeholder />
                   <small class="creating-stream-text">Creating Stream...</small>
                 </div>
                 <div v-else>
-                  <streaming-box
-                    v-if="webrtc && !streamStarting"
-                    ref="streamingBox"
-                    :printer="printer"
-                    :webrtc="webrtc"
-                    :autoplay="true"
-                    :show-settings-icon="false"
-                    @onRotateRightClicked="
-                      (val) => {
-                        customRotationDeg = val
-                      }
-                    "
-                  />
+                  <div v-if="webrtc" class="stream-container">
+                    <div ref="streamInner" class="stream-inner">
+                      <streaming-box :webcam="webcamTestResult" :webrtc="webrtc">
+                        <template #fallback>
+                          <svg style="color: rgb(255 255 255 / 0.2)">
+                            <use href="#svg-3d-printer" />
+                          </svg>
+                        </template>
+                      </streaming-box>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <b-button @click="$router.go(-1)">Close Setup page</b-button>
+                <b-button @click="$router.go(-1)">Close Setup page</b-button>
               </div>
             </div>
           </div>
@@ -253,6 +248,7 @@ export default {
     return {
       printer: null,
       webrtc: null,
+      webcamTestResult: null,
       webcams: null,
       selectedWebcam: null,
       selectedWebcamData: null,
@@ -377,16 +373,14 @@ export default {
       }
       startWebcamStreamer(this.printerComm, this.selectedWebcam, this.streamingParams)
         .then((ret) => {
-          const streamId = ret?.[0]?.runtime?.stream_id
-          const streamMode = ret?.[0]?.streaming_params?.mode
+          const streamId = ret?.[0]?.stream_id
+          const streamMode = ret?.[0]?.stream_mode
           if (streamId === undefined || streamMode === undefined) {
             throw 'Webcam start failed to start for unknown reason. You can trouble-shoot the problem by following this guide.'
           } else {
+            this.webcamTestResult = ret[0]
             this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-            this.printerComm.setWebRTC(this.webrtc)
-
-            this.streamStarting = false
           }
         }, 60)
         .catch((err) => {

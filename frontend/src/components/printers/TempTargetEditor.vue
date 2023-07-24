@@ -30,14 +30,13 @@
       <br />
       <h5>Manual:</h5>
       <div>
-        <vue-slider
+        <slider-input
           v-model="value"
           :min="0"
           :max="maxTemp"
           :step="1"
-          :tooltip="'none'"
           @change="onSliderChanged"
-        ></vue-slider>
+        ></slider-input>
         <input id="target-temp" v-model="value" type="hidden" />
       </div>
     </div>
@@ -45,12 +44,12 @@
 </template>
 
 <script>
-import VueSlider from 'vue-slider-component'
+import SliderInput from '@src/components/SliderInput.vue'
 
 export default {
   name: 'TempTargetEditor',
   components: {
-    VueSlider,
+    SliderInput,
   },
   props: {
     presets: {

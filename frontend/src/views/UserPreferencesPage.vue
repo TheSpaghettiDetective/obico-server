@@ -307,7 +307,7 @@ export default {
             const key = getNotificationSettingKey(section, 'config')
             this.$set(this.errorMessages, key, errors)
           } else {
-            this._logError(err, 'Can not update your preferences')
+            this.errorDialog(err, 'Can not update your preferences')
           }
         })
     },
@@ -365,7 +365,7 @@ export default {
               this.$set(this.errorMessages, key, errors)
             }
           } else {
-            this._logError(err, 'Can not update your preferences')
+            this.errorDialog(err, 'Can not update your preferences')
           }
         })
     },
@@ -376,7 +376,7 @@ export default {
           this.$router.go()
         })
         .catch((err) => {
-          this._logError(err, 'Can not update your preferences')
+          this.errorDialog(err, 'Can not update your preferences')
         })
     },
     clearErrorMessages(propName) {
@@ -415,14 +415,14 @@ export default {
         .catch((err) => {
           if (err.response && err.response.data && typeof err.response.data === 'object') {
             if (err.response.data.non_field_errors) {
-              this._logError(err, err.response.data.non_field_errors)
+              this.errorDialog(err, err.response.data.non_field_errors)
             } else {
               for (const error in err.response.data) {
                 this.errorMessages[key] = err.response.data[error]
               }
             }
           } else {
-            this._logError(err, 'Can not update your preferences')
+            this.errorDialog(err, 'Can not update your preferences')
           }
         })
         .then(() => {

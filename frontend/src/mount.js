@@ -50,7 +50,7 @@ export default (router, components) => {
 
   Vue.mixin({
     methods: {
-      _logError: function (errorObj, userMessage) {
+      errorDialog: function (errorObj, userMessage) {
         console.error('logError', errorObj)
         if (userMessage) {
           this.$swal.Reject.fire({

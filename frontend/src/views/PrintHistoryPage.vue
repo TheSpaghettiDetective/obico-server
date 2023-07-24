@@ -395,7 +395,7 @@ export default {
           this.prints.push(...response.data.map((data) => normalizedPrint(data)))
         })
         .catch((error) => {
-          this._logError(error)
+          this.errorDialog(error)
         })
     },
     refetchData() {
@@ -421,7 +421,7 @@ export default {
           this.stats = response.data
         })
         .catch((error) => {
-          this._logError(error)
+          this.errorDialog(error)
         })
     },
 

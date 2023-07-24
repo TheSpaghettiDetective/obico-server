@@ -418,7 +418,7 @@ export default {
           this.$nextTick(this.drawCharts)
         })
         .catch((error) => {
-          this._logError(error, 'Failed to fetch statistics')
+          this.errorDialog(error, 'Failed to fetch statistics')
         })
     },
     updateChartGrouping(grouping) {

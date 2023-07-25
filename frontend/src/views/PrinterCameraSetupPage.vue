@@ -111,7 +111,8 @@
               </div>
               <p class="text-warning">
                 The settings above are retrieved from {{ agentUIDisplayName }}. If they are not
-                correct, change them in {{ agentUIDisplayName }} and restart the system.
+                correct, change them in {{ agentUIDisplayName }}. Don't forget to restart the system
+                afterward as your change may not take effect until a complete restart.
               </p>
               <hr />
               <div v-if="isWebRTCCameraStreamer">
@@ -143,15 +144,16 @@
                 </b-form-select>
                 <div v-if="streamMode === 'h264_copy'">
                   You are currently using the MP4 source. Consider turning on RTSP in
-                  OctoPrint/Crowsnest, and switch to the "Stream from the RTSP source" option. You
-                  will have a better streaming experience including lower latency when Obico streams
-                  from RTSP source. <a href="#">Learn more.</a>
+                  {{ newCameraStackDisplayName }}, and switch to the "Stream from the RTSP source"
+                  option. You will have a better streaming experience including lower latency when
+                  Obico streams from RTSP source. <a href="#">Learn more.</a>
                 </div>
                 <div v-if="streamMode === 'h264_rtsp'">
                   You are currently using the RTSP source. Please note that, due to an known bug,
                   RTSP stream may fail <i>after a few hours</i> on some Raspberry Pi devices. If
-                  this happen to you, please turn off RTSP in OctoPrint/Crowsnest, come back to this
-                  page, and select "Stream from the MP4 source". <a href="#">Learn more</a>
+                  this happen to you, please turn off RTSP in {{ newCameraStackDisplayName }}, come
+                  back to this page, and select "Stream from the MP4 source".
+                  <a href="#">Learn more</a>
                 </div>
                 <hr />
                 <div v-if="streamMode === 'h264_copy'">
@@ -173,8 +175,8 @@
                 <small
                   >You only need to change
                   {{ streamMode === 'h264_rtsp' ? 'RTSP Port' : 'MP4 Source URL' }} if you have a
-                  custom OctoPrint/Crowsnest installation. If the webcam is working in the preview,
-                  don't change it. <a href="#">Learn more</a></small
+                  custom {{ newCameraStackDisplayName }} installation. If the webcam is working in
+                  the preview, don't change it. <a href="#">Learn more</a></small
                 >
               </div>
               <hr />
@@ -201,14 +203,72 @@
                     <div ref="streamInner" class="stream-inner">
                       <streaming-box :webcam="webcamTestResult" :webrtc="webrtc">
                         <template #fallback>
-                          <svg style="color: rgb(255 255 255 / 0.2)">
-                            <use href="#svg-3d-printer" />
-                          </svg>
+                          <div>Your webcam stream is not working.</div>
+                          <div>Use the "Troubleshoot Tips" button to figure out the problem.</div>
                         </template>
                       </streaming-box>
                     </div>
                   </div>
+                  <div v-if="webcamTestResult?.error" class="text-danger">
+                    <h4>The webcam streaming process has run into error(s):</h4>
+                    <p>{{ webcamTestResult?.error }}</p>
+                  </div>
+                  <h3>Webcam stream not working correctly?</h3>
+                  <b-button @click="showTroubleshootingTips">Troubleshooting Tips</b-button>
+                  <div v-if="troubleshootingDialogOpen">
+                    <div>Follow these steps to troubleshoot:</div>
+                    <ol>
+                      <li>
+                        Make sure webcam "{{ selectedWebcam }}" works correctly in
+                        {{ agentUIDisplayName }}.
+                      </li>
+                      <li v-if="streamMode === 'h264_rtsp' && printer.isAgentMoonraker">
+                        Make sure you have <a href="#">turned on RTSP in Crowsnest V4</a> and
+                        restarted the Raspberry Pi.
+                      </li>
+                      <li v-if="streamMode === 'h264_rtsp' && !printer.isAgentMoonraker">
+                        Make sure you have
+                        <a href="#">turned on RTSP in the OctoPrint new camera stack</a> and
+                        restarted the Raspberry Pi.
+                      </li>
+                      <li v-if="streamMode === 'h264_rtsp'">
+                        Make sure the RTSP Port "{{ rtspPort }}" is correct. The default value is
+                        usually correct unless you have made changes to the default streaming
+                        settings in {{ newCameraStackDisplayName }}, or have multiple webcams.
+                      </li>
+                      <li v-if="streamMode === 'h264_rtsp' && printer.isAgentMoonraker">
+                        If the webcam stream tests okay here but goes dark after a few hours, you
+                        are one of the unlucky users with the Raspberry Pi 4Bs that don't work well
+                        with RTSP. In this case, please come back here and switch to "Stream from
+                        the MP4 source".
+                      </li>
+                      <li v-if="streamMode === 'h264_copy'">
+                        Make sure the MP4 source URL "{{ h264HttpUrl }}" is correct. The default
+                        value is usually correct unless you have made changes to the default
+                        streaming settings in {{ newCameraStackDisplayName }}, or have multiple
+                        webcams.
+                      </li>
+                      <li v-if="streamMode === 'h264_copy'">
+                        The WebRTC streaming in {{ newCameraStackDisplayName }} is relatively new
+                        and hence still has some outstanding bugs. Some of these bugs will cause the
+                        stream to fail in the Obico app even if it works in
+                        {{ agentUIDisplayName }}. You can try the legacy MJPEG-Streamer in
+                        {{ agentUIDisplayName }}, and come back here to try it again.
+                      </li>
+                      <li>
+                        Follow
+                        <a href="#">our comprehensive webcam streaming troubleshooting guide</a>.
+                      </li>
+                      <li>
+                        When everything fails,
+                        <a href="https://obico.io/docs/user-guides/contact-us-for-support/"
+                          >get help from a human</a
+                        >.
+                      </li>
+                    </ol>
+                  </div>
                 </div>
+                <br />
                 <b-button @click="$router.go(-1)">Close Setup page</b-button>
               </div>
             </div>
@@ -259,6 +319,7 @@ export default {
       errorMessage: null,
       actionMessage: 'Fetching printer info',
       untestedSettingChanges: false,
+      troubleshootingDialogOpen: false,
     }
   },
 
@@ -283,6 +344,10 @@ export default {
 
     agentUIDisplayName() {
       return this.printer.isAgentMoonraker() ? 'Mainsail/Fluidd' : 'OctoPrint'
+    },
+
+    newCameraStackDisplayName() {
+      return this.printer.isAgentMoonraker() ? 'Crowsnest V4' : 'the OctoPi new camera stack'
     },
   },
 
@@ -490,6 +555,9 @@ export default {
       } else {
         this.errorMessage = err
       }
+    },
+    showTroubleshootingTips() {
+      this.troubleshootingDialogOpen = true
     },
   },
 }

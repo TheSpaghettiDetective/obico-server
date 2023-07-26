@@ -377,7 +377,7 @@ export default {
         params.h264_http_url = this.h264HttpUrl
       } else if (this.streamMode === 'h264_rtsp') {
         params.rtsp_port = this.rtspPort
-      } else if (this.streamMode === 'h264_recode') {
+      } else if (this.streamMode === 'h264_transcode') {
         params.recode_width = parseInt(this.recodeWidth)
         params.recode_height = parseInt(this.recodeHeight)
         params.recode_fps = parseInt(this.recodeFps)
@@ -452,7 +452,7 @@ export default {
       if (this.isWebRTCWebcamStreamer) {
         this.streamMode = 'h264_copy'
       } else if (this.isMjpegWebcamStreamer) {
-        this.streamMode = 'h264_recode'
+        this.streamMode = 'h264_transcode'
       } else {
         return
       }
@@ -471,7 +471,7 @@ export default {
         }
       } else if (this.streamMode === 'h264_rtsp') {
         this.rtspPort = 8554
-      } else if (this.streamMode === 'h264_recode') {
+      } else if (this.streamMode === 'h264_transcode') {
         this.recodeWidth = this.selectedWebcamData?.width || 640
         this.recodeHeight = this.selectedWebcamData?.height || 360
         this.recodeFps = this.selectedWebcamData?.target_fps || 15

@@ -31,17 +31,10 @@ export function shutdownWebcamStreamer(printerComm) {
 }
 
 export function fetchAgentWebcams(printerComm, printer) {
-  const webcamFetchOctoPayload = null // TODO
-  const webcamFetchMoonrakerPayload = {
-    func: 'server/webcams/list',
-    target: 'moonraker_api',
-  }
-
-  const webcamPayload = printer.isAgentMoonraker()
-    ? webcamFetchMoonrakerPayload
-    : webcamFetchOctoPayload
-
-  return passThruPromise(printerComm, webcamPayload)
+  return passThruPromise(printerComm, {
+    func: 'list_system_webcams',
+    target: 'webcam_streamer',
+  })
 }
 
 export function startWebcamStreamer(printerComm, webcamName, streamingParams) {

@@ -62,7 +62,7 @@
             <div>For details, please refer to <a href="#">the Obico webcam setup guide</a></div>
           </div>
           <!-- camera settings editor -->
-          <div v-if="selectedWebcamData" class="webcam-data-wrap">
+          <div v-if="selectedWebcamData && canStream" class="webcam-data-wrap">
             <div class="content-column">
               <b-card class="mb-3">
                 <template #header>
@@ -115,7 +115,7 @@
                 afterward as your change may not take effect until a complete restart.
               </p>
               <hr />
-              <div v-if="isWebRTCCameraStreamer">
+              <div v-if="isWebRTCWebcamStreamer">
                 <h3>Source</h3>
                 <div>
                   It looks like you are using WebRTC to stream your webcam. Good call! WebRTC is
@@ -137,7 +137,7 @@
                   id="streamMode"
                   v-model="streamMode"
                   class="form-control"
-                  @change="setInitStreamConfig"
+                  @change="setInitStreamingParams"
                 >
                   <option key="h264_copy" value="h264_copy">Stream from the MP4 source</option>
                   <option key="h264_rtsp" value="h264_rtsp">Stream from the RTSP source</option>
@@ -178,6 +178,22 @@
                   custom {{ newCameraStackDisplayName }} installation. If the webcam is working in
                   the preview, don't change it. <a href="#">Learn more</a></small
                 >
+              </div>
+              <div v-else-if="isMjpegWebcamStreamer">
+                <h3>Streaming Resolution</h3>
+                <div>
+                  <label :for="widthInput">Width:</label>
+                  <input id="widthInput" v-model="recodeWidth" type="number" />
+                </div>
+                <div>
+                  <label :for="heightInput">Height:</label>
+                  <input id="heightInput" v-model="recodeHeight" type="number" />
+                </div>
+                <h3>Streaming Framerate</h3>
+                <div>
+                  <label :for="fpsInput">Frame per second:</label>
+                  <input id="fpsInput" v-model="recodeFps" type="number" />
+                </div>
               </div>
               <hr />
               <b-button
@@ -273,6 +289,17 @@
               </div>
             </div>
           </div>
+          <div v-if="selectedWebcamData && !canStream" class="webcam-data-wrap">
+            <div>
+              <div class="text-danger">Obico doesn't know how to stream this webcam.</div>
+              <ul>
+                Currently we can only stream
+                <li>WebRTC (camera-streamer) - Recommended</li>
+                <li>MJPEG-Streamer</li>
+                <li>Adaptive MJPEG-Streamer (experimental)</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -290,6 +317,7 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import WebRTCConnection from '@src/lib/webrtc'
 import { printerCommManager } from '@src/lib/printer-comm'
 import StreamingBox from '@src/components/StreamingBox'
+
 import {
   shutdownWebcamStreamer,
   PassThruTimeOutError,
@@ -312,21 +340,33 @@ export default {
       webcams: null,
       selectedWebcam: null,
       selectedWebcamData: null,
-      streamMode: null,
-      h264HttpUrl: null,
-      rtspPort: null,
       configuredCameras: [],
       errorMessage: null,
       actionMessage: 'Fetching printer info',
       untestedSettingChanges: false,
       troubleshootingDialogOpen: false,
+      streamMode: null,
+      h264HttpUrl: null,
+      rtspPort: null,
+      recodeWidth: 640,
+      recodeHeight: 360,
+      recodeFps: 15,
     }
   },
 
   computed: {
-    isWebRTCCameraStreamer() {
+    isWebRTCWebcamStreamer() {
       if (!this.selectedWebcamData) return false
       return this.selectedWebcamData.service === 'webrtc-camerastreamer'
+    },
+
+    isMjpegWebcamStreamer() {
+      if (!this.selectedWebcamData?.service) return false
+      return this.selectedWebcamData?.service?.toLowerCase().includes('mjpeg')
+    },
+
+    canStream() {
+      return this.isWebRTCWebcamStreamer || this.isMjpegWebcamStreamer
     },
 
     streamingParams() {
@@ -337,6 +377,10 @@ export default {
         params.h264_http_url = this.h264HttpUrl
       } else if (this.streamMode === 'h264_rtsp') {
         params.rtsp_port = this.rtspPort
+      } else if (this.streamMode === 'h264_recode') {
+        params.recode_width = parseInt(this.recodeWidth)
+        params.recode_height = parseInt(this.recodeHeight)
+        params.recode_fps = parseInt(this.recodeFps)
       }
 
       return params
@@ -356,6 +400,9 @@ export default {
     rtspPort: 'streamSettingsChanged',
     streamMode: 'streamSettingsChanged',
     h264HttpUrl: 'streamSettingsChanged',
+    recodeWidth: 'streamSettingsChanged',
+    recodeHeight: 'streamSettingsChanged',
+    recodeFps: 'streamSettingsChanged',
   },
 
   async created() {
@@ -402,28 +449,32 @@ export default {
       }
 
       this.selectedWebcamData = this.webcams.filter((cam) => cam.name === this.selectedWebcam)[0]
-      if (this.isWebRTCCameraStreamer) {
+      if (this.isWebRTCWebcamStreamer) {
         this.streamMode = 'h264_copy'
-      } else {
+      } else if (this.isMjpegWebcamStreamer) {
         this.streamMode = 'h264_recode'
+      } else {
+        return
       }
-      this.setInitStreamConfig()
+      this.setInitStreamingParams()
     },
 
-    setInitStreamConfig() {
-      if (this.isWebRTCCameraStreamer) {
-        if (this.streamMode === 'h264_copy') {
-          const streamUrl = this.webcamFullUrl(this.selectedWebcamData?.stream_url)
+    setInitStreamingParams() {
+      if (this.streamMode === 'h264_copy') {
+        const streamUrl = this.webcamFullUrl(this.selectedWebcamData?.stream_url)
 
-          // TODO: Is there a more robust way to figure out the mp4 url?
-          if (streamUrl.endsWith('webrtc')) {
-            this.h264HttpUrl = streamUrl.replace(/webrtc$/, 'video.mp4')
-          } else {
-            this.h264HttpUrl = 'http://127.0.0.1:8080/video.mp4'
-          }
-        } else if (this.streamMode === 'h264_rtsp') {
-          this.rtspPort = 8554
+        // TODO: Is there a more robust way to figure out the mp4 url?
+        if (streamUrl.endsWith('webrtc')) {
+          this.h264HttpUrl = streamUrl.replace(/webrtc$/, 'video.mp4')
+        } else {
+          this.h264HttpUrl = 'http://127.0.0.1:8080/video.mp4'
         }
+      } else if (this.streamMode === 'h264_rtsp') {
+        this.rtspPort = 8554
+      } else if (this.streamMode === 'h264_recode') {
+        this.recodeWidth = this.selectedWebcamData?.width || 640
+        this.recodeHeight = this.selectedWebcamData?.height || 360
+        this.recodeFps = this.selectedWebcamData?.target_fps || 15
       }
 
       this.testWebcamStream()
@@ -465,7 +516,7 @@ export default {
           return fetchAgentWebcams(this.printerComm, this.printer)
         })
         .then((ret) => {
-          this.webcams = ret?.webcams
+          this.webcams = ret || []
         })
         .catch((err) => {
           this.handlePassThruError(err)

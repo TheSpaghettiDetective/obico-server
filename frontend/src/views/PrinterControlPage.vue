@@ -177,8 +177,11 @@
             </b-dropdown>
           </div>
           <div v-if="selectedWebcam.name == 'All Webcams'" class="all-streams-wrap">
-            <div v-for="webcam of webcams" :key="webcam.name" class="single-stream-wrap">
-              <!-- <div ref="streamInner" class="stream-inner"> -->
+            <div
+              v-for="webcam of webcams"
+              :key="webcam.name"
+              :class="[webcams.length > 1 ? 'multi-stream-wrap' : 'single-stream-wrap']"
+            >
               <streaming-box
                 :webcam="webcam"
                 :webrtc="webcam.webrtc"
@@ -196,10 +199,9 @@
                   </svg>
                 </template>
               </streaming-box>
-              <!-- </div> -->
             </div>
           </div>
-          <div v-else>
+          <div v-else class="single-stream-wrap">
             <streaming-box
               :webcam="selectedWebcam"
               :webrtc="selectedWebcam.webrtc"
@@ -653,11 +655,17 @@ export default {
     left: 0
     width: 100%
     margin-bottom: 15px
-    flex: 0
+    display: flex
+    flex-direction: column
+    justify-content: flex-start
+    align-items: center
 
     .stream-inner
       position: static
       transform: none
+  .single-stream-wrap
+    border-radius: 0 0 var(--border-radius-md) var(--border-radius-md)
+    overflow: hidden
 
 .page-container
   @media (max-width: 510px)
@@ -689,19 +697,33 @@ export default {
 
 .all-streams-wrap
   display: flex
-  flex-direction: column
+  flex-direction: row
   flex-wrap: wrap
   justify-content: center
   align-items: center
-  gap: var(--gap-between-blocks)
-  height: calc(100vh - 50px - var(--gap-between-blocks)*2)
   width: calc(100vw - 100px - var(--gap-between-blocks)*3 - var(--widget-width))
+  height: calc(100vh - 50px - 3rem - var(--gap-between-blocks)*2)
+  max-height: calc(100vh - 50px - 3rem - var(--gap-between-blocks)*2)
+  overflow: hidden
+@media (max-width: 1024px)
+  .all-streams-wrap
+    width: 100%
+    height: 100%
+
 
 .single-stream-wrap
-  display: flex
-  flex: 1 0 41%
   align-items: center
   justify-content: center
+  max-height: calc(100vh - 50px - 3rem - var(--gap-between-blocks)*2)
+  overflow: hidden
+  width: 100%
+
+.multi-stream-wrap
+  flex: 0 1 40%
+  min-width: 200px
+  max-width: 400px
+
+
 
 
 .webcam-heading
@@ -713,16 +735,20 @@ export default {
   padding-right: var(--gap-between-blocks)
   padding: 10px 20px 10px 20px
   background-color: var(--color-surface-secondary)
-  cursor: pointer
   border-radius: var(--border-radius-md) var(--border-radius-md) 0 0
+  height: 3rem
 
 
 .dropdown-header-wrap
   display: flex
   flex-direction: row
   align-items: center
+  cursor: pointer
   gap: 5px
 .dropdown-header > p
   margin: 0
   padding: 0
+
+.stream-inner2
+  flex: 1
 </style>

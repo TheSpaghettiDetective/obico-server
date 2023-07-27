@@ -113,11 +113,96 @@
             </div>
           </div>
         </div>
-        <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
-          <div ref="streamInner" class="stream-inner">
+        <div class="stream-container">
+          <div class="webcam-heading">
+            <b-dropdown toggle-class="action-btn icon-btn" no-caret>
+              <template #button-content>
+                <div class="dropdown-header-wrap">
+                  <i class="fas fa-camera"></i>
+                  <p style="padding: 0; margin: 0">{{ selectedWebcam.name }}</p>
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+              </template>
+              <div>
+                <b-dropdown-text class="small text-secondary">WEBCAM SELECTION</b-dropdown-text>
+                <b-dropdown-item
+                  v-for="webcam in webcams"
+                  :key="webcam.name"
+                  @click.native.capture.stop.prevent="selectedWebcam = webcam"
+                >
+                  <div class="dropdown-text-group">
+                    <i
+                      class="fas fa-check text-primary"
+                      :style="{
+                        visibility: selectedWebcam.name === webcam.name ? 'visible' : 'hidden',
+                      }"
+                    ></i>
+                    <div class="filterItemH">
+                      <div class="text">{{ webcam.name }}</div>
+                    </div>
+                  </div>
+                </b-dropdown-item>
+                <b-dropdown-item
+                  @click.native.capture.stop.prevent="selectedWebcam = { name: 'All Webcams' }"
+                >
+                  <div class="dropdown-text-group">
+                    <i
+                      class="fas fa-check text-primary"
+                      :style="{
+                        visibility: selectedWebcam.name === 'All Webcams' ? 'visible' : 'hidden',
+                      }"
+                    ></i>
+                    <div class="filterItemH">
+                      <div class="text">All Webcams</div>
+                    </div>
+                  </div>
+                </b-dropdown-item>
+                <b-dropdown-divider />
+                <b-dropdown-item
+                  @click.native.capture.stop.prevent="
+                    () => {
+                      $router.push(`/printers/${printerId}/camera_setup`)
+                      $router.go()
+                    }
+                  "
+                >
+                  <div class="dropdown-text-group">
+                    <i class="fas fa-wrench"></i>
+                    <div class="filterItemH">
+                      <div class="text">Webcam Settings</div>
+                    </div>
+                  </div>
+                </b-dropdown-item>
+              </div>
+            </b-dropdown>
+          </div>
+          <div v-if="selectedWebcam.name == 'All Webcams'" class="all-streams-wrap">
+            <div v-for="webcam of webcams" :key="webcam.name" class="single-stream-wrap">
+              <!-- <div ref="streamInner" class="stream-inner"> -->
+              <streaming-box
+                :webcam="webcam"
+                :webrtc="webcam.webrtc"
+                :throttle-id="user.is_pro ? null : printer.id"
+                :poster-src="printer?.pic?.img_url"
+                @onRotateRightClicked="
+                  (val) => {
+                    customRotationDeg = val
+                  }
+                "
+              >
+                <template #fallback>
+                  <svg style="color: rgb(255 255 255 / 0.2)">
+                    <use href="#svg-3d-printer" />
+                  </svg>
+                </template>
+              </streaming-box>
+              <!-- </div> -->
+            </div>
+          </div>
+          <div v-else>
             <streaming-box
-              :webcam="webcam"
-              :webrtc="webcam.webrtc"
+              :webcam="selectedWebcam"
+              :webrtc="selectedWebcam.webrtc"
               :throttle-id="user.is_pro ? null : printer.id"
               :poster-src="printer?.pic?.img_url"
               @onRotateRightClicked="
@@ -226,6 +311,7 @@ export default {
       lastPrintFetchCounter: 0,
       widgetsConfig: null,
       customRotationDeg: getLocalPref('webcamRotationDeg', 0),
+      selectedWebcam: { name: 'All Webcams' },
     }
   },
 
@@ -541,7 +627,6 @@ export default {
   width: calc(100vw - 100px - var(--gap-between-blocks)*3 - var(--widget-width))
   background-color: #000
   border-radius: var(--border-radius-md)
-  overflow: hidden
 
   .stream-inner
     position: absolute
@@ -601,4 +686,43 @@ export default {
       display: block
       text-align: center
       margin-bottom: 1rem
+
+.all-streams-wrap
+  display: flex
+  flex-direction: column
+  flex-wrap: wrap
+  justify-content: center
+  align-items: center
+  gap: var(--gap-between-blocks)
+  height: calc(100vh - 50px - var(--gap-between-blocks)*2)
+  width: calc(100vw - 100px - var(--gap-between-blocks)*3 - var(--widget-width))
+
+.single-stream-wrap
+  display: flex
+  flex: 1 0 41%
+  align-items: center
+  justify-content: center
+
+
+.webcam-heading
+  width: 100%
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: flex-end
+  padding-right: var(--gap-between-blocks)
+  padding: 10px 20px 10px 20px
+  background-color: var(--color-surface-secondary)
+  cursor: pointer
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0
+
+
+.dropdown-header-wrap
+  display: flex
+  flex-direction: row
+  align-items: center
+  gap: 5px
+.dropdown-header > p
+  margin: 0
+  padding: 0
 </style>

@@ -194,6 +194,25 @@
                   <label for="fpsInput">Frame per second:</label>
                   <input id="fpsInput" v-model="recodeFps" type="number" />
                 </div>
+                <hr />
+                <h3>Encoding</h3>
+                <small
+                  >You can choose between H.264 and MJPEG encoding. H.264 is preferred because it is
+                  more efficient and hence can stream webcam at higher resolution and framerate.
+                  However, H.264 encoding may not be supported by the SBC board your
+                  {{ printer.agentDisplayName() }} runs on. In this case, please select
+                  MJPEG.</small
+                >
+                <b-form-select
+                  id="streamMode"
+                  v-model="streamMode"
+                  class="form-control"
+                  @change="setInitStreamingParams"
+                >
+                  <option key="h264_transcode" value="h264_transcode">H.264</option>
+                  <option key="mjpeg_webrtc" value="mjpeg_webrtc">MJPEG</option>
+                </b-form-select>
+                <hr />
                 <h3>CPU Usage</h3>
                 <small>
                   <div>
@@ -210,9 +229,8 @@
                     prints.
                   </div>
                   <div>
-                    Your Raspberry Pi has {{ Object.keys(cpuStats).length - 1 }} cores, displayed
-                    below. We recommend adjusting the resolution and framerate to keep all of them
-                    below 50%.
+                    Your Raspberry Pi has {{ coreCount }} cores, displayed below. We recommend
+                    adjusting the resolution and framerate to keep all of them below 50%.
                   </div>
                 </small>
                 <b-progress
@@ -222,9 +240,11 @@
                   max="100"
                   class="mb-3"
                 >
-                  <b-progress-bar variant="primary" :value="entry[1]">{{
-                    entry[0]
-                  }}</b-progress-bar>
+                  <b-progress-bar
+                    :variant="entry[1] > 50 ? 'warning' : 'primary'"
+                    :value="entry[1]"
+                    >{{ entry[0] }}</b-progress-bar
+                  >
                 </b-progress>
               </div>
               <hr />
@@ -432,6 +452,11 @@ export default {
     newCameraStackDisplayName() {
       return this.printer.isAgentMoonraker() ? 'Crowsnest V4' : 'the OctoPi new camera stack'
     },
+
+    coreCount() {
+      if (this.cpuStats === null) return null
+      return Object.keys(this.cpuStats).length
+    },
   },
 
   watch: {
@@ -518,7 +543,7 @@ export default {
         }
       } else if (this.streamMode === 'h264_rtsp') {
         this.rtspPort = 8554
-      } else if (this.streamMode === 'h264_transcode') {
+      } else if (this.streamMode === 'h264_transcode' || this.streamMode === 'mjpeg_webrtc') {
         this.recodeWidth = this.selectedWebcamData?.width || 640
         this.recodeHeight = this.selectedWebcamData?.height || 360
         this.recodeFps = this.selectedWebcamData?.target_fps || 15

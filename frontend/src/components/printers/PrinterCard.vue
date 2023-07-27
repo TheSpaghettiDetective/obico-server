@@ -44,8 +44,9 @@
         :key="webcam.name"
         :webcam="webcam"
         :webrtc="webcam.webrtc"
-        :throttle-id="isProAccount ? null : printer.id"
         :poster-src="printer?.pic?.img_url"
+        :printer="printer"
+        :autoplay="isProAccount"
       >
         <template #fallback>
           <svg style="color: rgb(255 255 255 / 0.2)">
@@ -377,7 +378,6 @@ export default {
             const webcams = printer?.settings?.webcams
             for (const webcam of webcams) {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
-              webrtc.openForPrinter(printer.id, printer.auth_token)
               webcam.webrtc = webrtc
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
             }

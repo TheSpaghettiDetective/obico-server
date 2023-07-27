@@ -212,7 +212,7 @@
                   <div>
                     Your Raspberry Pi has {{ Object.keys(cpuStats).length - 1 }} cores, displayed
                     below. We recommend adjusting the resolution and framerate to keep all of them
-                    understand 50%.
+                    below 50%.
                   </div>
                 </small>
                 <b-progress
@@ -249,7 +249,12 @@
                 <div v-else>
                   <div v-if="webrtc" class="stream-container">
                     <div ref="streamInner" class="stream-inner">
-                      <streaming-box :webcam="webcamTestResult" :webrtc="webrtc">
+                      <streaming-box
+                        :webcam="webcamTestResult"
+                        :webrtc="webrtc"
+                        :printer="printer"
+                        :autoplay="true"
+                      >
                         <template #fallback>
                           <div>Your webcam stream is not working.</div>
                           <div>Use the "Troubleshoot Tips" button to figure out the problem.</div>
@@ -540,7 +545,6 @@ export default {
           } else {
             this.webcamTestResult = ret[0]
             this.webrtc = WebRTCConnection(streamMode, streamId)
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
 
             if (streamMode === 'h264_transcode') {
               this.startCPUStatsUpdate()

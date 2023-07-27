@@ -203,10 +203,11 @@
           </div>
           <div v-else class="single-stream-wrap">
             <streaming-box
-              :webcam="selectedWebcam"
-              :webrtc="selectedWebcam.webrtc"
-              :throttle-id="user.is_pro ? null : printer.id"
+              :webcam="webcam"
+              :webrtc="webcam.webrtc"
               :poster-src="printer?.pic?.img_url"
+              :printer="printer"
+              :autoplay="user.is_pro"
               @onRotateRightClicked="
                 (val) => {
                   customRotationDeg = val
@@ -369,7 +370,6 @@ export default {
             const webcams = this.printer?.settings?.webcams
             for (const webcam of webcams) {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
-              webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
               webcam.webrtc = webrtc
               // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
             }

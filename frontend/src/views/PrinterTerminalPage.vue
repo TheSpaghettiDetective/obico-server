@@ -166,6 +166,7 @@ import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page-context'
 import split from 'lodash/split'
+import { printerWebRTCUrl } from '@src/components/StreamingBox'
 import CascadedDropdown from '@src/components/CascadedDropdown'
 import terminalMixin from '@src/components/terminal/terminal-mixin.js'
 import TerminalWindow from '@src/components/terminal/TerminalWindow'
@@ -199,7 +200,7 @@ export default {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
           if (this.webrtc && !this.webrtc.initialized) {
-            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            this.webrtc.connect(printerWebRTCUrl(this.printer.id), this.printer.auth_token)
             this.printerComm.setWebRTC(this.webrtc)
           }
         },

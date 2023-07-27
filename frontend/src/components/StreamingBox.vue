@@ -141,6 +141,14 @@ import Janus from '@src/lib/janus'
 import { toArrayBuffer } from '@src/lib/utils'
 import ViewingThrottle from '@src/lib/viewing-throttle'
 
+export function printerWebRTCUrl(printerId) {
+  return `/ws/janus/${printerId}/`
+}
+
+export function printerSharedWebRTCUrl(token) {
+  return `/ws/share_token/janus/${token}/`
+}
+
 function MJpegStreamDecoder(onFrame) {
   const self = {
     onFrame,
@@ -198,7 +206,15 @@ export default {
       required: false,
       default: null,
     },
-    throttleId: {
+    autoplay: {
+      type: Boolean,
+      required: true,
+    },
+    printer: {
+      type: Object,
+      required: true,
+    },
+    shareToken: {
       type: String,
       required: false,
       default: null,
@@ -275,9 +291,6 @@ export default {
     isBasicStreamingFrozen() {
       return this.remainingSecondsUntilNextCycle > 0 && !this.isVideoVisible
     },
-    autoplay() {
-      return !this.throttleId
-    },
   },
 
   created() {
@@ -286,7 +299,7 @@ export default {
       this.onCanPlay()
     })
     if (!this.autoplay) {
-      this.videoLimit = ViewingThrottle(this.throttleId, this.countDownCallback)
+      this.videoLimit = ViewingThrottle(this.printer.id, this.countDownCallback)
     }
 
     this.initWebRTC()
@@ -319,6 +332,11 @@ export default {
           },
           onMJpegData: this.mjpegStreamDecoder.onMJpegChunk,
         })
+        if (this.shareToken) {
+          this.webrtc.connect(printerSharedWebRTCUrl(this.shareToken), this.shareToken)
+        } else if (this.printer) {
+          this.webrtc.connect(printerWebRTCUrl(this.printer.id), this.printer.auth_token)
+        }
       }
     },
 

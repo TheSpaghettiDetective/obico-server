@@ -196,11 +196,11 @@ class Printer(SafeDeleteModel):
 
         if p_settings.get('webcams') is not None:
             p_settings['webcams'] = json.loads(p_settings.get('webcams'))
+        else:
+            p_settings['webcams'] = webcam_settings
 
-            ## Backward compatibility with mobile app 1.96 or earlier
-
-            if len(p_settings['webcams']) > 0:
-                webcam_settings = p_settings['webcams'][0]
+        ## Backward compatibility with mobile app 1.96 or earlier
+        webcam_settings = p_settings['webcams'][0]
 
         for key in ('flipV', 'flipH', 'rotate90', 'rotation', 'streamRatio'): # `webcam_rotate90` for backward compatibility with old plugins
             p_settings['webcam_' + key] = webcam_settings.get(key)

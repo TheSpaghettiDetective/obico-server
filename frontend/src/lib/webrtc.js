@@ -3,9 +3,6 @@ import find from 'lodash/find'
 
 import Janus from '@src/lib/janus'
 
-let printerWebRTCUrl = (printerId) => `/ws/janus/${printerId}/`
-let printerSharedWebRTCUrl = (token) => `/ws/share_token/janus/${token}/`
-
 function iceServers(authToken) {
   const turnServer = window.location.hostname.replace('app', 'turn')
 
@@ -44,13 +41,6 @@ export default function WebRTCConnection(streamMode, streamIdToTest) {
     h264WebRTCConn: h264Webrtc,
     mjpegWebRTCConn: mjpegWebrtc,
 
-    openForShareToken(shareToken) {
-      self.connect(printerSharedWebRTCUrl(shareToken), shareToken)
-    },
-
-    openForPrinter(printerId, authToken) {
-      self.connect(printerWebRTCUrl(printerId), authToken)
-    },
     connect(wsUri, token) {
       self.initialized = true
       if (self.h264WebRTCConn) self.h264WebRTCConn.connect(wsUri, token)

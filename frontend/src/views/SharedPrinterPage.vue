@@ -11,7 +11,14 @@
           </div>
           <div v-for="webcam of webcams" :key="webcam.name" class="stream-container">
             <div ref="streamInner" class="stream-inner">
-              <streaming-box :webcam="webcam" :webrtc="webcam.webrtc"> </streaming-box>
+              <streaming-box
+                :webcam="webcam"
+                :webrtc="webcam.webrtc"
+                :printer="printer"
+                :share-token="shareToken"
+                :autoplay="true"
+              >
+              </streaming-box>
             </div>
           </div>
           <div class="p-3 p-md-5">
@@ -74,7 +81,6 @@ export default {
             const webcams = this.printer?.settings?.webcams
             for (const webcam of webcams) {
               const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
-              webrtc.openForShareToken(this.shareToken)
               webcam.webrtc = webrtc
             }
             this.webcams = webcams

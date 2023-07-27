@@ -182,18 +182,50 @@
               <div v-else-if="isMjpegWebcamStreamer">
                 <h3>Streaming Resolution</h3>
                 <div>
-                  <label :for="widthInput">Width:</label>
+                  <label for="widthInput">Width:</label>
                   <input id="widthInput" v-model="recodeWidth" type="number" />
                 </div>
                 <div>
-                  <label :for="heightInput">Height:</label>
+                  <label for="heightInput">Height:</label>
                   <input id="heightInput" v-model="recodeHeight" type="number" />
                 </div>
                 <h3>Streaming Framerate</h3>
                 <div>
-                  <label :for="fpsInput">Frame per second:</label>
+                  <label for="fpsInput">Frame per second:</label>
                   <input id="fpsInput" v-model="recodeFps" type="number" />
                 </div>
+                <h3>CPU Usage</h3>
+                <small>
+                  <div>
+                    Because the selected webcam is in MJPEG format, Obico for
+                    {{ printer.agentDisplayName() }}
+                    <a href="#"
+                      >has to transcode it to H.264 to stream it over the Internet since H.264 is a
+                      much more efficient streaming format</a
+                    >.
+                  </div>
+                  <div>
+                    However, at high resolution and/or high framerate, transcoding from MJPEG to
+                    H.264 uses significant amount of CPU, which may affect the quality of your
+                    prints.
+                  </div>
+                  <div>
+                    Your Raspberry Pi has {{ Object.keys(cpuStats).length - 1 }} cores, displayed
+                    below. We recommend adjusting the resolution and framerate to keep all of them
+                    understand 50%.
+                  </div>
+                </small>
+                <b-progress
+                  v-for="entry in cpuStats"
+                  :key="entry[0]"
+                  show-progress
+                  max="100"
+                  class="mb-3"
+                >
+                  <b-progress-bar variant="primary" :value="entry[1]">{{
+                    entry[0]
+                  }}</b-progress-bar>
+                </b-progress>
               </div>
               <hr />
               <b-button
@@ -323,6 +355,7 @@ import {
   PassThruTimeOutError,
   fetchAgentWebcams,
   startWebcamStreamer,
+  fetchAgentCpuUsage,
 } from '@src/lib/printer-passthru'
 
 export default {
@@ -351,6 +384,7 @@ export default {
       recodeWidth: 640,
       recodeHeight: 360,
       recodeFps: 15,
+      cpuStats: null,
     }
   },
 
@@ -420,6 +454,14 @@ export default {
     this.printerComm.connect()
   },
 
+  beforeDestroy() {
+    this.stopCPUStatsUpdate()
+    if (this.webrtc) {
+      this.webrtc.disconnect()
+      this.webrtc = null
+    }
+  },
+
   methods: {
     async fetchPrinter(printerId) {
       this.actionMessage = 'Fetching printer info...'
@@ -483,10 +525,12 @@ export default {
     testWebcamStream() {
       this.actionMessage = `Starting webcam stream for ${this.selectedWebcam}`
 
+      this.stopCPUStatsUpdate()
       if (this.webrtc) {
         this.webrtc.disconnect()
         this.webrtc = null
       }
+
       startWebcamStreamer(this.printerComm, this.selectedWebcam, this.streamingParams)
         .then((ret) => {
           const streamId = ret?.[0]?.stream_id
@@ -497,6 +541,10 @@ export default {
             this.webcamTestResult = ret[0]
             this.webrtc = WebRTCConnection(streamMode, streamId)
             this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+
+            if (streamMode === 'h264_transcode') {
+              this.startCPUStatsUpdate()
+            }
           }
         }, 60)
         .catch((err) => {
@@ -607,8 +655,28 @@ export default {
         this.errorMessage = err
       }
     },
+
     showTroubleshootingTips() {
       this.troubleshootingDialogOpen = true
+    },
+
+    startCPUStatsUpdate() {
+      this.cpuStatsTimer = setInterval(() => {
+        fetchAgentCpuUsage(this.printerComm, this.printer.isAgentMoonraker()).then((cpuStats) => {
+          const filteredArray = Object.entries(cpuStats).filter(([key]) => key !== 'cpu')
+          const sortedArray = filteredArray.sort((a, b) => a[0].localeCompare(b[0]))
+
+          this.cpuStats = sortedArray
+        })
+      }, 2 * 1000)
+    },
+
+    stopCPUStatsUpdate() {
+      if (this.cpuStatsTimer) {
+        clearInterval(this.cpuStatsTimer)
+        this.cpuStatsTimer = undefined
+        this.cpuStats = null
+      }
     },
   },
 }

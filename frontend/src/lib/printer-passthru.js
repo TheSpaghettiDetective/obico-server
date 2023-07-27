@@ -47,6 +47,17 @@ export function startWebcamStreamer(printerComm, webcamName, streamingParams) {
   return passThruPromise(printerComm, payload, 60)
 }
 
+export function fetchAgentCpuUsage(printerComm, isAgentMoonraker) {
+  if (isAgentMoonraker) {
+    return passThruPromise(printerComm, {
+      target: 'moonraker_api',
+      func: 'machine/proc_stats',
+    }).then((procStats) => {
+      return procStats?.system_cpu_usage
+    })
+  }
+}
+
 export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword) {
   const listRecoursively = (fileObj) => {
     const fileList = []

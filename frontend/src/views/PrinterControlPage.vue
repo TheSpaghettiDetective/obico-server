@@ -719,7 +719,7 @@ export default {
   width: 100%
 
 .multi-stream-wrap
-  flex: 0 1 40%
+  flex: 0 1 45%
   min-width: 200px
   max-width: 400px
 

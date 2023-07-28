@@ -14,6 +14,11 @@
           {{ actionMessage }}
         </p>
       </div>
+      <agent-dependency
+        v-else-if="!allDependencyMet"
+        :printer-comm="printerComm"
+        @done="shutdownStreamButtonPressed"
+      />
       <div v-else>
         <div v-if="webcams === null">
           <h1>Webcam Setup Wizard</h1>
@@ -374,6 +379,7 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import WebRTCConnection from '@src/lib/webrtc'
 import { printerCommManager } from '@src/lib/printer-comm'
 import StreamingBox from '@src/components/StreamingBox'
+import AgentDependency from '@src/components/AgentDependency'
 
 import {
   shutdownWebcamStreamer,
@@ -381,6 +387,7 @@ import {
   fetchAgentWebcams,
   startWebcamStreamer,
   fetchAgentCpuUsage,
+  checkSystemDependency,
 } from '@src/lib/printer-passthru'
 
 export default {
@@ -389,11 +396,14 @@ export default {
   components: {
     PageLayout,
     StreamingBox,
+    AgentDependency,
   },
+
   data: function () {
     return {
       printer: null,
       webrtc: null,
+      printerComm: null,
       webcamTestResult: null,
       webcams: null,
       selectedWebcam: null,
@@ -410,6 +420,7 @@ export default {
       recodeHeight: 360,
       recodeFps: 15,
       cpuStats: null,
+      allDependencyMet: true,
     }
   },
 
@@ -589,11 +600,20 @@ export default {
       this.actionMessage = 'Shutting down Obico webcam stream(s)...'
       shutdownWebcamStreamer(this.printerComm)
         .then(() => {
-          this.actionMessage = `Retrieving webcam configuration in ${this.agentUIDisplayName}...`
-          return fetchAgentWebcams(this.printerComm, this.printer)
+          this.actionMessage = 'Checking required system packages...'
+          return checkSystemDependency(this.printerComm, ['janus', 'ffmpeg'])
         })
         .then((ret) => {
-          this.webcams = ret || []
+          this.allDependencyMet = ret.every((is_met) => is_met)
+          if (this.allDependencyMet) {
+            this.actionMessage = `Retrieving webcam configuration in ${this.agentUIDisplayName}...`
+            return fetchAgentWebcams(this.printerComm, this.printer)
+          } else {
+            return null
+          }
+        })
+        .then((ret) => {
+          this.webcams = ret
         })
         .catch((err) => {
           this.handlePassThruError(err)

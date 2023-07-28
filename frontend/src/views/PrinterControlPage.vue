@@ -185,8 +185,9 @@
               <streaming-box
                 :webcam="webcam"
                 :webrtc="webcam.webrtc"
-                :throttle-id="user.is_pro ? null : printer.id"
                 :poster-src="printer?.pic?.img_url"
+                :printer="printer"
+                :autoplay="user.is_pro"
                 @onRotateRightClicked="
                   (val) => {
                     customRotationDeg = val
@@ -309,6 +310,7 @@ export default {
       printerId: null,
       printer: null,
       webcams: [],
+      databaseWebcams: null,
       currentBitrate: null,
       lastPrint: null,
       lastPrintFetchCounter: 0,
@@ -355,25 +357,35 @@ export default {
     },
   },
 
-  created() {
+  async created() {
     this.user = user()
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
 
+    this.databaseWebcams = await axios.get(urls.cameras(this.printerId)).then((resp) => resp.data)
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),
       {
         onPrinterUpdateReceived: (data) => {
           this.printer = normalizedPrinter(data, this.printer)
-          if (this.webcams.length === 0 && this.printer?.settings?.webcams.length > 0) {
+          if (
+            this.databaseWebcams !== null &&
+            this.webcams.length === 0 &&
+            this.printer?.settings?.webcams.length > 0
+          ) {
             const webcams = this.printer?.settings?.webcams
+            const filteredWebcams = []
             for (const webcam of webcams) {
-              const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
-              webcam.webrtc = webrtc
-              // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+              const databaseCam = this.databaseWebcams.filter((c) => c.name === webcam.name)[0]
+              if (databaseCam) {
+                const webrtc = WebRTCConnection(webcam.stream_mode, webcam.stream_id)
+                webcam.webrtc = webrtc
+                filteredWebcams.push(webcam)
+                // this.printerComm.setWebRTC(this.webrtc)    TODO: think about how to handle data channel
+              }
             }
-            this.webcams = webcams
+            this.webcams = filteredWebcams
           }
         },
       }

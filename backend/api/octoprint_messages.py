@@ -66,6 +66,7 @@ def settings_dict(octoprint_settings):
         octoprint_version=octoprint_settings.get('octoprint_version', ''),
     )
     settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
+    settings.update(dict(installed_plugins=json.dumps(octoprint_settings.get('installed_plugins', []))))
 
     return settings
 

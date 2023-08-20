@@ -21,7 +21,9 @@ COPY --from=builder /usr/local /usr/local
 RUN apt-get update && \
     apt-get install -y libpq-dev git
 
+# Checkout moonraker and lock the version so that we can use the metadata parser
 RUN git clone https://github.com/Arksine/moonraker.git /moonraker
+RUN git -C /moonraker checkout 55e852cd8792c9d158b8b5647bec530cbee1f43a
 ENV PYTHONPATH="${PYTHONPATH}:/moonraker/moonraker"
 
 # Clean up unnecessary dependencies

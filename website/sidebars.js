@@ -76,6 +76,7 @@ module.exports = {
         'user-guides/connectivity-error-report',
         'user-guides/turn-on-debug-logging',
         'user-guides/send-mobile-app-log-files',
+        'user-guides/relink-printer',
       ],
     },
     {
@@ -129,6 +130,7 @@ module.exports = {
           items: [
             'server-guides/advanced/firewall-guides',
             'server-guides/advanced/reverse-proxy',
+            'server-guides/advanced/nginx-proxy-manager',
             'server-guides/advanced/nvidia-gpu',
             'server-guides/advanced/gmail_smtp_setup_guide',
             'server-guides/advanced/email_guide',

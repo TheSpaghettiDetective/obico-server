@@ -91,7 +91,7 @@
         </div>
         <div v-if="printer.alertUnacknowledged()" class="failure-detected-message">
           <div class="warning-message">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <i class="fas fa-exclamation-triangle"></i>
             Failure Detected!
           </div>
           <b-button variant="outline-warning custom-button" @click="onNotAFailureClicked($event)"

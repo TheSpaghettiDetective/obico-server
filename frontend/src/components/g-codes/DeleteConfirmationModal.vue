@@ -55,7 +55,7 @@ export default {
           this.$emit('deleted')
         })
         .catch((error) => {
-          this._logError(error, 'Failed to delete item')
+          this.errorDialog(error, 'Failed to delete item')
         })
     },
   },

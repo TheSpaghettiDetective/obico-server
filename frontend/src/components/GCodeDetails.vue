@@ -8,8 +8,8 @@
       }"
     >
       <div v-if="showThumbnail">
-        <div v-if="thumbnailUrl" class="thumbnail">
-          <img :src="thumbnailUrl" />
+        <div v-if="bigThumbnailUrl" class="thumbnail">
+          <img :src="bigThumbnailUrl" />
         </div>
         <div v-else class="thumbnail-placeholder">
           <span class="help">
@@ -74,7 +74,7 @@
       </muted-alert>
 
       <!-- Hidden lines -->
-      <b-collapse id="g-code-details-collapsible" v-model="extraDetailsVisible">
+      <collapsable-details v-if="fileDetailsToShow.length > numberOfVisibleLines">
         <div v-for="item in fileDetailsToShow.slice(numberOfVisibleLines)" :key="item.name">
           <div class="line">
             <div class="label">
@@ -99,20 +99,7 @@
           Fields above were embedded in the G-Code file by your slicer. Consult your slicer's manual
           if some fields are not accurate or missing.
         </muted-alert>
-      </b-collapse>
-      <!-- Collapse toggle -->
-      <button
-        v-if="fileDetailsToShow.length > numberOfVisibleLines"
-        class="collapse-toggle"
-        :class="extraDetailsVisible ? 'opened' : 'closed'"
-        :aria-expanded="extraDetailsVisible ? 'true' : 'false'"
-        aria-controls="g-code-details-collapsible"
-        @click="extraDetailsVisible = !extraDetailsVisible"
-      >
-        <span v-if="extraDetailsVisible">Show less</span>
-        <span v-else>Show more</span>
-        <i class="fas fa-chevron-down" :class="{ rotated: extraDetailsVisible }"></i>
-      </button>
+      </collapsable-details>
     </template>
   </div>
 </template>
@@ -121,6 +108,7 @@
 import MutedAlert from '@src/components/MutedAlert.vue'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
+import CollapsableDetails from '@src/components/CollapsableDetails.vue'
 
 export default {
   name: 'GCodeDetails',
@@ -128,6 +116,7 @@ export default {
   components: {
     MutedAlert,
     HelpWidget,
+    CollapsableDetails,
   },
 
   props: {
@@ -164,14 +153,15 @@ export default {
   data() {
     return {
       numberOfVisibleLines: 3,
-      extraDetailsVisible: false,
-      thumbnailUrl: null,
     }
   },
 
   computed: {
+    bigThumbnailUrl() {
+      return this.file.getBigThumbnailUrl && this.file.getBigThumbnailUrl()
+    },
     showThumbnail() {
-      return !this.compactView || this.thumbnailUrl
+      return !this.compactView || this.bigThumbnailUrl
     },
     fileDetailsToShow() {
       let result = []
@@ -213,28 +203,6 @@ export default {
         Object.keys(this.file.metadata || {}).length !== 0 &&
         !this.file.deleted
       )
-    },
-  },
-
-  watch: {
-    file() {
-      this.updateThumbnail()
-    },
-  },
-
-  created() {
-    this.updateThumbnail()
-  },
-
-  methods: {
-    updateThumbnail() {
-      let thumbnailProps = ['thumbnail1_url', 'thumbnail2_url', 'thumbnail3_url']
-      for (const t of thumbnailProps) {
-        if (this.file[t]) {
-          this.thumbnailUrl = this.file[t]
-          break
-        }
-      }
     },
   },
 }
@@ -315,20 +283,4 @@ export default {
   .value
     font-weight: bold
     text-align: right
-
-.collapse-toggle
-  font-weight: bold
-  display: flex
-  align-items: center
-  justify-content: center
-  gap: .5rem
-  background: none
-  border: none
-  color: var(--color-text-primary)
-  margin-top: .5rem
-
-  i
-    transition: all .3s ease-in-out
-    &.rotated
-      transform: rotate(180deg)
 </style>

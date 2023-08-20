@@ -149,7 +149,7 @@ import { normalizedGcode, normalizedPrinter } from '@src/lib/normalizers'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
 import availablePrinters from '@src/components/g-codes/AvailablePrinters.vue'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesMoonraker,
   listPrinterLocalGCodesOctoPrint,
@@ -243,7 +243,7 @@ export default {
           this.printer = normalizedPrinter(response.data)
         })
         .catch((error) => {
-          this._logError(error, 'Host printer for this gcode not found')
+          this.errorDialog(error, 'Host printer for this gcode not found')
         })
     },
     async fetchLocalFile() {
@@ -305,11 +305,9 @@ export default {
     },
     async fetchGcode() {
       if (this.selectedPrinterId) {
-        this.printerComm = PrinterComm(
+        this.printerComm = printerCommManager.getOrCreatePrinterComm(
           this.selectedPrinterId,
-          urls.printerWebSocket(this.selectedPrinterId),
-          (data) => {},
-          (printerStatus) => {}
+          urls.printerWebSocket(this.selectedPrinterId)
         )
         this.printerComm.connect(this.fetchLocalFile)
         return

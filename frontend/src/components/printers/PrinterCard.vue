@@ -223,7 +223,7 @@ import axios from 'axios'
 
 import urls from '@config/server-urls'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import { temperatureDisplayName } from '@src/lib/utils'
 import WebRTCConnection from '@src/lib/webrtc'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
@@ -336,7 +336,7 @@ export default {
       }
     },
     statusText() {
-      return get(this.printer, 'status.state.text', 'Offline')
+      return this.printer.calculatedState() || 'Offline'
     },
     statusClass() {
       if (this.printer.hasError()) {
@@ -353,16 +353,18 @@ export default {
     },
   },
   created() {
-    this.printerComm = PrinterComm(
+    this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printer.id,
       urls.printerWebSocket(this.printer.id),
-      (data) => {
-        this.$emit('PrinterUpdated', this.updatedPrinter(data))
-      },
-      (printerStatus) => {
-        // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
-        const status = printerStatus.status || printerStatus.octoprint_data
-        this.$emit('PrinterUpdated', this.updatedPrinter({ status }))
+      {
+        onPrinterUpdateReceived: (data) => {
+          this.$emit('PrinterUpdated', this.updatedPrinter(data))
+        },
+        onStatusReceived: (printerStatus) => {
+          // Backward compatibility: octoprint_data is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
+          const status = printerStatus.status || printerStatus.octoprint_data
+          this.$emit('PrinterUpdated', this.updatedPrinter({ status }))
+        },
       }
     )
     this.printerComm.connect()
@@ -406,13 +408,14 @@ export default {
         if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
-            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+            this.sendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT)
           }, 1000)
         }
         if (resumePrint) {
-          this.sendPrinterAction(this.printer.id, RESUME_PRINT, true)
+          this.printer.setTransientState('Resuming')
+          this.sendPrinterAction(this.printer.id, RESUME_PRINT)
         } else {
-          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+          this.sendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED)
         }
       })
 
@@ -495,25 +498,12 @@ export default {
           }
         })
         .catch((error) => {
-          this._logError(error, 'Failed to update printer')
+          this.errorDialog(error, 'Failed to update printer')
         })
     },
 
-    sendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios.post(urls.printerAction(printerId, path)).then(() => {
-        let toastHtml = ''
-        if (isOctoPrintCommand) {
-          toastHtml +=
-            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-            '<p>It may take a while to be executed.</p>'
-        }
-        if (toastHtml != '') {
-          this.$swal.Toast.fire({
-            icon: 'success',
-            html: toastHtml,
-          })
-        }
-      })
+    sendPrinterAction(printerId, path) {
+      axios.post(urls.printerAction(printerId, path))
     },
 
     shouldVideoBeFull(printer) {
@@ -526,7 +516,7 @@ export default {
       if (seconds == null || seconds == 0) {
         return {
           valid: false,
-          printing: isActive,
+          printing: Boolean(isActive),
         }
       } else {
         var d = moment.duration(seconds, 'seconds')
@@ -535,7 +525,7 @@ export default {
         var s = d.seconds()
         return {
           valid: true,
-          printing: isActive,
+          printing: Boolean(isActive),
           hours: h,
           showHours: h > 0,
           minutes: m,

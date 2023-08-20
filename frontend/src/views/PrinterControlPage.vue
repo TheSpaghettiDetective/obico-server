@@ -35,7 +35,7 @@
           class="btn shadow-none action-btn icon-btn"
           title="Configure"
         >
-          <i class="fa-solid fa-wrench"></i>
+          <i class="fas fa-wrench"></i>
           <span class="sr-only">Configure</span>
         </a>
         <!-- Mobile Menu -->
@@ -60,7 +60,7 @@
               },
               {
                 key: 'settings',
-                icon: 'fa-solid fa-wrench',
+                icon: 'fas fa-wrench',
                 title: 'Configure',
                 href: `/printers/${printer.id}/`,
               },
@@ -95,7 +95,7 @@
           <div class="extra-actions">
             <h2 class="section-title">Additional Actions</h2>
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
-              <i class="fa-solid fa-arrows-up-down"></i>
+              <i class="fas fa-arrows-alt-v"></i>
               Reorder &amp; Hide
             </b-button>
             <div class="text-muted extra-actions-explanation">
@@ -105,7 +105,7 @@
               >
             </div>
             <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
-              <i class="fa-solid fa-plus"></i>
+              <i class="fas fa-plus"></i>
               Add Printer
             </b-button>
             <div class="text-muted extra-actions-explanation">
@@ -114,20 +114,14 @@
           </div>
         </div>
         <div class="stream-container">
-          <div v-if="currentBitrate" class="streaming-info overlay-info small">
-            {{ currentBitrate }}
-          </div>
           <div ref="streamInner" class="stream-inner">
             <streaming-box
               :printer="printer"
               :webrtc="webrtc"
               :autoplay="user.is_pro"
-              :show-bitrate="false"
-              @onBitrateUpdated="onBitrateUpdated"
-              @onRotateLeftClicked="
+              @onRotateRightClicked="
                 (val) => {
                   customRotationDeg = val
-                  resizeStream()
                 }
               "
             />
@@ -145,7 +139,7 @@ import axios from 'axios'
 import { isLocalStorageSupported } from '@static/js/utils'
 import { normalizedPrinter, normalizedPrint } from '@src/lib/normalizers'
 import StreamingBox from '@src/components/StreamingBox'
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import WebRTCConnection from '@src/lib/webrtc'
 import PageLayout from '@src/components/PageLayout.vue'
 import { user } from '@src/lib/page-context'
@@ -158,6 +152,7 @@ import PrinterControlWidget from '@src/components/printer-control/PrinterControl
 import ReorderModal from '@src/components/ReorderModal'
 import { getLocalPref } from '@src/lib/pref'
 import SharePrinter from '@src/components/printers/SharePrinter.vue'
+import TerminalWidget from '../components/printer-control/TerminalWidget.vue'
 
 const RESUME_PRINT = '/resume_print/'
 const MUTE_CURRENT_PRINT = '/mute_current_print/?mute_alert=true'
@@ -191,6 +186,11 @@ const WIDGETS = [
     title: 'Printer Controls',
     component: 'PrinterControlWidget',
   },
+  {
+    id: 6,
+    title: 'Terminal Widget',
+    component: 'TerminalWidget',
+  },
 ]
 
 export default {
@@ -205,6 +205,7 @@ export default {
     FailureDetectionWidget,
     TemperatureWidget,
     PrinterControlWidget,
+    TerminalWidget,
   },
 
   data() {
@@ -230,7 +231,7 @@ export default {
       })
     },
     videoRotationDeg() {
-      const rotation = this.printer.settings.webcam_rotate90 ? 90 : 0 + this.customRotationDeg
+      const rotation = +(this.printer?.settings?.webcam_rotation ?? 0) + this.customRotationDeg
       return rotation % 360
     },
   },
@@ -242,13 +243,19 @@ export default {
           this.$nextTick(this.resizeStream)
           this.widgetsConfig = this.restoreWidgets()
         } else {
-          if (newValue?.isActive() !== oldValue?.isActive()) {
+          if (
+            newValue?.isActive() !== oldValue?.isActive() ||
+            newValue?.current_print?.started_at !== oldValue?.current_print?.started_at
+          ) {
             // poll server for the last print with correct status on starting/cancelling/finishing print
             this.fetchLastPrint({ pollForCorrect: true })
           }
         }
       },
       deep: true,
+    },
+    videoRotationDeg() {
+      this.resizeStream()
     },
   },
 
@@ -259,15 +266,17 @@ export default {
 
     this.webrtc = WebRTCConnection()
 
-    this.printerComm = PrinterComm(
+    this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),
-      (data) => {
-        this.printer = normalizedPrinter(data, this.printer)
-        if (this.webrtc && !this.webrtc.initialized) {
-          this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
-          this.printerComm.setWebRTC(this.webrtc)
-        }
+      {
+        onPrinterUpdateReceived: (data) => {
+          this.printer = normalizedPrinter(data, this.printer)
+          if (this.webrtc && !this.webrtc.initialized) {
+            this.webrtc.openForPrinter(this.printer.id, this.printer.auth_token)
+            this.printerComm.setWebRTC(this.webrtc)
+          }
+        },
       }
     )
     this.printerComm.connect()
@@ -297,22 +306,37 @@ export default {
       )
     },
     restoreWidgets() {
+      let widgets = WIDGETS.map((w) => ({ id: w.id, enabled: true }))
+
       if (isLocalStorageSupported()) {
-        const widgets = localStorage.getItem('printer-control-widgets-' + this.printer.id)
-        if (widgets) {
-          const parsed = JSON.parse(widgets)
-          for (const widget of WIDGETS) {
-            if (!parsed.find((w) => w.id === widget.id)) {
-              parsed.push({ id: widget.id, enabled: true })
-            }
-          }
-          localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(parsed))
+        widgets =
+          JSON.parse(localStorage.getItem('printer-control-widgets-' + this.printer.id)) || widgets
+      }
+
+      // add any new widgets
+      for (const WIDGET of WIDGETS) {
+        if (!widgets.find((w) => w.id === WIDGET.id)) {
+          widgets.push({ id: WIDGET.id, enabled: true })
         }
       }
 
-      return WIDGETS.map((widget) => {
-        return { id: widget.id, enabled: true }
-      })
+      // remove any old widgets which are no longer supported
+      for (const widget of widgets) {
+        if (!WIDGETS.find((w) => w.id === widget.id)) {
+          widgets.splice(widgets.indexOf(widget), 1)
+        }
+      }
+
+      // delete terminal widget if it's not supported
+      const terminalWidget = widgets.find((w) => w.id === 6)
+      if (terminalWidget && !this.printer.isAgentVersionGte('2.3.11', '1.4.4')) {
+        widgets.splice(widgets.indexOf(terminalWidget), 1)
+      }
+
+      if (isLocalStorageSupported()) {
+        localStorage.setItem('printer-control-widgets-' + this.printer.id, JSON.stringify(widgets))
+      }
+      return widgets
     },
     onUpdateSettings(props) {
       const { settingName, settingValue } = props
@@ -364,9 +388,6 @@ export default {
         })
     },
 
-    onBitrateUpdated(bitrate) {
-      this.currentBitrate = bitrate.value
-    },
     resizeStream() {
       const streamInner = this.$refs.streamInner
       if (!streamInner) return
@@ -419,32 +440,20 @@ export default {
         if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
           setTimeout(() => {
-            this.onSendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT, false)
+            this.onSendPrinterAction(this.printer.id, MUTE_CURRENT_PRINT)
           }, 1000)
         }
         if (resumePrint) {
-          this.onSendPrinterAction(this.printer.id, RESUME_PRINT, true)
+          this.printer.setTransientState('Resuming')
+          this.onSendPrinterAction(this.printer.id, RESUME_PRINT)
         } else {
-          this.onSendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED, false)
+          this.onSendPrinterAction(this.printer.id, ACK_ALERT_NOT_FAILED)
         }
       })
       ev.preventDefault()
     },
     onSendPrinterAction(printerId, path, isOctoPrintCommand) {
-      axios.post(urls.printerAction(printerId, path)).then(() => {
-        let toastHtml = ''
-        if (isOctoPrintCommand) {
-          toastHtml +=
-            `<h6>Successfully sent command to ${this.printer.name}!</h6>` +
-            '<p>It may take a while to be executed.</p>'
-        }
-        if (toastHtml != '') {
-          this.$swal.Toast.fire({
-            icon: 'success',
-            html: toastHtml,
-          })
-        }
-      })
+      axios.post(urls.printerAction(printerId, path))
     },
     onReorderClicked() {
       this.$swal
@@ -561,16 +570,6 @@ export default {
 
     .widgets-container
       width: 100%
-
-.streaming-info
-  text-align: right
-.overlay-info
-  position: absolute
-  right: 0
-  top: 0
-  z-index: 99
-  background-color: rgb(0 0 0 / .5)
-  padding: 4px 8px
 
 .extra-actions
   display: flex

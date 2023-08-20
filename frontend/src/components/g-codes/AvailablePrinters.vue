@@ -3,38 +3,38 @@
     <div v-if="printersLoading || !gcode" class="my-5 text-center">
       <b-spinner />
     </div>
-    <div v-else>
-      <div
-        v-for="printer in printers"
-        :key="`printer_${printer.id}`"
-        class="printer-item"
-        :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
-        @click="selectPrinter(printer)"
-      >
-        <div class="selected-indicator"></div>
-        <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
+    <div v-else class="text-center">
+      <div v-if="!targetPrinterId" class="mb-3">
         <div
-          class="printer-status"
-          :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+          v-for="printer in printers"
+          :key="`printer_${printer.id}`"
+          class="printer-item"
+          :class="{ active: selectedPrinter && printer.id === selectedPrinter.id }"
+          @click="selectPrinter(printer)"
         >
-          {{ printer.printabilityText() }}
+          <div class="selected-indicator"></div>
+          <div class="printer-name truncated" :title="printer.name">{{ printer.name }}</div>
+          <div
+            class="printer-status"
+            :class="[printer.isPrintable() ? 'text-success' : 'text-warning']"
+          >
+            {{ printer.printabilityText() }}
+          </div>
         </div>
+
+        <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
+          No available printers
+        </p>
       </div>
 
-      <p v-if="!printersLoading && !printers.length" class="text-center text-secondary mt-3 mb-3">
-        No available printers
-      </p>
-
       <button
-        class="btn btn-primary mt-3"
-        :disabled="!selectedPrinter || isSending"
+        class="btn btn-primary d-inline-flex align-items-center justify-content-center"
+        :disabled="!selectedPrinter || isSending || !selectedPrinter.isPrintable()"
         @click="onPrintClicked"
       >
-        <b-spinner v-if="isSending" small />
-        <div v-else>
-          <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
-          <div v-else class="truncated">Print</div>
-        </div>
+        <b-spinner v-if="isSending" small class="mr-1" />
+        <div v-if="selectedPrinter" class="truncated">Print on {{ selectedPrinter.name }}</div>
+        <div v-else class="truncated">Print</div>
       </button>
     </div>
   </div>
@@ -44,7 +44,8 @@
 import urls from '@config/server-urls'
 import axios from 'axios'
 import { normalizedPrinter } from '@src/lib/normalizers'
-import { sendToPrint, showRedirectModal } from './sendToPrint'
+import { sendToPrint, showRedirectModal, confirmPrint } from './sendToPrint'
+import { printerCommManager } from '@src/lib/printer-comm'
 
 export default {
   name: 'AvailablePrinters',
@@ -76,8 +77,17 @@ export default {
       printers: [],
       selectedPrinter: null,
       printersLoading: true,
-      isSending: false,
+      printerStateCheckInterval: null,
+      printerComms: {},
     }
+  },
+
+  computed: {
+    isSending() {
+      return this.printers.some(
+        (p) => p.calculatedState() === 'Starting' || p.calculatedState() === 'G-Code Downloading'
+      )
+    },
   },
 
   created() {
@@ -88,22 +98,13 @@ export default {
     async fetchPrinters() {
       this.printersLoading = true
 
-      let printers
-      try {
-        printers = await axios.get(urls.printers())
-      } catch (e) {
-        this.printersLoading = false
-        console.error(e)
-      }
-
-      if (!printers?.data) {
+      const resp = await axios.get(urls.printers())
+      if (!resp?.data) {
         this.printersLoading = false
         return
       }
 
-      printers = printers?.data
-      printers = printers.map((p) => normalizedPrinter(p))
-
+      const printers = resp?.data.map((p) => normalizedPrinter(p))
       if (this.targetPrinterId) {
         const selectedPrinter = printers.find((p) => p.id === this.targetPrinterId)
         this.printers = [selectedPrinter]
@@ -112,7 +113,21 @@ export default {
         }
       } else {
         this.printers = printers
-        this.selectedPrinter = printers.find((p) => p.isPrintable())
+        this.selectedPrinter = printers.find((p) => p.isPrintable()) || null
+      }
+
+      for (const printer of this.printers) {
+        this.printerComms[printer.id] = printerCommManager.getOrCreatePrinterComm(
+          printer.id,
+          urls.printerWebSocket(printer.id),
+          {
+            onPrinterUpdateReceived: (data) => {
+              const index = this.printers.findIndex((p) => p.id === printer.id)
+              this.$set(this.printers, index, normalizedPrinter(data, this.printers[index]))
+            },
+          }
+        )
+        this.printerComms[printer.id].connect()
       }
 
       this.printersLoading = false
@@ -134,28 +149,28 @@ export default {
     },
     onPrintClicked() {
       if (!this.selectedPrinter?.id) return
-      this.isSending = true
 
-      sendToPrint({
-        printerId: this.selectedPrinter.id,
-        gcode: this.gcode,
-        isCloud: this.isCloud,
-        isAgentMoonraker: this.selectedPrinter.isAgentMoonraker(),
-        Swal: this.$swal,
-        onCommandSent: () => {
-          if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes' + this.selectedPrinter.id)
-          }
-        },
-        onPrinterStatusChanged: () => {
-          if (!this.isPopup) {
-            showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
-          }
+      confirmPrint(this.gcode, this.selectedPrinter).then(() => {
+        sendToPrint({
+          printer: this.selectedPrinter,
+          gcode: this.gcode,
+          isCloud: this.isCloud,
+          Swal: this.$swal,
+          onCommandSent: () => {
+            if (this.isPopup) {
+              this.$bvModal.hide('b-modal-gcodes' + this.selectedPrinter.id)
+            }
+          },
+          onPrinterStatusChanged: () => {
+            if (!this.isPopup) {
+              showRedirectModal(this.$swal, () => this.$emit('refresh'), this.selectedPrinter.id)
+            }
 
-          this.isSending = false
-          this.fetchPrinters()
-        },
+            this.fetchPrinters()
+          },
+        })
       })
+      return
     },
   },
 }
@@ -165,6 +180,7 @@ export default {
 .printer-item
   display: flex
   align-items: center
+  text-align: left
   border-radius: var(--border-radius-sm)
   border: 1px solid var(--color-divider)
   margin-bottom: 0.5rem
@@ -195,5 +211,5 @@ export default {
   margin-left: 0.5rem
 
 .btn
-  width: 100%
+  max-width: 100%
 </style>

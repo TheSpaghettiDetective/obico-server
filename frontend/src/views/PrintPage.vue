@@ -99,7 +99,7 @@
                     class="subtitle truncated"
                     :class="[
                       printer
-                        ? printer.isPrintable()
+                        ? printer.isPrintable() && !printer.inTransientState()
                           ? 'text-success'
                           : 'text-warning'
                         : 'text-danger',
@@ -112,18 +112,18 @@
                   v-if="
                     printer &&
                     print.g_code_file &&
-                    !print.g_code_file.resident_printer &&
-                    !print.g_code_file.deleted
+                    !print.g_code_file.deleted &&
+                    print.g_code_file.url
                   "
                   class="action"
                 >
                   <button
                     class="btn btn-primary"
-                    :disabled="!printer.isPrintable()"
+                    :disabled="!printer.isPrintable() || printer.inTransientState()"
                     @click="onRepeatPrintClicked"
                   >
-                    <b-spinner v-if="isSending" small />
-                    <span v-else>Repeat Print</span>
+                    <b-spinner v-if="isSending" class="mr-2" small />
+                    <span>Reprint</span>
                   </button>
                 </div>
               </div>
@@ -331,7 +331,7 @@ import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
 import DetectiveWorking from '@src/components/DetectiveWorking'
 import FailureDetectionGauge from '@src/components/FailureDetectionGauge'
-import { sendToPrint, showRedirectModal } from '@src/components/g-codes/sendToPrint'
+import { sendToPrint, showRedirectModal, confirmPrint } from '@src/components/g-codes/sendToPrint'
 import { restoreFilterValues, getFilterParams } from '@src/components/FilteringDropdown'
 import { restoreSortingValue } from '@src/components/SortingDropdown'
 import {
@@ -341,6 +341,7 @@ import {
   SortingOptions,
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
+import { printerCommManager } from '@src/lib/printer-comm'
 
 export default {
   name: 'PrintPage',
@@ -368,7 +369,6 @@ export default {
       predictions: [],
       printer: null,
       isLoading: true,
-      isSending: false,
       currentPosition: 0,
       inflightAlertOverwrite: null,
       fullscreenUrl: null,
@@ -384,6 +384,8 @@ export default {
       filterLocalStoragePrefix: FilterLocalStoragePrefix,
       filterOptions: FilterOptions,
       filterValues: restoreFilterValues(FilterLocalStoragePrefix, FilterOptions),
+
+      printerStateCheckInterval: null,
     }
   },
 
@@ -442,6 +444,10 @@ export default {
       }
       return this.print.has_alerts ^ (this.print.alert_overwrite === 'FAILED')
     },
+    isSending() {
+      const printerState = this.printer?.calculatedState()
+      return printerState && ['G-Code Downloading', 'Starting'].includes(printerState)
+    },
   },
 
   created() {
@@ -457,6 +463,10 @@ export default {
         exitFullscreen()
       }
     })
+  },
+
+  unmounted() {
+    clearInterval(this.printerStateCheckInterval)
   },
 
   methods: {
@@ -485,12 +495,23 @@ export default {
           .get(urls.printer(this.print.printer.id), { params: { with_archived: true } })
           .then((response) => {
             this.printer = normalizedPrinter(response.data)
+
+            this.printerComm = printerCommManager.getOrCreatePrinterComm(
+              this.printer.id,
+              urls.printerWebSocket(this.printer.id),
+              {
+                onPrinterUpdateReceived: (data) => {
+                  this.printer = normalizedPrinter(data, this.printer)
+                },
+              }
+            )
+            this.printerComm.connect()
           })
           .catch((error) => {
             // Printer could be old and deleted from account (404 error)
             this.printer = null
             if (error?.response?.status !== 404) {
-              this._logError(error, 'Failed to fetch printer information')
+              this.errorDialog(error, 'Failed to fetch printer information')
             }
           })
           .finally(() => {
@@ -568,7 +589,7 @@ export default {
           this.nextPrint = next ? { id: next.id, index: this.currentIndex + 1 } : null
         })
         .catch((error) => {
-          this._logError(error)
+          this.errorDialog(error)
         })
     },
     onTimeUpdate(currentPosition) {
@@ -593,18 +614,16 @@ export default {
         })
     },
     onRepeatPrintClicked() {
-      this.isSending = true
-
-      sendToPrint({
-        printerId: this.printer.id,
-        gcode: this.print.g_code_file,
-        isCloud: true,
-        isAgentMoonraker: this.printer.isAgentMoonraker(),
-        Swal: this.$swal,
-        onPrinterStatusChanged: () => {
-          this.isSending = false
-          showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
-        },
+      confirmPrint(this.print.g_code_file, this.printer).then(() => {
+        sendToPrint({
+          printer: this.printer,
+          gcode: this.print.g_code_file,
+          isCloud: this.print.g_code_file?.resident_printer === null,
+          Swal: this.$swal,
+          onPrinterStatusChanged: () => {
+            showRedirectModal(this.$swal, () => this.fetchData(), this.printer.id)
+          },
+        })
       })
     },
     enterFullscreen(url) {

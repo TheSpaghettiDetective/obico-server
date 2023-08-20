@@ -6,7 +6,7 @@
         <!-- Grouping -->
         <b-dropdown right no-caret toggle-class="action-btn icon-btn">
           <template #button-content>
-            <i class="fa-solid fa-chart-simple"></i>
+            <i class="fas fa-chart-bar"></i>
           </template>
           <b-dropdown-text class="small text-secondary">GROUP BY</b-dropdown-text>
           <b-dropdown-item
@@ -418,7 +418,7 @@ export default {
           this.$nextTick(this.drawCharts)
         })
         .catch((error) => {
-          this._logError(error, 'Failed to fetch statistics')
+          this.errorDialog(error, 'Failed to fetch statistics')
         })
     },
     updateChartGrouping(grouping) {

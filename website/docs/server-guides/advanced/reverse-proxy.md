@@ -3,7 +3,15 @@ title: Configure Obico to work with a reverse proxy
 ---
 
 :::danger
-**Security Warning**: The guide below only cover the basic steps to set up a reverse proxy for self-hosted Obico Server. The setup required to properly secure your reverse proxy is too complicated to be covered here. Please do your own research to gather the necessary info before you proceed.
+**Security Warning**: The guide below only cover the basic steps to set up a reverse proxy for self-hosted Obico Server. The setup required to properly secure your private network is too complicated to be covered here. Please do your own research to gather the necessary info before you proceed.
+:::
+
+:::note
+This is a community-contributed guide. This guide is based on certain Obico community members' own setup and hence may not work for you.
+:::
+
+:::tip
+Some Obico community members have found it easier to set up NGINX reverse proxy using NGINX Proxy Manager. You can try your luck by following [this community-contributed guide](nginx-proxy-manager.md).
 :::
 
 You can set up a reverse proxy in front of your self-hosted Obico Server.

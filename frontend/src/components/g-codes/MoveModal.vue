@@ -178,7 +178,7 @@ export default {
           folders = response?.results || []
         } catch (error) {
           this.loading = false
-          this._logError(error)
+          this.errorDialog(error)
         }
 
         this.folders.push(...folders.map((data) => normalizedGcodeFolder(data)))
@@ -235,7 +235,7 @@ export default {
             })
         }
       } catch (error) {
-        this._logError(error, 'Failed to move item(s)')
+        this.errorDialog(error, 'Failed to move item(s)')
       }
 
       this.patchLoading = false

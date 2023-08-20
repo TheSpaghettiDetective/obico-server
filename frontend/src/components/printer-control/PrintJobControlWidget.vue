@@ -16,13 +16,13 @@
 
         <template v-if="printer.inTransientState()">
           <b-spinner label="Processing..."></b-spinner>
-          <p>{{ printer.status.state.text }}...</p>
+          <p>{{ printer.calculatedState() }}...</p>
         </template>
 
         <template v-else>
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
-              <span v-if="!printer.isPaused()">Printer is Curently Printing</span>
+              <span v-if="!printer.isPaused()">Printer is Currently Printing</span>
               <span v-else>Print is Paused</span>
             </p>
             <div class="buttons">
@@ -32,7 +32,7 @@
                 class="custom-button"
                 @click="onPauseToggled($event)"
               >
-                <i class="fa-solid fa-circle-pause"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-pause" />
                 Pause
               </b-button>
               <b-button
@@ -41,11 +41,11 @@
                 class="custom-button"
                 @click="onPauseToggled($event)"
               >
-                <i class="fa-solid fa-circle-play"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-play" />
                 Resume
               </b-button>
               <b-button variant="danger" class="custom-button" @click="onCancelClicked">
-                <i class="fa-solid fa-circle-xmark"></i>
+                <font-awesome-icon icon="fa-solid fa-circle-xmark" />
                 Cancel
               </b-button>
             </div>
@@ -103,14 +103,14 @@
               @click="onConnectClicked"
             >
               <b-spinner v-if="connecting" small></b-spinner>
-              <i v-else class="fa-brands fa-usb"></i>
+              <i v-else class="fab fa-usb"></i>
               {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
             </b-button>
           </div>
         </template>
 
-        <template v-if="printer.isOffline()">
-          <i class="fa-solid fa-triangle-exclamation big-icon warning"></i>
+        <template v-else-if="printer.isOffline()">
+          <i class="fas fa-exclamation-triangle big-icon warning"></i>
           <p>
             Obico for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
             <a
@@ -237,7 +237,7 @@ export default {
           if (err) {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: 'Failed to connect!',
+              title: err,
             })
           } else {
             if (connectionOptions.ports.length < 1) {
@@ -288,14 +288,16 @@ export default {
         if (this.printer.alertUnacknowledged()) {
           this.$emit('notAFailureClicked', ev, true)
         } else {
-          this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT, true)
+          this.$emit('sendPrinterAction', this.printer.id, RESUME_PRINT)
+          this.printer.setTransientState('Resuming')
         }
       } else {
         this.$swal.Confirm.fire({
           html: 'If you haven\'t changed the default configuration, the heaters will be turned off, and the print head will be z-lifted. The reversed will be performed before the print is resumed. <a target="_blank" href="https://www.obico.io/docs/user-guides/detection-print-job-settings#when-print-is-paused">Learn more. <small><i class="fas fa-external-link-alt"></i></small></a>',
         }).then((result) => {
           if (result.value) {
-            this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT, true)
+            this.$emit('sendPrinterAction', this.printer.id, PAUSE_PRINT)
+            this.printer.setTransientState('Pausing')
           }
         })
       }
@@ -305,8 +307,8 @@ export default {
         text: 'Once cancelled, the print can no longer be resumed.',
       }).then((result) => {
         if (result.value) {
-          // When it is confirmed
-          this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT, true)
+          this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT)
+          this.printer.setTransientState('Cancelling')
         }
       })
     },

@@ -89,7 +89,7 @@ An `Map` object. The `key` of the map is the name of the heater, such as "tool0"
 - `webcam_flipV`: `true` if the webcam is flipped vertically. Otherwise `false`.
 - `webcam_flipH`: `true` if the webcam is flipped horizontally. Otherwise `false`.
 - `webcam_streamRatio`: Webcam aspect ratio. Currently only	"4:3" and "16:9" are supported.
-- `webcam_rotate90`: `true` if the webcam is rotated 90 degrees clock-wise. Otherwise `false`.
+- `webcam_rotation`: `0` webcam rotation degree (clockwise). Possible values: [`0`, `90`, `180`, `270`].
 - `agent_name`: The "agent" that connects to the server to represents the printer. Currently it can be either `octoprint_obico` or `moonraker_obico`.
 - `agent_version`: The version of the agent.
 - `temp_profiles`: An `List` of `Map` objects. The `key` of the map is the name of the heater, such as "chamber", "bed". The `value` of the map is the preset temperature.

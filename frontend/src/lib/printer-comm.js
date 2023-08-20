@@ -4,24 +4,57 @@ import Vue from 'vue'
 import ifvisible from 'ifvisible'
 import pako from 'pako'
 import { toArrayBuffer } from '@src/lib/utils'
+import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
-export default function PrinterComm(
-  printerId,
-  wsUri,
-  onPrinterUpdateReceived,
-  onStatusReceived = null
-) {
-  var self = {}
+// PrinterCommManager is a singleton: https://www.sitepoint.com/javascript-design-patterns-singleton/
+class PrinterCommManager {
+  constructor() {
+    if (!PrinterCommManager.instance) {
+      this.printerCommMap = new Map()
+      PrinterCommManager.instance = this
+    }
+    return PrinterCommManager.instance
+  }
 
-  self.printerId = printerId
-  self.wsUri = wsUri
-  self.onPrinterUpdateReceived = onPrinterUpdateReceived
-  self.onStatusReceived = onStatusReceived
+  setPrinterComm(printerId, printerComm) {
+    this.printerCommMap.set(printerId, printerComm)
+  }
+
+  getPrinterComm(printerId) {
+    return this.printerCommMap.get(printerId)
+  }
+
+  getOrCreatePrinterComm(...props) {
+    const printerId = String(props[0]) // assuming same args as for PrinterComm function
+    if (!this.getPrinterComm(printerId)) {
+      this.setPrinterComm(printerId, PrinterComm(...props))
+    }
+    return this.getPrinterComm(printerId)
+  }
+
+  closeConnection(printerId) {
+    const printerComm = this.getPrinterComm(printerId)
+    if (printerComm) {
+      printerComm.closeServerWebSocket()
+      if (printerComm.webrtc) printerComm.webrtc.close()
+      this.printerCommMap.delete(printerId)
+    }
+  }
+
+  closeAllConnections() {
+    this.printerCommMap.forEach((_, token) => this.closeConnection(token))
+  }
+}
+
+export const printerCommManager = new PrinterCommManager()
+Object.freeze(printerCommManager)
+
+export default function PrinterComm(printerId, wsUri, callbacks) {
+  const self = { printerId, wsUri, ...callbacks }
 
   self.ws = null
   self.webrtc = null
   self.passthruQueue = new Map()
-
   ifvisible.on('blur', function () {
     self.closeWebSocket()
   })
@@ -35,7 +68,9 @@ export default function PrinterComm(
     if (refId && self.passthruQueue.get(refId)) {
       const callback = self.passthruQueue.get(refId)
       self.passthruQueue.delete(refId)
-      callback(null, msg.ret)
+      callback(msg.error, msg.ret)
+    } else if ('terminal_feed' in msg) {
+      self.onTerminalFeedReceived && self.onTerminalFeedReceived(msg.terminal_feed)
     } else if ('printer_event' in msg) {
       const printerEvent = msg.printer_event
       Vue.swal.Toast.fire({
@@ -52,6 +87,11 @@ export default function PrinterComm(
   }
 
   self.connect = function (onOpenCallback = null) {
+    if (self.ws && self.ws.readyState === WebSocket.OPEN) {
+      onOpenCallback && onOpenCallback()
+      return
+    }
+
     self.ws = new WebSocket(
       window.location.protocol.replace('http', 'ws') + '//' + window.location.host + self.wsUri
     )
@@ -66,7 +106,7 @@ export default function PrinterComm(
       if ('passthru' in msg) {
         self.onPassThruReceived(msg.passthru)
       } else {
-        onPrinterUpdateReceived(msg)
+        self.onPrinterUpdateReceived && self.onPrinterUpdateReceived(msg)
       }
     }
 
@@ -97,9 +137,7 @@ export default function PrinterComm(
         return
       }
 
-      if (self.onStatusReceived) {
-        self.onStatusReceived(msg)
-      }
+      self.onStatusReceived && self.onStatusReceived(msg)
     }
 
     self.webrtc.setCallbacks({
@@ -123,10 +161,10 @@ export default function PrinterComm(
         self.passthruQueue.set(refId, callback)
         setTimeout(function () {
           if (self.passthruQueue.has(refId)) {
+            clearPrinterTransientState(self.printerId)
             Vue.swal.Toast.fire({
               icon: 'error',
-              title:
-                'Failed to contact OctoPrint, or the Obico plugin version is older than 1.2.0.',
+              title: 'Failed to contact printer. Is it powered on and connected to Internet?',
             })
           }
         }, 10 * 1000)
@@ -137,6 +175,7 @@ export default function PrinterComm(
       self.ws.send(JSON.stringify({ passthru: msg }))
     } else {
       if (callback) {
+        clearPrinterTransientState(self.printerId)
         callback('Message not passed through. No suitable WebSocket.')
       }
     }

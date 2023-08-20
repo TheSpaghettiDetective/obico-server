@@ -12,14 +12,11 @@
   /* top: calc(var(--ifm-navbar-height) + 2rem); */
   background-color: var(--ifm-color-gray-0);
   padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 html[data-theme=dark] .sidebar {
   background-color: var(--ifm-color-gray-900);
-}
-
-.categories {
-  margin-bottom: 1rem;
 }
 
 .sidebarItemTitle {

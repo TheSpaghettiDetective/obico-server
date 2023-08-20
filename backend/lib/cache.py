@@ -55,7 +55,7 @@ def pic_post_throttle_key(printer_id):
     return 'thr:{}:{}'.format(printer_id, datetime.now().minute)
 
 def printer_status_set(printer_id, mapping, ex):
-    if isinstance(mapping, dict):
+    if isinstance(mapping, dict):  #TODO: retire this part after 7/1/2023
         cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
         prefix = printer_key_prefix(printer_id) + 'status'
         REDIS.hmset(prefix, cleaned_mapping)

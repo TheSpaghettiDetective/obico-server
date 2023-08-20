@@ -32,9 +32,7 @@
               selected
             </template>
             <b-dropdown-item>
-              <div @click="moveSelectedItems">
-                <i class="fa-solid fa-arrows-up-down-left-right"></i>Move
-              </div>
+              <div @click="moveSelectedItems"><i class="fas fa-arrows-alt"></i>Move</div>
             </b-dropdown-item>
             <b-dropdown-item>
               <div class="text-danger" @click="deleteSelectedItems">
@@ -90,9 +88,9 @@
                 <div class="title">{{ printer.name }}</div>
                 <div
                   class="subtitle"
-                  :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
+                  :class="[isPrinterBrowsable(printer) ? 'text-success' : 'text-warning']"
                 >
-                  {{ printer.browsabilityText() }}
+                  {{ printerBrowsabilityText(printer) }}
                 </div>
               </div>
             </div>
@@ -168,9 +166,9 @@
                     <div class="title">{{ printer.name }}</div>
                     <div
                       class="subtitle"
-                      :class="[printer.isBrowsable() ? 'text-success' : 'text-warning']"
+                      :class="[isPrinterBrowsable(printer) ? 'text-success' : 'text-warning']"
                     >
-                      {{ printer.browsabilityText() }}
+                      {{ printerBrowsabilityText(printer) }}
                     </div>
                   </div>
                 </div>
@@ -299,8 +297,8 @@ import NewFolderModal from '@src/components/g-codes/NewFolderModal.vue'
 import RenameModal from '@src/components/g-codes/RenameModal.vue'
 import MoveModal from '@src/components/g-codes/MoveModal.vue'
 import DeleteConfirmationModal from '@src/components/g-codes/DeleteConfirmationModal.vue'
-import { sendToPrint } from '@src/components/g-codes/sendToPrint'
-import PrinterComm from '@src/lib/printer-comm'
+import { sendToPrint, confirmPrint } from '@src/components/g-codes/sendToPrint'
+import { printerCommManager } from '@src/lib/printer-comm'
 import {
   listPrinterLocalGCodesOctoPrint,
   listPrinterLocalGCodesMoonraker,
@@ -505,6 +503,14 @@ export default {
   },
 
   methods: {
+    isPrinterBrowsable(printer) {
+      return !(printer.isOffline() || !printer.isAgentVersionGte('2.3.0', '1.2.0'))
+    },
+    printerBrowsabilityText(printer) {
+      return this.isPrinterBrowsable(printer)
+        ? 'Available to browse files'
+        : 'Unable to browse files'
+    },
     toggleSelectAll() {
       if (this.allSelected) {
         this.$refs.gCodeFileStructure.unselectAll()
@@ -544,7 +550,7 @@ export default {
             if (selectedFileIds.length)
               await axios.post(urls.gcodeFileBulkDelete(), { file_ids: selectedFileIds })
           } catch (err) {
-            this._logError(err, 'Failed to delete files and folders')
+            this.errorDialog(err, 'Failed to delete files and folders')
           } finally {
             this.fetchFilesAndFolders(true)
           }
@@ -565,7 +571,7 @@ export default {
       }
     },
     switchToPrinterStorage(printer) {
-      if (!printer.isBrowsable()) {
+      if (!this.isPrinterBrowsable(printer)) {
         this.$swal.Reject.fire({
           title: `${printer.name} isn't available for browsing files for one of the following reasons:`,
           html: `<ul style="text-align: left">
@@ -621,7 +627,9 @@ export default {
       }
       printers = printers.map((p) => normalizedPrinter(p))
       // bring browsable printers at the top of the list
-      printers = printers.sort((a, b) => Number(b.isBrowsable()) - Number(a.isBrowsable()))
+      printers = printers.sort(
+        (a, b) => Number(this.isPrinterBrowsable(b)) - Number(this.isPrinterBrowsable(a))
+      )
       this.printers = this.targetPrinter
         ? printers.filter((p) => p.id === this.targetPrinter.id)
         : printers
@@ -675,11 +683,9 @@ export default {
         this.localFilesLoading = true
 
         if (!this.selectedPrinterComm) {
-          this.selectedPrinterComm = PrinterComm(
+          this.selectedPrinterComm = printerCommManager.getOrCreatePrinterComm(
             this.selectedPrinterId,
-            urls.printerWebSocket(this.selectedPrinterId),
-            (data) => {},
-            (printerStatus) => {}
+            urls.printerWebSocket(this.selectedPrinterId)
           )
           this.selectedPrinterComm.connect(this.fetchLocalFiles)
         } else {
@@ -716,7 +722,7 @@ export default {
           folders = response?.results || []
         } catch (error) {
           this.loading = false
-          this._logError(error)
+          this.errorDialog(error)
         }
 
         this.currentFoldersPage += 1
@@ -745,7 +751,7 @@ export default {
           files = response?.results || []
         } catch (error) {
           this.loading = false
-          this._logError(error)
+          this.errorDialog(error)
         }
 
         this.currentFilesPage += 1
@@ -765,7 +771,7 @@ export default {
             }
           } catch (error) {
             this.loading = false
-            this._logError(error)
+            this.errorDialog(error)
           }
         }
       }
@@ -926,17 +932,18 @@ export default {
       }
     },
     onPrintClicked(gcode) {
-      sendToPrint({
-        printerId: this.targetPrinter.id,
-        gcode: gcode,
-        isCloud: this.isCloud,
-        isAgentMoonraker: this.targetPrinter.isAgentMoonraker(),
-        Swal: this.$swal,
-        onCommandSent: () => {
-          if (this.isPopup) {
-            this.$bvModal.hide('b-modal-gcodes' + this.targetPrinter.id)
-          }
-        },
+      confirmPrint(gcode, this.targetPrinter).then(() => {
+        sendToPrint({
+          printer: this.targetPrinter,
+          gcode: gcode,
+          isCloud: this.isCloud,
+          Swal: this.$swal,
+          onCommandSent: () => {
+            if (this.isPopup) {
+              this.$bvModal.hide('b-modal-gcodes' + this.targetPrinter.id)
+            }
+          },
+        })
       })
     },
 

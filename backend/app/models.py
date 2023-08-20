@@ -149,6 +149,7 @@ class Printer(SafeDeleteModel):
         (NONE, 'Just notify me'),
         (PAUSE, 'Pause the printer and notify me'),
     )
+    DEFAULT_WEBCAM_SETTINGS = {'flipV': False, 'flipH': False, 'rotation': 0, 'streamRatio': '16:9'}
 
     name = models.CharField(max_length=256, null=False)
     auth_token = models.CharField(max_length=256, unique=True, null=False, blank=False)
@@ -191,9 +192,17 @@ class Printer(SafeDeleteModel):
     def settings(self):
         p_settings = cache.printer_settings_get(self.id)
 
-        for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'):
+        for key in ('webcam_flipV', 'webcam_flipH', 'webcam_rotate90'): # `webcam_rotate90` for backward compatibility with old plugins
             p_settings[key] = p_settings.get(key, 'False') == 'True'
-        p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '4:3') == '16:9'
+
+        if 'webcam_rotation' in p_settings:
+            rotation_int = int(p_settings['webcam_rotation'])
+            p_settings['webcam_rotation'] = rotation_int if rotation_int in [0, 90, 180, 270] else 0
+            p_settings['webcam_rotate90'] = rotation_int == 270 # backward compatibility with old mobile app
+        elif 'webcam_rotate90' in p_settings: # Backward compatibility with old plugins
+            p_settings['webcam_rotation'] = int(270 if p_settings['webcam_rotate90'] else 0)
+
+        p_settings['ratio169'] = p_settings.get('webcam_streamRatio', '16:9') == '16:9'
 
         if p_settings.get('temp_profiles'):
             p_settings['temp_profiles'] = json.loads(p_settings.get('temp_profiles'))

@@ -24,7 +24,15 @@ import {
   faCircleQuestion,
   faBell,
   faCog,
-  faRotateLeft,
+  faCirclePause,
+  faCirclePlay,
+  faCircleXmark,
+  faPowerOff,
+  faGear,
+  faRotateRight,
+  faLayerGroup,
+  faChevronDown,
+  faRulerVertical,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
@@ -42,7 +50,7 @@ export default (router, components) => {
 
   Vue.mixin({
     methods: {
-      _logError: function (errorObj, userMessage) {
+      errorDialog: function (errorObj, userMessage) {
         console.error('logError', errorObj)
         if (userMessage) {
           this.$swal.Reject.fire({
@@ -72,7 +80,15 @@ export default (router, components) => {
     faBell,
     faCog,
     faDiscord,
-    faRotateLeft
+    faRotateRight,
+    faCirclePause,
+    faCirclePlay,
+    faCircleXmark,
+    faPowerOff,
+    faGear,
+    faLayerGroup,
+    faChevronDown,
+    faRulerVertical
   )
   Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 

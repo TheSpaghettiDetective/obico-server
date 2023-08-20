@@ -11,7 +11,7 @@ from app.models import PrinterEvent, Printer
 from lib.heater_trackers import process_heater_temps
 
 LOGGER = logging.getLogger(__name__)
-STATUS_TTL_SECONDS = 240
+STATUS_TTL_SECONDS = 120
 
 def process_octoprint_status(printer: Printer, msg: Dict) -> None:
     # Backward compatibility: octoprint_settings is for OctoPrint-Obico 2.1.2 or earlier, or moonraker-obico 0.5.1 or earlier
@@ -34,7 +34,7 @@ def process_octoprint_status(printer: Printer, msg: Dict) -> None:
         cache.printer_status_delete(printer.id)
     elif (printer_status or {}).get('_ts'):   # data format for plugin 1.6.0 and higher
         cache.printer_status_set(printer.id, json.dumps((printer_status or {})), ex=STATUS_TTL_SECONDS)
-    else:
+    else: # TODO: retire this part after 7/1/2023
         octoprint_data: Dict = dict()
         set_as_str_if_present(octoprint_data, (printer_status or {}), 'state')
         set_as_str_if_present(octoprint_data, (printer_status or {}), 'progress')
@@ -54,7 +54,11 @@ def process_octoprint_status(printer: Printer, msg: Dict) -> None:
 
 
 def settings_dict(octoprint_settings):
-    settings = dict(('webcam_' + k, str(v)) for k, v in octoprint_settings.get('webcam', {}).items())
+    webcam_settings = dict(Printer.DEFAULT_WEBCAM_SETTINGS)
+
+    webcam_settings.update(octoprint_settings.get('webcam', {}))
+    settings = dict(('webcam_' + k, str(v)) for k, v in webcam_settings.items())
+
     settings.update(dict(temp_profiles=json.dumps(octoprint_settings.get('temperature', {}).get('profiles', []))))
     settings.update(dict(printer_metadata=json.dumps(octoprint_settings.get('printer_metadata', {}))))
     settings.update(
@@ -62,6 +66,7 @@ def settings_dict(octoprint_settings):
         octoprint_version=octoprint_settings.get('octoprint_version', ''),
     )
     settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
+    settings.update(dict(installed_plugins=json.dumps(octoprint_settings.get('installed_plugins', []))))
 
     return settings
 

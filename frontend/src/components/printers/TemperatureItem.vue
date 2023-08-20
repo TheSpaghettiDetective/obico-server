@@ -4,7 +4,7 @@
       <svg v-if="heaterIcon">
         <use :href="heaterIcon" />
       </svg>
-      <i v-else class="fa-solid fa-temperature-empty"></i>
+      <i v-else class="fas fa-thermometer-empty"></i>
     </div>
     <div class="title">{{ temperatureDisplayName(tempKey) }}</div>
     <div class="value-wrapper">

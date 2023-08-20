@@ -9,7 +9,7 @@
     >
       <div v-for="item in currentItems" :key="item.id" class="item">
         <div class="handle">
-          <i class="fa-solid fa-grip-lines"></i>
+          <i class="fas fa-grip-lines"></i>
         </div>
         <div class="title">
           <span>{{ getTitle(item.id) }}</span>

@@ -337,11 +337,6 @@ a.link {
   transform: scaleX(-1) scaleY(-1);
 }
 
-.rotate90 {
-  -webkit-transform: rotate(-90deg);
-  transform: rotate(-90deg);
-}
-
 .swal2-popup {
   background-color: var(--color-surface-secondary) !important;
   border-radius: var(--border-radius-lg);

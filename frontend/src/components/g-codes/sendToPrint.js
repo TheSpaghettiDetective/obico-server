@@ -1,12 +1,34 @@
+import Vue from 'vue'
 import axios from 'axios'
 import get from 'lodash/get'
+import { clearPrinterTransientState } from '@src/lib/printer-transient-state'
 
-import PrinterComm from '@src/lib/printer-comm'
+import { printerCommManager } from '@src/lib/printer-comm'
 import {
   printPrinterLocalGCodeOctoPrint,
   printPrinterLocalGCodeMoonraker,
 } from '@src/lib/printer-local-comm'
 import urls from '@config/server-urls'
+import { repeatPrinterLocalGCode } from '../../lib/printer-local-comm'
+
+export const confirmPrint = (gcode, printer) => {
+  return new Promise((resolve, reject) => {
+    Vue.swal
+      .fire({
+        html: `<h5 style="text-align: center; line-height: 1.5;">Print "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
+        imageUrl: gcode.getBigThumbnailUrl && gcode.getBigThumbnailUrl(),
+        showCancelButton: true,
+        confirmButtonText: 'Print!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.value) {
+          resolve()
+        }
+      })
+  })
+}
 
 export function printCloudGCode(printerComm, gcode) {
   return new Promise((resolve, reject) => {
@@ -14,11 +36,18 @@ export function printCloudGCode(printerComm, gcode) {
       {
         func: 'download',
         target: 'file_downloader',
-        args: [gcode],
+        args: [
+          {
+            id: gcode.id,
+            url: gcode.url,
+            filename: gcode.filename,
+            safe_filename: gcode.safe_filename,
+          },
+        ],
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         } else {
           resolve()
         }
@@ -28,29 +57,28 @@ export function printCloudGCode(printerComm, gcode) {
 }
 
 export const sendToPrint = (args) => {
-  const {
-    printerId,
-    gcode,
-    isCloud,
-    Swal,
-    onCommandSent,
-    onPrinterStatusChanged,
-    isAgentMoonraker = false,
-  } = args
+  const { printer, gcode, isCloud, Swal, onCommandSent, onPrinterStatusChanged } = args
 
-  const printerComm = PrinterComm(
+  const printerId = printer.id
+  const isAgentMoonraker = printer.isAgentMoonraker()
+
+  const printerComm = printerCommManager.getOrCreatePrinterComm(
     printerId,
-    urls.printerWebSocket(printerId),
-    (data) => {},
-    (printerStatus) => {}
+    urls.printerWebSocket(printerId)
   )
+
   printerComm.connect(() => {
     const printGCode = isCloud
       ? printCloudGCode
+      : !gcode.path
+      ? repeatPrinterLocalGCode
       : isAgentMoonraker
       ? printPrinterLocalGCodeMoonraker
       : printPrinterLocalGCodeOctoPrint
+
+    printer.setTransientState(isCloud ? 'G-Code Downloading' : 'Starting')
     printGCode(printerComm, gcode).catch((err) => {
+      clearPrinterTransientState(printerId)
       Swal.Toast.fire({
         icon: 'error',
         title: err,
@@ -59,18 +87,6 @@ export const sendToPrint = (args) => {
   })
 
   onCommandSent && onCommandSent()
-
-  Swal.Prompt.fire({
-    html: `
-        <div class="text-center">
-          <i class="fas fa-spinner fa-spin fa-lg py-3"></i>
-          <h5 class="pt-3">
-            Starting the print...
-          </h5>
-        </div>
-      `,
-    showConfirmButton: false,
-  })
 
   const checkPrinterStatus = async () => {
     let printer
@@ -82,10 +98,13 @@ export const sendToPrint = (args) => {
       return
     }
 
-    if (get(printer, 'status.state.text') === 'Operational') {
+    if (
+      get(printer, 'status.state.text') === 'Operational' ||
+      get(printer, 'status.state.text') === 'G-Code Downloading' ||
+      get(printer, 'status.state.text') === 'Downloading G-Code' // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
+    ) {
       setTimeout(checkPrinterStatus, 1000)
     } else {
-      Swal.close()
       onPrinterStatusChanged && onPrinterStatusChanged()
     }
   }
@@ -112,9 +131,10 @@ export const showRedirectModal = (Swal, onClose, printerId) => {
     confirmButtonText: 'Redirect now',
     onOpen: () => {
       timerInterval = setInterval(() => {
-        Swal.getHtmlContainer().querySelector('strong').textContent = (
-          Swal.getTimerLeft() / 1000
-        ).toFixed(0)
+        const htmlContainer = Swal.getHtmlContainer()
+        const timerElement = htmlContainer?.querySelector('strong')
+        if (!htmlContainer || !timerElement) return
+        timerElement.textContent = (Swal.getTimerLeft() / 1000).toFixed(0)
       }, 1000)
     },
     onClose: () => {

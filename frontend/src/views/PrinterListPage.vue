@@ -114,7 +114,12 @@
                   {{ archivedPrinterNum }} {{ 'printer' | pluralize(archivedPrinterNum) }} have been
                   archived.
                 </div>
-                <a href="/ent/printers/archived/" class="warning-action">Show Archived Printers</a>
+                <div>
+                  <a href="/ent/printers/archived/" class="warning-action"
+                    >Show Archived Printers</a
+                  >
+                  <a class="warning-action" @click="handleNeverShowAgain">Never Show Again</a>
+                </div>
               </div>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -183,6 +188,7 @@ export default {
       loading: true,
       isEnt: false,
       archivedPrinterNum: 0,
+      shouldShowArchiveWarning: false,
 
       // Sorting
       sortingLocalStoragePrefix: SortingLocalStoragePrefix,
@@ -260,9 +266,6 @@ export default {
     hiddenPrinterCount() {
       return this.printers.length - this.visiblePrinters.length
     },
-    shouldShowArchiveWarning() {
-      return this.archivedPrinterNum > 0
-    },
   },
 
   created() {
@@ -300,6 +303,7 @@ export default {
               this.insertPrinter(normalizedPrinter(p))
             }
           })
+          this.shouldShowArchiveWarningFunc()
         })
     },
     insertPrinter(printer) {
@@ -334,6 +338,28 @@ export default {
         setLocalPref(`${FilterLocalStoragePrefix}-${key}`, 'none')
       }
     },
+    handleNeverShowAgain() {
+      this.$swal.Prompt.fire({
+        title: 'Are you sure?',
+        html: `<p style="text-align: center">You can always view your archived printers in by navigating to the General tab within Preferences.</p>`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((userAction) => {
+        if (userAction.isConfirmed) {
+          localStorage.setItem('shouldNeverShowArchived', JSON.stringify(true))
+          this.shouldShowArchiveWarning = false
+        }
+      })
+    },
+    shouldShowArchiveWarningFunc() {
+      const shouldNeverShow = localStorage.getItem('shouldNeverShowArchived')
+      if (JSON.parse(shouldNeverShow) === true) {
+        this.shouldShowArchiveWarning = false
+      } else {
+        this.shouldShowArchiveWarning = this.archivedPrinterNum > 0
+      }
+    },
   },
 }
 </script>
@@ -361,9 +387,9 @@ export default {
 
     .warning-action
       padding: 0.25em 0
-      font-weight: bolder
-      font-size: 1.1em
       margin-left: auto
+      margin: 0px 5px 0px 5px
+      cursor: pointer
 
 .btn.hours-btn
   position: relative

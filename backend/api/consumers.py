@@ -26,7 +26,7 @@ from .serializers import PublicPrinterSerializer, PrinterSerializer
 
 LOGGER = logging.getLogger(__name__)
 TOUCH_MIN_SECS = 30
-
+STATUS_UPDATE_MIN_SECS = 45
 
 
 def report_error(
@@ -103,6 +103,7 @@ class WebConsumer(JsonWebsocketConsumer):
             self.channel_name
         )
         self.last_touch = time.time()
+        self.printer_status_last_sent = 0
 
         Room.objects.add(
             channels.web_group_name(self.printer.id),
@@ -134,6 +135,10 @@ class WebConsumer(JsonWebsocketConsumer):
             self.last_touch = time.time()
             Presence.objects.touch(self.channel_name)
 
+        if not data and time.time() - self.printer_status_last_sent > STATUS_UPDATE_MIN_SECS:
+            # Empty message from client is a signal for getting status to trigger a re-render in the client
+            channels.send_status_to_web(self.printer.id)
+
         if 'passthru' in data:
             channels.send_msg_to_printer(self.printer.id, data)
 
@@ -143,6 +148,7 @@ class WebConsumer(JsonWebsocketConsumer):
         serializer = PrinterSerializer(
             Printer.with_archived.get(id=self.printer.id))
         self.send_json(serializer.data)
+        self.printer_status_last_sent = time.time()
 
     @newrelic.agent.background_task()
     @report_error

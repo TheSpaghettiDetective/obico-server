@@ -4,6 +4,10 @@ import filesize from 'filesize'
 import semverGte from 'semver/functions/gte'
 import { humanizedDuration } from '@src/lib/formatters'
 import { gcodeMetadata } from '@src/components/g-codes/gcode-metadata'
+import {
+  setPrinterTransientState,
+  getPrinterCalculatedState,
+} from '@src/lib/printer-transient-state'
 
 export const toMomentOrNull = (datetimeStr) => {
   if (!datetimeStr) {
@@ -131,6 +135,14 @@ export const normalizedGcode = (gcode) => {
     }
   })
 
+  // Normalize thumbnail
+  gcode.getBigThumbnailUrl = () => {
+    return gcode.thumbnail1_url || gcode.thumbnail2_url || gcode.thumbnail3_url
+  }
+  gcode.getSmallThumbnailUrl = () => {
+    return gcode.thumbnail3_url || gcode.thumbnail2_url || gcode.thumbnail1_url
+  }
+
   return gcode
 }
 
@@ -161,14 +173,43 @@ export const normalizedPrinter = (newData, oldData) => {
     isActive: function () {
       const flags = get(this, 'status.state.flags')
       // https://discord.com/channels/704958479194128507/705047010641838211/1013193281280159875
-      return Boolean(flags && flags.operational && (!flags.ready || flags.paused))
+      return (
+        Boolean(flags && flags.operational && (!flags.ready || flags.paused)) ||
+        this.inTransientState()
+      )
     },
     inTransientState: function () {
-      return (
-        !this.hasError() &&
-        get(this, 'status.state.text', '').includes('ing') &&
-        !get(this, 'status.state.text', '').includes('Printing')
-      )
+      const calculatedState = this.calculatedState()
+      // Backward compatibility with OctoPrint-Obico 2.3.7 - 2.3.9
+      if (calculatedState === 'Downloading G-Code') {
+        return true
+      }
+
+      return calculatedState && calculatedState.endsWith('ing') && calculatedState !== 'Printing'
+    },
+    calculatedState: function () {
+      return getPrinterCalculatedState(this, this.status?.state?.text)
+    },
+    calculatedStateColor: function () {
+      const calcState = this.calculatedState()
+      const colorMapping = {
+        secondary: ['Offline', undefined, null],
+        success: ['Operational'],
+        neutral: ['Printing', 'G-Code Downloading', 'Downloading G-Code', 'Starting'],
+        warning: ['Paused', 'Pausing', 'Resuming'],
+        danger: ['Cancelling'],
+      }
+
+      for (const [color, states] of Object.entries(colorMapping)) {
+        if (states.includes(calcState)) {
+          return color
+        }
+      }
+      return 'neutral' // fallback
+    },
+    setTransientState: function (stateText) {
+      setPrinterTransientState(this, stateText)
+      if (this.status) this.status = { ...this.status } // clone status to trigger immidiate UI update
     },
     inUserInteractionRequired: function () {
       return get(this, 'status.user_interaction_required', false)
@@ -185,12 +226,12 @@ export const normalizedPrinter = (newData, oldData) => {
     agentDisplayName: function () {
       return this.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'
     },
-    basicStreamingInWebrtc: function () {
+    isAgentVersionGte: function (minOctoPrintAgentVersion, minMoonrakerAgentVersion) {
       return (
         (get(this, 'settings.agent_name', '') === 'octoprint_obico' &&
-          semverGte(get(this, 'settings.agent_version', '0.0.0'), '2.1.0')) ||
+          semverGte(get(this, 'settings.agent_version', '0.0.0'), minOctoPrintAgentVersion)) ||
         (get(this, 'settings.agent_name', '') === 'moonraker_obico' &&
-          semverGte(get(this, 'settings.agent_version', '0.0.0'), '0.3.0'))
+          semverGte(get(this, 'settings.agent_version', '0.0.0'), minMoonrakerAgentVersion))
       )
     },
     alertUnacknowledged: function () {
@@ -207,24 +248,6 @@ export const normalizedPrinter = (newData, oldData) => {
     },
     printabilityText: function () {
       return this.isPrintable() ? 'Ready' : 'Unavailable'
-    },
-    // Storage availability
-    browsabilityMinPluginVersion: function () {
-      const MIN_OCTOPRINT_PLUGIN_VERSION = '2.3.0'
-      const MIN_MOONRAKER_PLUGIN_VERSION = '1.2.0'
-      return this.isAgentMoonraker() ? MIN_MOONRAKER_PLUGIN_VERSION : MIN_OCTOPRINT_PLUGIN_VERSION
-    },
-    isBrowsable: function () {
-      return !(
-        this.isOffline() ||
-        !semverGte(
-          get(this, 'settings.agent_version', '0.0.0'),
-          this.browsabilityMinPluginVersion()
-        )
-      )
-    },
-    browsabilityText: function () {
-      return this.isBrowsable() ? 'Available to browse files' : 'Unable to browse files'
     },
   }
   if (oldData) {

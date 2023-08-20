@@ -2,7 +2,7 @@
   <widget-template>
     <template #title>
       <div v-if="activeMenu" class="nav-btn" @click="activeMenu = null">
-        <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Back
+        <i class="fas fa-arrow-left"></i>&nbsp;&nbsp;Back
       </div>
       <span v-else>Printer Controls</span>
     </template>
@@ -34,8 +34,16 @@
             <div class="title">Baby Step Z</div>
           </button>
           <button v-if="!hideTunePrinter" class="menu-button" @click="activeMenu = 'tune-printer'">
-            <i class="fa-solid fa-gear"></i>
+            <font-awesome-icon :icon="['fas', 'gear']" />
             <div class="title">Tune Printer</div>
+          </button>
+          <button
+            v-if="powerDevices.length"
+            class="menu-button"
+            @click="activeMenu = 'power-control'"
+          >
+            <font-awesome-icon :icon="['fas', 'power-off']" />
+            <div class="title">Power</div>
           </button>
         </div>
 
@@ -55,39 +63,37 @@
             </div>
             <div class="xy-move">
               <div class="left" @click="xyzControl(axis.x, directions.down)">
-                <i class="fa-solid fa-arrow-left"></i>
+                <i class="fas fa-arrow-left"></i>
               </div>
               <div class="right" @click="xyzControl(axis.x, directions.up)">
-                <i class="fa-solid fa-arrow-right"></i>
+                <i class="fas fa-arrow-right"></i>
               </div>
               <div class="up" @click="xyzControl(axis.y, directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="xyzControl(axis.y, directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
               <div class="home" @click="xyzControl(axis.xy, directions.home)">
-                <i class="fa-solid fa-house"></i>
+                <i class="fas fa-home"></i>
               </div>
             </div>
             <div class="z-move">
               <div class="up" @click="xyzControl(axis.z, directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="xyzControl(axis.z, directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
               <div class="home" @click="xyzControl(axis.z, directions.home)">
-                <i class="fa-solid fa-house"></i>
+                <i class="fas fa-home"></i>
               </div>
             </div>
           </div>
           <div class="additional">
-            <div class="control-btn" @click="homeAll">
-              <i class="fa-solid fa-house"></i> Home All
-            </div>
+            <div class="control-btn" @click="homeAll"><i class="fas fa-home"></i> Home All</div>
             <div class="control-btn" @click="disableSteppers">
-              <i class="fa-solid fa-power-off"></i> Disable Steppers
+              <i class="fas fa-power-off"></i> Disable Steppers
             </div>
           </div>
         </div>
@@ -109,10 +115,10 @@
               </div>
               <div class="main-buttons">
                 <div class="control-btn" @click="handleFilament(filamentDirections.retract)">
-                  <i class="fa-solid fa-minus"></i> Retract
+                  <i class="fas fa-minus"></i> Retract
                 </div>
                 <div class="control-btn" @click="handleFilament(filamentDirections.extrude)">
-                  <i class="fa-solid fa-plus"></i> Extrude
+                  <i class="fas fa-plus"></i> Extrude
                 </div>
               </div>
             </template>
@@ -148,10 +154,10 @@
             </div>
             <div class="z-move">
               <div class="up" @click="controlZOffset(directions.up)">
-                <i class="fa-solid fa-arrow-up"></i>
+                <i class="fas fa-arrow-up"></i>
               </div>
               <div class="down" @click="controlZOffset(directions.down)">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
             </div>
           </div>
@@ -289,6 +295,31 @@
             limitation of the communication protocol.
           </muted-alert>
         </div>
+
+        <!-- Power Control -->
+        <div v-show="activeMenu === 'power-control'" class="control-panel power-control">
+          <div v-for="(item, index) in powerDevices" :key="index" class="power-item">
+            <div class="title">
+              <div class="name">{{ item.device }}</div>
+              <div
+                class="status text-danger"
+                :class="{ 'text-success': item.status.toUpperCase() === 'ON' }"
+              >
+                • {{ item.status.toUpperCase() }}
+              </div>
+            </div>
+            <b-button variant="outline-primary" @click="togglePower(item)"> Toggle Power </b-button>
+          </div>
+
+          <div v-if="powerDevices.length > 1" class="bulk-actions">
+            <b-button variant="success" @click="batchPowerControl('on')"> Power On All </b-button>
+            <b-button variant="danger" @click="batchPowerControl('off')"> Power Off All </b-button>
+          </div>
+
+          <muted-alert class="info-block">
+            Rapid toggling power may result in error. Please allow a cooldown period.
+          </muted-alert>
+        </div>
       </div>
     </template>
   </widget-template>
@@ -367,6 +398,8 @@ export default {
       customFeedRateFactor: null,
       customFlowRateFactor: null,
       customFanSpeed: null,
+
+      powerDevices: [],
     }
   },
 
@@ -469,6 +502,8 @@ export default {
   },
 
   created() {
+    this.getPowerDevices()
+
     // Get jogDistance from localStorage or set default value
     if (isLocalStorageSupported()) {
       this.xyzJogDistance.value =
@@ -508,10 +543,10 @@ export default {
       }
       const payload = { func: func, target: '_printer', args: args }
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -519,7 +554,7 @@ export default {
     getCurrentZOffset() {
       const moonrakerPayload = { func: 'printer/objects/query?gcode_move', target: 'moonraker_api' }
       this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.currentZOffset = 'no reading'
         } else {
           const offset = ret.status.gcode_move.homing_origin[2]
@@ -542,10 +577,10 @@ export default {
 
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -566,10 +601,10 @@ export default {
             this.printerComm.passThruToPrinter(
               { func: 'set_temperature', target: '_printer', args: [this.activeTool, 180] },
               (err, ret) => {
-                if (err || ret?.error) {
+                if (err) {
                   this.$swal.Toast.fire({
                     icon: 'error',
-                    title: ret.error,
+                    title: err,
                   })
                 }
               }
@@ -593,10 +628,10 @@ export default {
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         }
       })
@@ -621,10 +656,10 @@ export default {
       const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
       this.currentZOffset = null
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           this.$swal.Toast.fire({
             icon: 'error',
-            title: ret.error,
+            title: err,
           })
         } else {
           this.getCurrentZOffset()
@@ -660,13 +695,13 @@ export default {
           }
 
       this.printerComm.passThruToPrinter(payload, (err, ret) => {
-        if (err || ret?.error) {
+        if (err) {
           if (onError) {
             onError(err, ret)
           } else {
             this.$swal.Toast.fire({
               icon: 'error',
-              title: ret.error,
+              title: err,
             })
           }
         } else {
@@ -678,6 +713,63 @@ export default {
               title: 'Command successfully sent!',
             })
           }
+        }
+      })
+    },
+
+    // Power Control
+    getPowerDevices() {
+      if (!this.printer.isAgentMoonraker()) return
+      const moonrakerPayload = {
+        func: 'machine/device_power/devices',
+        target: 'moonraker_api',
+        args: [],
+      }
+      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
+        if (err) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: err,
+          })
+        } else {
+          this.powerDevices = ret?.devices || []
+        }
+      })
+    },
+    togglePower(device) {
+      // same as above but adapted to this file passThru function and syntax
+      const actionString = device.status.toUpperCase() === 'ON' ? 'off' : 'on'
+      const deviceStr = `device=${device.device}&action=${actionString}`
+      const moonrakerPayload = {
+        func: `machine/device_power/device?${deviceStr}`,
+        target: 'moonraker_api',
+        kwargs: { verb: 'post' },
+      }
+      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
+        this.getPowerDevices()
+        if (err) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: err,
+          })
+        }
+      })
+    },
+    batchPowerControl(action) {
+      if (!this.powerDevices.length) return
+      const str = `${this.powerDevices.map((obj) => obj.device).join('&')}`
+      const moonrakerPayload = {
+        func: `machine/device_power/${action}?${str}`,
+        target: 'moonraker_api',
+        kwargs: { verb: 'post' },
+      }
+      this.printerComm.passThruToPrinter(moonrakerPayload, (err, ret) => {
+        this.getPowerDevices()
+        if (err) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: err,
+          })
         }
       })
     },
@@ -730,7 +822,7 @@ export default {
   &:disabled
     opacity: .5
     cursor: not-allowed
-  i
+  i, svg
     font-size: 1.75rem
     @media (max-width: 510px)
       font-size: 1.2rem
@@ -886,4 +978,22 @@ export default {
 
   .info-block
     width: 100%
+
+.power-control
+  .power-item
+    margin: 1rem 0
+    display: flex
+    flex-direction: column
+    gap: .5rem
+  .title
+    display: flex
+    justify-content: space-between
+    font-size: 1rem
+    font-weight: bold
+  .bulk-actions
+    display: flex
+    gap: 1rem
+    margin: 2rem 0
+    button
+      flex: 1
 </style>

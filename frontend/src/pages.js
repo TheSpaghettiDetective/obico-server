@@ -19,6 +19,7 @@ import GCodeFoldersPage from '@src/views/GCodeFoldersPage.vue'
 import GCodeFilePage from '@src/views/GCodeFilePage.vue'
 import UserPreferencesPage from '@src/views/UserPreferencesPage.vue'
 import PrinterEventsPage from '@src/views/PrinterEventsPage.vue'
+import PrinterTerminalPage from '@src/views/PrinterTerminalPage.vue'
 
 const router = new VueRouter({
   mode: 'history',
@@ -73,6 +74,7 @@ const components = {
   UploadPrintPage,
   UserPreferencesPage,
   PrinterEventsPage,
+  PrinterTerminalPage,
 }
 
 export { router, components }

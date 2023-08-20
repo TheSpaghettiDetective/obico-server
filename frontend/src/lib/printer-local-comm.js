@@ -31,8 +31,8 @@ export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword
         kwargs,
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(err || ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         }
 
         let folders = []
@@ -63,6 +63,8 @@ export function listPrinterLocalGCodesOctoPrint(printerComm, path, searchKeyword
               num_bytes: item.size,
               filesize: filesize(item.size),
               created_at: toMomentOrNull(new Date(item.date * 1000)),
+              getBigThumbnailUrl: () => null,
+              getSmallThumbnailUrl: () => null,
             })
           }
         }
@@ -85,8 +87,8 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
         },
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(err || ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         }
         // subdirs should be ignored when user is searching
         const dirsInServerFormat = searchKeyword
@@ -121,6 +123,8 @@ export function listPrinterLocalGCodesMoonraker(printerComm, path, searchKeyword
               filesize: filesize(f.size),
               created_at: toMomentOrNull(new Date(f.modified * 1000)),
               path: `${pathPrefix}${f.filename}`,
+              getBigThumbnailUrl: () => null,
+              getSmallThumbnailUrl: () => null,
             }
           }
         )
@@ -141,8 +145,8 @@ export function printPrinterLocalGCodeOctoPrint(printerComm, gcode) {
         kwargs: { printAfterSelect: 'true' },
       },
       (err, ret) => {
-        if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!')
+        if (err) {
+          reject(err)
         } else {
           resolve()
         }
@@ -164,8 +168,27 @@ export function printPrinterLocalGCodeMoonraker(printerComm, gcode) {
         },
       },
       (err, ret) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve()
+        }
+      }
+    )
+  })
+}
+
+export function repeatPrinterLocalGCode(printerComm, gcode) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      {
+        target: 'file_operations',
+        func: 'start_printer_local_print',
+        args: [gcode],
+      },
+      (err, ret) => {
         if (err || ret?.error) {
-          reject(ret?.error || 'Something went wrong!')
+          reject(err || ret?.error)
         } else {
           resolve()
         }

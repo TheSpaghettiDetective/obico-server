@@ -2,6 +2,10 @@
 title: Configure a Gmail account as SMTP server to send emails
 ---
 
+:::note
+This is a community-contributed guide. This guide is based on certain Obico community members' own setup and hence may not work for you.
+:::
+
 To use Gmail's SMTP server for sending email, follow the following simple steps.
 
 ## 1. Make sure the 2-Step Verification is turned on for the Gmail account. {#1-make-sure-the-2-step-verification-is-turned-on-for-the-gmail-account}

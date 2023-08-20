@@ -10,16 +10,17 @@ x-web-defaults: &web-defaults
     - ./frontend:/frontend
   depends_on:
     - redis
+  env_file: .env
   environment:
     OCTOPRINT_TUNNEL_PORT_RANGE: '0-0'
-    EMAIL_HOST: '${EMAIL_HOST-}'
-    EMAIL_HOST_USER: '${EMAIL_HOST_USER-}'
-    EMAIL_HOST_PASSWORD: '${EMAIL_HOST_PASSWORD-}'
+    EMAIL_HOST: '${EMAIL_HOST-''}'
+    EMAIL_HOST_USER: '${EMAIL_HOST_USER-''}'
+    EMAIL_HOST_PASSWORD: '${EMAIL_HOST_PASSWORD-''}'
     EMAIL_PORT: '${EMAIL_PORT-587}'
     EMAIL_USE_TLS: '${EMAIL_USE_TLS-True}'
     DEFAULT_FROM_EMAIL: '${DEFAULT_FROM_EMAIL-changeme@example.com}'
     DEBUG: '${DEBUG-False}'    # Don't set DEBUG to True unless you know what you are doing. Otherwise the static files will be cached in browser until hard-refresh
-    ADMIN_IP_WHITELIST: '${ADMIN_IP_WHITELIST-}'
+    ADMIN_IP_WHITELIST: '${ADMIN_IP_WHITELIST-[]}'
     SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
     SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
@@ -29,14 +30,14 @@ x-web-defaults: &web-defaults
     ML_API_HOST: '${ML_API_HOST-http://ml_api:3333}'
     ACCOUNT_ALLOW_SIGN_UP: '${ACCOUNT_ALLOW_SIGN_UP-False}'
     WEBPACK_LOADER_ENABLED: '${WEBPACK_LOADER_ENABLED-False}'
-    TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN-}'
-    TWILIO_ACCOUNT_SID: '${TWILIO_ACCOUNT_SID-}'
-    TWILIO_AUTH_TOKEN: '${TWILIO_AUTH_TOKEN-}'
-    TWILIO_FROM_NUMBER: '${TWILIO_FROM_NUMBER-}'
-    SENTRY_DSN: '${SENTRY_DSN-}'
-    PUSHOVER_APP_TOKEN: '${PUSHOVER_APP_TOKEN-}'
-    SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
-    SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
+    TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN-''}'
+    TWILIO_ACCOUNT_SID: '${TWILIO_ACCOUNT_SID-''}'
+    TWILIO_AUTH_TOKEN: '${TWILIO_AUTH_TOKEN-''}'
+    TWILIO_FROM_NUMBER: '${TWILIO_FROM_NUMBER-''}'
+    SENTRY_DSN: '${SENTRY_DSN-''}'
+    PUSHOVER_APP_TOKEN: '${PUSHOVER_APP_TOKEN-''}'
+    SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-''}'
+    SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-''}'
     VERSION:
 
 services:

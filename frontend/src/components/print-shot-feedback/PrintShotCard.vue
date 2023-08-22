@@ -19,7 +19,7 @@
       </small>
       <div class="navigation-container my-4" style="display: flex">
         <b-button variant="outline-secondary" @click="$emit('prev')">
-          <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Pervious
+          <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Previous
         </b-button>
 
         <b-button variant="outline-secondary" @click="$emit('next')">

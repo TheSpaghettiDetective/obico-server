@@ -34,7 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'First Layer AI',
-      items: ['user-guides/first_layer_ai/setup_guild',],
+      items: ['user-guides/first_layer_ai/nozzle-camera-configuration','user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only',],
     },
     {
       type: 'category',

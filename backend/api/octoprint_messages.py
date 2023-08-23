@@ -81,6 +81,9 @@ def update_current_print_if_needed(msg, printer):
     printer_status = msg.get('status') or msg.get('octoprint_data') or {}
 
     print_ts = msg.get('current_print_ts')
+    if print_ts > 2147483647: # Some agents send ts in ms for whatever reason, and causes the db to overflow
+        print_ts = print_ts // 1000
+
     g_code_file_id = printer_status.get('job', {}).get('file', {}).get('obico_g_code_file_id') \
         or msg.get('tsd_gcode_file_id')  # tsd_gcode_file_id to be compatible with version 2.2.x and earlier
     current_filename = (op_event.get('data') or {}).get('name') or ((printer_status.get('job') or {}).get('file') or {}).get('name')

@@ -33,6 +33,11 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'First Layer AI',
+      items: ['user-guides/first_layer_ai/setup_guild',],
+    },
+    {
+      type: 'category',
       label: 'Webcam Streaming',
       items: [
         'user-guides/webcam-streaming-for-human-eyes',

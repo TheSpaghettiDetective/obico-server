@@ -19,7 +19,7 @@ FROM python:3.7.17-slim-bullseye
 COPY --from=builder /usr/local /usr/local
 
 RUN apt-get update && \
-    apt-get install -y libpq-dev git
+    apt-get install -y --no-install-recommends libpq-dev git ffmpeg
 
 # Checkout moonraker and lock the version so that we can use the metadata parser
 RUN git clone https://github.com/Arksine/moonraker.git /moonraker

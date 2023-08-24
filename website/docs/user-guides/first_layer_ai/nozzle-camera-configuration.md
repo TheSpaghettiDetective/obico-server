@@ -6,18 +6,21 @@ title: How to Install a Nozzle Camera for First Layer AI (Project Celestrius)
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+This guide will walk you through how to install a nozzle camera on your 3D printer. We recommend the cameras:
 
+- Any [USB endoscope camera](https://www.amazon.com/Seesi-Endoscope-Waterproof-Inspection-Semi-Rigid/dp/B07PBF6DX5/) with at least 720P. There are many printable mounts for a variety of USB endoscope cameras for many different 3D printers. Find a mount and endoscope combination that works for you or design your own mount for your USB endoscope of choice.
+- The 4K Nozzle Camera from 3DO is an awesome high-quality camera designed specifically to be used as a nozzle camera. There are ready-made mounts for a variety of [3D printers](https://github.com/3DO-EU/nozzle-camera/tree/main/printers). If you are in the US or Canada, you can get a 3DO nozzle camera from [KB3D](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html) or [Fabreeko](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html). If you are in Europe, you can get it from [3DO](https://3do.eu/59-nozzle-camera) directly.
 
-:::note
-This guide was initially created specifically for Prusa Mini 3D printers, but most of the instructions can be applied to most common 3D printers such as Creality Ender 3 and other similar printers. Installing the nozzle camera on another printer will require some connecting the dots, but it should be mostly straightforward if you use this guide. 
-:::
+We have detailed guides for the Prusa Mini and the Voron Stealthburner as well as some recommendations for other printers. We will add additional detailed printer guides in the future. 
+
 
 
 <Tabs>
 <TabItem value="Prusa-Mini" label="Prusa Mini" default>
 
-   
-Be sure to save the settings to your printer profile so they will be re-used for the duration of the Celestrius Alpha Testing
+:::note
+This guide was initially created specifically for Prusa Mini 3D printers, but most of the instructions can be applied to most common 3D printers such as Creality Ender 3 and other similar printers. Installing the nozzle camera on another printer will require some connecting the dots, but it should be mostly straightforward if you use this guide. 
+:::
 
 
 This guide has been adapted from and inspired by Ananord’s guide on [Instructables](https://www.instructables.com/3D-Printer-Layer-Cam-Nozzle-Cam-Prusa-Mini/) and Chilicoke’s  Nozzle Camera [Youtube guide](https://www.youtube.com/watch?v=GAp23w_dnNc&t=10s) in addition to other work from the community. 

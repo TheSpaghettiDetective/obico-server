@@ -214,3 +214,22 @@ export function getMoonrakerWebcams(printerComm) {
     )
   })
 }
+
+export function requestSnapshot(printerComm, url) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      {
+        func: `web_snapshot_request`,
+        target: 'jpeg_poster',
+        args: [url],
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(err || ret?.error)
+        } else {
+          resolve(ret.pic)
+        }
+      }
+    )
+  })
+}

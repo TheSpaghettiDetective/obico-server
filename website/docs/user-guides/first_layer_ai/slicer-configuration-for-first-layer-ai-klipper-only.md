@@ -44,6 +44,20 @@ Be sure to save the settings to your printer profile so they will be re-used for
 5. Add the following to *After Layer Change G-code*: ```SET_PRINT_STATS_INFO CURRENT_LAYER={layer_num + 1}```
 
 </TabItem>
+<TabItem value="OrcaSlicer" label="OrcaSlicer">
+1. Open OrcaSlicer 
+
+2. Click the edit printer button. It's the button next to the wifi symbol. 
+   
+3. Click *Machine G-Code*
+   
+4. Add the following to the top of the *Machine Start G-code* section (before other start G-code): ```SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]```
+
+5. Add the following to *After Layer Change G-code*: ```SET_PRINT_STATS_INFO CURRENT_LAYER={layer_num + 1}```
+   
+6. Add the following after the last line of *Machine End G-code*: ```; total layers count = [total_layer_count]```
+
+</TabItem>
 <TabItem value="Cura" label="Cura">
 Configuring Cura to get layer information is a bit more involved than PrusaSlicer and SuperSlicer, but thanks to Pedro Llamas Klipper Pre-processor script, and detailed instructions, it can be done!
 

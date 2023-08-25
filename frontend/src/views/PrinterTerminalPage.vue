@@ -71,6 +71,14 @@
             </div>
           </div>
           <div class="buttonWrap">
+            <div
+              v-if="!isMoonraker && meetsPowerVersion"
+              class="buttonHolder"
+              @click="toggleTerminalPower"
+            >
+              <b-spinner v-if="terminalPower === null" small />
+              <i v-else class="fas fa-power-off actionIcon"></i>
+            </div>
             <div class="buttonHolder" @click="clearFeed">
               <i class="fas fa-trash actionIcon"></i>
             </div>
@@ -153,7 +161,11 @@
             </b-dropdown>
           </div>
         </div>
-        <terminal-window class="feedWrap" :terminal-feed-array="terminalFeedArray" />
+        <terminal-window
+          class="feedWrap"
+          :terminal-feed-array="terminalFeedArray"
+          :show-powered-off="!isMoonraker && meetsPowerVersion && terminalPower === false"
+        />
       </div>
     </template>
   </page-layout>
@@ -238,26 +250,26 @@ export default {
 
 .controlsWrap
   width: 100%
-  display: flex
-  flex-direction: row
   align-items: center
   margin-top: 0
-  flex: 0 1 auto
   height: 3rem
+  max-height: 3rem
+  display: flex
+  flex: 1
 
 .inputWrap
-  flex: 1
-  height: 100%
+  height: 3rem
   margin-right: 10px
   display: flex
+  flex: 1
   flex-direction: row
   align-items: center
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
 
 .textInput
-  flex: 1
   height: 100%
+  flex: 1
   border: none
   padding: 0px 20px
   background-color: var(--color-surface-secondary)
@@ -280,7 +292,8 @@ export default {
   display: flex
   align-items: center
   justify-content: flex-start
-  height: 100%
+  height: 3rem
+  gap: 10px
 
 .buttonHolder
   padding: 10px 16px
@@ -297,7 +310,6 @@ export default {
 
 .actionBtnNoP
   height: 100%
-  margin-left: 10px
   display: flex
   align-items: center
   justify-content: center

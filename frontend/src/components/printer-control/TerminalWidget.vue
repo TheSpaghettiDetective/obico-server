@@ -8,6 +8,14 @@
             <i class="fas fa-expand actionIcon"></i>
           </div>
         </a>
+        <div
+          v-if="!isMoonraker && meetsPowerVersion"
+          class="actionBtn"
+          @click="toggleTerminalPower"
+        >
+          <b-spinner v-if="terminalPower === null" small />
+          <i v-else class="fas fa-power-off actionIcon"></i>
+        </div>
         <div class="actionBtn" @click="clearFeed">
           <i class="fas fa-trash actionIcon"></i>
         </div>
@@ -88,7 +96,11 @@
         </b-dropdown>
       </div>
       <div class="wrapper">
-        <terminal-window class="feedWrap" :terminal-feed-array="terminalFeedArray" />
+        <terminal-window
+          class="feedWrap"
+          :terminal-feed-array="terminalFeedArray"
+          :show-powered-off="!isMoonraker && meetsPowerVersion && terminalPower === false"
+        />
         <div class="inputWrap">
           <input
             v-model="inputValue"

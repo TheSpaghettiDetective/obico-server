@@ -10,6 +10,9 @@ export default {
       hideSDMessages: true,
       hideOKMessages: true,
       hideGCodeMessages: true,
+      isMoonraker: null,
+      terminalPower: null,
+      meetsPowerVersion: false,
     }
   },
 
@@ -29,6 +32,22 @@ export default {
     }
     if (hideOKPref) {
       this.hideOKMessages = JSON.parse(hideOKPref)
+    }
+  },
+
+  watch: {
+    printer: {
+      handler(newValue, oldValue) {
+        if (this.isMoonraker === null && newValue !== null) {
+          this.terminalSetup()
+        }
+      },
+    },
+  },
+
+  created() {
+    if (this.printer !== null) {
+      this.terminalSetup()
     }
   },
 
@@ -56,6 +75,7 @@ export default {
 
     sendMessage() {
       if (!this.inputValue.length) return
+      if (!this.isMoonraker && this.meetsPowerVersion && this.terminalPower === false) return
       const newString = this.inputValue.toUpperCase()
 
       if (this.printer.isAgentMoonraker()) {
@@ -99,6 +119,38 @@ export default {
       } else {
         this.hideSDMessages = val
       }
+    },
+    async terminalSetup() {
+      this.isMoonraker = this.printer.isAgentMoonraker()
+      this.meetsPowerVersion = this.printer.isAgentVersionGte('2.4.7', '0')
+      if (!this.isMoonraker && this.meetsPowerVersion) {
+        this.printerComm.passThruToPrinter(
+          {
+            func: 'toggle_terminal_power',
+            target: 'gcode_hooks',
+            args: ['get'],
+          },
+          (err, ret) => {
+            this.terminalPower = ret || false
+          }
+        )
+      }
+    },
+
+    async toggleTerminalPower() {
+      const str = this.terminalPower ? 'off' : 'on'
+      this.terminalPower = null
+      this.clearFeed()
+      this.printerComm.passThruToPrinter(
+        {
+          func: 'toggle_terminal_power',
+          target: 'gcode_hooks',
+          args: [str],
+        },
+        (err, ret) => {
+          this.terminalPower = ret || false
+        }
+      )
     },
   },
 }

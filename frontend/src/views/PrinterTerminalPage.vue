@@ -60,29 +60,31 @@
         <div class="controlsWrap">
           <div class="inputWrap">
             <input
+              :disabled="!terminalPower"
               v-model="inputValue"
               type="text"
               class="textInput"
               placeholder="Enter code..."
               @keyup.enter="sendMessage"
             />
-            <div class="sendBtn" @click="sendMessage">
+            <b-button :disabled="!terminalPower" class="sendBtn" @click="sendMessage">
               <i class="fas fa-chevron-right sendIcon"></i>
-            </div>
+            </b-button>
           </div>
           <div class="buttonWrap">
-            <div
+            <b-button
               v-if="!isMoonraker && meetsPowerVersion"
               class="buttonHolder"
               @click="toggleTerminalPower"
             >
               <b-spinner v-if="terminalPower === null" small />
               <i v-else class="fas fa-power-off actionIcon"></i>
-            </div>
-            <div class="buttonHolder" @click="clearFeed">
+            </b-button>
+            <b-button :disabled="!terminalPower" class="buttonHolder" @click="clearFeed">
               <i class="fas fa-trash actionIcon"></i>
-            </div>
+            </b-button>
             <b-dropdown
+              :disabled="!terminalPower"
               right
               no-caret
               class="actionBtnNoP"
@@ -328,6 +330,9 @@ export default {
   &:hover
     cursor: pointer
     background-color: var(--color-surface-primary)
+
+.actionIcon
+  color: var(--color-text-primary)
 
 .feedWrap
   margin-top: 15px

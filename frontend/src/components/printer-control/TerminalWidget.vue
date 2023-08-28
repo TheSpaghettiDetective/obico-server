@@ -4,22 +4,23 @@
     <template #content>
       <div class="actionWrap">
         <a :href="`/printers/${printer.id}/terminal/`">
-          <div class="actionBtn">
+          <b-button class="actionBtn">
             <i class="fas fa-expand actionIcon"></i>
-          </div>
+          </b-button>
         </a>
-        <div
+        <b-button
           v-if="!isMoonraker && meetsPowerVersion"
           class="actionBtn"
           @click="toggleTerminalPower"
         >
           <b-spinner v-if="terminalPower === null" small />
           <i v-else class="fas fa-power-off actionIcon"></i>
-        </div>
-        <div class="actionBtn" @click="clearFeed">
+        </b-button>
+        <b-button class="actionBtn" @click="clearFeed">
           <i class="fas fa-trash actionIcon"></i>
-        </div>
+        </b-button>
         <b-dropdown
+          :disabled="!terminalPower"
           right
           no-caret
           class="actionBtnNoP"
@@ -103,13 +104,21 @@
         />
         <div class="inputWrap">
           <input
+            :disabled="!terminalPower"
             v-model="inputValue"
             type="text"
             class="textInput"
             placeholder="Enter code..."
             @keyup.enter="sendMessage"
           />
-          <b-button variant="outline-primary" class="sendBtn" @click="sendMessage"> Send </b-button>
+          <b-button
+            :disabled="!terminalPower"
+            variant="outline-primary"
+            class="sendBtn"
+            @click="sendMessage"
+          >
+            Send
+          </b-button>
         </div>
       </div>
     </template>

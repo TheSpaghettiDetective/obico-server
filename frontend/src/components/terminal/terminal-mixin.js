@@ -126,7 +126,7 @@ export default {
       if (!this.isMoonraker && this.meetsPowerVersion) {
         this.printerComm.passThruToPrinter(
           {
-            func: 'toggle_terminal_power',
+            func: 'toggle_terminal_feed',
             target: 'gcode_hooks',
             args: ['get'],
           },
@@ -143,7 +143,7 @@ export default {
       this.clearFeed()
       this.printerComm.passThruToPrinter(
         {
-          func: 'toggle_terminal_power',
+          func: 'toggle_terminal_feed',
           target: 'gcode_hooks',
           args: [str],
         },

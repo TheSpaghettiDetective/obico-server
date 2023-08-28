@@ -122,7 +122,11 @@ export default {
     },
     async terminalSetup() {
       this.isMoonraker = this.printer.isAgentMoonraker()
-      this.meetsPowerVersion = this.printer.isAgentVersionGte('2.4.7', '0')
+      this.meetsPowerVersion = this.printer.isAgentVersionGte('2.4.7', '0.0.0')
+      if (this.isMoonraker) {
+        this.terminalPower = true
+      }
+
       if (!this.isMoonraker && this.meetsPowerVersion) {
         this.printerComm.passThruToPrinter(
           {

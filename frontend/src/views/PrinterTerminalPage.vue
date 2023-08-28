@@ -266,7 +266,7 @@ export default {
   align-items: center
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
-  @media (max-width: 500px)
+  @media (max-width: 450px)
       max-width: 45%
       flex: 0 1
 
@@ -276,7 +276,7 @@ export default {
   border: none
   padding: 0px 20px
   background-color: var(--color-surface-secondary)
-  @media (max-width: 500px)
+  @media (max-width: 450px)
     max-width: 75%
 
 .sendBtn
@@ -299,7 +299,7 @@ export default {
   justify-content: flex-start
   height: 3rem
   gap: 10px
-  @media (max-width: 500px)
+  @media (max-width: 450px)
     flex: 1
     justify-content: flex-end
 

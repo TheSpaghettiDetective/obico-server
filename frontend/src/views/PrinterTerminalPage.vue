@@ -266,6 +266,9 @@ export default {
   align-items: center
   background-color: var(--color-surface-secondary)
   border-radius: var(--border-radius-md)
+  @media (max-width: 500px)
+      max-width: 45%
+      flex: 0 1
 
 .textInput
   height: 100%
@@ -273,6 +276,8 @@ export default {
   border: none
   padding: 0px 20px
   background-color: var(--color-surface-secondary)
+  @media (max-width: 500px)
+    max-width: 75%
 
 .sendBtn
   width: 3rem
@@ -294,6 +299,9 @@ export default {
   justify-content: flex-start
   height: 3rem
   gap: 10px
+  @media (max-width: 500px)
+    flex: 1
+    justify-content: flex-end
 
 .buttonHolder
   padding: 10px 16px

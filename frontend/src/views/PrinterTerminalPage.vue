@@ -61,6 +61,7 @@
           v-if="printerComm !== null && printer !== null"
           :printer="printer"
           :printer-comm="printerComm"
+          :full-screen-height="true"
         ></printer-terminal>
       </div>
     </template>
@@ -136,10 +137,4 @@ export default {
 .custom-svg-icon
   height: 1.25rem
   width: 1.25rem
-
-.contentWrap
-  height: calc(100vh - 50px - var(--gap-between-blocks))
-  display: flex
-  flex-direction: column
-  margin-bottom: -120px
 </style>

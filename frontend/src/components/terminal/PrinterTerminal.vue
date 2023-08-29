@@ -1,5 +1,5 @@
 <template>
-  <div class="fullHeight">
+  <div :class="['wrapper', { 'full-screen-height': fullScreenHeight }]">
     <div class="actionWrap">
       <a :href="`/printers/${printer.id}/terminal/`">
         <b-button :disabled="!feedIsOn" class="actionBtn">
@@ -90,30 +90,28 @@
         </div>
       </b-dropdown>
     </div>
-    <div class="wrapper fullHeight">
-      <terminal-feed-view
-        class="feedWrap fullHeight"
-        :terminal-feed-array="terminalFeedArray"
-        :feed-is-on="feedIsOn"
+    <terminal-feed-view
+      class="feedWrap"
+      :terminal-feed-array="terminalFeedArray"
+      :feed-is-on="feedIsOn"
+    />
+    <div class="inputWrap">
+      <input
+        :disabled="!feedIsOn"
+        v-model="inputValue"
+        type="text"
+        class="textInput"
+        placeholder="Enter code..."
+        @keyup.enter="sendMessage"
       />
-      <div class="inputWrap">
-        <input
-          :disabled="!feedIsOn"
-          v-model="inputValue"
-          type="text"
-          class="textInput"
-          placeholder="Enter code..."
-          @keyup.enter="sendMessage"
-        />
-        <b-button
-          :disabled="!feedIsOn"
-          variant="outline-primary"
-          class="sendBtn"
-          @click="sendMessage"
-        >
-          Send
-        </b-button>
-      </div>
+      <b-button
+        :disabled="!feedIsOn"
+        variant="outline-primary"
+        class="sendBtn"
+        @click="sendMessage"
+      >
+        Send
+      </b-button>
     </div>
   </div>
 </template>
@@ -137,6 +135,11 @@ export default {
     printerComm: {
       type: Object,
       required: true,
+    },
+    fullScreenHeight: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
 
@@ -294,10 +297,9 @@ export default {
 
 <style lang="sass" scoped>
 
-.fullHeight
-  flex: 1
-  display: flex
-  flex-direction: column
+.full-screen-height
+  height: calc(100vh - 50px - var(--gap-between-blocks))
+  margin-bottom: -120px
 
 .wrapper
   display: flex
@@ -308,6 +310,9 @@ export default {
   position: relative
 
 .feedWrap
+  display: flex
+  flex-direction: column
+  flex: 1
   padding: 10px
   width: 100%
   background-color: var(--color-background)

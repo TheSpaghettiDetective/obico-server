@@ -2,7 +2,9 @@
   <widget-template>
     <template #title>Printer Terminal</template>
     <template #content>
-      <printer-terminal :printer="printer" :printer-comm="printerComm"></printer-terminal>
+      <div class="terminal-widget">
+        <printer-terminal :printer="printer" :printer-comm="printerComm"></printer-terminal>
+      </div>
     </template>
   </widget-template>
 </template>
@@ -32,4 +34,8 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+.terminal-widget
+  height: 300px
+  display: flex
+</style>

@@ -149,7 +149,7 @@ export default {
       hideSDMessages: true,
       hideOKMessages: true,
       hideGCodeMessages: true,
-      feedIsOn: null,
+      feedIsOn: true,
     }
   },
 

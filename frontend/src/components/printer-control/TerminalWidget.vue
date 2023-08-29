@@ -36,6 +36,6 @@ export default {
 
 <style lang="sass" scoped>
 .terminal-widget
-  height: 300px
+  height: 400px
   display: flex
 </style>

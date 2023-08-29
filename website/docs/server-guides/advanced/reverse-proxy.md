@@ -42,7 +42,7 @@ The "Domain name" needs to be set to `reverse_proxy_ip:reverse_proxy_port`. The 
 
 ## NGINX {#nginx}
 
-For webcam feed to work, remember to activate Websockets support. Otherwise there will no webfeed when accessing through proxy.
+For webcam feed to work, remember to activate Websockets Support. Otherwise there will no webfeed when accessing through proxy.
 
 ![NginxProxyManagerSettings](/img/server-guides/nginxsettings.png)
 

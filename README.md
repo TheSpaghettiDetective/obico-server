@@ -29,7 +29,7 @@ The following software is required before you start installing the server:
 
 You will also need an email account that has SMTP access enabled (gmail will not work. As of May 30, 2022 Google has removed the option for allowing SMTP access). Other web mail such as Yahoo should work but we haven't tried them.
 
-## Get the code and start the server.
+## Get the code and start the server
 
 1. Get the code:
 
@@ -65,7 +65,7 @@ This refers to the LAN IP address that has been given to the computer that the O
 
 The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 
-It is also reccomended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
+It is also recommended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
 
 ## Login as Django admin
 

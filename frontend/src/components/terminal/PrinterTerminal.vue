@@ -2,23 +2,19 @@
   <div class="fullHeight">
     <div class="actionWrap">
       <a :href="`/printers/${printer.id}/terminal/`">
-        <b-button class="actionBtn">
+        <b-button :disabled="!feedIsOn" class="actionBtn">
           <i class="fas fa-expand actionIcon"></i>
         </b-button>
       </a>
-      <b-button
-        v-if="!isMoonraker && meetsPowerVersion"
-        class="actionBtn"
-        @click="toggleTerminalPower"
-      >
-        <b-spinner v-if="terminalPower === null" small />
-        <i v-else class="fas fa-power-off actionIcon"></i>
+      <b-button v-if="canToggleFeed" class="actionBtn" @click="toggleTerminalPower">
+        <b-spinner v-if="feedIsOn === null" small />
+        <i v-else :class="['fas', 'fa-power-off', 'actionIcon', { 'text-primary': !feedIsOn }]"></i>
       </b-button>
-      <b-button class="actionBtn" @click="clearFeed">
+      <b-button :disabled="!feedIsOn" class="actionBtn" @click="clearFeed">
         <i class="fas fa-trash actionIcon"></i>
       </b-button>
       <b-dropdown
-        :disabled="!terminalPower"
+        :disabled="!feedIsOn"
         right
         no-caret
         class="actionBtnNoP"
@@ -98,11 +94,11 @@
       <terminal-feed-view
         class="feedWrap fullHeight"
         :terminal-feed-array="terminalFeedArray"
-        :show-powered-off="!isMoonraker && meetsPowerVersion && terminalPower === false"
+        :feed-is-on="feedIsOn"
       />
       <div class="inputWrap">
         <input
-          :disabled="!terminalPower"
+          :disabled="!feedIsOn"
           v-model="inputValue"
           type="text"
           class="textInput"
@@ -110,7 +106,7 @@
           @keyup.enter="sendMessage"
         />
         <b-button
-          :disabled="!terminalPower"
+          :disabled="!feedIsOn"
           variant="outline-primary"
           class="sendBtn"
           @click="sendMessage"
@@ -153,19 +149,16 @@ export default {
       hideSDMessages: true,
       hideOKMessages: true,
       hideGCodeMessages: true,
-      isMoonraker: null,
-      terminalPower: null,
-      meetsPowerVersion: false,
+      feedIsOn: null,
     }
   },
 
-  watch: {
-    printer: {
-      handler(newValue, oldValue) {
-        if (this.isMoonraker === null && newValue !== null) {
-          this.terminalSetup()
-        }
-      },
+  computed: {
+    canToggleFeed() {
+      if (this.printer.isAgentMoonraker()) {
+        return false
+      }
+      return this.printer.isAgentVersionGte('2.4.7', '0.0.0')
     },
   },
 
@@ -217,7 +210,7 @@ export default {
 
     sendMessage() {
       if (!this.inputValue.length) return
-      if (!this.isMoonraker && this.meetsPowerVersion && this.terminalPower === false) return
+      if (!this.feedIsOn) return
       const newString = this.inputValue.toUpperCase()
 
       if (this.printer.isAgentMoonraker()) {
@@ -263,29 +256,26 @@ export default {
       }
     },
     async terminalSetup() {
-      this.isMoonraker = this.printer.isAgentMoonraker()
-      this.meetsPowerVersion = this.printer.isAgentVersionGte('2.4.7', '0.0.0')
-      if (this.isMoonraker) {
-        this.terminalPower = true
+      if (!this.canToggleFeed) {
+        this.feedIsOn = true
+        return
       }
 
-      if (!this.isMoonraker && this.meetsPowerVersion) {
-        this.printerComm.passThruToPrinter(
-          {
-            func: 'toggle_terminal_feed',
-            target: 'gcode_hooks',
-            args: ['get'],
-          },
-          (err, ret) => {
-            this.terminalPower = ret || false
-          }
-        )
-      }
+      this.printerComm.passThruToPrinter(
+        {
+          func: 'toggle_terminal_feed',
+          target: 'gcode_hooks',
+          args: ['get'],
+        },
+        (err, ret) => {
+          this.feedIsOn = ret || false
+        }
+      )
     },
 
     async toggleTerminalPower() {
-      const str = this.terminalPower ? 'off' : 'on'
-      this.terminalPower = null
+      const str = this.feedIsOn ? 'off' : 'on'
+      this.feedIsOn = null
       this.clearFeed()
       this.printerComm.passThruToPrinter(
         {
@@ -294,7 +284,7 @@ export default {
           args: [str],
         },
         (err, ret) => {
-          this.terminalPower = ret || false
+          this.feedIsOn = ret || false
         }
       )
     },

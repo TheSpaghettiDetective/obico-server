@@ -110,7 +110,7 @@
         class="sendBtn"
         @click="sendMessage"
       >
-        Send
+        <i class="fas fa-chevron-right text-primary-icon"></i>
       </b-button>
     </div>
   </div>
@@ -322,6 +322,7 @@ export default {
   padding: 10px
   width: 100%
   background-color: var(--color-background)
+  border: solid var(--color-surface-primary) 1px
 .feedWrap::-webkit-scrollbar
   background-color: var(--color-background)
 .feedWrap::-webkit-scrollbar-thumb
@@ -343,6 +344,10 @@ export default {
 .sendBtn
   height: 100%
   width: auto
+  min-width: 60px
+  border-radius: var(--border-radius-sm)
+  background-color: var(--color-surface-primary)
+  border: none
 
 .actionBtn
   margin-left: 5px
@@ -374,6 +379,9 @@ export default {
 .actionIcon
   width: 16px
   height: 16px
+  color: var(--color-text-primary)
+
+.text-primary-icon
   color: var(--color-text-primary)
 
 .actionWrap

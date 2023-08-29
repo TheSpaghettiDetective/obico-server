@@ -39,20 +39,20 @@ git clone https://github.com/puzzledqs/BBox-Label-Tool
 The repository contains model configuration details which we'll need for training.
 
 ```shell
-git clone https://github.com/TheSpaghettiDetective/orbico-server.git
-cd orbico-server && wget -O ml_api/model/model.weights $(cat ml_api/model/model.weights.url | tr -d '\r')
+git clone https://github.com/TheSpaghettiDetective/obico-server.git
+cd obico-server && wget -O ml_api/model/model.weights $(cat ml_api/model/model.weights.url | tr -d '\r')
 ```
 
 ### Collect and Prepare Data
 
-If you've been using The Spaghetti Detective at all, you'll have plenty of recorded video in the [time-lapses page](https://app.thespaghettidetective.com/prints/) of the web app. In order to fine-tune the model, we need videos of false positives (spaghetti was detected when there was none) and false negatives (there was spaghetti, but it wasn't detected). Go ahead and download a few of each, using the triple-dot menu at the top right of each video file. 
+If you've been using The Spaghetti Detective at all, you'll have plenty of recorded video in the [time-lapses page](https://app.thespaghettidetective.com/prints/) of the web app. In order to fine-tune the model, we need videos of false positives (spaghetti was detected when there was none) and false negatives (there was spaghetti, but it wasn't detected). Go ahead and download a few of each, using the triple-dot menu at the top right of each video file.
 
 
 Now that we have our data, we need to transform it into something we can use for training. As [Darknet](https://github.com/AlexeyAB/darknet) is an ML toolkit for training [YOLO](https://pjreddie.com/darknet/yolo/) models for object detection in still images, this requires sampling images from the videos, labeling the objects (i.e. spaghetti), and grouping the images by category (spaghetti / not spaghetti):
- 
+
 **A note on data quality:** the model only trains based on what you've given it. The more varied examples you have and the clearer the spaghetti, the better the result. If you're seeing no improvement (or worse performance), check to make sure your data is correctly annotated and categorized, and try increasing the size of your dataset.
 
-1. Create two directories: `positives` and `negatives`. 
+1. Create two directories: `positives` and `negatives`.
 2. Move the downloaded videos into these directories - videos with spaghetti go in the `positives` directory, and those without go in `negatives`.
 4. For each video in `positives`, note the time that the print started visibly failing. You'll need this to extract positive spaghetti images.
 5. Run `python ./BBox-Label-Tool/main.py`, and annotate the images with bounding boxes (see [here](https://texas-aerial-robotics.github.io/md_yoloTraining.html) for a more in depth tutorial).
@@ -78,7 +78,7 @@ darknet detector train $1/obj.data ml_api/model/model.cfg ml_api/model/model.wei
 
 You should see periodic reports of the training progress like so:
 ```
-Region Avg IOU: 0.798363, Class: 0.893232, Obj: 0.700808, No Obj: 0.004567, Avg Recall: 1.000000, count: 8 
+Region Avg IOU: 0.798363, Class: 0.893232, Obj: 0.700808, No Obj: 0.004567, Avg Recall: 1.000000, count: 8
 Region Avg IOU: 0.800677, Class: 0.892181, Obj: 0.701590, No Obj: 0.004574, Avg Recall: 1.000000, count: 8
 
 9002: 0.211667, 0.60730 avg, 0.001000 rate, 3.868000 seconds, 576128 images Loaded: 0.000000 seconds
@@ -110,7 +110,6 @@ The model server will return a JSON blob with bounding box information for any s
 
 ### Contribute Improvements
 
-Given that this guide is for fine-tuning the model to your specific printing setup, it's unlikely that it will perform better than the base model in the general case. 
+Given that this guide is for fine-tuning the model to your specific printing setup, it's unlikely that it will perform better than the base model in the general case.
 
-However, if you have suggestions or improvements to the overall quality of the model, please open a [new issue](https://github.com/TheSpaghettiDetective/orbico-server/issues/new/choose) where it can be discussed. 
-
+However, if you have suggestions or improvements to the overall quality of the model, please open a [new issue](https://github.com/TheSpaghettiDetective/orbico-server/issues/new/choose) where it can be discussed.

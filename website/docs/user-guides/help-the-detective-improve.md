@@ -14,7 +14,7 @@ For instance, if The Detective claims that she has found spaghetti for a print, 
 
 ## Upload your own time-lapse videos {#upload-your-own-time-lapse-videos}
 
-The more The Detective sees, the better she gets. That's why it'll help her tremendously if you upload time-lapse videos for her to look at. For instance, there are probably a lot of time-lapse videos sitting in your OctoPrint's Timelpase folder - upload them all!
+The more The Detective sees, the better she gets. That's why it'll help her tremendously if you upload time-lapse videos for her to look at. For instance, there are probably a lot of time-lapse videos sitting in your OctoPrint's Timelapse folder - upload them all!
 
 To upload your own time-lapse videos, go to the [TIME-LAPSE](https://app.obico.io/prints/) page and click on the button with an upload icon.
 

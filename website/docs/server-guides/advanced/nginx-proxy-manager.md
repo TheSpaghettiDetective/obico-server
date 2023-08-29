@@ -38,7 +38,7 @@ SITE_IS_PUBLIC=True
 
 DNS server for **domain.com** requires the following record:
 
-**obico	 A  [public IP address]**
+**obico A [public IP address]**
 
 This next record is required to enable the tunnel within the Obico apps or web gui.
 

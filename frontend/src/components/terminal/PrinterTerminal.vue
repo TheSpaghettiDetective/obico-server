@@ -308,6 +308,7 @@ export default {
   gap: .825rem
   padding-bottom: 1rem
   position: relative
+  width: 100%
 
 .feedWrap
   display: flex
@@ -348,6 +349,7 @@ export default {
   justify-content: center
   background-color: var(--color-surface-primary)
   border-radius: var(--border-radius-sm)
+  border: none
   &:hover
     cursor: pointer
 

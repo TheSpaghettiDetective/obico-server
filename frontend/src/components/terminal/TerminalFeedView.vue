@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'TerminalWindow',
+  name: 'TerminalFeedView',
 
   components: {},
 

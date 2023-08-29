@@ -75,7 +75,6 @@ import { normalizedPrinter } from '@src/lib/normalizers'
 import { user } from '@src/lib/page-context'
 import split from 'lodash/split'
 import CascadedDropdown from '@src/components/CascadedDropdown'
-import terminalMixin from '@src/components/terminal/terminal-mixin.js'
 import PrinterTerminal from '@src/components/terminal/PrinterTerminal'
 
 export default {
@@ -86,8 +85,6 @@ export default {
     CascadedDropdown,
     PrinterTerminal,
   },
-
-  mixins: [terminalMixin],
 
   data: function () {
     return {

@@ -95,7 +95,7 @@
       </b-dropdown>
     </div>
     <div class="wrapper fullHeight">
-      <terminal-window
+      <terminal-feed-view
         class="feedWrap fullHeight"
         :terminal-feed-array="terminalFeedArray"
         :show-powered-off="!isMoonraker && meetsPowerVersion && terminalPower === false"
@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import terminalMixin from '@src/components/terminal/terminal-mixin.js'
+import moment from 'moment'
 import TerminalFeedView from '@src/components/terminal/TerminalFeedView'
 
 export default {
@@ -132,8 +132,6 @@ export default {
   components: {
     TerminalFeedView,
   },
-
-  mixins: [terminalMixin],
 
   props: {
     printer: {
@@ -146,8 +144,160 @@ export default {
     },
   },
 
+  data() {
+    return {
+      oldTerminalFeed: null,
+      terminalFeedArray: [],
+      inputValue: '',
+      hideTempMessages: true,
+      hideSDMessages: true,
+      hideOKMessages: true,
+      hideGCodeMessages: true,
+      isMoonraker: null,
+      terminalPower: null,
+      meetsPowerVersion: false,
+    }
+  },
+
+  watch: {
+    printer: {
+      handler(newValue, oldValue) {
+        if (this.isMoonraker === null && newValue !== null) {
+          this.terminalSetup()
+        }
+      },
+    },
+  },
+
   created() {
     this.printerComm.onTerminalFeedReceived = this.onNextTerminalFeed
+    this.terminalSetup()
+  },
+
+  mounted() {
+    const hideTempPref = localStorage.getItem(`printer-terminal-filter-prefs-temperature`)
+    const hideSDPref = localStorage.getItem(`printer-terminal-filter-prefs-sd`)
+    const hideOKPref = localStorage.getItem(`printer-terminal-filter-prefs-ok`)
+    const hideGCodePref = localStorage.getItem(`printer-terminal-filter-prefs-gcode`)
+    if (hideTempPref) {
+      this.hideTempMessages = JSON.parse(hideTempPref)
+    }
+    if (hideSDPref) {
+      this.hideSDMessages = JSON.parse(hideSDPref)
+    }
+    if (hideGCodePref) {
+      this.hideGCodeMessages = JSON.parse(hideGCodePref)
+    }
+    if (hideOKPref) {
+      this.hideOKMessages = JSON.parse(hideOKPref)
+    }
+  },
+
+  methods: {
+    onNextTerminalFeed(newTerminalFeed) {
+      const sameMsg = newTerminalFeed?.msg === this.oldTerminalFeed?.msg
+      const same_ts = newTerminalFeed?._ts === this.oldTerminalFeed?._ts
+      const newMsg = newTerminalFeed?.msg
+
+      this.oldTerminalFeed = newTerminalFeed
+      const tempRegex = /((N\d+\s+)?M105)|((ok\s+([PBN]\d+\s+)*)?([BCLPR]|T\d*):-?\d+)/g
+      const SDRegex = /((N\d+\s+)?M27)|(SD printing byte)|(Not SD printing)/g
+      const gCodeRegex = /^G[0-3].*$/g
+
+      if (this.hideSDMessages && SDRegex.test(newMsg)) return
+      if (this.hideTempMessages && tempRegex.test(newMsg)) return
+      if (this.hideGCodeMessages && gCodeRegex.test(newMsg)) return
+      if (this.hideOKMessages && newMsg.toLowerCase().trim() === 'ok') return
+      if (!sameMsg && !same_ts) {
+        newTerminalFeed.normalTimeStamp = moment().format('h:mm:ssa')
+        newTerminalFeed.msg = newMsg.trim() // remove unnecessary whitespace
+        this.terminalFeedArray.unshift(newTerminalFeed)
+      }
+    },
+
+    sendMessage() {
+      if (!this.inputValue.length) return
+      if (!this.isMoonraker && this.meetsPowerVersion && this.terminalPower === false) return
+      const newString = this.inputValue.toUpperCase()
+
+      if (this.printer.isAgentMoonraker()) {
+        this.onNextTerminalFeed({ msg: newString, _ts: new Date() }) // Moonraker doesn't echo the gcodes user enters. Hence we need to insert them to the terminal
+      }
+
+      const moonrakerPayload = {
+        func: 'printer/gcode/script',
+        target: 'moonraker_api',
+        kwargs: { script: `${newString}` },
+      }
+      const octoPayload = {
+        func: 'commands',
+        target: '_printer',
+        args: [`${newString}`],
+        force: true,
+      }
+
+      const payload = this.printer.isAgentMoonraker() ? moonrakerPayload : octoPayload
+      this.printerComm.passThruToPrinter(payload, (err, ret) => {
+        if (err) {
+          this.$swal.Toast.fire({
+            icon: 'error',
+            title: err,
+          })
+        }
+      })
+      this.inputValue = ''
+    },
+    clearFeed() {
+      this.terminalFeedArray = []
+    },
+    updateFilterPrefs(str, val) {
+      localStorage.setItem(`printer-terminal-filter-prefs-${str}`, JSON.stringify(val))
+      if (str === 'temperature') {
+        this.hideTempMessages = val
+      } else if (str === 'gcode') {
+        this.hideGCodeMessages = val
+      } else if (str === 'ok') {
+        this.hideOKMessages = val
+      } else {
+        this.hideSDMessages = val
+      }
+    },
+    async terminalSetup() {
+      this.isMoonraker = this.printer.isAgentMoonraker()
+      this.meetsPowerVersion = this.printer.isAgentVersionGte('2.4.7', '0.0.0')
+      if (this.isMoonraker) {
+        this.terminalPower = true
+      }
+
+      if (!this.isMoonraker && this.meetsPowerVersion) {
+        this.printerComm.passThruToPrinter(
+          {
+            func: 'toggle_terminal_feed',
+            target: 'gcode_hooks',
+            args: ['get'],
+          },
+          (err, ret) => {
+            this.terminalPower = ret || false
+          }
+        )
+      }
+    },
+
+    async toggleTerminalPower() {
+      const str = this.terminalPower ? 'off' : 'on'
+      this.terminalPower = null
+      this.clearFeed()
+      this.printerComm.passThruToPrinter(
+        {
+          func: 'toggle_terminal_feed',
+          target: 'gcode_hooks',
+          args: [str],
+        },
+        (err, ret) => {
+          this.terminalPower = ret || false
+        }
+      )
+    },
   },
 }
 </script>

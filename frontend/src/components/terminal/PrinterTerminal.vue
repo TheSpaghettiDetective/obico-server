@@ -1,7 +1,7 @@
 <template>
   <div :class="['wrapper', { 'full-screen-height': fullScreenHeight }]">
     <div class="actionWrap">
-      <a :href="`/printers/${printer.id}/terminal/`">
+      <a v-if="showFullScreenOpt" :href="`/printers/${printer.id}/terminal/`">
         <b-button :disabled="!feedIsOn" class="actionBtn">
           <i class="fas fa-expand actionIcon"></i>
         </b-button>
@@ -140,6 +140,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    showFullScreenOpt: {
+      type: Boolean,
+      required: true,
+      default: true,
     },
   },
 

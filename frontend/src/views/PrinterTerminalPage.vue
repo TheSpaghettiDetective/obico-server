@@ -62,6 +62,7 @@
           :printer="printer"
           :printer-comm="printerComm"
           :full-screen-height="true"
+          :show-full-screen-opt="false"
         ></printer-terminal>
       </div>
     </template>

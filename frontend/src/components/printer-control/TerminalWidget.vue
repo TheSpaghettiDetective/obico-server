@@ -3,7 +3,11 @@
     <template #title>Printer Terminal</template>
     <template #content>
       <div class="terminal-widget">
-        <printer-terminal :printer="printer" :printer-comm="printerComm"></printer-terminal>
+        <printer-terminal
+          :printer="printer"
+          :printer-comm="printerComm"
+          :show-full-screen-opt="true"
+        ></printer-terminal>
       </div>
     </template>
   </widget-template>

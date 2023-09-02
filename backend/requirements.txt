@@ -48,4 +48,4 @@ sentry-sdk==1.5.10
 nplusone==1.0.0
 colorlog==6.7.0
 packaging==23.0
-scikit_learn==1.0.2
+numpy==1.21.6

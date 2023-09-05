@@ -1,6 +1,11 @@
 <template>
   <div class="feedWrap" colorScheme="background">
-    <div v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">
+    <div v-if="!feedIsOn" style="width: 100%">
+      <p style="margin: 0; margin-top: 5px; text-align: center">
+        <i class="fas fa-power-off" style="margin-right: 5px"></i>Terminal feed is off
+      </p>
+    </div>
+    <div v-else v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">
       <div v-if="feed?.msg" class="terminalText">
         <p class="messageTimeStamp">
           {{ feed.normalTimeStamp }}
@@ -16,13 +21,17 @@
 
 <script>
 export default {
-  name: 'TerminalWindow',
+  name: 'TerminalFeedView',
 
   components: {},
 
   props: {
     terminalFeedArray: {
       type: Array,
+      required: true,
+    },
+    feedIsOn: {
+      type: Boolean,
       required: true,
     },
   },

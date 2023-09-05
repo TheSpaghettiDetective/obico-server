@@ -22,4 +22,4 @@ import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
 The following resources were created by the Obico community members, but not directly maintained by the Obico Team and Contributors. They may be outdated, and should be used at user discretion. Always cross-check commands and instructions used with those located on this repo.*
 :::
 
-- If you are on Windows 10 and prefer a video tutorial, head to Lukes Laboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).
+- If you are on Windows 10 and prefer a video tutorial, head to Luke's Laboratory's [awesome video](https://www.youtube.com/watch?v=8l4C_K9S2-Y) (Big shout-out to [@LukesLaboratory](https://twitter.com/LukesLaboratory/)).

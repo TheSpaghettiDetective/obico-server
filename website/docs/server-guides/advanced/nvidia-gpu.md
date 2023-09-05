@@ -93,13 +93,13 @@ ML algorithms can be executed with different hardware and software options:
 
 * x86_64 with CPU hardware without GPU, with `Darknet` or `ONNX` runtime.
 * x86_64 with GPU (CUDA), with `Darknet` or `ONNX` runtime.
-* ARM with GPU (CDUA), i.e. `Nvidia Jetson` devices with `Darknet` or `ONNX` runtime.
+* ARM with GPU (CUDA), i.e. `Nvidia Jetson` devices with `Darknet` or `ONNX` runtime.
 
 Darknet is written by Yolo2 author and you can find more details [here](https://github.com/AlexeyAB/darknet).
-ONNX is Microsft-powered set of libraries and standards to execute neural networks on a different hardware.
+ONNX is Microsoft-powered set of libraries and standards to execute neural networks on a different hardware.
 More details about ONNX can be found [here](https://onnxruntime.ai/).
 
 Darknet is now stable implementation of TSD, while ONNX support is in beta stage now and may have some issues.
 
-All suitable containers are build and now stored at docker.io registry, so you
+All suitable containers are built and now stored at docker.io registry, so you
 probably don't need to compile them (takes hours).

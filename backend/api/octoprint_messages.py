@@ -138,6 +138,11 @@ def update_print_stats_if_needed(printer_status, _print):
 
         completion = printer_status.get('progress', {}).get('completion')
         filament_used = printer_status.get('progress', {}).get('filamentUsed')
+        if filament_used is None: #Try Octoprint api
+            for key in printer_status.get('job', {}).get('filament'):
+                tool_used =  printer_status.get('job', {}).get('filament').get(key).get('length')
+                if tool_used is not None:
+                    filament_used = (filament_used or 0) + tool_used
 
         if filament_used is None and completion is not None and _print.g_code_file and _print.g_code_file.filament_total:
             if completion == 0 and print_time and _print.g_code_file.estimated_time: # Old moonraker-obico version sends completion: 0.0 when print ends. We estimate it using print time

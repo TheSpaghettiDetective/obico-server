@@ -7,7 +7,8 @@
       :step="step"
       :value="value"
       class="slider"
-      @change="$emit('change', $event.target.value)"
+      @change="$emit('change', Number($event.target.value))"
+      @input="$emit('input', Number($event.target.value))"
     />
   </div>
 </template>

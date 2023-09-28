@@ -1012,3 +1012,49 @@ div[id^="b-modal-"] {
     opacity: .8;
   }
 }
+
+// bootstrap pagination button colors
+.page-item.active .page-link {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.page-link:focus {
+  box-shadow: none;
+}
+
+// bootstrap checkbox colors
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: var(--color-primary);
+}
+.custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: none;
+}
+.custom-control-input:not(:disabled):active ~ .custom-control-label::before {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+  background-color: var(--color-primary);
+}
+.btn-primary:focus, .btn-primary.focus {
+  background-color: var(--color-primary);
+  box-shadow: none;
+}
+.btn:focus, .btn.focus {
+  box-shadow: none;
+}
+.btn-primary.disabled, .btn-primary:disabled {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}

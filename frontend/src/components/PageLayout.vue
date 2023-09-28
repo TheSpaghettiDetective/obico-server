@@ -6,7 +6,14 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <svg class="logo-small">
+        <div v-if="$brand">
+          <img
+            :src="`/static/img/branding/${$brand}/logo-square.png`"
+            class="logo-small"
+            alt="Logo"
+          />
+        </div>
+        <svg v-else class="logo-small">
           <use href="#svg-logo-compact" />
         </svg>
       </a>

@@ -36,6 +36,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 
+const urlParams = new URLSearchParams(window.location.search)
+Vue.prototype.$brand = urlParams.get('theme')
+
 export default (router, components) => {
   initTheme()
   setupSentry(Vue)

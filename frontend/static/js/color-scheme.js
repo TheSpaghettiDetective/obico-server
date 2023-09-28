@@ -1,4 +1,5 @@
 import { isLocalStorageSupported } from './utils.js'
+import * as branding from './branding.js'
 
 
 const Themes = {
@@ -181,8 +182,10 @@ function currentThemeValue(theme) {
 }
 
 
-function initTheme(themeValue) {
-  colors.forEach(function(color) {
+function initTheme(themeValue, brand) {
+  const finalColors =(brand && branding[brand]) ? [...colors, ...branding[brand].colors] : colors
+
+  finalColors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 
     if (color.name === 'surface-secondary') {

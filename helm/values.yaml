@@ -1,0 +1,83 @@
+application:
+  allowSignup: false
+  debugMode: false
+  enableWebpack: false
+  ipWhitelist:
+    - 127.0.0.1
+  isPublic: false
+  octoPrintPortRange:
+    min: 0
+    max: 0
+  sentryDns: ''
+  socialLogin: false
+
+dependencies:
+  metricsServer: false # Already Included In RD
+
+email:
+  fromAddress: 'changeme@example.com'
+  host: ''
+  password: ''
+  port: 587
+  secret: false
+  user: ''
+  useTls: true
+
+image:
+  pullPolicy: Never
+  pullSecrets: []
+
+ingress:
+  className: ''
+  domainName: "obico.localhost"
+  sslSecret: false
+  installNginx: false # Set To `true` To Install Nginx Ingress Controller
+
+mlApi:
+  autoScale:
+    cpuTarget: 80
+    minReplicas: 2
+    memoryTarget: 80
+    maxReplicas: 3
+  debugMode: true
+  image: obico/ml-api
+  nodePort: false
+
+pushover:
+  secret: false
+  token: ''
+
+redis:
+  image: redis:5.0-alpine
+  host: false
+  port: 6379
+
+slack:
+  clientId: ''
+  clientSecret: ''
+  secret: false
+
+tasks:
+  autoScale:
+    cpuTarget: 80
+    minReplicas: 2
+    memoryTarget: 80
+    maxReplicas: 3
+  image: obico/server
+
+telegram:
+  secret: false
+  token: ''
+
+twilio:
+  accountSid: ''
+  authToken: ''
+  fromNumber: ''
+  secret: false
+
+web:
+  image: obico/server
+  nodePort: false
+  dbPvc:
+    name: false
+    storageClass: local-path

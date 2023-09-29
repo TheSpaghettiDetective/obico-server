@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-en-redis
+spec:
+  {{- with .Values.redis }}
+  type: ExternalName
+{{- if .host }}
+  externalName: '{{ .host }}'
+{{- else }}
+  externalName: {{ include "helm.fullname" $ }}-redis.{{ $.Release.Namespace }}.svc.cluster.local
+{{- end }}
+  {{- end }}

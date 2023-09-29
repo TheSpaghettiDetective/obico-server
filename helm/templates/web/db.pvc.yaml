@@ -1,0 +1,15 @@
+{{- if not .Values.web.dbPvc.name }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-db-pvc
+spec:
+  storageClassName: {{ .Values.web.dbPvc.storageClass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

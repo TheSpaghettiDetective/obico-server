@@ -1,0 +1,32 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-ml-api
+spec:
+{{- with .Values.mlApi.autoScale }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "helm.fullname" $ }}-tasks
+  minReplicas: {{ .minReplicas }}
+  maxReplicas: {{ .maxReplicas }}
+  metrics:
+    {{- if .cpuTarget }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .cpuTarget }}
+    {{- end }}
+    {{- if .memoryTarget }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .memoryTarget }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-web
+spec:
+  ports:
+    - name: web
+      port: 3334
+      targetPort: web
+{{- if .Values.web.nodePort }}
+      nodePort: {{ .Values.web.nodePort }}
+  type: NodePort
+{{- end }}
+  selector:
+    obico.deployment: web

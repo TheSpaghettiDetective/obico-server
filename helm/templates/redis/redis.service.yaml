@@ -1,0 +1,15 @@
+{{- if not .Values.redis.host }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" .  }}-redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: redis
+  selector:
+    obico.deployment: {{ include "helm.fullname" . }}-redis
+  type: ClusterIP
+{{- end }}

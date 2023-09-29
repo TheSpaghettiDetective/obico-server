@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "helm.fullname" . }}-ingress
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+{{- with .Values.ingress }}
+  ingressClassName: {{ .className }}
+  rules:
+    - host: '{{ .domainName }}'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "helm.fullname" $ }}-web
+                port:
+                  name: web
+  {{ if .sslSecret }}
+  tls:
+    - hosts:
+        - {{ .domainName }}
+      secretName: {{ .sslSecret }}
+  {{-end }}
+{{- end }}

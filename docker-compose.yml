@@ -2,9 +2,10 @@ version: '2.4'
 
 x-web-defaults: &web-defaults
   restart: unless-stopped
+  image: obico/server
   build:
-    context: backend
-    dockerfile: 'Dockerfile'
+    context: .
+    dockerfile: 'backend/Dockerfile'
   volumes:
     - ./backend:/app
     - ./frontend:/frontend
@@ -45,6 +46,7 @@ services:
     restart: unless-stopped
     build:
       context: ml_api
+    image: obico/ml-api
     environment:
       DEBUG: 'True'
       FLASK_APP: 'server.py'

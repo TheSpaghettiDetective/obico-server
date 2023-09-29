@@ -1,0 +1,41 @@
+{{- if not .Values.redis.host }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" .  }}-redis
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      obico.deployment: {{ include "helm.fullname" . }}-redis
+  template:
+    metadata:
+      labels:
+        {{- include "helm.labels" . | nindent 8 }}
+        obico.deployment: {{ include "helm.fullname" . }}-redis
+    spec:
+      containers:
+        - image: {{ .Values.redis.image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          name: redis
+          livenessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            tcpSocket:
+              port: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+          startupProbe:
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 2
+            tcpSocket:
+              port: redis
+      imagePullSecrets:
+        {{ toYaml $.Values.image.pullSecrets | nindent 8 }}
+{{- end }}

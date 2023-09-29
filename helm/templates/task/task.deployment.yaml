@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-tasks
+
+spec:
+  selector:
+    matchLabels:
+      obico.deployment: tasks
+  template:
+    metadata:
+      annotations:
+        checksum/env: {{ include (print $.Template.BasePath "/config/env.configmap.yaml") . | sha256sum }}
+      labels:
+        {{ include "helm.labels" . | nindent 8 }}
+        obico.deployment: tasks
+    spec:
+{{- with .Values.tasks }}
+      initContainers:
+        {{ include "helm.initContainers" $ | nindent 8 }}
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" $ }}-env
+          command:
+            - celery
+            - -A
+            - config
+            - worker
+            - -l
+            - info
+            - -c
+            - '1'
+            - -Q
+            - realtime,celery
+          image: {{ .image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          name: task
+      imagePullSecrets:
+        {{ toYaml $.Values.image.pullSecrets | nindent 8 }}
+{{- end }}

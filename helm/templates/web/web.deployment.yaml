@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-web
+spec:
+  selector:
+    matchLabels:
+      obico.deployment: web
+  template:
+    metadata:
+      annotations:
+        checksum/env: {{ include (print $.Template.BasePath "/config/env.configmap.yaml") . | sha256sum }}
+      labels:
+        {{ include "helm.labels" . | nindent 8 }}
+        obico.deployment: web
+    spec:
+{{- with .Values.web }}
+      initContainers:
+        {{ include "helm.initContainers" $ | nindent 8 }}
+        - name: init-migrate
+          image: {{ .image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          command:
+            - python
+            - manage.py
+            - migrate
+          envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" $ }}-env
+          volumeMounts:
+            - mountPath: /app/database
+              name: sqlite
+        - name: init-static
+          image: {{ .image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          command:
+            - python
+            - manage.py
+            - collectstatic
+            - -v
+            - '2'
+            - --noinput
+          envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" $ }}-env
+          volumeMounts:
+            - mountPath: /app/static_build
+              name: static-assets
+      containers:
+        - command:
+            - python
+            - manage.py
+            - runserver
+            - --nostatic
+            - --noreload
+            - 0.0.0.0:3334
+          envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" $ }}-env
+          image: {{ .image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          name: web
+          livenessProbe:
+            httpGet:
+              port: web
+          ports:
+            - containerPort: 3334
+              name: web
+          readinessProbe:
+            httpGet:
+              port: web
+          volumeMounts:
+            - mountPath: /app/database
+              name: sqlite
+            - mountPath: /app/static_build
+              name: static-assets
+      imagePullSecrets:
+        {{ toYaml $.Values.image.pullSecrets | nindent 8 }}
+      volumes:
+        - name: static-assets
+          emptyDir: {}
+        - name: sqlite
+          persistentVolumeClaim:
+            {{ if .dbPvc.name }}
+            claimName: {{ .dbPvc.name }}
+            {{- else -}}
+            claimName: {{ include "helm.fullname" $ }}-db-pvc
+            {{- end -}}
+{{- end }}

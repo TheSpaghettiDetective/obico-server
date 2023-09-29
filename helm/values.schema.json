@@ -1,0 +1,505 @@
+{
+  "required": [
+    "application",
+    "dependencies",
+    "email",
+    "image",
+    "ingress",
+    "mlApi",
+    "pushover",
+    "redis",
+    "slack",
+    "tasks",
+    "telegram",
+    "twilio",
+    "web"
+  ],
+  "properties": {
+    "application": {
+      "type": "object",
+      "required": [
+        "allowSignup",
+        "debugMode",
+        "enableWebpack",
+        "ipWhitelist",
+        "isPublic",
+        "octoPrintPortRange",
+        "sentryDns",
+        "socialLogin"
+      ],
+      "properties": {
+        "allowSignup": {
+          "type": "boolean"
+        },
+        "debugMode" : {
+          "type": "boolean",
+          "description": "Don't set DEBUG to True unless you know what you are doing. Otherwise the static files will be cached in browser until hard-refresh"
+        },
+        "enableWebpack": {
+          "type": "boolean",
+          "description": "Don't set it to True unless you want to develop the frontend"
+        },
+        "ipWhitelist" : {
+          "type": "array",
+          "items": [
+            {
+              "type": "string",
+              "format": "ipv4"
+            }
+          ],
+          "uniqueItems": true
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "octoPrintPortRange": {
+          "type": "object",
+          "required": [
+            "min",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            }
+          }
+        },
+        "sentryDns": {
+          "type": "string",
+          "oneOf": [
+            {
+              "format": "hostname"
+            },
+            {
+              "enum": [""]
+            }
+          ]
+        },
+        "socialLogin": {
+          "type": "boolean"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "required": [
+        "metricsServer"
+      ],
+      "properties": {
+        "metricsServer" : {
+          "type": "boolean"
+        }
+      }
+    },
+    "email" : {
+      "type": "object",
+      "required": [
+        "fromAddress",
+        "host",
+        "password",
+        "port",
+        "secret",
+        "user",
+        "useTls"
+      ],
+      "properties": {
+        "fromAddress": {
+          "type": "string",
+          "format": "email"
+        },
+        "host": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "secret": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        },
+        "user" : {
+          "type": "string"
+        },
+        "useTls": {
+          "type": "boolean"
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "pullPolicy",
+        "pullSecrets"
+      ],
+      "properties": {
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["IfNotPresent","Always","Never"]
+        },
+        "pullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ingress": {
+      "required": [
+        "className",
+        "domainName",
+        "sslSecret",
+        "installNginx"
+      ],
+      "properties": {
+        "className": {
+          "type": "string"
+        },
+        "domainName": {
+          "type": "string",
+          "format": "hostname"
+        },
+        "sslSecret": {
+          "oneOf": [
+            {
+              "type": "boolean",
+              "enum": [false]
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "installNginx": {
+          "type": "boolean"
+        }
+      }
+    },
+    "mlApi": {
+      "type": "object",
+      "required": [
+        "autoScale",
+        "debugMode",
+        "image",
+        "nodePort"
+      ],
+      "properties": {
+        "autoScale": {
+          "type": "object",
+          "required": [
+            "cpuTarget",
+            "maxReplicas",
+            "memoryTarget",
+            "minReplicas"
+          ],
+          "properties": {
+            "cpuTarget": {
+              "oneOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean",
+                  "enum": [false]
+                }
+              ]
+            },
+            "maxReplicas" : {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "memoryTarget": {
+              "oneOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean",
+                  "enum": [false]
+                }
+              ]
+            },
+            "minReplicas": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "debugMode": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "string"
+        },
+        "nodePort": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 30000,
+              "maximum": 32767
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        }
+      }
+    },
+    "pushover": {
+      "type": "object",
+      "required": [
+        "secret",
+        "token"
+      ],
+      "properties": {
+        "secret": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "redis": {
+      "type": "object",
+      "required": [
+        "image",
+        "host",
+        "port"
+      ],
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "host": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "hostname"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        },
+        "port": {
+          "type": "number"
+        }
+      }
+    },
+    "slack": {
+      "type": "object",
+      "required": [
+        "clientId",
+        "clientSecret",
+        "secret"
+      ],
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "clientSecret": {
+          "type": "string"
+        },
+        "secret": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "required": [
+        "autoScale",
+        "image"
+      ],
+      "properties": {
+        "autoScale": {
+          "type": "object",
+          "required": [
+            "cpuTarget",
+            "maxReplicas",
+            "memoryTarget",
+            "minReplicas"
+          ],
+          "properties": {
+            "cpuTarget": {
+              "oneOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean",
+                  "enum": [false]
+                }
+              ]
+            },
+            "maxReplicas" : {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "memoryTarget": {
+              "oneOf": [
+                {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean",
+                  "enum": [false]
+                }
+              ]
+            },
+            "minReplicas": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "image": {
+          "type": "string"
+        }
+      }
+    },
+    "telegram": {
+      "type": "object",
+      "required": [
+        "secret",
+        "token"
+      ],
+      "properties": {
+        "secret": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "twilio": {
+      "type": "object",
+      "required": [
+        "accountSid",
+        "authToken",
+        "fromNumber",
+        "secret"
+      ],
+      "properties": {
+        "accountSid": {
+          "type": "string"
+        },
+        "authToken": {
+          "type": "string"
+        },
+        "fromNumber": {
+          "type": "string"
+        },
+        "secret": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        }
+      }
+    },
+    "web": {
+      "type": "object",
+      "required": [
+        "image",
+        "nodePort",
+        "dbPvc"
+      ],
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "nodePort": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 30000,
+              "maximum": 32767
+            },
+            {
+              "type": "boolean",
+              "enum": [false]
+            }
+          ]
+        },
+        "dbPvc": {
+          "type": "object",
+          "required": [
+            "name",
+            "storageClass"
+          ],
+          "properties": {
+            "name": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean",
+                  "enum": [false]
+                }
+              ]
+            },
+            "storageClass": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

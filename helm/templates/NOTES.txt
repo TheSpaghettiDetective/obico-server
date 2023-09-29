@@ -1,0 +1,39 @@
+{{- if and (not .Values.email.secret) .Values.email.user }}
+
+**********************************
+*         !! WARNING !!          *
+**********************************
+
+You have configured the application e-mails using an insecure method. Please create a Kubernetes Secret per the README.md.
+
+{{- end }}
+
+{{- if and (not .Values.pushover.secret) .Values.pushover.token }}
+
+**********************************
+*         !! WARNING !!          *
+**********************************
+
+You have configured push notifications using an insecure method. Please create a Kubernetes Secret per the README.md.
+
+{{- end }}
+
+{{- if and (not .Values.slack.secret) .Values.slack.clientId }}
+
+**********************************
+*         !! WARNING !!          *
+**********************************
+
+You have configured slack notifications using an insecure method. Please create a Kubernetes Secret per the README.md.
+
+{{- end }}
+
+{{- if and (not .Values.telegram.secret) .Values.telegram.token }}
+
+**********************************
+*         !! WARNING !!          *
+**********************************
+
+You have configured telegram using an insecure method. Please create a Kubernetes Secret per the README.md.
+
+{{- end }}

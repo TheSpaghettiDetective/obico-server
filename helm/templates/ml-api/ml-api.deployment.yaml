@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{ include "helm.labels" . | nindent 4 }}
+  name: {{ include "helm.fullname" . }}-ml-api
+spec:
+  selector:
+    matchLabels:
+      obico.deployment: ml-api
+  template:
+    metadata:
+      labels:
+        obico.deployment: ml-api
+    spec:
+{{ with .Values.mlApi }}
+      initContainers:
+        {{ include "helm.initContainers" $ | nindent 8 }}
+      containers:
+        - env:
+            - name: FLASK_APP
+              value: server.py
+            - name: DEBUG
+              value: '{{ include "helm.python.boolean" .debugMode }}'
+          envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" $ }}-env
+          image: {{ .image}}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          name: ml-api
+          command:
+            - gunicorn
+            - --bind
+            - 0.0.0.0:3333
+            - --workers
+            - '1'
+            - wsgi
+          livenessProbe:
+            httpGet:
+              path: /hc/
+              port: ml-api
+          ports:
+            - containerPort: 3333
+              name: ml-api
+          readinessProbe:
+            httpGet:
+              path: /hc/
+              port: ml-api
+      imagePullSecrets:
+        {{ toYaml $.Values.image.pullSecrets | nindent 8 }}
+{{- end }}

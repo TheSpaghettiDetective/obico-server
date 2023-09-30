@@ -124,3 +124,9 @@ data:
   TWILIO_AUTH_TOKEN: ''
   TWILIO_FROM_NUMBER: ''
 ```
+
+## Gotchas
+
+### Rancher Desktop & Moby/Docker
+
+Rancher desktop comes with the ContainerD engine enabled by default. If you try to use RD, you will need to configure it to use the Moby Engine for the docker build to work by default.

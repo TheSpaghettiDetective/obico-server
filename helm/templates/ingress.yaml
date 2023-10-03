@@ -23,5 +23,5 @@ spec:
     - hosts:
         - {{ .domainName }}
       secretName: {{ .sslSecret }}
-  {{-end }}
+  {{- end }}
 {{- end }}

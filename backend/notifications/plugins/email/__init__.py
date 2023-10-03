@@ -3,6 +3,7 @@ import smtplib
 import logging
 import backoff  # type: ignore
 import os
+import requests
 
 from django.conf import settings
 from django.template.base import Template
@@ -158,10 +159,11 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             # https://github.com/TheSpaghettiDetective/TheSpaghettiDetective/issues/43
             try:
                 if not settings.SITE_IS_PUBLIC:
-                    attachments.append(('Image.jpg', requests.get(context.img_url).content, 'image/jpeg'))
+                    attachments.append(('Image.jpg', requests.get(img_url).content, 'image/jpeg'))
                 else:
                     ctx['img_url'] = img_url
-            except:
+            except Exception as e:
+                LOGGER.warn("Could not attach image: " + str(e))
                 ctx['img_url'] = img_url
 
         message = tpl.render(ctx)

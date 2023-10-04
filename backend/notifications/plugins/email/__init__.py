@@ -141,8 +141,9 @@ class EmailNotificationPlugin(BaseNotificationPlugin):
             ctx: Dict,
             img_url: str = None,
             verified_only: bool = True,
-            attachments: Optional[List] = []) -> None:
+            attachments: Optional[List] = None) -> None:
 
+        attachments = attachments or []
         tpl = get_template(template_path)
 
         ctx['user'] = user

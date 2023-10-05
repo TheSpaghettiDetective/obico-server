@@ -1,5 +1,7 @@
 FROM python:3.7.12-alpine3.14
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /app
 EXPOSE 3334
 RUN apk -U add bash vim ffmpeg postgresql-libs git openjpeg tiff

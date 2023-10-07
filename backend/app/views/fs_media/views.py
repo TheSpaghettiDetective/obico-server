@@ -19,7 +19,7 @@ def server_media_catchall(request, *args, **kwargs):
     return HttpResponseServerError(msg)
 
 
-def serve_media(request, file_name, printer_id=None, print_id=None, user_id=None):
+def serve_media(request, file_name, printer_id=None, print_id=None, user_id=None, **kwargs):
     """
     Serves media files while enforcing permissions based on given object IDs.
 

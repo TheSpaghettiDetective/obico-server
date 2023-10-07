@@ -1,19 +1,16 @@
+import logging
 import os
 import re
-from django.views import View
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseServerError
+
 from django.core.handlers.wsgi import WSGIRequest
-from lib.utils import safe_path_join
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError, Http404
 
 from app import models
 from config import settings
-import logging
+from lib.utils import safe_path_join
 
 LOGGER = logging.getLogger(__name__)
 
-
-# Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 
 def server_media_catchall(request, *args, **kwargs):
     """Catch any media requests that aren't being served through serve_media (help identify legacy requests)"""
@@ -45,7 +42,7 @@ def serve_media(request, file_name, printer_id=None, print_id=None, user_id=None
         '.jpg': 'image/jpeg',
         '.gcode': 'text/plain',
         '.json': 'text/plain'
-        }
+    }
     content_type = content_types.get(filepath_extension.lower(), 'text/plain')
     with open(full_path, 'rb') as fh:
         return HttpResponse(fh, content_type=content_type)

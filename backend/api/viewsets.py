@@ -249,6 +249,8 @@ class PrintViewSet(
             return Response([])
 
         headers = {
+            # Add original request headers to pass through user authentication
+            **request.headers,
             'If-Modified-Since': request.headers.get('if-modified-since'),
             'If-None-Match': request.headers.get('if-none-match'),
         }

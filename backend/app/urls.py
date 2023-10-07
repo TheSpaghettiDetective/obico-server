@@ -11,7 +11,7 @@ urlpatterns = [
     path('', web_views.index, name='index'),
     path('accounts/login/', web_views.SocialAccountAwareLoginView.as_view(), name="account_login"),
     path('accounts/signup/', web_views.SocialAccountAwareSignupView.as_view(), name="account_signup"),
-    path(f'media/', include(media_patterns)),
+    path('media/', include(media_patterns)),
     path('printers/', web_views.printers, name='printers'),
     re_path('printers/wizard/(?P<route>([^/]+/)*)$', web_views.new_printer),
     path('printers/<int:pk>/', web_views.edit_printer),

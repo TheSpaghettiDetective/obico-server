@@ -220,7 +220,7 @@ export const biqu = {
     },
     {
       name: 'background',
-      values: {[Themes.Light]: '#0a0c22', [Themes.Dark]: '#EBEBEB'},
+      values: {[Themes.Light]: '#0a0c22', [Themes.Dark]: '#0a0c22'},
     },
     {
       name: 'surface-primary',

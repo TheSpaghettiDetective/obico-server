@@ -1,10 +1,11 @@
-FROM thespaghettidetective/web:base-1.13
+FROM thespaghettidetective/web:base-3.0
 
 WORKDIR /app
 EXPOSE 3334
 
-ADD . /app
 RUN pip install -U pip
-RUN pip install -r requirements.txt
+ADD ./requirements-3.x.txt /app
+RUN pip install -r requirements-3.x.txt
+ADD ./ /app
 
 ENTRYPOINT ["/app/entrypoint.sh"]

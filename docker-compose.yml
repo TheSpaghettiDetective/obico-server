@@ -66,6 +66,7 @@ services:
   tasks:
     <<: *web-defaults
     hostname: tasks
+    entrypoint: ''
     command: celery -A config worker --beat -l info -c 2 -Q realtime,celery
 
   redis:

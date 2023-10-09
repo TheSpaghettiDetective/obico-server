@@ -221,16 +221,23 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console_debug'],
-        },
+        # SQL query logging can now be disabled by setting DISABLE_DEBUG_QUERY_LOGGING=True
+        # 'django.db.backends': {
+        #     'level': 'DEBUG',
+        #     'handlers': ['console_debug'],
+        # },
         'root': {
             'level': 'INFO',
             'handlers': ['console']
         }
     }
 }
+
+if get_bool('DISABLE_DEBUG_QUERY_LOGGING', False):
+    LOGGING['loggers']['django.db.backends'] = {
+        'level': 'DEBUG',
+        'handlers': ['console_debug'],
+    }
 
 # Django settings
 

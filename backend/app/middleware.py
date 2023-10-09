@@ -5,7 +5,6 @@ from django.contrib.sessions.backends.base import UpdateError
 from whitenoise.middleware import WhiteNoiseMiddleware
 import time
 from django.utils.cache import patch_vary_headers
-from django.utils.http import cookie_date
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils.http import http_date
 from django.urls import reverse, NoReverseMatch

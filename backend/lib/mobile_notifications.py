@@ -20,11 +20,6 @@ PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None
 
 
-def send_print_progress(_print, op_data):
-    if _print.user.notification_enabled:
-        send_print_progress(_print, op_data, get_rotated_pic_url(_print.printer))
-
-
 def send_failure_alert(_print, rotated_jpg_url, is_warning, print_paused):
     for mobile_device in MobileDevice.objects.filter(user=_print.printer.user):
         data = dict(
@@ -87,8 +82,11 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
         send_to_device(data, mobile_device)
 
 
-def send_print_progress(_print, op_data, existed_rotated_jpg_url):
-    rotated_jpg_url = existed_rotated_jpg_url       # Cache it as it's expensive to generate
+def send_print_progress(_print, op_data):
+    if not _print.user.notification_enabled:
+        return
+
+    rotated_jpg_url = get_rotated_pic_url(_print.printer)
 
     pushed_platforms = set()
 

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import os
-from celery import Celery
+from celery import Celery, Task
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -27,3 +27,19 @@ celery_app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
 celery_app.autodiscover_tasks()
+
+
+# Provides alternative to shared_task decorator removed in Celery 5.x
+# See https://github.com/celery/celery/issues/6707#issuecomment-825542048
+class PeriodicTask(Task):
+
+    @classmethod
+    def on_bound(cls, app):
+        app.conf.beat_schedule[cls.name] = {
+            'task': cls.name,
+            'schedule': cls.run_every,
+            'args': (),
+            'kwargs': {},
+            'options': cls.options or {},
+            'relative': cls.relative,
+        }

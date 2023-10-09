@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core import serializers
 from celery import shared_task
-from celery.decorators import periodic_task
+from config.celery import PeriodicTask
 from datetime import timedelta
 import tempfile
 import requests
@@ -239,12 +239,12 @@ def detect_timelapse(self, print_id):
 
 # Websocket connection count house upkeep jobs
 
-@periodic_task(run_every=timedelta(seconds=1200))
+@shared_task(base=PeriodicTask, run_every=timedelta(seconds=1200))
 def prune_channel_presence():
     Room.objects.prune_presences(age=120)
 
 
-@periodic_task(run_every=timedelta(seconds=1200))
+@shared_task(base=PeriodicTask, run_every=timedelta(seconds=1200))
 def prune_channel_rooms():
     Room.objects.prune_rooms()
 

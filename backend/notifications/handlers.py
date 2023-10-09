@@ -18,7 +18,6 @@ from .plugin import (
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
-
 from . import notification_types
 
 
@@ -207,16 +206,6 @@ class Handler(object):
         if not feature or not printer.user.notification_enabled:
             return
 
-        should_fire = NotificationSetting.objects.filter(
-            user_id=printer.user_id,
-            enabled=True,
-            name__in=self.notification_plugin_names(),
-            **{feature.name: True},
-        ).exists()
-
-        if not should_fire:
-            LOGGER.debug('no matching NotificationSetting objects, ignoring event')
-
         kwargs = {
                 'printer_id': printer.id,
                 'notification_type': notification_type,
@@ -224,6 +213,7 @@ class Handler(object):
                 'img_url': img_url,
                 'extra_context': extra_context,
             }
+
         from . import tasks
         if in_process:
             tasks.send_printer_notifications(**kwargs)

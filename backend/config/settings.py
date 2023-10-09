@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.humanize',
     'channels',
-    "app.apps.CustomRoomsConfig",
     'whitenoise.runserver_nostatic',
     'hijack',
     'compat',
@@ -68,6 +67,7 @@ INSTALLED_APPS = [
     'nplusone.ext.django',
     'qr_code',
     'app',  # app has to come before allauth for template override to work
+    "app.apps.CustomRoomsConfig",  # Replaces 'channels_presence'
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -98,6 +98,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 if DEBUG:

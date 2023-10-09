@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.humanize',
     'channels',
-    "channels_presence",
+    "app.apps.CustomRoomsConfig",
     'whitenoise.runserver_nostatic',
     'hijack',
     'compat',

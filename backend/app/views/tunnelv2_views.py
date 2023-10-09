@@ -323,15 +323,15 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         )
     }
 
-    if 'CONTENT_TYPE' in request.META:
-        req_headers['Content-Type'] = request.META['CONTENT_TYPE']
+    if 'content-type' in request.headers:
+        req_headers['Content-Type'] = request.headers['content-type']
 
-    if 'HTTP_COOKIE' in request.META:
+    if 'cookie' in request.headers:
         # let's not forward cookies of TSD server
         stripped_cookies = '; '.join(
             [
                 cookie.strip()
-                for cookie in request.META['HTTP_COOKIE'].split(';')
+                for cookie in request.headers['cookie'].split(';')
                 if DJANGO_COOKIE_RE.match(cookie.strip()) is None
             ]
         )
@@ -343,7 +343,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         stripped_auth_heaader = ', '.join(
             [
                 h
-                for h in request.META['HTTP_AUTHORIZATION'].split(',')
+                for h in request.headers['authorization'].split(',')
                 if h != request.auth_header
             ]
         )

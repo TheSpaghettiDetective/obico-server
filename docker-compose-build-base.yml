@@ -1,0 +1,8 @@
+version: '2.4'
+
+services:
+  web:
+    image: thespaghettidetective/web:base-3.0
+    build:
+      context: backend
+      dockerfile: 'Dockerfile.base'

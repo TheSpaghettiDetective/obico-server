@@ -29,7 +29,7 @@ celery_app.config_from_object('django.conf:settings', namespace='CELERY')
 celery_app.autodiscover_tasks()
 
 
-# Provides alternative to shared_task decorator removed in Celery 5.x
+# Provides alternative to periodic_task decorator removed in Celery 5.x
 # See https://github.com/celery/celery/issues/6707#issuecomment-825542048
 class PeriodicTask(Task):
 
@@ -40,6 +40,6 @@ class PeriodicTask(Task):
             'schedule': cls.run_every,
             'args': (),
             'kwargs': {},
-            'options': cls.options or {},
-            'relative': cls.relative,
+            'options': getattr(cls, 'options', {}),
+            'relative': bool(getattr(cls, 'relative', False))
         }

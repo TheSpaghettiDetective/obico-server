@@ -10,6 +10,8 @@ celery_app.conf.task_ignore_result = True
 celery_app.conf.task_store_errors_even_if_ignored = True
 celery_app.conf.worker_prefetch_multiplier = 1
 celery_app.conf.broker_transport_options = {'visibility_timeout': 3600*12}
+# Prevents warning on celery 5.x
+celery_app.conf.broker_connection_retry_on_startup = True
 celery_app.conf.task_routes = {
     'app.tasks.process_print_events': {'queue': 'realtime'},
     'app_ent.tasks.credit_dh_for_contribution': {'queue': 'realtime'},

@@ -11,6 +11,7 @@ x-web-defaults: &web-defaults
   depends_on:
     - redis
   environment:
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
     OCTOPRINT_TUNNEL_PORT_RANGE: '0-0'
     EMAIL_HOST: '${EMAIL_HOST-}'
     EMAIL_HOST_USER: '${EMAIL_HOST_USER-}'

@@ -49,3 +49,6 @@ nplusone==1.0.0
 colorlog==6.7.0
 packaging==23.0
 numpy==1.21.6
+
+# Dev packages
+django-debug-toolbar

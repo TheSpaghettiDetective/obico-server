@@ -100,6 +100,15 @@ MIDDLEWARE = [
     'app.middleware.check_admin_ip_whitelist',
 ]
 
+if DEBUG:
+    gzip_index = MIDDLEWARE.index('django.middleware.gzip.GZipMiddleware')
+    MIDDLEWARE.insert(gzip_index+1, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INSTALLED_APPS.append("debug_toolbar")
+
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [

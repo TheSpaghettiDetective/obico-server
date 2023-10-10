@@ -53,6 +53,8 @@ colorlog = "*"
 packaging = "*"
 numpy = "*"
 django-debug-toolbar = "*"
+inotify-simple = "*"
+Twisted = {extras = ["tls", "http2"], version = "*" }
 
 [dev-packages]
 

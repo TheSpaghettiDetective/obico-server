@@ -139,6 +139,7 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
           context: backend
           file: backend/Dockerfile
+          build-args: BASE_IMAGE=ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
           push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/server:${{ env.GitVersion_FullSemVer_Docker }}
 

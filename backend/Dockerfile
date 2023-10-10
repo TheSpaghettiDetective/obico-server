@@ -1,4 +1,6 @@
-FROM thespaghettidetective/web:dev-django-4.2
+# Use BASE_IMAGE arg to allow building locally and in GitHub actions
+ARG BASE_IMAGE=thespaghettidetective/web:dev-django-4.2
+FROM ${BASE_IMAGE}
 
 WORKDIR /app
 EXPOSE 3334

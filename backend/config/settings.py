@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'channels',
     'whitenoise.runserver_nostatic',
     'hijack',
-    'compat',
     'simple_history',
     'widget_tweaks',
     'rest_framework',
@@ -101,6 +100,7 @@ MIDDLEWARE = [
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
+    'hijack.middleware.HijackUserMiddleware',
 ]
 
 if DEBUG:

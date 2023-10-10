@@ -15,7 +15,7 @@ ENV PYTHONPATH="${PYTHONPATH}:/moonraker/moonraker"
 
 RUN pip install --upgrade pip
 
-ADD requirements-4.x.txt .
-RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install -r requirements-4.x.txt
+ADD requirements.txt .
+RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install -r requirements.txt
 
 RUN apk --purge del .build-deps

@@ -2,7 +2,7 @@ version: '2.4'
 
 services:
   web:
-    image: thespaghettidetective/web:base-4
+    image: thespaghettidetective/web:dev-django-4.2
     build:
       context: backend
       dockerfile: 'Dockerfile.base'

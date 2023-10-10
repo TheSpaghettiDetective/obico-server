@@ -24,7 +24,6 @@ celery[redis]==4.4.7
 django-safedelete==0.5.1
 pillow==9.3.0
 django-hijack==2.1.10
-git+https://github.com/TheSpaghettiDetective/daphne@tsd_stable-2.5.0
 asgiref==3.2.10
 # latest version of zope.interface is broken
 zope.interface==4.7.2
@@ -33,7 +32,6 @@ channels-redis==3.0.1
 django-jstemplate==1.3.8
 pushbullet.py==0.11.0
 pytelegrambotapi==3.6.6
-git+https://github.com/ivahotin/django-channels-presence.git
 backoff==1.10.0
 django-webpack-loader==0.7.0
 django-qr-code==1.2.0

@@ -33,7 +33,8 @@ colorama==0.4.6 ; sys_platform == 'win32'
 colorlog==6.7.0
 constantly==15.1.0
 cryptography==41.0.4 ; python_version >= '3.7'
-git+https://github.com/TheSpaghettiDetective/daphne@c38745541095b3d95092c927aa000fd1fca9f8ca#egg=daphne
+daphne==4.0.0
+Twisted[tls,http2]
 decorator==5.1.1 ; python_version < '3.11' and python_version >= '3.7'
 defusedxml==0.7.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 discord-webhook==1.3.0
@@ -41,7 +42,7 @@ dj-database-url==2.1.0
 django==3.2.22
 django-allauth==0.57.0
 django-bootstrap-pagination==1.7.1
-git+https://github.com/ivahotin/django-channels-presence.git@8cc0775adcd653c4bd920294c4e6f3d980692d40#egg=django-channels-presence
+django-channels-presence==1.0.0
 django-cors-headers==4.2.0
 django-debug-toolbar==4.2.0
 django-extensions==3.2.3

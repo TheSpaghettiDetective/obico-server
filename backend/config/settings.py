@@ -178,7 +178,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # Request logging for debugging purpose
@@ -251,7 +250,14 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
-STATICFILES_STORAGE = 'app.storage.CustomCompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": 'app.storage.CustomCompressedManifestStaticFilesStorage',
+    },
+}
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../frontend/static'),
     os.path.join(BASE_DIR, '../frontend/builds'),

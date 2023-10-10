@@ -61,7 +61,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command:  python manage.py runserver --nostatic --noreload 0.0.0.0:3334
+    command: daphne -b 0.0.0.0 -p 3334 config.routing:application
 
   tasks:
     <<: *web-defaults

@@ -10,7 +10,7 @@ from api.authentication import TokenAuthMiddlewareStack
 
 application = ProtocolTypeRouter({
     # Need to explicity add http as of 3.0
-    'http': get_asgi_application(),
+    'http': django_asgi_app,
     'websocket': TokenAuthMiddlewareStack(
         URLRouter(
             api.ws_routing.websocket_urlpatterns

@@ -1,4 +1,4 @@
-FROM thespaghettidetective/web:base-4
+FROM thespaghettidetective/web:dev-django-4.2
 
 WORKDIR /app
 EXPOSE 3334

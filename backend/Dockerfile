@@ -4,8 +4,8 @@ WORKDIR /app
 EXPOSE 3334
 
 RUN pip install -U pip
-ADD ./requirements-4.x.txt /app
-RUN pip install -r requirements-4.x.txt
+ADD ./requirements.txt /app
+RUN pip install -r requirements.txt
 ADD ./ /app
 
 ENTRYPOINT ["/app/entrypoint.sh"]

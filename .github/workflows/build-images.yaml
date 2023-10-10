@@ -72,15 +72,10 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v5
         with:
-          cache-from: |
-            thespaghettidetective/web:base-dev-django-4.2
-            thespaghettidetective/web:base-dev
-            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-dev-django-4.2
-            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-dev
           context: backend
           file: backend/Dockerfile.base
           push: true
-          tags: ghcr.io/${{ env.REPOSITORY_LC }}/web:base-dev-${{ env.GitVersion_FullSemVer_Docker }}
+          tags: ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
 
   build-base-ml-image:
     runs-on: ubuntu-latest
@@ -141,10 +136,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           cache-from: |
-            thespaghettidetective/server:base-dev-django-4.2
-            thespaghettidetective/server:base-dev
-            ghcr.io/${{ env.REPOSITORY_LC }}/server:base-dev-django-4.2
-            ghcr.io/${{ env.REPOSITORY_LC }}/server:base-dev
+            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
           context: backend
           file: backend/Dockerfile
           push: true

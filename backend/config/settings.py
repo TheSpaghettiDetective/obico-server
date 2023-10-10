@@ -43,6 +43,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Need to declare this explicitly as of 4.0
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

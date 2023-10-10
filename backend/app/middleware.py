@@ -26,11 +26,11 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
         if path:
             self.add_files(path, prefix="/.well-known")
 
-    def process_request(self, request):
+    def get_response(self, request):
         if OctoprintTunnelV2Helper.is_tunnel_request(request):
             return None
 
-        return super().process_request(request)
+        return super().get_response(request)
 
 
 def octoprint_tunnelv2(get_response):

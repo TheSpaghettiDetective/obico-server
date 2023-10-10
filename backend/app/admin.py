@@ -1,10 +1,19 @@
+import sys
+
 from django.contrib import admin
 
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 
-from .models import User, Printer, NotificationSetting
+from config import settings
+from . import models
+from .models import User, Printer, NotificationSetting, Print, GCodeFolder, GCodeFile
+from django.apps import apps
+import inspect
+from django.contrib.admin.sites import AlreadyRegistered
+from django.db.models import Model
 from notifications.plugins.email import EmailNotificationPlugin
 from notifications.handlers import handler
 
@@ -57,3 +66,18 @@ class NotificationSettingAdmin(admin.ModelAdmin):
 
     def get_user(self, obj):
         return obj.user.email
+
+@admin.register(Print)
+class PrintAdmin(admin.ModelAdmin):
+    exclude = [x for x in Print.__dict__.keys() if x.endswith('at')] + ['alert_overwrite']
+    # print(f"excluding: {exclude}")
+
+
+if settings.DEBUG:
+    admin.site.register(GCodeFile)
+    admin.site.register(GCodeFolder)
+    for name, model in inspect.getmembers(sys.modules[models.__name__], lambda x: inspect.isclass(x) and issubclass(x, Model)):
+        try:
+            admin.site.register(model)
+        except (AlreadyRegistered, ImproperlyConfigured):
+            pass

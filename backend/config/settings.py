@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'nplusone.ext.django',
     'qr_code',
     'app',  # app has to come before allauth for template override to work
-    "app.apps.CustomRoomsConfig",  # Replaces 'channels_presence'
+    "channels_presence",
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

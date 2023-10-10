@@ -34,7 +34,9 @@ channels-redis = "*"
 django-jstemplate = "*"
 "pushbullet.py" = "*"
 pytelegrambotapi = "*"
-django-channels-presence = "*"
+# Fork of django_channels_presence adds django 4.x compatibility
+# See https://github.com/mitmedialab/django-channels-presence/issues/23
+django-channels-presence = {ref = "24c15f229372a16c7e8d6e160de89f4817d96c3f", git = "https://github.com/ApexArray/django-channels-presence"}
 backoff = "*"
 django-webpack-loader = "*"
 django-qr-code = "*"

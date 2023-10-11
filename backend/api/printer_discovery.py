@@ -32,7 +32,7 @@ class DeviceInfoSerializer(serializers.Serializer):
     arch = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
     rpi_model = serializers.CharField(
-        required=True, max_length=253, allow_blank=True)
+        required=False, max_length=253, allow_blank=True, default='')
     octopi_version = serializers.CharField(
         required=False, max_length=253, allow_blank=True, default='')
     printerprofile = serializers.CharField(

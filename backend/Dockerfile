@@ -1,5 +1,5 @@
 # Use BASE_IMAGE arg to allow building locally and in GitHub actions
-ARG BASE_IMAGE=thespaghettidetective/web:dev-django-4.2
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 WORKDIR /app

@@ -2,9 +2,12 @@ version: '2.4'
 
 x-web-defaults: &web-defaults
   restart: unless-stopped
+  image: ghcr.io/apexarray/obico-server/web:dev-django-4.2
   build:
     context: backend
     dockerfile: 'Dockerfile'
+    args:
+      BASE_IMAGE: ghcr.io/apexarray/obico-server/web-base:dev-django-4.2
   volumes:
     - ./backend:/app
     - ./frontend:/frontend

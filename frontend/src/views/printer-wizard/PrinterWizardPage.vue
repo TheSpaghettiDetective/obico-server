@@ -209,6 +209,8 @@ cd moonraker-obico
                                   The printer or SBC is connected to the same local network as your
                                   phone/computer.
                                 </li>
+                                <li v-if="targetOctoPrint">Obico for OctoPrint is 1.8.0 or above.</li>
+                                <li v-else>Obico for Klipper is 1.5.0 or above.</li>
                               </ul>
                             </div>
                           </div>

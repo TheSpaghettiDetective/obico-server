@@ -748,7 +748,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
-        MAX_UNLINKED_PRINTERS_PER_IP = 1
+        MAX_UNLINKED_PRINTERS_PER_IP = 2
 
         client_ip, is_routable = get_client_ip(request)
 

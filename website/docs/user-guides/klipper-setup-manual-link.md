@@ -4,6 +4,16 @@ description: For Klipper/Moonraker/Mainsail/Fluidd users
 sidebar_label: Manually Link Klipper
 ---
 
+Follow this guide in one of these 2 rare cases:
+
+* You are trying to re-link your Klipper printer. There are only [a few reasons](/docs/user-guides/relink-printer/) why you need to re-link printer.
+* Your printer can't be identified at the last step in [Obico for Klipper setup guide](/docs/user-guides/klipper-setup/). You don't need a 6-digit code if your printer can be identified and linked automatically.
+
+:::caution
+If you are setting up Obico for the first time, you should follow [Obico for Klipper setup guide](/docs/user-guides/klipper-setup) first. **Please DO NOT PROCEED** if you haven't done so.
+:::
+
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -14,14 +24,6 @@ import TabItem from '@theme/TabItem';
 :::info
 This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io). If you are connecting to a [self-hosted Obico Server](/docs/server-guides/), you will need to use the address of your self-hosted server.
 :::
-
-## Hardware requirements {#hardware-requirements}
-
-Before you start, make sure:
-
-- You have the Klipper and Moonraker set up correctly and connected to your printer. Also a user interface such as Mainsail/Fluidd is highly recommended.
-- A webcam is set up for your printer and connected to Mainsail/Fluidd/Moonraker.
-- There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
 ## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
@@ -170,20 +172,3 @@ Hooray! You are done! You can now close the terminal. Obico for Klipper is now r
 ## Step 6 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
-
-## What's next? {#whats-next}
-
-### Check out your printer feed! {#check-out-your-printer-feed}
-
-Press "Go Check Out Printer Feed!" to see everything you care about your printer: the webcam feed, heater temperature, time remaining on the print job, and more! Remember, you can see your printer feed anywhere you go, as long as you have an internet connection on your phone!
-
-### Test the magical failure detection! {#test-the-magical-failure-detection}
-
-The Detective sounds too magical to be true? [See The Detective in action for yourself](/docs/user-guides/how-to-test-failure-detection).
-
-### Change printer settings. {#change-printer-settings}
-
-The default settings for your printer in The Spaghetti Detective are the ones that most users find the most reasonable. But feel free to tweak them to your liking:
-
-- [Change notification settings](/docs/user-guides/notification-settings) (mobile app only). By default you receive push notifications when The Detective finds something fishy, and for the status of whatever your printer is printing. But you can choose to receive a lot more.
-- [Change printer settings](/docs/user-guides/detection-print-job-settings), such as if The Detective should pause your printer when a failure is detected.

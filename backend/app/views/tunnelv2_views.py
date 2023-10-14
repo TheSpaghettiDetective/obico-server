@@ -396,7 +396,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     cache.octoprinttunnel_update_stats(user.id, len(content))
 
-    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/'):
+    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/') and isinstance(content, bytes):
         # manifest file is fetched without cookie by default, forcing cookie here. https://stackoverflow.com/a/57184506
         content = content.replace(
             b'href="/manifest.webmanifest"',

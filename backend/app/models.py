@@ -878,8 +878,6 @@ class OctoPrintTunnel(SafeDeleteModel):
     def create(
         cls, printer: Printer, app: str
     ) -> 'OctoPrintTunnel':
-        # Some users will create multiple tunnels for the same 3rd-party apps for various reasons. Delete existing once so that it won't be confusing for them.
-        cls.objects.filter(printer=printer, app=app).delete()
 
         internal = app == cls.INTERNAL_APP
         if internal:

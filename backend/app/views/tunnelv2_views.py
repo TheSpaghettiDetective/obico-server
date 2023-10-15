@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
 import zlib
+import sentry_sdk
 
 from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
@@ -181,7 +182,21 @@ def tunnel_api(request, octoprinttunnel):
             content_type='application/json',
         )
 
+    if request.path.lower() == '/_tsd_/dest_platform_info/': # Currently only Moonraker is supported.
+        platform_info = {}
+        try:
+            platform_info = retrieve_klipper_host_info(octoprinttunnel) # Currently only mobileraker will make this call.
+        except:
+            sentry_sdk.capture_exception()
+
+        return HttpResponse(
+                json.dumps(platform_info),
+                content_type='application/json',
+            )
+
     raise Http404
+
+
 # Helpers
 
 
@@ -237,6 +252,26 @@ def set_response_items(self):
             items.append(('Set-Cookie', raw_cookie))
     return items
 
+
+def retrieve_klipper_host_info(octoprinttunnel):
+    resp = _tunnel_http_req_and_wait_for_resp(octoprinttunnel,  "/machine/system_info", "get", {}, b'')
+    network_dict = json.loads(resp.content.decode('utf-8')).get('result', {}).get('system_info', {}).get('network', {})
+    ip_addrs = [
+        ip['address'] for wlan in network_dict.values()
+        for ip in wlan['ip_addresses'] if not ip['is_link_local'] and ip['family'] == 'ipv4' # is_link_local is true for 127.0.0.1
+    ]
+    ip_addrs +=[
+        ip['address'] for wlan in network_dict.values()
+        for ip in wlan['ip_addresses'] if not ip['is_link_local'] and ip['family'] == 'ipv6'
+    ]
+    if len(ip_addrs) == 0:
+        return {}
+
+    ip_addr = ip_addrs[0]
+    resp = _tunnel_http_req_and_wait_for_resp(octoprinttunnel,  "/server/config", "get", {}, b'')
+    server_port = json.loads(resp.content.decode('utf-8')).get('result', {}).get('config', {}).get('server', {}).get('port')
+
+    return {'PrinterLocalIp': ip_addr, 'PrinterLocalPort': server_port}
 
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
@@ -309,6 +344,11 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if stripped_auth_heaader:
             req_headers['Authorization'] = stripped_auth_heaader
 
+    return _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request.body)
+
+
+def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request_body):
+    user = octoprinttunnel.printer.user
     ref = f'v2.{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
     msg = (
@@ -319,7 +359,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
                 'method': method,
                 'headers': req_headers,
                 'path': path,
-                'data': request.body
+                'data': request_body
             },
             'as_binary': True,
         }

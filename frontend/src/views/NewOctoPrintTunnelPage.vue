@@ -217,32 +217,31 @@
             </div>
             <div class="my-4">
               <div class="mx-auto text-center">
-                <h4>{{ platformDisplayName }} Tunnel</h4>
+                <h4>Free {{ platformDisplayName }} Tunnel</h4>
                 <div class="lead">Powered by Obico</div>
               </div>
             </div>
             <div class="account-details">
               <p>
-                With the {{ platformDisplayName }} Tunnel by Obico, you can now use {{ appDisplayName }} to
+                With the Free {{ platformDisplayName }} Tunnel by Obico, you can now use {{ appDisplayName }} to
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
                   >securely control and monitor your printer from anywhere</a
-                >.
+                >:
               </p>
-              <div class="text-muted">Obico Free Account:</div>
               <ul class="text-muted">
                 <li>Unlimited realtime webcam at 0.1FPS.</li>
                 <li>300MB monthly tunnel data cap (excluding webcam streaming).</li>
                 <li>10 hours/mo AI failure detection.</li>
               </ul>
-              <div class="text-muted">
-                Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
+              <div>
+                🔥🔥🔥 Upgrade to Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
                   >from $4/mo</a
-                >):
+                >) to get premium features:
               </div>
-              <ul class="text-muted">
-                <li>Unlimited realtime webcam streaming.</li>
-                <li>Unlimited tunnel data usage.</li>
-                <li>50 hours/mo AI failure detection.</li>
+              <ul>
+                <li>📷 Unlimited realtime webcam streaming.</li>
+                <li>📶 Unlimited tunnel data usage.</li>
+                <li>🤖 50 hours/mo AI failure detection.</li>
                 <li>
                   <a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
                     >And much more...</a
@@ -355,7 +354,7 @@ export default {
     },
     appDisplayName() {
       if (this.appName.toLowerCase().includes('mobileraker')) {
-        return 'Moonraker'
+        return 'Mobileraker'
       }
       return this.appName
     },

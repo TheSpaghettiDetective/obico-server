@@ -1,5 +1,4 @@
 from django.urls import path
-from config.settings import TIMELAPSE_CONTAINER, PICS_CONTAINER, GCODE_CONTAINER
 
 from . import views
 

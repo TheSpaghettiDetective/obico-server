@@ -129,20 +129,3 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
                 printer_settings=printer.settings,
                 to_long_term_storage=False
             )
-
-def safe_path_join(base_dir: str, relative_dir: str):
-    """
-    Joins a base_dir and relative_dir while attempting to prevent directory traversal attacks (../).
-
-    NOTE: base_dir MUST be a safe value (not supplied by the user)
-
-    See https://stackoverflow.com/a/45190125
-
-    Args:
-        base_dir: SAFE base directory where file should be located
-        relative_dir: User-supplied relative directory/filename
-    """
-    full_path = os.path.join(base_dir, relative_dir.strip('/'))
-    if not os.path.commonprefix([base_dir, full_path]) == base_dir:
-        raise Exception("tried to access file outside base directory!")
-    return full_path

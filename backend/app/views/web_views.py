@@ -238,6 +238,18 @@ def printer_events(request):
     return render(request, 'printer_events.html')
 
 
+### Misc ####
+
+# Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
+def serve_jpg_file(request, file_path):
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
+
+    if not os.path.exists(full_path):
+        raise Http404("Requested file does not exist")
+    with open(full_path, 'rb') as fh:
+        return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))
+
+
 # Health check that touches DB and redis
 def health_check(request):
     User.objects.all()[:1]

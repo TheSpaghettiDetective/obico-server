@@ -70,7 +70,11 @@ NOT_CONNECTED_HTML = """
             <h3 style="color: red;">
                 Either your printer is offline,
                 or the Obico plugin version is
-                lower than {min_version}.
+                lower than the minimum versions:
+                <ul>
+                    <li>Obico for OctoPrint: 1.8.4</li>
+                    <li>Obico Klipper: 1.3.0</li>
+                </ul>
             </h3>
         </center>
     </body>
@@ -277,8 +281,6 @@ def retrieve_klipper_host_info(octoprinttunnel):
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
-
-    min_version = MIN_SUPPORTED_VERSION[get_agent_name(octoprinttunnel)].public
     version = octoprinttunnel.printer.agent_version or '0.0'
 
     if user.tunnel_usage_over_cap():
@@ -289,12 +291,12 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=NOT_CONNECTED_STATUS_CODE)
 
     if not is_plugin_version_supported(get_agent_name(octoprinttunnel), version):
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()
@@ -370,7 +372,7 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
     if data is None:
         # request timed out
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None

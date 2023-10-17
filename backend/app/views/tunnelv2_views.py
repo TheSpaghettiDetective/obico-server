@@ -68,6 +68,8 @@ NOT_CONNECTED_HTML = """
     <body>
         <center>
             <h1>Not Connected</h1>
+        </center>
+        <div>
             <hr>
             <h3 style="color: red;">
                 Either your printer is offline,
@@ -78,7 +80,7 @@ NOT_CONNECTED_HTML = """
                     <li>Obico Klipper: 1.3.0</li>
                 </ul>
             </h3>
-        </center>
+        </div>
     </body>
 </html>
 """

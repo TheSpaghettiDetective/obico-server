@@ -33,6 +33,9 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'tsd_sessionid'
 
+# How long before HMAC signed URLs expire
+HMAC_SIGNED_URL_EXPIRATION_HOURS = 1
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool('DEBUG', False)
 

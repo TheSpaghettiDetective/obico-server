@@ -5,7 +5,7 @@ import re
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
@@ -19,6 +19,7 @@ import requests
 
 from allauth.account.views import LoginView, SignupView
 
+from lib.url_signing import HmacSignedUrl
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
@@ -242,6 +243,9 @@ def printer_events(request):
 
 # Was surprised to find there is no built-in way in django to serve uploaded files in both debug and production mode
 def serve_jpg_file(request, file_path):
+    url = HmacSignedUrl(request.get_full_path())
+    if not url.is_authorized():
+        return HttpResponseForbidden("You do not have permission to view this media")
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
     if not os.path.exists(full_path):

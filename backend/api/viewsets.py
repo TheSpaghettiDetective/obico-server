@@ -28,7 +28,7 @@ from django.utils.dateparse import parse_datetime
 from django.db.models.functions import TruncDay
 from django.db.models import Sum, Max, Count, fields, Case, Value, When
 
-
+from lib.url_signing import new_signed_url
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
@@ -253,7 +253,7 @@ class PrintViewSet(
             'If-None-Match': request.headers.get('if-none-match'),
         }
 
-        r = requests.get(url=p.prediction_json_url,
+        r = requests.get(url=new_signed_url(p.prediction_json_url),
                          timeout=PREDICTION_FETCH_TIMEOUT,
                          headers={k: v for k, v in headers.items() if v is not None})
         r.raise_for_status()

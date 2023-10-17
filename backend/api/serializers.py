@@ -1,3 +1,5 @@
+from functools import partial
+from django.db import models
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -13,6 +15,8 @@ from app.models import (
     SharedResource, OctoPrintTunnel, calc_normalized_p,
     NotificationSetting, PrinterEvent, GCodeFolder
 )
+from lib.site import url_points_to_this_site
+from lib.url_signing import new_signed_url
 
 from notifications.handlers import handler
 
@@ -22,6 +26,41 @@ def int_with_default(v, default):
         return int(v)
     except ValueError:
         return default
+
+
+class SignedHmacUrlSerializer(serializers.SerializerMethodField):
+    """
+    This Serializer class is used to append HMAC signatures to media URLs for authc/authz purposes.
+
+    URLs are only signed if:
+        1. The base URL matches the configured site
+        2. The URL starts with 'settings.MEDIA_URL'
+
+    Otherwise, returns base URL from the database.
+    """
+    def __init__(self, **kwargs):
+        # force method_name = None to use default method_name
+        super().__init__(method_name=None, **kwargs)
+
+    @staticmethod
+    def _base_get_signed_url(obj: models.Model, field_name):
+        """
+        Base method for generating HMAC-signed URLs.
+
+        Do not call this method directly. Instead, use 'functools.partial' or a lambda function
+        to dynamically create the individual get_* functions with the appropriate field_name.
+        """
+        url = getattr(obj, field_name)
+        if url is not None and url_points_to_this_site(url):
+            return new_signed_url(url)
+        return url
+
+    def bind(self, field_name, parent):
+        """
+        Automatically create the expected get_* function on the parent serializer
+        """
+        super().bind(field_name, parent)
+        setattr(parent, self.method_name, partial(self._base_get_signed_url, field_name=field_name))
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -70,16 +109,22 @@ class BasePrinterSerializer(serializers.ModelSerializer):
 
 
 class BaseGCodeFileSerializer(serializers.ModelSerializer):
+    thumbnail1_url = SignedHmacUrlSerializer()
+    thumbnail2_url = SignedHmacUrlSerializer()
+    thumbnail3_url = SignedHmacUrlSerializer()
+
     class Meta:
         model = GCodeFile
         fields = '__all__'
         read_only_fields = ('user', 'resident_printer')
 
-
 class BasePrintSerializer(serializers.ModelSerializer):
     ended_at = serializers.DateTimeField(read_only=True)
     printer = BasePrinterSerializer(many=False, read_only=True)
     g_code_file = BaseGCodeFileSerializer(many=False, read_only=True)
+    video_url = SignedHmacUrlSerializer()
+    tagged_video_url = SignedHmacUrlSerializer()
+    poster_url = SignedHmacUrlSerializer()
 
     class Meta:
         model = Print

@@ -344,10 +344,10 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         if stripped_auth_heaader:
             req_headers['Authorization'] = stripped_auth_heaader
 
-    return _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request.body)
+    return _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request.body, request_is_secure=request.is_secure())
 
 
-def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request_body):
+def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request_body, request_is_secure=False):
     user = octoprinttunnel.printer.user
     ref = f'v2.{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
@@ -404,7 +404,7 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
     tunnel_cookies = []
     for cookie in (data['response'].get('cookies', ()) or ()):
         if (
-            request.is_secure() and
+            request_is_secure and
             'secure' not in cookie.lower()
         ):
             cookie += '; Secure'
@@ -419,7 +419,7 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
             # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
             cookie_port = octoprinttunnel.port
             if not cookie_port:
-                cookie_port = 443 if request.is_secure() else 80
+                cookie_port = 443 if request_is_secure else 80
             tunnel_cookies.append(cookie.replace(f"P{m.groups()[0]}", f"P{cookie_port}"))
 
         tunnel_cookies.append(cookie)

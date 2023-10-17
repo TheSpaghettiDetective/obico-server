@@ -40,6 +40,8 @@ OVER_FREE_LIMIT_HTML = """
     <body>
         <center>
             <h1>Over Free Limit</h1>
+        </center>
+        <div>
             <hr>
             <h3 style="color: red;">
                 Your month-to-date usage of tunnel data is over
@@ -51,7 +53,7 @@ OVER_FREE_LIMIT_HTML = """
                 or wait for the reset of free limit at the start of
                 the next month.
             </h3>
-        </center>
+        </div>
     </body>
 </html>
 """

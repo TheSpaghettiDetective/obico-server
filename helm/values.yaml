@@ -40,7 +40,7 @@ mlApi:
     memoryTarget: 80
     maxReplicas: 3
   debugMode: true
-  image: obico/ml-api
+  image: thespaghettidetective/ml_api
   nodePort: false
 
 pushover:
@@ -63,7 +63,7 @@ tasks:
     minReplicas: 2
     memoryTarget: 80
     maxReplicas: 3
-  image: obico/server
+  image: thespaghettidetective/web
 
 telegram:
   secret: false
@@ -76,7 +76,7 @@ twilio:
   secret: false
 
 web:
-  image: obico/server
+  image: thespaghettidetective/web
   nodePort: false
   dbPvc:
     name: false

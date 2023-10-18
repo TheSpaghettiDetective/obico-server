@@ -183,3 +183,46 @@ jobs:
           file: ml_api/Dockerfile
           push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/ml:${{ env.GitVersion_FullSemVer_Docker }}
+
+  build-helm-package:
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend-image
+      - build-api-image
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.0
+
+      - uses: actions/download-artifacts@v3
+        with:
+          name: gitversion.properties
+
+      - name: Load Variables
+        run: cat gitversion.properties >> $GITHUB_ENV
+
+      - name: Update Web Image
+        run: sed -i "s#thespaghettidetective/web#thespaghettidetective/web:${{ env.GitVersion_FullSemVer }}#" helm/values.yaml
+
+      - name: Update ML API Image
+        run: |
+          set -e
+          sed -i "s#thespaghettidetective/ml_api#thespaghettidetective/ml_api:${{ env.GitVersion_FullSemVer }}#" helm/values.yaml
+
+      - name: Update Chart Version
+        run: |
+          set -e
+          sed -i "s#version: 0.0.0#version: ${{ env.GitVersion_FullSemVer }}#" helm/Chart.yaml
+
+      - name: Package Helm
+        run: helm package helm --version=${{ env.GitVersion_FullSemVer }}
+
+      - uses: actions/upload-artifacts@v3
+        with:
+          name: obico-helm-package
+          path: obico-${{ env.GitVersion_FullSemVer }}.tgz

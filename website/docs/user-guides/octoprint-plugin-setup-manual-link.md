@@ -6,7 +6,7 @@ sidebar_label: Manually Link OctoPrint
 
 Follow this guide in one of these 2 rare cases:
 
-* You are trying to re-link OctoPrint. There are only [a few reasons](/docs/user-guides/relink-octoprint/) why you need to re-link OctoPrint.
+* You are trying to re-link OctoPrint. There are only [a few reasons](/docs/user-guides/relink-printer/) why you need to re-link OctoPrint.
 * Your OctoPrint can't be identified at the last step in [Obico for OctoPrint setup guide](/docs/user-guides/octoprint-plugin-setup/). You don't need a 6-digit code if your OctoPrint can be identified and linked automatically.
 
 :::caution

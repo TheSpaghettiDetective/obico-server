@@ -16,6 +16,7 @@ Example:
 ### Parameters {#parameters}
 
 - `app`: Required. The name of your app.
+- `platform`: Optional. It can be "OctoPrint" or "Klipper". Default to "OctoPrint" if absent.
 - `printer_id`: Optional. If not provided, and the user has more than 1 printers linked to his/her Obico account, the page will list all printers for the user to choose from.
 - `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
 
@@ -73,3 +74,16 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 #### Response {#response-2}
 
 - `normalized_p`: The prediction value in the range of [0,1). < 0.33: Low. 0.33 - 0.66: Medium. > 0.66: High.
+
+### Printer System Info
+
+#### Endpoint
+
+`{TUNNEL_ENDPOINT}/_tsd_/dest_platform_info/`
+
+Currently only Moonraker is supported.
+
+#### Response
+
+- `server_ip`: The IP address of the Moonraker server.
+- `server_port`: The port the Moonraker server listens on.

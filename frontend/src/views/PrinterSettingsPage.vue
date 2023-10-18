@@ -602,7 +602,7 @@ export default {
     errorAlert() {
       this.$swal.Toast.fire({
         icon: 'error',
-        html: '<div>Can not update printer settings.</div><div>Get help from <a href="https://obico.io/discord">the Obico app discussion forum</a> if this error persists.</div>',
+        html: '<div>Can not update printer settings.</div><div>Get help from <a href="https://obico.io/discord">the Obico general support forum</a> or <a href="https://obico.io/discord">Obico for klipper support forum</a> if this error persists.</div>',
       })
     },
 

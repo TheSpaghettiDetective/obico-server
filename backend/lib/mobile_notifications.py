@@ -5,25 +5,19 @@ from django.utils.timezone import now
 from sentry_sdk import capture_exception
 
 from .utils import shortform_duration, shortform_localtime, get_rotated_pic_url
-from app.models import calc_normalized_p, MobileDevice
+from app.models import calc_normalized_p, MobileDevice, PrinterEvent
 from lib import cache
 
-PRINT_EVENTS = ['PrintResumed', 'PrintPaused', 'PrintDone', 'PrintCancelled', 'PrintStarted', 'FilamentChange']
+PRINT_EVENT_MAP = {
+    PrinterEvent.RESUMED: 'PrintResumed',
+    PrinterEvent.PAUSED: 'PrintPaused',
+    PrinterEvent.ENDED: 'PrintDone',
+    PrinterEvent.STARTED: 'PrintStarted',
+    PrinterEvent.FILAMENT_CHANGE: 'FilamentChange',
+}
 PRINT_PROGRESS_PUSH_INTERVAL = {'android': 60*5, 'ios': 60*20}
 
 firebase_app = firebase_admin.initialize_app(firebase_admin.credentials.Certificate(os.environ.get('FIREBASE_KEY'))) if os.environ.get('FIREBASE_KEY') else None
-
-
-def send_if_needed(_print, op_event, op_data):
-    if MobileDevice.objects.filter(user=_print.printer.user).count() < 1 or not _print.user.notification_enabled:
-        return
-
-    rotated_jpg_url = None      # Cache it as it's expensive to generate
-    if op_event.get('event_type') in PRINT_EVENTS:
-        rotated_jpg_url = get_rotated_pic_url(_print.printer)
-        send_print_event(_print, op_event.get('event_type'), rotated_jpg_url)
-
-    send_print_progress(_print, op_data, rotated_jpg_url)
 
 
 def send_failure_alert(_print, rotated_jpg_url, is_warning, print_paused):
@@ -39,7 +33,15 @@ def send_failure_alert(_print, rotated_jpg_url, is_warning, print_paused):
         send_to_device(data, mobile_device)
 
 
-def send_print_event(_print, event_type, rotated_jpg_url):
+def send_print_event(_print, printer_event, rotated_jpg_url):
+
+    event_type = PRINT_EVENT_MAP.get(printer_event.event_type)
+    ## HACK: 'PrintCancelled' was converted to 'ENDED'. Was probably a bad design
+    if printer_event.event_type == PrinterEvent.ENDED and printer_event.event_class == PrinterEvent.WARNING:
+        event_type = 'PrintCancelled'
+    if not _print.user.notification_enabled or not event_type:
+        return
+
     title = event_type.replace('Print', '')
     if event_type == 'FilamentChange':
         title = '🟠 Filament'
@@ -80,8 +82,11 @@ def send_heater_event(printer, event, heater_name, actual_temperature):
         send_to_device(data, mobile_device)
 
 
-def send_print_progress(_print, op_data, existed_rotated_jpg_url):
-    rotated_jpg_url = existed_rotated_jpg_url       # Cache it as it's expensive to generate
+def send_print_progress(_print, op_data):
+    if not _print.user.notification_enabled:
+        return
+
+    rotated_jpg_url = get_rotated_pic_url(_print.printer)
 
     pushed_platforms = set()
 

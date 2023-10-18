@@ -103,9 +103,6 @@ cd moonraker-obico
                                 >
                               </li>
                               <li>Follow the installation steps.</li>
-                              <li>
-                                At the end, you will be asked to enter a 6-digit verification code.
-                              </li>
                             </ol>
                           </div>
                         </div>
@@ -173,7 +170,7 @@ cd moonraker-obico
                       </div>
                     </tab-content>
                     <template v-if="discoveryEnabled">
-                      <tab-content v-if="targetOctoPrint" title="Link It!">
+                      <tab-content title="Link It!">
                         <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
                           <div class="discover-body">
@@ -189,7 +186,7 @@ cd moonraker-obico
                                   <span class="sr-only"></span>
                                 </div>
                                 <span class="sr-only"></span>Scanning...,
-                                {{ discoveredPrinters.length }} OctoPrint(s) found on your local
+                                {{ discoveredPrinters.length }} printer(s) found on your local
                                 network:
                               </div>
                               <discovered-printer
@@ -200,19 +197,20 @@ cd moonraker-obico
                               />
                             </div>
                             <div class="mt-5 mb-3">
-                              Can't find the OctoPrint you want to link? Switch to
+                              Can't find the printer you want to link? Switch to
                               <a class="link" @click="discoveryEnabled = false">Manual Setup</a>
                               instead.
                             </div>
                             <div v-if="discoveryCount >= 2" class="text-muted">
-                              <div>To link your OctoPrint, please make sure:</div>
+                              <div>To link your printer, please make sure:</div>
                               <ul>
-                                <li>The Raspberry Pi is powered on.</li>
+                                <li>The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.</li>
                                 <li>
-                                  The Raspberry Pi is connected to the same local network as your
+                                  The printer or SBC is connected to the same local network as your
                                   phone/computer.
                                 </li>
-                                <li>The Obico plugin version is 1.8.0 or above.</li>
+                                <li v-if="targetOctoPrint">Obico for OctoPrint is 1.8.0 or above.</li>
+                                <li v-else>Obico for Klipper is 1.5.0 or above.</li>
                               </ul>
                             </div>
                           </div>
@@ -482,10 +480,6 @@ export default {
   methods: {
     setTargetPlatform(platfrom) {
       this.targetPlatform = platfrom
-      if (platfrom === 'moonraker') {
-        this.discoveryEnabled = false
-      }
-
       this.$router.push(routes.printerWizardSetup + `?${window.location.search}`)
     },
     setSavingStatus(propName, status) {

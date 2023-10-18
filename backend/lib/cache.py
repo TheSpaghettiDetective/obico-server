@@ -6,6 +6,7 @@ import bson
 import json
 from typing import List, Optional
 
+from lib.url_signing import new_signed_url
 
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
@@ -95,6 +96,9 @@ def printer_status_delete(printer_id):
 
 def printer_pic_set(printer_id, mapping, ex=None):
     cleaned_mapping = {k: v for k, v in mapping.items() if v is not None}
+    img_url = cleaned_mapping.get('img_url', None)
+    if img_url is not None:
+        cleaned_mapping['img_url'] = new_signed_url(img_url)
     prefix = printer_key_prefix(printer_id) + 'pic'
     REDIS.hmset(prefix, cleaned_mapping)
     if ex:

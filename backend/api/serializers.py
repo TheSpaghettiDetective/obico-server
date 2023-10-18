@@ -112,6 +112,7 @@ class BaseGCodeFileSerializer(serializers.ModelSerializer):
     thumbnail1_url = SignedHmacUrlSerializer()
     thumbnail2_url = SignedHmacUrlSerializer()
     thumbnail3_url = SignedHmacUrlSerializer()
+    url = SignedHmacUrlSerializer()
 
     class Meta:
         model = GCodeFile

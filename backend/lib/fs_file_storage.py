@@ -16,8 +16,11 @@ def save_file_obj(dest_path, file_obj, container, content_type):
         copyfileobj(file_obj, dest_file)
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
-    full_url = site.build_full_url(uri)
-    return settings.INTERNAL_MEDIA_HOST + uri, new_signed_url(full_url)
+    internal_url = new_signed_url(settings.INTERNAL_MEDIA_HOST + uri)
+    external_url = new_signed_url(site.build_full_url(uri))
+    if external_url.endswith('.jpg') or internal_url.endswith('.jpg'):
+        print("ERROR: returning an unsigned URL from save_file_obj")
+    return internal_url, external_url
 
 def list_dir(dir_path, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dir_path)

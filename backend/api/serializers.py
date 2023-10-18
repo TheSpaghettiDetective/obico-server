@@ -344,6 +344,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
 
 class PrinterEventSerializer(serializers.ModelSerializer):
+    image_url = SignedHmacUrlSerializer()
 
     class Meta:
         model = PrinterEvent

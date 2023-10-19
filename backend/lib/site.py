@@ -10,18 +10,7 @@ def build_full_url(url):
     return '{}{}/{}'.format(protocol, domain_name, normalized_url)
 
 
-def _get_this_site_url() -> str:
-    """
-    Returns domain in the form of <protocol><hostname>:<port>
-
-    For example: https://example.com:443
-    """
-    protocol = 'https://' if settings.SITE_USES_HTTPS else 'http://'
-    domain_name = Site.objects.first().domain
-    return '{}{}'.format(protocol, domain_name)
-
-
-this_site_url = _get_this_site_url()
+this_site_url = build_full_url('')
 
 
 def url_points_to_this_site(url: str) -> bool:

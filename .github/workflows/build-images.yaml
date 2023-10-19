@@ -264,7 +264,7 @@ jobs:
       - name: Package Helm
         run: |
           set -e
-          helm dependency install
+          helm dependency update
           helm package helm --version=${{ env.GitVersion_FullSemVer }}
 
       - uses: actions/upload-artifact@v3

@@ -264,7 +264,7 @@ jobs:
       - name: Package Helm
         run: helm package helm --version=${{ env.GitVersion_FullSemVer }}
 
-      - uses: actions/upload-artifacts@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: obico-helm-package
           path: obico-${{ env.GitVersion_FullSemVer }}.tgz

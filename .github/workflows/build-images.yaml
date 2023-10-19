@@ -166,7 +166,7 @@ jobs:
             thespaghettidetective/server:base
             ghcr.io/${{ env.REPOSITORY_LC }}/server:base-1.13
             ghcr.io/${{ env.REPOSITORY_LC }}/server:base
-          context: backend
+          context: .
           file: backend/Dockerfile
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/server:${{ env.GitVersion_FullSemVer_Docker }}
           outputs: type=docker,dest=/tmp/web.image.tar

@@ -241,7 +241,7 @@ jobs:
         with:
           version: v3.13.0
 
-      - uses: actions/download-artifacts@v3
+      - uses: actions/download-artifact@v3
         with:
           name: gitversion.properties
 
@@ -321,6 +321,44 @@ jobs:
           set -e
           docker load --input /tmp/web.image.tar
           docker image ls -a
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: obico-helm-package
+
+      - uses: azure/setup-helm@v3
+        with:
+          version: '3.13.0'
+
+      - name: Create KinD Cluster
+        uses: helm/kind-action@v1.5.0
+
+      - name: Confirm Cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - id: run-helm
+        name: Run Charts
+        run: helm install helm obico-${{ env.GitVersion_FullSemVer }}.tgz --wait --timeout=200s
+
+      - name: Logging Results
+        if: failure()
+        run: |
+          set -e
+          
+          mkdir -p results/logs
+          
+          kubectl describe all > results/describe.yaml
+          
+          kubectl get pod --no-headers -o custom-columns=":metadata.name" | xargs -I {} sh -c 'kubectl logs "$1" --all-containers=true > "results/logs/$1.log" || :' -- {}
+          kubectl get pod --no-headers -o custom-columns=":metadata.name" | xargs -I {} sh -c 'kubectl logs "$1" --all-containers=true --previous > "results/logs/$1.previous.log" || :' -- {}
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+            name: results
+            path: results
 
   upload-packages:
     #if: github.event_name != 'pull_request'

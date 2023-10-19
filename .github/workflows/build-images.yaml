@@ -79,8 +79,15 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_LC }}/web:base
           context: backend
           file: backend/Dockerfile.base
-          push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
+          outputs: type=docker,dest=/tmp/web-base.image.tar
+          push: false
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-base.image.tar
+          path: /tmp/web-base.image.tar
 
   build-base-ml-image:
     runs-on: ubuntu-latest
@@ -96,13 +103,6 @@ jobs:
       - name: Load Variables
         run: cat gitversion.properties >> $GITHUB_ENV
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build and Push
         uses: docker/build-push-action@v5
         with:
@@ -113,8 +113,15 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_LC }}/ml_api_base
           context: ml_api
           file: ml_api/Dockerfile.base_amd64
-          push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/ml_api_base:base-${{ env.GitVersion_FullSemVer_Docker }}
+          outputs: type=docker,dest=/tmp/ml-api-base.image.tar
+          push: false
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ml-api-base.image.tar
+          path: /tmp/ml-api-base.image.tar
 
   build-backend-image:
     runs-on: ubuntu-latest
@@ -130,14 +137,19 @@ jobs:
       - name: Load Variables
         run: cat gitversion.properties >> $GITHUB_ENV
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Download Web Base
+        uses: actions/download-artifact@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: web-base.image.tar
+          path: /tmp
 
-      - name: Build and Push
+      - name: Load Web Base
+        run: |
+          set -e
+          docker load --input /tmp/web-base.image.tar
+          docker image ls -a   
+
+      - name: Build and export
         uses: docker/build-push-action@v5
         with:
           cache-from: |
@@ -147,8 +159,15 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_LC }}/server:base
           context: backend
           file: backend/Dockerfile
-          push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/server:${{ env.GitVersion_FullSemVer_Docker }}
+          outputs: type=docker,dest=/tmp/web.image.tar
+          push: false
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: web.image.tar
+          path: /tmp/web.image.tar
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -164,14 +183,19 @@ jobs:
       - name: Load Variables
         run: cat gitversion.properties >> $GITHUB_ENV
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Download ML API Base
+        uses: actions/download-artifact@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: ml-api-base.image.tar
+          path: /tmp
 
-      - name: Build and Push
+      - name: Load ML API Base
+        run: |
+          set -e
+          docker load --input /tmp/ml-api-base.image.tar
+          docker image ls -a
+
+      - name: Build and export
         uses: docker/build-push-action@v5
         with:
           cache-from: |
@@ -181,8 +205,14 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_LC }}/ml:base
           context: ml_api
           file: ml_api/Dockerfile
-          push: true
           tags: ghcr.io/${{ env.REPOSITORY_LC }}/ml:${{ env.GitVersion_FullSemVer_Docker }}
+          outputs: type=docker,dest=/tmp/ml-api.image.tar
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ml-api.image.tar
+          path: /tmp/ml-api.image.tar
 
   build-helm-package:
     runs-on: ubuntu-latest
@@ -226,3 +256,167 @@ jobs:
         with:
           name: obico-helm-package
           path: obico-${{ env.GitVersion_FullSemVer }}.tgz
+
+  test-helm-package:
+    runs-on: ubuntu-latest
+    needs:
+      - build-helm-package
+    steps:
+      - name: Download ML API Base
+        uses: actions/download-artifact@v3
+        with:
+          name: ml-api-base.image.tar
+          path: /tmp
+
+      - name: Download Web Base
+        uses: actions/download-artifact@v3
+        with:
+          name: web-base.image.tar
+          path: /tmp
+
+      - name: Download ML API
+        uses: actions/download-artifact@v3
+        with:
+          name: ml-api.image.tar
+          path: /tmp
+
+      - name: Download Web
+        uses: actions/download-artifact@v3
+        with:
+          name: web.image.tar
+          path: /tmp
+
+      - name: Load ML API Base
+        run: |
+          set -e
+          docker load --input /tmp/ml-api-base.image.tar
+          docker image ls -a
+
+      - name: Load Web Base
+        run: |
+          set -e
+          docker load --input /tmp/web-base.image.tar
+          docker image ls -a    
+
+      - name: Load ML API
+        run: |
+          set -e
+          docker load --input /tmp/ml-api.image.tar
+          docker image ls -a
+
+      - name: Load Web
+        run: |
+          set -e
+          docker load --input /tmp/web.image.tar
+          docker image ls -a
+
+  upload-packages:
+    #if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs:
+      - test-helm-package
+    steps:
+      - name: Download ML API
+        uses: actions/download-artifact@v3
+        with:
+          name: ml-api.image.tar
+          path: /tmp
+
+      - name: Download Web
+        uses: actions/download-artifact@v3
+        with:
+          name: web.image.tar
+          path: /tmp
+
+      - name: Load ML API
+        run: |
+          set -e
+          docker load --input /tmp/ml-api.image.tar
+          docker image ls -a
+
+      - name: Load Web
+        run: |
+          set -e
+          docker load --input /tmp/web.image.tar
+          docker image ls -a
+
+      - name: Download ML API Base
+        uses: actions/download-artifact@v3
+        with:
+          name: ml-api-base.image.tar
+          path: /tmp
+
+      - name: Load ML API Base
+        run: |
+          set -e
+          docker load --input /tmp/ml-api-base.image.tar
+          docker image ls -a
+
+      - name: Download Web Base
+        uses: actions/download-artifact@v3
+        with:
+          name: web-base.image.tar
+          path: /tmp
+
+      - name: Load Web Base
+        run: |
+          set -e
+          docker load --input /tmp/web-base.image.tar
+          docker image ls -a
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          cache-from: |
+            thespaghettidetective/web:base-1.13
+            thespaghettidetective/web:base
+            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-1.13
+            ghcr.io/${{ env.REPOSITORY_LC }}/web:base
+          context: backend
+          file: backend/Dockerfile.base
+          tags: ghcr.io/${{ env.REPOSITORY_LC }}/web:base-${{ env.GitVersion_FullSemVer_Docker }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          cache-from: |
+            thespaghettidetective/ml_api_base:1.3
+            thespaghettidetective/ml_api_base
+            ghcr.io/${{ env.REPOSITORY_LC }}/ml_api_base:1.3
+            ghcr.io/${{ env.REPOSITORY_LC }}/ml_api_base
+          context: ml_api
+          file: ml_api/Dockerfile.base_amd64
+          tags: ghcr.io/${{ env.REPOSITORY_LC }}/ml_api_base:base-${{ env.GitVersion_FullSemVer_Docker }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          cache-from: |
+            thespaghettidetective/server:base-1.13
+            thespaghettidetective/server:base
+            ghcr.io/${{ env.REPOSITORY_LC }}/server:base-1.13
+            ghcr.io/${{ env.REPOSITORY_LC }}/server:base
+          context: backend
+          file: backend/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPOSITORY_LC }}/server:${{ env.GitVersion_FullSemVer_Docker }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          cache-from: |
+            thespaghettidetective/ml:base-1.13
+            thespaghettidetective/ml:base
+            ghcr.io/${{ env.REPOSITORY_LC }}/ml:base-1.13
+            ghcr.io/${{ env.REPOSITORY_LC }}/ml:base
+          context: ml_api
+          file: ml_api/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPOSITORY_LC }}/ml:${{ env.GitVersion_FullSemVer_Docker }}

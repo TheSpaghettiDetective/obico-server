@@ -18,8 +18,6 @@ def save_file_obj(dest_path, file_obj, container, content_type):
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
     internal_url = new_signed_url(settings.INTERNAL_MEDIA_HOST + uri)
     external_url = new_signed_url(site.build_full_url(uri))
-    if external_url.endswith('.jpg') or internal_url.endswith('.jpg'):
-        print("ERROR: returning an unsigned URL from save_file_obj")
     return internal_url, external_url
 
 def list_dir(dir_path, container):

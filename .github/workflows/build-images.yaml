@@ -262,7 +262,10 @@ jobs:
           sed -i "s#version: 0.0.0#version: ${{ env.GitVersion_FullSemVer }}#" helm/Chart.yaml
 
       - name: Package Helm
-        run: helm package helm --version=${{ env.GitVersion_FullSemVer }}
+        run: |
+          set -e
+          helm dependency install
+          helm package helm --version=${{ env.GitVersion_FullSemVer }}
 
       - uses: actions/upload-artifact@v3
         with:

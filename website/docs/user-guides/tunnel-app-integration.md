@@ -13,6 +13,10 @@ Example:
 
 `https://app.obico.io/tunnels/new/`
 
+#### HTTP Verb
+
+`GET`
+
 ### Parameters {#parameters}
 
 - `app`: Required. The name of your app.
@@ -45,6 +49,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Tunnel usage API {#tunnel-usage-api}
 
+#### HTTP Verb
+
+`GET`
+
 #### Endpoint {#endpoint}
 
 `{TUNNEL_ENDPOINT}/_tsd_/tunnelusage/`
@@ -57,6 +65,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Webcam snapshot API {#webcam-snapshot-api}
 
+#### HTTP Verb
+
+`GET`
+
 #### Endpoint {#endpoint-1}
 
 `{TUNNEL_ENDPOINT}/_tsd_/webcam/0/`
@@ -66,6 +78,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 - `snapshot`: The url to fetch the most recent webcam snapshot (in JPEG). No authentication is required.
 
 ### Failure prediction API {#failure-prediction-api}
+
+#### HTTP Verb
+
+`GET`
 
 #### Endpoint {#endpoint-2}
 
@@ -77,6 +93,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Printer System Info
 
+#### HTTP Verb
+
+`GET`
+
 #### Endpoint
 
 `{TUNNEL_ENDPOINT}/_tsd_/dest_platform_info/`
@@ -87,3 +107,4 @@ Currently only Moonraker is supported.
 
 - `server_ip`: The IP address of the Moonraker server.
 - `server_port`: The port the Moonraker server listens on.
+- `linked_name`: The name the user gave to the printer in Obico.

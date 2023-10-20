@@ -13,36 +13,26 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-def calculate_hmac_digest(path: str, valid_until: int):
-    """Returns base64 encoded digest given a 'path' and 'valid_until' timestamp"""
-    if None in [path, valid_until]:
-        raise ValueError("Must supply 'path' and 'valid_until' parameters to calculate an hmac digest")
-    hmac_msg: str = str({
-        'path': path,
-        'valid_until': valid_until
-    })
+def calculate_hmac_digest(path: str):
+    """Returns base64 encoded digest given a 'path'"""
     digest = hmac.digest(
         key=settings.SECRET_KEY.encode(),
-        msg=hmac_msg.encode(),
+        msg=path.encode(),
         digest=hashlib.sha256
     )
     return base64.urlsafe_b64encode(str(digest).encode()).decode()
 
 
-def new_signed_url(url_str: str, valid_until: Optional[Union[timezone.datetime, int]] = None) -> str:
+def new_signed_url(url_str: str) -> str:
     """
-    Signs a URL based on a given path and valid_until datetime/timestamp.
+    Signs a URL based on a given
 
     Signature is appended in the form of URL parameters in the query string. Note that
     the entire query string will be replaced (everything after '?' in the URL).
     """
-    if valid_until is None:
-        valid_until = round((timezone.now() + timedelta(hours=settings.HMAC_SIGNED_URL_EXPIRATION_HOURS)).timestamp())
-    elif type(valid_until) is timezone.datetime:
-        valid_until = round(valid_until.timestamp())
     parsed_url = urlparse(url_str)
-    digest = calculate_hmac_digest(parsed_url.path, valid_until)
-    signed_url = parsed_url._replace(query=f"valid_until={valid_until}&digest={digest}")
+    digest = calculate_hmac_digest(parsed_url.path)
+    signed_url = parsed_url._replace(query=f"digest={digest}")
     return urlunparse(signed_url)
 
 
@@ -53,7 +43,6 @@ class HmacSignedUrl:
 
     # Calculated fields are set during __post_init__
     path: str = field(init=False)
-    valid_until: int = field(init=False)
     supplied_digest: str = field(init=False)
 
     # Internal fields (don't show in repr)
@@ -65,10 +54,8 @@ class HmacSignedUrl:
         self._url_params = parse_qs(self._parsed_url.query)
         self.path = self._parsed_url.path
         self.supplied_digest = self._get_single_url_param('digest', None)
-        _valid_until = self._get_single_url_param('valid_until', None)
-        if None in [self.supplied_digest, _valid_until]:
-            raise ValueError("Must supply a 'digest' and 'valid_until' parameter to check authorization")
-        self.valid_until = int(_valid_until)
+        if self.supplied_digest is None:
+            raise ValueError("Must supply a 'digest' parameter to check authorization")
 
     def _get_single_url_param(self, key: str, default=None) -> str:
         """
@@ -82,8 +69,5 @@ class HmacSignedUrl:
 
     def is_authorized(self) -> bool:
         """Returns True if the supplied digest matches the calculated digest, else False"""
-        if self.valid_until <= round(timezone.now().timestamp()):
-            LOGGER.warning("Denied access to expired HMAC-signed URL")
-            return False
-        calculated_digest = calculate_hmac_digest(path=self.path, valid_until=self.valid_until)
+        calculated_digest = calculate_hmac_digest(path=self.path)
         return hmac.compare_digest(self.supplied_digest, calculated_digest)

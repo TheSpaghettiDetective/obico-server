@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.views.generic.base import RedirectView
 
 from .views import web_views

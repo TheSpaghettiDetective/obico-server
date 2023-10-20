@@ -10,4 +10,6 @@ ADD ./requirements.txt /app
 RUN pip install -r requirements.txt
 ADD ./ /app
 
+RUN python manage.py collectstatic -v 2 --noinput
+
 ENTRYPOINT ["/app/entrypoint.sh"]

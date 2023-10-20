@@ -2,7 +2,7 @@ from typing import List
 
 from django.core.management.base import BaseCommand
 
-from app.models import Print, PrinterEvent, GCodeFile, models
+from app.models import Print, PrinterEvent, GCodeFile, models, PrintShotFeedback
 from lib.url_signing import new_signed_url
 from lib.utils import printProgressBar
 
@@ -38,6 +38,10 @@ class Command(BaseCommand):
         )
         self._resign_urls_on_model(
             obj=PrinterEvent,  # type: ignore
+            url_fields=['image_url']
+        )
+        self._resign_urls_on_model(
+            obj=PrintShotFeedback,  # type: ignore
             url_fields=['image_url']
         )
 

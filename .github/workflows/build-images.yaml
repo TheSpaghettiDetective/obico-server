@@ -75,7 +75,9 @@ jobs:
           context: backend
           file: backend/Dockerfile.base
           push: true
-          tags: ghcr.io/${{ env.REPOSITORY_LC }}/web-base:${{ env.GitVersion_FullSemVer_Docker }}
+          tags: |
+            ghcr.io/${{ env.REPOSITORY_LC }}/web-base:${{ env.GitVersion_FullSemVer_Docker }}
+            ghcr.io/${{ env.REPOSITORY_LC }}/web-base:dev-django-4.2
 
   build-base-ml-image:
     runs-on: ubuntu-latest

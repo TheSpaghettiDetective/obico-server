@@ -6,7 +6,6 @@ import bson
 import json
 from typing import List, Optional
 
-
 REDIS = redis.Redis.from_url(
     settings.REDIS_URL, charset="utf-8", decode_responses=True)
 

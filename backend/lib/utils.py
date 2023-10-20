@@ -130,19 +130,25 @@ def get_rotated_pic_url(printer, jpg_url=None, force_snapshot=False):
                 to_long_term_storage=False
             )
 
-def safe_path_join(base_dir: str, relative_dir: str):
+
+# https://stackoverflow.com/questions/3173320/text-progress-bar-in-terminal-with-block-characters
+def printProgressBar(iteration, total, prefix='Progress:', suffix='Complete', decimals=1, length=50, fill='X', printEnd=""):
     """
-    Joins a base_dir and relative_dir while attempting to prevent directory traversal attacks (../).
-
-    NOTE: base_dir MUST be a safe value (not supplied by the user)
-
-    See https://stackoverflow.com/a/45190125
-
-    Args:
-        base_dir: SAFE base directory where file should be located
-        relative_dir: User-supplied relative directory/filename
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
-    full_path = os.path.join(base_dir, relative_dir.strip('/'))
-    if not os.path.commonprefix([base_dir, full_path]) == base_dir:
-        raise Exception("tried to access file outside base directory!")
-    return full_path
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd, flush=True)
+    # Print New Line on Complete
+    if iteration == total:
+        print()

@@ -279,7 +279,7 @@ def retrieve_klipper_host_info(octoprinttunnel):
     resp = _tunnel_http_req_and_wait_for_resp(octoprinttunnel,  "/server/config", "get", {}, b'')
     server_port = json.loads(resp.content.decode('utf-8')).get('result', {}).get('config', {}).get('server', {}).get('port')
 
-    return {'server_ip': ip_addr, 'server_port': server_port}
+    return {'server_ip': ip_addr, 'server_port': server_port, 'linked_name': octoprinttunnel.printer.name}
 
 @save_static_etag
 @condition(etag_func=fetch_static_etag)

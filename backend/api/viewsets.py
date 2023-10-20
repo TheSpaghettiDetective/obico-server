@@ -1,4 +1,3 @@
-from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 import os
@@ -28,7 +27,6 @@ from datetime import timedelta, datetime
 from django.utils.dateparse import parse_datetime
 from django.db.models.functions import TruncDay
 from django.db.models import Sum, Max, Count, fields, Case, Value, When
-
 
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
@@ -240,7 +238,7 @@ class PrintViewSet(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])
-    def prediction_json(self, request: WSGIRequest, pk) -> Response:
+    def prediction_json(self, request, pk) -> Response:
         p: Print = get_object_or_404(
             self.get_queryset().select_related('printer'),
             pk=pk)
@@ -253,9 +251,6 @@ class PrintViewSet(
             'If-Modified-Since': request.headers.get('if-modified-since'),
             'If-None-Match': request.headers.get('if-none-match'),
         }
-        # Add original request headers to pass through user authentication (if same host)
-        if p.prediction_json_url.startswith(f"{request.scheme}://{request.get_host()}"):
-            headers = {**headers, **request.headers}
 
         r = requests.get(url=p.prediction_json_url,
                          timeout=PREDICTION_FETCH_TIMEOUT,

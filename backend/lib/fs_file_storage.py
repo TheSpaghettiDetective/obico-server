@@ -4,6 +4,8 @@ from os import path
 from shutil import copyfileobj, rmtree
 
 from lib import site
+from lib.url_signing import new_signed_url
+
 
 def save_file_obj(dest_path, file_obj, container, content_type):
     fqp = path.join(settings.MEDIA_ROOT, container, dest_path)
@@ -14,7 +16,9 @@ def save_file_obj(dest_path, file_obj, container, content_type):
         copyfileobj(file_obj, dest_file)
 
     uri = '{}{}/{}'.format(settings.MEDIA_URL, container, dest_path)
-    return settings.INTERNAL_MEDIA_HOST + uri, site.build_full_url(uri)
+    internal_url = new_signed_url(settings.INTERNAL_MEDIA_HOST + uri)
+    external_url = new_signed_url(site.build_full_url(uri))
+    return internal_url, external_url
 
 def list_dir(dir_path, container):
     fqp = path.join(settings.MEDIA_ROOT, container, dir_path)

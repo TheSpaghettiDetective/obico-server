@@ -34,7 +34,7 @@ class Command(BaseCommand):
         )
         self._resign_urls_on_model(
             obj=Print,  # type: ignore
-            url_fields=['video_url', 'tagged_video_url', 'poster_url']
+            url_fields=['video_url', 'tagged_video_url', 'poster_url', 'prediction_json_url']
         )
         self._resign_urls_on_model(
             obj=PrinterEvent,  # type: ignore

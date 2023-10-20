@@ -6,6 +6,3 @@ services:
     entrypoint: ""
     environment:
       DEBUG: ${DEBUG:-True}
-    # Bind mount project to PyCharm remote debugger's default working directory
-    volumes:
-      - ./backend:/opt/project/backend

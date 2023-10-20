@@ -22,19 +22,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 VERSION = os.environ.get('VERSION', '')
 
+DEFAULT_SECRET_KEY = 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
+if not SECRET_KEY:
+    SECRET_KEY = DEFAULT_SECRET_KEY
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'tsd_sessionid'
-
-# How long before HMAC signed URLs expire
-HMAC_SIGNED_URL_EXPIRATION_HOURS = 1
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool('DEBUG', False)

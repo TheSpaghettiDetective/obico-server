@@ -12,7 +12,7 @@ Celestrius will watch your print during the first layer to make sure nothing fis
 
 In order to make this work, Celestrius needs to be able to know when the first layer is printing and when it finishes. To make this happen, you'll need to adjust your slicer to tell it to pass along the layer information within the G-code file.
 
-## **Choose your slicer below and make the changes detailed in the section for your slicer**
+## **Choose your slicer below and make the changes detailed in the section for your slicer** {#choose-your-slicer-below-and-make-the-changes-detailed-in-the-section-for-your-slicer}
 
 
 <Tabs>

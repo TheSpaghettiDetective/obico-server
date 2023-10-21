@@ -13,7 +13,7 @@ Example:
 
 `https://app.obico.io/tunnels/new/`
 
-#### HTTP Verb
+#### HTTP Verb {#http-verb}
 
 `GET`
 
@@ -49,7 +49,7 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Tunnel usage API {#tunnel-usage-api}
 
-#### HTTP Verb
+#### HTTP Verb {#http-verb-1}
 
 `GET`
 
@@ -65,7 +65,7 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Webcam snapshot API {#webcam-snapshot-api}
 
-#### HTTP Verb
+#### HTTP Verb {#http-verb-2}
 
 `GET`
 
@@ -79,7 +79,7 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Failure prediction API {#failure-prediction-api}
 
-#### HTTP Verb
+#### HTTP Verb {#http-verb-3}
 
 `GET`
 
@@ -91,19 +91,19 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 - `normalized_p`: The prediction value in the range of [0,1). < 0.33: Low. 0.33 - 0.66: Medium. > 0.66: High.
 
-### Printer System Info
+### Printer System Info {#printer-system-info}
 
-#### HTTP Verb
+#### HTTP Verb {#http-verb-4}
 
 `GET`
 
-#### Endpoint
+#### Endpoint {#endpoint}
 
 `{TUNNEL_ENDPOINT}/_tsd_/dest_platform_info/`
 
 Currently only Moonraker is supported.
 
-#### Response
+#### Response {#response}
 
 - `server_ip`: The IP address of the Moonraker server.
 - `server_port`: The port the Moonraker server listens on.

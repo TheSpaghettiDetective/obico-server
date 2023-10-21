@@ -4,7 +4,7 @@ title: Super Detection API
 
 The APIs documented on this page are called "super APIs" because they are authenticated by partner's "super auth token".
 
-## Authentication
+## Authentication {#authentication}
 
 All APIs are authenticated by the authentication token in the HTTP request header:
 
@@ -16,12 +16,12 @@ All APIs are authenticated by the authentication token in the HTTP request heade
 Please contact Obico team to obtain your super auth token.
 :::
 
-## Endpoint
+## Endpoint {#endpoint}
 
 - `https://app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
 - `https://app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
 
-## POST `/ent/partners/api/predict/`
+## POST `/ent/partners/api/predict/` {#post-entpartnersapipredict}
 
 ### Request {#request}
 
@@ -38,11 +38,11 @@ This POST request should be sent as `multipart/form-data` format.
 
 ### Response {#response}
 
-#### Status code: `200`
+#### Status code: `200` {#status-code-200}
 
 API request was processed successfully.
 
-#### Body
+#### Body {#body}
 
 ```
 {
@@ -84,11 +84,11 @@ In Obico open-source server, the way these temporal stats are used can be simpli
 All these "magic numbers", such as the rolling window sizes, or thresholds such as 0.36 or 0.78, should be considered as hyper-parameters. You are highly recommended to go through the hyper-parameters tuning process to find the optimal values for them.
 :::
 
-#### Status code: `400`
+#### Status code: `400` {#status-code-400}
 
 API request was NOT processed successfully for other reasons, such as missing required parameters.
 
-#### Body
+#### Body {#body-1}
 
 ```
 {
@@ -96,11 +96,11 @@ API request was NOT processed successfully for other reasons, such as missing re
 }
 ```
 
-#### Status code: `429`
+#### Status code: `429` {#status-code-429}
 
 API request was NOT processed successfully because of rate throttling.
 
-#### Body
+#### Body {#body-2}
 
 ```
 {

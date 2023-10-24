@@ -29,7 +29,8 @@ VERSION = os.environ.get('VERSION', '')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_REFRESH_INTERVAL = 60 * 60 * 24  # Refresh session cookies once every 24 hours
+SESSION_SAVE_EVERY_REQUEST = False
 SESSION_COOKIE_NAME = 'tsd_sessionid'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -88,11 +89,10 @@ MIDDLEWARE = [
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'nplusone.ext.django.NPlusOneMiddleware',
-    'app.middleware.SessionHostDomainMiddleware',
+    'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

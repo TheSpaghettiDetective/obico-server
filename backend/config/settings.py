@@ -267,6 +267,7 @@ WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
     'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
     'flv', 'woff', 'woff2', 'map'  # added map
 )
+WHITENOISE_AUTOREFRESH = get_bool('WHITENOISE_AUTOREFRESH', False)
 
 SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)

@@ -23,15 +23,15 @@ services:
     depends_on:
       - web
 
-  db:
-    image: postgres:14.2-bullseye
-    restart: unless-stopped
-    shm_size: 512MB
-    command: -c max_connections=500
-    expose:
-      - 5432
-    environment:
-      POSTGRES_PASSWORD: postgres
+#  db:
+#    image: postgres:14.2-bullseye
+#    restart: unless-stopped
+#    shm_size: 512MB
+#    command: -c max_connections=500
+#    expose:
+#      - 5432
+#    environment:
+#      POSTGRES_PASSWORD: postgres
 #    volumes:
 #      - postgres_socket:/var/run/postgresql
 

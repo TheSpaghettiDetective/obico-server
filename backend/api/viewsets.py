@@ -99,7 +99,7 @@ class PrinterViewSet(
         else:
             qs = Printer.objects.filter(user=self.request.user)
 
-        return qs.select_related('current_print', 'printerprediction')
+        return qs.select_related('current_print', 'printerprediction', 'user')
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):

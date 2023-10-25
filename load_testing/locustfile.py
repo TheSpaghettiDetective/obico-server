@@ -7,6 +7,7 @@ from requests.auth import HTTPBasicAuth
 
 # import logging
 # from http.client import HTTPConnection
+
 # HTTPConnection.debuglevel = 1
 # logging.basicConfig()
 # logging.getLogger().setLevel(logging.DEBUG)
@@ -39,14 +40,20 @@ def admin_login(environment: Environment, **kwargs):
     csrf_token = response.cookies.get('csrftoken', None)
     if csrf_token is None:
         raise ValueError("Could not get a valid csrftoken")
-    admin_user.client.post(
+    response = admin_user.client.post(
         url="/accounts/login/",
         data={
             'login': TEST_ADMIN_CREDENTIALS[0],
             'password': TEST_ADMIN_CREDENTIALS[1],
             'csrfmiddlewaretoken': csrf_token
         },
-    ).raise_for_status()
+        allow_redirects=False
+    )
+    response.raise_for_status()
+    tsd_sessionid = response.cookies.get('tsd_sessionid', None)
+    admin_user.client.cookies['tsd_sessionid'] = tsd_sessionid
+    if tsd_sessionid is None:
+        raise ValueError("Did not get a valid session ID")
     response = admin_user.client.get(f"/api/v1/printers/{TEST_PRINTER_ID}/")
     response.raise_for_status()
     global AUTH_TOKEN
@@ -74,8 +81,10 @@ class PrinterUser(HttpUser):
         self.auth_token = AUTH_TOKEN
         self.image_content = IMAGE_CONTENT
         if None in [self.auth_token, self.image_content]:
-            print(f"AUTH_TOKEN: {AUTH_TOKEN}")
-            print(f"IMAGE_CONTENT: {IMAGE_CONTENT}")
+            if self.auth_token is None:
+                print(f"AUTH_TOKEN: {self.auth_token}")
+            if self.image_content is None:
+                print(f"IMAGE_CONTENT: {IMAGE_CONTENT}")
             raise ValueError("Must set a valid auth_token and image_content before proceeding")
 
     @task

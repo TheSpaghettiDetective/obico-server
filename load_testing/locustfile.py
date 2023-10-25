@@ -87,8 +87,6 @@ class PrinterUser(HttpUser):
 class WebUser(HttpUser):
     auth_token = ''
     environment: Environment
-    # Comment out the following line to include WebUser tasks
-    abstract = True
 
     def on_start(self):
         self.login()

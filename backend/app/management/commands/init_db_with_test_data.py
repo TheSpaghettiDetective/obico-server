@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Drops all database content and loads test data.'
     user = None
 
-    def create_printers(self, count=100):
+    def create_printers(self, count=1):
         objects = [
             Printer(
                 name=f"Printer {i}",

@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'pushbullet',
     'corsheaders',
     'safedelete',
-    'nplusone.ext.django',
+    # 'nplusone.ext.django',  # Only include this if DEBUG=True
     'qr_code',
     'app',  # app has to come before allauth for template override to work
     "channels_presence",
@@ -89,7 +89,7 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'nplusone.ext.django.NPlusOneMiddleware',
+    # 'nplusone.ext.django.NPlusOneMiddleware',  # Only add this if DEBUG=True
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -104,13 +104,17 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
+    # Add debug toolbar
     gzip_index = MIDDLEWARE.index('django.middleware.gzip.GZipMiddleware')
     MIDDLEWARE.insert(gzip_index+1, "debug_toolbar.middleware.DebugToolbarMiddleware")
     INSTALLED_APPS.append("debug_toolbar")
-
     import socket  # only if you haven't already imported this
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+    # Add nplusone
+    INSTALLED_APPS += 'nplusone.ext.django'
+    MIDDLEWARE.insert(gzip_index+1, 'nplusone.ext.django.NPlusOneMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 

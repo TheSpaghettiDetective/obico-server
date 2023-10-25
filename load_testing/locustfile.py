@@ -87,6 +87,8 @@ class PrinterUser(HttpUser):
 class WebUser(HttpUser):
     auth_token = ''
     environment: Environment
+    # Comment out the following line to include WebUser tasks
+    abstract = True
 
     def on_start(self):
         self.login()
@@ -121,13 +123,13 @@ class WebUser(HttpUser):
             print(f"Finally got a session after {retries} retries")
 
     @tag('web')
-    @task
+    @task(1)
     def printers(self):
         response = self.client.get('/api/v1/printers/')
         response.raise_for_status()
 
     @tag('web')
-    @task
+    @task(2)
     def printer(self):
         response = self.client.get('/api/v1/printers/1/')
         response.raise_for_status()

@@ -1,7 +1,9 @@
 import time
-from locust import HttpUser, TaskSet, events, task, between, run_single_user
+import random
+
+from locust import HttpUser, events, task, run_single_user, tag, between
+import greenlet
 from locust.env import Environment
-from requests.auth import HTTPBasicAuth
 
 # START DEBUG SETTINGS
 
@@ -17,11 +19,13 @@ from requests.auth import HTTPBasicAuth
 
 # END DEBUG SETTINGS
 
-IMAGE_CONTENT = None
-AUTH_TOKEN = None
+# Test account credentials and target printer_id
 TEST_ADMIN_CREDENTIALS = ('test@test.com', 'test')
 TEST_PRINTER_ID = 1
 
+# Init global variables
+IMAGE_CONTENT = None
+AUTH_TOKEN = None
 
 @events.test_start.add_listener
 def get_image_content(environment: Environment, **kwargs):
@@ -31,34 +35,17 @@ def get_image_content(environment: Environment, **kwargs):
 
 
 @events.test_start.add_listener
-def admin_login(environment: Environment, **kwargs):
+def set_printer_auth_token(environment: Environment, **kwargs):
     """Log in as admin user so we can query the web view APIs"""
     print("Logging in admin")
-    HttpUser.host = environment.host
-    admin_user = HttpUser(environment=environment)
-    response = admin_user.client.get("/accounts/login/")
-    csrf_token = response.cookies.get('csrftoken', None)
-    if csrf_token is None:
-        raise ValueError("Could not get a valid csrftoken")
-    response = admin_user.client.post(
-        url="/accounts/login/",
-        data={
-            'login': TEST_ADMIN_CREDENTIALS[0],
-            'password': TEST_ADMIN_CREDENTIALS[1],
-            'csrfmiddlewaretoken': csrf_token
-        },
-        allow_redirects=False
-    )
-    response.raise_for_status()
-    tsd_sessionid = response.cookies.get('tsd_sessionid', None)
-    admin_user.client.cookies['tsd_sessionid'] = tsd_sessionid
-    if tsd_sessionid is None:
-        raise ValueError("Did not get a valid session ID")
+    WebUser.host = environment.host
+    admin_user = WebUser(environment=environment)
+    admin_user.login()
     response = admin_user.client.get(f"/api/v1/printers/{TEST_PRINTER_ID}/")
     response.raise_for_status()
     global AUTH_TOKEN
     AUTH_TOKEN = response.json()['auth_token']
-    print(f"Finished setting auth token: {AUTH_TOKEN}")
+    print(f"Finished setting printer auth token: {AUTH_TOKEN}")
 
 
 @events.test_start.add_listener
@@ -85,9 +72,10 @@ class PrinterUser(HttpUser):
                 print(f"AUTH_TOKEN: {self.auth_token}")
             if self.image_content is None:
                 print(f"IMAGE_CONTENT: {IMAGE_CONTENT}")
-            raise ValueError("Must set a valid auth_token and image_content before proceeding")
+            raise greenlet.error("Must set a valid auth_token and image_content before proceeding")
 
-    @task
+    @tag('octoprint')
+    @task(10)
     def octo_pic(self):
         self.client.post(
             url='/api/v1/octo/pic/',
@@ -95,6 +83,54 @@ class PrinterUser(HttpUser):
             headers={'Authorization': f'Token {self.auth_token}'},
             cookies=None
         ).raise_for_status()
+
+class WebUser(HttpUser):
+    auth_token = ''
+    environment: Environment
+
+    def on_start(self):
+        self.login()
+
+
+    def login(self):
+        retries = 0
+        while not self.client.cookies.get_dict().get('tsd_sessionid'):
+            response = self.client.get("/accounts/login/")
+            csrf_token = response.cookies.get('csrftoken', None)
+            if csrf_token is None:
+                raise ValueError("Could not get a valid csrftoken")
+
+            if retries:
+                print(f"Retrying login {retries}")
+            response = self.client.post(
+                url="/accounts/login/",
+                data={
+                    'login': TEST_ADMIN_CREDENTIALS[0],
+                    'password': TEST_ADMIN_CREDENTIALS[1],
+                    'csrfmiddlewaretoken': csrf_token
+                },
+                allow_redirects=False
+            )
+            response.raise_for_status()
+            tsd_sessionid = response.cookies.get('tsd_sessionid', None)
+            self.client.cookies['tsd_sessionid'] = tsd_sessionid
+            retries += 1
+            if tsd_sessionid is None:
+                time.sleep(random.randint(1, 5))
+        if retries > 1:
+            print(f"Finally got a session after {retries} retries")
+
+    @tag('web')
+    @task
+    def printers(self):
+        response = self.client.get('/api/v1/printers/')
+        response.raise_for_status()
+
+    @tag('web')
+    @task
+    def printer(self):
+        response = self.client.get('/api/v1/printers/1/')
+        response.raise_for_status()
 
 
 if __name__ == "__main__":

@@ -360,7 +360,7 @@ export default {
     },
     isKlipper() {
       if (this.platform) {
-        if (this.platform === 'klipper') {
+        if (this.platform.toLowerCase() === 'klipper') {
           return true
         }
       } else {

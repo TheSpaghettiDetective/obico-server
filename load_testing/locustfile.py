@@ -84,9 +84,10 @@ class PrinterUser(HttpUser):
             cookies=None
         ).raise_for_status()
 
-class WebUser(HttpUser):
+class WebUserBase(HttpUser):
     auth_token = ''
     environment: Environment
+    abstract = True
 
     def on_start(self):
         self.login()
@@ -119,6 +120,20 @@ class WebUser(HttpUser):
                 time.sleep(random.randint(1, 5))
         if retries > 1:
             print(f"Finally got a session after {retries} retries")
+
+    def get_internal_image_url(self, web_host='http://web:3334', printer_id=TEST_PRINTER_ID):
+        response = self.client.get(f'{web_host}/api/v1/printers/{printer_id}/')
+        response.raise_for_status()
+        resp_json: dict = response.json()
+        print(resp_json)
+        if 'pic' not in resp_json.keys():
+            return None
+        if 'img_url' not in resp_json['pic'].keys():
+            return None
+        return resp_json['pic']['img_url']
+
+class WebUser(WebUserBase):
+    abstract = False
 
     @tag('web')
     @task(1)

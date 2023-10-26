@@ -171,6 +171,7 @@ class OctoPrinterView(APIView):
                 'is_pro': user.is_pro,
                 'id': printer.id,
                 'name': printer.name,
+                'retract_on_pause': printer.retract_on_pause,
             }
         })
 

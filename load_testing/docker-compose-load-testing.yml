@@ -26,6 +26,18 @@ services:
     depends_on:
       - web
 
+  locust_ml:
+    image: locustio/locust
+    ports:
+      - "8099:8089"
+    volumes:
+      - ./load_testing:/load_testing
+      - ./backend:/backend
+    command: locust -f /load_testing/locustfile_ml_api.py -H http://ml_api:3333 -u 1 -r 1
+    entrypoint: ''
+    depends_on:
+      - web
+
   db:
     image: postgres:14.2-bullseye
     restart: unless-stopped

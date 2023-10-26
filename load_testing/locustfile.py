@@ -129,7 +129,7 @@ class WebUser(HttpUser):
     @tag('web')
     @task(2)
     def printer(self):
-        response = self.client.get('/api/v1/printers/1/')
+        response = self.client.get(f'/api/v1/printers/{TEST_PRINTER_ID}/')
         response.raise_for_status()
 
 

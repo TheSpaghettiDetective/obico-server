@@ -6,3 +6,9 @@ services:
     entrypoint: ""
     environment:
       DEBUG: ${DEBUG:-True}
+
+  ml_api:
+    volumes:
+      - ./ml_api:/app
+    ports:
+      - 3333:3333

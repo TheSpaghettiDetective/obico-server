@@ -534,7 +534,9 @@ class Print(SafeDeleteModel):
         return self.alert_overwrite is None and self.tagged_video_url is not None
 
     def need_print_shot_feedback(self):
-        return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
+        # Calling .all() instead of .filter() avoids n+1 queries here
+        return None in [feedback.answered_at for feedback in self.printshotfeedback_set.all()]
+        # return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
 
     @property
     def expecting_detective_view(self):

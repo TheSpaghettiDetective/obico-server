@@ -1,9 +1,0 @@
-version: '2.4'
-
-services:
-  web:
-    # TODO: Point this to the main repo once ready to merge
-    image: ghcr.io/apexarray/obico-server/web-base:dev-django-4.2
-    build:
-      context: backend
-      dockerfile: 'Dockerfile.base'

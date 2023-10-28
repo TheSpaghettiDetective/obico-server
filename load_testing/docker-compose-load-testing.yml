@@ -5,7 +5,7 @@ version: '2.4'
 
 services:
   web:
-    entrypoint: ''
+    command: sh -c 'python manage.py migrate && daphne -b 0.0.0.0 -p 3334 config.routing:application'
     # Optimize performance for load testing
     environment:
       DEBUG: False

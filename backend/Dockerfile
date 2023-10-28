@@ -1,6 +1,4 @@
-# Use BASE_IMAGE arg to allow building locally and in GitHub actions
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
+FROM thespaghettidetective/web:base-1.13
 
 WORKDIR /app
 EXPOSE 3334

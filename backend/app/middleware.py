@@ -70,8 +70,6 @@ def fix_tunnelv2_apple_cache(get_response):
 class RefreshSessionMiddleware(SessionMiddleware):
     def process_response(self, request, response):
         session = request.session
-        if settings.SESSION_COOKIE_REFRESH_INTERVAL >= settings.SESSION_COOKIE_AGE:
-            return ValueError("SESSION_COOKIE_REFRESH_INTERVAL must be less than SESSION_COOKIE_AGE")
         if not (session.is_empty() or session.get_expire_at_browser_close()):
             now_ts = int(time.time())
             expires_at_ts = session.get('_session_expire_at_ts', None)

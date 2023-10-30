@@ -112,7 +112,11 @@ docker compose exec web ./manage.py gen_site_secret
 
 2. Copy the `DJANGO_SECRET_KEY=xxx` line in the output of the previous command into `.env`
 
-3. Restart the Obico Server: `docker compose stop && docker compose up -d`
+3. Restart the Obico Server:
+
+```
+docker compose stop && docker compose up -d
+```
 
 4. Re-sign all media URL. This step is important, otherwise all of your previous prints and G-Code files will be unusable.
 

@@ -10,9 +10,11 @@ services:
     environment:
       DEBUG: False
       DATABASE_URL: postgres://postgres:postgres@%2fvar%2frun%2fpostgresql/postgres
+#      DATABASE_URL: sqlite:////tmp/db/db.sqlite3
 #      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
     volumes:
       - postgres_socket:/var/run/postgresql
+      - /tmp/db
 
   locust:
     image: locustio/locust
@@ -39,7 +41,7 @@ services:
       - web
 
   db:
-    image: postgres:14.2-bullseye
+    image: postgres:10-alpine
     restart: unless-stopped
     shm_size: 512MB
     command: -c max_connections=500
@@ -49,6 +51,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_socket:/var/run/postgresql
+      - /var/lib/postgresql/data/  # Anonyumous volume gets removed on `docker compose down -v`
 
 volumes:
   postgres_socket:

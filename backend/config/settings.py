@@ -237,7 +237,7 @@ LOGGING = {
     }
 }
 
-if not get_bool('DISABLE_DEBUG_QUERY_LOGGING', False):
+if DEBUG and not get_bool('DISABLE_DEBUG_QUERY_LOGGING', False):
     LOGGING['loggers']['django.db.backends'] = {
         'level': 'DEBUG',
         'handlers': ['console_debug'],

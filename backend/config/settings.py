@@ -249,33 +249,6 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# STORAGES only compatible with Django 4.2+
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "django.core.files.storage.FileSystemStorage",
-#     },
-#     "staticfiles": {
-#         "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-#     },
-# }
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../frontend/static'),
-    os.path.join(BASE_DIR, '../frontend/builds'),
-]
-# WHITENOISE_KEEP_ONLY_HASHED_FILES = True
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
-    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip',
-    'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
-    'flv', 'woff', 'woff2', 'map'  # added map
-)
-WHITENOISE_AUTOREFRESH = get_bool('WHITENOISE_AUTOREFRESH', False)
-
 SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
 SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
@@ -400,6 +373,34 @@ WEBPACK_LOADER = {
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
     }
 }
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
+if not WEBPACK_LOADER_ENABLED:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STORAGES only compatible with Django 4.2+
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "django.core.files.storage.FileSystemStorage",
+#     },
+#     "staticfiles": {
+#         "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+#     },
+# }
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../frontend/static'),
+    os.path.join(BASE_DIR, '../frontend/builds'),
+]
+# WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip',
+    'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
+    'flv', 'woff', 'woff2', 'map'  # added map
+)
+WHITENOISE_AUTOREFRESH = get_bool('WHITENOISE_AUTOREFRESH', False)
 
 TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 

@@ -73,11 +73,11 @@ class PrintAdmin(admin.ModelAdmin):
     # print(f"excluding: {exclude}")
 
 
-if settings.DEBUG:
-    admin.site.register(GCodeFile)
-    admin.site.register(GCodeFolder)
-    for name, model in inspect.getmembers(sys.modules[models.__name__], lambda x: inspect.isclass(x) and issubclass(x, Model)):
-        try:
-            admin.site.register(model)
-        except (AlreadyRegistered, ImproperlyConfigured):
-            pass
+# if settings.DEBUG:
+#     admin.site.register(GCodeFile)
+#     admin.site.register(GCodeFolder)
+#     for name, model in inspect.getmembers(sys.modules[models.__name__], lambda x: inspect.isclass(x) and issubclass(x, Model)):
+#         try:
+#             admin.site.register(model)
+#         except (AlreadyRegistered, ImproperlyConfigured):
+#             pass

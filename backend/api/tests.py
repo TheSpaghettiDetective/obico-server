@@ -13,7 +13,6 @@ from api.octoprint_messages import process_octoprint_status
 
 def init_data():
     user = User.objects.create(email='test@tsd.com')
-    # user.set_password('test')
     user.save()
     printer = Printer.objects.create(user=user)
     print = Print.objects.create(

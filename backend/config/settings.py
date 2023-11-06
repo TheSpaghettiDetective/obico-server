@@ -65,7 +65,6 @@ INSTALLED_APPS = [
     'pushbullet',
     'corsheaders',
     'safedelete',
-    # 'nplusone.ext.django',  # Only include this if DEBUG=True
     'qr_code',
     'app',  # app has to come before allauth for template override to work
     "channels_presence",
@@ -89,7 +88,6 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    # 'nplusone.ext.django.NPlusOneMiddleware',  # Only add this if DEBUG=True
     'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

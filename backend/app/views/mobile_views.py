@@ -64,7 +64,7 @@ def oauth_callback(request, *args, **kwargs):
             raise Exception("Unsupported provider")
 
         provider = adapter.get_provider()
-        app = adapter.get_provider().get_app(request)
+        app = provider.app
 
         try:
             if is_google:

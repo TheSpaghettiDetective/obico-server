@@ -247,6 +247,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+# This allows us to interact with the popup window during autodiscovery handshake
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'unsafe-none'
+
 SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
 SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)

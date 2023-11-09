@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import SuspiciousOperation, MiddlewareNotUsed, PermissionDenied
 from django.contrib.sessions.backends.base import UpdateError
 
@@ -77,7 +78,16 @@ class RefreshSessionMiddleware(SessionMiddleware):
             if expires_at_ts is None or now_ts >= refresh_at_ts:
                 # This will set modified flag and update the cookie expiration time
                 session['_session_expire_at_ts'] = now_ts + settings.SESSION_COOKIE_AGE
-        return super().process_response(request, response)
+        response = super().process_response(request, response)
+        # If setting a session cookie, ensure it is explicitly scoped to our domain so that it
+        # passes through to subdomains for tunneling
+        if response.cookies:
+            # Only update domain of our session cookie if domain is not set.
+            # Does nothing if settings.SESSION_COOKIE_DOMAIN is configured.
+            session_cookie = response.cookies.get(settings.SESSION_COOKIE_NAME, None)
+            if session_cookie and not session_cookie.get('domain', ''):
+                session_cookie['domain'] = str(get_current_site(request)).split(':')[0]
+        return response
 
 
 def check_admin_ip_whitelist(get_response):

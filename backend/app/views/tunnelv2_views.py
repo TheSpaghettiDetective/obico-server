@@ -253,8 +253,8 @@ def save_static_etag(func):
     return inner
 
 
-def set_response_items(self):
-    items = list(self._headers.values())
+def set_response_items(self: HttpResponse):
+    items = list(self.headers.values())
     if hasattr(self, "tunnel_cookies"):
         for raw_cookie in self.tunnel_cookies:
             items.append(('Set-Cookie', raw_cookie))

@@ -301,6 +301,9 @@ SOCIALACCOUNT_PROVIDERS = {
         'VERIFIED_EMAIL': True
     }
 }
+# Backwards compatibility to allow SSO via GET request
+# We can remove this after we update to the mobile app to use POST instead of GET
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}

@@ -381,8 +381,6 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
 
     content_type = data['response']['headers'].get('Content-Type') or None
     status_code = data['response']['status']
-    if status_code == 502:
-        logger.exception("502 response")
 
     resp = HttpResponse(
         status=status_code,

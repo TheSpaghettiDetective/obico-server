@@ -254,7 +254,7 @@ def save_static_etag(func):
 
 
 def set_response_items(self: HttpResponse):
-    items = list(self.headers.values())
+    items = list(self.headers.items())
     if hasattr(self, "tunnel_cookies"):
         for raw_cookie in self.tunnel_cookies:
             items.append(('Set-Cookie', raw_cookie))
@@ -381,6 +381,8 @@ def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_header
 
     content_type = data['response']['headers'].get('Content-Type') or None
     status_code = data['response']['status']
+    if status_code == 502:
+        logger.exception("502 response")
 
     resp = HttpResponse(
         status=status_code,

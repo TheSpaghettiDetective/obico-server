@@ -223,11 +223,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        # SQL query logging can now be disabled by setting DISABLE_DEBUG_QUERY_LOGGING=True
-        # 'django.db.backends': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console_debug'],
-        # },
         'root': {
             'level': 'INFO',
             'handlers': ['console']
@@ -385,15 +380,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
 if not WEBPACK_LOADER_ENABLED:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# STORAGES only compatible with Django 4.2+
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "django.core.files.storage.FileSystemStorage",
-#     },
-#     "staticfiles": {
-#         "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-#     },
-# }
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../frontend/static'),
     os.path.join(BASE_DIR, '../frontend/builds'),

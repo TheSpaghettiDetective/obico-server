@@ -70,14 +70,3 @@ class NotificationSettingAdmin(admin.ModelAdmin):
 @admin.register(Print)
 class PrintAdmin(admin.ModelAdmin):
     exclude = [x for x in Print.__dict__.keys() if x.endswith('at')] + ['alert_overwrite']
-    # print(f"excluding: {exclude}")
-
-
-# if settings.DEBUG:
-#     admin.site.register(GCodeFile)
-#     admin.site.register(GCodeFolder)
-#     for name, model in inspect.getmembers(sys.modules[models.__name__], lambda x: inspect.isclass(x) and issubclass(x, Model)):
-#         try:
-#             admin.site.register(model)
-#         except (AlreadyRegistered, ImproperlyConfigured):
-#             pass

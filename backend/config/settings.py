@@ -32,7 +32,6 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
 SESSION_COOKIE_REFRESH_INTERVAL = 60 * 60 * 24  # Refresh session cookies once every 24 hours
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_COOKIE_NAME = 'tsd_sessionid'
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool('DEBUG', False)

@@ -73,9 +73,9 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           cache-from: |
-            thespaghettidetective/web:base-1.14
+            thespaghettidetective/web:base-1.15
             thespaghettidetective/web:base
-            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-1.14
+            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-1.15
             ghcr.io/${{ env.REPOSITORY_LC }}/web:base
           context: backend
           file: backend/Dockerfile.base

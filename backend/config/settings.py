@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     'api',
     'notifications',
     'webpack_loader',
-    'django_pagination_bootstrap',
 ]
 
 if get_bool('SOCIAL_LOGIN', False):
@@ -100,7 +99,6 @@ MIDDLEWARE = [
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
-    'django_pagination_bootstrap.middleware.PaginationMiddleware',
 ]
 
 if DEBUG:

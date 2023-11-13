@@ -55,7 +55,6 @@ numpy = "1.2.0"
 django-debug-toolbar = "*"
 inotify-simple = "*"
 Twisted = {extras = ["tls", "http2"], version = "*" }
-django-pagination-bootstrap = "*"
 
 [dev-packages]
 

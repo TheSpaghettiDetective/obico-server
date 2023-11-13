@@ -233,7 +233,7 @@ def cap_image_size(pic):
         pic.file.seek(0)
         return pic
 
-    im.thumbnail((1280, 960), Image.ANTIALIAS)
+    im.thumbnail((1280, 960), Image.LANCZOS)
     output = io.BytesIO()
     im.save(output, format='JPEG')
     output.seek(0)

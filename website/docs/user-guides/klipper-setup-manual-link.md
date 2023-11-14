@@ -167,8 +167,10 @@ On the welcome page, click the "**Link Printer**" button.
 <div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-klipper.png" /></div>
 <br />
 
-Hooray! You are done! You can now close the terminal. Obico for Klipper is now running as a system service.
+## Step 6: Restart the Raspberry Pi.
 
-## Step 6 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
+Once the Raspberry Pi has booted up, you should be able to see your printer and the webcam stream in the Obico app.
+
+## Step 7 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
 
 Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".

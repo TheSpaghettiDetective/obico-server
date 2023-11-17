@@ -31,7 +31,7 @@ We already added some custom g-code to the slicer to get the layer information t
 <Tabs>
 <TabItem value="PrusaSlicer" label="PrusaSlicer" default>
 
-1. 1. Open PrusaSlicer
+1. Open PrusaSlicer
 
 2. Go to the *Print Settings* tab.
 

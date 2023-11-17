@@ -105,3 +105,29 @@ The following options are available to be configured in the [Celestrius Alpha En
 1. **Enable or Disable**: Enable or disable the first layer scan by clicking the checkbox (Scanning is enabled by default). If you turn off scanning, first layer AI will still work, but it may be more accurate with scanning enabled. 
 2. **Retraction Value**: This is the amount that your filament will retract after the first layer finishes printing. This helps prevent filanent ooze during the scan. The default is 6.5mm.
 3. **Scan Height**: The Z-height that the scan will run at. The default value is 4mm. If your camera is out of focus while doing the first layer scan, adjust the height so your camera is in focus. 
+
+### Configuring Retraction value
+
+When your first layer finishes, Obico will pause the print and retract the value that is set. This will ensure that the filament is not leaking out of the nozzle as the first layer is scanned. Depending on your setup, you may find that the default value is not sufficient. 
+
+If the filament is leaking out of your nozzle during the scan, increase the value so the filament will retract more before the scan starts. 
+
+If you run into any issues with your nozzle clogging after the first layer is scanned, reduce the retraction value so that the filament is pulled back a shorter distance. 
+
+### Configuring Scan Height
+
+The first layer scan will happen at Z=4mm by default, but if this height doesn't produce a clear focused image, you can adjust the scan height so the images are more in focus. To find the optimal scan height, do the following:
+
+1. Print [this stl file](https://www.printables.com/model/650444-scan-height-test-model). It is a simple box of 1 layer tall (0.2mm layer height). Leave the model on the build plate when it is finished printing. 
+2. Move the Z-axis to Z=4mm. 
+3. Move your print head to the center of the build plate. 
+4. move the Z-height up or down until you achieve the best focus. The printed model should be as clearly in focus as possible. 
+
+In the example below, you can see that the z-height of 4mm is clearly more focused than 2mm. At 2mm, the space in between the nozzle and the camera is more out of focus, while it is more focused at 4mm. 
+
+#### Z-height = 2mm
+![](/img/user-guides/z2.png)
+
+#### Z-height = 4mm
+![](/img/user-guides/z4.png)
+

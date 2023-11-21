@@ -79,14 +79,14 @@ class RefreshSessionMiddleware(SessionMiddleware):
                 # This will set modified flag and update the cookie expiration time
                 session['_session_expire_at_ts'] = now_ts + settings.SESSION_COOKIE_AGE
         response = super().process_response(request, response)
-        # If setting a session cookie, ensure it is explicitly scoped to our domain so that it
+        # If setting a session cookie, ensure we set the domain attribute so that the cookie
         # passes through to subdomains for tunneling
         if response.cookies:
             # Only update domain of our session cookie if domain is not set.
             # Does nothing if settings.SESSION_COOKIE_DOMAIN is configured.
             session_cookie = response.cookies.get(settings.SESSION_COOKIE_NAME, None)
             if session_cookie and not session_cookie.get('domain', ''):
-                session_cookie['domain'] = str(get_current_site(request)).split(':')[0]
+                session_cookie['domain'] = str(request.get_host()).split(':')[0]
         return response
 
 

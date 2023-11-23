@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
+import json
 
 from allauth.account.views import LoginView, SignupView
 
@@ -139,7 +140,7 @@ def slack_oauth_callback(request):
     NotificationSetting.objects.create(
         user=request.user,
         name='slack',
-        config={'access_token': r.json().get('access_token')}
+        config_json=json.dumps({'access_token': r.json().get('access_token')})
     )
     return redirect('/user_preferences/notification_slack/')
 

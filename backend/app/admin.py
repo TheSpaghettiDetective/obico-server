@@ -52,7 +52,6 @@ class UserAdmin(DjangoUserAdmin):
     actions = [send_test_email]
 
 
-@admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):
     exclude = ('current_img_url', 'detection_score')
 

@@ -4,6 +4,7 @@ const defaultRoutes = {
   GeneralPreferences: '/user_preferences/general/',
   ThemePreferences: '/user_preferences/personalization/',
   ProfilePreferences: '/user_preferences/profile/',
+  ApiKey: '/user_preferences/api_key/',
   AuthorizedApps: '/user_preferences/authorized_apps/',
   GeneralNotifications: '/user_preferences/general_notifications/',
   PushNotifications: '/user_preferences/mobile_push_notifications/',

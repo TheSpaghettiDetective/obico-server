@@ -3,14 +3,18 @@ from django.http import Http404
 import os
 import time
 import logging
+import re
 from binascii import hexlify
 from rest_framework import viewsets, mixins
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework import authentication
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
@@ -870,3 +874,99 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+
+class GetApiKeyView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request):
+        token, created = Token.objects.get_or_create(user=request.user)
+        return Response({'api_key': token.key })
+
+
+class SlicerApiVersionView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        return Response({"text": "Obico"})
+
+
+class SlicerApiPrinterListView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        return Response({"printers": [{"id": str(p.id), "name": p.name} for p in request.user.printer_set.all()]})
+
+
+class SlicerApiUploadView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        data = dict(**request.data)
+        file = request.data.get('file')
+        if file:
+            data['filename'] = file.name
+
+        serializer = GCodeFileDeSerializer(data=data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        start_print = request.data.get('print') == 'true'
+
+        printer = None
+        if start_print:
+            raw_printer_id = request.data.get('printer_id')
+            if raw_printer_id:
+                try:
+                    printer_id = int(re.match(r".*\[(\d+)\]", raw_printer_id).groups()[0])
+                except (ValueError, TypeError, IndexError):
+                    raise ValidationError({'printer_id': 'invalid value'})
+
+                printer = request.user.printer_set.filter(id=printer_id).first()
+                if printer is None:
+                    raise ValidationError({'printer_id': 'could not find printer'})
+
+        if 'file' in request.FILES:
+            file_size_limit = 500 * 1024 * 1024 if request.user.is_pro else 50 * 1024 * 1024
+            num_bytes=request.FILES['file'].size
+            if num_bytes > file_size_limit:
+                return Response({'error': 'File size too large'}, status=413)
+
+            gcode_file = GCodeFile.objects.create(**validated_data)
+
+            self.set_metadata(gcode_file, *gcode_metadata.parse(request.FILES['file'], num_bytes, request.encoding or settings.DEFAULT_CHARSET))
+
+            request.FILES['file'].seek(0)
+            _, ext_url = save_file_obj(self.path_in_storage(gcode_file), request.FILES['file'], settings.GCODE_CONTAINER)
+            gcode_file.url = ext_url
+            gcode_file.num_bytes = num_bytes
+            gcode_file.save()
+
+            if start_print:
+                # FIXME
+                return Response({"message": "print queued"})
+
+
+            return Response({"message": "uploaded successfully"})
+
+        raise ValidationError({"file": "Missing file body"})
+
+    def set_metadata(self, gcode_file, metadata, thumbnails):
+        gcode_file.metadata_json = json.dumps(metadata)
+        for key in ['estimated_time', 'filament_total']:
+            setattr(gcode_file, key, metadata.get(key))
+
+        thumb_num = 0
+        for thumb in sorted(thumbnails, key=lambda x: x.getbuffer().nbytes, reverse=True):
+            thumb_num += 1
+            if thumb_num > 3:
+                continue
+            _, ext_url = save_file_obj(f'gcode_thumbnails/{gcode_file.user.id}/{gcode_file.id}/{thumb_num}.png', thumb, settings.TIMELAPSE_CONTAINER)
+            setattr(gcode_file, f'thumbnail{thumb_num}_url', ext_url)
+
+    def path_in_storage(self, gcode_file):
+        return f'{gcode_file.user.id}/{gcode_file.id}'

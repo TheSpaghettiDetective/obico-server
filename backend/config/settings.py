@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'simple_history',
     'widget_tweaks',
     'rest_framework',
-    'rest_framework.authtoken',
     'jstemplate',
     'pushbullet',
     'corsheaders',

@@ -39,13 +39,7 @@ router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
 
 router.register(r'octo/g_code_files', octoprint_views.GCodeFileView, 'AgentGCodeFile')
 
-
 urlpatterns = [
-    path('version', viewsets.SlicerApiVersionView.as_view()),
-    path('printers', viewsets.SlicerApiPrinterListView.as_view()),
-    path('files/local', viewsets.SlicerApiUploadView.as_view()),
-    path('v1/apikey/', viewsets.GetApiKeyView.as_view()),
-
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),

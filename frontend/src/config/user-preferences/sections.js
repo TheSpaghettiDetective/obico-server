@@ -27,13 +27,6 @@ const defaultSections = {
     route: routes.ProfilePreferences,
     isHidden: onlyNotifications(),
   },
-  ApiKey: {
-    title: 'Api Key',
-    faIcon: 'fas fa-check-circle',
-    importComponent: () => import('@src/components/user-preferences/ApiKey'),
-    route: routes.ApiKey,
-    isHidden: onlyNotifications(),
-  },
   AuthorizedApps: {
     title: 'Authorized Apps',
     faIcon: 'fas fa-check-circle',

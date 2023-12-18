@@ -48,6 +48,4 @@ export default {
   gcodeFileBulkDelete: () => '/api/v1/g_code_files/bulk_delete/',
   gcodeFolderBulkMove: () => '/api/v1/g_code_folders/bulk_move/',
   gcodeFileBulkMove: () => '/api/v1/g_code_files/bulk_move/',
-
-  getApiKey: () => '/api/v1/apikey/',
 }

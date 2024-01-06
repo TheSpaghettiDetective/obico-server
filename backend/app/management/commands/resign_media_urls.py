@@ -4,8 +4,29 @@ from django.core.management.base import BaseCommand
 
 from app.models import Print, PrinterEvent, GCodeFile, models, PrintShotFeedback
 from lib.url_signing import new_signed_url
-from lib.utils import printProgressBar
 
+
+# https://stackoverflow.com/questions/3173320/text-progress-bar-in-terminal-with-block-characters
+def print_progress_bar(iteration, total, prefix='Progress:', suffix='Complete', decimals=1, length=50, fill='X', printEnd=""):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd, flush=True)
+    # Print New Line on Complete
+    if iteration == total:
+        print()
 
 class Command(BaseCommand):
     help = '(re-)signs all media URLs. Must be run once after updating, and any time the Django SECRET_KEY is rotated'
@@ -24,8 +45,8 @@ class Command(BaseCommand):
             if changed:
                 row.save()
             if idx % 20 == 0:
-                printProgressBar(idx + 1, total_rows)
-        printProgressBar(1, 1)
+                print_progress_bar(idx + 1, total_rows)
+        print_progress_bar(1, 1)
 
     def resign_urls(self):
         self._resign_urls_on_model(

@@ -147,6 +147,10 @@ If you are phone or computer is one the **the same local network** as your Klipp
 
 <b />
 
+## Step 4: Restart the Raspberry Pi.
+
+Once the Raspberry Pi has booted up, you should be able to see your printer and the webcam stream in the Obico app.
+
 ## What's next? {#whats-next}
 
 ### Check out your printer feed! {#check-out-your-printer-feed}

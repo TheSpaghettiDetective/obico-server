@@ -1,0 +1,13 @@
+version: '2.4'
+
+services:
+  web:
+    command: python /app/manage.py runserver 0.0.0.0:3334
+    environment:
+      DEBUG: ${DEBUG:-True}
+
+  ml_api:
+    volumes:
+      - ./ml_api:/app
+    ports:
+      - 3333:3333

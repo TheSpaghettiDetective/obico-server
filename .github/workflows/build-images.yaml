@@ -25,10 +25,10 @@ jobs:
 
       - name: Saving Results
         run: |
-          
+
           REPOSITORY_LC=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')
           GitVersion_FullSemVer_Docker=$(echo "$GitVersion_FullSemVer" | tr '+' '.')
-          
+
           echo "GitVersion_FullSemVer_Docker=$GitVersion_FullSemVer_Docker" >> gitversion.properties
           echo "GitVersion_FullSemVer=$GitVersion_FullSemVer"               >> gitversion.properties
           echo "GitVersion_LegacySemVer=$GitVersion_LegacySemVer"           >> gitversion.properties
@@ -73,9 +73,9 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           cache-from: |
-            thespaghettidetective/web:base-1.13
+            thespaghettidetective/web:base-1.15
             thespaghettidetective/web:base
-            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-1.13
+            ghcr.io/${{ env.REPOSITORY_LC }}/web:base-1.15
             ghcr.io/${{ env.REPOSITORY_LC }}/web:base
           context: backend
           file: backend/Dockerfile.base

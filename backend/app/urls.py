@@ -1,10 +1,12 @@
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.views.generic.base import RedirectView
 
 from .views import web_views
 from .views import mobile_views
 
 from .views import tunnelv2_views
+
+from config import settings
 
 urlpatterns = [
     path('', web_views.index, name='index'),
@@ -62,3 +64,6 @@ urlpatterns = [
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
 ]
+
+if settings.DEBUG:
+    urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))

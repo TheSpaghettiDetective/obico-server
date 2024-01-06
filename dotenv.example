@@ -2,7 +2,7 @@
 
 # DJANGO_SECRET_KEY=
 # Generate your own unique secret key by running the following command:
-# docker run --rm python:alpine python3 -c 'import secrets; print(secrets.token_urlsafe())'
+# docker compose exec web ./manage.py gen_site_secret
 
 # EMAIL_HOST=
 

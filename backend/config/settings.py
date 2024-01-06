@@ -29,7 +29,8 @@ VERSION = os.environ.get('VERSION', '')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # User login session is 2 months
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_REFRESH_INTERVAL = 60 * 60 * 24  # Refresh session cookies once every 24 hours
+SESSION_SAVE_EVERY_REQUEST = False
 SESSION_COOKIE_NAME = 'tsd_sessionid'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -43,6 +44,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Need to declare this explicitly as of 4.0
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,21 +55,18 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.humanize',
     'channels',
-    "channels_presence",
     'whitenoise.runserver_nostatic',
     'hijack',
-    'compat',
     'simple_history',
     'widget_tweaks',
     'rest_framework',
-    'bootstrap_pagination',
     'jstemplate',
     'pushbullet',
     'corsheaders',
     'safedelete',
-    'nplusone.ext.django',
     'qr_code',
     'app',  # app has to come before allauth for template override to work
+    "channels_presence",
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -88,8 +87,7 @@ MIDDLEWARE = [
     'app.middleware.fix_tunnelv2_apple_cache',
     'app.middleware.TSDWhiteNoiseMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'nplusone.ext.django.NPlusOneMiddleware',
-    'app.middleware.SessionHostDomainMiddleware',
+    'app.middleware.RefreshSessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,7 +96,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app.middleware.octoprint_tunnelv2',
     'app.middleware.check_admin_ip_whitelist',
+    'allauth.account.middleware.AccountMiddleware',
+    'hijack.middleware.HijackUserMiddleware',
 ]
+
+if DEBUG:
+    # Add debug toolbar
+    gzip_index = MIDDLEWARE.index('django.middleware.gzip.GZipMiddleware')
+    MIDDLEWARE.insert(gzip_index+1, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INSTALLED_APPS.append("debug_toolbar")
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+    # Add nplusone
+    INSTALLED_APPS.append('nplusone.ext.django')
+    MIDDLEWARE.insert(gzip_index+1, 'nplusone.ext.django.NPlusOneMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -166,7 +179,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # Request logging for debugging purpose
@@ -210,10 +222,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console_debug'],
-        },
         'root': {
             'level': 'INFO',
             'handlers': ['console']
@@ -221,28 +229,20 @@ LOGGING = {
     }
 }
 
+if DEBUG and not get_bool('DISABLE_DEBUG_QUERY_LOGGING', False):
+    LOGGING['loggers']['django.db.backends'] = {
+        'level': 'DEBUG',
+        'handlers': ['console_debug'],
+    }
+
 # Django settings
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
-STATICFILES_STORAGE = 'app.storage.CustomCompressedManifestStaticFilesStorage'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../frontend/static'),
-    os.path.join(BASE_DIR, '../frontend/builds'),
-]
-# WHITENOISE_KEEP_ONLY_HASHED_FILES = True
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
-    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip',
-    'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
-    'flv', 'woff', 'woff2', 'map'  # added map
-)
+# This allows us to interact with the popup window during autodiscovery handshake
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'unsafe-none'
 
 SITE_ID = 1
 SITE_USES_HTTPS = get_bool('SITE_USES_HTTPS', False)
@@ -254,10 +254,13 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '3600/hour',
     },
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    ),
+    ],
 }
+
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer'),
 
 # Google recaptcha V3
 
@@ -292,6 +295,9 @@ SOCIALACCOUNT_PROVIDERS = {
         'VERIFIED_EMAIL': True
     }
 }
+# Backwards compatibility to allow SSO via GET request
+# We can remove this after we update to the mobile app to use POST instead of GET
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}
@@ -365,6 +371,25 @@ WEBPACK_LOADER = {
         'LOADER_CLASS': 'webpack_loader.loader.WebpackLoader',
     }
 }
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
+if not WEBPACK_LOADER_ENABLED:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../frontend/static'),
+    os.path.join(BASE_DIR, '../frontend/builds'),
+]
+# WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip',
+    'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf',
+    'flv', 'woff', 'woff2', 'map'  # added map
+)
+WHITENOISE_AUTOREFRESH = get_bool('WHITENOISE_AUTOREFRESH', False)
 
 TWILIO_COUNTRY_CODES = []  # serviced country codes, no restrictions by default
 
@@ -441,3 +466,7 @@ NOTIFICATION_PLUGIN_DIRS = [
 ]
 
 ADMIN_IP_WHITELIST = json.loads(os.environ.get('ADMIN_IP_WHITELIST') or '[]')
+
+# This line prevents warning messages after 3.2
+# https://docs.djangoproject.com/en/4.0/releases/3.2/#customizing-type-of-auto-created-primary-keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

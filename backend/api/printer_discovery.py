@@ -19,7 +19,7 @@ from lib.cache import (
 LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
-LINKHELPER_PRESENCE_EXPIRATION_SECS = 3
+LINKHELPER_PRESENCE_EXPIRATION_SECS = 4
 
 
 class DeviceInfoSerializer(serializers.Serializer):

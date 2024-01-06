@@ -1,3 +1,4 @@
+import mimetypes
 import os
 from binascii import hexlify
 import re
@@ -16,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
+import json
 
 from allauth.account.views import LoginView, SignupView
 
@@ -139,7 +141,7 @@ def slack_oauth_callback(request):
     NotificationSetting.objects.create(
         user=request.user,
         name='slack',
-        config={'access_token': r.json().get('access_token')}
+        config_json=json.dumps({'access_token': r.json().get('access_token')})
     )
     return redirect('/user_preferences/notification_slack/')
 
@@ -248,10 +250,16 @@ def serve_jpg_file(request, file_path):
         return HttpResponseForbidden("You do not have permission to view this media")
     full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
+    # Determine content type based on file extension
+    content_type = mimetypes.guess_type(file_path)[0]
+    # Content type is not guessed correctly for files without extensions (i.e. for gcode files), so we set the
+    # content_type to octet-stream, which initiates a download in the user's browser.
+    if content_type is None:
+        content_type = "application/octet-stream"
     if not os.path.exists(full_path):
         raise Http404("Requested file does not exist")
     with open(full_path, 'rb') as fh:
-        return HttpResponse(fh, content_type=('video/mp4' if file_path.endswith('.mp4') else 'image/jpeg'))
+        return HttpResponse(fh, content_type=content_type)
 
 
 # Health check that touches DB and redis

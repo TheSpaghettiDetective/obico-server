@@ -60,7 +60,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
+    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
 
   tasks:
     <<: *web-defaults
@@ -69,4 +69,4 @@ services:
 
   redis:
     restart: unless-stopped
-    image: redis:5.0-alpine
+    image: redis:7.2-alpine

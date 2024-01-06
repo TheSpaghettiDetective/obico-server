@@ -99,7 +99,7 @@ class PrinterViewSet(
         else:
             qs = Printer.objects.filter(user=self.request.user)
 
-        return qs.select_related('current_print', 'printerprediction')
+        return qs.select_related('current_print', 'printerprediction', 'user')
 
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):
@@ -213,7 +213,7 @@ class PrintViewSet(
 
     def list(self, request):
         queryset = self.get_queryset().prefetch_related('printshotfeedback_set'
-            ).select_related('printer', 'g_code_file',
+            ).select_related('printer', 'g_code_file', 'printer__user'
             )
 
         sorting = request.GET.get('sorting', 'date_desc')
@@ -575,7 +575,7 @@ class PrintShotFeedbackViewSet(mixins.RetrieveModelMixin,
 
         qs = PrintShotFeedback.objects.filter(
             print__user=self.request.user
-        )
+        ).select_related('print__user')
 
         if print_id:
             qs = qs.filter(print_id=print_id)

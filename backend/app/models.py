@@ -9,7 +9,7 @@ from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -534,7 +534,8 @@ class Print(SafeDeleteModel):
         return self.alert_overwrite is None and self.tagged_video_url is not None
 
     def need_print_shot_feedback(self):
-        return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
+        # Calling .all() instead of .filter() avoids n+1 queries here
+        return None in [feedback.answered_at for feedback in self.printshotfeedback_set.all()]
 
     @property
     def expecting_detective_view(self):

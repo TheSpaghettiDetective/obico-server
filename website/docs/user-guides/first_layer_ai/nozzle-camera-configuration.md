@@ -46,7 +46,7 @@ Required Components:
 Since writing this guide, the 3DO nozzle camera now has a compatible mount for [Prusa Mini 3D printers](https://github.com/3DO-EU/nozzle-camera/tree/main/printers/Prusa%20Mini). If you prefer it, you can get a 3DO camera from [Fabreeko](https://www.fabreeko.com/products/nozzle-camera-by-3d0?variant=44184256446719) or [KB3D](https://kb-3d.com/store/electronics/779-3do-nozzle-camera-kit.html)
 :::
 
-## Prepare the mount
+## Prepare the mount {#prepare-the-mount}
 
 ![](/img/blogs/prusa-mini-nozzle-camera-setup/002.jpeg)
 
@@ -71,7 +71,7 @@ a. This simple mount attaches to the rear 5015 fan on the Prusa Mini/Mini+ with 
 
 a. Install the mount on the fan using the M4x20 screw and M4 nut as shown. Do not connect the camera yet.
 
-## Prepare the camera
+## Prepare the camera {#prepare-the-camera}
 
 1. **Connect the camera to OctoPrint.**
 
@@ -85,7 +85,7 @@ b. Connect to OctoPrint to ensure the camera is working properly. Restart OctoPr
 a. Since the camera is cylindrical, it is difficult to determine the direction without looking at the live camera feed. Determine the direction of the camera and use a sharpie to mark the up position of the camera. Do not worry about making it perfect, we will adjust the positioning in a later step.
 
 
-## Mount the camera
+## Mount the camera {#mount-the-camera}
 
 1. **Insert the endoscope into the mount**
 
@@ -113,7 +113,7 @@ If the camera still isn’t secure, you can wrap a small piece of masking or ele
 :::
 
 
-## Set higher camera resolution
+## Set higher camera resolution {#set-higher-camera-resolution}
 
 :::tip
 The information below assumes you will add the endoscope camera in replacement of any other camera you have installed. If you are comfortable, you may prefer to set up the endoscope camera as a second camera. You can follow Charlie Powell's [guide to add the endoscope as a second camera](https://community.octoprint.org/t/setting-up-multiple-webcams-in-octopi-the-right-way/32669). Just be sure to set the endoscope camera resolution to 1280x720.
@@ -164,7 +164,7 @@ Due to Raspberry Pi CPU performance, there is a necessary tradeoff between resol
 This guide will walk you through installing the 3DO 4K nozzle camera on your Voron 2.4 3D printer with a StealthBurner tool head.
 
 
-## Required Hardware:
+## Required Hardware: {#required-hardware}
 
 ![](/img/blogs/nozzle-camera-stealthburner/001.png)
 
@@ -177,7 +177,7 @@ This guide will walk you through installing the 3DO 4K nozzle camera on your Vor
   - [1x High-quality high-temperature USB cable (FEP + Silicone)](https://kb-3d.com/store/wiring-connectors/780-7660-pre-order-3do-usb-cable-for-nozzle-camera-usb-a-to-5p-multiple-styles.html#/915-length-07_meters)
 
 
-## Printed Parts
+## Printed Parts {#printed-parts}
 
 You will need to print a new main body for the stealth burner to accommodate the nozzle camera. Head over to the [nozzle camera github page](https://github.com/3DO-EU/nozzle-camera) and find the main body for your hotend.
 
@@ -191,7 +191,7 @@ For example, print the following parts for standard stealth burner hotends:
 
 
 
-## Install the camera
+## Install the camera {#install-the-camera}
 
 ![](/img/blogs/nozzle-camera-stealthburner/002.png)
 
@@ -209,7 +209,7 @@ The PCB can be mounted to the fan with VHB tape (only tested with LGX lite extru
 
 
 
-## Lights
+## Lights {#lights}
 :::tip
 The led lights included in the [KB3D kit](https://kb-3d.com/store/electronics/779-pre-order-3do-nozzle-camera-kit.html) and [Fabreeko kit](https://www.fabreeko.com/products/nozzle-camera-by-3d0?variant=43751816593663) are quite a bit brighter than the ones specified in the [StealthBurner BOM](https://vorondesign.com/voron_stealthburner), so you may want to consider swapping the lights.
 :::
@@ -218,7 +218,7 @@ If you plan to use the nozzle camera long term, you may find it easiest to re-us
 
 If you plan to install new components (lights and fans) on the main body, head over to the [Voron StealthBurner manual](https://github.com/VoronDesign/Voron-StealthBurner/raw/main/Manual/Assembly_Manual_SB.pdf) after installing the camera and follow the instructions as you did previously.
 
-## Set camera resolution to 4096x3840
+## Set camera resolution to 4096x3840 {#set-camera-resolution-to-4096x3840}
 
 1. Open your preferred web interface such as Mainsail or Fluidd.
 2. Go to *Machine*. Open the folder that contains your webcam settings such as `crowsnest.conf`
@@ -233,13 +233,13 @@ This is a very high resolution. It may not produce a good quality webcam stream 
 
 If you get warnings about Obico consuming too much CPU power, you can [disable the webcam in Obico](https://www.obico.io/docs/user-guides/moonraker-obico/config/) by setting `disable_webcam_streaming = True` under `[webcam]` in the moonraker-obico.cfg file.
 
-## Data collection
+## Data collection {#data-collection}
 
 Once your stealth burner is fully assembled and installed, you are ready for data collection.  You can now move onto collecting the data. You will need to install a special plugin for data collection. Follow the [First Layer AI Data Collection (Project Celestrius)](https://app.obico.io/ent/celestrius_alpha_enroll/) to get started.
 
 
 
-## FAQ (Adapted from 3DO)
+## FAQ (Adapted from 3DO) {#faq-adapted-from-3do}
 
 - **Does it work in an enclosed printer?**
 
@@ -280,7 +280,7 @@ Example of folding FPC
 
 Obico has no affiliation with the Nozzle Camera from 3DO, but they are a great team making an awesome nozzle camera product!
 
-## Thanks to the contributors that made the 3DO Nozzle Camera project possible
+## Thanks to the contributors that made the 3DO Nozzle Camera project possible {#thanks-to-the-contributors-that-made-the-3do-nozzle-camera-project-possible}
 
 CAD Design & Testing
 

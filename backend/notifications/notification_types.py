@@ -12,10 +12,11 @@ FilamentChange = NotificationType('FilamentChange')
 HeaterCooledDown = NotificationType('HeaterCooledDown')
 HeaterTargetReached = NotificationType('HeaterTargetReached')
 
+#Deprecation
 OTHER_PRINT_EVENT_MAP = {
-  PrinterEvent.STARTED: PrintStarted,
+  PrinterEvent.STARTED: PrintStarted, 
   PrinterEvent.PAUSED: PrintPaused,
-  PrinterEvent.RESUMED: PrintResumed,
+  PrinterEvent.RESUMED: PrintResumed, 
 }
 
 def from_print_event(print_event):

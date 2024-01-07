@@ -167,6 +167,9 @@ def unsubscribe_email(request):
         nsetting.notify_on_filament_change = False
         nsetting.notify_on_other_print_events = False
         nsetting.notify_on_heater_status = False
+        nsetting.notify_on_print_start = False
+        nsetting.notify_on_print_pause = False
+        nsetting.notify_on_print_resume = False
         nsetting.save()
     elif email_list == 'account_notification':
         user.account_notification_by_email = False

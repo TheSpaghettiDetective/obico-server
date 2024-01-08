@@ -142,3 +142,4 @@ websocket-client==1.6.4 ; python_version >= '3.8'
 whitenoise[brotli]==6.6.0
 yarl==1.9.2 ; python_version >= '3.7'
 zope.interface==6.1
+django-oauth-toolkit==2.3.0

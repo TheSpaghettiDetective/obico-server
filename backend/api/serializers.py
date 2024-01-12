@@ -257,11 +257,28 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             'notify_on_filament_change',
             'notify_on_other_print_events',
             'notify_on_heater_status',
+            'notify_on_print_start',
+            'notify_on_print_pause',
+            'notify_on_print_resume',
         )
 
         read_only_fields = (
             'id', 'user', 'created_at', 'updated_at',
         )
+        
+    def create(self, validated_data):
+        if validated_data.get('notify_on_other_print_events'):
+            validated_data['notify_on_print_start'] = True
+            validated_data['notify_on_print_pause'] = True
+            validated_data['notify_on_print_resume'] = True
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if validated_data.get('notify_on_other_print_events'):
+            validated_data['notify_on_print_start'] = True
+            validated_data['notify_on_print_pause'] = True
+            validated_data['notify_on_print_resume'] = True
+        return super().update(instance, validated_data)
 
     def validate_name(self, name):
         name = name.strip()

@@ -26,4 +26,8 @@ class Migration(migrations.Migration):
             name='notify_on_print_start',
             field=models.BooleanField(blank=True, default=False),
         ),
+        migrations.RunSQL(
+            "UPDATE app_notificationsetting SET notify_on_print_pause = TRUE WHERE notify_on_other_print_events = TRUE;",
+            "UPDATE app_notificationsetting SET notify_on_print_pause = FALSE WHERE notify_on_other_print_events = FALSE;"
+        ),
     ]

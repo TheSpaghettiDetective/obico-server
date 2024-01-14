@@ -965,6 +965,10 @@ class NotificationSetting(models.Model):
 
     notify_on_heater_status = models.BooleanField(blank=True, default=False)
 
+    notify_on_print_start = models.BooleanField(blank=True, default=False)
+    notify_on_print_pause = models.BooleanField(blank=True, default=False)
+    notify_on_print_resume = models.BooleanField(blank=True, default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

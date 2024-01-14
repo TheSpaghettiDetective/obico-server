@@ -192,10 +192,9 @@ export default {
               notify_on_print_done: 'f',
               notify_on_print_cancelled: 'f',
               notify_on_filament_change: 'f',
-              notify_on_other_print_events: 'f',
               notify_on_heater_status: 'f',
               notify_on_print_start: 'f',
-              notify_on_print_paus: 'f',
+              notify_on_print_pause: 'f',
               notify_on_print_resume: 'f'
             },
           })

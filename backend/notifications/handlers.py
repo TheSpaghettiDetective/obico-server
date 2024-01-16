@@ -143,7 +143,7 @@ class Handler(object):
 
         if notification_type == notification_types.PrintPaused:
             return Feature.notify_on_print_pause
-        
+
         return None
 
     def should_plugin_handle_notification_type(

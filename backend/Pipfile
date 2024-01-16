@@ -51,10 +51,11 @@ sentry-sdk = "*"
 nplusone = "*"
 colorlog = "*"
 packaging = "*"
-numpy = "1.26.0"
+numpy = "==1.26.3"
 django-debug-toolbar = "*"
 inotify-simple = "*"
 Twisted = {extras = ["tls", "http2"], version = "*" }
+django-oauth-toolkit = "==2.3.0"
 
 [dev-packages]
 

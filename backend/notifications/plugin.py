@@ -31,8 +31,10 @@ class Feature(enum.Enum):
     notify_on_print_done = 'notify_on_print_done'
     notify_on_print_cancelled = 'notify_on_print_cancelled'
     notify_on_filament_change = 'notify_on_filament_change'
-    notify_on_other_print_events = 'notify_on_other_print_events'
     notify_on_heater_status = 'notify_on_heater_status'
+    notify_on_print_start = 'notify_on_print_start',
+    notify_on_print_pause =  'notify_on_print_pause',
+    notify_on_print_resume = 'notify_on_print_resume',
 
 
 @dataclasses.dataclass(frozen=True)
@@ -97,8 +99,10 @@ class BaseNotificationPlugin(object):
             Feature.notify_on_print_done,
             Feature.notify_on_print_cancelled,
             Feature.notify_on_filament_change,
-            Feature.notify_on_other_print_events,
             Feature.notify_on_heater_status,
+            Feature.notify_on_print_start,
+            Feature.notify_on_print_pause,
+            Feature.notify_on_print_resume,
         }
 
     def env_vars(self) -> Dict:

@@ -255,8 +255,10 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
             'notify_on_print_done',
             'notify_on_print_cancelled',
             'notify_on_filament_change',
-            'notify_on_other_print_events',
             'notify_on_heater_status',
+            'notify_on_print_start',
+            'notify_on_print_pause',
+            'notify_on_print_resume',
         )
 
         read_only_fields = (

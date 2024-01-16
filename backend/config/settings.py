@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'qr_code',
     'app',  # app has to come before allauth for template override to work
     "channels_presence",
+    'oauth2_provider',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -275,6 +276,7 @@ AUTHENTICATION_BACKENDS = (
 
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
+    'oauth2_provider.backends.OAuth2Backend',
 )
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
@@ -301,6 +303,12 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 if RECAPTCHA_SITE_KEY:
     ACCOUNT_FORMS = {'signup': 'app.forms.RecaptchaSignupForm'}
+
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': None,
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+    'PKCE_REQUIRED': False,
+}
 
 # Layout
 TEMPLATE_LAYOUT = "layout.html"

@@ -176,9 +176,10 @@ This method is optional if your plugin doesn't support **any** of the following 
 - notify_on_print_done
 - notify_on_print_cancelled
 - notify_on_filament_change
-- notify_on_other_print_events
 - notify_on_heater_status
-
+- notify_on_print_start
+- notify_on_print_pause
+- notify_on_print_resume
 
 ##### Signature {#signature-4}
 
@@ -304,7 +305,9 @@ When a feature is declared supported by a plugin, a toggle will be shown on its 
 - `notify_on_print_done`
 - `notify_on_print_cancelled`
 - `notify_on_filament_change`
-- `notify_on_other_print_events`
+- `notify_on_print_start`
+- `notify_on_print_pause`
+- `notify_on_print_resume`
 - `notify_on_heater_status`
 
 ### module `notification_types` {#module-notification_types}

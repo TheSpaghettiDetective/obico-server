@@ -67,21 +67,21 @@ The following is using gmail as an example. Other web mail services may vary sli
 
 2. Open `.env` using your favorite editor.
 
-3. Find the following lines, and set them to the correct values of your email account:
+3. Find the following lines, and set them to the correct values of your email account (make sure to remove the pound "#" symbols):
 
 ```text
-# EMAIL_HOST=
+EMAIL_HOST=
 
-# EMAIL_HOST_USER=
+EMAIL_HOST_USER=
 # Such as your email address for a Gmail account
 
-# EMAIL_HOST_PASSWORD=
+EMAIL_HOST_PASSWORD=
 # Your email account password
 
-# EMAIL_PORT=587
+EMAIL_PORT=587
 # Check with your email provider to make sure.
 
-# EMAIL_USE_TLS=True
+EMAIL_USE_TLS=True
 # Set it to False if your email provider doesn't use TLS, which is uncommon
 ```
 

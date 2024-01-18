@@ -33,6 +33,14 @@ class SocialAccountAwareLoginForm(LoginForm):
             raise err
 
 
+class CustomSignupForm(SignupForm):
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return email
+
+
 class RecaptchaSignupForm(SignupForm):
     recaptcha_token = CharField(required=True)
 

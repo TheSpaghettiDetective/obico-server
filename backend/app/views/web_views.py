@@ -25,7 +25,7 @@ from lib.url_signing import HmacSignedUrl
 from lib.view_helpers import get_print_or_404, get_printer_or_404, get_paginator, get_template_path
 
 from app.models import (User, Printer, SharedResource, GCodeFile, NotificationSetting)
-from app.forms import SocialAccountAwareLoginForm
+from app.forms import SocialAccountAwareLoginForm, CustomSignupForm
 from lib import channels
 from lib.file_storage import save_file_obj
 from app.tasks import preprocess_timelapse
@@ -47,6 +47,8 @@ class SocialAccountAwareLoginView(LoginView):
     form_class = SocialAccountAwareLoginForm
 
 class SocialAccountAwareSignupView(SignupView):
+    form_class = CustomSignupForm
+
     def dispatch(self, request, *args, **kwargs):
         if settings.ACCOUNT_ALLOW_SIGN_UP:
             return super().dispatch(request, *args, **kwargs)

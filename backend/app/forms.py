@@ -38,6 +38,7 @@ class CustomSignupForm(SignupForm):
         email = self.cleaned_data.get('email')
         if email and User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("A user with that email already exists.")
+        import time; time.sleep(30)
         return email
 
 

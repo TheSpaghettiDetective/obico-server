@@ -35,9 +35,9 @@ import {
   faRulerVertical,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
+import { syndicate } from '@src/lib/page-context'
 
-const urlParams = new URLSearchParams(window.location.search)
-Vue.prototype.$brand = urlParams.get('theme')
+Vue.prototype.$syndicate = syndicate().provider
 
 export default (router, components) => {
   initTheme()

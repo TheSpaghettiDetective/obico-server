@@ -6,9 +6,9 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <div v-if="$brand">
+        <div v-if="$syndicate">
           <img
-            :src="`/static/img/branding/${$brand}/logo-square.png`"
+            :src="`/static/img/syndicate/${$syndicate}/logo-square.png`"
             class="logo-small"
             alt="Logo"
           />

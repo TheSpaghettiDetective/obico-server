@@ -4,7 +4,7 @@ const Themes = {
   System: 'System',
 }
 
-export const yumi = {
+export const qidi = {
   // only light theme is supported for now
   colors: [
     {

@@ -19,4 +19,5 @@ def detect_app_platform(request):
 def additional_settings_export(request):
     return {
         'TWILIO_COUNTRY_CODES': settings.TWILIO_COUNTRY_CODES,
+        'ORGANIZATION': {"provider": "yumi"}
     }

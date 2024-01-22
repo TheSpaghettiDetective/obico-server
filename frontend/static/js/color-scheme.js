@@ -184,7 +184,6 @@ function currentThemeValue(theme) {
 
 function initTheme(themeValue, brand) {
   const finalColors =(brand && branding[brand]) ? [...colors, ...branding[brand].colors] : colors
-
   finalColors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 

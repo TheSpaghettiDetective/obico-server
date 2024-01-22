@@ -1,5 +1,5 @@
 import { isLocalStorageSupported } from './utils.js'
-import * as branding from './branding.js'
+import * as syndicates from './syndicate.js'
 
 
 const Themes = {
@@ -182,9 +182,8 @@ function currentThemeValue(theme) {
 }
 
 
-function initTheme(themeValue, brand) {
-  const finalColors =(brand && branding[brand]) ? [...colors, ...branding[brand].colors] : colors
-
+function initTheme(themeValue, syndicate) {
+  const finalColors =(syndicate && syndicates[syndicate]) ? [...colors, ...syndicates[syndicate].colors] : colors
   finalColors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 

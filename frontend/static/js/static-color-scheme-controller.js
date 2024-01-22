@@ -4,11 +4,10 @@ const theme = {
   value: defaultTheme,
 }
 
-const urlParams = new URLSearchParams(window.location.search)
-const brand = urlParams.get('theme')
+const syndicate = JSON.parse(document.querySelector('#syndicate-json').text)
 
 // initialize theme for static pages
-initTheme(currentThemeValue(theme), brand)
+initTheme(currentThemeValue(theme), syndicate.provider)
 
 // manually control navbar color
 let navbar = document.getElementById('dynamic-navbar')

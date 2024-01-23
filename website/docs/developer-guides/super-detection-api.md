@@ -98,14 +98,27 @@ API request was NOT processed successfully for other reasons, such as missing re
 }
 ```
 
+#### Status code: `401` {#status-code-401}
+
+Super auth_token is not valid. Contact Obico team member.
+
+#### Body {#body-3}
+
+```
+{
+  "error": "Invalid or Inactive Token",
+  "is_authenticated": "False"
+}
+```
+
 #### Status code: `429` {#status-code-429}
 
-API request was NOT processed successfully because of rate throttling.
+API request was NOT processed successfully because of rate throttling. Contact Obico team member to increase your rate limit.
 
 #### Body {#body-2}
 
 ```
 {
-  "error": "Detailed error message"
+  "error": "You are running too hot! Take it easy buddy..."
 }
 ```

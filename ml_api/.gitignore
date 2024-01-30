@@ -1,2 +1,2 @@
-model/*.onnx
 model/*.darknet
+model/*.onnx

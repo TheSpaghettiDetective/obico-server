@@ -4,23 +4,30 @@
 # -----------------------------------------------------------------------------
 FROM nvcr.io/nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04 as darknet_builder
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install -y ca-certificates build-essential gcc g++ cmake git
+# hadolint ignore=DL3008,DL3015
+RUN apt-get update \
+  && apt-get install -y \
+    build-essential \
+    ca-certificates \
+    cmake \
+    g++ \
+    gcc \
+    git \
+    wget
 WORKDIR /
 # Lock darknet version for reproducibility
-RUN git clone https://github.com/AlexeyAB/darknet && cd darknet && git checkout 59c86222c5387bffd9108a21885f80e980ece234
-# compile GPU version
-RUN cd darknet \
+# compile CPU and GPU version
+# hadolint ignore=DL3003
+RUN git clone https://github.com/AlexeyAB/darknet --depth 1 \
+  && cd darknet \
+  && git checkout 59c86222c5387bffd9108a21885f80e980ece234 \
+  && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
+  && make -j "$(nproc)" && mv libdarknet.so libdarknet_cpu.so \
   && sed -i 's/GPU=0/GPU=1/' Makefile \
   && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
   && sed -i 's/CUDNN_HALF=0/CUDNN_HALF=1/' Makefile \
-  && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
-  && make -j 4 && mv libdarknet.so libdarknet_gpu.so
-# compile CPU version
-RUN cd darknet \
-  && sed -i 's/GPU=1/GPU=0/' Makefile \
-  && sed -i 's/CUDNN=1/CUDNN=0/' Makefile \
-  && sed -i 's/CUDNN_HALF=1/CUDNN_HALF=0/' Makefile \
-  && make -j 4 && mv libdarknet.so libdarknet_cpu.so
+  && make -j "$(nproc)" && mv libdarknet.so libdarknet_gpu.so
+
 # -----------------------------------------------------------------------------
 # Cuda image with cuDNN runtime (smaller) without dev packages
 # Output: GPU + CPU image
@@ -30,11 +37,18 @@ FROM nvcr.io/nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu20.04 as ml_api_base_amd64
 COPY --from=darknet_builder /darknet /darknet
 
 WORKDIR /app
-RUN apt update && apt install --no-install-recommends -y ca-certificates python3-pip wget
-RUN pip install --upgrade pip
-RUN pip install opencv_python_headless onnxruntime-gpu
+# hadolint ignore=DL3008
+RUN apt-get update \
+  && apt-get install --no-install-recommends -y \
+    ca-certificates \
+    python3-pip \
+    wget \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
-ADD requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip==23.3.2
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 3333

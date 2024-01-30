@@ -116,4 +116,3 @@ if __name__ == "__main__":
         elif cap:
             reading_success, custom_image_bgr = cap.read()
             frame_number += 1
-

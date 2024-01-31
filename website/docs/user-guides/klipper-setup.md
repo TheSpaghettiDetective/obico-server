@@ -42,7 +42,7 @@ Before you start, make sure:
     3. Moonraker network port: `7125` (HTTP) or `7130` (HTTPS) (see [\[server\]][])
     4. Log file directory: `/logs` folder (root level of the disk) (see [moonraker.log])
 6. Next, the installation process will ask you to enter details required to link your printer to the Obico server. Provide:
-    - The Obico Server you want to link it to. The default is the [Obico Cloud](https://app.obico.io).  
+    - The Obico Server you want to link it to. The default is `https://app.obico.io` (the [Obico Cloud](https://app.obico.io)).
       Alternatively, you can also [host your own Obico Server][]: enter the IP address or hostname of your own server (e.g. http://192.168.0.5:3334).
     - A **6-digit verification code**. **Leave the terminal window open on this screen.**
 7. Follow the guide outlined in [Step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) to either link your Klipper machine and Obico automatically, **or** obtain the 6-digit manual verification code.

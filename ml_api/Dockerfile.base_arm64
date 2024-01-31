@@ -22,7 +22,7 @@ ENV LIBRARY_PATH="${LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib:/usr
 # hadolint ignore=DL3003
 RUN git clone https://github.com/AlexeyAB/darknet --depth 1 \
   && cd darknet \
-  && git checkout 59c86222c5387bffd9108a21885f80e980ece234 \
+  && git fetch origin 59c86222c5387bffd9108a21885f80e980ece234 \
   && sed -i 's/LIBSO=0/LIBSO=1/' Makefile \
   && make -j "$(nproc)" && mv libdarknet.so libdarknet_cpu.so \
   && sed -i 's/GPU=0/GPU=1/' Makefile \
@@ -70,3 +70,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 3333
+
+ARG GIT_SOURCE
+ARG GIT_COMMIT
+LABEL org.opencontainers.image.source="${GIT_SOURCE}"
+LABEL org.opencontainers.image.revision="${GIT_COMMIT}"

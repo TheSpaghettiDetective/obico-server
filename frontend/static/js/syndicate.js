@@ -4,36 +4,36 @@ const Themes = {
   System: 'System',
 }
 
-export const qidi = {
+export const yumi = {
   // only light theme is supported for now
   colors: [
     {
       name: 'primary',
-      values: {[Themes.Light]: '#078ED3', [Themes.Dark]: '#078ED3'},
+      values: {[Themes.Light]: '#078ED3', [Themes.Dark]: '#FFCC2E'},
     },
     {
       name: 'primary-hover',
-      values: {[Themes.Light]: '#0B88C8', [Themes.Dark]: '#0B88C8'},
+      values: {[Themes.Light]: '#0B88C8', [Themes.Dark]: '#70EFDE'},
     },
     {
       name: 'primary-muted',
-      values: {[Themes.Light]: '#24A8EC', [Themes.Dark]: '#24A8EC'},
+      values: {[Themes.Light]: '#24A8EC', [Themes.Dark]: '#018786'},
     },
     {
       name: 'on-primary',
-      values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#FFFFFF'},
+      values: {[Themes.Light]: '#FFFFFF', [Themes.Dark]: '#001210'},
     },
     {
       name: 'secondary',
-      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#28303A'},
+      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
     },
     {
       name: 'secondary-hover',
-      values: {[Themes.Light]: '#424A54', [Themes.Dark]: '#424A54'},
+      values: {[Themes.Light]: '#424A54', [Themes.Dark]: '#D0D0D0'},
     },
     {
       name: 'on-secondary',
-      values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#EBEBEB'},
+      values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#28303A'},
     },
     {
       name: 'success',
@@ -77,43 +77,43 @@ export const qidi = {
     },
     {
       name: 'background',
-      values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#EBEBEB'},
+      values: {[Themes.Light]: '#EBEBEB', [Themes.Dark]: '#212224'},
     },
     {
       name: 'surface-primary',
-      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#ffffff'},
+      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#485B71'},
     },
     {
       name: 'surface-secondary',
-      values: {[Themes.Light]: '#F5F5F5', [Themes.Dark]: '#F5F5F5'},
+      values: {[Themes.Light]: '#F5F5F5', [Themes.Dark]: '#000000'},
     },
     {
       name: 'overlay',
-      values: {[Themes.Light]: '#F5F5F5CC', [Themes.Dark]: '#F5F5F5CC'},
+      values: {[Themes.Light]: '#F5F5F5CC', [Themes.Dark]: '#000000CC'},
     },
     {
       name: 'hover',
-      values: {[Themes.Light]: '#66666613', [Themes.Dark]: '#66666613'},
+      values: {[Themes.Light]: '#66666613', [Themes.Dark]: '#FFFFFF13'},
     },
     {
       name: 'hover-accent',
-      values: {[Themes.Light]: '#66666626', [Themes.Dark]: '#66666626'},
+      values: {[Themes.Light]: '#66666626', [Themes.Dark]: '#C9E0FA26'},
     },
     {
       name: 'divider',
-      values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#ABB6C2'},
+      values: {[Themes.Light]: '#ABB6C2', [Themes.Dark]: '#6A7B8A'},
     },
     {
       name: 'divider-muted',
-      values: {[Themes.Light]: '#ABB6C266', [Themes.Dark]: '#ABB6C266'},
+      values: {[Themes.Light]: '#ABB6C266', [Themes.Dark]: '#6A7B8A66'},
     },
     {
       name: 'text-primary',
-      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#28303A'},
+      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
     },
     {
       name: 'text-secondary',
-      values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#8A94A2'},
+      values: {[Themes.Light]: '#8A94A2', [Themes.Dark]: '#AAACB0'},
     },
     {
       name: 'text-help',
@@ -122,26 +122,26 @@ export const qidi = {
 
     {
       name: 'input-background',
-      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#E2E8ED'},
+      values: {[Themes.Light]: '#E2E8ED', [Themes.Dark]: '#42566B'},
     },
     {
       name: 'input-placeholder',
-      values: {[Themes.Light]: '#28303A80', [Themes.Dark]: '#28303A80'},
+      values: {[Themes.Light]: '#28303A80', [Themes.Dark]: '#EBEBEB80'},
     },
 
     {
       name: 'table-accent',
-      values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#E3E3E3'},
+      values: {[Themes.Light]: '#E3E3E3', [Themes.Dark]: '#283848'},
     },
 
     // Icon colors
     {
       name: 'icon-tunneling-1',
-      values: {[Themes.Light]: '#4E5D6C', [Themes.Dark]: '#4E5D6C'},
+      values: {[Themes.Light]: '#4E5D6C', [Themes.Dark]: '#EAEAEA'},
     },
     {
       name: 'icon-tunneling-2',
-      values: {[Themes.Light]: '#1D2935', [Themes.Dark]: '#1D2935'},
+      values: {[Themes.Light]: '#1D2935', [Themes.Dark]: '#CDCDCD'},
     },
   ],
 }

@@ -1,5 +1,6 @@
 ARG BASE_TAG="1.3"
 FROM thespaghettidetective/ml_api_base:${BASE_TAG}
+LABEL base-tag="${BASE_TAG}"
 
 WORKDIR /app
 EXPOSE 3333

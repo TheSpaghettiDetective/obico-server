@@ -1,2 +1,6 @@
 model/*.darknet
 model/*.onnx
+.*
+Dockerfile*
+Makefile
+**/*.pyc

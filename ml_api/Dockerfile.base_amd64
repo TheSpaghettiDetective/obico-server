@@ -26,7 +26,8 @@ RUN git clone https://github.com/AlexeyAB/darknet --depth 1 \
   && sed -i 's/GPU=0/GPU=1/' Makefile \
   && sed -i 's/CUDNN=0/CUDNN=1/' Makefile \
   && sed -i 's/CUDNN_HALF=0/CUDNN_HALF=1/' Makefile \
-  && make -j "$(nproc)" && mv libdarknet.so libdarknet_gpu.so
+  && make -j "$(nproc)" && mv libdarknet.so libdarknet_gpu.so \
+  && rm -rf .git .circleci .github
 
 # -----------------------------------------------------------------------------
 # Cuda image with cuDNN runtime (smaller) without dev packages

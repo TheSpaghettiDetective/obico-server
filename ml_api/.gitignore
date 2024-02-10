@@ -1,2 +1,3 @@
 model/*.darknet
 model/*.onnx
+darknet/

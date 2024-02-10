@@ -32,6 +32,7 @@ target "ml_api_amd64" {
     GIT_COMMIT = "${GIT_COMMIT}"
     GIT_SOURCE = "${GIT_SOURCE}"
     ARCH = "amd64"
+    BASE_TAG = "${GIT_COMMIT}-amd64"
   }
 
   contexts = {
@@ -48,6 +49,8 @@ target "ml_api_arm64" {
     GIT_COMMIT = "${GIT_COMMIT}"
     GIT_SOURCE = "${GIT_SOURCE}"
     ARCH = "arm64"
+    BASE_TAG = "${GIT_COMMIT}-arm64"
+
   }
 
   contexts = {

@@ -20,3 +20,6 @@ ARG GIT_SOURCE
 ARG GIT_COMMIT
 LABEL org.opencontainers.image.source="${GIT_SOURCE}"
 LABEL org.opencontainers.image.revision="${GIT_COMMIT}"
+
+# check if we can load app, if any python import fails then it will fail image build
+RUN gunicorn --bind 0.0.0.0:3333 --workers 1 wsgi --check-config --preload

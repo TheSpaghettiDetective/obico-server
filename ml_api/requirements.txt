@@ -2,5 +2,6 @@ flask==2.3.3
 gunicorn==21.2.0
 ipdb
 newrelic==4.12.0.113
+opencv-python==4.8.1.78
 requests==2.31.0
 sentry_sdk[flask]==1.40.3

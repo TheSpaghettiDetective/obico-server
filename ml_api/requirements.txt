@@ -1,4 +1,4 @@
-flask>=1.0
+flask==2.3.3
 gunicorn==19.9.0
 ipdb
 newrelic==4.12.0.113

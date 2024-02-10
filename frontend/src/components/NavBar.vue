@@ -11,7 +11,7 @@
       <b-container class="p-0">
         <b-navbar-brand href="/">
           <div v-if="$syndicate">
-            <img :src="`/static/img/syndicate/${$syndicate}/logo-full.png`" width="100" alt="Logo" />
+            <img :src="`/static/${$syndicate}/img/logo-full.png`" width="100" alt="Logo" />
           </div>
           <svg v-else width="100" height="30">
             <use href="#svg-logo-full" />

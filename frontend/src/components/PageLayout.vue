@@ -8,7 +8,7 @@
       <a href="/" class="sidebar-header">
         <div v-if="$syndicate">
           <img
-            :src="`/static/img/syndicate/${$syndicate}/logo-square.png`"
+            :src="`/static/${$syndicate}/img/logo-square.png`"
             class="logo-small"
             alt="Logo"
           />

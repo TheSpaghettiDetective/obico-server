@@ -1,9 +1,6 @@
 flask==2.3.3
-gunicorn==19.9.0
+gunicorn==21.2.0
 ipdb
 newrelic==4.12.0.113
-onnxruntime-gpu
-opencv_python_headless
-redis==3.0.1
-requests==2.21.0
-sentry_sdk[flask]==1.5.10
+requests==2.31.0
+sentry_sdk[flask]==1.40.3

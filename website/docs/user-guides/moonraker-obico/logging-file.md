@@ -7,6 +7,10 @@ The log file is usually located in the folder `~/printer_data/logs/`. The name o
 If the log file doesn't provide enough info for you to find the root cause of the issue, it can often be very helpful to change the logging level to `DEBUG`. Follow [this guide](config.md/#logging-section) for detailed instructions. Don't forget to restart the moonraker-obico service after the change.
 
 :::caution
+You need to restart the printer or Raspberry Pi for any change to take effect.
+:::
+
+:::caution
 When you set the logging level to `DEBUG`, the log file will become very large quickly.
 :::
 

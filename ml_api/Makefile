@@ -1,5 +1,7 @@
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 GIT_SOURCE := $(shell git config --get remote.origin.url)
+QUAY_REPO_USER := kaszpir
+QUAY_REPO_NAME := ml_api
 
 help:
 	@grep -E '(^[0-9a-zA-Z_-]+:.*?##.*$$)|(^##)' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
@@ -49,6 +51,16 @@ clean: ## delete built images for current commit
 	docker image ls | grep ${GIT_COMMIT} | awk '{print $$3}' | sort | uniq | xargs docker rmi -f || true
 
 all: lint-dockerfile ml list_images ## build all
+
+quay_amd64:  ARCH=amd64
+quay_arm64:  ARCH=arm64
+quay_amd64 quay_arm64:
+	$(MAKE) ml_${ARCH}
+	docker tag ml_api:${GIT_COMMIT}-${ARCH} quay.io/${QUAY_REPO_USER}/${QUAY_REPO_NAME}:${GIT_COMMIT}-${ARCH}
+	docker push quay.io/${QUAY_REPO_USER}/${QUAY_REPO_NAME}:${GIT_COMMIT}-${ARCH}
+
+quay: ## build ml api images and push to quay.io
+	$(MAKE) quay_amd64 quay_arm64
 
 
 bake: ## run image builds with docker buildx, see docker-bake.hcl

@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y ca-certificates build-essential gcc g++ cmake git
 WORKDIR /
 # Lock darknet version for reproducibility
-RUN git clone https://github.com/AlexeyAB/darknet --depth 1 && cd darknet && git checkout 59c86222c5387bffd9108a21885f80e980ece234
+RUN git clone https://github.com/AlexeyAB/darknet && cd darknet && git checkout 59c86222c5387bffd9108a21885f80e980ece234
 ENV LIBRARY_PATH="${LIBRARY_PATH}:/usr/local/cuda/targets/aarch64-linux/lib:/usr/local/cuda/targets/aarch64-linux/lib/stubs"
 # compile CPU version
 RUN cd darknet \

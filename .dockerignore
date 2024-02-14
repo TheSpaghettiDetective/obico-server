@@ -2,3 +2,4 @@ npm_modules/
 __pycache__
 .git
 backend/static_build/
+darknet/

@@ -1,3 +1,7 @@
-model/*.onnx
+.*
+**/*.pyc
+Dockerfile*
+Makefile
 model/*.darknet
+model/*.onnx
 

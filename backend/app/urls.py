@@ -6,6 +6,8 @@ from .views import mobile_views
 
 from .views import tunnelv2_views
 
+from .views import orca_slicer_views
+
 from config import settings
 
 urlpatterns = [
@@ -63,7 +65,14 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
+
+    # Shown only for orcaslicer
+    path('orca_slicer/welcome/', orca_slicer_views.welcome),
 ]
+
+# 创建logger对象
+import logging
+logger = logging.getLogger(__name__)
 
 if settings.DEBUG:
     urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))

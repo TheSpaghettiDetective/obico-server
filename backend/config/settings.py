@@ -99,6 +99,7 @@ MIDDLEWARE = [
     'app.middleware.check_admin_ip_whitelist',
     'allauth.account.middleware.AccountMiddleware',
     'hijack.middleware.HijackUserMiddleware',
+    'app.middleware.check_x_api',
 ]
 
 if DEBUG:
@@ -258,6 +259,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ]
 }
 
 if DEBUG:

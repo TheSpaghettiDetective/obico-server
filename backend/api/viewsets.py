@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
+from rest_framework.views import APIView
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework import permissions
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
@@ -90,7 +93,7 @@ class PrinterViewSet(
 ):
 
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     serializer_class = PrinterSerializer
 
     def get_queryset(self):
@@ -432,7 +435,7 @@ class GCodeFolderViewSet(viewsets.ModelViewSet):
 class GCodeFileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
     pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
@@ -870,3 +873,10 @@ class PrinterEventViewSet(
 
         serializer = self.serializer_class(results, many=True)
         return Response(serializer.data)
+
+class ApiVersionView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [OAuth2Authentication]
+
+    def get(self, request, format=None):
+        return Response({"text": "Obico"})

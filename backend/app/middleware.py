@@ -15,6 +15,11 @@ from ipware import get_client_ip
 from .views import tunnelv2_views
 from lib.tunnelv2 import OctoprintTunnelV2Helper
 
+from app.models import User
+from django.contrib.auth import login as auth_login
+from oauth2_provider.models import AccessToken
+from oauth2_provider.signals import app_authorized
+
 import logging
 
 LOGGER = logging.getLogger()
@@ -106,4 +111,30 @@ def check_admin_ip_whitelist(get_response):
         response = get_response(request)
         return response
 
+    return middleware
+
+def authenticate_credentials(key):
+    try:
+        access_token = AccessToken.objects.get(token=key)
+        if access_token.is_valid():
+            user = access_token.user
+            return user
+        else:
+            return None  # Token is expired or invalid
+    except AccessToken.DoesNotExist:
+        return None  # Token does not exist
+
+def check_x_api(get_response):
+    def middleware(request):
+        token = request.META.get('HTTP_X_API_KEY', '')  
+        if token:
+            user = authenticate_credentials(token)
+            request.user = user
+            setattr(request.user, 'backend', 'django.contrib.auth.backends.ModelBackend')
+            auth_login(request, request.user)
+        
+        response = get_response(request)
+        return response
+    
+   
     return middleware

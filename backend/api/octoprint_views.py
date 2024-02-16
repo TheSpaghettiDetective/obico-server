@@ -41,7 +41,6 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
-
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

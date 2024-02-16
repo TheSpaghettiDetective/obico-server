@@ -4,6 +4,6 @@ ipdb
 newrelic==4.12.0.113
 onnxruntime
 onnxruntime-gpu
-opencv-python
+opencv-python-headless
 requests==2.31.0
 sentry_sdk[flask]==1.40.3

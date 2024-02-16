@@ -43,7 +43,7 @@ def get_p():
             img = cv2.imdecode(img_array, -1)
             detections = detect(net_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
-        except:
+        except Exception as err:
             sentry_sdk.capture_exception()
             app.logger.error(f"Failed to get image {request.args} - {err}")
             abort(
@@ -52,7 +52,7 @@ def get_p():
                         detections=[],
                         message=f"Failed to get image {request.args} - {err}",
                     ),
-                    503,
+                    400,
                 )
             )
     else:
@@ -62,7 +62,7 @@ def get_p():
                 jsonify(
                     detections=[], message=f"Invalid request params: {request.args}"
                 ),
-                400,
+                422,
             )
         )
 

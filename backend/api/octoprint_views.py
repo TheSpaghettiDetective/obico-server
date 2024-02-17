@@ -41,7 +41,7 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 LOGGER = logging.getLogger(__name__)
@@ -227,6 +227,11 @@ def pause_if_needed(printer, img_url):
 
 
 def cap_image_size(pic):
+    try:
+        im = Image.open(pic.file)
+    except UnidentifiedImageError:
+        raise ValidationError('Corrupted image.')
+
     im = Image.open(pic.file)
     if max(im.size) <= 1296:
         pic.file.seek(0)

@@ -277,7 +277,7 @@ class RangeFileWrapper(object):
                 raise StopIteration()
             self.remaining -= len(data)
             return data
-       
+
 range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
 def serve_jpg_file(request, file_path):
     url = HmacSignedUrl(request.get_full_path())
@@ -324,3 +324,7 @@ def health_check(request):
     User.objects.all()[:1]
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
+
+def orca_slicer_authorized(request):
+    access_granted = 'true' if request.GET.get('error') != 'access_denied' else 'false'
+    return render(request, 'orca_slicer_authorized.html', {'access_granted': access_granted})

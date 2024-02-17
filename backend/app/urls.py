@@ -6,8 +6,6 @@ from .views import mobile_views
 
 from .views import tunnelv2_views
 
-from .views import orca_slicer_views
-
 from config import settings
 
 urlpatterns = [
@@ -46,6 +44,7 @@ urlpatterns = [
     path('publictimelapses/', RedirectView.as_view(url='/ent_pub/publictimelapses/', permanent=True), name='publictimelapse_list'),
     path('slack_oauth_callback/', web_views.slack_oauth_callback, name='slack_oauth_callback'),
     path('printer_events/', web_views.printer_events),
+    path('orca_slicer/authorized/', web_views.orca_slicer_authorized, name='orca_slicer_authorized'),
 
     # tunnel v2 redirect and page with iframe
     re_path(
@@ -65,14 +64,7 @@ urlpatterns = [
     path('mobile/auth/apple/', mobile_views.apple_login),
     path('mobile/auth/fetch/', mobile_views.fetch_session),
     path('mobile/auth/oauth_callback/', mobile_views.oauth_callback),
-
-    # Shown only for orcaslicer
-    path('orca_slicer/welcome/', orca_slicer_views.welcome),
 ]
-
-# 创建logger对象
-import logging
-logger = logging.getLogger(__name__)
 
 if settings.DEBUG:
     urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))

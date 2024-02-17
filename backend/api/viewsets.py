@@ -13,7 +13,6 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from rest_framework.views import APIView
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework import permissions
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
@@ -875,8 +874,8 @@ class PrinterEventViewSet(
         return Response(serializer.data)
 
 class ApiVersionView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     authentication_classes = [OAuth2Authentication]
 
     def get(self, request, format=None):
-        return Response({"text": "Obico"})
+        return Response({"major": "1", "minor": "0"})

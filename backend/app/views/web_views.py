@@ -325,6 +325,6 @@ def health_check(request):
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
 
-
 def orca_slicer_authorized(request):
-    return render(request, 'orca_slicer_authorized.html')
+    access_granted = 'true' if request.GET.get('error') != 'access_denied' else 'false'
+    return render(request, 'orca_slicer_authorized.html', {'access_granted': access_granted})

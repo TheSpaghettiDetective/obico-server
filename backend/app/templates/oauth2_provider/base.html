@@ -1,0 +1,7 @@
+{% extends "non_vue_layout.html" %}
+
+{% block navbar %}
+  {% if request.GET.hide_navbar != 'true' %}
+  {{ block.super }}
+  {% endif %}
+{% endblock navbar %}

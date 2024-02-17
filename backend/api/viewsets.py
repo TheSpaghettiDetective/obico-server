@@ -875,7 +875,7 @@ class PrinterEventViewSet(
 
 class ApiVersionView(APIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = [OAuth2Authentication]
+    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
 
     def get(self, request, format=None):
-        return Response({"major": "1", "minor": "0"})
+        return Response({'version': '1.0.0'})

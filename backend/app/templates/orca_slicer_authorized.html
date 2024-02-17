@@ -9,6 +9,12 @@
 </head>
 
 <body>
+    {% if access_granted == 'false' %}
+        <div>
+            <h3>Access denied</h3>
+            <p>Access to the Slicer was denied. You can close the window now.</p>
+        </div>
+    {% else %}
     <div id="auth-div">
         <p>Access Token: </p>
         <p>Expires In: </p>
@@ -41,6 +47,7 @@
             }
         });
     </script>
+    {% endif %}
 </body>
 
 </html>

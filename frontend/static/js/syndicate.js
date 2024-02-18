@@ -13,7 +13,7 @@ export const yumi = {
     },
     {
       name: 'primary-hover',
-      values: {[Themes.Light]: '#0B88C8', [Themes.Dark]: '#70EFDE'},
+      values: {[Themes.Light]: '#0B88C8', [Themes.Dark]: '#FFCC2E'},
     },
     {
       name: 'primary-muted',
@@ -25,7 +25,7 @@ export const yumi = {
     },
     {
       name: 'secondary',
-      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
+      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#AAACB0'},
     },
     {
       name: 'secondary-hover',
@@ -81,7 +81,7 @@ export const yumi = {
     },
     {
       name: 'surface-primary',
-      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#485B71'},
+      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#233141'},
     },
     {
       name: 'surface-secondary',
@@ -109,7 +109,7 @@ export const yumi = {
     },
     {
       name: 'text-primary',
-      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#EBEBEB'},
+      values: {[Themes.Light]: '#28303A', [Themes.Dark]: '#FFFFFF'},
     },
     {
       name: 'text-secondary',
@@ -265,7 +265,7 @@ export const biqu = {
 
     {
       name: 'input-background',
-      values: {[Themes.Light]: '#42566B', [Themes.Dark]: '#42566B'},
+      values: {[Themes.Light]: '#42566B', [Themes.Dark]: '#000000'},
     },
     {
       name: 'input-placeholder',

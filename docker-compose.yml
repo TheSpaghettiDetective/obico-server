@@ -39,6 +39,7 @@ x-web-defaults: &web-defaults
     SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
     SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
     DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
+    SYNDICATE: '${SYNDICATE-}'
     VERSION:
 
 services:

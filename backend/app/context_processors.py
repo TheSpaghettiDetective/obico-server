@@ -17,7 +17,12 @@ def detect_app_platform(request):
 
 
 def additional_settings_export(request):
-    return {
+    settings_dict = {
         'TWILIO_COUNTRY_CODES': settings.TWILIO_COUNTRY_CODES,
-        # 'syndicate': {"provider": "yumi"}
     }
+
+    syndicate = getattr(settings, 'SYNDICATE', None)
+    if syndicate:
+        settings_dict['syndicate'] = {"provider": syndicate}
+
+    return settings_dict

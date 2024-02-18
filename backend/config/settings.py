@@ -435,6 +435,9 @@ CHANNEL_LAYERS = {
 }
 
 # Settings to store and serve uploaded images
+
+LT_FILE_STORAGE_MODULE = os.environ.get('LT_FILE_STORAGE_MODULE', 'lib.fs_file_storage')
+ST_FILE_STORAGE_MODULE = os.environ.get('ST_FILE_STORAGE_MODULE', 'lib.fs_file_storage')
 GOOGLE_APPLICATION_CREDENTIALS = os.environ.get(
     'GOOGLE_APPLICATION_CREDENTIALS')
 

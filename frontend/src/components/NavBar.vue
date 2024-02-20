@@ -10,11 +10,8 @@
     >
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <div v-if="$syndicate">
-            <img :src="`/static/${$syndicate}/img/logo-full.png`" width="100" alt="Logo" />
-          </div>
-          <svg v-else width="100" height="30">
-            <use href="#svg-logo-full" />
+          <svg width="100" height="30">
+            <use :href="$syndicate === 'yumi' ? '#yumi-svg-logo-full' : '#svg-logo-full'" />
           </svg>
         </b-navbar-brand>
 

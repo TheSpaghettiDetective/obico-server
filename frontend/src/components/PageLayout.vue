@@ -6,16 +6,9 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <div v-if="$syndicate">
-          <img
-            :src="`/static/${$syndicate}/img/logo-square.png`"
-            class="logo-small"
-            alt="Logo"
-          />
-        </div>
-        <svg v-else class="logo-small">
-          <use href="#svg-logo-compact" />
-        </svg>
+        <svg width="100" height="30">
+            <use :href="$syndicate === 'yumi' ? '#yumi-svg-logo-full' : '#svg-logo-compact'" />
+          </svg>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">

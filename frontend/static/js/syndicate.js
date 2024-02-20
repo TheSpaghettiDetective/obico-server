@@ -81,7 +81,7 @@ export const yumi = {
     },
     {
       name: 'surface-primary',
-      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#233141'},
+      values: {[Themes.Light]: '#ffffff', [Themes.Dark]: '#131920'},
     },
     {
       name: 'surface-secondary',

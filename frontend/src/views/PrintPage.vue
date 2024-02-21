@@ -538,6 +538,28 @@ export default {
       this.image = image
     },
     async fetchData(clearPreviousData = true) {
+    fetch(
+          'https://storage.googleapis.com/obico-public/first_layer_demo/1_owl_PLA_8m25s_demo_1_3/nozzle-cam-prusa-mini-mini-print-test-3/data.json'
+        )
+        .then((response) => {
+          this.first_layer_info = response.data
+          const bedWidth = this.first_layer_info.width
+          const bedHeight = this.first_layer_info.height
+
+          this.first_layer_info.points = this.first_layer_info.points.map((point) => {
+            return {
+              ...point,
+              x_percent: (point.x / bedWidth) * 100,
+              y_percent: (point.y / bedHeight) * 100,
+            }
+          })
+          this.carouselItems = this.first_layer_info.points.map((point) => ({
+            raw_img_url: point.raw_img_url,
+            tagged_img_url: point.tagged_img_url,
+          }))
+        })
+        .catch((error) => console.error(error))
+
       if (clearPreviousData) {
         this.print = null
         this.predictions = []
@@ -570,8 +592,8 @@ export default {
               }
             )
             this.printerComm.connect()
-
             if (this.isEnt) {
+            /*
               return axios.get(urls.firstLayerInspection(this.print.id))
                 .then((response) => {
                   if (response.data.length) {
@@ -582,7 +604,7 @@ export default {
                 })
                 .catch((error) => {
                   console.log('first layer inspection failure is ignored because it may not exist')
-                })
+                })*/
             }
           })
           .catch((error) => {

@@ -3,6 +3,7 @@
     <template #content>
       <loading-placeholder v-if="isLoading" />
       <b-container v-else fluid>
+        <first-layer-report-modal :is-modal-open="isFirstLayerReportModalOpen" @close="isFirstLayerReportModalOpen = false" />
         <b-row>
           <b-col lg="5">
             <div class="print-info">
@@ -130,6 +131,44 @@
             </div>
           </b-col>
           <b-col lg="7">
+            <div class="card-container mb-4">
+              <b-row>
+                <b-col cols="6">
+                  <b-row class="mb-4">
+                    <span class="ml-3">First Layer Report</span>
+                  </b-row>
+                  <hr />
+                  <b-row>
+                    <div class="first-layer-grade">
+                      <div class="icon">
+                        <i class="fas fa-info dark-icon"></i>
+                      </div>
+                      <span class="name">First Layer Grade</span>
+                      <div class="status text-warning">C - Okay First Layer</div>
+                    </div>
+                  </b-row>
+                  <hr />
+                  <b-row class="mb-5">
+                    <div class="first-layer-print-time">
+                      <div class="icon">
+                        <i class="fas fa-clock dark-icon"></i>
+                      </div>
+                      <span class="name">First Layer Print Time</span>
+                      <div class="status">12%</div>
+                    </div>
+                  </b-row>
+                  <b-row>
+                    <b-button class="mb-3 mt-3" style="width: 100%" @click="isFirstLayerReportModalOpen = true"
+                      >Open Detailed Report</b-button
+                    >
+                  </b-row>
+                </b-col>
+                <b-col cols="6">
+                  Image
+                </b-col>
+              </b-row>
+
+            </div>
             <div class="time-lapse">
               <div v-if="print.video_archived_at" class="card-container">
                 <h2 class="title">Time-Lapse video deleted</h2>
@@ -342,6 +381,7 @@ import {
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { printerCommManager } from '@src/lib/printer-comm'
+import FirstLayerReportModal from '@src/components/prints/FirstLayerReportModal.vue'
 
 export default {
   name: 'PrintPage',
@@ -352,6 +392,7 @@ export default {
     DetectiveWorking,
     FailureDetectionGauge,
     GCodeDetails,
+    FirstLayerReportModal
   },
 
   props: {
@@ -363,6 +404,7 @@ export default {
 
   data: function () {
     return {
+      isFirstLayerReportModalOpen: false,
       PrintStatus,
       absoluteDateFormat: 'MMM D, YYYY h:mm a',
       print: null,
@@ -650,6 +692,49 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+hr
+  width: 100%
+  margin-top: 7px
+  margin-bottom: 7px
+.first-layer-print-time
+  width:100%
+  display: flex
+  justify-content: space-between
+  padding: 0 1em
+  grid-template-columns: 3% 67% 30%
+  .icon
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0.5
+  .name
+    flex: 12
+    @media (max-width: 768px)
+      flex: 15
+  .status
+    display: flex
+    justify-content: flex-end
+.first-layer-grade
+  width:100%
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0 1em
+  .icon
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0.5
+  .name
+    flex: 7
+    @media (max-width: 768px)
+      flex: 11
+  .status
+    display: flex
+    justify-content: flex-end
+
 .print-info
   display: flex
   flex-direction: column

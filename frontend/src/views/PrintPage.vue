@@ -325,7 +325,7 @@ import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import { getLocalPref } from '@src/lib/pref'
 import { humanizedFilamentUsage } from '@src/lib/formatters'
-import { user } from '@src/lib/page-context'
+import { user, settings } from '@src/lib/page-context'
 import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
@@ -451,6 +451,9 @@ export default {
   },
 
   created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+
     this.user = user()
     this.fetchData()
     this.fetchSiblingPrints()
@@ -506,6 +509,16 @@ export default {
               }
             )
             this.printerComm.connect()
+
+            if (this.isEnt) {
+              return axios.get(urls.firstLayerInspection(this.print.id))
+                .then((response) => {
+                  // Add code here
+                })
+                .catch((error) => {
+                  console.log('first layer inspection failure is ignored because it may not exist')
+                })
+            }
           })
           .catch((error) => {
             // Printer could be old and deleted from account (404 error)

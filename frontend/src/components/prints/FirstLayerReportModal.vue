@@ -48,7 +48,7 @@
                       <i class="fas fa-info dark-icon"></i>
                     </div>
                     <span class="name">First Layer Grade</span>
-                    <div class="status text-warning">C - Okay First Layer</div>
+                    <div class="status" :class="gradeAccent">{{ grade || '&nbsp' }}</div>
                   </div>
                 </b-row>
                 <hr />
@@ -285,6 +285,18 @@ export default {
       type: Boolean,
       required: false,
     },
+    inspectionData: {
+      type: Object,
+      required: true,
+    },
+    grade: {
+      type: String,
+      required: true,
+    },
+    gradeAccent: {
+      type: String,
+      required: true,
+    },
   },
   computed: {},
   watch: {
@@ -344,28 +356,29 @@ export default {
       this.activeThumbnail = null
     },
     fetchData() {
-      axios
-        .get(
-          'https://storage.googleapis.com/obico-public/first_layer_demo/1_owl_PLA_8m25s_demo_1_3/nozzle-cam-prusa-mini-mini-print-test-3/data.json'
-        )
-        .then((response) => {
-          this.first_layer_info = response.data
-          const bedWidth = this.first_layer_info.width
-          const bedHeight = this.first_layer_info.height
+      if (this.inspectionData?.data_json_url) {
+        axios
+          .get(this.inspectionData?.data_json_url)
+          .then((response) => {
+            this.first_layer_info = response.data
+            this.$emit('image', this.first_layer_info.heatmap_img_url)
+            const bedWidth = this.first_layer_info.width
+            const bedHeight = this.first_layer_info.height
 
-          this.first_layer_info.points = this.first_layer_info.points.map((point) => {
-            return {
-              ...point,
-              x_percent: (point.x / bedWidth) * 100,
-              y_percent: (point.y / bedHeight) * 100,
-            }
+            this.first_layer_info.points = this.first_layer_info.points.map((point) => {
+              return {
+                ...point,
+                x_percent: (point.x / bedWidth) * 100,
+                y_percent: (point.y / bedHeight) * 100,
+              }
+            })
+            this.carouselItems = this.first_layer_info.points.map((point) => ({
+              raw_img_url: point.raw_img_url,
+              tagged_img_url: point.tagged_img_url,
+            }))
           })
-          this.carouselItems = this.first_layer_info.points.map((point) => ({
-            raw_img_url: point.raw_img_url,
-            tagged_img_url: point.tagged_img_url,
-          }))
-        })
-        .catch((error) => console.error(error))
+          .catch((error) => console.error(error))
+      }
     },
     imageClicked(clickedPoint) {
       const initialSlideIndex = this.carouselItems.findIndex(

@@ -3,7 +3,14 @@
     <template #content>
       <loading-placeholder v-if="isLoading" />
       <b-container v-else fluid>
-        <first-layer-report-modal :is-modal-open="isFirstLayerReportModalOpen" @close="isFirstLayerReportModalOpen = false" />
+        <first-layer-report-modal 
+          :is-modal-open="isFirstLayerReportModalOpen" 
+          :inspectionData="inspectionData" 
+          :grade="grade"
+          :gradeAccent="gradeAccent"
+          @image="handleImage"
+          @close="isFirstLayerReportModalOpen = false" 
+        />
         <b-row>
           <b-col lg="5">
             <div class="print-info">
@@ -137,34 +144,40 @@
                   <b-row class="mb-4">
                     <span class="ml-3">First Layer Report</span>
                   </b-row>
-                  <hr />
-                  <b-row>
-                    <div class="first-layer-grade">
-                      <div class="icon">
-                        <i class="fas fa-info dark-icon"></i>
-                      </div>
-                      <span class="name">First Layer Grade</span>
-                      <div class="status text-warning">C - Okay First Layer</div>
+                  <div class="first-layer-info-line">
+                    <div class="label">
+                      <div class="icon"><i class="fas fa-info"></i></div>
+                      <div class="title">First Layer Grade</div>
                     </div>
-                  </b-row>
-                  <hr />
-                  <b-row class="mb-5">
-                    <div class="first-layer-print-time">
-                      <div class="icon">
-                        <i class="fas fa-clock dark-icon"></i>
+                    <div class="value">
+                      <div class="print-status-color" :class="gradeAccent">
+                        {{ grade || '&nbsp;' }}
                       </div>
-                      <span class="name">First Layer Print Time</span>
-                      <div class="status">12%</div>
                     </div>
-                  </b-row>
+                  </div>
+                  <div class="first-layer-info-line mb-5">
+                    <div class="label">
+                      <div class="icon"><i class="far fa-clock"></i></div>
+                      <div class="title">First Layer Print Time</div>
+                    </div>
+                    <div class="value">12%</div>
+                  </div>
                   <b-row>
-                    <b-button class="mb-3 mt-3" style="width: 100%" @click="isFirstLayerReportModalOpen = true"
+                    <b-button class="mb-3 mt-4 ml-2 mr-2" style="width: 100%" @click="isFirstLayerReportModalOpen = true"
                       >Open Detailed Report</b-button
                     >
                   </b-row>
                 </b-col>
-                <b-col cols="6">
-                  Image
+                <b-col cols="6" class="heatmap-image-column">
+                  <div class="heatmap-image-container">
+                    <b-img
+                      :src="image"
+                      height="170"
+                      width="170"
+                      alt="First Layer Map"
+                      class="heatmap-image"
+                    />
+                  </div>
                 </b-col>
               </b-row>
 
@@ -404,6 +417,10 @@ export default {
 
   data: function () {
     return {
+      image: '',
+      grade: '',
+      gradeAccent: '',
+      inspectionData: {},
       isFirstLayerReportModalOpen: false,
       PrintStatus,
       absoluteDateFormat: 'MMM D, YYYY h:mm a',
@@ -517,7 +534,9 @@ export default {
   methods: {
     downloadFile,
     humanizedFilamentUsage,
-
+    handleImage(image) {
+      this.image = image
+    },
     async fetchData(clearPreviousData = true) {
       if (clearPreviousData) {
         this.print = null
@@ -555,7 +574,11 @@ export default {
             if (this.isEnt) {
               return axios.get(urls.firstLayerInspection(this.print.id))
                 .then((response) => {
-                  // Add code here
+                  if (response.data.length) {
+                    const inspectionData = response.data[0]
+                    this.inspectionData = inspectionData
+                    this.gradeConversion(inspectionData.score)
+                  }
                 })
                 .catch((error) => {
                   console.log('first layer inspection failure is ignored because it may not exist')
@@ -574,6 +597,24 @@ export default {
           })
       } catch (error) {
         console.log(error)
+      }
+    },
+    gradeConversion(score) {
+      if (score >= 80) {
+        this.grade = 'A - Flawless First Layer'
+        this.gradeAccent = 'text-success'
+      } else if (score >= 60) {
+        this.grade = 'B - Barely a Blemish, Bravo!'
+        this.gradeAccent = 'text-success'
+      } else if (score >= 40) {
+        this.grade = 'C - Okay First Layer'
+        this.gradeAccent = 'text-warning'
+      } else if (score >= 20) {
+        this.grade = 'D - Definitely Needs Tuning'
+        this.gradeAccent = 'text-danger'
+      } else {
+        this.grade = 'F - First Layer Fail'
+        this.gradeAccent = 'text-danger'
       }
     },
     switchToPrint(print) {
@@ -692,10 +733,20 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-hr
-  width: 100%
-  margin-top: 7px
-  margin-bottom: 7px
+.heatmap-image-column
+  display: flex
+  justify-content: flex-end
+  padding-top: 5px
+  padding-bottom: 5px
+.heatmap-image-container
+  border-radius: var(--border-radius-lg)
+  height: 230px
+  width: 230px
+  background: white
+  padding: 32px 
+.heatmap-image
+  border: 1px solid #cac8c8
+  
 .first-layer-print-time
   width:100%
   display: flex
@@ -782,6 +833,29 @@ hr
         text-align: center
     .value
       font-weight: bold
+
+.first-layer-info-line
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottm: 6px
+  padding: 6px 0
+  gap: .5rem
+  border-top: 1px solid var(--color-divider-muted)
+  &:first-of-type
+    border-top: none
+  .label
+    display: flex
+    align-items: center
+    flex: 1
+    gap: .5rem
+    line-height: 1.1
+    .icon
+      opacity: .5
+      width: 1rem
+      text-align: center
+  .value
+    font-weight: bold
 
 .printer
   display: flex

@@ -6,9 +6,21 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <svg width="100" height="30">
-            <use :href="$syndicate === 'yumi' ? '#yumi-svg-logo-full' : '#svg-logo-compact'" />
+        <template v-if="$syndicate === 'yumi'">
+          <svg width="100" height="30">
+            <use xlink:href="#yumi-svg-logo-full" />
           </svg>
+        </template>
+
+        <template v-else-if="$syndicate === 'mintion'">
+          <img src="/static/mintion/img/logo-mintion.png" alt="Mintion Logo" width="100" height="30" />
+        </template>
+
+        <template v-else>
+          <svg width="100" height="30">
+            <use xlink:href="#svg-logo-compact" />
+          </svg>
+        </template>
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">

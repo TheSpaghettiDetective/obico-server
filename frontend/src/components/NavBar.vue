@@ -11,7 +11,7 @@
       <b-container class="p-0">
         <b-navbar-brand href="/">
           <svg width="100" height="30">
-            <use :href="$syndicate === 'yumi' ? '#yumi-svg-logo-full' : '#svg-logo-full'" />
+            <use :href="$syndicate ? `#${$syndicate}-svg-logo-full` : '#svg-logo-full'" />
           </svg>
         </b-navbar-brand>
 

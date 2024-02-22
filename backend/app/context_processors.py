@@ -24,7 +24,8 @@ def additional_settings_export(request):
     syndicate = getattr(settings, 'SYNDICATE', None)
     if syndicate:
         settings_dict['syndicate'] = {"provider": syndicate}
-    # read from webview headers
+
+    # per-request syndicate overrides the global setting. This is so that Mintion users can use Obico cloud but see their own theme.
     syndicate_header = request.META.get('HTTP_X_OBICO_SYNDICATE', None)
     if syndicate_header:
         settings_dict['syndicate'] = {"provider": syndicate_header}

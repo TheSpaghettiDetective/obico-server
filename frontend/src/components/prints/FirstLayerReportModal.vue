@@ -34,35 +34,37 @@
                     </div>
 
                     <div class="button">
-                      <b-button>Open File</b-button>
+                      <b-button
+                        :href="`/g_code_files/cloud/${file.id}/`"
+                        v-if="showOpenButton && file.id"
+                      >
+                        Open File
+                      </b-button>
                     </div>
                   </div>
                 </b-row>
-
-                <hr />
                 <!-- File Block 2nd row -->
-                <b-row>
-                  <div class="first-layer-grade">
-                    <div class="icon">
-                      <i class="fas fa-info dark-icon"></i>
-                    </div>
-                    <span class="name">First Layer Grade</span>
-                    <div class="status" :class="gradeAccent">{{ grade || '&nbsp' }}</div>
+                <div class="first-layer-info-line">
+                  <div class="label">
+                    <div class="icon"><i class="fas fa-info"></i></div>
+                    <div class="title">First Layer Grade</div>
                   </div>
-                </b-row>
-                <hr />
+                  <div class="value">
+                    <div :class="gradeResult.gradeAccent">
+                      {{ gradeResult.gradeTitle || '&nbsp;' }}
+                    </div>
+                  </div>
+                </div>
                 <!-- File Block 3rd row -->
-                <b-row>
-                  <div class="first-layer-print-time">
-                    <div class="icon">
-                      <i class="fas fa-clock dark-icon"></i>
-                    </div>
-                    <span class="name">First Layer Print Time</span>
-                    <div class="status">12%</div>
+                <div class="first-layer-info-line">
+                  <div class="label">
+                    <div class="icon"><i class="far fa-clock"></i></div>
+                    <div class="title">First Layer Print Time</div>
                   </div>
-                </b-row>
-                <hr class="mb-0" />
+                  <div class="value">12%</div>
+                </div>
               </div>
+                
               <!-- File Block End -->
               <!-- Notes Block Start -->
               <div class="notes-block mb-4">
@@ -75,34 +77,22 @@
                 <b-row>
                   <div class="description">
                     <p>
-                      You're first layer score is <span class="text-warning">C</span>. The
-                      risk for the first layer to cause your point to fail later is LOW.<br />However,
-                      if you want a perfect bottom surface finish and structural strength, you
-                      can stop the print, perfect your first layer, and restart the print.
+                      You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br> 
+                      
+                      {{ gradeResult.gradeRemarks }}
                     </p>
                   </div>
                 </b-row>
-                <hr />
+                <hr v-if="!isGradeA" />
                 <!-- File Block 3rd row -->
                 <b-row>
-                  <div class="info">
+                  <div v-if="!isGradeA" class="info">
                     <p>
-                      Grade <span class="text-warning">C</span> usually means one of the
+                      Grade <span :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span> usually means one of the
                       following:
                     </p>
                     <ul>
-                      <li>Under-extrusion.</li>
-                      <li>Over-extrusion.</li>
-                      <li>
-                        Suboptimal z-offset setting that causes the material to not bont
-                        perfectly.
-                      </li>
-                      <li>
-                        Contaminated print bed that causes the material in some areas to
-                        slightly bubble or wrap
-                      </li>
-                      <li>Uneven print bed coupied with suboptimal auto-bed-leveling.</li>
-                      <li>Other problems that cause the first layer to have defects.</li>
+                      <li v-for="(suggestion, index) in gradeResult.gradeSuggestion" :key="index" v-html="suggestion"></li>
                     </ul>
                   </div>
                 </b-row>
@@ -288,16 +278,24 @@ export default {
       type: Object,
       required: true,
     },
-    grade: {
-      type: String,
+    gradeResult: {
+      type: Object,
       required: true,
     },
-    gradeAccent: {
-      type: String,
+    file: {
+      type: Object,
       required: true,
+    },
+    showOpenButton: {
+      type: Boolean,
+      default: false,
     },
   },
-  computed: {},
+  computed: {
+    isGradeA() {
+      return this.gradeResult.grade === 'A'
+    }
+  },
   watch: {
     isModalOpen: function(value) {
       if (!!value) {
@@ -412,6 +410,31 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.font-bold
+  font-weight: bold
+.first-layer-info-line
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottm: 6px
+  padding: 6px 0
+  gap: .5rem
+  border-top: 1px solid var(--color-divider-muted)
+  &:first-of-type
+    border-top: none
+  .label
+    display: flex
+    align-items: center
+    flex: 1
+    gap: .5rem
+    line-height: 1.1
+    .icon
+      opacity: .5
+      width: 1rem
+      text-align: center
+  .value
+    font-weight: bold
+
 .layer-demo-overlay
   position: fixed
   z-index: 1000
@@ -434,6 +457,8 @@ export default {
       background: transparent
       border: none
       font-size: 22px
+  @media (max-width: 768px)
+    margin: 2em 2em 0 2em
 .b-carousel
   padding-bottom: 0.5rem
   .close-button
@@ -582,10 +607,11 @@ $border-color: #dee2e6
   .card-map
     border-radius: var(--border-radius-lg)
     background: white
+    .card-body
+      padding: 10%
   .card-footer
     border-radius: var(--border-radius-lg)
   .image-container
-    padding: 3.5em
     position: relative
     display: block
     width: 100%
@@ -657,15 +683,16 @@ $border-color: #dee2e6
 
     .toggle-heatmap
       position: absolute
-      top: 65px
-      right: 70px
+      top: 2%
+      right: 4%
       background: none
       border: none
       cursor: pointer
+      z-index: 1
       .fa-eye
-        color: #495b71
+        color: #2d2e30
       .fa-eye-slash
-        color: #495b71
+        color: #2d2e30
 
 .border-right
   border-right: 1px solid $border-color
@@ -755,6 +782,12 @@ $border-color: #dee2e6
   }
   @media (min-width: 992px) {
     width: 706px !important;
+  }
+}
+@media (max-width: 768px) {
+  .custom-slick-carousel .slick-prev:before, .custom-slick-carousel .slick-next:before {
+    position: relative !important;
+    top: 1em !important
   }
 }
 </style>

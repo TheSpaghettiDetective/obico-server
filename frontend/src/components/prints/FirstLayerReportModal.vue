@@ -1,7 +1,6 @@
 <template>
   <div v-show="isModalOpen" class="content-container">
-    <!-- Layer Demo as Page -->
-    <!-- For Full Page add class "layer-demo-overlay" on below div -->
+    <!-- Layer Demo as Modal -->
     <div class="layer-demo-overlay">
       <div class="layer-demo-modal">
         <b-row>
@@ -285,7 +284,7 @@ export default {
       type: Boolean,
       required: false,
     },
-    inspectionData: {
+    firstLayerInfo: {
       type: Object,
       required: true,
     },
@@ -306,11 +305,15 @@ export default {
       } else {
         this.$bvModal.hide('first-layer-report-modal') 
       }
+    },
+    firstLayerInfo: function(value) {
+      if (!!value) {
+        this.prepareFirstLayerInfo()
+      }
     }
   },
 
   mounted() {
-    this.fetchData()
     const heatmapImage = new Image()
     heatmapImage.src = this.first_layer_info.heatmap_img_url
   },
@@ -355,30 +358,23 @@ export default {
     hideThumbnail() {
       this.activeThumbnail = null
     },
-    fetchData() {
-      if (this.inspectionData?.data_json_url) {
-        axios
-          .get(this.inspectionData?.data_json_url)
-          .then((response) => {
-            this.first_layer_info = response.data
-            this.$emit('image', this.first_layer_info.heatmap_img_url)
-            const bedWidth = this.first_layer_info.width
-            const bedHeight = this.first_layer_info.height
+    prepareFirstLayerInfo() {
+      this.first_layer_info = this.firstLayerInfo
+      const bedWidth = this.first_layer_info.width
+      const bedHeight = this.first_layer_info.height
+      const points = this.first_layer_info.points || []
 
-            this.first_layer_info.points = this.first_layer_info.points.map((point) => {
-              return {
-                ...point,
-                x_percent: (point.x / bedWidth) * 100,
-                y_percent: (point.y / bedHeight) * 100,
-              }
-            })
-            this.carouselItems = this.first_layer_info.points.map((point) => ({
-              raw_img_url: point.raw_img_url,
-              tagged_img_url: point.tagged_img_url,
-            }))
-          })
-          .catch((error) => console.error(error))
-      }
+      this.first_layer_info.points = points.map((point) => {
+        return {
+          ...point,
+          x_percent: (point.x / bedWidth) * 100,
+          y_percent: (point.y / bedHeight) * 100,
+        }
+      })
+      this.carouselItems = this.first_layer_info.points.map((point) => ({
+        raw_img_url: point.raw_img_url,
+        tagged_img_url: point.tagged_img_url,
+      }))
     },
     imageClicked(clickedPoint) {
       const initialSlideIndex = this.carouselItems.findIndex(

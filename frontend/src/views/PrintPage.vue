@@ -3,13 +3,13 @@
     <template #content>
       <loading-placeholder v-if="isLoading" />
       <b-container v-else fluid>
-        <first-layer-report-modal 
-          :is-modal-open="isFirstLayerReportModalOpen" 
-          :inspectionData="inspectionData" 
+        <first-layer-report-modal
+          :is-modal-open="isFirstLayerReportModalOpen"
+          :inspectionData="inspectionData"
           :grade="grade"
           :gradeAccent="gradeAccent"
           @image="handleImage"
-          @close="isFirstLayerReportModalOpen = false" 
+          @close="isFirstLayerReportModalOpen = false"
         />
         <b-row>
           <b-col lg="5">
@@ -538,28 +538,6 @@ export default {
       this.image = image
     },
     async fetchData(clearPreviousData = true) {
-    fetch(
-          'https://storage.googleapis.com/obico-public/first_layer_demo/1_owl_PLA_8m25s_demo_1_3/nozzle-cam-prusa-mini-mini-print-test-3/data.json'
-        )
-        .then((response) => {
-          this.first_layer_info = response.data
-          const bedWidth = this.first_layer_info.width
-          const bedHeight = this.first_layer_info.height
-
-          this.first_layer_info.points = this.first_layer_info.points.map((point) => {
-            return {
-              ...point,
-              x_percent: (point.x / bedWidth) * 100,
-              y_percent: (point.y / bedHeight) * 100,
-            }
-          })
-          this.carouselItems = this.first_layer_info.points.map((point) => ({
-            raw_img_url: point.raw_img_url,
-            tagged_img_url: point.tagged_img_url,
-          }))
-        })
-        .catch((error) => console.error(error))
-
       if (clearPreviousData) {
         this.print = null
         this.predictions = []
@@ -592,20 +570,6 @@ export default {
               }
             )
             this.printerComm.connect()
-            if (this.isEnt) {
-            /*
-              return axios.get(urls.firstLayerInspection(this.print.id))
-                .then((response) => {
-                  if (response.data.length) {
-                    const inspectionData = response.data[0]
-                    this.inspectionData = inspectionData
-                    this.gradeConversion(inspectionData.score)
-                  }
-                })
-                .catch((error) => {
-                  console.log('first layer inspection failure is ignored because it may not exist')
-                })*/
-            }
           })
           .catch((error) => {
             // Printer could be old and deleted from account (404 error)
@@ -619,6 +583,34 @@ export default {
           })
       } catch (error) {
         console.log(error)
+      }
+
+      if (this.isEnt) {
+        return fetch(urls.firstLayerInspection(this.currentPrintId))
+          .then((response) => {
+            if (!response.ok) {
+              console.log('first layer inspection failure is ignored because it may not exist');
+              return []
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.length) {
+              const inspectionData = data[0];
+              this.inspectionData = inspectionData;
+              this.gradeConversion(inspectionData.score);
+              return inspectionData.data_json_url;
+            }
+            return null;
+          })
+          .then((dataJsonUrl) => {
+            if (dataJsonUrl) {
+              fetch(dataJsonUrl)
+                .then((response) => {
+                // Add code here
+                })
+              }
+          })
       }
     },
     gradeConversion(score) {
@@ -765,10 +757,10 @@ export default {
   height: 230px
   width: 230px
   background: white
-  padding: 32px 
+  padding: 32px
 .heatmap-image
   border: 1px solid #cac8c8
-  
+
 .first-layer-print-time
   width:100%
   display: flex

@@ -1,7 +1,7 @@
 <template>
   <div v-show="isModalOpen" class="content-container">
     <!-- Layer Demo as Modal -->
-    <div class="layer-demo-overlay">
+    <div @click.self="$emit('close')" class="layer-demo-overlay">
       <div class="layer-demo-modal">
         <b-row>
           <div class="close-button mb-1">
@@ -19,21 +19,40 @@
               <!-- File Block Start -->
               <div class="file-block mb-3">
                 <!-- File Block 1st row -->
-                <b-row>
-                  <div class="title">
-                    <div class="icon">
-                      <i class="fas fa-file-code"></i>
+                <div
+                  class="file-header compact"
+                  :class="{compact: compactView}"
+                >
+                  <div v-if="showIconThumbnail">
+                    <div v-if="bigThumbnailUrl" class="thumbnail">
+                      <img :src="bigThumbnailUrl" />
                     </div>
-                    <div class="info">
-                      <div class="file-name">
-                        <span>very-quick-test-print.gcode</span>
+                    <div v-else class="thumbnail-placeholder">
+                      <span class="help">
+                        <help-widget id="thumbnail-setup-guide" :highlight="false" :show-close-button="false" />
+                      </span>
+                      <svg>
+                        <use href="#svg-no-photo" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div v-else class="icon">
+                    <i class="fas fa-file-code"></i>
+                  </div>
+                  <div class="info truncated-wrapper">
+                    <div class="truncated" :title="file.filename">
+                      {{ file.filename }}
+                    </div>
+                    <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
+                      <div v-if="file.deleted" class="truncated">
+                        <span class="text-danger">Deleted</span>
                       </div>
-                      <div class="file-size">
-                        <span>45.5 KB, uploaded 11 days ago</span>
+                      <div v-else class="truncated">
+                        <span>{{ file.filesize }}, uploaded {{ fileUploadedTime }}</span>
                       </div>
                     </div>
-
-                    <div class="button">
+                  </div>
+                  <div class="button">
                       <b-button
                         :href="`/g_code_files/cloud/${file.id}/`"
                         v-if="showOpenButton && file.id"
@@ -41,13 +60,12 @@
                         Open File
                       </b-button>
                     </div>
-                  </div>
-                </b-row>
+                </div>
                 <!-- File Block 2nd row -->
-                <div class="first-layer-info-line">
+                <div class="first-layer-report-info-line">
                   <div class="label">
                     <div class="icon"><i class="fas fa-info"></i></div>
-                    <div class="title">First Layer Grade</div>
+                    <div>First Layer Grade</div>
                   </div>
                   <div class="value">
                     <div :class="gradeResult.gradeAccent">
@@ -56,10 +74,10 @@
                   </div>
                 </div>
                 <!-- File Block 3rd row -->
-                <div class="first-layer-info-line">
+                <div class="first-layer-report-info-line">
                   <div class="label">
                     <div class="icon"><i class="far fa-clock"></i></div>
-                    <div class="title">First Layer Print Time</div>
+                    <div>First Layer Print Time</div>
                   </div>
                   <div class="value">12%</div>
                 </div>
@@ -235,7 +253,6 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
-import axios from 'axios'
 
 export default {
   name: 'FirstLayerReportModal',
@@ -290,11 +307,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    compactView: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     isGradeA() {
       return this.gradeResult.grade === 'A'
-    }
+    },
+    showIconThumbnail() {
+      return !this.compactView || this.bigThumbnailUrl
+    },
+    bigThumbnailUrl() {
+      return this.file.getBigThumbnailUrl && this.file.getBigThumbnailUrl()
+    },
+    fileUploadedTime() {
+      return this.file.created_at.fromNow()
+    },
   },
   watch: {
     isModalOpen: function(value) {
@@ -410,9 +440,20 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.file-header
+  display: flex
+  align-items: center
+  gap: 1rem
+  .info
+    flex: 1
+  .icon
+    flex: 0 0 2rem
+    text-align: center
+    *
+      font-size: 2rem
 .font-bold
   font-weight: bold
-.first-layer-info-line
+.first-layer-report-info-line
   display: flex
   align-items: center
   justify-content: space-between
@@ -453,7 +494,7 @@ export default {
     padding-top: 6px
     padding-left: 7px
     button
-      color: white
+      color: var(--color-text-primary)
       background: transparent
       border: none
       font-size: 22px
@@ -465,7 +506,7 @@ export default {
     padding-top: 6px
     padding-left: 7px
     button
-      color: white
+      color: var(--color-text-primary)
       background: transparent
       border: none
 
@@ -652,34 +693,7 @@ $border-color: #dee2e6
         height: 100%
         object-fit: cover
         border-radius: var(--border-radius-sm)
-    .carousel-overlay
-      display: flex
-      justify-content: center
-      align-items: center
-      position: fixed
-      top: 0
-      left: 0
-      width: 100vw
-      height: 100vh
-      background-color: rgba(0, 0, 0, 0.5)
-      z-index: 1050
-      .container
-        background: var(--color-surface-primary)
-        width: 50%
-        display: flex
-        border-radius: var(--border-radius-lg)
-        justify-content: center
 
-    .close-carousel
-      position: absolute
-      top: 1rem
-      right: 1rem
-      border: none
-      background: none
-      color: white
-      font-size: 1.5rem
-      cursor: pointer
-      z-index: 1050
 
     .toggle-heatmap
       position: absolute

@@ -138,7 +138,7 @@
               <!-- First Layer Report Card -->
               <div v-show="firstLayerInspection.id" class="card-container">
                 <b-row>
-                  <b-col cols="6" class="first-layer-info-column">
+                  <b-col cols="7" class="first-layer-info-column">
                     <div>
                       <b-row class="mb-4">
                         <span class="ml-3">First Layer Report</span>
@@ -168,7 +168,7 @@
                       >
                     </b-row>
                   </b-col>
-                  <b-col cols="6" class="heatmap-image-column">
+                  <b-col cols="5" class="heatmap-image-column">
                     <div class="heatmap-image-container">
                       <transition name="fade" mode="out-in">
                         <b-img

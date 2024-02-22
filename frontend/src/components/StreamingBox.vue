@@ -288,7 +288,7 @@ export default {
   },
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
-      this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
+      this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
     })
 

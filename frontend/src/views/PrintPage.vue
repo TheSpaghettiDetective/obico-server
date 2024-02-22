@@ -6,8 +6,9 @@
         <first-layer-report-modal
           :is-modal-open="isFirstLayerReportModalOpen"
           :firstLayerInfo="firstLayerInfo"
-          :grade="grade"
-          :gradeAccent="gradeAccent"
+          :gradeResult="gradeResult"
+          :file="print.g_code_file || { filename: print.filename }"
+          :show-open-button="canOpenFile"
           @close="isFirstLayerReportModalOpen = false"
         />
         <b-row>
@@ -85,11 +86,7 @@
               <!-- GCode details -->
               <g-code-details
                 :file="print.g_code_file || { filename: print.filename }"
-                :show-open-button="
-                  print.g_code_file &&
-                  !print.g_code_file.resident_printer &&
-                  !print.g_code_file.deleted
-                "
+                :show-open-button="canOpenFile"
               />
               <!-- Printer -->
               <div class="card-container printer mb-5">
@@ -138,7 +135,8 @@
           </b-col>
           <b-col lg="7">
             <div class="print-info">
-              <div class="card-container">
+              <!-- First Layer Report Card -->
+              <div v-show="firstLayerInspection.id" class="card-container">
                 <b-row>
                   <b-col cols="6" class="first-layer-info-column">
                     <div>
@@ -151,8 +149,8 @@
                           <div class="title">First Layer Grade</div>
                         </div>
                         <div class="value">
-                          <div class="print-status-color" :class="gradeAccent">
-                            {{ grade || '&nbsp;' }}
+                          <div class="print-status-color" :class="gradeResult.gradeAccent">
+                            {{ gradeResult.gradeTitle || '&nbsp;' }}
                           </div>
                         </div>
                       </div>
@@ -401,6 +399,7 @@ import {
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { printerCommManager } from '@src/lib/printer-comm'
 import FirstLayerReportModal from '@src/components/prints/FirstLayerReportModal.vue'
+import { calculateGrade } from '../services/gradeCalculator';
 
 export default {
   name: 'PrintPage',
@@ -424,9 +423,9 @@ export default {
   data: function () {
     return {
       image: '',
-      grade: '',
-      gradeAccent: '',
+      gradeResult: {},
       firstLayerInfo: {},
+      firstLayerInspection: {},
       isFirstLayerReportModalOpen: false,
       PrintStatus,
       absoluteDateFormat: 'MMM D, YYYY h:mm a',
@@ -455,6 +454,11 @@ export default {
   },
 
   computed: {
+    canOpenFile() {
+      return this.print.g_code_file &&
+            !this.print.g_code_file.resident_printer &&
+            !this.print.g_code_file.deleted
+    },
     PrevPrintButtonTitle() {
       return this.sortingValue.direction.key === 'asc' ? 'Older' : 'Newer'
     },
@@ -600,7 +604,8 @@ export default {
           .then((data) => {
             if (data.length) {
               const inspectionData = data[0];
-              this.gradeConversion(inspectionData.score);
+              this.firstLayerInspection = inspectionData;
+              this.gradeResult = calculateGrade(inspectionData.score);
               return inspectionData.data_json_url;
             }
             return null;
@@ -626,24 +631,6 @@ export default {
           .finally(() => {
             this.isLoading = false
           })
-      }
-    },
-    gradeConversion(score) {
-      if (score >= 80) {
-        this.grade = 'A - Flawless First Layer'
-        this.gradeAccent = 'text-success'
-      } else if (score >= 60) {
-        this.grade = 'B - Barely a Blemish, Bravo!'
-        this.gradeAccent = 'text-success'
-      } else if (score >= 40) {
-        this.grade = 'C - Okay First Layer'
-        this.gradeAccent = 'text-warning'
-      } else if (score >= 20) {
-        this.grade = 'D - Definitely Needs Tuning'
-        this.gradeAccent = 'text-danger'
-      } else {
-        this.grade = 'F - First Layer Fail'
-        this.gradeAccent = 'text-danger'
       }
     },
     switchToPrint(print) {

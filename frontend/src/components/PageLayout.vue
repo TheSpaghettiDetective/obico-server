@@ -118,9 +118,6 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
-        <content-top
-          v-if="layoutSections.contentTop && !path.match('\/printers\/[0-9]+\/control\/')"
-        ></content-top>
         <slot name="content"></slot>
       </div>
     </div>
@@ -131,16 +128,9 @@
 <script>
 import get from 'lodash/get'
 import { inMobileWebView, user, settings } from '@src/lib/page-context'
-import layoutSections from '@config/layout/sections'
 
 export default {
   name: 'PageLayout',
-
-  components: {
-    ...Object.keys(layoutSections).reduce((obj, name) => {
-      return Object.assign(obj, { [name]: layoutSections[name].importComponent })
-    }, {}),
-  },
 
   props: {
     isPopup: {
@@ -151,7 +141,6 @@ export default {
 
   data() {
     return {
-      layoutSections,
       collapsed: true,
       path: window.location.pathname,
       user: null,

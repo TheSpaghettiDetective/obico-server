@@ -86,7 +86,7 @@
                       {{ title }}
                     </h3>
 
-                    <tab-content v-if="targetMoonraker" title="Install Obico for Klipper">
+                    <tab-content v-if="targetMoonraker" :title="`Install ${$t('name')} for Klipper`">
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
@@ -118,12 +118,12 @@ cd moonraker-obico
                             <div class="text-warning">
                               Warning: Re-Linking OctoPrint should be your last resort to solve
                               issues. Please make sure you have exhausted all options on
-                              <a href="https://www.obico.io/help/">Obico's help website</a>.
+                              <a href="https://www.obico.io/help/">{{$t('name')}}'s help website</a>.
                             </div>
                             <ol>
                               <li>Open OctoPrint in another browser tab.</li>
                               <li>
-                                Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.
+                                Select <em>"OctoPrint settings menu → {{$t('name')}} for OctoPrint"</em>.
                               </li>
                               <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                             </ol>
@@ -151,7 +151,7 @@ cd moonraker-obico
                                 Select
                                 <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.
                               </li>
-                              <li>Enter "Obico" to locate the plugin. Click <em>"Install"</em>.</li>
+                              <li>Enter "{{$t('name')}}" to locate the plugin. Click <em>"Install"</em>.</li>
                               <li>Restart OctoPrint when prompted.</li>
                             </ol>
                           </div>
@@ -209,8 +209,8 @@ cd moonraker-obico
                                   The printer or SBC is connected to the same local network as your
                                   phone/computer.
                                 </li>
-                                <li v-if="targetOctoPrint">Obico for OctoPrint is 1.8.0 or above.</li>
-                                <li v-else>Obico for Klipper is 1.5.0 or above.</li>
+                                <li v-if="targetOctoPrint">{{$t('name')}} for OctoPrint is 1.8.0 or above.</li>
+                                <li v-else>{{$t('name')}} for Klipper is 1.5.0 or above.</li>
                               </ul>
                             </div>
                           </div>
@@ -223,7 +223,7 @@ cd moonraker-obico
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8">
                               <ol>
-                                <li>Wait for <em>"Obico for OctoPrint"</em> wizard to popup.</li>
+                                <li>Wait for <em>"{{ $t('name') }} for OctoPrint"</em> wizard to popup.</li>
                                 <li>Follow the instructions in the wizard.</li>
                                 <li>Select <em>"Web Setup"</em> when asked.</li>
                               </ol>
@@ -622,7 +622,7 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>The 6-digit code needs to be entered in the Obico plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+      let html = `<p>The 6-digit code needs to be entered in the ${ this.$t('name') } plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
@@ -630,7 +630,7 @@ export default {
         </ul></p>`
 
       if (!this.targetOctoPrint) {
-        html = `<p>The 6-digit code needs to be entered to the <em>Obico for OctoPrint</em> installation script.</p>
+        html = `<p>The 6-digit code needs to be entered to the <em>${ this.$t('name') } for OctoPrint</em> installation script.</p>
         <p>Check <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/">this set up guide</a> for detailed instructions.</p>`
       }
 

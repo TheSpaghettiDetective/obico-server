@@ -16,6 +16,8 @@ import moment from 'moment'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import i18next from "@src/i18n/i18n.js";
+import I18NextVue from "i18next-vue";
 import {
   faStar,
   faFileCode,
@@ -51,7 +53,7 @@ export default (router, components) => {
   Vue.use(VuePluralize)
   Vue.use(OnoffToggle)
   Vue.use(LoadScript)
-
+  Vue.use(I18NextVue, { i18next });
   Vue.mixin({
     methods: {
       errorDialog: function (errorObj, userMessage) {
@@ -102,6 +104,10 @@ export default (router, components) => {
       router,
       components,
     }).$mount('#app')
+    // new Vue({
+    //   router,
+    //   components,
+    // }).$mount('#app')
   }
 
   // FIXME: make start of the week dynamic when/if it will be done in the backend

@@ -9,7 +9,7 @@
       <img class="pic-item" :src="require('@static/img/printer.png')" />
     </div>
     <div class="my-4">
-      <p>The Obico app needs to make sure you have access to selected printer.</p>
+      <p>The {{$t('name')}} app needs to make sure you have access to selected printer.</p>
       <p>
         When you press "Link Now" button below, a new browser window will pop up to finish a
         handshake with this printer.

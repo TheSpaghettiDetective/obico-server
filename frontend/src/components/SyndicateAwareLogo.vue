@@ -14,12 +14,6 @@
   <script>
   export default {
     name: 'SyndicateAwareLogo',
-    props: {
-      syndicate: {
-        type: String,
-        required: true,
-      },
-    },
     data() {
       return {
         syndicateLogos: {
@@ -47,7 +41,8 @@
     },
     computed: {
       currentLogo() {
-        return this.syndicateLogos[this.syndicate] || this.syndicateLogos.base;
+        const syndicate = this.$syndicate;
+        return this.syndicateLogos[syndicate] || this.syndicateLogos.base;
       },
     },
   };

@@ -10,7 +10,7 @@
     >
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <SyndicateAwareLogo :syndicate="$syndicate" />
+          <SyndicateAwareLogo />
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">

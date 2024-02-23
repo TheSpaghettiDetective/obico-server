@@ -12,10 +12,18 @@
                     Account
                   </h2>
                   <template v-for="(value, name) in sections">
-                    <router-link v-if="!value.isHidden" :key="name" :to="value.route"
-                      :class="value.isSubcategory ? 'subcategory' : ''">
+                    <router-link
+                      v-if="!value.isHidden"
+                      :key="name"
+                      :to="value.route"
+                      :class="value.isSubcategory ? 'subcategory' : ''"
+                    >
                       <span>
-                        <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']" style="font-size: 1.125rem"></i>
+                        <i
+                          v-if="value.faIcon"
+                          :class="[value.faIcon, 'mr-2']"
+                          style="font-size: 1.125rem"
+                        ></i>
                         <span>{{ value.title }}</span>
                       </span>
                       <i class="fas fa-arrow-right"></i>
@@ -29,35 +37,70 @@
                     </span>
                   </a>
                 </div>
-                <div v-else class="mobile-settings-content" :class="{ 'is-in-mobile': useMobileLayout }">
-                  <component :is="currentRouteComponent" v-if="currentSection &&
-                    (!currentSection.isNotificationChannel || availableNotificationPlugins)
-                    " :user="user" :error-messages="errorMessages" :saving="saving" :config="config"
-                    :notification-channel="currentSection && currentSection.isNotificationChannel ? currentSection : {}
-                      " @createNotificationChannel="createNotificationChannel"
+                <div
+                  v-else
+                  class="mobile-settings-content"
+                  :class="{ 'is-in-mobile': useMobileLayout }"
+                >
+                  <component
+                    :is="currentRouteComponent"
+                    v-if="
+                      currentSection &&
+                      (!currentSection.isNotificationChannel || availableNotificationPlugins)
+                    "
+                    :user="user"
+                    :error-messages="errorMessages"
+                    :saving="saving"
+                    :config="config"
+                    :notification-channel="
+                      currentSection && currentSection.isNotificationChannel ? currentSection : {}
+                    "
+                    @createNotificationChannel="createNotificationChannel"
                     @updateNotificationChannel="patchNotificationChannel"
-                    @deleteNotificationChannel="deleteNotificationChannel" @clearErrorMessages="clearErrorMessages"
-                    @addErrorMessage="addErrorMessage" @updateSetting="updateSetting"></component>
+                    @deleteNotificationChannel="deleteNotificationChannel"
+                    @clearErrorMessages="clearErrorMessages"
+                    @addErrorMessage="addErrorMessage"
+                    @updateSetting="updateSetting"
+                  ></component>
                 </div>
               </div>
               <!-- Desktop -->
-              <b-tabs v-else :vertical="true" class="desktop-settings-wrapper" nav-wrapper-class="settings-nav"
-                active-nav-item-class="" content-class="desktop-settings-content" @activate-tab="updateRoute">
+              <b-tabs
+                v-else
+                :vertical="true"
+                class="desktop-settings-wrapper"
+                nav-wrapper-class="settings-nav"
+                active-nav-item-class=""
+                content-class="desktop-settings-content"
+                @activate-tab="updateRoute"
+              >
                 <template v-for="(value, name) in sections">
-                  <b-tab v-if="!value.isHidden" :key="name" :title-item-class="value.isSubcategory ? 'subcategory' : ''"
+                  <b-tab
+                    v-if="!value.isHidden"
+                    :key="name"
+                    :title-item-class="value.isSubcategory ? 'subcategory' : ''"
                     :active="$route.path === value.route"
-                    :disabled="value.isNotificationChannel && !user.notification_enabled">
+                    :disabled="value.isNotificationChannel && !user.notification_enabled"
+                  >
                     <template #title>
                       <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']"></i>
                       {{ value.title }}
                     </template>
-                    <component :is="name" v-if="!value.isNotificationChannel || availableNotificationPlugins" :user="user"
-                      :error-messages="errorMessages" :saving="saving" :config="config"
+                    <component
+                      :is="name"
+                      v-if="!value.isNotificationChannel || availableNotificationPlugins"
+                      :user="user"
+                      :error-messages="errorMessages"
+                      :saving="saving"
+                      :config="config"
                       :notification-channel="value.isNotificationChannel ? value : {}"
                       @createNotificationChannel="createNotificationChannel"
                       @updateNotificationChannel="patchNotificationChannel"
-                      @deleteNotificationChannel="deleteNotificationChannel" @clearErrorMessages="clearErrorMessages"
-                      @addErrorMessage="addErrorMessage" @updateSetting="updateSetting"></component>
+                      @deleteNotificationChannel="deleteNotificationChannel"
+                      @clearErrorMessages="clearErrorMessages"
+                      @addErrorMessage="addErrorMessage"
+                      @updateSetting="updateSetting"
+                    ></component>
                   </b-tab>
                 </template>
                 <template #tabs-end>

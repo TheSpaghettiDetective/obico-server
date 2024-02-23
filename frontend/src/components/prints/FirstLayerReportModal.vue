@@ -83,7 +83,7 @@
                   <div class="value">12%</div>
                 </div>
               </div>
-                
+
               <!-- File Block End -->
               <!-- Notes Block Start -->
               <div class="notes-block mb-4">
@@ -96,8 +96,8 @@
                 <b-row>
                   <div class="description">
                     <p>
-                      You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br> 
-                      
+                      You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
+
                       {{ gradeResult.gradeRemarks }}
                     </p>
                   </div>
@@ -330,9 +330,9 @@ export default {
   watch: {
     isModalOpen: function(value) {
       if (!!value) {
-        this.$bvModal.show('first-layer-report-modal') 
+        this.$bvModal.show('first-layer-report-modal')
       } else {
-        this.$bvModal.hide('first-layer-report-modal') 
+        this.$bvModal.hide('first-layer-report-modal')
       }
     },
     firstLayerInfo: function(value) {
@@ -397,7 +397,7 @@ export default {
         return {
           ...point,
           x_percent: (point.x / bedWidth) * 100,
-          y_percent: (point.y / bedHeight) * 100,
+          y_percent: 100 - (point.y / bedHeight) * 100, // Invert Y axis because the origin of the points is at the bottom left
         }
       })
       this.carouselItems = this.first_layer_info.points.map((point) => ({

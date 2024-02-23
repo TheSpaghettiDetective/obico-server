@@ -12,14 +12,14 @@
     <template #header>
       <div v-if="setupCompleted" class="mb-4">
         <p class="lead">
-          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{$t('name')}} Messenger has been
+          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{$t('brand_name')}} Messenger has been
           successfully added to your workspace.
         </p>
         <br />
         <h2>What's Next?</h2>
         <br />
         <p>
-          1. Make sure {{$t('name')}} Messenger is added to the channels you want the notifications to be
+          1. Make sure {{$t('brand_name')}} Messenger is added to the channels you want the notifications to be
           sent to.
         </p>
         <img
@@ -30,7 +30,7 @@
         <p>2. There is no 2. You are all set. It's this simple. :)</p>
       </div>
       <div v-else>
-        <p class="lead">Click the button below to add the {{$t('name')}} Slack App into your workspace:</p>
+        <p class="lead">Click the button below to add the {{$t('brand_name')}} Slack App into your workspace:</p>
         <a
           :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read&redirect_uri=${redirectUri}`"
         >
@@ -60,7 +60,7 @@
         <h2>Questions?</h2>
         <br />
         <p>
-          Q: How do I remove the {{$t('name')}} Slack App from a slack channel so that it won't send
+          Q: How do I remove the {{$t('brand_name')}} Slack App from a slack channel so that it won't send
           notifications to that channel?
         </p>
         <p>A:</p>
@@ -77,7 +77,7 @@
           :src="require('@static/img/notification-guides/slack/slack_setup4.png')"
         />
         <br /><br />
-        <p>Q: How do I remove the {{$t('name')}} Slack App from the entire workspace?</p>
+        <p>Q: How do I remove the {{$t('brand_name')}} Slack App from the entire workspace?</p>
         <p>
           A: Please follow the instructions in
           <a

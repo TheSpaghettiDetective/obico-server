@@ -104,10 +104,6 @@ export default (router, components) => {
       router,
       components,
     }).$mount('#app')
-    // new Vue({
-    //   router,
-    //   components,
-    // }).$mount('#app')
   }
 
   // FIXME: make start of the week dynamic when/if it will be done in the backend

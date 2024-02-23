@@ -11,9 +11,9 @@
       <p>
         <a
           href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know"
-          >Running the {{$t('name')}} app incurs non-trivial amount of costs</a
+          >Running the {{$t('brand_name')}} app incurs non-trivial amount of costs</a
         >. With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us
-        run the {{$t('name')}} app smoothly.
+        run the {{$t('brand_name')}} app smoothly.
       </p>
       <p><a href="/ent_pub/pricing/">Check out Pro pricing >>></a></p>
     </div>
@@ -80,7 +80,7 @@
                 <ul>
                   <li>
                     Send the secure link to anyone you want to share your printer feed with. They do
-                    NOT need the {{$t('name')}} account to see your printer feed.
+                    NOT need the {{$t('brand_name')}} account to see your printer feed.
                   </li>
                   <li>
                     Anyone with this shareable link will be able to see your printer feed.

@@ -1,17 +1,3 @@
 {
-    "welcome": "welcome",
-    "name": "Yumi",
-    "basicStreamInfoModal": {
-        "title": "Upgrade for Enhanced Experience",
-        "content1": "As a Yumi Free plan user, visit <1>Yumi's special page</1>.",
-        "upgradePlanUrl": "https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming"
-    },
-    "helpMenuScreen": {
-        "klipperSupport": "Klipper Support",
-        "klipperSupportUrl": "https://obico.io/discord-obico-klipper",
-        "discordSupport": "General Yumi Discord",
-        "discordSupportUrl": "https://discord.gg/NcZkQfj",
-        "documentation": "Documentation",
-        "documentationUrl": "https://www.obico.io/help"
-    }
+    "brand_name": "Yumi"
 }

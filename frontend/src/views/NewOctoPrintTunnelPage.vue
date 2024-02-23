@@ -12,7 +12,7 @@
               </div>
             </b-row>
             <b-row>
-              <h1 class="mx-auto">Welcome To {{$t('name')}}</h1>
+              <h1 class="mx-auto">Welcome To {{$t('brand_name')}}</h1>
             </b-row>
             <b-row>
               <b-col>
@@ -58,7 +58,7 @@
                   <i class="feature-check fas fa-check-circle"></i
                   ><span class="feature-text">G-Code Remote Upload and Printing</span>
                 </div>
-                <div class="lead py-4">{{ platformDisplayName }} has not been linked to your {{$t('name')}} account.</div>
+                <div class="lead py-4">{{ platformDisplayName }} has not been linked to your {{$t('brand_name')}} account.</div>
                 <div class="d-flex flex-column align-center justify-content-center">
                   <div>
                     <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg"
@@ -105,7 +105,7 @@
                   >{{ platformDisplayName }} Tunnel</a
                 >
                 is a secure way provided by
-                <a href="https://www.obico.io/" target="_blank">{{$t('name')}}</a> to remotely access your
+                <a href="https://www.obico.io/" target="_blank">{{$t('brand_name')}}</a> to remotely access your
                 {{ platformDisplayName }}. With the {{ platformDisplayName }} Tunnel, you can use {{ appDisplayName }} to access your
                 {{ platformDisplayName }} from anywhere.
               </p>
@@ -119,7 +119,7 @@
                     >capped at 300MB per month</a
                   >. You can
                   <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the {{$t('name')}} app Pro plan for 1 Starbucks a month</a
+                    >upgrade to the {{$t('brand_name')}} app Pro plan for 1 Starbucks a month</a
                   >
                   to enjoy unlimited tunnel usage.
                 </div>
@@ -140,7 +140,7 @@
                     >capped at 300MB per month</a
                   >. You can
                   <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the {{$t('name')}} app Pro plan for 1 Starbucks a month</a
+                    >upgrade to the {{$t('brand_name')}} app Pro plan for 1 Starbucks a month</a
                   >
                   to continue enjoying unlimited tunnel usage.
                 </div>
@@ -188,7 +188,7 @@
               <p class="text-muted small mb-1">Security notes:</p>
               <ul class="text-muted small pl-4">
                 <li>
-                  The app can only access the tunnel, not your {{$t('name')}} account info such as your email
+                  The app can only access the tunnel, not your {{$t('brand_name')}} account info such as your email
                   address.
                 </li>
                 <li>
@@ -218,12 +218,12 @@
             <div class="my-4">
               <div class="mx-auto text-center">
                 <h4>Free {{ platformDisplayName }} Tunnel</h4>
-                <div class="lead">Powered by {{$t('name')}}</div>
+                <div class="lead">Powered by {{$t('brand_name')}}</div>
               </div>
             </div>
             <div class="account-details">
               <p>
-                With the Free {{ platformDisplayName }} Tunnel by {{$t('name')}}, you can now use {{ appDisplayName }} to
+                With the Free {{ platformDisplayName }} Tunnel by {{$t('brand_name')}}, you can now use {{ appDisplayName }} to
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
                   >securely control and monitor your printer from anywhere</a
                 >:
@@ -234,7 +234,7 @@
                 <li>10 hours/mo AI failure detection.</li>
               </ul>
               <div>
-                🔥🔥🔥 Upgrade to {{$t('name')}} Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
+                🔥🔥🔥 Upgrade to {{$t('brand_name')}} Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
                   >from $4/mo</a
                 >) to get premium features:
               </div>

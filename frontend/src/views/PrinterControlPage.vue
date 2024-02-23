@@ -109,7 +109,7 @@
               Add Printer
             </b-button>
             <div class="text-muted extra-actions-explanation">
-              <small>Link another printer to {{$t('name')}}.</small>
+              <small>Link another printer to {{$t('brand_name')}}.</small>
             </div>
           </div>
         </div>

@@ -1,17 +1,3 @@
 {
-    "welcome": "welcome",
-    "name": "Obico",
-    "basicStreamInfoModal": {
-        "title": "Upgrade for Better Streaming",
-        "content1": "Because you are now on the <1>Obico Cloud Free plan</1>:",
-        "upgradePlanUrl": "https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming"
-      },
-    "helpMenuScreen": {
-        "klipperSupport": "Klipper Support",
-        "klipperSupportUrl": "https://obico.io/discord-obico-klipper",
-        "discordSupport": "General Obico Discord",
-        "discordSupportUrl": "https://discord.gg/NcZkQfj",
-        "documentation": "Documentation",
-        "documentationUrl": "https://www.obico.io/help"
-    }
+    "brand_name": "Obico"
 }

@@ -189,7 +189,7 @@
                 <div v-if="print.video_archived_at" class="card-container">
                   <h2 class="title">Time-Lapse video deleted</h2>
                   <p>
-                    Time-lapse videos older than 6-months are deleted from the {{$t('name')}} app server as
+                    Time-lapse videos older than 6-months are deleted from the {{$t('brand_name')}} app server as
                     they are rarely needed and cost significant amount to store in the cloud.
                   </p>
                   <p>
@@ -356,7 +356,7 @@
                   <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
                   <ul>
                     <li class="text-secondary mt-3">
-                      The {{$t('name')}} server is still processing the time-lapse;
+                      The {{$t('brand_name')}} server is still processing the time-lapse;
                     </li>
                     <li class="text-secondary mt-3">
                       Or, the print time was shorter than the threshold. You can change the threshold
@@ -761,7 +761,7 @@ export default {
   padding-bottom: 5px
 .open-detailed-report-button
   width: 100%
-  
+
 .heatmap-image-column
   display: flex
   justify-content: flex-end

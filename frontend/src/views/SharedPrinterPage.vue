@@ -22,10 +22,10 @@
             <hr />
             <br /><br />
             <p class="text-center">
-              {{$t('name')}} lets you monitor and control your printer from anywhere, on your phone.
+              {{$t('brand_name')}} lets you monitor and control your printer from anywhere, on your phone.
             </p>
             <a class="btn btn-block btn-primary" href="/accounts/signup/"
-              >Sign up for a free {{$t('name')}} account</a
+              >Sign up for a free {{$t('brand_name')}} account</a
             >
           </div>
         </div>

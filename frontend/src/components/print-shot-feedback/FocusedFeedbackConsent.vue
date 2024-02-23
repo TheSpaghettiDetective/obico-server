@@ -36,7 +36,7 @@
         class="custom-control-input"
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
-        I grant the {{$t('name')}} app team members the permission to review the time-lapse video of the
+        I grant the {{$t('brand_name')}} app team members the permission to review the time-lapse video of the
         print shown on this page.
         <a
           target="_blank"

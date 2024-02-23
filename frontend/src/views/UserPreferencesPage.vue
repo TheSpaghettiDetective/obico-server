@@ -255,10 +255,11 @@ export default {
           if (val.isNotificationChannel) {
             this.sections[key].pluginInfo = plugins[val.channelName]
           }
-          if (val.title === 'Pushover') {
-            const pushoverAppToken = plugins['pushover'].env_vars.PUSHOVER_APP_TOKEN
-            if (pushoverAppToken.is_required && !pushoverAppToken.is_set) {
-              this.$set(this.sections, 'pushover', { ...this.sections['pushover'], isHidden: true });
+          if (val.channelName && plugins[val.channelName] && plugins[val.channelName].env_vars) {
+            const pushoverAppToken = plugins[val.channelName].env_vars.PUSHOVER_APP_TOKEN
+
+            if (pushoverAppToken && pushoverAppToken.is_required && !pushoverAppToken.is_set) {
+              this.$set(this.sections, key, { ...this.sections[key], isHidden: true });
             }
           }
         }

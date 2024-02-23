@@ -28,7 +28,7 @@
             src: '/static/mintion/img/logo-mintion.png',
             alt: 'Mintion Logo',
             width: '100',
-            height: '30',
+            height: '50',
           },
           base: {
             type: 'svg',

@@ -255,6 +255,15 @@ export default {
           if (val.isNotificationChannel) {
             this.sections[key].pluginInfo = plugins[val.channelName]
           }
+          if (val.channelName && plugins[val.channelName] && plugins[val.channelName].env_vars) {
+            const env_vars = plugins[val.channelName].env_vars
+            const needHidden = Object.values(env_vars).some(envItem => {
+              return envItem.is_required && !envItem.is_set
+            })
+            if (needHidden) {
+              this.$set(this.sections, key, { ...this.sections[key], isHidden: true });
+            }
+          }
         }
       })
     },

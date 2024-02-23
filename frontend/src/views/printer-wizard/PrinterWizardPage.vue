@@ -118,12 +118,12 @@ cd moonraker-obico
                             <div class="text-warning">
                               Warning: Re-Linking OctoPrint should be your last resort to solve
                               issues. Please make sure you have exhausted all options on
-                              <a href="https://www.obico.io/help/">{{$t('brand_name')}}'s help website</a>.
+                              <a href="https://www.obico.io/help/">{{ $t('brand_name') }}'s help website</a>.
                             </div>
                             <ol>
                               <li>Open OctoPrint in another browser tab.</li>
                               <li>
-                                Select <em>"OctoPrint settings menu → {{$t('brand_name')}} for OctoPrint"</em>.
+                                Select <em>"OctoPrint settings menu → {{ $t('brand_name') }} for OctoPrint"</em>.
                               </li>
                               <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                             </ol>
@@ -151,7 +151,7 @@ cd moonraker-obico
                                 Select
                                 <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.
                               </li>
-                              <li>Enter "{{$t('brand_name')}}" to locate the plugin. Click <em>"Install"</em>.</li>
+                              <li>Enter "{{ $t('brand_name') }}" to locate the plugin. Click <em>"Install"</em>.</li>
                               <li>Restart OctoPrint when prompted.</li>
                             </ol>
                           </div>
@@ -209,8 +209,8 @@ cd moonraker-obico
                                   The printer or SBC is connected to the same local network as your
                                   phone/computer.
                                 </li>
-                                <li v-if="targetOctoPrint">{{$t('brand_name')}} for OctoPrint is 1.8.0 or above.</li>
-                                <li v-else>{{$t('brand_name')}} for Klipper is 1.5.0 or above.</li>
+                                <li v-if="targetOctoPrint">{{ $t('brand_name') }} for OctoPrint is 1.8.0 or above.</li>
+                                <li v-else>{{ $t('brand_name') }} for Klipper is 1.5.0 or above.</li>
                               </ul>
                             </div>
                           </div>
@@ -223,7 +223,7 @@ cd moonraker-obico
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8">
                               <ol>
-                                <li>Wait for <em>"{{ $t('name') }} for OctoPrint"</em> wizard to popup.</li>
+                                <li>Wait for <em>"{{ $t('brand_name') }} for OctoPrint"</em> wizard to popup.</li>
                                 <li>Follow the instructions in the wizard.</li>
                                 <li>Select <em>"Web Setup"</em> when asked.</li>
                               </ol>

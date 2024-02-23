@@ -70,7 +70,7 @@
                 :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
               ></i>
               <div class="text">
-                <div class="title">{{ $t('name') }} Cloud</div>
+                <div class="title">{{ $t('brand_name') }} Cloud</div>
               </div>
             </div>
           </b-dropdown-item>
@@ -143,7 +143,7 @@
                     :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
                   ></i>
                   <div class="text">
-                    <div class="title">{{ $t('name') }} Cloud</div>
+                    <div class="title">{{ $t('brand_name') }} Cloud</div>
                   </div>
                 </div>
               </b-dropdown-item>

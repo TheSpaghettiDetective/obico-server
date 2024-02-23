@@ -5,7 +5,7 @@
         <b-row class="justify-content-center">
           <b-col lg="8" class="text-center">
             <h1 class="pb-2">Upload Time-lapse</h1>
-            <p class="pb-2">Upload time-lapse videos to test {{$t('brand_name')}}'s AI failure detection.</p>
+            <p class="pb-2">Upload time-lapse videos to test {{ $t('brand_name') }}'s AI failure detection.</p>
             <vue-dropzone
               id="dropzone"
               class="upload-box"
@@ -27,7 +27,7 @@
                 />
                 <div class="py-2 text-center">
                   <div class="py-2">
-                    The {{$t('brand_name')}} Server is running failure detection on the time-lapse video(s) you
+                    The {{ $t('brand_name') }} Server is running failure detection on the time-lapse video(s) you
                     uploaded.
                   </div>
                   <div>We will send you email when it is done.</div>

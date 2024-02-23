@@ -15,7 +15,7 @@
         <div v-if="isInMobile" class="text-warning small">
           <p>
             Telegram in the mobile app is very finicky. Please open a browser, and log into
-            <a href="https://app.obico.io">the {{ $t('name') }} web app</a> using the same credential to set up
+            <a href="https://app.obico.io">the {{ $t('brand_name') }} web app</a> using the same credential to set up
             Telegram.
           </p>
           <p>Once set up, Telegram notification will work properly on your phone.</p>

@@ -1,8 +1,9 @@
 <template>
   <div v-show="isModalOpen" class="content-container">
-    <!-- Layer Demo as Modal -->
-    <div @click.self="$emit('close')" class="layer-demo-overlay">
-      <div class="layer-demo-modal">
+    <!-- First Layer Overlay -->
+    <div @click.self="$emit('close')" class="first-layer-overlay">
+      <!-- First Layer modal -->
+      <div class="first-layer-modal">
         <b-row>
           <div class="close-button mb-1">
             <button @click="$emit('close')">
@@ -476,7 +477,7 @@ export default {
   .value
     font-weight: bold
 
-.layer-demo-overlay
+.first-layer-overlay
   position: fixed
   z-index: 1000
   top: 0
@@ -484,7 +485,11 @@ export default {
   overflow: auto
   height: 100vh
   background-color: rgba(0, 0, 0, 0.5)
-.layer-demo-modal
+  @media (max-width: 768px)
+    width: 100%
+    padding-left: 15px
+    padding-right: 15px
+.first-layer-modal
   border-radius: var(--border-radius-lg)
   padding: auto 1em !important
   padding: 10px 20px
@@ -499,7 +504,10 @@ export default {
       border: none
       font-size: 22px
   @media (max-width: 768px)
-    margin: 2em 2em 0 2em
+    margin-top: 3em
+    margin-left: 0
+    margin-right: 0
+    margin-bottom: 5em
 .b-carousel
   padding-bottom: 0.5rem
   .close-button
@@ -509,6 +517,7 @@ export default {
       color: var(--color-text-primary)
       background: transparent
       border: none
+      font-size: 22px
 
 .carousel-tabs
   display: flex

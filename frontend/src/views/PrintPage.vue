@@ -137,8 +137,8 @@
             <div class="print-info">
               <!-- First Layer Report Card -->
               <div v-show="firstLayerInspection.id" class="card-container">
-                <b-row>
-                  <b-col cols="7" class="first-layer-info-column">
+                <b-row class="m-0">
+                  <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
                     <div>
                       <b-row class="mb-4">
                         <span class="ml-3">First Layer Report</span>
@@ -162,20 +162,18 @@
                         <div class="value">12%</div>
                       </div>
                     </div>
-                    <b-row>
-                      <b-button class="ml-2 mr-2 open-detailed-report-button" @click="isFirstLayerReportModalOpen = true"
+                    <b-row class="m-0">
+                      <b-button class="open-detailed-report-button" @click="isFirstLayerReportModalOpen = true"
                         >Open Detailed Report</b-button
                       >
                     </b-row>
                   </b-col>
-                  <b-col cols="5" class="heatmap-image-column">
+                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="heatmap-image-column">
                     <div class="heatmap-image-container">
                       <transition name="fade" mode="out-in">
                         <b-img
                           v-if="image"
                           :src="image"
-                          height="170"
-                          width="170"
                           alt="First Layer Map"
                           class="heatmap-image"
                         />
@@ -758,23 +756,42 @@ export default {
   flex-direction: column
   justify-content: space-between
   height: 240px
-  padding-bottom: 5px
+  padding: 0
 .open-detailed-report-button
   width: 100%
 
 .heatmap-image-column
   display: flex
   justify-content: flex-end
-  padding-top: 5px
-  padding-bottom: 5px
+  padding-right: 0
+  @media (max-width: 768px)
+    padding: 0
+  @media (max-width: 1198px) and (min-width: 991px)
+    margin-top: 1em  
+    padding: 0
+    justify-content: center
 .heatmap-image-container
   border-radius: var(--border-radius-lg)
-  height: 230px
-  width: 230px
   background: white
   padding: 32px
+  @media (max-width: 576px)
+    height: 393px
+    width: 100%
+    margin-top: 2em
+  @media (max-width: 1198px) and (min-width: 991px)
+    height: 393px
+    width: 100%
+    margin-top: 2em
 .heatmap-image
   border: 1px solid #cac8c8
+  height: 176px
+  
+  @media (max-width: 576px)
+    height: 330px
+    width: 100%
+  @media (max-width: 1198px) and (min-width: 991px)
+    height: 100%
+    width: 100%
 
 .first-layer-print-time
   width:100%

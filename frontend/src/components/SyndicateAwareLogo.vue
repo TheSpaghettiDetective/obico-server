@@ -25,7 +25,6 @@
           },
           mintion: {
             type: 'svg',
-            // src: '/static/mintion/img/logo-mintion.svg',
             src: '#mintion-svg-logo-full',
             alt: 'Mintion Logo',
             width: '100',

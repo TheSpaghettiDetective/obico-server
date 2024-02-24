@@ -80,7 +80,7 @@
                     <div class="icon"><i class="far fa-clock"></i></div>
                     <div>First Layer Print Time</div>
                   </div>
-                  <div class="value">12%</div>
+                  <div class="value">{{ print.duration || '-' }}</div>
                 </div>
               </div>
 
@@ -300,7 +300,7 @@ export default {
       type: Object,
       required: true,
     },
-    file: {
+    print: {
       type: Object,
       required: true,
     },
@@ -314,6 +314,9 @@ export default {
     },
   },
   computed: {
+    file() {
+      return this.print.g_code_file || { filename: this.print.filename }
+    },
     isGradeA() {
       return this.gradeResult.grade === 'A'
     },

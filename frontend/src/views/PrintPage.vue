@@ -7,7 +7,7 @@
           :is-modal-open="isFirstLayerReportModalOpen"
           :firstLayerInfo="firstLayerInfo"
           :gradeResult="gradeResult"
-          :file="print.g_code_file || { filename: print.filename }"
+          :print="print"
           :show-open-button="canOpenFile"
           @close="isFirstLayerReportModalOpen = false"
         />
@@ -159,7 +159,7 @@
                           <div class="icon"><i class="far fa-clock"></i></div>
                           <div class="title">First Layer Print Time</div>
                         </div>
-                        <div class="value">12%</div>
+                        <div class="value">{{ print.duration || '-' }}</div>
                       </div>
                     </div>
                     <b-row class="m-0">
@@ -778,10 +778,15 @@ export default {
     height: 393px
     width: 100%
     margin-top: 2em
-  @media (max-width: 1198px) and (min-width: 991px)
+  @media (max-width: 991px) and (min-width: 577px)
+    width: 15em
+  @media (max-width: 1198px) and (min-width: 992px)
     height: 393px
     width: 100%
     margin-top: 2em
+  @media (min-width: 1199px)
+    width: 15em
+  
 .heatmap-image
   border: 1px solid #cac8c8
   height: 176px

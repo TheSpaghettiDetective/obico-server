@@ -89,7 +89,7 @@
                 :show-open-button="canOpenFile"
               />
               <!-- Printer -->
-              <div class="card-container printer mb-5">
+              <div class="card-container printer">
                 <div class="icon">
                   <svg width="1em" height="1em" style="margin-bottom: 5px">
                     <use href="#svg-3d-printer" />
@@ -757,6 +757,12 @@ export default {
   justify-content: space-between
   height: 240px
   padding: 0
+  @media (max-width: 576px)
+    height: auto
+    gap: 1em
+  @media (max-width: 1198px) and (min-width: 991px)
+    height: auto
+    gap: 1em
 .open-detailed-report-button
   width: 100%
 
@@ -777,13 +783,13 @@ export default {
   @media (max-width: 576px)
     height: 393px
     width: 100%
-    margin-top: 2em
+    margin-top: 1.4em
   @media (max-width: 991px) and (min-width: 577px)
     width: 15em
   @media (max-width: 1198px) and (min-width: 992px)
     height: 393px
     width: 100%
-    margin-top: 2em
+    margin-top: 0.5em
   @media (min-width: 1199px)
     width: 15em
   
@@ -912,6 +918,7 @@ export default {
   display: flex
   align-items: center
   gap: .7rem
+  margin-bottom: var(--gap-between-blocks)
   .title
     font-weight: bold
   .info
@@ -927,8 +934,6 @@ export default {
     font-size: 1.5rem
     font-weight: normal
     margin-bottom: 1rem
-  @media (max-width: 991px)
-    margin-top: var(--gap-between-blocks)
   ::v-deep
     .card
       border-radius: var(--border-radius-lg)

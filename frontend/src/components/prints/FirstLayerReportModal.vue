@@ -1,251 +1,242 @@
 <template>
-  <div v-show="isModalOpen" class="content-container">
-    <!-- First Layer Overlay -->
-    <div @click.self="$emit('close')" class="first-layer-overlay">
-      <!-- First Layer modal -->
-      <div class="first-layer-modal">
-        <b-row>
-          <div class="close-button mb-1">
-            <button @click="$emit('close')">
-              <i class="far fa-window-close"></i>
-            </button>
+  <modal :is-modal-open="isModalOpen" @close="$emit('close')">
+    <div class="p-2">
+      <b-row>
+        <h4 class="mb-4 report-title">First Layer Report</h4>
+      </b-row>
+      <b-row>
+        <b-col lg="7">
+          <!-- File Block Start -->
+          <div class="file-block mb-3">
+            <!-- File Block 1st row -->
+            <div
+              class="file-header compact"
+              :class="{compact: compactView}"
+            >
+              <div v-if="showIconThumbnail">
+                <div v-if="bigThumbnailUrl" class="thumbnail">
+                  <img :src="bigThumbnailUrl" />
+                </div>
+                <div v-else class="thumbnail-placeholder">
+                  <span class="help">
+                    <help-widget id="thumbnail-setup-guide" :highlight="false" :show-close-button="false" />
+                  </span>
+                  <svg>
+                    <use href="#svg-no-photo" />
+                  </svg>
+                </div>
+              </div>
+              <div v-else class="icon">
+                <i class="fas fa-file-code"></i>
+              </div>
+              <div class="info truncated-wrapper">
+                <div class="truncated" :title="file.filename">
+                  {{ file.filename }}
+                </div>
+                <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
+                  <div v-if="file.deleted" class="truncated">
+                    <span class="text-danger">Deleted</span>
+                  </div>
+                  <div v-else class="truncated">
+                    <span>{{ file.filesize }}, uploaded {{ fileUploadedTime }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="button">
+                  <b-button
+                    :href="`/g_code_files/cloud/${file.id}/`"
+                    v-if="showOpenButton && file.id"
+                  >
+                    Open File
+                  </b-button>
+                </div>
+            </div>
+            <!-- File Block 2nd row -->
+            <div class="first-layer-report-info-line">
+              <div class="label">
+                <div class="icon"><i class="fas fa-info"></i></div>
+                <div>First Layer Grade</div>
+              </div>
+              <div class="value">
+                <div :class="gradeResult.gradeAccent">
+                  {{ gradeResult.gradeTitle || '&nbsp;' }}
+                </div>
+              </div>
+            </div>
+            <!-- File Block 3rd row -->
+            <div class="first-layer-report-info-line">
+              <div class="label">
+                <div class="icon"><i class="far fa-clock"></i></div>
+                <div>First Layer Print Time</div>
+              </div>
+              <div class="value">{{ print.duration || '-' }}</div>
+            </div>
           </div>
-        </b-row>
-        <div class="p-2">
-          <b-row>
-            <h4 class="mb-4 report-title">First Layer Report</h4>
-          </b-row>
-          <b-row>
-            <b-col lg="6" class="mb-4">
-              <!-- File Block Start -->
-              <div class="file-block mb-3">
-                <!-- File Block 1st row -->
-                <div
-                  class="file-header compact"
-                  :class="{compact: compactView}"
+
+          <!-- File Block End -->
+          <!-- Notes Block Start -->
+          <div class="notes-block mb-3">
+            <!-- Notes Block 1st row -->
+            <b-row>
+              <span class="title">First Layer Notes</span>
+            </b-row>
+            <hr />
+            <!-- File Block 2nd row -->
+            <b-row>
+              <div class="description">
+                <p>
+                  You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
+
+                  {{ gradeResult.gradeRemarks }}
+                </p>
+              </div>
+            </b-row>
+            <hr v-if="!isGradeA" />
+            <!-- File Block 3rd row -->
+            <b-row>
+              <div v-if="!isGradeA" class="info">
+                <p>
+                  Grade <span :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span> usually means one of the
+                  following:
+                </p>
+                <ul>
+                  <li v-for="(suggestion, index) in gradeResult.gradeSuggestion" :key="index" v-html="suggestion"></li>
+                </ul>
+              </div>
+            </b-row>
+          </div>
+        </b-col>
+        <!-- Map Section -->
+        <b-col lg="5" class="heatmap-column">
+          <b-card no-body class="mb-3 text-center card-map">
+            <b-card-body>
+              <div ref="imageContainer" class="image-container">
+                <b-img
+                  :src="
+                    isHeatmapVisible
+                      ? first_layer_info.heatmap_img_url
+                      : first_layer_info.gcode_img_url
+                  "
+                  alt="First Layer Map"
+                />
+
+                <button class="toggle-heatmap" @click="toggleHeatmap">
+                  <i
+                    :class="`fa ${isHeatmapVisible ? 'fa-eye' : 'fa-eye-slash'}`"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+
+                <div v-if="isHeatmapVisible">
+                  <div
+                    v-for="(point, index) in first_layer_info.points"
+                    :key="index"
+                    class="pin"
+                    :style="{ left: `${point.x_percent}%`, top: `${point.y_percent}%` }"
+                    @click="isHeatmapVisible ? imageClicked(point) : null"
+                    @mouseover="isHeatmapVisible ? showThumbnail(point, $event) : null"
+                    @mouseleave="isHeatmapVisible ? hideThumbnail() : null"
+                  ></div>
+                </div>
+
+                <div v-if="activeThumbnail" :style="thumbnailStyle" class="thumbnail">
+                  <img :src="activeThumbnail" />
+                </div>
+
+                <!-- Carousal Modal Start -->
+                <b-modal
+                  id="carousal-modal"
+                  size="lg"
+                  hide-footer
+                  hide-header
+                  content-class="b-carousel"
+                  class="b-carousel"
                 >
-                  <div v-if="showIconThumbnail">
-                    <div v-if="bigThumbnailUrl" class="thumbnail">
-                      <img :src="bigThumbnailUrl" />
-                    </div>
-                    <div v-else class="thumbnail-placeholder">
-                      <span class="help">
-                        <help-widget id="thumbnail-setup-guide" :highlight="false" :show-close-button="false" />
-                      </span>
-                      <svg>
-                        <use href="#svg-no-photo" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div v-else class="icon">
-                    <i class="fas fa-file-code"></i>
-                  </div>
-                  <div class="info truncated-wrapper">
-                    <div class="truncated" :title="file.filename">
-                      {{ file.filename }}
-                    </div>
-                    <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
-                      <div v-if="file.deleted" class="truncated">
-                        <span class="text-danger">Deleted</span>
-                      </div>
-                      <div v-else class="truncated">
-                        <span>{{ file.filesize }}, uploaded {{ fileUploadedTime }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="button">
-                      <b-button
-                        :href="`/g_code_files/cloud/${file.id}/`"
-                        v-if="showOpenButton && file.id"
-                      >
-                        Open File
-                      </b-button>
-                    </div>
-                </div>
-                <!-- File Block 2nd row -->
-                <div class="first-layer-report-info-line">
-                  <div class="label">
-                    <div class="icon"><i class="fas fa-info"></i></div>
-                    <div>First Layer Grade</div>
-                  </div>
-                  <div class="value">
-                    <div :class="gradeResult.gradeAccent">
-                      {{ gradeResult.gradeTitle || '&nbsp;' }}
-                    </div>
-                  </div>
-                </div>
-                <!-- File Block 3rd row -->
-                <div class="first-layer-report-info-line">
-                  <div class="label">
-                    <div class="icon"><i class="far fa-clock"></i></div>
-                    <div>First Layer Print Time</div>
-                  </div>
-                  <div class="value">{{ print.duration || '-' }}</div>
-                </div>
-              </div>
-
-              <!-- File Block End -->
-              <!-- Notes Block Start -->
-              <div class="notes-block mb-4">
-                <!-- Notes Block 1st row -->
-                <b-row>
-                  <span class="title">First Layer Notes</span>
-                </b-row>
-                <hr />
-                <!-- File Block 2nd row -->
-                <b-row>
-                  <div class="description">
-                    <p>
-                      You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
-
-                      {{ gradeResult.gradeRemarks }}
-                    </p>
-                  </div>
-                </b-row>
-                <hr v-if="!isGradeA" />
-                <!-- File Block 3rd row -->
-                <b-row>
-                  <div v-if="!isGradeA" class="info">
-                    <p>
-                      Grade <span :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span> usually means one of the
-                      following:
-                    </p>
-                    <ul>
-                      <li v-for="(suggestion, index) in gradeResult.gradeSuggestion" :key="index" v-html="suggestion"></li>
-                    </ul>
-                  </div>
-                </b-row>
-              </div>
-              <!-- Notes Block End -->
-              <b-button class="mb-3 mt-3" style="width: 100%"
-                >View First Layer Timelapse</b-button
-              >
-              <b-button class="feedback-button" style="width: 100%"
-                >Give Feedback About This Report</b-button
-              >
-            </b-col>
-            <!-- Map Section -->
-            <b-col lg="6">
-              <b-card no-body class="mb-3 text-center card-map">
-                <b-card-body>
-                  <div ref="imageContainer" class="image-container">
-                    <b-img
-                      :src="
-                        isHeatmapVisible
-                          ? first_layer_info.heatmap_img_url
-                          : first_layer_info.gcode_img_url
-                      "
-                      alt="First Layer Map"
-                    />
-
-                    <button class="toggle-heatmap" @click="toggleHeatmap">
-                      <i
-                        :class="`fa ${isHeatmapVisible ? 'fa-eye' : 'fa-eye-slash'}`"
-                        aria-hidden="true"
-                      ></i>
+                  <div class="close-button mb-5">
+                    <button @click="closeCarousel">
+                      <i class="far fa-window-close"></i>
                     </button>
-
-                    <div v-if="isHeatmapVisible">
-                      <div
-                        v-for="(point, index) in first_layer_info.points"
-                        :key="index"
-                        class="pin"
-                        :style="{ left: `${point.x_percent}%`, top: `${point.y_percent}%` }"
-                        @click="isHeatmapVisible ? imageClicked(point) : null"
-                        @mouseover="isHeatmapVisible ? showThumbnail(point, $event) : null"
-                        @mouseleave="isHeatmapVisible ? hideThumbnail() : null"
-                      ></div>
-                    </div>
-
-                    <div v-if="activeThumbnail" :style="thumbnailStyle" class="thumbnail">
-                      <img :src="activeThumbnail" />
-                    </div>
-
-                    <!-- Carousal Modal Start -->
-                    <b-modal
-                      id="carousal-modal"
-                      size="lg"
-                      hide-footer
-                      hide-header
-                      content-class="b-carousel"
-                      class="b-carousel"
-                    >
-                      <div class="close-button mb-5">
-                        <button @click="closeCarousel">
-                          <i class="far fa-window-close"></i>
-                        </button>
-                      </div>
-                      <div class="carousel-tabs">
-                        <b-tabs
-                          v-model="activeTab"
-                          nav-class="mb-2 border-0"
-                          active-nav-item-class="carousel-active-tab"
-                        >
-                          <b-tab
-                            title="AI Detected Image"
-                            active
-                            title-link-class="carousel-tab"
-                          >
-                            <vue-slick-carousel
-                              v-if="carouselItems.length"
-                              :key="carouselKey"
-                              ref="slickTagged"
-                              v-bind="settings"
-                              class="custom-slick-carousel"
-                              @afterChange="carouselImageChanged"
-                            >
-                              <div
-                                v-for="(item, index) in carouselItems"
-                                :key="`tagged-${index}`"
-                              >
-                                <img
-                                  width="auto"
-                                  height="350px"
-                                  :src="item.tagged_img_url"
-                                  :alt="`Tagged Screenshot ${index + 1}`"
-                                />
-                              </div>
-                            </vue-slick-carousel>
-                          </b-tab>
-
-                          <b-tab title="Original Image" title-link-class="carousel-tab">
-                            <vue-slick-carousel
-                              v-if="carouselItems.length"
-                              :key="carouselKey"
-                              ref="slickOriginal"
-                              v-bind="settings"
-                              class="custom-slick-carousel"
-                              @afterChange="carouselImageChanged"
-                            >
-                              <div
-                                v-for="(item, index) in carouselItems"
-                                :key="`original-${index}`"
-                              >
-                                <img
-                                  width="auto"
-                                  height="350px"
-                                  :src="item.raw_img_url"
-                                  :alt="`Original Screenshot ${index + 1}`"
-                                />
-                              </div>
-                            </vue-slick-carousel>
-                          </b-tab>
-                        </b-tabs>
-                      </div>
-                    </b-modal>
-                    <!-- Carousal Modal End -->
                   </div>
-                </b-card-body>
-              </b-card>
-              <div class="map-info">
-                Click pins on the g-node map to see snapshots of certain areas of the print.
+                  <div class="carousel-tabs">
+                    <b-tabs
+                      v-model="activeTab"
+                      nav-class="mb-2 border-0"
+                      active-nav-item-class="carousel-active-tab"
+                    >
+                      <b-tab
+                        title="AI Detected Image"
+                        active
+                        title-link-class="carousel-tab"
+                      >
+                        <vue-slick-carousel
+                          v-if="carouselItems.length"
+                          :key="carouselKey"
+                          ref="slickTagged"
+                          v-bind="settings"
+                          class="custom-slick-carousel"
+                          @afterChange="carouselImageChanged"
+                        >
+                          <div
+                            v-for="(item, index) in carouselItems"
+                            :key="`tagged-${index}`"
+                          >
+                            <img
+                              width="auto"
+                              height="350px"
+                              :src="item.tagged_img_url"
+                              :alt="`Tagged Screenshot ${index + 1}`"
+                            />
+                          </div>
+                        </vue-slick-carousel>
+                      </b-tab>
+
+                      <b-tab title="Original Image" title-link-class="carousel-tab">
+                        <vue-slick-carousel
+                          v-if="carouselItems.length"
+                          :key="carouselKey"
+                          ref="slickOriginal"
+                          v-bind="settings"
+                          class="custom-slick-carousel"
+                          @afterChange="carouselImageChanged"
+                        >
+                          <div
+                            v-for="(item, index) in carouselItems"
+                            :key="`original-${index}`"
+                          >
+                            <img
+                              width="auto"
+                              height="350px"
+                              :src="item.raw_img_url"
+                              :alt="`Original Screenshot ${index + 1}`"
+                            />
+                          </div>
+                        </vue-slick-carousel>
+                      </b-tab>
+                    </b-tabs>
+                  </div>
+                </b-modal>
+                <!-- Carousal Modal End -->
               </div>
-            </b-col>
-          </b-row>
-        </div>
-      </div>
+            </b-card-body>
+          </b-card>
+          <div class="map-info">
+            Click pins on the g-node map to see snapshots of certain areas of the print.
+          </div>
+        </b-col>
+      </b-row>
+      <b-row class="buttons-row">
+        <!-- Notes Block End -->
+        <b-col cols="12" lg="7">
+          <b-button class="mb-3" style="width: 100%"
+            >View First Layer Timelapse</b-button
+          >
+          <b-button class="feedback-button" style="width: 100%"
+            >Give Feedback About This Report</b-button
+          >
+        </b-col>
+      </b-row>
     </div>
-  </div>
+  </modal>  
 </template>
 
 <script>
@@ -254,12 +245,14 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
+import Modal from '@src/molecules/Modal.vue'
 
 export default {
   name: 'FirstLayerReportModal',
   components: {
     VueSlickCarousel,
     PageLayout,
+    Modal,
   },
 
   data: function () {
@@ -331,13 +324,6 @@ export default {
     },
   },
   watch: {
-    isModalOpen: function(value) {
-      if (!!value) {
-        this.$bvModal.show('first-layer-report-modal')
-      } else {
-        this.$bvModal.hide('first-layer-report-modal')
-      }
-    },
     firstLayerInfo: function(value) {
       if (!!value) {
         this.prepareFirstLayerInfo()
@@ -438,6 +424,13 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.buttons-row
+  @media (max-width: 991px)
+    margin-top: 2em
+.heatmap-column
+  display: flex
+  flex-direction: column
+  align-items: center
 .file-header
   display: flex
   align-items: center
@@ -474,37 +467,6 @@ export default {
   .value
     font-weight: bold
 
-.first-layer-overlay
-  position: fixed
-  z-index: 1000
-  top: 0
-  left: 0
-  overflow: auto
-  height: 100vh
-  background-color: rgba(0, 0, 0, 0.5)
-  @media (max-width: 768px)
-    width: 100%
-    padding-left: 15px
-    padding-right: 15px
-.first-layer-modal
-  border-radius: var(--border-radius-lg)
-  padding: auto 1em !important
-  padding: 10px 20px
-  background-color: var(--color-surface-secondary)
-  margin: 2em 2em 0 8em
-  .close-button
-    padding-top: 6px
-    padding-left: 7px
-    button
-      color: var(--color-text-primary)
-      background: transparent
-      border: none
-      font-size: 22px
-  @media (max-width: 768px)
-    margin-top: 3em
-    margin-left: 0
-    margin-right: 0
-    margin-bottom: 5em
 .b-carousel
   padding-bottom: 0.5rem
   .close-button
@@ -646,25 +608,20 @@ hr
 
 
 $border-color: #dee2e6
-.content-container
-  margin: 0 auto
-  position: relative
-  .card-description
-    border-radius: var(--border-radius-lg)
-  .card-map
-    border-radius: var(--border-radius-lg)
-    background: white
-    .card-body
-      padding: 10%
-  .card-footer
-    border-radius: var(--border-radius-lg)
+.card-map
+  border-radius: var(--border-radius-lg)
+  background: white
+  @media (min-width: 991px)
+    max-width: 490px
+  .card-body
+    padding: 10%
   .image-container
     position: relative
     display: block
     width: 100%
 
     > img
-      border: 1px solid black
+      border: 1px solid #cac8c8
       width: 100%
       height: auto
       object-fit: contain

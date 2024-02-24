@@ -341,12 +341,6 @@ export default {
       }
     }
   },
-
-  mounted() {
-    const heatmapImage = new Image()
-    heatmapImage.src = this.first_layer_info.heatmap_img_url
-  },
-
   methods: {
     /**
      * Handler for when image is changed in Carousal

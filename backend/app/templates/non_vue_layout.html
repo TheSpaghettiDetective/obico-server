@@ -7,17 +7,13 @@
     <nav class="navbar navbar-expand-xl bg-dark static-top" id="dynamic-navbar">
       <div class="container">
         <a class="navbar-brand" href="/">
-          {% if syndicate.provider == "mintion" %}
-            <img src="/static/mintion/img/logo-mintion.png" width="100" height="30" alt="mintion" />
-          {% else %}
           <svg width="100" height="30">
-            {% if syndicate.provider == "yumi" %}
-              <use href="#yumi-svg-logo-full" />
+            {% if syndicate.provider %}
+              <use href="#{{ syndicate.provider }}-svg-logo-full" />
             {% else %}
               <use href="#svg-logo-full" />
             {% endif %}
           </svg>
-          {% endif %}
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
           aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">

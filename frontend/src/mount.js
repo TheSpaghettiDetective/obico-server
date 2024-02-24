@@ -11,7 +11,7 @@ import VuePluralize from 'vue-pluralize'
 import OnoffToggle from 'vue-onoff-toggle'
 import LoadScript from 'vue-plugin-load-script'
 import LoadingPlaceholder from '@src/components/LoadingPlaceholder.vue'
-import SyndicateAwareLogo from '@src/components/SyndicateAwareLogo.vue'
+import SyndicateAwareSVG from '@src/components/SyndicateAwareSVG.vue'
 import moment from 'moment'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -75,7 +75,7 @@ export default (router, components) => {
   })
 
   Vue.component('LoadingPlaceholder', LoadingPlaceholder)
-  Vue.component('SyndicateAwareLogo', SyndicateAwareLogo)
+  Vue.component('SyndicateAwareSVG', SyndicateAwareSVG)
 
   library.add(
     faStar,

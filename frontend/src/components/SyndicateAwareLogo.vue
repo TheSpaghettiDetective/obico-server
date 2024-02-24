@@ -24,11 +24,12 @@
             height: '30',
           },
           mintion: {
-            type: 'img',
-            src: '/static/mintion/img/logo-mintion.png',
+            type: 'svg',
+            // src: '/static/mintion/img/logo-mintion.svg',
+            src: '#mintion-svg-logo-full',
             alt: 'Mintion Logo',
             width: '100',
-            height: '50',
+            height: '30',
           },
           base: {
             type: 'svg',

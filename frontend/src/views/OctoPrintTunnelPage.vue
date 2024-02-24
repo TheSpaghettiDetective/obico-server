@@ -110,7 +110,7 @@ export default {
             OctoPrint/Klipper Secure Tunnel
           </h4>
           <div class="p-1">
-            It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the ${this.$t('name')} app server.
+            It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the ${this.$t('brand_name')} app server.
           </div>
           <div class="p-1">
             <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">

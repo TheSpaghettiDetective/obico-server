@@ -72,7 +72,7 @@
       align="center">
       <a class="mobile-cta-font" href="{{ view_link }}" target="_blank"
         style="font-size: 14px; font-weight: 500; line-height:22px; font-family: 'Roboto', Helvetica, sans-serif; color: #ffffff; text-decoration: none; display: inline-block;">
-        Go to the Obico app to take a closer look.
+        Go to the {{ syndicate.brand_name }} app to take a closer look.
       </a>
     </td>
   </tr>
@@ -85,7 +85,7 @@
       style="font-family: 'Roboto', Helvetica, sans-serif; font-size:14px; font-weight:400; color:#161338; line-height:22px;">
       <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">Why did I receive this email?</span></span></h2>
       <ul>
-        <li>The Obico app detected in your webcam image some features that are characteristic
+        <li>The {{ syndicate.brand_name }} app detected in your webcam image some features that are characteristic
           in failed prints (such as the shapes of spaghetti).</li>
         <li>Your print <strong>may</strong> have failed. It could also have been a false alarm since our
           algorithm is not yet perfect.</li>
@@ -98,7 +98,7 @@
       <h2><span style="font-size:16px;"><span style="color:#2D2D2D;">What can I do now?</span></span></h2>
       <ul>
         <li>If it's clear from the image included above that your print is really failing, you can click the "Yes it
-          failed. Cancel the print!" button above. You may be asked to sign into the Obico web app.</li>
+          failed. Cancel the print!" button above. You may be asked to sign into the {{ syndicate.brand_name }} web app.</li>
         {% if print_paused %}
         <li>If it's clear from the image that your print is actually ok, that is, this email was a false alarm, you can
           click the "it is a false alarm. Resume the print!" button. If you are sure that current print won't fail, you
@@ -106,12 +106,12 @@
           rest of current print by clicking "Resume the print, and don't alert me for the rest of this print." </li>
         {% endif %}
         <li>If the picture attached to this email can't clearly tell you if your print actually failed, you can click
-          "Go to the Obico app to take a closer look" to go to the real time webcam view. From there you can
+          "Go to the {{ syndicate.brand_name }} app to take a closer look" to go to the real time webcam view. From there you can
           see the webcam in real time,
           and decide if you want to cancel the print.</li>
         {% if print_paused %}
         <li>You can also resume the print in OctoPrint or Mainsail/Fluidd. Just remember
-          that the Obico app has turned off the heaters for your safety. Remember to turn them back on before
+          that the {{ syndicate.brand_name }} app has turned off the heaters for your safety. Remember to turn them back on before
           resuming the print.</li>
         {% endif %}
       </ul>

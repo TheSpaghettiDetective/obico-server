@@ -40,7 +40,9 @@ import {
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { syndicate } from '@src/lib/page-context'
 
-Vue.prototype.$syndicate = syndicate().provider
+const provider = syndicate().provider
+Vue.prototype.$syndicate = provider
+const brandName=provider === 'base' ? 'Obico' : provider.charAt(0).toUpperCase() + provider.slice(1)
 
 export default (router, components) => {
   initTheme()
@@ -63,7 +65,7 @@ export default (router, components) => {
             title: 'Error',
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
               ${userMessage}.
-              Get help from <a href="https://obico.io/discord-obico-klipper">Obico for Klipper support forum</a> or <a href="https://obico.io/discord">the Obico general support forum</a> if this error persists.
+              Get help from <a href="https://obico.io/discord-obico-klipper">${brandName} for Klipper support forum</a> or <a href="https://obico.io/discord">the ${brandName} general support forum</a> if this error persists.
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,

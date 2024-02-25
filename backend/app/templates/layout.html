@@ -13,10 +13,10 @@
   {% block meta_viewport %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% endblock meta_viewport %}
-  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. Obico is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ syndicate.brand_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
   <meta name="author" content="">
 
-  <title>Obico</title>
+  <title>{{ syndicate.brand_name }}</title>
 
   <!-- Font Awesome -->
   <link
@@ -39,7 +39,7 @@
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
-  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/favicon-'|add:syndicate.provider|add:'.png' %}">
   <meta name="theme-color" content="rgb(45 62 79)">
 
   {% block header_ext %}{% endblock header_ext %}
@@ -73,7 +73,7 @@
     {% elif not app_platform.platform %}
       <footer id="global-footer">
         <div class="container">
-          <p>&copy; Obico {% now "Y" %}. All Rights Reserved.</p>
+          <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. All Rights Reserved.</p>
         </div>
       </footer>
     {% endif %}

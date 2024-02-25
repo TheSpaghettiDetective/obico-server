@@ -10,7 +10,7 @@
     >
       <b-container class="p-0">
         <b-navbar-brand href="/">
-          <SyndicateAwareLogo />
+          <SyndicateAwareSVG href="#svg-logo-compact" width="100" height="30" />
         </b-navbar-brand>
 
         <b-navbar-toggle target="navbar-toggle-collapse">

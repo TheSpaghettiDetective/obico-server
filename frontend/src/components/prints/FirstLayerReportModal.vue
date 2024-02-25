@@ -1,5 +1,4 @@
 <template>
-  <modal :is-modal-open="isModalOpen" @close="$emit('close')">
     <div class="p-2">
       <b-row>
         <h4 class="mb-4 report-title">First Layer Report</h4>
@@ -236,7 +235,6 @@
         </b-col>
       </b-row>
     </div>
-  </modal>  
 </template>
 
 <script>
@@ -245,14 +243,12 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import PageLayout from '@src/components/PageLayout'
-import Modal from '@src/molecules/Modal.vue'
 
 export default {
   name: 'FirstLayerReportModal',
   components: {
     VueSlickCarousel,
     PageLayout,
-    Modal,
   },
 
   data: function () {
@@ -281,10 +277,6 @@ export default {
     }
   },
   props: {
-    isModalOpen: {
-      type: Boolean,
-      required: false,
-    },
     firstLayerInfo: {
       type: Object,
       required: true,
@@ -324,11 +316,14 @@ export default {
     },
   },
   watch: {
-    firstLayerInfo: function(value) {
-      if (!!value) {
-        this.prepareFirstLayerInfo()
-      }
-    }
+    firstLayerInfo: {
+      handler: function (value) {
+        if (value) {
+          this.prepareFirstLayerInfo()
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
     /**
@@ -435,6 +430,7 @@ export default {
   display: flex
   align-items: center
   gap: 1rem
+  padding-bottom: 5px
   .info
     flex: 1
   .icon
@@ -761,10 +757,16 @@ $border-color: #dee2e6
     width: 706px !important;
   }
 }
+div#carousal-modal___BV_modal_outer_ {
+  z-index: 1100 !important;
+}
 @media (max-width: 768px) {
   .custom-slick-carousel .slick-prev:before, .custom-slick-carousel .slick-next:before {
     position: relative !important;
     top: 1em !important
   }
+}
+button.btn.feedback-button.btn-secondary {
+  border: 1px solid var(--color-primary) !important
 }
 </style>

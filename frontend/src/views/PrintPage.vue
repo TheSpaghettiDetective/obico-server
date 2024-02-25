@@ -3,14 +3,6 @@
     <template #content>
       <loading-placeholder v-if="isLoading" />
       <b-container v-else fluid>
-        <first-layer-report-modal
-          :is-modal-open="isFirstLayerReportModalOpen"
-          :firstLayerInfo="firstLayerInfo"
-          :gradeResult="gradeResult"
-          :print="print"
-          :show-open-button="canOpenFile"
-          @close="isFirstLayerReportModalOpen = false"
-        />
         <b-row>
           <b-col lg="5">
             <div class="print-info">
@@ -163,7 +155,7 @@
                       </div>
                     </div>
                     <b-row class="m-0">
-                      <b-button class="open-detailed-report-button" @click="isFirstLayerReportModalOpen = true"
+                      <b-button class="open-detailed-report-button" @click="onOpenDetailedReport"
                         >Open Detailed Report</b-button
                       >
                     </b-row>
@@ -408,7 +400,6 @@ export default {
     DetectiveWorking,
     FailureDetectionGauge,
     GCodeDetails,
-    FirstLayerReportModal
   },
 
   props: {
@@ -741,6 +732,23 @@ export default {
     },
     exitFullscreen() {
       this.fullscreenUrl = null
+    },
+    onOpenDetailedReport() {
+      this.$swal.openModalWithComponent(
+        FirstLayerReportModal,
+        {
+          printer: this.printer,
+          firstLayerInfo: this.firstLayerInfo,
+          gradeResult: this.gradeResult,
+          print: this.print,
+          showOpenButton: this.canOpenFile
+        },
+        {
+          showCloseButton: true,
+          showConfirmButton: false,
+          width: '100em'
+        }
+      )
     },
   },
 }

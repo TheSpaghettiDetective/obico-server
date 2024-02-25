@@ -85,7 +85,6 @@
               <div class="description">
                 <p>
                   You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
-
                   {{ gradeResult.gradeRemarks }}
                 </p>
               </div>
@@ -150,12 +149,9 @@
                   hide-header
                   content-class="b-carousel"
                   class="b-carousel"
+                  @show="onCarouselModalShow"
                 >
-                  <div class="close-button mb-5">
-                    <button @click="closeCarousel">
-                      <i class="far fa-window-close"></i>
-                    </button>
-                  </div>
+                  <button @click="closeCarousel" class="close-carousel">×</button>
                   <div class="carousel-tabs">
                     <b-tabs
                       v-model="activeTab"
@@ -166,49 +162,46 @@
                         title="AI Detected Image"
                         active
                         title-link-class="carousel-tab"
+                        @click="handleTabClicked"
                       >
                         <vue-slick-carousel
                           v-if="carouselItems.length"
-                          :key="carouselKey"
                           ref="slickTagged"
                           v-bind="settings"
                           class="custom-slick-carousel"
-                          @afterChange="carouselImageChanged"
+                          @afterChange="afterCarouselImageChanged"
+                          @beforeChange="beforeCarouselImageChanged"
                         >
-                          <div
+                          <img
                             v-for="(item, index) in carouselItems"
                             :key="`tagged-${index}`"
-                          >
-                            <img
-                              width="auto"
-                              height="350px"
-                              :src="item.tagged_img_url"
-                              :alt="`Tagged Screenshot ${index + 1}`"
-                            />
-                          </div>
+                            width="auto"
+                            height="350px"
+                            :class="{ 'fade-in': showCarouselAnimation }"
+                            :src="item.tagged_img_url"
+                            :alt="`Tagged Screenshot ${index + 1}`"
+                          />
                         </vue-slick-carousel>
                       </b-tab>
 
-                      <b-tab title="Original Image" title-link-class="carousel-tab">
+                      <b-tab title="Original Image" title-link-class="carousel-tab" @click="handleTabClicked">
                         <vue-slick-carousel
                           v-if="carouselItems.length"
-                          :key="carouselKey"
                           ref="slickOriginal"
                           v-bind="settings"
                           class="custom-slick-carousel"
-                          @afterChange="carouselImageChanged"
+                          @afterChange="afterCarouselImageChanged"
+                          @beforeChange="beforeCarouselImageChanged"
                         >
-                          <div
+                          <img
                             v-for="(item, index) in carouselItems"
                             :key="`original-${index}`"
-                          >
-                            <img
-                              width="auto"
-                              height="350px"
-                              :src="item.raw_img_url"
-                              :alt="`Original Screenshot ${index + 1}`"
-                            />
-                          </div>
+                            width="auto"
+                            height="350px"
+                            :class="{ 'fade-in': showCarouselAnimation }"
+                            :src="item.raw_img_url"
+                            :alt="`Original Screenshot ${index + 1}`"
+                          />
                         </vue-slick-carousel>
                       </b-tab>
                     </b-tabs>
@@ -253,6 +246,7 @@ export default {
 
   data: function () {
     return {
+      showCarouselAnimation: true,
       first_layer_info: {},
       carouselItems: [],
       isHeatmapVisible: true,
@@ -326,11 +320,20 @@ export default {
     },
   },
   methods: {
+    onCarouselModalShow() {
+      this.showCarouselAnimation = true
+    },
+    handleTabClicked() {
+      this.showCarouselAnimation = true
+    },
+    beforeCarouselImageChanged(index) {
+      this.showCarouselAnimation = false
+    },
     /**
      * Handler for when image is changed in Carousal
      * @param {Number} changedIndex
      */
-    carouselImageChanged(changedIndex) {
+    afterCarouselImageChanged(changedIndex) {
       this.updateCarouselInitialState(changedIndex)
     },
     /**
@@ -478,6 +481,7 @@ export default {
   display: flex
   justify-content: center
   height: 480px
+  margin-top: 1.25em 
 .report-title
   padding-left: 15px
 
@@ -487,7 +491,6 @@ export default {
   text-align: center
 .feedback-button
   color: var(--color-primary)
-  border-color: var(--color-primary)
   background-color: transparent
   &:hover
     background-color: var(--color-hover)
@@ -697,6 +700,17 @@ $border-color: #dee2e6
 </style>
 
 <style>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fadeIn 1.2s ease-in-out;
+}
 .carousel-active-tab {
   border: none !important;
   background-color: var(--color-background) !important;
@@ -741,10 +755,17 @@ $border-color: #dee2e6
   color: var(--color-primary) !important;
   margin-left: -20px !important;
 }
+div#carousal-modal {
+  animation: swal2-show .3s !important;
+  transition: none !important;
+}
+.modal-dialog.modal-lg {
+  transition: none !important
+}
 .b-carousel {
   background-color: var(--color-surface-primary) !important;
   border-radius: var(--border-radius-lg) !important;
-  z-index: 11;
+  background: var(--color-surface-secondary) !important;
   @media (min-width: 676px) and (max-width: 991px) {
     width: 667px !important;
     margin-left: -16%;
@@ -753,8 +774,34 @@ $border-color: #dee2e6
     width: 600px !important;
     margin-left: -10%;
   }
-  @media (min-width: 992px) {
+  @media (min-width: 991px) {
     width: 706px !important;
+    left: 3em
+  }
+  .close-carousel {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    justify-content: center;
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0;
+    transition: color .1s ease-out;
+    border: none;
+    border-radius: 0;
+    outline: initial;
+    background: 0 0;
+    color: #ccc !important;
+    font-family: serif;
+    font-size: 2.5em;
+    line-height: 1.2;
+    cursor: pointer;
+    overflow: hidden;
+    font-weight: 100;
+    &:hover {
+      color: #f27474 !important
+    }
   }
 }
 div#carousal-modal___BV_modal_outer_ {

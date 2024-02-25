@@ -746,7 +746,7 @@ export default {
         {
           showCloseButton: true,
           showConfirmButton: false,
-          width: '100em'
+          width: '75em'
         }
       )
     },

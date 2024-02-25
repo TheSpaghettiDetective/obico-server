@@ -6,7 +6,7 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <SyndicateAwareSVG />
+        <SyndicateAwareSVG href="#svg-logo-compact" width="100" height="30" />
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">

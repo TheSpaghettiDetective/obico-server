@@ -10,8 +10,8 @@ export default {
   props: ['href'],
   computed: {
     syndicateAwareHref() {
-      return this.$syndicate ? `#${this.$syndicate}${this.href.slice(1)}` : `${this.href}`;
+      return this.$syndicate === 'base' ? this.href : `#${this.$syndicate}-${this.href.slice(1)}`;
     },
   },
 };
-</script>
+</script> 

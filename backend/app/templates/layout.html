@@ -39,7 +39,12 @@
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
-  <link rel="icon" type="image/png" href="{% static 'img/favicon-'|add:syndicate.provider|add:'.png' %}">
+  {% if syndicate.provider == 'base' %}
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  {% else %}
+  <link rel="icon" type="image/png" href="{% static syndicate.provider|add:'/img/favicon.png' %}">
+  {% endif %}
+
   <meta name="theme-color" content="rgb(45 62 79)">
 
   {% block header_ext %}{% endblock header_ext %}

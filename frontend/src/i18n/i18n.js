@@ -2,6 +2,7 @@ import i18n from 'i18next';
 
 import baseEn from './base/en.json';
 import yumiEn from './yumi/en.json';
+import mintionEn from './mintion/en.json';
 import { syndicate } from '@src/lib/page-context'
 
 
@@ -18,6 +19,9 @@ const resources = {
   },
   'en_yumi': {
     translation: yumiEn,
+  },
+  'en_mintion': {
+    translation: mintionEn,
   },
 };
 

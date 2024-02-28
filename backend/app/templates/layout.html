@@ -39,11 +39,15 @@
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
-  {% if syndicate.provider == 'base' %}
-  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
-  {% else %}
-  <link rel="icon" type="image/png" href="{% static syndicate.provider|add:'/img/favicon.png' %}">
-  {% endif %}
+  {% with favicon_path='img/favicon.png' %}
+    {% if syndicate and syndicate.provider != 'base' %}
+      {% with favicon_path=syndicate.provider|add:'/img/favicon.png' %}
+        <link rel="icon" type="image/png" href="{% static favicon_path %}">
+      {% endwith %}
+    {% else %}
+      <link rel="icon" type="image/png" href="{% static favicon_path %}">
+    {% endif %}
+  {% endwith %}
 
   <meta name="theme-color" content="rgb(45 62 79)">
 

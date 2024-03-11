@@ -24,7 +24,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Obico App (Mobile & Web)',
-      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails'],
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails', 'user-guides/orca-slicer-integration'],
     },
     {
       type: 'category',

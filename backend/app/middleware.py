@@ -124,17 +124,21 @@ def authenticate_credentials(key):
     except AccessToken.DoesNotExist:
         return None  # Token does not exist
 
+
+# HTTP_X_API_KEY seems to be needed by OrcaSlicer: https://github.com/TheSpaghettiDetective/OrcaSlicer/blob/5a0f98e3f2634a61d8ad2f3b78bebf8e38f19de7/src/slic3r/GUI/PrinterWebView.cpp#L108
+# But I'm not too sure if it's really needed. I'll leave it here for now.
+
 def check_x_api(get_response):
     def middleware(request):
-        token = request.META.get('HTTP_X_API_KEY', '')  
+        token = request.META.get('HTTP_X_API_KEY', '')
         if token:
             user = authenticate_credentials(token)
             request.user = user
             setattr(request.user, 'backend', 'django.contrib.auth.backends.ModelBackend')
             auth_login(request, request.user)
-        
+
         response = get_response(request)
         return response
-    
-   
+
+
     return middleware

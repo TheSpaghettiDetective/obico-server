@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0073_auto_20230128_0217'),
+        ('app', '0076_remove_notificationsetting_notify_on_other_print_events'),
     ]
 
     operations = [

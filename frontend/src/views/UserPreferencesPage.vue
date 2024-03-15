@@ -24,7 +24,7 @@
                           :class="[value.faIcon, 'mr-2']"
                           style="font-size: 1.125rem"
                         ></i>
-                        <span>{{ value.title }}</span>
+                        <span>{{ $t(value.title) }}</span>
                       </span>
                       <i class="fas fa-arrow-right"></i>
                     </router-link>
@@ -33,7 +33,7 @@
                   <a v-if="!onlyNotifications()" href="#" @click.prevent="logout">
                     <span>
                       <i :class="['fas fa-sign-out-alt', 'mr-2']" style="font-size: 1.125rem"></i>
-                      Logout
+                      {{$t('Logout')}}
                     </span>
                   </a>
                 </div>
@@ -84,7 +84,7 @@
                   >
                     <template #title>
                       <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']"></i>
-                      {{ value.title }}
+                      {{ $t(value.title) }}
                     </template>
                     <component
                       :is="name"
@@ -107,7 +107,7 @@
                   <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="logout">
                       <i :class="['fas fa-sign-out-alt', 'mr-2']"></i>
-                      Logout
+                      {{$t('Logout')}}
                     </a>
                   </li>
                 </template>

@@ -67,21 +67,21 @@ The following is using gmail as an example. Other web mail services may vary sli
 
 2. Open `.env` using your favorite editor.
 
-3. Find the following lines, and set them to the correct values of your email account:
+3. Find the following lines, and set them to the correct values of your email account (make sure to remove the pound "#" symbols):
 
 ```text
-# EMAIL_HOST=
+EMAIL_HOST=
 
-# EMAIL_HOST_USER=
+EMAIL_HOST_USER=
 # Such as your email address for a Gmail account
 
-# EMAIL_HOST_PASSWORD=
+EMAIL_HOST_PASSWORD=
 # Your email account password
 
-# EMAIL_PORT=587
+EMAIL_PORT=587
 # Check with your email provider to make sure.
 
-# EMAIL_USE_TLS=True
+EMAIL_USE_TLS=True
 # Set it to False if your email provider doesn't use TLS, which is uncommon
 ```
 
@@ -91,6 +91,38 @@ You can follow [this guide](advanced/gmail_smtp_setup_guide.md) if you want to u
 
 If you run into issues with Email server settings, please follow this [Email server trouble-shooting guide](advanced/email_guide.md).
 *Note: Make sure to to remove the # or else it will not work.
+
+### (Re-)generate `DJANGO_SECRET_KEY` {#re-generate-django_secret_key}
+
+This step is optional. But you are highly recommended to generate `DJANGO_SECRET_KEY` and rotate (re-generate) it periodically, especially if you have your Obico Server exposed to the Internet via reverse proxy.
+
+:::caution
+If this step is omitted, the Obico Server will use the default value, which is not recommended unless your intention is just to quickly spin up an temporary Obico Server for evaluation or testing.
+:::
+
+:::caution
+If you are upgrading the Obico Server from a version before October 20th, 2023, you need to go through these steps. Otherwise, all of your previous prints and G-Code files will be unusable.
+:::
+
+1. Randomly generate the next `DJANGO_SECRET_KEY`:
+
+```
+docker compose exec web ./manage.py gen_site_secret
+```
+
+2. Copy the `DJANGO_SECRET_KEY=xxx` line in the output of the previous command into `.env`
+
+3. Restart the Obico Server:
+
+```
+docker compose stop && docker compose up -d
+```
+
+4. Re-sign all media URL. This step is important, otherwise all of your previous prints and G-Code files will be unusable.
+
+```
+docker compose exec web ./manage.py resign_media_urls
+```
 
 
 ## What's next? {#whats-next}

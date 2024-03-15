@@ -1,0 +1,63 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ipdb = "*"
+django = "==4.0.*"
+gunicorn = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+django-allauth = "*"
+django-widget-tweaks = "*"
+djangorestframework = "*"
+django-extensions = "*"
+redis = "*"
+django-simple-history = "*"
+jsonfield = "*"
+newrelic = "*"
+django-settings-export = "*"
+oauth2client = "*"
+authy = "*"
+phonenumbers = "*"
+twilio = "*"
+django-safedelete = "*"
+pillow = "*"
+django-hijack = "*"
+whitenoise = {extras = ["brotli"], version = "*"}
+celery = {extras = ["redis"], version = "*"}
+asgiref = "*"
+"zope.interface" = "*"
+channels = {extras = ["daphne"], version = "*" }
+channels-redis = "*"
+django-jstemplate = "*"
+"pushbullet.py" = "*"
+pytelegrambotapi = "*"
+# Fork of django_channels_presence adds django 4.x compatibility
+# See https://github.com/mitmedialab/django-channels-presence/issues/23
+django-channels-presence = {ref = "24c15f229372a16c7e8d6e160de89f4817d96c3f", git = "https://github.com/TheSpaghettiDetective/django-channels-presence.git"}
+backoff = "*"
+django-webpack-loader = "*"
+django-qr-code = "*"
+discord-webhook = "*"
+bson = "*"
+firebase-admin = "*"
+django-cors-headers = "*"
+pyjwt = "*"
+django-ipware = "*"
+django-redis = "*"
+sentry-sdk = "*"
+nplusone = "*"
+colorlog = "*"
+packaging = "*"
+numpy = "==1.26.3"
+django-debug-toolbar = "*"
+inotify-simple = "*"
+Twisted = {extras = ["tls", "http2"], version = "*" }
+django-oauth-toolkit = "==2.3.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

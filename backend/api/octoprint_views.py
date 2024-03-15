@@ -41,8 +41,7 @@ from lib.prediction import update_prediction_with_detections, is_failing, VISUAL
 from lib.channels import send_status_to_web
 from config.celery import celery_app
 from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer, CameraSerializer
-
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 LOGGER = logging.getLogger(__name__)
@@ -174,6 +173,7 @@ class OctoPrinterView(APIView):
                 'id': printer.id,
                 'name': printer.name,
                 'cameras': serializer.data,
+                'retract_on_pause': printer.retract_on_pause,
             }
         })
 
@@ -230,12 +230,17 @@ def pause_if_needed(printer, img_url):
 
 
 def cap_image_size(pic):
+    try:
+        im = Image.open(pic.file)
+    except UnidentifiedImageError:
+        raise ValidationError('Corrupted image.')
+
     im = Image.open(pic.file)
     if max(im.size) <= 1296:
         pic.file.seek(0)
         return pic
 
-    im.thumbnail((1280, 960), Image.ANTIALIAS)
+    im.thumbnail((1280, 960), Image.LANCZOS)
     output = io.BytesIO()
     im.save(output, format='JPEG')
     output.seek(0)

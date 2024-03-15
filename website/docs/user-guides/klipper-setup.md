@@ -1,7 +1,7 @@
 ---
 id: klipper-setup
 title: Set up Obico for Klipper
-description: For Klipper/Moonraker/Mainsail/Fluidd users
+description: For users using Klipper with Mainsail or Fluidd
 sidebar_label: Set up Obico for Klipper
 ---
 
@@ -9,7 +9,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::caution
- This guide is for the users who use **Moonraker with Klipper**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
+ This guide is for the users who use Klipper with Moonraker and **Mainsail or Fluidd**. If you are using OctoPrint with Klipper, please follow the [Obico for OctoPrint guide](octoprint-plugin-setup.md) instead.
 :::
 
 :::info
@@ -20,27 +20,40 @@ This guide assumes you are connecting to the [Obico Cloud](https://app.obico.io)
 
 Before you start, make sure:
 
-- You have the Klipper and Moonraker set up correctly and connected to your printer. Also a user interface such as Mainsail/Fluidd is highly recommended.
+- You have set up Klipper and the Moonraker API correctly, and it is connected to your printer. A interface such as Mainsail/Fluidd is highly recommended.
 - A webcam is set up for your printer and connected to Mainsail/Fluidd/Moonraker.
 - There is sufficient lighting to illuminate the printing area of your printer. If your printer is in a lighted room, you are probably fine. If you'll print with light off, you will need to make sure the printing area is illuminated when your printer is printing. A LED strip or small LED lamp will do the trick.
 
 
 ## Step 1: Download Obico for Klipper and run `install.sh` {#step-1-download-obico-for-klipper-and-run-installsh}
 
-1. SSH to the Raspberry Pi your Klipper runs on.
-2. Run:
+1. Use SSH to connect to the Raspberry Pi your Klipper runs on.
+2. Run the following commands one by one:
 ```bash
     cd ~
     git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
     cd moonraker-obico
     ./install.sh
 ```
-3. Follow the installation steps. You may be asked to enter the password in order to run `sudo` commands.
-5. You will also be asked to enter the configurations necessary for the installation to complete, such as the location of your `moonraker.conf`, Moonraker's port and address, and the log directory.
-6. `install.sh` will now start the process to link your printer to the Obico server. You will be asked to enter:
-    - The Obico Server you want to link it to. The default is the [Obico Cloud](https://app.obico.io). You can also change it to using your own [self-hosted Obico Server](https://www.obico.io/docs/server-guides/) (ex: http://192.168.0.5:3334).
-    - A **6-digit verification code**. You will obtain this 6-digit verification code in the following steps.
-7. Leave the terminal open. We will come back to enter the 6-digit code once we obtain it from the Obico app.
+3. Follow the guided installation steps on your screen. You may be asked to enter your password in order to run `sudo` commands.
+5. When asked for additional information about configuration files, provide their location or the appropriate number. Default for Klipper may be:
+    1. `moonraker.conf` configuration file: `~/printer_data/config/moonraker.conf` or `~/moonraker.conf` (see [Moonraker docs][])
+    2. Moonraker network address: The IP or hostname of the Klipper machine
+    3. Moonraker network port: `7125` (HTTP) or `7130` (HTTPS) (see [\[server\]][])
+    4. Log file directory: `/logs` folder (root level of the disk) (see [moonraker.log])
+6. Next, the installation process will ask you to enter details required to link your printer to the Obico server. Provide:
+    - The Obico Server you want to link it to. The default is `https://app.obico.io` (the [Obico Cloud](https://app.obico.io)).
+      Alternatively, you can also [host your own Obico Server][]: enter the IP address or hostname of your own server (e.g. http://192.168.0.5:3334).
+    - A **6-digit verification code**. **Leave the terminal window open on this screen.**
+7. Follow the guide outlined in [Step 3](#step-3-launch-the-link-printer-wizard-in-the-obico-app) to either link your Klipper machine and Obico automatically, **or** obtain the 6-digit manual verification code.
+    - If the automatic linking process is successful, the prompt in the terminal will automatically be skipped.
+    - You do not need the 6-digit code if automatic linking can be performed.
+
+[Moonraker docs]: https://moonraker.readthedocs.io/en/latest/configuration/
+[\[server\]]: https://moonraker.readthedocs.io/en/latest/configuration/#server
+[moonraker.log]: https://moonraker.readthedocs.io/en/latest/web_api/#download-moonrakerlog
+
+[host your own Obico Server]: https://www.obico.io/docs/server-guides/
 
 ## Step 2: Sign up for an Obico account. {#step-2-sign-up-for-an-obico-account}
 
@@ -99,30 +112,11 @@ If you are connecting to a self-hosted Obico Server, press the wrench icon (**�
 
 ## Step 3: Launch the "Link Printer" wizard in the Obico app {#step-3-launch-the-link-printer-wizard-in-the-obico-app}
 
-<Tabs
-  groupId="app"
-  defaultValue="mobile"
-  values={[
-    {label: '📱  Mobile App', value: 'mobile'},
-    {label: '🌐  Web App', value: 'web'},
-  ]}>
-  <TabItem value="mobile">
+:::tip
 
-Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
+If your phone or computer is one the **the same local network** as your Klipper is, the Obico app can find your Klipper machine automatically. This is the easiest way to link your printer to your Obico account.
 
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/launch-manual-link-mobile.jpg" /></div>
-
-  </TabItem>
-  <TabItem value="web">
-
-On the welcome page, click the "**Link Printer**" button.
-
-![Welcome page](/img/user-guides/setupguide/welcome-web.jpg)
-
-  </TabItem>
-</Tabs>
-
-## Step 4: Obtain the 6-digit verification code {#step-4-obtain-the-6-digit-verification-code}
+:::
 
 <Tabs
   groupId="app"
@@ -133,44 +127,40 @@ On the welcome page, click the "**Link Printer**" button.
   ]}>
   <TabItem value="mobile">
 
-1. Choose "**Klipper**" on the next screen.
-1. Assuming you have followed the previous steps and run the `install.sh` script, simply press "**Yes. Obico for Klipper is installed**".
-1. Now you will see a screen with a 6-digit verification code. This is the code you will use to link your printer. You can long-press the number to copy it to the clipboard.
+1. Press "**Link Printer**" button on the welcome screen. If you don't see that screen, tap the menu icon (☰) on the top-left corner, and select "**Link New Printer**".
+2. Choose "**Klipper**" on the next screen.
+3. Assuming you have followed the previous steps and installed the plugin, you can simply click the "**Yes, Obico for Klipper is installed**" button.
+4. The app will start scanning for the Klipper printer connected to the same local network.
+5. If printer is found, simply click the "**Link**" button and the app will do the rest for you.
+  :::tip
+  **If, however, the app can't find your printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.**
+  :::
 
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/klipper-verification-code-mobile.jpg" /></div>
-
-<div />
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-mobile.gif" /></div>
+6. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
   </TabItem>
-
   <TabItem value="web">
 
-1. Click "Klipper" on the page that asks you to select a platform.
+1. On the welcome page, click the "**Link Printer**" button.
+2. Click "Klipper" on the page that asks you to select a platform.
+1. Assuming you have followed the previous steps and run the `install.sh` script, simply press "Next".
+4. The app will start scanning for your Klipper connected to the same local network.
+5. If your Klipper printer is found, simply click the "**Link**" button and the app will do the rest for you.
+  :::tip
+  **If, however, the app can't find your Klipper printer after 1 minute of scanning, you need to follow the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.**
+  :::
+6. On the message dialog, click the "**Link Now**" button. This will open a new browser tab for a few seconds. This new browser tab is needed to finish a "handshake" with your Klipper printer. If the handshake fails, you will need to switch to the [Manual Setup Guide](/docs/user-guides/klipper-setup-manual-link) to link your printer using a 6-digit code.
 
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/select-platform-web.jpg" /></div>
-
-2. Assuming you have followed Step 1 and run the `install.sh` script, you can simply click the "**Next>**" button.
-3. Now you will see a screen with a 6-digit verification code. You can press Ctrl-C (Windows) or Cmd-C (Mac) to copy the 6 digit code to the clipboard.
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/klipper-verification-code-web.jpg" /></div>
+<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/auto-link-klipper-web.gif" /></div>
+7. Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
 
   </TabItem>
 </Tabs>
 
-## Step 5: Enter the 6-digit code {#step-5-enter-the-6-digit-code}
+## Step 4: Restart the Raspberry Pi.
 
-1. Go back to terminal for your SSH session in Step 1.
-1. Enter the 6-digit code you obtained in the previous step.
-1. As the final step, you will be asked if you want to opt in bug reporting. We strongly recommend you answer "Y" here. Bug reporting will help us catch and fix bugs earlier and more easily, and hence a better Obico app for you! :)
-
-<div style={{display: "flex", justifyContent: "center"}}><img src="/img/user-guides/setupguide/link-success-klipper.png" /></div>
-<br />
-
-Hooray! You are done! You can now close the terminal. Obico for Klipper is now running as a system service.
-
-## Step 6 (optional): Give your printer a shiny name! {#step-6-optional-give-your-printer-a-shiny-name}
-
-Optionally, you can now give your printer a name. If you skip this step, your printer will have the default name "*My Awesome Cloud Printer*".
+Once the Raspberry Pi has booted up, you should be able to see your printer and the webcam stream in the Obico app.
 
 ## What's next? {#whats-next}
 

@@ -86,7 +86,7 @@
                       {{ title }}
                     </h3>
 
-                    <tab-content v-if="targetMoonraker" title="Install Obico for Klipper">
+                    <tab-content v-if="targetMoonraker" :title="`Install ${$t('brand_name')} for Klipper`">
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
@@ -103,9 +103,6 @@ cd moonraker-obico
                                 >
                               </li>
                               <li>Follow the installation steps.</li>
-                              <li>
-                                At the end, you will be asked to enter a 6-digit verification code.
-                              </li>
                             </ol>
                           </div>
                         </div>
@@ -121,12 +118,12 @@ cd moonraker-obico
                             <div class="text-warning">
                               Warning: Re-Linking OctoPrint should be your last resort to solve
                               issues. Please make sure you have exhausted all options on
-                              <a href="https://www.obico.io/help/">Obico's help website</a>.
+                              <a href="https://www.obico.io/help/">{{ $t('brand_name') }}'s help website</a>.
                             </div>
                             <ol>
                               <li>Open OctoPrint in another browser tab.</li>
                               <li>
-                                Select <em>"OctoPrint settings menu → Obico for OctoPrint"</em>.
+                                Select <em>"OctoPrint settings menu → {{ $t('brand_name') }} for OctoPrint"</em>.
                               </li>
                               <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
                             </ol>
@@ -154,7 +151,7 @@ cd moonraker-obico
                                 Select
                                 <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.
                               </li>
-                              <li>Enter "Obico" to locate the plugin. Click <em>"Install"</em>.</li>
+                              <li>Enter "{{ $t('brand_name') }}" to locate the plugin. Click <em>"Install"</em>.</li>
                               <li>Restart OctoPrint when prompted.</li>
                             </ol>
                           </div>
@@ -173,7 +170,7 @@ cd moonraker-obico
                       </div>
                     </tab-content>
                     <template v-if="discoveryEnabled">
-                      <tab-content v-if="targetOctoPrint" title="Link It!">
+                      <tab-content title="Link It!">
                         <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
                           <div class="discover-body">
@@ -189,7 +186,7 @@ cd moonraker-obico
                                   <span class="sr-only"></span>
                                 </div>
                                 <span class="sr-only"></span>Scanning...,
-                                {{ discoveredPrinters.length }} OctoPrint(s) found on your local
+                                {{ discoveredPrinters.length }} printer(s) found on your local
                                 network:
                               </div>
                               <discovered-printer
@@ -200,19 +197,20 @@ cd moonraker-obico
                               />
                             </div>
                             <div class="mt-5 mb-3">
-                              Can't find the OctoPrint you want to link? Switch to
+                              Can't find the printer you want to link? Switch to
                               <a class="link" @click="discoveryEnabled = false">Manual Setup</a>
                               instead.
                             </div>
                             <div v-if="discoveryCount >= 2" class="text-muted">
-                              <div>To link your OctoPrint, please make sure:</div>
+                              <div>To link your printer, please make sure:</div>
                               <ul>
-                                <li>The Raspberry Pi is powered on.</li>
+                                <li>The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.</li>
                                 <li>
-                                  The Raspberry Pi is connected to the same local network as your
+                                  The printer or SBC is connected to the same local network as your
                                   phone/computer.
                                 </li>
-                                <li>The Obico plugin version is 1.8.0 or above.</li>
+                                <li v-if="targetOctoPrint">{{ $t('brand_name') }} for OctoPrint is 1.8.0 or above.</li>
+                                <li v-else>{{ $t('brand_name') }} for Klipper is 1.5.0 or above.</li>
                               </ul>
                             </div>
                           </div>
@@ -225,7 +223,7 @@ cd moonraker-obico
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8">
                               <ol>
-                                <li>Wait for <em>"Obico for OctoPrint"</em> wizard to popup.</li>
+                                <li>Wait for <em>"{{ $t('brand_name') }} for OctoPrint"</em> wizard to popup.</li>
                                 <li>Follow the instructions in the wizard.</li>
                                 <li>Select <em>"Web Setup"</em> when asked.</li>
                               </ol>
@@ -482,10 +480,6 @@ export default {
   methods: {
     setTargetPlatform(platfrom) {
       this.targetPlatform = platfrom
-      if (platfrom === 'moonraker') {
-        this.discoveryEnabled = false
-      }
-
       this.$router.push(routes.printerWizardSetup + `?${window.location.search}`)
     },
     setSavingStatus(propName, status) {
@@ -628,7 +622,7 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>The 6-digit code needs to be entered in the Obico plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+      let html = `<p>The 6-digit code needs to be entered in the ${ this.$t('brand_name') } plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
         <p><ul>
         <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
         <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
@@ -636,7 +630,7 @@ export default {
         </ul></p>`
 
       if (!this.targetOctoPrint) {
-        html = `<p>The 6-digit code needs to be entered to the <em>Obico for OctoPrint</em> installation script.</p>
+        html = `<p>The 6-digit code needs to be entered to the <em>${ this.$t('brand_name') } for OctoPrint</em> installation script.</p>
         <p>Check <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/">this set up guide</a> for detailed instructions.</p>`
       }
 

@@ -98,7 +98,7 @@ The file is large, so it may take a while (up to 40 minutes but likely less) for
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-printer-profile.png)
 
-- Under _Defauilt Printer Profile_, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
+- Under _Default Printer Profile_, enter the origin location (usually lower left), whether or not it has a heated bed, and the size of your printers build volume. These settings won't affect your prints, but they help enhance the overall user experience.
 
 ![](/img/user-guides/octoprint-orange-pi-zero-2-kit/octoprint-webcam-view.png)
 

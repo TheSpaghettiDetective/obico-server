@@ -17,6 +17,15 @@
           >some examples. <small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </small>
+      <div class="navigation-container my-4" style="display: flex">
+        <b-button variant="outline-secondary" @click="$emit('prev')">
+          <i class="fas fa-chevron-left"></i>&nbsp;&nbsp;Previous
+        </b-button>
+
+        <b-button variant="outline-secondary" @click="$emit('next')">
+          Next&nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+        </b-button>
+      </div>
     </div>
   </div>
 </template>
@@ -86,4 +95,14 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="sass" scoped>
+.navigation-container
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 1rem
+  margin: -1.5em
+  margin-bottom: .5em
+  padding: 1em 1.5em
+  background-color: var(--color-surface-primary)
+</style>

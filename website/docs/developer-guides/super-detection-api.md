@@ -4,7 +4,7 @@ title: Super Detection API
 
 The APIs documented on this page are called "super APIs" because they are authenticated by partner's "super auth token".
 
-## Authentication
+## Authentication {#authentication}
 
 All APIs are authenticated by the authentication token in the HTTP request header:
 
@@ -16,12 +16,12 @@ All APIs are authenticated by the authentication token in the HTTP request heade
 Please contact Obico team to obtain your super auth token.
 :::
 
-## Endpoint
+## Endpoint {#endpoint}
 
 - `https://app.obico.io/`. Production endpoint. Please use this endpoint unless instructed by the Obico team differently.
 - `https://app-stg.obico.io/`. Staging endpoint. Please don't use unless instructed by the Obico team.
 
-## POST `/ent/partners/api/predict/`
+## POST `/ent/partners/api/predict/` {#post-entpartnersapipredict}
 
 ### Request {#request}
 
@@ -38,11 +38,11 @@ This POST request should be sent as `multipart/form-data` format.
 
 ### Response {#response}
 
-#### Status code: `200`
+#### Status code: `200` {#status-code-200}
 
 API request was processed successfully.
 
-#### Body
+#### Body {#body}
 
 ```
 {
@@ -54,7 +54,8 @@ API request was processed successfully.
       "rolling_mean_long": 0,
       "prediction_num": 0,
       "prediction_num_lifetime": 0
-    }
+    },
+    "tagged_img_url": "https://app.obico.io/xxx"
   }
 }
 ```
@@ -66,6 +67,7 @@ API request was processed successfully.
     - `rolling_mean_long`: Long-term rolling mean for `p`. Rolling window span = 7200. This rolling mean is accumulated over the lifetime of the printer.
     - `prediction_num`: The number of predictions for the current print so far.
     - `prediction_num_lifetime`: The number of predictions for the life-time of the printer.
+- `tagged_img_url`: The URL for the image tagged with detections (green boxes).
 
 :::tip
 It's a good practice to use the temporal stats to smoothen out the noises in failure detection. Otherwise there may be excessive amount of false alarms.
@@ -84,11 +86,11 @@ In Obico open-source server, the way these temporal stats are used can be simpli
 All these "magic numbers", such as the rolling window sizes, or thresholds such as 0.36 or 0.78, should be considered as hyper-parameters. You are highly recommended to go through the hyper-parameters tuning process to find the optimal values for them.
 :::
 
-#### Status code: `400`
+#### Status code: `400` {#status-code-400}
 
 API request was NOT processed successfully for other reasons, such as missing required parameters.
 
-#### Body
+#### Body {#body-1}
 
 ```
 {
@@ -96,14 +98,27 @@ API request was NOT processed successfully for other reasons, such as missing re
 }
 ```
 
-#### Status code: `429`
+#### Status code: `401` {#status-code-401}
 
-API request was NOT processed successfully because of rate throttling.
+Super auth_token is not valid. Contact Obico team member.
 
-#### Body
+#### Body {#body-3}
 
 ```
 {
-  "error": "Detailed error message"
+  "error": "Invalid or Inactive Token",
+  "is_authenticated": "False"
+}
+```
+
+#### Status code: `429` {#status-code-429}
+
+API request was NOT processed successfully because of rate throttling. Contact Obico team member to increase your rate limit.
+
+#### Body {#body-2}
+
+```
+{
+  "error": "You are running too hot! Take it easy buddy..."
 }
 ```

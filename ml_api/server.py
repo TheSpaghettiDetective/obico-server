@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import flask
-from flask import request, jsonify
+from flask import abort, make_response, request, jsonify
 from os import path, environ
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -43,13 +43,29 @@ def get_p():
             img = cv2.imdecode(img_array, -1)
             detections = detect(net_main, img, thresh=THRESH)
             return jsonify({'detections': detections})
-        except:
+        except Exception as err:
             sentry_sdk.capture_exception()
+            app.logger.error(f"Failed to get image {request.args} - {err}")
+            abort(
+                make_response(
+                    jsonify(
+                        detections=[],
+                        message=f"Failed to get image {request.args} - {err}",
+                    ),
+                    400,
+                )
+            )
     else:
-        app.logger.warn("Invalid request params: {}".format(request.args))
+        app.logger.warn(f"Invalid request params: {request.args}")
+        abort(
+            make_response(
+                jsonify(
+                    detections=[], message=f"Invalid request params: {request.args}"
+                ),
+                422,
+            )
+        )
 
-    # todo, not a correct way to report an error if exception
-    return jsonify({'detections': []})
 
 @app.route('/hc/', methods=['GET'])
 def health_check():

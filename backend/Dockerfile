@@ -1,8 +1,9 @@
-FROM thespaghettidetective/web:base-1.10
+FROM thespaghettidetective/web:base-1.16
 
 WORKDIR /app
 EXPOSE 3334
 
-ADD . /app
-RUN pip install -U pip
+RUN pip install -U pip pipenv==2022.12.19
+
+ADD ./ /app
 RUN pip install -r requirements.txt

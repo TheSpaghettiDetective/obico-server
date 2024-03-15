@@ -295,7 +295,7 @@ export default {
 
   created() {
     this.mjpegStreamDecoder = new MJpegStreamDecoder((jpg, l) => {
-      this.mjpgSrc = 'data:image/jpg;base64, ' + jpg
+      this.mjpgSrc = `data:image/jpg;base64,${jpg}`
       this.onCanPlay()
     })
     if (!this.autoplay) {
@@ -395,12 +395,12 @@ export default {
       this.$swal.Prompt.fire({
         title: 'Upgrade for Better Streaming',
         html: `
-          <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">Obico Cloud Free plan</a>:</p>
+          <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$t('brand_name')} Cloud Free plan</a>:</p>
           <ul>
             <li>Streaming is limited to 5 FPS (frames per second).</li>
             <li>After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.</li>
           </ul>
-          <p>Support the Obico project by <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan offers many perks, including the <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">Premium Streaming</a>:</p>
+          <p>Support the ${this.$t('brand_name')} project by <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan offers many perks, including the <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">Premium Streaming</a>:</p>
           <ul>
             <li>Smooth 25 FPS.</li>
             <li>Unlimited streaming with no cooldowns.</li>

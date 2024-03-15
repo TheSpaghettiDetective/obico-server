@@ -1,5 +1,9 @@
 # Note: Please don't place single quotes (') or double quote (") around the values. Also it's case-sensitive
 
+# DJANGO_SECRET_KEY=
+# Generate your own unique secret key by running the following command:
+# docker compose exec web ./manage.py gen_site_secret
+
 # EMAIL_HOST=
 
 # EMAIL_HOST_USER=
@@ -22,6 +26,9 @@
 
 # SITE_IS_PUBLIC=False
 # set it to True if the site configured in django admin is accessible from the internet
+
+# CSRF_TRUSTED_ORIGINS=
+# A list of trusted origins for unsafe requests (e.g. POST). For example: ["https://obico.mydomain.com", "https://*.example.com"]. Necessary if, for example, a Cloudflare tunnel is used for external access.
 
 # SOCIAL_LOGIN=False
 # Set it to True to allow social account login. You will need to set "Provider" in Django admin (https://django-allauth.readthedocs.io/en/latest/providers.html)

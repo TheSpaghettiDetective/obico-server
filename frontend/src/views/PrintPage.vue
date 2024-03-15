@@ -78,11 +78,7 @@
               <!-- GCode details -->
               <g-code-details
                 :file="print.g_code_file || { filename: print.filename }"
-                :show-open-button="
-                  print.g_code_file &&
-                  !print.g_code_file.resident_printer &&
-                  !print.g_code_file.deleted
-                "
+                :show-open-button="canOpenFile"
               />
               <!-- Printer -->
               <div class="card-container printer">
@@ -130,185 +126,235 @@
             </div>
           </b-col>
           <b-col lg="7">
-            <div class="time-lapse">
-              <div v-if="print.video_archived_at" class="card-container">
-                <h2 class="title">Time-Lapse video deleted</h2>
-                <p>
-                  Time-lapse videos older than 6-months are deleted from the Obico app server as
-                  they are rarely needed and cost significant amount to store in the cloud.
-                </p>
-                <p>
-                  If you are a Pro subscriber and you don't want your time-lapse videos to be
-                  deleted, please
-                  <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos"
-                    >contact us</a
-                  >.
-                </p>
-              </div>
-              <div v-else-if="print.video_url || print.tagged_video_url">
-                <b-card no-body>
-                  <b-tabs pills card>
-                    <b-tab title="Detective Time-Lapse" :disabled="!canShowDetectiveView">
-                      <b-card-text>
-                        <div
-                          v-if="print.tagged_video_url"
-                          :class="{
-                            'is-fullscreen':
-                              !!fullscreenUrl && fullscreenUrl === print.tagged_video_url,
-                          }"
-                        >
-                          <div class="video-wrapper">
-                            <video-box
-                              :video-url="print.tagged_video_url"
-                              :poster-url="print.poster_url"
-                              :fluid="false"
-                              :fullscreen-btn="fullscreenUrl === null"
-                              :exit-fullscreen-btn="fullscreenUrl !== null"
-                              :download-btn="true"
-                              @timeupdate="onTimeUpdate"
-                              @fullscreen="() => enterFullscreen(print.tagged_video_url)"
-                              @exitFullscreen="exitFullscreen"
-                              @download="
-                                () => downloadFile(print.tagged_video_url, `${print.id}_tagged.mp4`)
-                              "
-                            />
+            <div class="print-info">
+              <!-- First Layer Report Card -->
+              <div v-show="firstLayerInspection.id" class="card-container">
+                <b-row class="m-0">
+                  <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
+                    <div>
+                      <b-row class="mb-4">
+                        <span class="ml-3">First Layer Report</span>
+                      </b-row>
+                      <div class="first-layer-info-line">
+                        <div class="label">
+                          <div class="icon"><i class="fas fa-info"></i></div>
+                          <div class="title">First Layer Grade</div>
+                        </div>
+                        <div class="value">
+                          <div class="print-status-color" :class="gradeResult.gradeAccent">
+                            {{ gradeResult.gradeTitle || '&nbsp;' }}
                           </div>
-                          <div class="detective-footer">
-                            <failure-detection-gauge
-                              v-if="print.prediction_json_url"
-                              :normalized-p="normalizedP"
-                            />
-                            <div class="feedback-section">
-                              <div
-                                class="lead"
-                                :class="[print.alerted_at ? 'text-danger' : 'text-success']"
-                              >
-                                {{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}
-                              </div>
-                              <div class="py-2">
-                                Did we get it right?
-                                <b-button
-                                  :variant="thumbedUp ? 'primary' : 'outline'"
-                                  class="mx-2 btn-sm"
-                                  @click="onThumbUpClick"
+                        </div>
+                      </div>
+                      <div class="first-layer-info-line">
+                        <div class="label">
+                          <div class="icon"><i class="far fa-clock"></i></div>
+                          <div class="title">First Layer Print Time</div>
+                        </div>
+                        <div class="value">{{ print.duration || '-' }}</div>
+                      </div>
+                    </div>
+                    <b-row class="m-0">
+                      <b-button class="open-detailed-report-button" @click="onOpenDetailedReport"
+                        >Open Detailed Report</b-button
+                      >
+                    </b-row>
+                  </b-col>
+                  <b-col cols="12" sm="5" md="5" lg="12" xl="5" class="heatmap-image-column">
+                    <div class="heatmap-image-container">
+                      <transition name="fade" mode="out-in">
+                        <b-img
+                          v-if="image"
+                          :src="image"
+                          alt="First Layer Map"
+                          class="heatmap-image"
+                        />
+                      </transition>
+                    </div>
+                  </b-col>
+                </b-row>
+
+              </div>
+              <div class="time-lapse">
+                <div v-if="print.video_archived_at" class="card-container">
+                  <h2 class="title">Time-Lapse video deleted</h2>
+                  <p>
+                    Time-lapse videos older than 6-months are deleted from the {{ $t('brand_name') }} app server as
+                    they are rarely needed and cost significant amount to store in the cloud.
+                  </p>
+                  <p>
+                    If you are a Pro subscriber and you don't want your time-lapse videos to be
+                    deleted, please
+                    <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos"
+                      >contact us</a
+                    >.
+                  </p>
+                </div>
+                <div v-else-if="print.video_url || print.tagged_video_url">
+                  <b-card no-body>
+                    <b-tabs pills card>
+                      <b-tab title="Detective Time-Lapse" :disabled="!canShowDetectiveView">
+                        <b-card-text>
+                          <div
+                            v-if="print.tagged_video_url"
+                            :class="{
+                              'is-fullscreen':
+                                !!fullscreenUrl && fullscreenUrl === print.tagged_video_url,
+                            }"
+                          >
+                            <div class="video-wrapper">
+                              <video-box
+                                :video-url="print.tagged_video_url"
+                                :poster-url="print.poster_url"
+                                :fluid="false"
+                                :fullscreen-btn="fullscreenUrl === null"
+                                :exit-fullscreen-btn="fullscreenUrl !== null"
+                                :download-btn="true"
+                                @timeupdate="onTimeUpdate"
+                                @fullscreen="() => enterFullscreen(print.tagged_video_url)"
+                                @exitFullscreen="exitFullscreen"
+                                @download="
+                                  () => downloadFile(print.tagged_video_url, `${print.id}_tagged.mp4`)
+                                "
+                              />
+                            </div>
+                            <div class="detective-footer">
+                              <failure-detection-gauge
+                                v-if="print.prediction_json_url"
+                                :normalized-p="normalizedP"
+                              />
+                              <div class="feedback-section">
+                                <div
+                                  class="lead"
+                                  :class="[print.alerted_at ? 'text-danger' : 'text-success']"
                                 >
-                                  <b-spinner
-                                    v-if="inflightAlertOverwrite"
-                                    type="grow"
-                                    small
-                                  ></b-spinner>
-                                  <i v-else class="fas fa-thumbs-up"></i>
-                                </b-button>
-                                <b-button
-                                  :variant="thumbedDown ? 'primary' : 'outline'"
-                                  class="mx-2 btn-sm"
-                                  @click="onThumbDownClick"
-                                >
-                                  <b-spinner
-                                    v-if="inflightAlertOverwrite"
-                                    type="grow"
-                                    small
-                                  ></b-spinner>
-                                  <i v-else class="fas fa-thumbs-down"></i>
-                                </b-button>
-                              </div>
-                              <transition name="bounce">
-                                <div v-if="print.printShotFeedbackEligible" class="pt-2">
+                                  {{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}
+                                </div>
+                                <div class="py-2">
+                                  Did we get it right?
                                   <b-button
-                                    variant="outline-primary"
-                                    size="sm"
-                                    :href="`/prints/shot-feedback/${print.id}/`"
+                                    :variant="thumbedUp ? 'primary' : 'outline'"
+                                    class="mx-2 btn-sm"
+                                    @click="onThumbUpClick"
                                   >
-                                    <i
-                                      v-if="!print.need_print_shot_feedback"
-                                      class="fas fa-check mr-2"
-                                    ></i>
-                                    FOCUSED FEEDBACK
+                                    <b-spinner
+                                      v-if="inflightAlertOverwrite"
+                                      type="grow"
+                                      small
+                                    ></b-spinner>
+                                    <i v-else class="fas fa-thumbs-up"></i>
+                                  </b-button>
+                                  <b-button
+                                    :variant="thumbedDown ? 'primary' : 'outline'"
+                                    class="mx-2 btn-sm"
+                                    @click="onThumbDownClick"
+                                  >
+                                    <b-spinner
+                                      v-if="inflightAlertOverwrite"
+                                      type="grow"
+                                      small
+                                    ></b-spinner>
+                                    <i v-else class="fas fa-thumbs-down"></i>
                                   </b-button>
                                 </div>
-                              </transition>
+                                <transition name="bounce">
+                                  <div v-if="print.printShotFeedbackEligible" class="pt-2">
+                                    <b-button
+                                      variant="outline-primary"
+                                      size="sm"
+                                      :href="`/prints/shot-feedback/${print.id}/`"
+                                    >
+                                      <i
+                                        v-if="!print.need_print_shot_feedback"
+                                        class="fas fa-check mr-2"
+                                      ></i>
+                                      FOCUSED FEEDBACK
+                                    </b-button>
+                                  </div>
+                                </transition>
 
-                              <div class="about-feedback">
-                                <small v-if="print.printShotFeedbackEligible">
-                                  <span v-if="!print.need_print_shot_feedback">
-                                    Thank you for completing the Focused Feedback. You have earned 2
-                                    non-expirable AI Detection Hours. You can click the button again
-                                    to change your feedback.
-                                  </span>
-                                  <span v-else>
-                                    With Focused Feedback, you can tell us exactly where we got it
-                                    wrong. This is the most effective way to help us improve.
+                                <div class="about-feedback">
+                                  <small v-if="print.printShotFeedbackEligible">
+                                    <span v-if="!print.need_print_shot_feedback">
+                                      Thank you for completing the Focused Feedback. You have earned 2
+                                      non-expirable AI Detection Hours. You can click the button again
+                                      to change your feedback.
+                                    </span>
+                                    <span v-else>
+                                      With Focused Feedback, you can tell us exactly where we got it
+                                      wrong. This is the most effective way to help us improve.
+                                      <a
+                                        href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
+                                        target="_blank"
+                                      >
+                                        You will earn 2 AI Detection Hours once you finish the Focused
+                                        Feedback
+                                      </a>
+                                    </span>
+                                  </small>
+                                  <small v-else>
+                                    Every time you give us feedback,
                                     <a
-                                      href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
+                                      href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
                                       target="_blank"
                                     >
-                                      You will earn 2 AI Detection Hours once you finish the Focused
-                                      Feedback
+                                      you help us get better at detecting failures
                                     </a>
-                                  </span>
-                                </small>
-                                <small v-else>
-                                  Every time you give us feedback,
-                                  <a
-                                    href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-                                    target="_blank"
-                                  >
-                                    you help us get better at detecting failures
-                                  </a>
-                                </small>
+                                  </small>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div v-else>
-                          <detective-working class="detective-placeholder" />
-                        </div>
-                      </b-card-text>
-                    </b-tab>
-                    <b-tab
-                      v-if="print.video_url"
-                      :active="!print.tagged_video_url"
-                      title="Original Time-Lapse"
-                    >
-                      <b-card-text>
-                        <div
-                          :class="{
-                            'is-fullscreen original':
-                              !!fullscreenUrl && fullscreenUrl === print.video_url,
-                          }"
-                        >
-                          <div class="video-wrapper">
-                            <video-box
-                              :video-url="print.video_url"
-                              :poster-url="print.poster_url"
-                              :fluid="false"
-                              :fullscreen-btn="fullscreenUrl === null"
-                              :exit-fullscreen-btn="fullscreenUrl !== null"
-                              :download-btn="true"
-                              @timeupdate="onTimeUpdate"
-                              @fullscreen="() => enterFullscreen(print.video_url)"
-                              @exitFullscreen="exitFullscreen"
-                              @download="() => downloadFile(print.video_url, `${print.id}.mp4`)"
-                            />
+                          <div v-else>
+                            <detective-working class="detective-placeholder" />
                           </div>
-                        </div>
-                      </b-card-text>
-                    </b-tab>
-                  </b-tabs>
-                </b-card>
-              </div>
-              <div v-else class="card-container">
-                <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
-                <ul>
-                  <li class="text-secondary mt-3">
-                    The Obico server is still processing the time-lapse;
-                  </li>
-                  <li class="text-secondary mt-3">
-                    Or, the print time was shorter than the threshold. You can change the threshold
-                    in
-                    <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
-                  </li>
-                </ul>
+                        </b-card-text>
+                      </b-tab>
+                      <b-tab
+                        v-if="print.video_url"
+                        :active="!print.tagged_video_url"
+                        title="Original Time-Lapse"
+                      >
+                        <b-card-text>
+                          <div
+                            :class="{
+                              'is-fullscreen original':
+                                !!fullscreenUrl && fullscreenUrl === print.video_url,
+                            }"
+                          >
+                            <div class="video-wrapper">
+                              <video-box
+                                :video-url="print.video_url"
+                                :poster-url="print.poster_url"
+                                :fluid="false"
+                                :fullscreen-btn="fullscreenUrl === null"
+                                :exit-fullscreen-btn="fullscreenUrl !== null"
+                                :download-btn="true"
+                                @timeupdate="onTimeUpdate"
+                                @fullscreen="() => enterFullscreen(print.video_url)"
+                                @exitFullscreen="exitFullscreen"
+                                @download="() => downloadFile(print.video_url, `${print.id}.mp4`)"
+                              />
+                            </div>
+                          </div>
+                        </b-card-text>
+                      </b-tab>
+                    </b-tabs>
+                  </b-card>
+                </div>
+                <div v-else class="card-container">
+                  <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
+                  <ul>
+                    <li class="text-secondary mt-3">
+                      The {{ $t('brand_name') }} server is still processing the time-lapse;
+                    </li>
+                    <li class="text-secondary mt-3">
+                      Or, the print time was shorter than the threshold. You can change the threshold
+                      in
+                      <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </b-col>
@@ -325,7 +371,7 @@ import { getNormalizedP, downloadFile } from '@src/lib/utils'
 import urls from '@config/server-urls'
 import { getLocalPref } from '@src/lib/pref'
 import { humanizedFilamentUsage } from '@src/lib/formatters'
-import { user } from '@src/lib/page-context'
+import { user, settings } from '@src/lib/page-context'
 import { normalizedPrint, PrintStatus, normalizedPrinter } from '@src/lib/normalizers'
 import PageLayout from '@src/components/PageLayout.vue'
 import VideoBox from '@src/components/VideoBox'
@@ -342,6 +388,8 @@ import {
 } from '@src/views/PrintHistoryPage'
 import GCodeDetails from '@src/components/GCodeDetails.vue'
 import { printerCommManager } from '@src/lib/printer-comm'
+import FirstLayerReportModal from '@src/components/prints/FirstLayerReportModal.vue'
+import { calculateGrade } from '../services/gradeCalculator';
 
 export default {
   name: 'PrintPage',
@@ -363,6 +411,11 @@ export default {
 
   data: function () {
     return {
+      image: '',
+      gradeResult: {},
+      firstLayerInfo: {},
+      firstLayerInspection: {},
+      isFirstLayerReportModalOpen: false,
       PrintStatus,
       absoluteDateFormat: 'MMM D, YYYY h:mm a',
       print: null,
@@ -390,6 +443,11 @@ export default {
   },
 
   computed: {
+    canOpenFile() {
+      return this.print.g_code_file &&
+            !this.print.g_code_file.resident_printer &&
+            !this.print.g_code_file.deleted
+    },
     PrevPrintButtonTitle() {
       return this.sortingValue.direction.key === 'asc' ? 'Older' : 'Newer'
     },
@@ -451,6 +509,9 @@ export default {
   },
 
   created() {
+    const { IS_ENT } = settings()
+    this.isEnt = !!IS_ENT
+
     this.user = user()
     this.fetchData()
     this.fetchSiblingPrints()
@@ -472,7 +533,6 @@ export default {
   methods: {
     downloadFile,
     humanizedFilamentUsage,
-
     async fetchData(clearPreviousData = true) {
       if (clearPreviousData) {
         this.print = null
@@ -519,6 +579,47 @@ export default {
           })
       } catch (error) {
         console.log(error)
+      }
+
+      if (this.isEnt) {
+        return fetch(urls.firstLayerInspection(this.currentPrintId))
+          .then((response) => {
+            if (!response.ok) {
+              console.log('first layer inspection failure is ignored because it may not exist');
+              return []
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.length) {
+              const inspectionData = data[0];
+              this.firstLayerInspection = inspectionData;
+              this.gradeResult = calculateGrade(inspectionData.score);
+              return inspectionData.data_json_url;
+            }
+            return null;
+          })
+          .then((dataJsonUrl) => {
+            if (dataJsonUrl) {
+              this.isLoading = true
+              fetch(dataJsonUrl)
+                .then((response) => {
+                  if (!response.ok) {
+                    console.log('first layer info failure is ignored because it may not exist');
+                    return {}
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  this.firstLayerInfo = data
+                  this.image = data.heatmap_img_url
+                })
+                .catch((err) => console.log('Could not fetch data'))
+              }
+          })
+          .finally(() => {
+            this.isLoading = false
+          })
       }
     },
     switchToPrint(print) {
@@ -632,11 +733,124 @@ export default {
     exitFullscreen() {
       this.fullscreenUrl = null
     },
+    onOpenDetailedReport() {
+      this.$swal.openModalWithComponent(
+        FirstLayerReportModal,
+        {
+          printer: this.printer,
+          firstLayerInfo: this.firstLayerInfo,
+          gradeResult: this.gradeResult,
+          print: this.print,
+          showOpenButton: this.canOpenFile
+        },
+        {
+          showCloseButton: true,
+          showConfirmButton: false,
+          width: '75em'
+        }
+      )
+    },
   },
 }
 </script>
 
 <style lang="sass" scoped>
+.fade-enter-active, .fade-leave-active
+  transition: opacity 0.5s
+.fade-enter, .fade-leave-to
+  opacity: 0
+.first-layer-info-column
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  height: 240px
+  padding: 0
+  @media (max-width: 576px)
+    height: auto
+    gap: 1em
+  @media (max-width: 1198px) and (min-width: 991px)
+    height: auto
+    gap: 1em
+.open-detailed-report-button
+  width: 100%
+
+.heatmap-image-column
+  display: flex
+  justify-content: flex-end
+  padding-right: 0
+  @media (max-width: 768px)
+    padding: 0
+  @media (max-width: 1198px) and (min-width: 991px)
+    margin-top: 1em  
+    padding: 0
+    justify-content: center
+.heatmap-image-container
+  border-radius: var(--border-radius-lg)
+  background: white
+  padding: 32px
+  @media (max-width: 576px)
+    height: 393px
+    width: 100%
+    margin-top: 1.4em
+  @media (max-width: 991px) and (min-width: 577px)
+    width: 15em
+  @media (max-width: 1198px) and (min-width: 992px)
+    height: 393px
+    width: 100%
+    margin-top: 0.5em
+  @media (min-width: 1199px)
+    width: 15em
+  
+.heatmap-image
+  border: 1px solid #cac8c8
+  height: 176px
+  
+  @media (max-width: 576px)
+    height: 330px
+    width: 100%
+  @media (max-width: 1198px) and (min-width: 991px)
+    height: 100%
+    width: 100%
+
+.first-layer-print-time
+  width:100%
+  display: flex
+  justify-content: space-between
+  padding: 0 1em
+  grid-template-columns: 3% 67% 30%
+  .icon
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0.5
+  .name
+    flex: 12
+    @media (max-width: 768px)
+      flex: 15
+  .status
+    display: flex
+    justify-content: flex-end
+.first-layer-grade
+  width:100%
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0 1em
+  .icon
+    flex: 1
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: 0.5
+  .name
+    flex: 7
+    @media (max-width: 768px)
+      flex: 11
+  .status
+    display: flex
+    justify-content: flex-end
+
 .print-info
   display: flex
   flex-direction: column
@@ -685,10 +899,34 @@ export default {
     .value
       font-weight: bold
 
+.first-layer-info-line
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottm: 6px
+  padding: 6px 0
+  gap: .5rem
+  border-top: 1px solid var(--color-divider-muted)
+  &:first-of-type
+    border-top: none
+  .label
+    display: flex
+    align-items: center
+    flex: 1
+    gap: .5rem
+    line-height: 1.1
+    .icon
+      opacity: .5
+      width: 1rem
+      text-align: center
+  .value
+    font-weight: bold
+
 .printer
   display: flex
   align-items: center
   gap: .7rem
+  margin-bottom: var(--gap-between-blocks)
   .title
     font-weight: bold
   .info
@@ -704,8 +942,6 @@ export default {
     font-size: 1.5rem
     font-weight: normal
     margin-bottom: 1rem
-  @media (max-width: 991px)
-    margin-top: var(--gap-between-blocks)
   ::v-deep
     .card
       border-radius: var(--border-radius-lg)

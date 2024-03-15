@@ -20,7 +20,7 @@
                   <div>
                     <vue-slick-carousel
                       ref="carousel"
-                      :arrows="true"
+                      :arrows="false"
                       :dots="true"
                       @afterChange="onNextShot"
                     >
@@ -29,6 +29,8 @@
                         :key="i"
                         :shot="shot"
                         @shotChanged="onShotChanged"
+                        @prev="onPrev"
+                        @next="onNext"
                       ></print-shot-card>
                       <template #customPaging="page">
                         <div :class="pageClass(page)">&bull;</div>
@@ -124,6 +126,14 @@ export default {
 
     onNextShot(shotIndex) {
       this.currentShot = shotIndex
+    },
+
+    onPrev() {
+      this.$refs.carousel.prev()
+    },
+
+    onNext() {
+      this.$refs.carousel.next()
     },
 
     pageClass(page) {

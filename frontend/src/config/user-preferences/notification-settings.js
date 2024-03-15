@@ -26,9 +26,20 @@ export default [
         enabledByDefault: true,
       },
       {
-        id: 'notify_on_other_print_events',
-        title: 'When other event happens',
-        description: 'Such as start, pause, and resume',
+        id: 'notify_on_print_start',
+        title: 'When print is started',
+        enabledByDefault: false,
+      },
+      {
+        id: 'notify_on_print_pause',
+        title: 'When print is paused',
+        description: 'Note: this event may be triggered by other plugins that pause the print frequently, such as the timelapse plugin',
+        enabledByDefault: false,
+      },
+      {
+        id: 'notify_on_print_resume',
+        title: 'When print is resumed',
+        description: 'Note: this event may be triggered by other plugins that pause the print frequently, such as the timelapse plugin',
         enabledByDefault: false,
       },
     ],

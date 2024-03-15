@@ -16,11 +16,11 @@ Follow [this guide](https://support.google.com/accounts/answer/185839) to turn o
 
 1. Go to the account page for the Gmail account you intend to use.
 1. Select "Security".
-1. Under "Signing in to Google," select "App Passwords".
-1. At the bottom, choose "Select app", and "Other (Custom name)".
+1. Under "How you sign in to Google" select "2-Step Verification".
+1. At the bottom, choose "App Passwords".
 1. Choose a name for this app password, such as "My Obico server".
-1. Click "Generate".
-1. On the next screen, copy the text in the yellow box. This is the pass you will use in the next step.
+1. Click "Create".
+1. On the next screen, copy the text in the white box. This is the pass you will use in the next step.
 
 
 ![Site configuration](/img/server-guides//gmail_setup_1.png)

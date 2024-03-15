@@ -221,3 +221,41 @@ export function repeatPrinterLocalGCode(printerComm, gcode) {
     args: [gcode],
   })
 }
+
+
+export function getMoonrakerWebcams(printerComm) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      {
+        func: `server/webcams/list`,
+        target: 'moonraker_api',
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(err || ret?.error)
+        } else {
+          resolve(ret?.webcams)
+        }
+      }
+    )
+  })
+}
+
+export function requestSnapshot(printerComm, url) {
+  return new Promise((resolve, reject) => {
+    printerComm.passThruToPrinter(
+      {
+        func: `web_snapshot_request`,
+        target: 'jpeg_poster',
+        args: [url],
+      },
+      (err, ret) => {
+        if (err || ret?.error) {
+          reject(err || ret?.error)
+        } else {
+          resolve(ret.pic)
+        }
+      }
+    )
+  })
+}

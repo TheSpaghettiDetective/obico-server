@@ -190,15 +190,15 @@
                 <ul>
                   Required versions:
                   <li>OctoPrint 1.7.0 or higher</li>
-                  <li>The Obico plugin 1.8.11 or higher</li>
+                  <li>The {{ $t('brand_name') }} plugin 1.8.11 or higher</li>
                 </ul>
               </i>
               <h3>Filament Runout Notifications</h3>
               <p>
                 Host_action_commands must be enabled in your firmware to make it possible for your
-                filament runout sensor to communicate with OctoPrint and the Obico app. If you
+                filament runout sensor to communicate with OctoPrint and the {{ $t('brand_name') }} app. If you
                 enable action commands in your firmware, then the filament runout sensor can work
-                properly and the Obico app can notify you when the filament runs out. Unfortunately,
+                properly and the {{ $t('brand_name') }} app can notify you when the filament runs out. Unfortunately,
                 without host_action_commands enabled, OctoPrint is unable to communicate with the
                 printer to know that a filament runout was detected.
               </p>
@@ -223,13 +223,13 @@
             <template v-if="id === 'filament-used-may-be-incorrect'">
               <h3>Is filament usage inaccurate?</h3>
               <p>
-                G-code files uploaded to your Obico account before upgrading to Obico for OctoPrint
-                version 2.3.0 or Obico for Klipper version 1.2.0 do not include filament usage data.
+                G-code files uploaded to your {{ $t('brand_name') }} account before upgrading to {{ $t('brand_name') }} for OctoPrint
+                version 2.3.0 or {{ $t('brand_name') }} for Klipper version 1.2.0 do not include filament usage data.
               </p>
               <p><strong>To ensure accurate filament usage and other statistics:</strong></p>
               <ul>
                 <li>
-                  Upload G-code files and start prints directly through Obico instead of
+                  Upload G-code files and start prints directly through {{ $t('brand_name') }} instead of
                   OctoPrint/Klipper.
                 </li>
                 <li>

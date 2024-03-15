@@ -1,12 +1,13 @@
 <template>
   <div class="discovered-printers mt-4">
     <div class="flex-grow-0 pt-1 mr-2">
+      <img v-if="discoveredPrinter.agent.toLowerCase().includes('octoprint')" class="logo-img" :src="require('@static/img/octoprint_logo.png')" />
+      <img v-else-if="discoveredPrinter.agent.toLowerCase().includes('klipper')" class="logo-img" :src="require('@static/img/klipper_logo.jpg')" />
       <img
-        v-if="discoveredPrinter.rpi_model"
+        v-else
         class="logo-img"
         :src="require('@static/img/raspberry_pi.png')"
       />
-      <img v-else class="logo-img" :src="require('@static/img/octoprint_logo.png')" />
     </div>
     <div class="row flex-grow-1 ml-1 link-action">
       <div class="col-sm-12 col-md-10 pb-2">

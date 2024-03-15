@@ -94,13 +94,14 @@ class SlackNotificationPlugin(BaseNotificationPlugin):
                     }
                 ]
             }
-            msg['blocks'].append(
-                {
-                    "type": "image",
-                    "image_url": image_url,
-                    "alt_text": "Print snapshot"
-                }
-            )
+            if image_url:
+                msg['blocks'].append(
+                    {
+                        "type": "image",
+                        "image_url": image_url,
+                        "alt_text": "Print snapshot"
+                    }
+                )
 
             req = requests.post(
                 url='https://slack.com/api/chat.postMessage',

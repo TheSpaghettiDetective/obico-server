@@ -6,9 +6,8 @@ import bson
 import json
 from typing import List, Optional
 
-
 REDIS = redis.Redis.from_url(
-    settings.REDIS_URL, charset="utf-8", decode_responses=True)
+    settings.REDIS_URL, encoding="utf-8", decode_responses=True)
 
 # for binary messages, decoding must be omitted
 BREDIS = redis.Redis.from_url(settings.REDIS_URL, decode_responses=False)

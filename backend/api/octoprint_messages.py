@@ -72,7 +72,8 @@ def settings_dict(printer_settings):
         tsd_plugin_version=printer_settings.get('tsd_plugin_version', ''),
         octoprint_version=printer_settings.get('octoprint_version', ''),
     )
-    settings.update(dict(platform_uname=json.dumps(printer_settings.get('platform_uname', []))))
+    settings.update(dict(platform_uname=json.dumps(octoprint_settings.get('platform_uname', []))))
+    settings.update(dict(installed_plugins=json.dumps(octoprint_settings.get('installed_plugins', []))))
 
     return settings
 
@@ -96,7 +97,7 @@ def update_current_print_if_needed(msg, printer):
 
     # Notification for mobile devices
     # This has to happen before event saving, as `current_print` may change after event saving.
-    mobile_notifications.send_if_needed(printer.current_print, op_event, printer_status)
+    mobile_notifications.send_print_progress(printer.current_print, printer_status)
 
     if op_event.get('event_type') == 'PrintCancelling':
         # progress data will be reset after PrintCancelling in OctoPrint. Set it now or never.

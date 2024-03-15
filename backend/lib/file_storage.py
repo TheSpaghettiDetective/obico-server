@@ -5,8 +5,8 @@ from six.moves.urllib.parse import urlencode, quote
 
 import importlib
 
-lt_file_storage = importlib.import_module(getattr(settings, 'LT_FILE_STORAGE_MODULE', 'lib.fs_file_storage'))
-st_file_storage = importlib.import_module(getattr(settings, 'ST_FILE_STORAGE_MODULE', 'lib.fs_file_storage'))
+lt_file_storage = importlib.import_module(settings.LT_FILE_STORAGE_MODULE)
+st_file_storage = importlib.import_module(settings.ST_FILE_STORAGE_MODULE)
 
 def save_file_obj(dest_path, file_obj, container, long_term_storage=True):
     content_type='application/octet-stream'

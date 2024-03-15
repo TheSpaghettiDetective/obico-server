@@ -6,13 +6,13 @@
         <i class="fas fa-ellipsis-h fa-2x"></i>
         <i class="fas fa-ellipsis-h fa-2x"></i>
       </div>
-      <img class="pic-item" :src="require('@static/img/octoprint_logo.png')" />
+      <img class="pic-item" :src="require('@static/img/printer.png')" />
     </div>
     <div class="my-4">
-      <p>The Obico app needs to make sure you have access to selected OctoPrint.</p>
+      <p>The {{ $t('brand_name') }} app needs to make sure you have access to selected printer.</p>
       <p>
         When you press "Link Now" button below, a new browser window will pop up to finish a
-        handshake with this OctoPrint.
+        handshake with this printer.
       </p>
     </div>
     <div>

@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from allauth.account.views import SignupView
 from allauth.account.forms import SignupForm
 
-from allauth.exceptions import ImmediateHttpResponse
+from allauth.core.exceptions import ImmediateHttpResponse
 from django.core.exceptions import PermissionDenied
 from requests import RequestException
 from allauth.socialaccount.providers.base import ProviderException
@@ -64,7 +64,7 @@ def oauth_callback(request, *args, **kwargs):
             raise Exception("Unsupported provider")
 
         provider = adapter.get_provider()
-        app = adapter.get_provider().get_app(request)
+        app = provider.app
 
         try:
             if is_google:

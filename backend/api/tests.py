@@ -13,7 +13,6 @@ from api.octoprint_messages import process_printer_status
 
 def init_data():
     user = User.objects.create(email='test@tsd.com')
-    user.set_password('test')
     user.save()
     printer = Printer.objects.create(user=user)
     print = Print.objects.create(
@@ -21,8 +20,7 @@ def init_data():
     printer.current_print = print
     printer.save()
     client = Client()
-    client.login(email='test@tsd.com', password='test')
-
+    client.force_login(user)
     return (user, printer, client)
 
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for why it is patching "api.octoprint_views.send_failure_alert" not "lib.notifications.send_failure_alert"

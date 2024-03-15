@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core import serializers
 from celery import shared_task
-from celery.decorators import periodic_task
+from config.celery import PeriodicTask
 from datetime import timedelta
 import tempfile
 import requests
@@ -61,12 +61,7 @@ def process_print_end_event(print_event):
 
 def send_notification_for_print_event(_print, print_event, extra_context=None):
     notification_type = notification_types.from_print_event(print_event)
-    if notification_type in [
-        notification_types.FilamentChange,
-        notification_types.PrintDone,
-        notification_types.PrintCancelled,
-        ] + list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
-
+    if notification_type:
         handler.queue_send_printer_notifications_task(
             printer=print_event.printer,
             notification_type=notification_type,
@@ -239,12 +234,12 @@ def detect_timelapse(self, print_id):
 
 # Websocket connection count house upkeep jobs
 
-@periodic_task(run_every=timedelta(seconds=1200))
+@shared_task(base=PeriodicTask, run_every=timedelta(seconds=1200))
 def prune_channel_presence():
     Room.objects.prune_presences(age=120)
 
 
-@periodic_task(run_every=timedelta(seconds=1200))
+@shared_task(base=PeriodicTask, run_every=timedelta(seconds=1200))
 def prune_channel_rooms():
     Room.objects.prune_rooms()
 

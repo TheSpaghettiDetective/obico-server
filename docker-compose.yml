@@ -22,6 +22,7 @@ x-web-defaults: &web-defaults
     ADMIN_IP_WHITELIST: '${ADMIN_IP_WHITELIST-}'
     SITE_USES_HTTPS: '${SITE_USES_HTTPS-False}'
     SITE_IS_PUBLIC: '${SITE_IS_PUBLIC-False}'
+    CSRF_TRUSTED_ORIGINS: '${CSRF_TRUSTED_ORIGINS-}'
     SOCIAL_LOGIN: '${SOCIAL_LOGIN-False}'
     REDIS_URL: '${REDIS_URL-redis://redis:6379}'
     DATABASE_URL: '${DATABASE_URL-sqlite:////app/db.sqlite3}'
@@ -37,6 +38,8 @@ x-web-defaults: &web-defaults
     PUSHOVER_APP_TOKEN: '${PUSHOVER_APP_TOKEN-}'
     SLACK_CLIENT_ID: '${SLACK_CLIENT_ID-}'
     SLACK_CLIENT_SECRET: '${SLACK_CLIENT_SECRET-}'
+    DJANGO_SECRET_KEY: '${DJANGO_SECRET_KEY-}'
+    SYNDICATE: '${SYNDICATE-}'
     VERSION:
 
 services:
@@ -59,7 +62,7 @@ services:
       - "3334:3334"
     depends_on:
       - ml_api
-    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && python manage.py runserver --nostatic --noreload 0.0.0.0:3334'
+    command: sh -c 'python manage.py migrate && python manage.py collectstatic -v 2 --noinput && daphne -b 0.0.0.0 -p 3334 config.routing:application'
 
   tasks:
     <<: *web-defaults
@@ -68,4 +71,4 @@ services:
 
   redis:
     restart: unless-stopped
-    image: redis:5.0-alpine
+    image: redis:7.2-alpine

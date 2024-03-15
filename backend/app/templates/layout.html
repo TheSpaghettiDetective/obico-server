@@ -13,10 +13,10 @@
   {% block meta_viewport %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% endblock meta_viewport %}
-  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. Obico is the easiest way to monitor and control your 3D printer from anywhere.">
+  <meta name="description" content="The all-in-one, open-source, smart 3D printing platform for makers. {{ syndicate.brand_name }} is the easiest way to monitor and control your 3D printer from anywhere.">
   <meta name="author" content="">
 
-  <title>Obico</title>
+  <title>{{ syndicate.brand_name }}</title>
 
   <!-- Font Awesome -->
   <link
@@ -32,7 +32,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" type="text/css" href="{% static 'vendor/css/sweetalert2.min.css' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
 
   {% bundle 'styles' %}
   {% bundlechunk 'chunk-vendors' 'css' %}
@@ -40,7 +39,16 @@
   {% block page_css %}{% endblock page_css %}
 
   <!-- favicons -->
-  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  {% with favicon_path='img/favicon.png' %}
+    {% if syndicate and syndicate.provider != 'base' %}
+      {% with favicon_path=syndicate.provider|add:'/img/favicon.png' %}
+        <link rel="icon" type="image/png" href="{% static favicon_path %}">
+      {% endwith %}
+    {% else %}
+      <link rel="icon" type="image/png" href="{% static favicon_path %}">
+    {% endif %}
+  {% endwith %}
+
   <meta name="theme-color" content="rgb(45 62 79)">
 
   {% block header_ext %}{% endblock header_ext %}
@@ -48,6 +56,7 @@
   {{ settings|json_script:"settings-json" }}
   {{ user|user_dict|json_script:"user-json" }}
   {{ app_platform|json_script:"app-platform-json" }}
+  {{ syndicate|json_script:"syndicate-json"}}
 </head>
 
 <body>
@@ -73,7 +82,7 @@
     {% elif not app_platform.platform %}
       <footer id="global-footer">
         <div class="container">
-          <p>&copy; Obico {% now "Y" %}. All Rights Reserved.</p>
+          <p>&copy; {{ syndicate.brand_name }} {% now "Y" %}. All Rights Reserved.</p>
         </div>
       </footer>
     {% endif %}

@@ -6,9 +6,7 @@
     <!-- Sidebar -->
     <nav class="side-nav">
       <a href="/" class="sidebar-header">
-        <svg class="logo-small">
-          <use href="#svg-logo-compact" />
-        </svg>
+        <SyndicateAwareSVG href="#svg-logo-compact" width="100" height="30" />
       </a>
       <ul class="list-unstyled m-0">
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">
@@ -120,9 +118,6 @@
       </b-navbar>
       <!-- Page content -->
       <div class="page-content">
-        <content-top
-          v-if="layoutSections.contentTop && !path.match('\/printers\/[0-9]+\/control\/')"
-        ></content-top>
         <slot name="content"></slot>
       </div>
     </div>
@@ -133,16 +128,9 @@
 <script>
 import get from 'lodash/get'
 import { inMobileWebView, user, settings } from '@src/lib/page-context'
-import layoutSections from '@config/layout/sections'
 
 export default {
   name: 'PageLayout',
-
-  components: {
-    ...Object.keys(layoutSections).reduce((obj, name) => {
-      return Object.assign(obj, { [name]: layoutSections[name].importComponent })
-    }, {}),
-  },
 
   props: {
     isPopup: {
@@ -153,7 +141,6 @@ export default {
 
   data() {
     return {
-      layoutSections,
       collapsed: true,
       path: window.location.pathname,
       user: null,

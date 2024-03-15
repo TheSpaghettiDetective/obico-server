@@ -383,7 +383,7 @@ export default {
       this.$swal.Prompt.fire({
         title: 'Time-lapse video deleted',
         html: `
-          <p>Time-lapse videos older than 6-months are deleted from the Obico app server as they are rarely needed and cost significant amount to store in the cloud.</p>
+          <p>Time-lapse videos older than 6-months are deleted from the ${this.$t('brand_name')} app server as they are rarely needed and cost significant amount to store in the cloud.</p>
           <p>If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">contact us</a>.</p>
           `,
         showCloseButton: true,

@@ -13,9 +13,14 @@ Example:
 
 `https://app.obico.io/tunnels/new/`
 
+#### HTTP Verb {#http-verb}
+
+`GET`
+
 ### Parameters {#parameters}
 
 - `app`: Required. The name of your app.
+- `platform`: Optional. It can be "OctoPrint" or "Klipper". Default to "OctoPrint" if absent.
 - `printer_id`: Optional. If not provided, and the user has more than 1 printers linked to his/her Obico account, the page will list all printers for the user to choose from.
 - `success_redirect_url`: Optional. If not provided, the page will be redirected to `https://app.obico.io/tunnels/succeeded/` on successful authorization.
 
@@ -44,6 +49,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Tunnel usage API {#tunnel-usage-api}
 
+#### HTTP Verb {#http-verb-1}
+
+`GET`
+
 #### Endpoint {#endpoint}
 
 `{TUNNEL_ENDPOINT}/_tsd_/tunnelusage/`
@@ -56,6 +65,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Webcam snapshot API {#webcam-snapshot-api}
 
+#### HTTP Verb {#http-verb-2}
+
+`GET`
+
 #### Endpoint {#endpoint-1}
 
 `{TUNNEL_ENDPOINT}/_tsd_/webcam/0/`
@@ -66,6 +79,10 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 
 ### Failure prediction API {#failure-prediction-api}
 
+#### HTTP Verb {#http-verb-3}
+
+`GET`
+
 #### Endpoint {#endpoint-2}
 
 `{TUNNEL_ENDPOINT}/_tsd_/prediction/`
@@ -73,3 +90,21 @@ This value will be designated as `TUNNEL_ENDPOINT` for the rest of this document
 #### Response {#response-2}
 
 - `normalized_p`: The prediction value in the range of [0,1). < 0.33: Low. 0.33 - 0.66: Medium. > 0.66: High.
+
+### Printer System Info {#printer-system-info}
+
+#### HTTP Verb {#http-verb-4}
+
+`GET`
+
+#### Endpoint {#endpoint}
+
+`{TUNNEL_ENDPOINT}/_tsd_/dest_platform_info/`
+
+Currently only Moonraker is supported.
+
+#### Response {#response}
+
+- `server_ip`: The IP address of the Moonraker server.
+- `server_port`: The port the Moonraker server listens on.
+- `linked_name`: The name the user gave to the printer in Obico.

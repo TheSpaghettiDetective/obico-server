@@ -1,4 +1,5 @@
 import { isLocalStorageSupported } from './utils.js'
+import * as syndicates from './syndicate.js'
 
 
 const Themes = {
@@ -8,7 +9,6 @@ const Themes = {
 }
 
 const defaultTheme = (isLocalStorageSupported() ? localStorage.getItem('colorTheme') : Themes.Dark) || Themes.Dark
-
 
 // CSS Vars
 
@@ -180,9 +180,23 @@ function currentThemeValue(theme) {
   return theme.value
 }
 
+function mergeColorOverrides(defaultColors, syndicateColors) {
+  const merged = new Map(defaultColors.map(color => [color.name, color]));
 
-function initTheme(themeValue) {
-  colors.forEach(function(color) {
+  syndicateColors.forEach(color => {
+    merged.set(color.name, color);
+  });
+
+  return Array.from(merged.values());
+}
+
+
+function initTheme(themeValue, syndicate) {
+  const finalColors = syndicate && syndicates[syndicate]
+  ? mergeColorOverrides(colors, syndicates[syndicate].colors)
+  : colors;
+
+  finalColors.forEach(function(color) {
     document.documentElement.style.setProperty(`--color-${color.name}`, color.values[themeValue])
 
     if (color.name === 'surface-secondary') {

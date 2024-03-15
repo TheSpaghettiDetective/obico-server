@@ -144,3 +144,5 @@ def send_failure_alerts(
             plugin.instance.send_failure_alert(context=context)
         except NotImplementedError:
             pass
+        except Exception:
+            capture_exception()

@@ -116,7 +116,12 @@ function MJpegWebRTCConnection(streamIdToTest) {
                   if (stream) {
                     self.streamId = stream.id
                     self.streaming = pluginHandle
-                    if (get(stream, 'media[0].type') === 'data') {
+
+                    const mjpegStreamExisting =
+                      get(stream, 'data') || // Janus 0.x format
+                      find(get(stream, 'media', []), { type: 'data' }) // Janus 1.x format
+
+                    if (mjpegStreamExisting) {
                       self.callbacks.onStreamAvailable(self)
                     }
                   } else {

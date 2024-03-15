@@ -1,11 +1,11 @@
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import SuspiciousOperation, MiddlewareNotUsed, PermissionDenied
 from django.contrib.sessions.backends.base import UpdateError
 
 from whitenoise.middleware import WhiteNoiseMiddleware
 import time
 from django.utils.cache import patch_vary_headers
-from django.utils.http import cookie_date
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils.http import http_date
 from django.urls import reverse, NoReverseMatch
@@ -15,8 +15,14 @@ from ipware import get_client_ip
 from .views import tunnelv2_views
 from lib.tunnelv2 import OctoprintTunnelV2Helper
 
+from app.models import User
+from django.contrib.auth import login as auth_login
+from oauth2_provider.models import AccessToken
+from oauth2_provider.signals import app_authorized
+
 import logging
 
+LOGGER = logging.getLogger()
 
 class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
 
@@ -27,11 +33,11 @@ class TSDWhiteNoiseMiddleware(WhiteNoiseMiddleware):
         if path:
             self.add_files(path, prefix="/.well-known")
 
-    def process_request(self, request):
+    def get_response(self, request):
         if OctoprintTunnelV2Helper.is_tunnel_request(request):
             return None
 
-        return super().process_request(request)
+        return super().get_response(request)
 
 
 def octoprint_tunnelv2(get_response):
@@ -66,66 +72,28 @@ def fix_tunnelv2_apple_cache(get_response):
 
     return middleware
 
-
-# https://stackoverflow.com/questions/2116860/django-session-cookie-domain-with-multiple-domains
-# https://ittone.ma/ittone/django-session_cookie_domain-with-multiple-domains/
-class SessionHostDomainMiddleware(SessionMiddleware):
-
+# https://stackoverflow.com/questions/64466605/django-how-to-get-the-time-until-a-cookie-expires
+class RefreshSessionMiddleware(SessionMiddleware):
     def process_response(self, request, response):
-        """
-        If request.session was modified, or if the configuration is to save the
-        session every time, save the changes and set a session cookie or delete
-        the session cookie if the session has been emptied.
-        """
-        try:
-            accessed = request.session.accessed
-            modified = request.session.modified
-            empty = request.session.is_empty()
-        except AttributeError:
-            pass
-        else:
-            host = request.get_host().split(':')[0]
-            # First check if we need to delete this cookie.
-            # The session should be deleted only if the session is entirely empty
-            if settings.SESSION_COOKIE_NAME in request.COOKIES and empty:
-                response.delete_cookie(
-                    settings.SESSION_COOKIE_NAME,
-                    path=settings.SESSION_COOKIE_PATH,
-                    domain=host,
-                    samesite=settings.SESSION_COOKIE_SAMESITE,
-                )
-            else:
-                if accessed:
-                    patch_vary_headers(response, ('Cookie',))
-                if (modified or settings.SESSION_SAVE_EVERY_REQUEST) and not empty:
-                    if request.session.get_expire_at_browser_close():
-                        max_age = None
-                        expires = None
-                    else:
-                        max_age = request.session.get_expiry_age()
-                        expires_time = time.time() + max_age
-                        expires = http_date(expires_time)
-                    # Save the session data and refresh the client cookie.
-                    # Skip session save for 500 responses, refs #3881.
-                    if response.status_code != 500:
-                        try:
-                            request.session.save()
-                        except UpdateError:
-                            raise SuspiciousOperation(
-                                "The request's session was deleted before the "
-                                "request completed. The user may have logged "
-                                "out in a concurrent request, for example."
-                            )
-                        response.set_cookie(
-                            settings.SESSION_COOKIE_NAME,
-                            request.session.session_key, max_age=max_age,
-                            expires=expires, domain=host,
-                            path=settings.SESSION_COOKIE_PATH,
-                            secure=settings.SESSION_COOKIE_SECURE or None,
-                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,
-                            samesite=settings.SESSION_COOKIE_SAMESITE,
-                        )
+        session = request.session
+        if not (session.is_empty() or session.get_expire_at_browser_close()):
+            now_ts = int(time.time())
+            expires_at_ts = session.get('_session_expire_at_ts', None)
+            refresh_at_ts = expires_at_ts or now_ts - (settings.SESSION_COOKIE_AGE - settings.SESSION_COOKIE_REFRESH_INTERVAL)
+            if expires_at_ts is None or now_ts >= refresh_at_ts:
+                # This will set modified flag and update the cookie expiration time
+                session['_session_expire_at_ts'] = now_ts + settings.SESSION_COOKIE_AGE
+        response = super().process_response(request, response)
+        # If setting a session cookie, ensure we set the domain attribute so that the cookie
+        # passes through to subdomains for tunneling
+        if response.cookies:
+            # Only update domain of our session cookie if domain is not set.
+            # Does nothing if settings.SESSION_COOKIE_DOMAIN is configured.
+            session_cookie = response.cookies.get(settings.SESSION_COOKIE_NAME, None)
+            if session_cookie and not session_cookie.get('domain', ''):
+                session_cookie['domain'] = str(request.get_host()).split(':')[0]
         return response
+
 
 def check_admin_ip_whitelist(get_response):
     try:
@@ -142,5 +110,35 @@ def check_admin_ip_whitelist(get_response):
 
         response = get_response(request)
         return response
+
+    return middleware
+
+def authenticate_credentials(key):
+    try:
+        access_token = AccessToken.objects.get(token=key)
+        if access_token.is_valid():
+            user = access_token.user
+            return user
+        else:
+            return None  # Token is expired or invalid
+    except AccessToken.DoesNotExist:
+        return None  # Token does not exist
+
+
+# HTTP_X_API_KEY seems to be needed by OrcaSlicer: https://github.com/TheSpaghettiDetective/OrcaSlicer/blob/5a0f98e3f2634a61d8ad2f3b78bebf8e38f19de7/src/slic3r/GUI/PrinterWebView.cpp#L108
+# But I'm not too sure if it's really needed. I'll leave it here for now.
+
+def check_x_api(get_response):
+    def middleware(request):
+        token = request.META.get('HTTP_X_API_KEY', '')
+        if token:
+            user = authenticate_credentials(token)
+            request.user = user
+            setattr(request.user, 'backend', 'django.contrib.auth.backends.ModelBackend')
+            auth_login(request, request.user)
+
+        response = get_response(request)
+        return response
+
 
     return middleware

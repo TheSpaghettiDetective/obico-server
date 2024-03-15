@@ -8,11 +8,11 @@ The AI failure detection in this project is based on a Deep Learning model. [See
 
 # Install and run the server
 
-*Note: Form more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
+*Note: For more detailed instructions, head to [the Obico Server guide](https://www.obico.io/docs/server-guides/).*
 
 ## Prerequisites
 
-The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. A NVidia GPU is optional but can vastly reduce the power consumption and beef up the number of printers the server can handle.
+The Obico Server only requires a computer to run. Even old PCs (within the previous 10 years) will do just fine. An Nvidia GPU is optional but can vastly increase the power consumption and beef up the number of printers the server can handle.
 
 [Detailed hardware minimum specs](https://www.obico.io/docs/server-guides/hardware-requirements/).
 
@@ -29,7 +29,7 @@ The following software is required before you start installing the server:
 
 You will also need an email account that has SMTP access enabled (gmail will not work. As of May 30, 2022 Google has removed the option for allowing SMTP access). Other web mail such as Yahoo should work but we haven't tried them.
 
-## Get the code and start the server.
+## Get the code and start the server
 
 1. Get the code:
 
@@ -65,7 +65,7 @@ This refers to the LAN IP address that has been given to the computer that the O
 
 The Obico Server needs to have an IP address that is accessible by OctoPrint or Klipper. It can be a private IP address (192.168.x.y, etc) but there needs to be a route between OctoPrint and the Obico Server.
 
-It is also reccomended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
+It is also recommended that a static IP is set to avoid issues with changing IP's. Please look up your WiFi routers guide on how to do this.
 
 ## Login as Django admin
 

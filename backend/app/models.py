@@ -9,7 +9,7 @@ from django.db import models, IntegrityError
 from jsonfield import JSONField
 import uuid
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -546,7 +546,8 @@ class Print(SafeDeleteModel):
         return self.alert_overwrite is None and self.tagged_video_url is not None
 
     def need_print_shot_feedback(self):
-        return self.printshotfeedback_set.filter(answered_at__isnull=True).count() > 0
+        # Calling .all() instead of .filter() avoids n+1 queries here
+        return None in [feedback.answered_at for feedback in self.printshotfeedback_set.all()]
 
     @property
     def expecting_detective_view(self):
@@ -890,8 +891,6 @@ class OctoPrintTunnel(SafeDeleteModel):
     def create(
         cls, printer: Printer, app: str
     ) -> 'OctoPrintTunnel':
-        # Some users will create multiple tunnels for the same 3rd-party apps for various reasons. Delete existing once so that it won't be confusing for them.
-        cls.objects.filter(printer=printer, app=app).delete()
 
         internal = app == cls.INTERNAL_APP
         if internal:
@@ -974,9 +973,12 @@ class NotificationSetting(models.Model):
     notify_on_print_done = models.BooleanField(blank=True, default=True)
     notify_on_print_cancelled = models.BooleanField(blank=True, default=False)
     notify_on_filament_change = models.BooleanField(blank=True, default=True)
-    notify_on_other_print_events = models.BooleanField(blank=True, default=False)
 
     notify_on_heater_status = models.BooleanField(blank=True, default=False)
+
+    notify_on_print_start = models.BooleanField(blank=True, default=False)
+    notify_on_print_pause = models.BooleanField(blank=True, default=False)
+    notify_on_print_resume = models.BooleanField(blank=True, default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

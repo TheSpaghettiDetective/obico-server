@@ -972,6 +972,13 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@babel/runtime@^7.23.2":
+  version "7.23.9"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.23.9.tgz#47791a15e4603bb5f905bc0753801cf21d6345f7"
+  integrity sha512-0CX6F+BI2s9dkUqr08KFrAIZgNFj75rdBU/DjCyYLIaV/quFjkk6T+EJ2LkZHyZTbEV4L5p97mNkUsHl2wLFAw==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.0.0", "@babel/template@^7.22.5":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.22.5.tgz#0c8c4d944509875849bd0344ff0050756eefc6ec"
@@ -3539,11 +3546,6 @@ deep-equal@^1.0.1:
     object-keys "^1.1.1"
     regexp.prototype.flags "^1.2.0"
 
-deep-extend@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
-  integrity sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==
-
 deep-is@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
@@ -5103,6 +5105,18 @@ human-signals@^1.1.1:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
   integrity sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==
 
+i18next-vue@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/i18next-vue/-/i18next-vue-1.1.0.tgz#67ecbaedf67b07a2e9fd8f53f903474cf9ca8f54"
+  integrity sha512-BPQT/Hg59WO27lYhcv6FvESeXa37dgc+3v4bHSq1nj3HMorEygpHg9931gIn7L033i+oufYd9MZiHLVJlgdc8w==
+
+i18next@^23.10.0:
+  version "23.10.0"
+  resolved "https://registry.npmjs.org/i18next/-/i18next-23.10.0.tgz#fb328794ae692e6fdde0564259e421f4203c4a2c"
+  integrity sha512-/TgHOqsa7/9abUKJjdPeydoyDc0oTi/7u9F8lMSj6ufg4cbC1Oj3f/Jja7zj7WRIhEQKB7Q4eN6y68I9RDxxGQ==
+  dependencies:
+    "@babel/runtime" "^7.23.2"
+
 iconv-lite@0.4.24:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -5946,10 +5960,25 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
+lodash.defaults@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
+  integrity sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==
+
 lodash.defaultsdeep@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.1.tgz#512e9bd721d272d94e3d3a63653fa17516741ca6"
   integrity sha512-3j8wdDzYuWO3lM3Reg03MuQR957t287Rpcxp1njpEa8oDrikb+FwGdW3n+FELh/A6qib6yPit0j/pv9G/yeAqA==
+
+lodash.foreach@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.foreach/-/lodash.foreach-4.5.0.tgz#1a6a35eace401280c7f06dddec35165ab27e3e53"
+  integrity sha512-aEXTF4d+m05rVOAUG3z4vZZ4xVexLKZGF0lIxuHZ1Hplpk/3B6Z1+/ICICYRLm7c41Z2xiejbkCkJoTlypoXhQ==
+
+lodash.frompairs@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/lodash.frompairs/-/lodash.frompairs-4.0.1.tgz#bc4e5207fa2757c136e573614e9664506b2b1bd2"
+  integrity sha512-dvqe2I+cO5MzXCMhUnfYFa9MD+/760yx2aTAN1lqEcEkf896TxgrX373igVdqSJj6tQd0jnSLE1UMuKufqqxFw==
 
 lodash.get@^4.4.2:
   version "4.4.2"
@@ -5980,6 +6009,11 @@ lodash.pick@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
   integrity sha512-hXt6Ul/5yWjfklSGvLQl8vM//l3FtyHZeuelpzK6mm99pNvN9yTDruNZPEJZD1oWrqo+izBmB7oUfWgcCX7s4Q==
+
+lodash.topairs@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/lodash.topairs/-/lodash.topairs-4.3.0.tgz#3b6deaa37d60fb116713c46c5f17ea190ec48d64"
+  integrity sha512-qrRMbykBSEGdOgQLJJqVSdPWMD7Q+GJJ5jMRfQYb+LTLsw3tYVIabnCzRqTJb2WTo17PG5gNzXuFaZgYH/9SAQ==
 
 lodash.transform@^4.6.0:
   version "4.6.0"
@@ -7722,6 +7756,11 @@ regenerator-runtime@^0.13.11:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+
+regenerator-runtime@^0.14.0:
+  version "0.14.1"
+  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
+  integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
 
 regenerator-transform@^0.15.1:
   version "0.15.1"
@@ -9528,14 +9567,18 @@ webpack-bundle-analyzer@^3.6.1:
     opener "^1.5.1"
     ws "^6.0.0"
 
-webpack-bundle-tracker@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/webpack-bundle-tracker/-/webpack-bundle-tracker-0.4.3.tgz#48a3e2226ddb9d24d704640ab4168c2d120f4526"
-  integrity sha512-Sl/+OsNhFAH3/c6XADupRu8jLvGojfXX0pZIIm3O5ZcJqkHHqlY4nLG+NVRcbDgM/jOeWimKDGQMVEa8FBeJ2g==
+webpack-bundle-tracker@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/webpack-bundle-tracker/-/webpack-bundle-tracker-2.0.1.tgz#250025fb45fde957aa787ab3d458d2cb06d5dd27"
+  integrity sha512-BLPR98I+u/3sExW098tWzmKXeNyOQGMgbLg/eDwYgKKNohde93H2AMmSbRJv4NWn7Ltlryn7gP4XeAG5RP0vGg==
   dependencies:
-    deep-extend "^0.6.0"
-    mkdirp "^0.5.1"
-    strip-ansi "^5.2.0"
+    lodash.assign "^4.2.0"
+    lodash.defaults "^4.2.0"
+    lodash.foreach "^4.5.0"
+    lodash.frompairs "^4.0.1"
+    lodash.get "^4.4.2"
+    lodash.topairs "^4.3.0"
+    strip-ansi "^6.0.1"
 
 webpack-chain@^6.4.0:
   version "6.5.1"

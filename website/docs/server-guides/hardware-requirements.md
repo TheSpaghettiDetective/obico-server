@@ -12,7 +12,7 @@ This is an incomplete list. Only tested / known devices are included.
 
 Device | Can run Obico
 :---|:---:
-Raspberry Pi(any model) | ❌
+Raspberry Pi (any model) | ❌
 Latte Panda | ❌
 Jetson Nano 2gb | ❌
 Jetson Nano 4gb | ✅

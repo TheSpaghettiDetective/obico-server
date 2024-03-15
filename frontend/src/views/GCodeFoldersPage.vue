@@ -70,7 +70,7 @@
                 :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
               ></i>
               <div class="text">
-                <div class="title">Obico Cloud</div>
+                <div class="title">{{ $t('brand_name') }} Cloud</div>
               </div>
             </div>
           </b-dropdown-item>
@@ -143,7 +143,7 @@
                     :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
                   ></i>
                   <div class="text">
-                    <div class="title">Obico Cloud</div>
+                    <div class="title">{{ $t('brand_name') }} Cloud</div>
                   </div>
                 </div>
               </b-dropdown-item>
@@ -577,7 +577,7 @@ export default {
           html: `<ul style="text-align: left">
             <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
             <li>Printer is not connected to ${printer.agentDisplayName()}</li>
-            <li>Obico for ${printer.agentDisplayName()} plugin is outdated (you need version ${printer.browsabilityMinPluginVersion()} or later)</li>
+            <li>${this.$t('brand_name')} for ${printer.agentDisplayName()} plugin is outdated (you need version ${printer.browsabilityMinPluginVersion()} or later)</li>
           </ul>`,
         })
         return

@@ -12,7 +12,7 @@
               </div>
             </b-row>
             <b-row>
-              <h1 class="mx-auto">Welcome To Obico</h1>
+              <h1 class="mx-auto">Welcome To {{ $t('brand_name') }}</h1>
             </b-row>
             <b-row>
               <b-col>
@@ -43,7 +43,7 @@
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
                   ><span class="feature-text"
-                    >Unlimited Secure Tunnel to your OctoPrint/Klipper</span
+                    >Unlimited Secure Tunnel to your {{ platformDisplayName }}</span
                   >
                 </div>
                 <div class="pb-1">
@@ -58,11 +58,11 @@
                   <i class="feature-check fas fa-check-circle"></i
                   ><span class="feature-text">G-Code Remote Upload and Printing</span>
                 </div>
-                <div class="lead py-4">OctoPrint has not been linked to your Obico account.</div>
+                <div class="lead py-4">{{ platformDisplayName }} has not been linked to your {{ $t('brand_name') }} account.</div>
                 <div class="d-flex flex-column align-center justify-content-center">
                   <div>
                     <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg"
-                      >Link OctoPrint Now</a
+                      >Link {{ platformDisplayName }} Now</a
                     >
                   </div>
                   <div>
@@ -97,17 +97,17 @@
             <div>
               <div class="lead text-center mt-3 mb-5">Tunnel Access Authorization</div>
               <h4 class="my-4">
-                <span class="font-weight-bold">{{ appName }}</span> is requesting to access you
-                OctoPrint Tunnel.
+                <span class="font-weight-bold">{{ appDisplayName }}</span> is requesting to access you
+                {{ platformDisplayName }} Tunnel.
               </h4>
               <p class="text-muted">
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
-                  >OctoPrint Tunnel</a
+                  >{{ platformDisplayName }} Tunnel</a
                 >
                 is a secure way provided by
-                <a href="https://www.obico.io/" target="_blank">Obico</a> to remotely access your
-                OctoPrint. With the OctoPrint Tunnel, you can use {{ appName }} to access your
-                OctoPrint from anywhere.
+                <a href="https://www.obico.io/" target="_blank">{{ $t('brand_name') }}</a> to remotely access your
+                {{ platformDisplayName }}. With the {{ platformDisplayName }} Tunnel, you can use {{ appDisplayName }} to access your
+                {{ platformDisplayName }} from anywhere.
               </p>
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
@@ -119,7 +119,7 @@
                     >capped at 300MB per month</a
                   >. You can
                   <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the Obico app Pro plan for 1 Starbucks a month</a
+                    >upgrade to the {{ $t('brand_name') }} app Pro plan for 1 Starbucks a month</a
                   >
                   to enjoy unlimited tunnel usage.
                 </div>
@@ -140,7 +140,7 @@
                     >capped at 300MB per month</a
                   >. You can
                   <a href="http://app.obico.io/ent_pub/pricing/" target="_blank"
-                    >upgrade to the Obico app Pro plan for 1 Starbucks a month</a
+                    >upgrade to the {{ $t('brand_name') }} app Pro plan for 1 Starbucks a month</a
                   >
                   to continue enjoying unlimited tunnel usage.
                 </div>
@@ -148,7 +148,7 @@
 
               <div class="mt-5">
                 <p class="lead">
-                  Tunnel access by <span class="font-weight-bold">{{ appName }}</span> (make sure
+                  Tunnel access by <span class="font-weight-bold">{{ appDisplayName }}</span> (make sure
                   you trust it):
                 </p>
                 <h5 v-if="printersToShow.length === 0">You have 0 active printers</h5>
@@ -188,7 +188,7 @@
               <p class="text-muted small mb-1">Security notes:</p>
               <ul class="text-muted small pl-4">
                 <li>
-                  The app can only access the tunnel, not your Obico account info such as your email
+                  The app can only access the tunnel, not your {{ $t('brand_name') }} account info such as your email
                   address.
                 </li>
                 <li>
@@ -198,6 +198,9 @@
               </ul>
             </div>
           </div>
+        </div>
+        <div class="text-center pt-3 w-100">
+          <a class="btn btn-secondary" :href="logoutUrl">Log Out</a>
         </div>
       </b-col>
       <b-col v-else class="mt-5">
@@ -210,36 +213,35 @@
                 <use href="#svg-logo-compact" />
               </svg>
               <h3>&#8644;</h3>
-              <img class="logo-icon" :src="require('@static/img/octoprint_logo.png')" />
+              <img class="logo-icon" :src="platformLogo" />
             </div>
             <div class="my-4">
               <div class="mx-auto text-center">
-                <h4>OctoPrint Tunnel</h4>
-                <div class="lead">Powered by Obico</div>
+                <h4>Free {{ platformDisplayName }} Tunnel</h4>
+                <div class="lead">Powered by {{ $t('brand_name') }}</div>
               </div>
             </div>
             <div class="account-details">
               <p>
-                With the OctoPrint Tunnel by Obico, you can now use {{ appName }} to
+                With the Free {{ platformDisplayName }} Tunnel by {{ $t('brand_name') }}, you can now use {{ appDisplayName }} to
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"
                   >securely control and monitor your printer from anywhere</a
-                >.
+                >:
               </p>
-              <div class="text-muted">Obico Free Account:</div>
               <ul class="text-muted">
                 <li>Unlimited realtime webcam at 0.1FPS.</li>
                 <li>300MB monthly tunnel data cap (excluding webcam streaming).</li>
                 <li>10 hours/mo AI failure detection.</li>
               </ul>
-              <div class="text-muted">
-                Obico Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
+              <div>
+                🔥🔥🔥 Upgrade to {{ $t('brand_name') }} Pro Account (<a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
                   >from $4/mo</a
-                >):
+                >) to get premium features:
               </div>
-              <ul class="text-muted">
-                <li>Unlimited realtime webcam streaming.</li>
-                <li>Unlimited tunnel data usage.</li>
-                <li>50 hours/mo AI failure detection.</li>
+              <ul>
+                <li>📷 Unlimited realtime webcam streaming.</li>
+                <li>📶 Unlimited tunnel data usage.</li>
+                <li>🤖 50 hours/mo AI failure detection.</li>
                 <li>
                   <a href="https://app.obico.io/ent_pub/pricing/" target="_blank"
                     >And much more...</a
@@ -273,7 +275,10 @@ import octopodLogo from '@static/img/octopod.webp'
 import octoappLogo from '@static/img/octoapp.webp'
 import polymerLogo from '@static/img/polymer.webp'
 import printoidLogo from '@static/img/printoid.webp'
+import mobilerakerLogo from '@static/img/mobileraker.webp'
 import genericAppLogo from '@static/img/generic-app.png'
+import octoprintLogo from '@static/img/octoprint_logo.png'
+import klipperLogo from '@static/img/klipper_logo.jpg'
 
 export default {
   name: 'NewOctoPrintTunnelPage',
@@ -302,6 +307,11 @@ export default {
         window.location.pathname + window.location.search
       )}`
     },
+    logoutUrl() {
+      return `/accounts/logout/?hide_navbar=true&next=${encodeURIComponent(
+        window.location.pathname + window.location.search
+      )}`
+    },
     signupUrl() {
       return `/accounts/signup/?hide_navbar=true&next=${encodeURIComponent(
         window.location.pathname + window.location.search
@@ -314,6 +324,9 @@ export default {
     },
     appName() {
       return new URLSearchParams(window.location.search).get('app') || 'Unknown App'
+    },
+    platform() {
+      return new URLSearchParams(window.location.search).get('platform')
     },
     trialDaysLeft() {
       if (this.user?.subscription?.plan_id !== 'pro-trial') {
@@ -331,9 +344,37 @@ export default {
           return polymerLogo
         case 'octoapp':
           return octoappLogo
+        case 'mobileraker-ios':
+          return mobilerakerLogo
+        case 'mobileraker-android':
+          return mobilerakerLogo
         default:
           return genericAppLogo
       }
+    },
+    appDisplayName() {
+      if (this.appName.toLowerCase().includes('mobileraker')) {
+        return 'Mobileraker'
+      }
+      return this.appName
+    },
+    isKlipper() {
+      if (this.platform) {
+        if (this.platform.toLowerCase() === 'klipper') {
+          return true
+        }
+      } else {
+        if (this.appName.toLowerCase().includes('mobileraker')) {
+          return true
+        }
+      }
+      return false
+    },
+    platformLogo() {
+      return this.isKlipper ? klipperLogo : octoprintLogo
+    },
+    platformDisplayName() {
+      return this.isKlipper ? 'Klipper' : 'OctoPrint'
     },
   },
 
@@ -408,9 +449,10 @@ body
 
 .logo-icon
   max-height: 50px
-  object-fit: contain
-  border-radius: 8px
+  max-width: 50px
   margin: 0px 15px
+  border-radius: 50%
+  object-fit: cover
 
   &.obico
     max-width: 46px

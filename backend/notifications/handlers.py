@@ -18,7 +18,6 @@ from .plugin import (
     Feature,
 )
 from app.models import Print, Printer, NotificationSetting, User
-
 from . import notification_types
 
 
@@ -136,8 +135,14 @@ class Handler(object):
         if notification_type in (notification_types.HeaterCooledDown, notification_types.HeaterTargetReached):
             return Feature.notify_on_heater_status
 
-        if notification_type in list(notification_types.OTHER_PRINT_EVENT_MAP.values()):
-            return Feature.notify_on_other_print_events
+        if notification_type == notification_types.PrintStarted:
+            return Feature.notify_on_print_start
+
+        if notification_type == notification_types.PrintResumed:
+            return Feature.notify_on_print_resume
+
+        if notification_type == notification_types.PrintPaused:
+            return Feature.notify_on_print_pause
 
         return None
 
@@ -207,16 +212,6 @@ class Handler(object):
         if not feature or not printer.user.notification_enabled:
             return
 
-        should_fire = NotificationSetting.objects.filter(
-            user_id=printer.user_id,
-            enabled=True,
-            name__in=self.notification_plugin_names(),
-            **{feature.name: True},
-        ).exists()
-
-        if not should_fire:
-            LOGGER.debug('no matching NotificationSetting objects, ignoring event')
-
         kwargs = {
                 'printer_id': printer.id,
                 'notification_type': notification_type,
@@ -224,6 +219,7 @@ class Handler(object):
                 'img_url': img_url,
                 'extra_context': extra_context,
             }
+
         from . import tasks
         if in_process:
             tasks.send_printer_notifications(**kwargs)

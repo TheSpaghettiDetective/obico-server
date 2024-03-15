@@ -24,7 +24,7 @@ When passed an image URL, the server:
    2. evaluates the model via GPU
    3. filters the results (including via [non-max suppression](https://learnopencv.com/non-maximum-suppression-theory-and-implementation-in-pytorch/) and probability thresholds)
    4. returns one or more bounding boxes which are likely to contain spaghetti
-2. Formats the results so that they are easily parseable by the web server, and returns them as a JSON array of `[{category_name, detection_probability, bounding_box}]`. There's currently only one category of "failure", i.e. failure/spaghetti detected.
+2. Formats the results so that they are easily parsable by the web server, and returns them as a JSON array of `[{category_name, detection_probability, bounding_box}]`. There's currently only one category of "failure", i.e. failure/spaghetti detected.
 
 ## Building and running `ml_api` locally
 

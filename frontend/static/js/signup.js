@@ -13,4 +13,18 @@ $(document).ready(function () {
     $('.popover').popover({
         container: 'body'
     });
+
+    jQuery.fn.preventDoubleSubmission = function() {
+        $(this).on('submit', function(event) {
+            var $form = $(this);
+            var $submitButton = $form.find('button[type="submit"]');
+            $submitButton.prop('disabled', true).addClass('disabled');
+
+            setTimeout(function() {
+                $submitButton.prop('disabled', false).removeClass('disabled');
+            }, 3000);
+        });
+    };
+
+   $('#signup_form').preventDoubleSubmission();
 });

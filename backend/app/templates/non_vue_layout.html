@@ -8,7 +8,11 @@
       <div class="container">
         <a class="navbar-brand" href="/">
           <svg width="100" height="30">
-            <use href="#svg-logo-full" />
+            {% if syndicate.provider %}
+              <use href="#{{ syndicate.provider }}-svg-logo-full" />
+            {% else %}
+              <use href="#svg-logo-full" />
+            {% endif %}
           </svg>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"

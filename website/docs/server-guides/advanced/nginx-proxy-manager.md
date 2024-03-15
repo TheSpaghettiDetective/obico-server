@@ -15,7 +15,7 @@ If this guide doesn't work for you, you can try your luck by following [another 
 :::
 
 
-## Assumptions for this guide
+## Assumptions for this guide {#assumptions-for-this-guide}
 
 * FQDN of the Obico public server: **obico.domain.com**
 * Obico Self-Hosted server IP: **192.168.2.10**
@@ -34,11 +34,11 @@ SITE_IS_PUBLIC=True
 # set it to True if the site configured in django admin is accessible from the internet
 ```
 
-## Setting up the DNS server
+## Setting up the DNS server {#setting-up-the-dns-server}
 
 DNS server for **domain.com** requires the following record:
 
-**obico	 A  [public IP address]**
+**obico A [public IP address]**
 
 This next record is required to enable the tunnel within the Obico apps or web gui.
 
@@ -52,13 +52,13 @@ Select your domain and give it the Edit permission.
 
 Make sure to write down the API Token as it will be needed in NGINX later and you can’t go back, and view again once created. You would have to delete and recreate a new one.
 
-## Configuring the firewall
+## Configuring the firewall {#configuring-the-firewall}
 
 Port Forwarding:
 
 Port 80 and 443 requires to be forwarded to the NGINX Proxy Manager internal IP address 192.168.2.100
 
-## Setting up NGINX Proxy Manager on docker
+## Setting up NGINX Proxy Manager on docker {#setting-up-nginx-proxy-manager-on-docker}
 
 I have used the following to setup NGINX Proxy Manager:
 
@@ -81,7 +81,7 @@ services:
       - ./letsencrypt:/etc/letsencrypt
 ```
 
-## Required SSL certificates for using NGINX Proxy Manager and the Obico self-hosted server
+## Required SSL certificates for using NGINX Proxy Manager and the Obico self-hosted server {#required-ssl-certificates-for-using-nginx-proxy-manager-and-the-obico-self-hosted-server}
 
 In order to have the Obico self-hosted server available from a public facing IP address and also having the tunnels being created to access the printer WebUI a minimum of 2 certificates will be required:
 

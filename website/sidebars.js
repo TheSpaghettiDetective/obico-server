@@ -24,12 +24,17 @@ module.exports = {
     {
       type: 'category',
       label: 'Obico App (Mobile & Web)',
-      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails'],
+      items: ['user-guides/detection-print-job-settings', 'user-guides/printer-feed-sharing', 'user-guides/notification-settings', 'user-guides/enable-gcode-thumbnails', 'user-guides/orca-slicer-integration'],
     },
     {
       type: 'category',
       label: 'Failure Detection',
       items: ['user-guides/how-to-test-failure-detection', 'user-guides/failure-detection-false-alarms', 'user-guides/optimal-camera-setup', 'user-guides/how-does-credits-work', 'user-guides/help-the-detective-improve', 'user-guides/detective-not-watching',],
+    },
+    {
+      type: 'category',
+      label: 'First Layer AI',
+      items: ['user-guides/first_layer_ai/nozzle-camera-configuration','user-guides/first_layer_ai/slicer-configuration-for-first-layer-ai-klipper-only',],
     },
     {
       type: 'category',
@@ -100,7 +105,7 @@ module.exports = {
       type: 'category',
       label: 'Obico for Klipper',
       link: {type: 'doc', id: 'user-guides/moonraker-obico/overview'},
-      items: ['user-guides/moonraker-obico/config', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
+      items: ['user-guides/klipper-setup-manual-link','user-guides/moonraker-obico/config', 'user-guides/webcam-streaming-resolution-framerate-klipper', 'user-guides/moonraker-obico/logging-file', 'user-guides/moonraker-obico/update-manager', 'user-guides/moonraker-obico/uninstall'],
     },
     'user-guides/contact-us-for-support',
   ],

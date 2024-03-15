@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.conf import settings
 import zlib
+import sentry_sdk
 
 from lib.view_helpers import get_printer_or_404, get_template_path
 from lib import cache
@@ -39,6 +40,8 @@ OVER_FREE_LIMIT_HTML = """
     <body>
         <center>
             <h1>Over Free Limit</h1>
+        </center>
+        <div>
             <hr>
             <h3 style="color: red;">
                 Your month-to-date usage of tunnel data is over
@@ -50,7 +53,7 @@ OVER_FREE_LIMIT_HTML = """
                 or wait for the reset of free limit at the start of
                 the next month.
             </h3>
-        </center>
+        </div>
     </body>
 </html>
 """
@@ -65,13 +68,19 @@ NOT_CONNECTED_HTML = """
     <body>
         <center>
             <h1>Not Connected</h1>
+        </center>
+        <div>
             <hr>
             <h3 style="color: red;">
                 Either your printer is offline,
                 or the Obico plugin version is
-                lower than {min_version}.
+                lower than the minimum versions:
+                <ul>
+                    <li>Obico for OctoPrint: 1.8.4</li>
+                    <li>Obico Klipper: 1.3.0</li>
+                </ul>
             </h3>
-        </center>
+        </div>
     </body>
 </html>
 """
@@ -181,7 +190,21 @@ def tunnel_api(request, octoprinttunnel):
             content_type='application/json',
         )
 
+    if request.path.lower() == '/_tsd_/dest_platform_info/': # Currently only Moonraker is supported.
+        platform_info = {}
+        try:
+            platform_info = retrieve_klipper_host_info(octoprinttunnel) # Currently only mobileraker will make this call.
+        except:
+            sentry_sdk.capture_exception()
+
+        return HttpResponse(
+                json.dumps(platform_info),
+                content_type='application/json',
+            )
+
     raise Http404
+
+
 # Helpers
 
 
@@ -230,20 +253,38 @@ def save_static_etag(func):
     return inner
 
 
-def set_response_items(self):
-    items = list(self._headers.values())
+def set_response_items(self: HttpResponse):
+    items = list(self.headers.items())
     if hasattr(self, "tunnel_cookies"):
         for raw_cookie in self.tunnel_cookies:
             items.append(('Set-Cookie', raw_cookie))
     return items
 
 
+def retrieve_klipper_host_info(octoprinttunnel):
+    resp = _tunnel_http_req_and_wait_for_resp(octoprinttunnel,  "/machine/system_info", "get", {}, b'')
+    network_dict = json.loads(resp.content.decode('utf-8')).get('result', {}).get('system_info', {}).get('network', {})
+    ip_addrs = [
+        ip['address'] for wlan in network_dict.values()
+        for ip in wlan['ip_addresses'] if not ip['is_link_local'] and ip['family'] == 'ipv4' # is_link_local is true for 127.0.0.1
+    ]
+    ip_addrs +=[
+        ip['address'] for wlan in network_dict.values()
+        for ip in wlan['ip_addresses'] if not ip['is_link_local'] and ip['family'] == 'ipv6'
+    ]
+    if len(ip_addrs) == 0:
+        return {}
+
+    ip_addr = ip_addrs[0]
+    resp = _tunnel_http_req_and_wait_for_resp(octoprinttunnel,  "/server/config", "get", {}, b'')
+    server_port = json.loads(resp.content.decode('utf-8')).get('result', {}).get('config', {}).get('server', {}).get('port')
+
+    return {'server_ip': ip_addr, 'server_port': server_port, 'linked_name': octoprinttunnel.printer.name}
+
 @save_static_etag
 @condition(etag_func=fetch_static_etag)
 def _octoprint_http_tunnel(request, octoprinttunnel):
     user = octoprinttunnel.printer.user
-
-    min_version = MIN_SUPPORTED_VERSION[get_agent_name(octoprinttunnel)].public
     version = octoprinttunnel.printer.agent_version or '0.0'
 
     if user.tunnel_usage_over_cap():
@@ -254,12 +295,12 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     # if plugin is disconnected, halt
     if channels.num_ws_connections(channels.octo_group_name(octoprinttunnel.printer.id)) < 1:
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=NOT_CONNECTED_STATUS_CODE)
 
     if not is_plugin_version_supported(get_agent_name(octoprinttunnel), version):
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=NOT_CONNECTED_STATUS_CODE)
 
     method = request.method.lower()
@@ -282,15 +323,15 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         )
     }
 
-    if 'CONTENT_TYPE' in request.META:
-        req_headers['Content-Type'] = request.META['CONTENT_TYPE']
+    if 'content-type' in request.headers:
+        req_headers['Content-Type'] = request.headers['content-type']
 
-    if 'HTTP_COOKIE' in request.META:
+    if 'cookie' in request.headers:
         # let's not forward cookies of TSD server
         stripped_cookies = '; '.join(
             [
                 cookie.strip()
-                for cookie in request.META['HTTP_COOKIE'].split(';')
+                for cookie in request.headers['cookie'].split(';')
                 if DJANGO_COOKIE_RE.match(cookie.strip()) is None
             ]
         )
@@ -302,13 +343,18 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
         stripped_auth_heaader = ', '.join(
             [
                 h
-                for h in request.META['HTTP_AUTHORIZATION'].split(',')
+                for h in request.headers['authorization'].split(',')
                 if h != request.auth_header
             ]
         )
         if stripped_auth_heaader:
             req_headers['Authorization'] = stripped_auth_heaader
 
+    return _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request.body, request_is_secure=request.is_secure())
+
+
+def _tunnel_http_req_and_wait_for_resp(octoprinttunnel, path, method, req_headers, request_body, request_is_secure=False):
+    user = octoprinttunnel.printer.user
     ref = f'v2.{octoprinttunnel.id}.{method}.{time.time()}.{path}'
 
     msg = (
@@ -319,7 +365,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
                 'method': method,
                 'headers': req_headers,
                 'path': path,
-                'data': request.body
+                'data': request_body
             },
             'as_binary': True,
         }
@@ -330,7 +376,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     if data is None:
         # request timed out
         return HttpResponse(
-            NOT_CONNECTED_HTML.format(min_version=min_version),
+            NOT_CONNECTED_HTML,
             status=TIMED_OUT_STATUS_CODE)
 
     content_type = data['response']['headers'].get('Content-Type') or None
@@ -364,7 +410,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
     tunnel_cookies = []
     for cookie in (data['response'].get('cookies', ()) or ()):
         if (
-            request.is_secure() and
+            request_is_secure and
             'secure' not in cookie.lower()
         ):
             cookie += '; Secure'
@@ -379,7 +425,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
             # https://github.com/OctoPrint/OctoPrint/commit/59a0c8e8d79e9d28c4a2dfbf4105f8dd580a8f04
             cookie_port = octoprinttunnel.port
             if not cookie_port:
-                cookie_port = 443 if request.is_secure() else 80
+                cookie_port = 443 if request_is_secure else 80
             tunnel_cookies.append(cookie.replace(f"P{m.groups()[0]}", f"P{cookie_port}"))
 
         tunnel_cookies.append(cookie)
@@ -396,7 +442,7 @@ def _octoprint_http_tunnel(request, octoprinttunnel):
 
     cache.octoprinttunnel_update_stats(user.id, len(content))
 
-    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/'):
+    if get_agent_name(octoprinttunnel) == 'moonraker_obico' and path == ('/') and isinstance(content, bytes):
         # manifest file is fetched without cookie by default, forcing cookie here. https://stackoverflow.com/a/57184506
         content = content.replace(
             b'href="/manifest.webmanifest"',

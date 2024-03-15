@@ -19,6 +19,8 @@
     "core-js": "^3.6.4",
     "d3": "^7.8.2",
     "filesize": "^3.6.1",
+    "i18next": "^23.10.0",
+    "i18next-vue": "^1.1.0",
     "ifvisible": "^1.1.0",
     "jquery": "^3.5.1",
     "lodash": "^4.17.21",
@@ -51,15 +53,15 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
-    "sass": "^1.19.0",
-    "sass-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-tracker": "^0.4.3",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.8.0",
-    "prettier": "2.8.1"
+    "prettier": "2.8.1",
+    "sass": "^1.19.0",
+    "sass-loader": "^8.0.0",
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-tracker": "^2.0.1"
   },
   "browserslist": [
     "> 1%",

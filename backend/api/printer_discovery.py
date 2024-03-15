@@ -19,7 +19,7 @@ from lib.cache import (
 LINKHELPER_MESSAGE_EXPIRATION_SECS = 60
 
 # device is considered offline if does not call in ..
-LINKHELPER_PRESENCE_EXPIRATION_SECS = 10
+LINKHELPER_PRESENCE_EXPIRATION_SECS = 4
 
 
 class DeviceInfoSerializer(serializers.Serializer):
@@ -32,7 +32,7 @@ class DeviceInfoSerializer(serializers.Serializer):
     arch = serializers.CharField(
         required=True, max_length=253, allow_blank=True)
     rpi_model = serializers.CharField(
-        required=True, max_length=253, allow_blank=True)
+        required=False, max_length=253, allow_blank=True, default='')
     octopi_version = serializers.CharField(
         required=False, max_length=253, allow_blank=True, default='')
     printerprofile = serializers.CharField(

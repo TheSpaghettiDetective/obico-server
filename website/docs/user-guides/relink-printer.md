@@ -14,14 +14,14 @@ Consider re-linking in one of the following cases:
 
 ## How to re-link? {#how-to-re-link}
 
-### Obico for OctoPrint
-
-Follow [this guide](/docs/user-guides/octoprint-plugin-setup-manual-link/) to re-link OctoPrint-based printer.
-
 :::note
 Your printer can't be automatically identified during the re-linking process. 6-digit code is required to re-link your printer.
 :::
 
-### Obico for Klipper
+### Obico for OctoPrint {#obico-for-octoprint}
 
-Follow [this guide](/docs/user-guides/relink-klipper/) to re-link Klipper-based printer.
+Follow [this guide](/docs/user-guides/octoprint-plugin-setup-manual-link/) to re-link OctoPrint-based printer.
+
+### Obico for Klipper {#obico-for-klipper}
+
+Follow [this guide](/docs/user-guides/klipper-setup-manual-link/) to re-link Klipper-based printer.

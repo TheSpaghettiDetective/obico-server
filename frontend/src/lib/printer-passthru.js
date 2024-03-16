@@ -47,26 +47,6 @@ export function startWebcamStreamer(printerComm, webcamName, streamingParams) {
   return passThruPromise(printerComm, payload, 60)
 }
 
-export function checkSystemDependency(printerComm, dependencies) {
-  const payload = {
-    func: 'is_met',
-    target: 'agent_dependency',
-    args: dependencies,
-  }
-
-  return passThruPromise(printerComm, payload)
-}
-
-export function installSystemDependency(printerComm, sudoPassword, dependencies) {
-  const payload = {
-    func: 'install',
-    target: 'agent_dependency',
-    args: [sudoPassword].concat(dependencies),
-  }
-
-  return passThruPromise(printerComm, payload)
-}
-
 export function fetchAgentCpuUsage(printerComm, isAgentMoonraker) {
   if (isAgentMoonraker) {
     return passThruPromise(printerComm, {

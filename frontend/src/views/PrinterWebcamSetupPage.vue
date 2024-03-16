@@ -34,9 +34,9 @@
           <p />
 
           <div>
-            {{ configuredCameras.length }} camera(s) saved in Obico
+            {{ configuredWebcams.length }} webcam(s) saved in Obico
             <div>
-              <div v-for="webcam in configuredCameras" :key="webcam.name">
+              <div v-for="webcam in configuredWebcams" :key="webcam.name">
                 <i class="fas fa-trash" @click="deleteWebcamConfiguration(webcam)"></i>
                 {{ webcam.name }}
               </div>
@@ -66,7 +66,7 @@
             </div>
             <div>For details, please refer to <a href="#">the Obico webcam setup guide</a></div>
           </div>
-          <!-- camera settings editor -->
+          <!-- webcam settings editor -->
           <div v-if="selectedWebcamData && canStream" class="webcam-data-wrap">
             <div class="content-column">
               <b-card class="mb-3">
@@ -149,14 +149,14 @@
                 </b-form-select>
                 <div v-if="streamMode === 'h264_copy'">
                   You are currently using the MP4 source. Consider turning on RTSP in
-                  {{ newCameraStackDisplayName }}, and switch to the "Stream from the RTSP source"
+                  {{ newWebcamStackDisplayName }}, and switch to the "Stream from the RTSP source"
                   option. You will have a better streaming experience including lower latency when
                   Obico streams from RTSP source. <a href="#">Learn more.</a>
                 </div>
                 <div v-if="streamMode === 'h264_rtsp'">
                   You are currently using the RTSP source. Please note that, due to an known bug,
                   RTSP stream may fail <i>after a few hours</i> on some Raspberry Pi devices. If
-                  this happen to you, please turn off RTSP in {{ newCameraStackDisplayName }}, come
+                  this happen to you, please turn off RTSP in {{ newWebcamStackDisplayName }}, come
                   back to this page, and select "Stream from the MP4 source".
                   <a href="#">Learn more</a>
                 </div>
@@ -180,7 +180,7 @@
                 <small
                   >You only need to change
                   {{ streamMode === 'h264_rtsp' ? 'RTSP Port' : 'MP4 Source URL' }} if you have a
-                  custom {{ newCameraStackDisplayName }} installation. If the webcam is working in
+                  custom {{ newWebcamStackDisplayName }} installation. If the webcam is working in
                   the preview, don't change it. <a href="#">Learn more</a></small
                 >
               </div>
@@ -256,10 +256,10 @@
               <b-button
                 class="mb-3"
                 :disabled="!untestedSettingChanges"
-                @click="testCameraButtonPress"
+                @click="testWebcamButtonPress"
                 >Test Streaming Settings</b-button
               >
-              <b-button variant="primary" class="mb-3" @click="saveCameraButtonPress"
+              <b-button variant="primary" class="mb-3" @click="saveWebcamButtonPress"
                 >Save</b-button
               >
             </div>
@@ -312,7 +312,7 @@
                       <li v-if="streamMode === 'h264_rtsp'">
                         Make sure the RTSP Port "{{ rtspPort }}" is correct. The default value is
                         usually correct unless you have made changes to the default streaming
-                        settings in {{ newCameraStackDisplayName }}, or have multiple webcams.
+                        settings in {{ newWebcamStackDisplayName }}, or have multiple webcams.
                       </li>
                       <li v-if="streamMode === 'h264_rtsp' && printer.isAgentMoonraker">
                         If the webcam stream tests okay here but goes dark after a few hours, you
@@ -323,11 +323,11 @@
                       <li v-if="streamMode === 'h264_copy'">
                         Make sure the MP4 source URL "{{ h264HttpUrl }}" is correct. The default
                         value is usually correct unless you have made changes to the default
-                        streaming settings in {{ newCameraStackDisplayName }}, or have multiple
+                        streaming settings in {{ newWebcamStackDisplayName }}, or have multiple
                         webcams.
                       </li>
                       <li v-if="streamMode === 'h264_copy'">
-                        The WebRTC streaming in {{ newCameraStackDisplayName }} is relatively new
+                        The WebRTC streaming in {{ newWebcamStackDisplayName }} is relatively new
                         and hence still has some outstanding bugs. Some of these bugs will cause the
                         stream to fail in the Obico app even if it works in
                         {{ agentUIDisplayName }}. You can try the legacy MJPEG-Streamer in
@@ -356,7 +356,7 @@
               <div class="text-danger">Obico doesn't know how to stream this webcam.</div>
               <ul>
                 Currently we can only stream
-                <li>WebRTC (camera-streamer) - Recommended</li>
+                <li>WebRTC (webcam-streamer) - Recommended</li>
                 <li>MJPEG-Streamer</li>
                 <li>Adaptive MJPEG-Streamer (experimental)</li>
               </ul>
@@ -391,7 +391,7 @@ import {
 } from '@src/lib/printer-passthru'
 
 export default {
-  name: 'PrinterCameraSetupPage',
+  name: 'PrinterWebcamSetupPage',
 
   components: {
     PageLayout,
@@ -408,7 +408,7 @@ export default {
       webcams: null,
       selectedWebcam: null,
       selectedWebcamData: null,
-      configuredCameras: [],
+      configuredWebcams: [],
       errorMessage: null,
       actionMessage: 'Fetching printer info',
       untestedSettingChanges: false,
@@ -460,7 +460,7 @@ export default {
       return this.printer.isAgentMoonraker() ? 'Mainsail/Fluidd' : 'OctoPrint'
     },
 
-    newCameraStackDisplayName() {
+    newWebcamStackDisplayName() {
       return this.printer.isAgentMoonraker() ? 'Crowsnest V4' : 'the OctoPi new camera stack'
     },
 
@@ -507,12 +507,12 @@ export default {
     async fetchPrinter(printerId) {
       this.actionMessage = 'Fetching printer info...'
       const printerApiCall = axios.get(urls.printer(printerId))
-      const cameraApiCall = axios.get(urls.cameras(printerId))
+      const webcamApiCall = axios.get(urls.webcams(printerId))
 
-      Promise.all([printerApiCall, cameraApiCall])
-        .then(([printerApiResp, cameraApiResp]) => {
+      Promise.all([printerApiCall, webcamApiCall])
+        .then(([printerApiResp, webcamApiResp]) => {
           this.printer = normalizedPrinter(printerApiResp.data)
-          this.configuredCameras = cameraApiResp.data
+          this.configuredWebcams = webcamApiResp.data
         })
         .catch(() => {
           this.errorMessage = 'Failed to connect to Obico server'
@@ -623,11 +623,11 @@ export default {
         })
     },
 
-    testCameraButtonPress() {
+    testWebcamButtonPress() {
       this.testWebcamStream()
     },
 
-    async saveCameraButtonPress() {
+    async saveWebcamButtonPress() {
       let confirmPrompt
       if (this.untestedSettingChanges) {
         confirmPrompt = this.$swal.Prompt.fire({
@@ -662,21 +662,21 @@ export default {
     },
 
     async saveWebcamConfig() {
-      const camera_config = {
+      const webcam_config = {
         printer_id: this.printer.id,
         name: this.selectedWebcam,
         streaming_params: this.streamingParams,
       }
-      const configuredCamera = find(this.configuredCameras, { name: this.selectedWebcam })
-      if (configuredCamera) {
-        await axios.patch(urls.camera(configuredCamera.id), camera_config)
+      const configuredWebcam = find(this.configuredWebcams, { name: this.selectedWebcam })
+      if (configuredWebcam) {
+        await axios.patch(urls.webcam(configuredWebcam.id), webcam_config)
       } else {
-        await axios.post(urls.cameras(), camera_config)
+        await axios.post(urls.webcams(), webcam_config)
       }
     },
 
     deleteWebcamConfiguration(webcam) {
-      axios.delete(urls.camera(webcam.id)).then(() => {
+      axios.delete(urls.webcam(webcam.id)).then(() => {
         this.getConfiguredWebcams()
       })
     },

@@ -991,7 +991,7 @@ class NotificationSetting(models.Model):
         unique_together = ('user', 'name')
 
 
-class Camera(models.Model):
+class Webcam(models.Model):
     printer = models.ForeignKey(Printer, on_delete=models.CASCADE, null=False)
     name = models.TextField()
     streaming_params_json = models.TextField(default='{}', blank=True)

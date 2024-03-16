@@ -35,12 +35,12 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile, Camera
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile, Webcam
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer, CameraSerializer
+from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer, WebcamSerializer
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -162,8 +162,8 @@ class OctoPrinterView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get_response(self, printer, user):
-        queryset = Camera.objects.filter(printer__user=self.request.user, printer=printer)
-        serializer = CameraSerializer(queryset, many=True)
+        queryset = Webcam.objects.filter(printer__user=self.request.user, printer=printer)
+        serializer = WebcamSerializer(queryset, many=True)
         return Response({
             'user': {       # For compatibility with plugin < 1.5.0. Can be removed once old plugins have phased out.
                 'is_pro': user.is_pro,
@@ -172,7 +172,7 @@ class OctoPrinterView(APIView):
                 'is_pro': user.is_pro,
                 'id': printer.id,
                 'name': printer.name,
-                'cameras': serializer.data,
+                'webcams': serializer.data,
                 'retract_on_pause': printer.retract_on_pause,
             }
         })

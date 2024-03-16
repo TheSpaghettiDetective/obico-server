@@ -34,11 +34,11 @@ from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
-    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, Camera)
+    SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder, Webcam)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer, CameraSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer, WebcamSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache, gcode_metadata
@@ -874,7 +874,7 @@ class PrinterEventViewSet(
         return Response(serializer.data)
 
 
-class CameraViewSet(
+class WebcamViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
@@ -884,10 +884,10 @@ class CameraViewSet(
 ):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    serializer_class = CameraSerializer
+    serializer_class = WebcamSerializer
 
     def get_queryset(self):
-        return Camera.objects.filter(printer__user=self.request.user)
+        return Webcam.objects.filter(printer__user=self.request.user)
 
     def list(self, request):
         queryset = self.get_queryset().filter(printer=int(request.query_params.get('printer_id')))

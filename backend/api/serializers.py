@@ -11,7 +11,7 @@ import json
 from app.models import (
     User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
-    NotificationSetting, PrinterEvent, GCodeFolder, Camera
+    NotificationSetting, PrinterEvent, GCodeFolder, Webcam
 )
 
 from notifications.handlers import handler
@@ -308,12 +308,12 @@ class PrinterEventSerializer(serializers.ModelSerializer):
         read_only_fields = ('printer', 'print')
 
 
-class CameraSerializer(serializers.ModelSerializer):
+class WebcamSerializer(serializers.ModelSerializer):
     streaming_params = serializers.DictField(required=False)
     printer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = Camera
+        model = Webcam
         fields = (
             'id', 'printer_id', 'created_at', 'updated_at',
             'name', 'streaming_params',

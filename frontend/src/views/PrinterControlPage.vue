@@ -161,7 +161,7 @@
                 <b-dropdown-item
                   @click.native.capture.stop.prevent="
                     () => {
-                      $router.push(`/printers/${printerId}/camera_setup`)
+                      $router.push(`/printers/${printerId}/webcam_setup`)
                       $router.go()
                     }
                   "
@@ -362,7 +362,7 @@ export default {
     this.printerId = split(window.location.pathname, '/').slice(-3, -2).pop()
     this.fetchLastPrint()
 
-    this.databaseWebcams = await axios.get(urls.cameras(this.printerId)).then((resp) => resp.data)
+    this.databaseWebcams = await axios.get(urls.webcams(this.printerId)).then((resp) => resp.data)
     this.printerComm = printerCommManager.getOrCreatePrinterComm(
       this.printerId,
       urls.printerWebSocket(this.printerId),

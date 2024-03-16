@@ -19,7 +19,7 @@ urlpatterns = [
     path('printers/<int:pk>/delete/', web_views.delete_printer),
     path('printers/<int:pk>/control/', web_views.printer_control),
     path('printers/<int:pk>/terminal/', web_views.printer_terminal),
-    path('printers/<int:pk>/camera_setup/', web_views.printer_camera_setup),
+    path('printers/<int:pk>/webcam_setup/', web_views.printer_webcam_setup),
     path('printers/share_token/<share_token>/', web_views.printer_shared, name='printer_shared'),
     re_path('^user_preferences/(?P<route>([^/]+/)*)$', web_views.user_preferences),
     path('unsubscribe_email/', web_views.unsubscribe_email),

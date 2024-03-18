@@ -393,3 +393,23 @@ class GCodeFileView(
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+class WebcamView(
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
+    authentication_classes = (PrinterAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = WebcamSerializer
+
+    def get_queryset(self):
+        printer_id = self.request.query_params.get('printer_id')
+        return Webcam.objects.filter(printer__user=self.request.user, printer__id=printer_id)
+
+    def partial_update(self, request, pk=None):
+        instance = self.get_queryset().filter(pk=pk).first()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

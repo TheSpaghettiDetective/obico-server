@@ -37,8 +37,10 @@ router.register(r'tunnels', viewsets.OctoPrintTunnelViewSet, 'OctoPrintTunnel')
 router.register(r'notification_settings', viewsets.NotificationSettingsViewSet, 'NotificationSettings')
 router.register(r'printer_events', viewsets.PrinterEventViewSet, 'PrinterEvent')
 router.register(r'webcams', viewsets.WebcamViewSet, 'Webcam')
+router.register(r'version', viewsets.ApiVersionViewSet, 'ApiVersion')
 
 router.register(r'octo/g_code_files', octoprint_views.GCodeFileView, 'AgentGCodeFile')
+router.register(r'octo/webcams', octoprint_views.WebcamView, 'AgentWebcam')
 
 urlpatterns = [
     path('v1/onetimeverificationcodes/verify/',  # For compatibility with plugin <= 1.7.0
@@ -53,6 +55,4 @@ urlpatterns = [
          octoprint_views.OneTimeVerificationCodeVerifyView.as_view(),
     ),
     path('v1/octo/printer_events/', octoprint_views.PrinterEventView.as_view()),
-
-    path('v1/version/', viewsets.ApiVersionView.as_view()),
 ]

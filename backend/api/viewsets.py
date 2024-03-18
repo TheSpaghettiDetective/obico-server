@@ -895,9 +895,9 @@ class WebcamViewSet(
         return Response(serializer.data)
 
 
-class ApiVersionView(APIView):
+class ApiVersionViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
 
-    def get(self, request, format=None):
+    def list(self, request, format=None):
         return Response({'version': '1.0.0'})

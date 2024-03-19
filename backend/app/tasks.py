@@ -148,7 +148,7 @@ def preprocess_timelapse(self, user_id, video_path, filename):
     converted_mp4_path = tmp_file_path + '.mp4'
     Path(tmp_file_path).parent.mkdir(parents=True, exist_ok=True)
     with open(tmp_file_path, 'wb') as file_obj:
-        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER, long_term_storage=False)
+        retrieve_to_file_obj(f'uploaded/{video_path}', file_obj, settings.PICS_CONTAINER, long_term_storage=True)
 
     subprocess.run(f'ffmpeg -y -i {tmp_file_path} -c:v libx264 -pix_fmt yuv420p {converted_mp4_path}'.split(), check=True)
 

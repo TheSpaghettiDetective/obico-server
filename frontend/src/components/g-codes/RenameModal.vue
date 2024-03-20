@@ -1,8 +1,8 @@
 <template>
   <b-modal
     id="b-modal-rename"
-    title="Enter new name"
-    ok-title="Rename"
+    :title="$t('Enter new name')"
+    :ok-title="$t('Rename')"
     centered
     @ok="handleOk"
     @hidden="resetModal"
@@ -15,7 +15,7 @@
           v-model="newItemName"
           type="text"
           name="name"
-          placeholder="New name"
+          :placeholder="$t('New name')"
           class="input-lg"
           required="required"
         />
@@ -148,7 +148,7 @@ export default {
           `${this.itemType === 'file' ? 'filename' : 'name'}=${this.newNameWithExt}`
         )
       } catch (e) {
-        this.errorMessage = 'Server error'
+        this.errorMessage = this.$t('Server error')
         console.log(e)
         return
       }

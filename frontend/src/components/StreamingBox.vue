@@ -28,12 +28,12 @@
           hiding: !slowLinkShowing && slowLinkHiding,
         }"
       >
-        Video frames dropped
+        {{$t("Video frames dropped")}}
       </div>
     </div>
     <div v-show="trackMuted" class="muted-status-wrapper">
-      <div class="text">Buffering...</div>
-      <a href="#" @click="showMutedStatusDescription($event)">Why is it stuck?</a>
+      <div class="text">{{ $t("Buffering...") }}</div>
+      <a href="#" @click="showMutedStatusDescription($event)">{{ $t("Why is it stuck?") }}</a>
     </div>
     <b-button
       v-if="
@@ -74,12 +74,12 @@
         @click="onInfoClicked"
       >
         <div v-if="isBasicStreamingReadyToPlay" class="message">
-          Webcam streams up to 5 FPS for Free
+          {{$t("Webcam streams up to 5 FPS for Free")}}
         </div>
         <div v-if="isBasicStreamingFrozen" class="message text-warning">
           {{ remainingSecondsUntilNextCycle }}s left in the cooldown period
         </div>
-        <a href="#" class="learn-more">Learn more...</a>
+        <a href="#" class="learn-more">{{ $t("Learn more...") }}</a>
       </div>
     </div>
 
@@ -381,7 +381,7 @@ export default {
       }
 
       this.$swal.Prompt.fire({
-        title: 'Upgrade for Better Streaming',
+        title: this.$t('Upgrade for Better Streaming'),
         html: `
           <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$t('brand_name')} Cloud Free plan</a>:</p>
           <ul>
@@ -422,7 +422,7 @@ export default {
       this.slowLinkLoss = 0
 
       this.$swal.Prompt.fire({
-        title: 'Video frames dropped',
+        title: this.$t('Video frames dropped'),
         html: `
           <p>The video frames are getting dropped because there is most likely a bandwidth bottleneck along the route they travel from your Raspberry Pi to your computer. The bottleneck can be anywhere, but in most cases, <Text bold>it is either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
           <p>Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.</p>
@@ -437,7 +437,7 @@ export default {
       event.preventDefault()
 
       this.$swal.Prompt.fire({
-        title: 'Webcam stream buffering',
+        title: this.$t('Webcam stream buffering'),
         html: `
           <p>When you see the messaging about webcam stream is "buffering" occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:</p>
           <p class="lead">1. A constricted video stream on <strong>your Raspberry Pi. The most common reasons are:</p>

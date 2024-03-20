@@ -9,7 +9,7 @@
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/user_preferences/'" class="mobile-settings-categories">
                   <h2 v-show="!onlyNotifications()" class="categories-title section-title">
-                    Account
+                    {{$t("Account")}}
                   </h2>
                   <template v-for="(value, name) in sections">
                     <router-link
@@ -114,7 +114,7 @@
               </b-tabs>
             </div>
             <div v-else class="text-center">
-              <b-spinner class="mt-5" label="Loading..."></b-spinner>
+              <b-spinner class="mt-5" :label="$t('Loading...')"></b-spinner>
             </div>
           </b-col>
         </b-row>
@@ -228,10 +228,10 @@ export default {
     },
     logout() {
       this.$swal.Confirm.fire({
-        title: 'Confirmation',
-        html: '<p class="text-center">You a going to logout from your account</p>',
-        confirmButtonText: 'Logout',
-        cancelButtonText: 'Cancel',
+        title: this.$t('Confirmation'),
+        html: `<p class="text-center">${this.$t("You a going to logout from your account")}</p>`,
+        confirmButtonText: this.$t('Logout'),
+        cancelButtonText: this.$t('Cancel'),
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.replace('/accounts/logout/')
@@ -316,7 +316,7 @@ export default {
             const key = getNotificationSettingKey(section, 'config')
             this.$set(this.errorMessages, key, errors)
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, this.$t('Can not update your preferences'))
           }
         })
     },
@@ -374,7 +374,7 @@ export default {
               this.$set(this.errorMessages, key, errors)
             }
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, this.$t('Can not update your preferences'))
           }
         })
     },
@@ -385,7 +385,7 @@ export default {
           this.$router.go()
         })
         .catch((err) => {
-          this.errorDialog(err, 'Can not update your preferences')
+          this.errorDialog(err, this.$t('Can not update your preferences'))
         })
     },
     clearErrorMessages(propName) {
@@ -431,7 +431,7 @@ export default {
               }
             }
           } else {
-            this.errorDialog(err, 'Can not update your preferences')
+            this.errorDialog(err, this.$t('Can not update your preferences'))
           }
         })
         .then(() => {

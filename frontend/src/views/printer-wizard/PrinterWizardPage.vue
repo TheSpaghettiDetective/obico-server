@@ -9,7 +9,7 @@
                 <svg class="success-checkmark">
                   <use href="#svg-success-checkmark" />
                 </svg>
-                <h3 class="pb-4">Successfully linked to your account!</h3>
+                <h3 class="pb-4">{{ $t("Successfully linked to your account!") }}</h3>
                 <div
                   class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 d-flex flex-column align-center justify-content-center"
                 >
@@ -25,14 +25,14 @@
                         v-model="verifiedPrinter.name"
                         type="text"
                         class="dark"
-                        placeholder="Printer name"
+                        :placeholder="$t('Printer name')"
                         @input="updatePrinterName"
                       />
                     </div>
                   </saving-animation>
                   <div>
                     <div class="text-muted mx-auto text-center font-weight-light">
-                      Give your printer a shiny name.
+                      {{$t("Give your printer a shiny name.")}}
                     </div>
                   </div>
                 </div>
@@ -44,35 +44,35 @@
                     <a
                       :href="redirectToTunnelCreation"
                       class="btn btn-primary btn-block mx-auto btn-lg"
-                      >Authorize App Access</a
+                      >{{ $t("Authorize App Access") }}</a
                     >
                   </div>
                   <div v-else>
                     <div class="mt-4">
                       <a href="/printers/" class="btn btn-primary btn-block mx-auto btn-lg"
-                        >Go Check Out Printer Feed!</a
+                        >{{ $t("Go Check Out Printer Feed!") }}</a
                       >
                     </div>
                     <div class="mt-5">
                       <a
                         href="/user_preferences/notification_twilio/"
                         class="btn btn-outline-secondary btn-block mx-auto"
-                        >Add Phone Number</a
+                        >{{ $t("Add Phone Number") }}</a
                       >
                     </div>
                     <div>
                       <div class="text-muted mx-auto text-center font-weight-light">
-                        Receive text (SMS) in case of print failures.
+                        {{$t("Receive text (SMS) in case of print failures.")}}
                       </div>
                     </div>
                     <div class="mt-4">
                       <a :href="editPrinterUrl" class="btn btn-outline-secondary btn-block mx-auto"
-                        >Change Printer Settings</a
+                        >{{ $t("Change Printer Settings") }}</a
                       >
                     </div>
                     <div>
                       <div class="text-muted mx-auto text-center font-weight-light">
-                        You can always change it later.
+                        {{$t("You can always change it later.")}}
                       </div>
                     </div>
                   </div>
@@ -91,9 +91,9 @@
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <ol>
-                              <li>SSH to the Raspberry Pi your Klipper runs on.</li>
+                              <li>{{ $t("SSH to the Raspberry Pi your Klipper runs on.") }}</li>
                               <li>
-                                <div>Run:</div>
+                                <div>{{ $t("Run:") }}</div>
                                 <pre class="mt-2">
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
@@ -102,7 +102,7 @@ cd moonraker-obico
                               </pre
                                 >
                               </li>
-                              <li>Follow the installation steps.</li>
+                              <li>{{ $t("Follow the installation steps.") }}</li>
                             </ol>
                           </div>
                         </div>
@@ -110,22 +110,26 @@ cd moonraker-obico
                     </tab-content>
                     <tab-content
                       v-if="printerIdToLink && targetOctoPrint"
-                      title="Open Plugin Settings"
+                      :title="$t('Open Plugin Settings')"
                     >
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <div class="text-warning">
-                              Warning: Re-Linking OctoPrint should be your last resort to solve
-                              issues. Please make sure you have exhausted all options on
-                              <a href="https://www.obico.io/help/">{{ $t('brand_name') }}'s help website</a>.
+                              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {domLink}.`)">
+                                <template #domLink>
+                                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$t('brand_name')})}}</a>
+                                </template>
+                              </i18next>
                             </div>
                             <ol>
-                              <li>Open OctoPrint in another browser tab.</li>
+                              <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
                               <li>
-                                Select <em>"OctoPrint settings menu → {{ $t('brand_name') }} for OctoPrint"</em>.
+                                {{ $t("Select") }}
+                                <em>"{{$t("OctoPrint settings menu → {brandName} for OctoPrint",{brandName:$t('brand_name')})}}"</em>.
+                               
                               </li>
-                              <li>Select <em>"Troubleshooting → Re-run Wizard"</em>.</li>
+                              <li>{{ $t("Select ") }}<em>{{ $t("'Troubleshooting → Re-run Wizard''") }}</em>.</li>
                             </ol>
                           </div>
                         </div>
@@ -141,18 +145,18 @@ cd moonraker-obico
                         </div>
                       </div>
                     </tab-content>
-                    <tab-content v-if="!printerIdToLink && targetOctoPrint" title="Install Plugin">
+                    <tab-content v-if="!printerIdToLink && targetOctoPrint" :title="$t('Install Plugin')">
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <ol>
-                              <li>Open OctoPrint in another browser tab.</li>
+                              <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
                               <li>
-                                Select
-                                <em>"OctoPrint settings menu → Plugin Manager → Get More..."</em>.
+                                {{ $t("Select") }}
+                                <em>"{{$t("OctoPrint settings menu → Plugin Manager → Get More...")}}"</em>.
                               </li>
-                              <li>Enter "{{ $t('brand_name') }}" to locate the plugin. Click <em>"Install"</em>.</li>
-                              <li>Restart OctoPrint when prompted.</li>
+                              <li>{{ $t("Enter '{brandName}' to locate the plugin. Click",{brandName:$t('brand_name')}) }} <em>"{{$t("Install")}}"</em>.</li>
+                              <li>{{ $t("Restart OctoPrint when prompted.") }}</li>
                             </ol>
                           </div>
                         </div>
@@ -170,7 +174,7 @@ cd moonraker-obico
                       </div>
                     </tab-content>
                     <template v-if="discoveryEnabled">
-                      <tab-content title="Link It!">
+                      <tab-content :title="$t('Link It!')">
                         <loading :active="chosenDeviceId != null" :can-cancel="false"> </loading>
                         <div class="discover">
                           <div class="discover-body">
@@ -178,16 +182,15 @@ cd moonraker-obico
                               <div class="spinner-border big" role="status">
                                 <span class="sr-only"></span>
                               </div>
-                              <div class="lead">Scanning...</div>
+                              <div class="lead">{{ $t("Scanning...") }}</div>
                             </div>
                             <div v-else>
                               <div class="lead my-3">
                                 <div class="spinner-border" role="status">
                                   <span class="sr-only"></span>
                                 </div>
-                                <span class="sr-only"></span>Scanning...,
-                                {{ discoveredPrinters.length }} printer(s) found on your local
-                                network:
+                                <span class="sr-only"></span>
+                                {{ $t("Scanning..., {name} printer(s) found on your local network:",{name:discoveredPrinters.length}) }}
                               </div>
                               <discovered-printer
                                 v-for="discoveredPrinter in discoveredPrinters"
@@ -197,20 +200,22 @@ cd moonraker-obico
                               />
                             </div>
                             <div class="mt-5 mb-3">
-                              Can't find the printer you want to link? Switch to
-                              <a class="link" @click="discoveryEnabled = false">Manual Setup</a>
-                              instead.
+                              <i18next :translation="$t(`Can't find the printer you want to link? Switch to {domLink} instead.`)">
+                                <template #domLink>
+                                  <a class="link" @click="discoveryEnabled = false">{{$t("Manual Setup")}}</a>
+                                </template>
+                              </i18next>
                             </div>
                             <div v-if="discoveryCount >= 2" class="text-muted">
-                              <div>To link your printer, please make sure:</div>
+                              <div>{{$t("To link your printer, please make sure:")}}</div>
                               <ul>
-                                <li>The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.</li>
+                                <li>{{ $t("The printer is powered on. If you are using an external SBC such as a Raspberry Pi, make sure it's powered on as well.") }}</li>
                                 <li>
-                                  The printer or SBC is connected to the same local network as your
-                                  phone/computer.
+                                  {{$t("The printer or SBC is connected to the same local network as your phone/computer.")}}
                                 </li>
-                                <li v-if="targetOctoPrint">{{ $t('brand_name') }} for OctoPrint is 1.8.0 or above.</li>
-                                <li v-else>{{ $t('brand_name') }} for Klipper is 1.5.0 or above.</li>
+                                <li v-if="targetOctoPrint">{{ $t("{brandName} for OctoPrint is 1.8.0 or above.",{brandName:$t('brand_name')}) }}</li>
+                                <li v-else>{{ $t("{brandName} for Klipper is 1.5.0 or above.",{brandName:$t('brand_name')}) }}
+                                  </li>
                               </ul>
                             </div>
                           </div>
@@ -218,14 +223,27 @@ cd moonraker-obico
                       </tab-content>
                     </template>
                     <template v-else>
-                      <tab-content v-if="targetOctoPrint" title="Plugin Wizard">
+                      <tab-content v-if="targetOctoPrint" :title="$t('Plugin Wizard')">
                         <div class="container">
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8">
                               <ol>
-                                <li>Wait for <em>"{{ $t('brand_name') }} for OctoPrint"</em> wizard to popup.</li>
-                                <li>Follow the instructions in the wizard.</li>
-                                <li>Select <em>"Web Setup"</em> when asked.</li>
+                                
+                                <li>
+                                  <i18next :translation="$t(`Wait for {domLink} wizard to popup.`)">
+                                    <template #domLink>
+                                      <em>"{{$t("{brandName} for OctoPrint",{brandName:$t("brand_name")})}}"</em>
+                                    </template>
+                                  </i18next>
+                                </li>
+                                <li>{{ $t("Follow the instructions in the wizard.") }}</li>
+                                <li>
+                                  <i18next :translation="$t(`Select {domLink} when asked.`)">
+                                    <template #domLink>
+                                      <em>"{{$t("Web Setup")}}"</em>
+                                    </template>
+                                  </i18next>
+                                </li>
                               </ol>
                             </div>
                           </div>
@@ -242,7 +260,7 @@ cd moonraker-obico
                           </div>
                         </div>
                       </tab-content>
-                      <tab-content title="Enter Code">
+                      <tab-content :title="$t('Enter Code')">
                         <div class="container">
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
@@ -254,15 +272,19 @@ cd moonraker-obico
                               />
                               <small class="mx-auto py-1" :class="{ 'text-muted': !copied }">{{
                                 copied
-                                  ? 'Code copied to system clipboard'
-                                  : 'Ctrl-C/Cmd-C to copy the code'
+                                  ? $t('Code copied to system clipboard')
+                                  : $t('Ctrl-C/Cmd-C to copy the code')
                               }}</small>
                               <div class="mx-auto pt-1 pb-4">
-                                <span class="text-muted">Code will expire in </span
+                                <span class="text-muted">{{ $t("Code will expire in ") }}</span
                                 >{{ timeToExpire }}
                               </div>
                               <div class="lead">
-                                Enter the <strong>6-digit verification code</strong>
+                                <i18next :translation="$t(`Enter the {domLink}`)">
+                                  <template #domLink>
+                                    <strong>{{$t("6-digit verification code")}}</strong>
+                                  </template>
+                                </i18next>
                               </div>
                             </div>
                           </div>
@@ -288,7 +310,7 @@ cd moonraker-obico
                                 <a
                                   class="link font-weight-bold"
                                   @click="showVerificationCodeHelpModal"
-                                  >Can't find the page to enter the 6-digit code?</a
+                                  >{{ $t("Can't find the page to enter the 6-digit code?") }}</a
                                 >
                               </div>
                             </div>
@@ -303,10 +325,10 @@ cd moonraker-obico
                           v-if="props.activeTabIndex > 0"
                           class="btn btn-link btn-back"
                           @click.native="
-                            props.prevTab()
+                            props.prevTab();
                             prevTab(props.activeTabIndex)
                           "
-                          >&lt; Back</wizard-button
+                          >&lt; {{$t("Back")}}</wizard-button
                         >
                       </div>
                       <div class="wizard-footer-right">
@@ -315,39 +337,34 @@ cd moonraker-obico
                           class="wizard-footer-right wizard-btn"
                           :style="{ ...props.fillButtonStyle, color: 'var(--color-on-primary)' }"
                           @click.native="
-                            props.nextTab()
+                            props.nextTab();
                             nextTab(props.activeTabIndex)
                           "
-                          >Next &gt;</wizard-button
+                          >{{$t("Next")}} &gt;</wizard-button
                         >
                       </div>
                     </template>
                   </form-wizard>
                   <div class="row">
                     <div class="helper col-sm-12">
-                      Need help? Check out the
-                      <a
-                        target="_blank"
-                        :href="
-                          targetMoonraker
-                            ? 'https://www.obico.io/docs/user-guides/klipper-setup/'
-                            : 'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'
-                        "
-                        >step-by-step set up guide.</a
-                      >
+                      <i18next :translation="$t(`Need help? Check out the {domLink}`)">
+                        <template #domLink>
+                          <a target="_blank" :href="targetMoonraker? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
+                        </template>
+                      </i18next>
                     </div>
                   </div>
                 </div>
                 <div v-else class="container">
                   <div class="row">
-                    <h3 class="col-sm-12 text-center p-3">Which platform are you using?</h3>
+                    <h3 class="col-sm-12 text-center p-3">{{ $t("Which platform are you using?") }}</h3>
                   </div>
                   <div class="row">
                     <div class="col-sm-12 col-lg-6 p-4">
                       <div class="wizard-card" @click="setTargetPlatform('octoprint')">
                         <img :src="require('@static/img/octoprint_logo.png')" />
                         <h3 class="mt-4">OctoPrint</h3>
-                        <div>Including OctoPrint for Klipper such as OctoKlipper.</div>
+                        <div>{{ $t("Including OctoPrint for Klipper such as OctoKlipper.") }}</div>
                       </div>
                     </div>
                     <div class="col-sm-12 col-lg-6 p-4">
@@ -358,7 +375,7 @@ cd moonraker-obico
                           <img :src="require('@static/img/fluidd_logo.png')" />
                         </div>
                         <h3 class="mt-4">Klipper</h3>
-                        <h5>with Mainsail/Fluidd/Moonraker</h5>
+                        <h5>{{ $t("with Mainsail/Fluidd/Moonraker") }}</h5>
                       </div>
                     </div>
                   </div>

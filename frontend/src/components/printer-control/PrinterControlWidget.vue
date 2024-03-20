@@ -2,9 +2,9 @@
   <widget-template>
     <template #title>
       <div v-if="activeMenu" class="nav-btn" @click="activeMenu = null">
-        <i class="fas fa-arrow-left"></i>&nbsp;&nbsp;Back
+        <i class="fas fa-arrow-left"></i>&nbsp;&nbsp;{{$t("Back")}}
       </div>
-      <span v-else>Printer Controls</span>
+      <span v-else>{{ $t("Printer Controls") }}</span>
     </template>
     <template #content>
       <div class="wrapper">
@@ -15,7 +15,7 @@
             @click="activeMenu = 'move-head'"
           >
             <svg class="icon move-xy"><use href="#svg-move-xy" /></svg>
-            <div class="title">Move Head</div>
+            <div class="title">{{ $t("Move Head") }}</div>
           </button>
           <button
             class="menu-button"
@@ -23,7 +23,7 @@
             @click="activeMenu = 'extrude'"
           >
             <svg class="icon extruder"><use href="#extruder" /></svg>
-            <div class="title">Extrude</div>
+            <div class="title">{{ $t("Extrude") }}</div>
           </button>
           <button
             v-if="printer.isAgentMoonraker()"
@@ -31,11 +31,11 @@
             @click="activeMenu = 'baby-step-z'"
           >
             <svg class="icon move-z"><use href="#svg-move-z" /></svg>
-            <div class="title">Baby Step Z</div>
+            <div class="title">{{ $t("Baby Step Z") }}</div>
           </button>
           <button v-if="!hideTunePrinter" class="menu-button" @click="activeMenu = 'tune-printer'">
             <font-awesome-icon :icon="['fas', 'gear']" />
-            <div class="title">Tune Printer</div>
+            <div class="title">{{ $t("Tune Printer") }}</div>
           </button>
           <button
             v-if="powerDevices.length"
@@ -43,7 +43,7 @@
             @click="activeMenu = 'power-control'"
           >
             <font-awesome-icon :icon="['fas', 'power-off']" />
-            <div class="title">Power</div>
+            <div class="title">{{ $t("Power") }}</div>
           </button>
         </div>
 
@@ -91,9 +91,9 @@
             </div>
           </div>
           <div class="additional">
-            <div class="control-btn" @click="homeAll"><i class="fas fa-home"></i> Home All</div>
+            <div class="control-btn" @click="homeAll"><i class="fas fa-home"></i>{{ $t(" Home All") }}</div>
             <div class="control-btn" @click="disableSteppers">
-              <i class="fas fa-power-off"></i> Disable Steppers
+              <i class="fas fa-power-off"></i> {{$t("Disable Steppers")}}
             </div>
           </div>
         </div>
@@ -115,17 +115,17 @@
               </div>
               <div class="main-buttons">
                 <div class="control-btn" @click="handleFilament(filamentDirections.retract)">
-                  <i class="fas fa-minus"></i> Retract
+                  <i class="fas fa-minus"></i> {{$t("Retract")}}
                 </div>
                 <div class="control-btn" @click="handleFilament(filamentDirections.extrude)">
-                  <i class="fas fa-plus"></i> Extrude
+                  <i class="fas fa-plus"></i> {{$t("Extrude")}}
                 </div>
               </div>
             </template>
             <template v-else>
               <div class="text-center mt-4">
                 <b-spinner></b-spinner>
-                <p class="mt-2">Loading tools...</p>
+                <p class="mt-2">{{ $t("Loading tools...") }}</p>
               </div>
             </template>
           </div>
@@ -163,7 +163,7 @@
           </div>
           <div class="additional">
             <div class="current-offset">
-              <div class="label">Current Offset</div>
+              <div class="label">{{ $t("Current Offset") }}</div>
               <div class="value">
                 <span v-if="currentZOffset || typeof currentZOffset === 'number'">
                   {{ currentZOffset }}
@@ -179,7 +179,7 @@
         <div v-show="activeMenu === 'tune-printer'" class="control-panel tune-printer">
           <template v-if="!printer.isAgentMoonraker() || currentFeedRate !== null">
             <div class="controls-title">
-              <span>Feed Rate / Speed</span>
+              <span>{{ $t("Feed Rate / Speed") }}</span>
               <help-widget id="print-speed-widget-help" class="help-message"></help-widget>
             </div>
             <div class="controls">
@@ -192,7 +192,7 @@
                         customFeedRateFactor === null || parseInt(customFeedRateFactor) < 1
                       "
                       @click="setPrintSpeed(customFeedRateFactor)"
-                      >Apply</b-button
+                      >{{ $t("Apply") }}</b-button
                     >
                   </template>
                   <b-form-input
@@ -208,7 +208,7 @@
 
           <template v-if="!printer.isAgentMoonraker() || currentFlowRate !== null">
             <div class="controls-title">
-              <span>Flow Rate</span>
+              <span>{{ $t("Flow Rate") }}</span>
               <help-widget id="flow-rate-widget-help" class="help-message"></help-widget>
             </div>
             <div class="controls">
@@ -221,7 +221,7 @@
                         customFlowRateFactor === null || parseInt(customFlowRateFactor) < 1
                       "
                       @click="setFlowRate(customFlowRateFactor)"
-                      >Apply</b-button
+                      >{{ $t("Apply") }}</b-button
                     >
                   </template>
                   <b-form-input
@@ -237,7 +237,7 @@
 
           <template v-if="!printer.isAgentMoonraker() || currentFanSpeed !== null">
             <div class="controls-title">
-              <span>Fan Speed</span>
+              <span>{{ $t("Fan Speed") }}</span>
               <help-widget id="fan-speed-widget-help" class="help-message"></help-widget>
             </div>
             <div class="controls">
@@ -251,7 +251,7 @@
                     setFanSpeed(0)
                   }
                 "
-                >0% (Off)</b-button
+                >{{ $t("0% (Off)") }}</b-button
               >
               <div class="custom">
                 <b-input-group prepend="%">
@@ -264,7 +264,7 @@
                         parseInt(customFanSpeed) < 0
                       "
                       @click="setFanSpeed(customFanSpeed)"
-                      >Apply</b-button
+                      >{{ $t("Apply") }}</b-button
                     >
                   </template>
                   <b-form-input
@@ -291,8 +291,7 @@
           </template>
 
           <muted-alert v-if="!printer.isAgentMoonraker()" class="info-block">
-            These settings can only be set. They can't be read back from the firmware due to a
-            limitation of the communication protocol.
+            {{$t("These settings can only be set. They can't be read back from the firmware due to a limitation of the communication protocol.")}}
           </muted-alert>
         </div>
 
@@ -308,16 +307,16 @@
                 • {{ item.status.toUpperCase() }}
               </div>
             </div>
-            <b-button variant="outline-primary" @click="togglePower(item)"> Toggle Power </b-button>
+            <b-button variant="outline-primary" @click="togglePower(item)">{{ $t(" Toggle Power ") }}</b-button>
           </div>
 
           <div v-if="powerDevices.length > 1" class="bulk-actions">
-            <b-button variant="success" @click="batchPowerControl('on')"> Power On All </b-button>
-            <b-button variant="danger" @click="batchPowerControl('off')"> Power Off All </b-button>
+            <b-button variant="success" @click="batchPowerControl('on')">{{ $t(" Power On All ") }}</b-button>
+            <b-button variant="danger" @click="batchPowerControl('off')">{{ $t(" Power Off All ") }}</b-button>
           </div>
 
           <muted-alert class="info-block">
-            Rapid toggling power may result in error. Please allow a cooldown period.
+            {{$t("Rapid toggling power may result in error. Please allow a cooldown period.")}}
           </muted-alert>
         </div>
       </div>
@@ -592,10 +591,10 @@ export default {
       const currentToolTemp = this.tools[this.activeTool].actual
       if (currentToolTemp < 179) {
         this.$swal.Confirm.fire({
-          title: 'Unable to extrude / retract',
-          html: '<p class="text-center">The hotend is below the minimum temperature</p>',
-          confirmButtonText: 'Heat to 180°C',
-          cancelButtonText: 'Cancel',
+          title: this.$t('Unable to extrude / retract'),
+          html: `<p class="text-center">${this.$t("The hotend is below the minimum temperature")}</p>`,
+          confirmButtonText: this.$t('Heat to 180°C'),
+          cancelButtonText: this.$t('Cancel'),
         }).then((result) => {
           if (result.isConfirmed) {
             this.printerComm.passThruToPrinter(
@@ -710,7 +709,7 @@ export default {
           } else {
             this.$swal.Toast.fire({
               icon: 'success',
-              title: 'Command successfully sent!',
+              title: this.$t('Command successfully sent!'),
             })
           }
         }

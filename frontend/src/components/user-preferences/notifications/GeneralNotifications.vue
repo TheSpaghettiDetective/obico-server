@@ -1,6 +1,6 @@
 <template>
   <section class="notifications">
-    <h2 class="section-title">Notifications</h2>
+    <h2 class="section-title">{{ $t("Notifications") }}</h2>
 
     <!-- FIXME: reuse NotificationSettingSwitch -->
     <div v-if="theme === 'web'" class="row">
@@ -17,7 +17,7 @@
               class="custom-control-input"
             />
             <label class="custom-control-label" for="id_notification_enabled">
-              Enable notifications
+              {{$t("Enable notifications")}}
             </label>
           </div>
         </saving-animation>
@@ -30,7 +30,7 @@
       >
         <div class="mobile-setting-item-wrapper">
           <div class="setting-item-text">
-            <label for="id_notification_enabled">Enable notifications</label>
+            <label for="id_notification_enabled">{{ $t("Enable notifications") }}</label>
           </div>
           <div class="setting-item-switch">
             <onoff-toggle

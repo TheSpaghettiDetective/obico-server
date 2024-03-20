@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-dropdown-text class="small text-secondary">SORT BY</b-dropdown-text>
+    <b-dropdown-text class="small text-secondary">{{ $t("SORT BY") }}</b-dropdown-text>
     <b-dropdown-item
       v-for="sorting in sortingOptions.options"
       :key="`s_${sorting.key}`"
@@ -17,7 +17,7 @@
 
     <b-dropdown-divider />
 
-    <b-dropdown-text class="small text-secondary">DIRECTION</b-dropdown-text>
+    <b-dropdown-text class="small text-secondary">{{ $t("DIRECTION") }}</b-dropdown-text>
     <b-dropdown-item
       v-for="direction in sortingDirections"
       :key="`d_${direction.key}`"
@@ -36,10 +36,11 @@
 
 <script>
 import { getLocalPref, setLocalPref } from '@src/lib/pref'
+import i18n from '@src/i18n/i18n.js'
 
 const SortingDirections = [
-  { key: 'asc', title: 'Ascending' },
-  { key: 'desc', title: 'Descending' },
+  { key: 'asc', title: i18n.t('Ascending') },
+  { key: 'desc', title: i18n.t('Descending') },
 ]
 
 export default {

@@ -12,21 +12,21 @@
         <a
           :href="`/tunnels/${printer.id}/`"
           class="btn shadow-none action-btn icon-btn"
-          title="OctoPrint Tunnel"
+          :title="$t('OctoPrint Tunnel')"
         >
           <svg class="custom-svg-icon">
             <use href="#svg-tunnel" />
           </svg>
-          <span class="sr-only">OctoPrint Tunnel</span>
+          <span class="sr-only">{{ $t("OctoPrint Tunnel") }}</span>
         </a>
         <!-- Configure -->
         <a
           :href="`/printers/${printer.id}/`"
           class="btn shadow-none action-btn icon-btn"
-          title="Configure"
+          :title="$t('Configure')"
         >
           <i class="fas fa-wrench"></i>
-          <span class="sr-only">Configure</span>
+          <span class="sr-only">{{ $t("Configure") }}</span>
         </a>
         <!-- Mobile Menu -->
         <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
@@ -39,13 +39,13 @@
               {
                 key: 'tunnel',
                 svgIcon: 'svg-tunnel',
-                title: 'OctoPrint Tunnel',
+                title: $t('OctoPrint Tunnel'),
                 href: `/tunnels/${printer.id}/`,
               },
               {
                 key: 'settings',
                 icon: 'fas fa-wrench',
-                title: 'Configure',
+                title: $t('Configure'),
                 href: `/printers/${printer.id}/`,
               },
             ]"

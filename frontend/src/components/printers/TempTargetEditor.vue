@@ -4,12 +4,12 @@
       <h1 v-if="value > 0" class="target-temp-degree">
         {{ value }} <span class="text-subscript text-muted">°C</span>
       </h1>
-      <h1 v-if="value < 1" class="target-temp-degree">OFF</h1>
+      <h1 v-if="value < 1" class="target-temp-degree">{{ $t("OFF") }}</h1>
     </div>
     <br />
     <div class="mb-5">
       <div>
-        <h5>Presets:</h5>
+        <h5>{{ $t("Presets:") }}</h5>
       </div>
       <div>
         <b-form-select
@@ -28,7 +28,7 @@
         </b-form-select>
       </div>
       <br />
-      <h5>Manual:</h5>
+      <h5>{{ $t("Manual:") }}</h5>
       <div>
         <slider-input
           v-model="value"

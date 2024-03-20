@@ -27,7 +27,7 @@
         </template>
         <div>
           <div>
-            <b-dropdown-text class="small text-secondary">Filter</b-dropdown-text>
+            <b-dropdown-text class="small text-secondary">{{ $t("Filter") }}</b-dropdown-text>
             <b-dropdown-item
               @click.native.capture.stop.prevent="
                 updateFilterPrefs('temperature', !hideTempMessages)
@@ -40,7 +40,7 @@
                 ></i>
                 <div class="filterItemH">
                   <i class="fas fa-fire"></i>
-                  <div class="text">Suppress Temperature</div>
+                  <div class="text">{{ $t("Suppress Temperature") }}</div>
                 </div>
               </div>
             </b-dropdown-item>
@@ -54,7 +54,7 @@
                 ></i>
                 <div class="filterItemH">
                   <i class="fas fa-sd-card"></i>
-                  <div class="text">Suppress SD Status Messages</div>
+                  <div class="text">{{ $t("Suppress SD Status Messages") }}</div>
                 </div>
               </div>
             </b-dropdown-item>
@@ -68,7 +68,7 @@
                 ></i>
                 <div class="filterItemH">
                   <i class="fas fa-code"></i>
-                  <div class="text">Suppress Position Messages</div>
+                  <div class="text">{{ $t("Suppress Position Messages") }}</div>
                 </div>
               </div>
             </b-dropdown-item>
@@ -82,7 +82,7 @@
                 ></i>
                 <div class="filterItemH">
                   <i class="fas fa-thumbs-up"></i>
-                  <div class="text">Suppress 'OK' Messages</div>
+                  <div class="text">{{ $t("Suppress 'OK' Messages") }}</div>
                 </div>
               </div>
             </b-dropdown-item>
@@ -101,7 +101,7 @@
         v-model="inputValue"
         type="text"
         class="textInput"
-        placeholder="Enter code..."
+        :placeholder="$t('Enter code...')"
         @keyup.enter="sendMessage"
       />
       <b-button

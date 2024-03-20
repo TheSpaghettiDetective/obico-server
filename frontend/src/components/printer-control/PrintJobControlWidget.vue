@@ -1,17 +1,17 @@
 <template>
   <widget-template :inside-card="insideCard">
-    <template #title>Print Job Control</template>
+    <template #title>{{ $t("Print Job Control") }}</template>
     <template #content>
       <div class="wrapper">
         <div v-if="!printer.isOffline() && printer.hasError()" class="error-container">
-          <div class="title">{{ printer.agentDisplayName() }} Error</div>
+          <div class="title">{{ printer.agentDisplayName() }} {{$t('Error')}}</div>
           <p class="text">
             {{ printer.status.state.error }}
           </p>
         </div>
 
         <div v-if="printer.inUserInteractionRequired()" class="warning-container">
-          <p class="text">Filament Change or User Interaction Required</p>
+          <p class="text">{{ $t("Filament Change or User Interaction Required") }}</p>
         </div>
 
         <template v-if="printer.inTransientState()">
@@ -22,8 +22,8 @@
         <template v-else>
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && printer.isActive()">
             <p>
-              <span v-if="!printer.isPaused()">Printer is Currently Printing</span>
-              <span v-else>Print is Paused</span>
+              <span v-if="!printer.isPaused()">{{ $t("Printer is Currently Printing") }}</span>
+              <span v-else>{{ $t("Print is Paused") }}</span>
             </p>
             <div class="buttons">
               <b-button
@@ -33,7 +33,7 @@
                 @click="onPauseToggled($event)"
               >
                 <font-awesome-icon icon="fa-solid fa-circle-pause" />
-                Pause
+                {{$t("Pause")}}
               </b-button>
               <b-button
                 v-else
@@ -42,23 +42,23 @@
                 @click="onPauseToggled($event)"
               >
                 <font-awesome-icon icon="fa-solid fa-circle-play" />
-                Resume
+                {{$t("Resume")}}
               </b-button>
               <b-button variant="danger" class="custom-button" @click="onCancelClicked">
                 <font-awesome-icon icon="fa-solid fa-circle-xmark" />
-                Cancel
+                {{$t("Cancel")}}
               </b-button>
             </div>
           </template>
 
           <template v-if="!printer.isOffline() && !printer.isDisconnected() && !printer.isActive()">
-            <p>Open G-Code File to Start Printing</p>
+            <p>{{ $t("Open G-Code File to Start Printing") }}</p>
             <div class="buttons">
               <b-button variant="outline-primary" class="custom-button" @click="openObicoFiles">
                 <svg class="logo-small custom-svg-icon">
                   <use href="#svg-logo-compact" />
                 </svg>
-                {{ $t('brand_name') }} Files
+                {{ $t('brand_name') }} {{$t("Files")}}
               </b-button>
               <b-button
                 v-if="printer.isAgentMoonraker()"
@@ -94,7 +94,7 @@
         </template>
 
         <template v-if="!printer.isOffline() && printer.isDisconnected()">
-          <p>Printer Not Connected at the Serial Port</p>
+          <p>{{ $t("Printer Not Connected at the Serial Port") }}</p>
           <div class="buttons">
             <b-button
               v-if="!printer.isAgentMoonraker()"
@@ -104,7 +104,7 @@
             >
               <b-spinner v-if="connecting" small></b-spinner>
               <i v-else class="fab fa-usb"></i>
-              {{ connecting ? 'Contacting OctoPrint' : 'Connect' }}
+              {{ connecting ? $t('Contacting OctoPrint') : $t('Connect') }}
             </b-button>
           </div>
         </template>
@@ -112,11 +112,11 @@
         <template v-else-if="printer.isOffline()">
           <i class="fas fa-exclamation-triangle big-icon warning"></i>
           <p>
-            {{ $t('brand_name') }} for {{ printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint' }} is Offline.
+            {{$t("{brandName} for {name} is Offline.",{brandName:$t('brand_name'),name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
             <a
               target="_blank"
               href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/"
-              >Why?</a
+              >{{ $t("Why?") }}</a
             >
           </p>
         </template>
@@ -243,7 +243,7 @@ export default {
             if (connectionOptions.ports.length < 1) {
               this.$swal.Toast.fire({
                 icon: 'error',
-                title: 'Uh-Oh. No printer is found on the serial port.',
+                title: this.$t('Uh-Oh. No printer is found on the serial port.'),
               })
             } else {
               this.$swal
@@ -304,7 +304,7 @@ export default {
     },
     onCancelClicked() {
       this.$swal.Confirm.fire({
-        text: 'Once cancelled, the print can no longer be resumed.',
+        text: this.$t('Once cancelled, the print can no longer be resumed.'),
       }).then((result) => {
         if (result.value) {
           this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT)

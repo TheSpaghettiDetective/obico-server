@@ -36,18 +36,18 @@
             :href="print.video_url"
             target="_blank"
           >
-            <i class="fas fa-download"></i>Download Original Time-lapse
+            <i class="fas fa-download"></i>{{$t("Download Original Time-lapse")}}
           </b-dropdown-item>
           <b-dropdown-item
             v-if="print.tagged_video_url && !print.video_archived_at"
             :href="print.tagged_video_url"
             target="_blank"
           >
-            <i class="fas fa-download"></i>Download Detective Time-lapse
+            <i class="fas fa-download"></i>{{$t("Download Detective Time-lapse")}}
           </b-dropdown-item>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item @click="deleteVideo">
-            <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
+            <span class="text-danger">{{ $t(" ") }}<i class="fas fa-trash-alt"></i>{{$t("Delete")}} </span>
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -60,8 +60,8 @@
           </div>
           <div class="archived-info">
             <div class="text">
-              Video file is deleted.
-              <a href="#" @click="showVideoArchivedDescription($event)">Why?</a>
+              {{$t("Video file is deleted.")}}
+              <a href="#" @click="showVideoArchivedDescription($event)">{{ $t("Why?") }}</a>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@
             <div class="container">
               <div class="row">
                 <div class="text-muted col-4">
-                  File
+                  {{$t("File")}}
                   <span class="float-right">:</span>
                 </div>
                 <div class="col-8">{{ print.filename }}</div>
@@ -107,7 +107,7 @@
                   }}:{{ duration | duration('seconds') }}
                 </b-tooltip>
                 <div class="text-muted col-4">
-                  Duration
+                  {{$t("Duration")}}
                   <span class="float-right">:</span>
                 </div>
                 <div class="col-8">{{ duration.humanize() }}</div>
@@ -122,7 +122,7 @@
           :style="{ opacity: normalizedP > 0.4 ? 1 : 0 }"
         >
           <!-- v-show="normalizedP > 0.4" -->
-          <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+          <i class="fas fa-exclamation-triangle"></i> {{$t("Possible failure detected!")}}
         </div>
 
         <div v-show="cardView == 'detective' || isPublic">
@@ -133,7 +133,7 @@
                 {{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}
               </div>
               <div class="py-2">
-                Did we get it right?
+                {{$t("Did we get it right?")}}
                 <b-button
                   :variant="thumbedUp ? 'primary' : 'outline'"
                   class="mx-2 btn-sm"
@@ -159,7 +159,7 @@
                     :href="focusedFeedbackLink"
                   >
                     F
-                    <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+                    <i class="fas fa-search focused-feedback-icon"></i>{{$t("CUSED FEEDBACK")}}
                     <svg
                       v-if="print.need_print_shot_feedback"
                       class="seg-control-icon ml-1 double-hours-icon"
@@ -173,23 +173,20 @@
             <div class="text-muted py-2 px-3 help-text">
               <small v-if="print.printShotFeedbackEligible">
                 <span v-if="!print.need_print_shot_feedback"
-                  >Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI
-                  Detection Hours. You can click the button again to change your feedback.</span
+                  >{{$t("Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.")}}</span
                 >
-                <span v-else>
-                  With Focused Feedback, you can tell us exactly where we got it wrong. This is the
-                  most effective way to help us improve.
+                <span v-else> {{$t("With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.")}}
                   <a
                     href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
-                    >You will earn 2 AI Detection Hours once you finish the Focused Feedback</a
+                    >{{ $t("You will earn 2 AI Detection Hours once you finish the Focused Feedback") }}</a
                   >.
                 </span>
               </small>
 
               <small v-else>
-                Every time you give us feedback,
+                {{$t("Every time you give us feedback,")}}
                 <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-                  >you help us get better at detecting failures</a
+                  >{{ $t("you help us get better at detecting failures") }}</a
                 >.
               </small>
             </div>
@@ -250,7 +247,7 @@ export default {
     },
 
     endStatus() {
-      return this.print.cancelled_at ? '(Cancelled)' : ''
+      return this.print.cancelled_at ? this.$t('(Cancelled)') : ''
     },
 
     duration() {
@@ -381,10 +378,10 @@ export default {
     showVideoArchivedDescription(event) {
       event.preventDefault()
       this.$swal.Prompt.fire({
-        title: 'Time-lapse video deleted',
+        title: this.$t('Time-lapse video deleted'),
         html: `
-          <p>Time-lapse videos older than 6-months are deleted from the ${this.$t('brand_name')} app server as they are rarely needed and cost significant amount to store in the cloud.</p>
-          <p>If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">contact us</a>.</p>
+          <p>${this.$t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:this.$t('brand_name')})}</p>
+          <p>${this.$t("If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please ")}<a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">${this.$t("contact us")}</a>.</p>
           `,
         showCloseButton: true,
       })

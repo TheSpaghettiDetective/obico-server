@@ -1,7 +1,7 @@
 <template>
   <b-modal
     id="b-modal-new-folder"
-    title="Enter new folder name"
+    :title="$t('Enter new folder name')"
     ok-title="Create"
     :ok-disabled="!newFolderName.length"
     centered
@@ -16,7 +16,7 @@
           v-model="newFolderName"
           type="text"
           name="name"
-          placeholder="Folder name"
+          :placeholder="$t('Folder name')"
           class="input-lg"
           required="required"
         />

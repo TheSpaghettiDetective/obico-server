@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h5>Presets:</h5>
+      <h5>{{ $t("Presets:") }}</h5>
     </div>
     <div>
       <b-form-select id="id_preset" v-model="currentPreset" class="form-control">
@@ -12,7 +12,8 @@
     </div>
 
     <muted-alert class="mt-4 mb-1">
-      Temperature presets can be edited or added in {{ agentName }} settings.
+      {{ $t('Temperature presets can be edited or added in {agentName} settings.',{agentName}) }}
+      
     </muted-alert>
 
     <input id="selected-preset" v-model="currentPreset" type="hidden" />

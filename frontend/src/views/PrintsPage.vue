@@ -10,7 +10,7 @@
             v-show="!selectedPrintIds.size"
             class="label"
             @click="allPrintsSelected = !allPrintsSelected"
-            >Select all</span
+            >{{ $t("Select all") }}</span
           >
           <b-dropdown
             v-show="selectedPrintIds.size"
@@ -19,11 +19,11 @@
           >
             <template #button-content>
               {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
-              selected...
+              {{$t("selected...")}}
             </template>
             <b-dropdown-item>
               <div class="text-danger" @click="onDeleteBtnClick">
-                <i class="far fa-trash-alt"></i>Delete
+                <i class="far fa-trash-alt"></i>{{$t("Delete")}}
               </div>
             </b-dropdown-item>
           </b-dropdown>
@@ -33,7 +33,7 @@
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
-        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" :title="$t('Sort By')">
           <template #button-content>
             <i class="fas fa-sort-amount-down"></i>
           </template>
@@ -50,7 +50,7 @@
           no-caret
           toggle-class="action-btn icon-btn"
           menu-class="scrollable"
-          title="Filter"
+          :title="$t('Filter')"
         >
           <template #button-content>
             <i class="fas fa-filter"></i>
@@ -73,13 +73,13 @@
               {
                 key: 'sorting',
                 icon: 'fas fa-sort-amount-down',
-                title: `Sort`,
+                title: $t(`Sort`),
                 expandable: true,
               },
               {
                 key: 'filtering',
                 icon: 'fas fa-filter',
-                title: `Filter`,
+                title: $t(`Filter`),
                 expandable: true,
               },
             ]"
@@ -122,8 +122,8 @@
         </b-row>
 
         <mugen-scroll :handler="fetchMoreData" :should-handle="!loading" class="text-center p-4">
-          <div v-if="noMoreData" class="text-center p-2">No more time-lapses.</div>
-          <b-spinner v-if="!noMoreData" label="Loading..."></b-spinner>
+          <div v-if="noMoreData" class="text-center p-2">{{ $t("No more time-lapses.") }}</div>
+          <b-spinner v-if="!noMoreData" :label="$t('Loading...')"></b-spinner>
         </mugen-scroll>
 
         <b-modal

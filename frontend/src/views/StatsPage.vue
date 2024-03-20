@@ -8,7 +8,7 @@
           <template #button-content>
             <i class="fas fa-chart-bar"></i>
           </template>
-          <b-dropdown-text class="small text-secondary">GROUP BY</b-dropdown-text>
+          <b-dropdown-text class="small text-secondary">{{ $t("GROUP BY") }}</b-dropdown-text>
           <b-dropdown-item
             v-for="grouping in groupingOptions"
             :key="grouping.key"
@@ -27,7 +27,7 @@
           no-caret
           toggle-class="action-btn icon-btn"
           menu-class="scrollable"
-          title="Filter"
+          :title="$t('Filter')"
         >
           <template #button-content>
             <i class="fas fa-filter"></i>
@@ -52,19 +52,19 @@
               {
                 key: 'grouping',
                 icon: 'fas fa-chart-bar',
-                title: `Group By`,
+                title: $t(`Group By`),
                 expandable: true,
               },
               {
                 key: 'filtering',
                 icon: 'fas fa-filter',
-                title: `Filter`,
+                title: $t(`Filter`),
                 expandable: true,
               },
             ]"
           >
             <template #grouping>
-              <b-dropdown-text class="small text-secondary">GROUP BY</b-dropdown-text>
+              <b-dropdown-text class="small text-secondary">{{ $t("GROUP BY") }}</b-dropdown-text>
               <b-dropdown-item
                 v-for="grouping in groupingOptions"
                 :key="grouping.key"
@@ -100,7 +100,7 @@
       <b-container v-else>
         <b-row>
           <b-col>
-            <muted-alert class="muted-alert">Statistics include deleted prints</muted-alert>
+            <muted-alert class="muted-alert">{{ $t("Statistics include deleted prints") }}</muted-alert>
           </b-col>
         </b-row>
         <b-row>
@@ -108,18 +108,18 @@
             <div class="stats-block total-prints">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
-                <span>Total Prints</span>
+                <span>{{ $t("Total Prints") }}</span>
               </div>
               <div class="chart-wrapper">
                 <div class="legend">
                   <div class="line">
                     <div class="square success"></div>
-                    <div class="title">Finished:</div>
+                    <div class="title">{{ $t("Finished:") }}</div>
                     <div class="value">{{ stats ? stats.total_succeeded_print_count : '' }}</div>
                   </div>
                   <div class="line">
                     <div class="square danger"></div>
-                    <div class="title">Cancelled:</div>
+                    <div class="title">{{ $t("Cancelled:") }}</div>
                     <div class="value">{{ stats ? stats.total_cancelled_print_count : '' }}</div>
                   </div>
                 </div>
@@ -131,20 +131,20 @@
             <div class="stats-block print-time">
               <div class="stats-block-title">
                 <i class="far fa-clock"></i>
-                <span>Print Time</span>
+                <span>{{ $t("Print Time") }}</span>
               </div>
               <div class="info total-print-time">
-                <div class="title">Total print time</div>
+                <div class="title">{{ $t("Total print time") }}</div>
                 <div class="value">{{ humanizedDuration(stats.total_print_time) }}</div>
               </div>
               <div class="other-print-time-numbers">
                 <div class="info">
-                  <div class="title">Longest print</div>
+                  <div class="title">{{ $t("Longest print") }}</div>
                   <div class="value">{{ humanizedDuration(stats.longest_print_time) }}</div>
                 </div>
                 <div class="divider"></div>
                 <div class="info">
-                  <div class="title">Average print</div>
+                  <div class="title">{{ $t("Average print") }}</div>
                   <div class="value">{{ humanizedDuration(stats.average_print_time) }}</div>
                 </div>
               </div>
@@ -156,7 +156,7 @@
             <div class="stats-block bar-chart">
               <div class="stats-block-title">
                 <i class="fas fa-hashtag"></i>
-                <span>Prints Count</span>
+                <span>{{ $t("Prints Count") }}</span>
               </div>
               <div ref="printCountGroupsChart" class="bar-chart-wrapper"></div>
             </div>
@@ -167,7 +167,7 @@
             <div class="stats-block bar-chart">
               <div class="stats-block-title">
                 <i class="far fa-clock"></i>
-                <span>Print Time</span>
+                <span>{{ $t("Print Time") }}</span>
               </div>
               <div ref="printTimeGroupsChart" class="bar-chart-wrapper"></div>
             </div>
@@ -185,11 +185,11 @@
                       :highlight="false"
                       :show-close-button="false"
                     >
-                      Filament Usage
+                      {{$t("Filament Usage")}}
                     </help-widget>
                   </span>
                   <div class="divider"></div>
-                  <div class="subtitle">{{ totalFilamentUsedFormatted }} total</div>
+                  <div class="subtitle">{{ totalFilamentUsedFormatted }} {{$t("total")}}</div>
                 </div>
               </div>
               <div ref="filamentUsedGroupsChart" class="bar-chart-wrapper"></div>
@@ -224,40 +224,40 @@ import { BarChart, xAxisLabelsFormat } from '@src/lib/charts/bar-chart'
 import { queryBuilder, getDateTo, getRecommendedGrouping } from '@src/lib/time-period-filtering'
 import HelpWidget from '@src/components/HelpWidget.vue'
 import { humanizedDuration, humanizedFilamentUsage } from '@src/lib/formatters'
-
+import i18n from "@src/i18n/i18n.js"
 const GroupingLocalStorageKey = 'statsGrouping'
 
 const DateParamFormat = 'YYYY-MM-DD'
 const FilterLocalStoragePrefix = 'statsFiltering'
 const FilterOptions = {
   timePeriod: {
-    title: 'Time Period',
+    title: i18n.t('Time Period'),
     buildQueryParam: queryBuilder,
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'this_week', title: 'This Week' },
-      { key: 'this_month', title: 'This Month' },
-      { key: 'this_year', title: 'This Year' },
-      { key: 'custom', title: 'Custom' },
+      { key: 'none', title: i18n.t('All') },
+      { key: 'this_week', title: i18n.t('This Week') },
+      { key: 'this_month', title: i18n.t('This Month') },
+      { key: 'this_year', title: i18n.t('This Year') },
+      { key: 'custom', title: i18n.t('Custom') },
     ],
     default: 'none',
   },
   printStatus: {
-    title: 'Print Status',
+    title: i18n.t('Print Status'),
     queryParam: 'filter',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'finished', title: 'Finished' },
-      { key: 'cancelled', title: 'Cancelled' },
+      { key: 'none', title: i18n.t('All') },
+      { key: 'finished', title: i18n.t('Finished') },
+      { key: 'cancelled', title: i18n.t('Cancelled') },
     ],
     default: 'none',
   },
   printers: {
-    title: 'Printers',
+    title: i18n.t('Printers'),
     queryParam: 'filter_by_printer_ids',
     multiple: true,
     values: [
-      { key: 'none', title: 'All', includesAll: true },
+      { key: 'none', title: i18n.t('All'), includesAll: true },
       // Other options are added on printers fetch
     ],
     default: 'none',
@@ -418,7 +418,7 @@ export default {
           this.$nextTick(this.drawCharts)
         })
         .catch((error) => {
-          this.errorDialog(error, 'Failed to fetch statistics')
+          this.errorDialog(error, this.$t('Failed to fetch statistics'))
         })
     },
     updateChartGrouping(grouping) {

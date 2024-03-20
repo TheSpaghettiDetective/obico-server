@@ -1,8 +1,8 @@
 <template>
   <section class="profile">
-    <h2 class="section-title">{{ onlyName() ? 'Edit Name' : 'Profile' }}</h2>
+    <h2 class="section-title">{{ onlyName() ? $t('Edit Name') : $t('Profile') }}</h2>
     <div class="form-group row">
-      <label for="id_first_name" class="col-md-2 col-sm-3 col-form-label">First Name</label>
+      <label for="id_first_name" class="col-md-2 col-sm-3 col-form-label">{{ $t("First Name") }}</label>
       <div class="col-md-10 col-sm-9">
         <saving-animation :errors="errorMessages.first_name" :saving="saving.first_name">
           <input
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="id_last_name" class="col-md-2 col-sm-3 col-form-label">Last Name</label>
+      <label for="id_last_name" class="col-md-2 col-sm-3 col-form-label">{{ $t("Last Name") }}</label>
       <div class="col-md-10 col-sm-9">
         <saving-animation :errors="errorMessages.last_name" :saving="saving.last_name">
           <input
@@ -30,16 +30,16 @@
       </div>
     </div>
     <div v-if="!onlyName()" class="row">
-      <label for="id_email" class="col-md-2 col-sm-3 col-form-label">Primary Email</label>
+      <label for="id_email" class="col-md-2 col-sm-3 col-form-label">{{ $t("Primary Email") }}</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
         {{ user.email }} ({{ user.is_primary_email_verified ? 'Verified' : 'Unverified' }})
-        <div class="form-text"><a href="/accounts/email">Manage email addresses</a></div>
+        <div class="form-text"><a href="/accounts/email">{{ $t("Manage email addresses") }}</a></div>
       </div>
     </div>
     <div v-if="!onlyName()" class="form-group row">
-      <label class="col-md-2 col-sm-3 col-form-label">Password</label>
+      <label class="col-md-2 col-sm-3 col-form-label">{{ $t("Password") }}</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
-        <a href="/accounts/password/change">Change</a>
+        <a href="/accounts/password/change">{{ $t("Change") }}</a>
       </div>
     </div>
   </section>

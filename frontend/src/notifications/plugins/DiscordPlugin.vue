@@ -3,8 +3,8 @@
     :error-messages="errorMessages"
     :saving="saving"
     :notification-channel="notificationChannel"
-    config-variable-title="Webhook URL"
-    config-variable-placeholder="Discord Webhook"
+    :config-variable-title="$t('Webhook URL')"
+    :config-variable-placeholder="$t('Discord Webhook')"
     config-variable-name="webhook_url"
     @createNotificationChannel="$emit('createNotificationChannel', $event)"
     @updateNotificationChannel="$emit('updateNotificationChannel', $event)"
@@ -13,11 +13,11 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        If you have a Discord channel you wish to receive notifications on, you can
-        <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
-          >generate webhook url</a
-        >
-        and enter it here.
+        <i18next :translation="$t('If you have a Discord channel you wish to receive notifications on, you can {domLink} and enter it here.')">
+          <template #domLink>
+            <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"> {{$t("generate webhook url")}}</a>
+          </template>
+        </i18next>
       </small>
     </template>
   </notification-channel-template>

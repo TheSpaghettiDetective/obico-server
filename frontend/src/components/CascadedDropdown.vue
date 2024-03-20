@@ -36,7 +36,7 @@
     <template v-if="menuExpanded !== null">
       <b-dropdown-item>
         <div class="clickable-area" @click.stop.prevent="menuExpanded = null">
-          <i class="fas fa-chevron-left"></i>Back
+          <i class="fas fa-chevron-left"></i>{{$t("Back")}}
         </div>
       </b-dropdown-item>
       <b-dropdown-divider />

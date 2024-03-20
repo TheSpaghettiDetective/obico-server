@@ -12,25 +12,24 @@
     <template #header>
       <div v-if="setupCompleted" class="mb-4">
         <p class="lead">
-          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{ $t('brand_name') }} Messenger has been
-          successfully added to your workspace.
+          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{ $t('{brandName} Messenger has been successfully added to your workspace.',{brandName:$t('brand_name')}) }}
         </p>
         <br />
-        <h2>What's Next?</h2>
+        <h2>{{ $t("What's Next?") }}</h2>
         <br />
         <p>
-          1. Make sure {{ $t('brand_name') }} Messenger is added to the channels you want the notifications to be
-          sent to.
+          {{ $t(" 1. Make sure {brandName} Messenger is added to the channels you want the notifications to be sent to.",{brandName:$t('brand_name')}) }}
+         
         </p>
         <img
           class="mw-100"
           :src="require('@static/img/notification-guides/slack/slack_setup1.png')"
         />
         <br /><br />
-        <p>2. There is no 2. You are all set. It's this simple. :)</p>
+        <p>{{ $t("2. There is no 2. You are all set. It's this simple. :)") }}</p>
       </div>
       <div v-else>
-        <p class="lead">Click the button below to add the {{ $t('brand_name') }} Slack App into your workspace:</p>
+        <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace:',{brandName:$t('brand_name')}) }}</p>
         <a
           :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read&redirect_uri=${redirectUri}`"
         >
@@ -48,20 +47,19 @@
     <template #footer>
       <div v-if="setupCompleted">
         <br /><br />
-        <h2>Test Notifications</h2>
+        <h2>{{ $t("Test Notifications") }}</h2>
         <br />
         <div class="btn btn-sm btn-primary float-left" @click="onSlackTest($event)">
-          Test Slack Notification
+          {{$t("Test Slack Notification")}}
         </div>
         <br />
         <br />
         <br />
         <br />
-        <h2>Questions?</h2>
+        <h2>{{ $t("Questions?") }}</h2>
         <br />
         <p>
-          Q: How do I remove the {{ $t('brand_name') }} Slack App from a slack channel so that it won't send
-          notifications to that channel?
+          {{ $t("Q: How do I remove the {brandName} Slack App from a slack channel so that it won't send notifications to that channel?",{brandName:$t('brand_name')}) }}
         </p>
         <p>A:</p>
         <img
@@ -77,13 +75,14 @@
           :src="require('@static/img/notification-guides/slack/slack_setup4.png')"
         />
         <br /><br />
-        <p>Q: How do I remove the {{ $t('brand_name') }} Slack App from the entire workspace?</p>
+        <p>{{ $t("Q: How do I remove the {brandName} Slack App from the entire workspace?",{brandName:$t('brand_name')}) }}</p>
         <p>
-          A: Please follow the instructions in
-          <a
-            href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace"
-            >this Slack help doc</a
-          >.
+          <i18next :translation="$t('A: Please follow the instructions in {domLink}.')">
+            <template #domLink>
+              <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">{{ $t("this Slack help doc") }}</a>
+            </template>
+          </i18next>
+   
         </p>
       </div>
     </template>
@@ -141,13 +140,13 @@ export default {
         .catch((err) => {
           event.target.classList.remove('disabled')
           this.$swal.Reject.fire({
-            title: 'Error',
+            title: this.$t('Error'),
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
-              Slack test failed
+              ${this.$t("Slack test failed")}
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: 'Close',
+            cancelButtonText: this.$t('Close'),
           })
         })
     },

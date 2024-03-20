@@ -1,21 +1,22 @@
 <template>
   <div class="card-body consent-section">
     <div>
-      Number of snapshots:
+      {{$t("Number of snapshots:")}}
       <span class="feedback-estimate">{{ print.printshotfeedback_set.length }}</span>
     </div>
     <p>
-      Estimated time to finish:
+      {{$t("Estimated time to finish:")}}
       <span class="feedback-estimate">{{ estimatedFeedbackTime }}</span>
     </p>
     <p class="font-weight-light">
-      Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of
-      the print. You will earn
-      <strong class="text-light">2 non-expirable AI Detection Hours</strong> after you finish this
-      Focused Feedback.
-      <a target="_blank" href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
-        >Learn more. <small><i class="fas fa-external-link-alt"></i></small
-      ></a>
+      <i18next :translation="$t('Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of the print. You will earn {domLink} after you finish this Focused Feedback. {domLink2}')">
+        <template #domLink>
+          <strong class="text-light">{{$t("2 non-expirable AI Detection Hours")}}</strong>
+        </template>
+        <template #domLink2>
+          <a target="_blank" href="https://www.obico.io/docs/user-guides/how-does-credits-work/">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
+        </template>
+      </i18next>
     </p>
     <br />
     <button
@@ -24,7 +25,7 @@
       type="button"
       @click="$emit('continue-btn-pressed')"
     >
-      Start Focused Feedback
+      {{$t("Start Focused Feedback")}}
     </button>
     <br />
     <div class="custom-control custom-checkbox form-check-inline">
@@ -36,22 +37,22 @@
         class="custom-control-input"
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
-        I grant the {{ $t('brand_name') }} app team members the permission to review the time-lapse video of the
-        print shown on this page.
+        {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", { brandName: $t('brandName') }) }}
+        
         <a
           target="_blank"
           href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse"
-          >Why is this necessary? <small><i class="fas fa-external-link-alt"></i></small
+          >{{$t("Why is this necessary? ")}}<small><i class="fas fa-external-link-alt"></i></small
         ></a>
       </label>
     </div>
     <br />
     <div>
-      <span class="text-muted">File:</span>
+      <span class="text-muted">{{ $t("File:") }}</span>
       {{ print.filename }}
     </div>
     <div>
-      <span class="text-muted">Printed:</span>
+      <span class="text-muted">{{ $t("Printed:") }}</span>
       {{ print.started_at.fromNow() }}
     </div>
     <br />
@@ -95,7 +96,7 @@ export default {
     estimatedFeedbackTime() {
       const seconds = this.print.printshotfeedback_set.length * 12
       if (seconds < 60) {
-        return `${seconds} seconds`
+        return `${seconds} `+this.$t('seconds') 
       } else {
         return moment.duration(seconds, 'seconds').humanize()
       }

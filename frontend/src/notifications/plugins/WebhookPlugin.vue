@@ -4,8 +4,8 @@
     :saving="saving"
     :notificationChannel="notificationChannel"
 
-    configVariableTitle="Webhook URL"
-    configVariablePlaceholder="Custom Webhook URL"
+    :configVariableTitle="$t('Webhook URL')"
+    :configVariablePlaceholder="$t('Custom Webhook URL')"
     configVariableName="custom_webhook_URL"
 
     @createNotificationChannel="(channel, config) => $emit('createNotificationChannel', channel, config)"
@@ -15,7 +15,7 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        Enter a custom webhook URL at which to receive notifications. 
+        {{$t("Enter a custom webhook URL at which to receive notifications.")}} 
       </small>
     </template>
   </notification-channel-template>

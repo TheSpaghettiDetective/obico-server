@@ -7,7 +7,7 @@
             <div class="card">
               <h5 class="card-header text-center">
                 F
-                <i class="fas fa-search focused-feedback-icon"></i>CUSED FEEDBACK
+                <i class="fas fa-search focused-feedback-icon"></i>{{$t("CUSED FEEDBACK")}}
               </h5>
               <loading :active="print === null" :is-full-page="true"></loading>
               <div v-if="print !== null">
@@ -40,7 +40,7 @@
                   <br />
                   <div class="card-body p-3">
                     <a :href="`/print_history/${print.id}/`">
-                      <i class="fas fa-chevron-left"></i> Print Page
+                      <i class="fas fa-chevron-left"></i> {{$t("Print Page")}}
                     </a>
                   </div>
                 </div>

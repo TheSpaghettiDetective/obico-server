@@ -6,7 +6,7 @@
         v-if="isPopup"
         href="#"
         class="btn shadow-none icon-btn d-inline"
-        title="Go Back"
+        :title="$t('Go Back')"
         @click.prevent="goBack"
       >
         <i class="fas fa-chevron-left"></i>
@@ -19,7 +19,7 @@
           v-if="isCloud"
           href="#"
           class="btn shadow-none icon-btn action-btn"
-          title="Rename file"
+          :title="$t('Rename file')"
           @click.prevent="renameFile"
         >
           <i class="fas fa-edit"></i>
@@ -29,7 +29,7 @@
           v-if="isCloud"
           href="#"
           class="text-danger btn shadow-none icon-btn action-btn"
-          title="Delete file"
+          :title="$t('Delete file')"
           @click.prevent="deleteFile"
         >
           <i class="fas fa-trash-alt"></i>
@@ -45,14 +45,14 @@
               {
                 key: 'renameFile',
                 icon: 'fas fa-edit',
-                title: `Rename file`,
+                title: $t(`Rename file`),
                 callback: true,
               },
               {
                 key: 'deleteFile',
                 icon: 'fas fa-trash-alt',
                 customMenuOptionClass: 'text-danger',
-                title: `Delete file`,
+                title: $t(`Delete file`),
                 callback: true,
               },
             ]"
@@ -78,7 +78,7 @@
         <b-row>
           <b-col class="text-center mt-5">
             <div v-if="gcodeNotFound">
-              <p>This G-Code file doesn't exists</p>
+              <p>{{ $t("This G-Code file doesn't exists") }}</p>
             </div>
             <div v-else>
               <b-spinner />
@@ -90,7 +90,7 @@
         <b-row>
           <b-col :lg="isPopup ? 12 : 5">
             <b-alert :show="isDeleted" variant="warning warning-block">
-              This file is deleted and unavailable for print
+              {{$t("This file is deleted and unavailable for print")}}
             </b-alert>
 
             <!-- File details -->
@@ -111,7 +111,7 @@
           <b-col :lg="isPopup ? 12 : 7">
             <!-- Print history -->
             <div class="print-history" :class="{ 'full-width': isPopup || isDeleted }">
-              <h2 class="section-title mb-3">Print History</h2>
+              <h2 class="section-title mb-3">{{ $t("Print History") }}</h2>
               <div v-if="gcode.print_set.length">
                 <print-history-item
                   v-for="print of gcode.print_set"
@@ -122,7 +122,7 @@
               </div>
               <div v-else>
                 <div class="card-container p-4 justify-content-center text-secondary">
-                  This file doesn't have any prints yet
+                  {{$t("This file doesn't have any prints yet")}}
                 </div>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default {
           this.printer = normalizedPrinter(response.data)
         })
         .catch((error) => {
-          this.errorDialog(error, 'Host printer for this gcode not found')
+          this.errorDialog(error, this.$t('Host printer for this gcode not found'))
         })
     },
     async fetchLocalFile() {

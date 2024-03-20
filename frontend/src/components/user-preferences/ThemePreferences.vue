@@ -1,8 +1,8 @@
 <template>
   <section class="personalization">
-    <h2 class="section-title">Appearance</h2>
+    <h2 class="section-title">{{ $t("Appearance") }}</h2>
     <div class="form-group row mt-3">
-      <label class="col-md-2 col-sm-3 col-form-label">Theme</label>
+      <label class="col-md-2 col-sm-3 col-form-label">{{ $t("Theme") }}</label>
       <div class="col-sm-9 col-md-10">
         <div class="theme-controls">
           <div class="theme-toggle" :class="[themeValue]" @click="toggleTheme">
@@ -10,8 +10,8 @@
               <use href="#svg-moon-icon" />
             </svg>
             <div class="label">
-              <span v-show="themeValue === Themes.Dark" class="dark">DARK</span>
-              <span v-show="themeValue === Themes.Light" class="light">LIGHT</span>
+              <span v-show="themeValue === Themes.Dark" class="dark">{{ $t("DARK") }}</span>
+              <span v-show="themeValue === Themes.Light" class="light">{{ $t("LIGHT") }}</span>
             </div>
             <svg class="icon" :class="{ active: themeValue === Themes.Light }">
               <use href="#svg-sun-icon" />
@@ -31,7 +31,7 @@
             class="custom-control-input"
           />
           <label class="custom-control-label" for="id_theme_system">
-            Sync theme with system settings
+            {{$t("Sync theme with system settings")}}
           </label>
         </div>
       </div>

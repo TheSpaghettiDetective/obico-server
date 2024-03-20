@@ -1,11 +1,11 @@
 <template>
   <section class="profile">
-    <h2 class="section-title">Authorized Apps</h2>
+    <h2 class="section-title">{{ $t("Authorized Apps") }}</h2>
     <div class="obico-table break-md mt-3">
       <div class="table-head">
         <div class="table-row">
-          <div>App Name</div>
-          <div>Printer to Access</div>
+          <div>{{ $t("App Name") }}</div>
+          <div>{{ $t("Printer to Access") }}</div>
           <div></div>
         </div>
       </div>
@@ -13,7 +13,7 @@
         <div v-for="item in authorizedApps" :key="item.id" class="table-row">
           <div>{{ item.app }}</div>
           <div>{{ item.printer.name }}</div>
-          <div><a href="#" @click.prevent="removeAccess(item.id)">Remove Access</a></div>
+          <div><a href="#" @click.prevent="removeAccess(item.id)">{{ $t("Remove Access") }}</a></div>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@ export default {
         this.authorizedApps = response.data
       })
       .catch((error) => {
-        this.errorDialog(error, 'Failed to fetch authorized apps')
+        this.errorDialog(error, this.$t('Failed to fetch authorized apps'))
       })
   },
 
@@ -52,7 +52,7 @@ export default {
           this.authorizedApps = this.authorizedApps.filter((app) => app.id !== id)
         })
         .catch((error) => {
-          this.errorDialog(error, 'Failed to remove access')
+          this.errorDialog(error, this.$t('Failed to remove access'))
         })
     },
   },

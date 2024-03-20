@@ -35,9 +35,9 @@
       <template v-if="!isMoveModal">
         <div v-if="!isFolder && isCloud" class="last-printed">
           <span v-if="!item.print_set">-</span>
-          <span v-else-if="!item.print_set.length">No prints yet</span>
+          <span v-else-if="!item.print_set.length">{{$t('No prints yet')}}</span>
           <span v-else-if="item.last_print">{{
-            item.last_print.ended_at ? item.last_print.ended_at.fromNow() : 'Printing...'
+            item.last_print.ended_at ? item.last_print.ended_at.fromNow() : $t('Printing...')
           }}</span>
           <div
             v-if="item.last_print && item.last_print.ended_at"
@@ -60,17 +60,17 @@
         </template>
         <b-dropdown-item v-if="!isFolder && targetPrinter" @click.stop="$emit('print', item)">
           <span class="text-primary">
-            <i class="fas fa-play-circle"></i>Print on {{ targetPrinter.name }}
+            <i class="fas fa-play-circle"></i>{{$t("Print on")}} {{ targetPrinter.name }}
           </span>
         </b-dropdown-item>
         <b-dropdown-item v-if="isCloud" @click.stop="$emit('renameItem', item)">
-          <i class="fas fa-edit"></i>Rename
+          <i class="fas fa-edit"></i>{{$t('Rename')}}
         </b-dropdown-item>
         <b-dropdown-item v-if="isCloud" @click.stop="$emit('moveItem', item)">
-          <i class="fas fa-arrows-alt"></i>Move
+          <i class="fas fa-arrows-alt"></i>{{$t('Move')}}
         </b-dropdown-item>
         <b-dropdown-item v-if="isCloud" @click.stop="$emit('deleteItem', item)">
-          <span class="text-danger"> <i class="fas fa-trash-alt"></i>Delete </span>
+          <span class="text-danger"> <i class="fas fa-trash-alt"></i>{{$t('Delete')}} </span>
         </b-dropdown-item>
       </b-dropdown>
     </div>

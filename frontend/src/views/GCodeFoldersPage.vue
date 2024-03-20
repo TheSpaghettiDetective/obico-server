@@ -21,7 +21,7 @@
         </b-form-group>
         <div>
           <span v-show="!selectedItemsCount" class="label" @click="toggleSelectAll"
-            >Select all</span
+            >{{ $t("Select all") }}</span
           >
           <b-dropdown
             v-show="selectedItemsCount"
@@ -29,14 +29,14 @@
           >
             <template #button-content>
               {{ selectedItemsCount }} item{{ selectedItemsCount === 1 ? '' : 's' }}
-              selected
+              {{$t("selected")}}
             </template>
             <b-dropdown-item>
-              <div @click="moveSelectedItems"><i class="fas fa-arrows-alt"></i>Move</div>
+              <div @click="moveSelectedItems"><i class="fas fa-arrows-alt"></i>{{ $t("Move") }}</div>
             </b-dropdown-item>
             <b-dropdown-item>
               <div class="text-danger" @click="deleteSelectedItems">
-                <i class="far fa-trash-alt"></i>Delete
+                <i class="far fa-trash-alt"></i>{{$t("Delete")}}
               </div>
             </b-dropdown-item>
           </b-dropdown>
@@ -62,7 +62,7 @@
           <template #button-content>
             <i class="fas fa-server"></i>
           </template>
-          <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
+          <b-dropdown-text class="small text-secondary">{{ $t("STORAGE") }}</b-dropdown-text>
           <b-dropdown-item @click="switchToCloudStorage">
             <div class="dropdown-text-group">
               <i
@@ -70,7 +70,7 @@
                 :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
               ></i>
               <div class="text">
-                <div class="title">{{ $t('brand_name') }} Cloud</div>
+                <div class="title">{{ $t('brand_name') }} {{$t("Cloud")}}</div>
               </div>
             </div>
           </b-dropdown-item>
@@ -128,7 +128,7 @@
               />
             </template>
             <template #storage>
-              <b-dropdown-text class="small text-secondary">STORAGE</b-dropdown-text>
+              <b-dropdown-text class="small text-secondary">{{ $t("STORAGE") }}</b-dropdown-text>
               <b-dropdown-item
                 @click="
                   () => {
@@ -143,7 +143,7 @@
                     :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
                   ></i>
                   <div class="text">
-                    <div class="title">{{ $t('brand_name') }} Cloud</div>
+                    <div class="title">{{ $t('brand_name') }} {{$t("Cloud")}}</div>
                   </div>
                 </div>
               </b-dropdown-item>
@@ -207,8 +207,8 @@
             >
               <div class="dz-message needsclick">
                 <i class="fas fa-upload fa-2x"></i> <br />
-                <div>G-Code file (*.gcode, *.gco, or *.g) only.</div>
-                <div>Up to {{ maxFilesize }} MB each file, {{ maxTotalFilesize }} GB total.</div>
+                <div>{{ $t("G-Code file (*.gcode, *.gco, or *.g) only.") }}</div>
+                <div>{{ $t('Up to {maxFilesize} MB each file, {maxTotalFilesize} GB total.',{maxFilesize,maxTotalFilesize}) }}</div>
               </div>
             </vue-dropzone>
 
@@ -216,7 +216,7 @@
               <div class="icon">
                 <i class="fas fa-info"></i>
               </div>
-              <p class="message">Search in Klipper printers works only for current directory</p>
+              <p class="message">{{ $t("Search in Klipper printers works only for current directory") }}</p>
             </div>
 
             <g-code-file-structure
@@ -421,13 +421,13 @@ export default {
         {
           key: 'storage',
           icon: 'fas fa-server',
-          title: `File storage`,
+          title: this.$t(`File storage`),
           expandable: true,
         },
         {
           key: 'sorting',
           icon: 'fas fa-sort-amount-down',
-          title: `Sort`,
+          title: this.$t(`Sort`),
           expandable: true,
         },
       ]
@@ -436,7 +436,7 @@ export default {
         options.unshift({
           key: 'createFolder',
           icon: 'fas fa-folder-plus',
-          title: 'Create folder',
+          title: this.$t('Create folder'),
           callback: true,
         })
       }
@@ -508,8 +508,8 @@ export default {
     },
     printerBrowsabilityText(printer) {
       return this.isPrinterBrowsable(printer)
-        ? 'Available to browse files'
-        : 'Unable to browse files'
+        ? this.$t('Available to browse files')
+        : this.$t('Unable to browse files')
     },
     toggleSelectAll() {
       if (this.allSelected) {
@@ -535,13 +535,11 @@ export default {
       const selectedFolderIds = Array.from(this.selectedFolders)
       const selectedFileIds = Array.from(this.selectedFiles)
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${
-          selectedFolderIds.length + selectedFileIds.length
-        } item(s)? This action can not be undone.`,
+        title: this.$t('Are you sure?'),
+        text: this.$t('Delete {name} item(s)? This action can not be undone.',{name:selectedFolderIds.length + selectedFileIds.length}),
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: this.$t('Yes'),
+        cancelButtonText: this.$t('No'),
       }).then(async (userAction) => {
         if (userAction.isConfirmed) {
           try {
@@ -550,7 +548,7 @@ export default {
             if (selectedFileIds.length)
               await axios.post(urls.gcodeFileBulkDelete(), { file_ids: selectedFileIds })
           } catch (err) {
-            this.errorDialog(err, 'Failed to delete files and folders')
+            this.errorDialog(err, this.$t('Failed to delete files and folders'))
           } finally {
             this.fetchFilesAndFolders(true)
           }
@@ -573,11 +571,11 @@ export default {
     switchToPrinterStorage(printer) {
       if (!this.isPrinterBrowsable(printer)) {
         this.$swal.Reject.fire({
-          title: `${printer.name} isn't available for browsing files for one of the following reasons:`,
+          title: this.$t(`{name} isn't available for browsing files for one of the following reasons:`,{name:printer.name}),
           html: `<ul style="text-align: left">
-            <li>${printer.agentDisplayName()} is powered off or not connected to the Internet</li>
-            <li>Printer is not connected to ${printer.agentDisplayName()}</li>
-            <li>${this.$t('brand_name')} for ${printer.agentDisplayName()} plugin is outdated (you need version ${printer.browsabilityMinPluginVersion()} or later)</li>
+            <li>${this.$t('{name} is powered off or not connected to the Internet',{name:printer.agentDisplayName()})}</li>
+            <li>${this.$t('Printer is not connected to {name}',{name:printer.agentDisplayName()})}</li>
+            <li>${this.$t("{brandName} for {name} plugin is outdated (you need version {version} or later)",{brandName:this.$t('brand_name'),name:printer.agentDisplayName(),version:printer.browsabilityMinPluginVersion()})}</li>
           </ul>`,
         })
         return
@@ -669,8 +667,8 @@ export default {
       if (this.selectedPrinterId) {
         if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
-            title: 'Error',
-            text: `Printer not found or unavailable`,
+            title: this.$t('Error'),
+            text: this.$t(`Printer not found or unavailable`),
           }).then(() => {
             if (this.isPopup && this.onClose) {
               this.onClose()
@@ -824,7 +822,7 @@ export default {
     },
     verifyItemRename(newName) {
       if (!this.activeItem.filename && this.folders.find((item) => item.name === newName)) {
-        return 'Folder with this name already exists'
+        return this.$t('Folder with this name already exists')
       }
       return true
     },
@@ -890,7 +888,7 @@ export default {
     },
     verifyNewFolder(newFolderName) {
       if (this.folders.find((item) => item.name === newFolderName)) {
-        return 'Folder with this name already exists'
+        return this.$t('Folder with this name already exists')
       }
       return true
     },

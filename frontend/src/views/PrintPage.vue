@@ -33,7 +33,7 @@
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="fas fa-info"></i></div>
-                      <div class="title">Status</div>
+                      <div class="title">{{ $t("Status") }}</div>
                     </div>
                     <div class="value">
                       <div class="print-status-color" :class="print.status.key">
@@ -44,14 +44,14 @@
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="far fa-clock"></i></div>
-                      <div class="title">Start time</div>
+                      <div class="title">{{ $t("Start time") }}</div>
                     </div>
                     <div class="value">{{ print.started_at.format(absoluteDateFormat) }}</div>
                   </div>
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="far fa-clock"></i></div>
-                      <div class="title">End time</div>
+                      <div class="title">{{ $t("End time") }}</div>
                     </div>
                     <div class="value">
                       {{ print.ended_at ? print.ended_at.format(absoluteDateFormat) : '-' }}
@@ -60,14 +60,14 @@
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="fas fa-clock"></i></div>
-                      <div class="title">Duration</div>
+                      <div class="title">{{ $t("Duration") }}</div>
                     </div>
                     <div class="value">{{ print.duration || '-' }}</div>
                   </div>
                   <div class="info-line">
                     <div class="label">
                       <div class="icon"><i class="fas fa-ruler-horizontal"></i></div>
-                      <div class="title">Filament used</div>
+                      <div class="title">{{ $t("Filament used") }}</div>
                     </div>
                     <div class="value">
                       {{ print.filament_used ? humanizedFilamentUsage(print.filament_used) : '-' }}
@@ -119,7 +119,7 @@
                     @click="onRepeatPrintClicked"
                   >
                     <b-spinner v-if="isSending" class="mr-2" small />
-                    <span>Reprint</span>
+                    <span>{{ $t("Reprint") }}</span>
                   </button>
                 </div>
               </div>
@@ -133,12 +133,12 @@
                   <b-col cols="12" sm="7" md="7" lg="12" xl="7"   class="first-layer-info-column">
                     <div>
                       <b-row class="mb-4">
-                        <span class="ml-3">First Layer Report</span>
+                        <span class="ml-3">{{ $t("First Layer Report") }}</span>
                       </b-row>
                       <div class="first-layer-info-line">
                         <div class="label">
                           <div class="icon"><i class="fas fa-info"></i></div>
-                          <div class="title">First Layer Grade</div>
+                          <div class="title">{{ $t("First Layer Grade") }}</div>
                         </div>
                         <div class="value">
                           <div class="print-status-color" :class="gradeResult.gradeAccent">
@@ -149,14 +149,14 @@
                       <div class="first-layer-info-line">
                         <div class="label">
                           <div class="icon"><i class="far fa-clock"></i></div>
-                          <div class="title">First Layer Print Time</div>
+                          <div class="title">{{ $t("First Layer Print Time") }}</div>
                         </div>
                         <div class="value">{{ print.duration || '-' }}</div>
                       </div>
                     </div>
                     <b-row class="m-0">
                       <b-button class="open-detailed-report-button" @click="onOpenDetailedReport"
-                        >Open Detailed Report</b-button
+                        >{{ $t("Open Detailed Report") }}</b-button
                       >
                     </b-row>
                   </b-col>
@@ -177,17 +177,17 @@
               </div>
               <div class="time-lapse">
                 <div v-if="print.video_archived_at" class="card-container">
-                  <h2 class="title">Time-Lapse video deleted</h2>
+                  <h2 class="title">{{ $t("Time-Lapse video deleted") }}</h2>
                   <p>
-                    Time-lapse videos older than 6-months are deleted from the {{ $t('brand_name') }} app server as
-                    they are rarely needed and cost significant amount to store in the cloud.
+                    {{ $t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:$t('brand_name')}) }}
                   </p>
                   <p>
-                    If you are a Pro subscriber and you don't want your time-lapse videos to be
-                    deleted, please
-                    <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos"
-                      >contact us</a
-                    >.
+                    <i18next :translation="$t(`If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please {domLink}`)">
+                      <template #domLink>
+                        <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">{{$t("contact us")}}</a>
+                      </template>
+                    </i18next>
+                    .
                   </p>
                 </div>
                 <div v-else-if="print.video_url || print.tagged_video_url">
@@ -231,7 +231,7 @@
                                   {{ print.alerted_at ? 'Failure detected' : 'No failure detected' }}
                                 </div>
                                 <div class="py-2">
-                                  Did we get it right?
+                                  {{$t("Did we get it right?")}}
                                   <b-button
                                     :variant="thumbedUp ? 'primary' : 'outline'"
                                     class="mx-2 btn-sm"
@@ -268,7 +268,7 @@
                                         v-if="!print.need_print_shot_feedback"
                                         class="fas fa-check mr-2"
                                       ></i>
-                                      FOCUSED FEEDBACK
+                                      {{$t("FOCUSED FEEDBACK")}}
                                     </b-button>
                                   </div>
                                 </transition>
@@ -276,29 +276,25 @@
                                 <div class="about-feedback">
                                   <small v-if="print.printShotFeedbackEligible">
                                     <span v-if="!print.need_print_shot_feedback">
-                                      Thank you for completing the Focused Feedback. You have earned 2
-                                      non-expirable AI Detection Hours. You can click the button again
-                                      to change your feedback.
+                                      {{$t("Thank you for completing the Focused Feedback. You have earned 2 non-expirable AI Detection Hours. You can click the button again to change your feedback.")}}
                                     </span>
                                     <span v-else>
-                                      With Focused Feedback, you can tell us exactly where we got it
-                                      wrong. This is the most effective way to help us improve.
+                                      {{$t("With Focused Feedback, you can tell us exactly where we got it wrong. This is the most effective way to help us improve.")}}
                                       <a
                                         href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-earn-detective-hours-for-giving-focused-feedback"
                                         target="_blank"
                                       >
-                                        You will earn 2 AI Detection Hours once you finish the Focused
-                                        Feedback
+                                        {{$t("You will earn 2 AI Detection Hours once you finish the Focused Feedback")}}
                                       </a>
                                     </span>
                                   </small>
                                   <small v-else>
-                                    Every time you give us feedback,
+                                    {{$t("Every time you give us feedback,")}}
                                     <a
                                       href="https://www.obico.io/docs/user-guides/how-does-credits-work/"
                                       target="_blank"
                                     >
-                                      you help us get better at detecting failures
+                                      {{$t("you help us get better at detecting failures")}}
                                     </a>
                                   </small>
                                 </div>
@@ -343,15 +339,17 @@
                   </b-card>
                 </div>
                 <div v-else class="card-container">
-                  <p class="text-secondary mt-3">Time-Lapse video unavailable because:</p>
+                  <p class="text-secondary mt-3">{{ $t("Time-Lapse video unavailable because:") }}</p>
                   <ul>
                     <li class="text-secondary mt-3">
-                      The {{ $t('brand_name') }} server is still processing the time-lapse;
+                      {{ $t("The {brandName} server is still processing the time-lapse;",{brandName:$t('brand_name')}) }}
                     </li>
                     <li class="text-secondary mt-3">
-                      Or, the print time was shorter than the threshold. You can change the threshold
-                      in
-                      <a :href="`/printers/${print.printer.id}/`">the printer settings.</a>
+                      <i18next :translation="$t(`Or, the print time was shorter than the threshold. You can change the threshold in {domLink}`)">
+                        <template #domLink>
+                          <a :href="`/printers/${print.printer.id}/`">{{$t("the printer settings")}}.</a>
+                        </template>
+                      </i18next>
                     </li>
                   </ul>
                 </div>
@@ -449,10 +447,10 @@ export default {
             !this.print.g_code_file.deleted
     },
     PrevPrintButtonTitle() {
-      return this.sortingValue.direction.key === 'asc' ? 'Older' : 'Newer'
+      return this.sortingValue.direction.key === 'asc' ? this.$t('Older') : this.$t('Newer')
     },
     NextPrintButtonTitle() {
-      return this.sortingValue.direction.key === 'asc' ? 'Newer' : 'Older'
+      return this.sortingValue.direction.key === 'asc' ? this.$t('Newer') : this.$t('Older')
     },
     fileName() {
       return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
@@ -571,7 +569,7 @@ export default {
             // Printer could be old and deleted from account (404 error)
             this.printer = null
             if (error?.response?.status !== 404) {
-              this.errorDialog(error, 'Failed to fetch printer information')
+              this.errorDialog(error, this.$t('Failed to fetch printer information'))
             }
           })
           .finally(() => {

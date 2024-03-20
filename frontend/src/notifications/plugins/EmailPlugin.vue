@@ -12,8 +12,8 @@
     <template #header>
       <div class="row">
         <div class="col">
-          <p class="text-muted mb-1">Notifications are sent to verified email addresses only.</p>
-          <p class="mb-4"><a href="/accounts/email">Manage email addresses</a></p>
+          <p class="text-muted mb-1">{{ $t("Notifications are sent to verified email addresses only.") }}</p>
+          <p class="mb-4"><a href="/accounts/email">{{ $t("Manage email addresses") }}</a></p>
         </div>
       </div>
     </template>
@@ -36,10 +36,12 @@
                 "
               />
               <label class="custom-control-label" for="id_account_notification_by_email">
-                Account events
-                <span class="text-muted setting-description"
-                  ><br />Plan changed; AI Detection Hours running low; etc.</span
-                >
+                <i18next :translation="$t('Account events {domLink}')">
+                  <template #domLink>
+                    <span class="text-muted setting-description"><br />{{$t("Plan changed; AI Detection Hours running low; etc.")}}</span>
+                  </template>
+                </i18next>
+
               </label>
             </div>
           </saving-animation>
@@ -50,10 +52,11 @@
           <div class="mobile-setting-item-wrapper">
             <div class="setting-item-text">
               <label for="id_account_notification_by_email">
-                Account events
-                <span class="text-muted setting-description"
-                  ><br />Plan changed; AI Detection Hours running low; etc.</span
-                >
+                <i18next :translation="$t('Account events {domLink}')">
+                  <template #domLink>
+                    <span class="text-muted setting-description"><br />{{$t("Plan changed; AI Detection Hours running low; etc.")}}</span>
+                  </template>
+                </i18next>
               </label>
             </div>
             <div class="setting-item-switch">

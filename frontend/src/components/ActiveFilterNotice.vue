@@ -2,9 +2,9 @@
   <div v-if="shouldShowFilterWarning" class="active-filter-notice">
     <div class="filter">
       <i class="fas fa-filter mr-2"></i>
-      Filters applied
+      {{$t("Filters applied")}}
     </div>
-    <div class="action-btn" @click="$emit('onShowAllClicked')">SHOW ALL</div>
+    <div class="action-btn" @click="$emit('onShowAllClicked')">{{ $t("SHOW ALL") }}</div>
   </div>
 </template>
 

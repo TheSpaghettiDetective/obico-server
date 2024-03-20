@@ -11,7 +11,7 @@
             v-show="!selectedPrintIds.size"
             class="label"
             @click="allPrintsSelected = !allPrintsSelected"
-            >Select all</span
+            >{{ $t("Select all") }}</span
           >
           <b-dropdown
             v-show="selectedPrintIds.size"
@@ -19,11 +19,11 @@
           >
             <template #button-content>
               {{ selectedPrintIds.size }} item{{ selectedPrintIds.size === 1 ? '' : 's' }}
-              selected
+              {{$t("selected")}}
             </template>
             <b-dropdown-item>
               <div class="text-danger" @click="onDeleteBtnClick">
-                <i class="far fa-trash-alt"></i>Delete
+                <i class="far fa-trash-alt"></i>{{$t("Delete")}}
               </div>
             </b-dropdown-item>
           </b-dropdown>
@@ -33,7 +33,7 @@
     <template #topBarRight>
       <div class="action-panel">
         <!-- Sorting -->
-        <b-dropdown right no-caret toggle-class="action-btn icon-btn" title="Sort By">
+        <b-dropdown right no-caret toggle-class="action-btn icon-btn" :title="$t('Sort By')">
           <template #button-content>
             <i class="fas fa-sort-amount-down"></i>
           </template>
@@ -50,7 +50,7 @@
           no-caret
           toggle-class="action-btn icon-btn"
           menu-class="scrollable"
-          title="Filter"
+          :title="$t('Filter')"
         >
           <template #button-content>
             <i class="fas fa-filter"></i>
@@ -75,13 +75,13 @@
               {
                 key: 'sorting',
                 icon: 'fas fa-sort-amount-down',
-                title: `Sort`,
+                title: $t(`Sort`),
                 expandable: true,
               },
               {
                 key: 'filtering',
                 icon: 'fas fa-filter',
-                title: `Filter`,
+                title: $t(`Filter`),
                 expandable: true,
               },
             ]"
@@ -123,7 +123,7 @@
                   <i class="fas fa-hashtag"></i>
                 </div>
                 <div class="info">
-                  <div class="title">Prints done</div>
+                  <div class="title">{{ $t("Prints done") }}</div>
                   <div class="value">
                     {{ stats.total_print_count }} (<span class="text-success">{{
                       stats.total_succeeded_print_count
@@ -138,7 +138,7 @@
                   <i class="far fa-clock"></i>
                 </div>
                 <div class="info">
-                  <div class="title">Total print time</div>
+                  <div class="title">{{ $t("Total print time") }}</div>
                   <div class="value">{{ totalPrintTimeFormatted }}</div>
                 </div>
               </div>
@@ -153,7 +153,7 @@
                       :highlight="false"
                       :show-close-button="false"
                     >
-                      Filament used
+                      {{$t("Filament used")}}
                     </help-widget>
                   </div>
                   <div class="value">{{ totalFilamentUsedFormatted }}</div>
@@ -161,7 +161,7 @@
               </div>
               <div class="btn-wrapper">
                 <a class="btn btn-secondary" :href="`/stats/`">
-                  Full Stats
+                  {{$t("Full Stats")}}
                   <i class="fas fa-arrow-right"></i>
                 </a>
               </div>
@@ -184,7 +184,7 @@
               <loading-placeholder v-if="!noMoreData" />
             </mugen-scroll>
           </b-col>
-          <b-col v-else class="text-center my-5">No prints found</b-col>
+          <b-col v-else class="text-center my-5">{{ $t("No prints found") }}</b-col>
         </b-row>
       </b-container>
 
@@ -437,11 +437,11 @@ export default {
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        title: this.$t('Are you sure?'),
+        text: this.$t(`Delete {name} print(s)? This action can not be undone.`,{name:this.selectedPrintIds.size}),
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: this.$t('Yes'),
+        cancelButtonText: this.$t('No'),
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
@@ -529,10 +529,10 @@ export default {
         const currentDateTo = this.getCurrentDateTo()
         const dateFromFormatted = currentDateFrom
           ? moment(currentDateFrom).format(dateFormat)
-          : 'Until'
+          : this.$t('Until')
         const dateToFormatted = currentDateTo
           ? moment(currentDateTo).format(dateFormat)
-          : 'and later'
+          : this.$t('and later')
 
         newTitle = `${dateFromFormatted}${
           currentDateFrom && currentDateTo ? ' - ' : ' '

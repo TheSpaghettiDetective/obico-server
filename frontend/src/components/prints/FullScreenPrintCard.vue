@@ -14,7 +14,7 @@
       :style="{ opacity: normalizedP > 0.4 ? 1 : 0 }"
       class="bg-warning alert-banner text-center"
     >
-      <i class="fas fa-exclamation-triangle"></i> Possible failure detected!
+      <i class="fas fa-exclamation-triangle"></i> {{$t("Possible failure detected!")}}
     </div>
 
     <failure-detection-gauge :normalized-p="normalizedP" />

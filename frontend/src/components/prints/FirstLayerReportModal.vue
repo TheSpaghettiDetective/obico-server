@@ -1,7 +1,7 @@
 <template>
     <div class="p-2">
       <b-row>
-        <h4 class="mb-4 report-title">First Layer Report</h4>
+        <h4 class="mb-4 report-title">{{ $t("First Layer Report") }}</h4>
       </b-row>
       <b-row>
         <b-col lg="7">
@@ -34,10 +34,10 @@
                 </div>
                 <div v-if="file.filesize || file.deleted" class="subtitle text-secondary truncated-wrapper">
                   <div v-if="file.deleted" class="truncated">
-                    <span class="text-danger">Deleted</span>
+                    <span class="text-danger">{{ $t("Deleted") }}</span>
                   </div>
                   <div v-else class="truncated">
-                    <span>{{ file.filesize }}, uploaded {{ fileUploadedTime }}</span>
+                    <span>{{ file.filesize }}, {{$t("uploaded")}} {{ fileUploadedTime }}</span>
                   </div>
                 </div>
               </div>
@@ -46,7 +46,7 @@
                     :href="`/g_code_files/cloud/${file.id}/`"
                     v-if="showOpenButton && file.id"
                   >
-                    Open File
+                    {{$t("Open File")}}
                   </b-button>
                 </div>
             </div>
@@ -54,7 +54,7 @@
             <div class="first-layer-report-info-line">
               <div class="label">
                 <div class="icon"><i class="fas fa-info"></i></div>
-                <div>First Layer Grade</div>
+                <div>{{ $t("First Layer Grade") }}</div>
               </div>
               <div class="value">
                 <div :class="gradeResult.gradeAccent">
@@ -66,7 +66,7 @@
             <div class="first-layer-report-info-line">
               <div class="label">
                 <div class="icon"><i class="far fa-clock"></i></div>
-                <div>First Layer Print Time</div>
+                <div>{{ $t("First Layer Print Time") }}</div>
               </div>
               <div class="value">{{ print.duration || '-' }}</div>
             </div>
@@ -77,14 +77,15 @@
           <div class="notes-block mb-3">
             <!-- Notes Block 1st row -->
             <b-row>
-              <span class="title">First Layer Notes</span>
+              <span class="title">{{ $t("First Layer Notes") }}</span>
             </b-row>
             <hr />
             <!-- File Block 2nd row -->
             <b-row>
               <div class="description">
                 <p>
-                  You're first layer score is: <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
+                  {{ $t("You're first layer score is:") }}
+                   <span class="font-bold" :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span><br>
                   {{ gradeResult.gradeRemarks }}
                 </p>
               </div>
@@ -94,8 +95,11 @@
             <b-row>
               <div v-if="!isGradeA" class="info">
                 <p>
-                  Grade <span :class="gradeResult.gradeAccent">{{ gradeResult.grade }}</span> usually means one of the
-                  following:
+                  <i18next :translation="$t(`Grade {domLink} usually means one of the following:`)">
+                    <template #domLink>
+                      <span :class="gradeResult.gradeAccent">{{gradeResult.grade}}</span>
+                    </template>
+                  </i18next>
                 </p>
                 <ul>
                   <li v-for="(suggestion, index) in gradeResult.gradeSuggestion" :key="index" v-html="suggestion"></li>
@@ -212,7 +216,7 @@
             </b-card-body>
           </b-card>
           <div class="map-info">
-            Click pins on the g-node map to see snapshots of certain areas of the print.
+            {{$t("Click pins on the g-node map to see snapshots of certain areas of the print.")}}
           </div>
         </b-col>
       </b-row>
@@ -220,10 +224,10 @@
         <!-- Notes Block End -->
         <b-col cols="12" lg="7">
           <b-button class="mb-3" style="width: 100%"
-            >View First Layer Timelapse</b-button
+            >{{ $t("View First Layer Timelapse") }}</b-button
           >
           <b-button class="feedback-button" style="width: 100%"
-            >Give Feedback About This Report</b-button
+            >{{ $t("Give Feedback About This Report") }}</b-button
           >
         </b-col>
       </b-row>

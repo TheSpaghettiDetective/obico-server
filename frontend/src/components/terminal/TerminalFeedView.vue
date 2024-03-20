@@ -2,7 +2,7 @@
   <div class="feedWrap" colorScheme="background">
     <div v-if="!feedIsOn" style="width: 100%">
       <p style="margin: 0; margin-top: 5px; text-align: center">
-        <i class="fas fa-power-off" style="margin-right: 5px"></i>Terminal feed is off
+        <i class="fas fa-power-off" style="margin-right: 5px"></i>{{$t("Terminal feed is off")}}
       </p>
     </div>
     <div v-else v-for="(feed, index) in terminalFeedArray" :key="index" class="itemWrap">

@@ -12,7 +12,7 @@
         <li v-if="isEnt && !user.is_pro" :class="{ active: path === '/ent_pub/pricing/' }">
           <a href="/ent_pub/pricing/" class="primary">
             <font-awesome-icon icon="star" />
-            Upgrade to Pro
+            {{$t("Upgrade to Pro")}}
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/printers/') }">
@@ -21,13 +21,13 @@
               <use href="#svg-3d-printer" />
             </svg>
             <br />
-            Printers
+            {{$t("Printers")}}
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/g_code_') }">
           <a href="/g_code_folders/cloud/">
             <font-awesome-icon icon="fa-file-code" />
-            G-Codes
+            {{$t("G-Codes")}}
           </a>
         </li>
         <li
@@ -36,13 +36,13 @@
         >
           <a href="/print_history/">
             <font-awesome-icon icon="fa-calendar-days" />
-            Print History
+            {{$t("Print History")}}
           </a>
         </li>
         <li v-if="user" :class="{ active: path.includes('/stats/') }">
           <a href="/stats/">
             <font-awesome-icon icon="fa-chart-pie" />
-            Statistics
+            {{$t("Statistics")}}
           </a>
         </li>
       </ul>
@@ -51,19 +51,19 @@
           <li v-if="isEnt" :class="{ active: path === '/ent_pub/pricing/' }">
             <a href="/ent_pub/pricing/">
               <font-awesome-icon icon="fa-money-check-dollar" />
-              Pricing
+              {{$t("Pricing")}}
             </a>
           </li>
           <li>
             <a href="https://www.obico.io/help/" target="_blank">
               <font-awesome-icon icon="fa-circle-question" />
-              Help
+              {{$t("Help")}}
             </a>
           </li>
           <li>
             <a href="https://obico.io/discord" target="_blank">
               <font-awesome-icon icon="fa-brands fa-discord" />
-              Community
+              {{$t("Community")}}
             </a>
           </li>
           <li>
@@ -77,13 +77,13 @@
                   unseenPrinterEventsDisplay
                 }}</span>
               </div>
-              <span class="trim-text">Notifications</span>
+              <span class="trim-text">{{ $t("Notifications") }}</span>
             </a>
           </li>
           <li v-if="user" :class="{ active: path.includes('/user_preferences/') }">
             <a href="/user_preferences/">
               <font-awesome-icon icon="fas fa-cog" />
-              <span class="trim-text">Preferences</span>
+              <span class="trim-text">{{ $t("Preferences") }}</span>
             </a>
           </li>
         </ul>

@@ -5,10 +5,10 @@
       class="header-panel"
       :class="{ 'without-action-buttons': !isCloud && !targetPrinter }"
     >
-      <div class="text">Name</div>
-      <div class="text">Size</div>
-      <div class="text">Created</div>
-      <div v-if="isCloud" class="text">Last Printed</div>
+      <div class="text">{{$t("Name")}}</div>
+      <div class="text">{{$t('Size')}}</div>
+      <div class="text">{{$t("Created")}}</div>
+      <div v-if="isCloud" class="text">{{$t("Last Printed")}}</div>
     </div>
 
     <div class="gcode-items-wrapper">
@@ -48,20 +48,20 @@
         :scroll-container="scrollContainerId"
       >
         <div v-if="!noMoreFolders || !noMoreFiles || searchInProgress" class="py-5">
-          <b-spinner label="Loading..." />
+          <b-spinner :label="$t('Loading...')" />
         </div>
       </mugen-scroll>
 
       <div v-if="!isCloud && (localFilesLoading || searchInProgress)" class="text-center py-5">
-        <b-spinner label="Loading..." />
+        <b-spinner :label="$t('Loading...')" />
       </div>
       <div v-else>
         <!-- Placeholders -->
         <div v-if="isFolderEmpty" class="placeholder text-secondary">
-          <span>Nothing here yet</span>
+          <span>{{ $t("Nothing here yet") }}</span>
         </div>
         <div v-else-if="nothingFound" class="placeholder text-secondary">
-          <span>Nothing found</span>
+          <span>{{ $t("Nothing found") }}</span>
         </div>
       </div>
     </div>

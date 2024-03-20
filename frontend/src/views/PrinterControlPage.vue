@@ -16,7 +16,7 @@
           @click.prevent="onSharePrinter()"
         >
           <i class="fas fa-share-alt fa-lg"></i>
-          <span class="sr-only">Share</span>
+          <span class="sr-only">{{ $t("Share") }}</span>
         </a>
         <!-- Tunnel -->
         <a
@@ -27,7 +27,7 @@
           <svg class="custom-svg-icon">
             <use href="#svg-tunnel" />
           </svg>
-          <span class="sr-only">OctoPrint Tunnel</span>
+          <span class="sr-only">{{ $t("OctoPrint Tunnel") }}</span>
         </a>
         <!-- Configure -->
         <a
@@ -36,7 +36,7 @@
           title="Configure"
         >
           <i class="fas fa-wrench"></i>
-          <span class="sr-only">Configure</span>
+          <span class="sr-only">{{ $t("Configure") }}</span>
         </a>
         <!-- Mobile Menu -->
         <b-dropdown right no-caret toggle-class="icon-btn d-md-none">
@@ -49,19 +49,19 @@
               {
                 key: 'share',
                 icon: 'fas fa-share-alt fa-lg',
-                title: 'Share',
+                title: $t('Share'),
                 callback: true,
               },
               {
                 key: 'tunnel',
                 svgIcon: 'svg-tunnel',
-                title: 'OctoPrint Tunnel',
+                title: $t('OctoPrint Tunnel'),
                 href: `/tunnels/${printer.id}/`,
               },
               {
                 key: 'settings',
                 icon: 'fas fa-wrench',
-                title: 'Configure',
+                title: $t('Configure'),
                 href: `/printers/${printer.id}/`,
               },
             ]"
@@ -93,23 +93,21 @@
           </template>
 
           <div class="extra-actions">
-            <h2 class="section-title">Additional Actions</h2>
+            <h2 class="section-title">{{ $t("Additional Actions") }}</h2>
             <b-button variant="outline-secondary" class="custom-button" @click="onReorderClicked">
               <i class="fas fa-arrows-alt-v"></i>
-              Reorder &amp; Hide
+              {{$t("Reorder")}} &amp; {{$t("Hide")}}
             </b-button>
             <div class="text-muted extra-actions-explanation">
-              <small
-                >Customize this page for each of your printers by reodering or hiding cards
-                above.</small
+              <small>{{ $t("Customize this page for each of your printers by reodering or hiding cards above.") }}</small
               >
             </div>
             <b-button variant="outline-primary" class="custom-button" href="/printers/wizard/">
               <i class="fas fa-plus"></i>
-              Add Printer
+              {{$t("Add Printer")}}
             </b-button>
             <div class="text-muted extra-actions-explanation">
-              <small>Link another printer to {{ $t('brand_name') }}.</small>
+              <small>{{ $t("Link another printer to {brandName}.",{brandName:$t('brand_name')}) }}</small>
             </div>
           </div>
         </div>
@@ -432,10 +430,10 @@ export default {
     },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
-        title: 'Noted!',
-        html: '<p>Do you want to mute failure detection on for this print?</p><small>If you select "Mute", failure detection will be turned off for this print, but will be automatically turned on for your next print.</small>',
-        confirmButtonText: 'Mute',
-        cancelButtonText: 'Cancel',
+        title: this.$t('Noted!'),
+        html: `<p>${this.$t("Do you want to mute failure detection on for this print?")}</p><small>${this.$t("If you select 'Mute', failure detection will be turned off for this print, but will be automatically turned on for your next print.")}</small>`,
+        confirmButtonText: this.$t('Mute'),
+        cancelButtonText: this.$t('Cancel'),
       }).then((result) => {
         if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
@@ -464,7 +462,7 @@ export default {
             extraInfo: WIDGETS,
           },
           {
-            confirmButtonText: 'Save',
+            confirmButtonText: this.$t('Save'),
             showCancelButton: true,
             preConfirm: () => {
               return {

@@ -12,7 +12,7 @@
           <streaming-box :printer="printer" :webrtc="webrtc" :autoplay="true" />
           <div class="p-3 p-md-5">
             <p class="text-center">
-              You are viewing an awesome 3D print your friend shared specifically with you on
+              {{$t("You are viewing an awesome 3D print your friend shared specifically with you on")}}
             </p>
             <a href="https://www.obico.io/">
               <svg width="100%" class="logo-img">
@@ -22,10 +22,10 @@
             <hr />
             <br /><br />
             <p class="text-center">
-              {{ $t('brand_name') }} lets you monitor and control your printer from anywhere, on your phone.
+              {{ $t('brand_name') }} {{$t("lets you monitor and control your printer from anywhere, on your phone.")}}
             </p>
             <a class="btn btn-block btn-primary" href="/accounts/signup/"
-              >Sign up for a free {{ $t('brand_name') }} account</a
+              >{{ $t("Sign up for a free {brandName} account",{brandName:$t('brand_name')}) }}</a
             >
           </div>
         </div>

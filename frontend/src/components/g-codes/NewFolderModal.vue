@@ -2,7 +2,7 @@
   <b-modal
     id="b-modal-new-folder"
     :title="$t('Enter new folder name')"
-    ok-title="Create"
+    :ok-title="$t('Create')"
     :ok-disabled="!newFolderName.length"
     centered
     @ok="handleOk"

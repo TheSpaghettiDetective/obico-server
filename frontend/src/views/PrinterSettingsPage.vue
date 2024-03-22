@@ -599,8 +599,8 @@ export default {
      */
     errorAlert() {
       this.$swal.Toast.fire({
-        icon: this.$t('error'),
-        html: `<div>Can not update printer settings.</div><div>Get help from <a href="https://obico.io/discord">the ${this.$t('brand_name')} general support forum</a> or <a href="https://obico.io/discord">${this.$t('brand_name')} for klipper support forum</a> if this error persists.</div>`,
+        icon: 'error',
+        html: `<div>${this.$t("Can not update printer settings.")}</div><div>${this.$t("Get help from")} <a href="https://obico.io/discord">${this.$t("the {brandName} general support forum",{brandName:this.$t('brand_name')})}</a> ${this.$t("or")} <a href="https://obico.io/discord">${this.$t("{brandName} for klipper support forum",{brandName:this.$t('brand_name')})}</a> ${this.$t("if this error persists.")}</div>`,
       })
     },
 
@@ -655,7 +655,7 @@ export default {
           axios.post(urls.printerAction(this.printerId, '/archive/')).then(() => {
             this.$swal.Prompt.fire({
               title: this.$t('Printer archived'),
-              html: `<p>${this.$t("{name} is archived.",{name:this.printer.name})}</p><p>You can find it on <a href="/ent/printers/archived/">this page</a> and un-archive it.</p>`,
+              html: `<p>${this.$t("{name} is archived.",{name:this.printer.name})}</p><p>${this.$t("You can find it on")} <a href="/ent/printers/archived/">${this.$t("this page")}</a> ${this.$t("and un-archive it")}.</p>`,
               confirmButtonText: this.$t('Go to the printer page'),
             }).then(() => {
               window.location.href = '/printers/'

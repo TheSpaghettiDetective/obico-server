@@ -162,34 +162,35 @@ import FilteringDropdown, {
   restoreFilterValues,
   getFilterParams,
 } from '@src/components/FilteringDropdown'
+import i18n from '@src/i18n/i18n.js'
 
 const PAGE_SIZE = 6
 
 const SortingLocalStoragePrefix = 'printsPageSorting'
 const SortingOptions = {
-  options: [{ title: 'Date', key: 'date' }],
+  options: [{ title: i18n.t('Date'), key: 'date' }],
   default: { sorting: 'date', direction: 'desc' },
 }
 
 const FilterLocalStoragePrefix = 'printsPageFiltering'
 const FilterOptions = {
   printStatus: {
-    title: 'Print Status',
+    title: i18n.t('Print Status'),
     queryParam: 'filter',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'finished', title: 'Finished' },
-      { key: 'cancelled', title: 'Cancelled' },
+      { key: 'none', title: i18n.t('All') },
+      { key: 'finished', title: i18n.t('Finished') },
+      { key: 'cancelled', title: i18n.t('Cancelled') },
     ],
     default: 'none',
   },
   feedbackNeeded: {
-    title: 'Feedback Needed',
+    title: i18n.t('Feedback Needed'),
     queryParam: 'feedback_needed',
     values: [
-      { key: 'none', title: 'All' },
-      { key: 'need_alert_overwrite', title: 'Review Needed' },
-      { key: 'need_print_shot_feedback', title: 'Focused Feedback Needed' },
+      { key: 'none', title: i18n.t('All') },
+      { key: 'need_alert_overwrite', title: i18n.t('Review Needed') },
+      { key: 'need_print_shot_feedback', title: i18n.t('Focused Feedback Needed') },
     ],
     default: 'none',
   },
@@ -295,17 +296,17 @@ export default {
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
-        title: 'Are you sure?',
-        text: `Delete ${this.selectedPrintIds.size} print(s)? This action can not be undone.`,
+        title: this.$t('Are you sure?'),
+        text: this.$t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$t('brand_name')}),
         showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonText: this.$t('Yes'),
+        cancelButtonText: this.$t('No'),
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
             selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
             this.$swal.Toast.fire({
-              title: `${selectedPrintIds.length} time-lapse(s) deleted!`,
+              title: this.$t(`{name} time-lapse(s) deleted!`,{name:selectedPrintIds.length}),
             })
             this.selectedPrintIds = new Set()
           })
@@ -318,7 +319,7 @@ export default {
       this.$delete(this.prints, i)
       if (toast) {
         this.$swal.Toast.fire({
-          title: `Time-lapse ${print.filename} deleted!`,
+          title: this.$t(`Time-lapse {name} deleted!`,{name:print.filename}),
         })
       }
     },

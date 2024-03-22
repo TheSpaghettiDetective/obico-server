@@ -639,20 +639,20 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>The 6-digit code needs to be entered in the ${ this.$t('brand_name') } plugin in OctoPrint. There are a few reasons why you can't find this page:</p>
+      let html = `<p>${this.$t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$t('brand_name')})}</p>
         <p><ul>
-        <li style="margin: 10px 0;">You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click <a href="/printers/wizard/">here</a> to walk through the process again.</li>
-        <li style="margin: 10px 0;">The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to <b>1.5.0</b> or later.</li>
-        <li style="margin: 10px 0;">Still no dice? Check out the step-by-step <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">set up guide</a>.</li>
+        <li style="margin: 10px 0;">${this.$t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$t("to walk through the process again.")}</li>
+        <li style="margin: 10px 0;">${this.$t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$t("or later.")}</li>
+        <li style="margin: 10px 0;">${this.$t("Still no dice? Check out the step-by-step")} <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-plugin-setup/">${this.$t("set up guide")}</a>.</li>
         </ul></p>`
 
       if (!this.targetOctoPrint) {
-        html = `<p>The 6-digit code needs to be entered to the <em>${ this.$t('brand_name') } for OctoPrint</em> installation script.</p>
-        <p>Check <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/">this set up guide</a> for detailed instructions.</p>`
+        html = `<p>${this.$t("The 6-digit code needs to be entered to the")} <em>${this.$t("{brandName} for OctoPrint",{brandName:this.$t('brand_name')})}</em> ${this.$t("installation script.")}</p>
+        <p>${this.$t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/"${this.$t("this set up guide")}</a> ${this.$t("for detailed instructions.")}</p>`
       }
 
       this.$swal.fire({
-        title: "Can't find the page to enter the 6-digit code?",
+        title: this.$t("Can't find the page to enter the 6-digit code?"),
         html,
         customClass: {
           container: 'dark-backdrop',
@@ -669,7 +669,7 @@ export default {
       if (this.discoveryCount >= MAX_DISCOVERY_CALLS && this.discoveredPrinters.length === 0) {
         this.discoveryEnabled = false
         this.$swal.Toast.fire({
-          title: 'No OctoPrint discovered on your local network. Switched to manual linking.',
+          title: this.$t('No OctoPrint discovered on your local network. Switched to manual linking.'),
         })
       }
       this.discoveryCount += 1

@@ -383,15 +383,15 @@ export default {
       this.$swal.Prompt.fire({
         title: this.$t('Upgrade for Better Streaming'),
         html: `
-          <p>Because you are now on the <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$t('brand_name')} Cloud Free plan</a>:</p>
+          <p>${this.$t("Because you are now on the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$t("{brandName} Cloud Free plan",{brandName:this.$t('brand_name')})}</a>:</p>
           <ul>
-            <li>Streaming is limited to 5 FPS (frames per second).</li>
-            <li>After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.</li>
+            <li>${this.$t("Streaming is limited to 5 FPS (frames per second).")}</li>
+            <li>${this.$t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
           </ul>
-          <p>Support the ${this.$t('brand_name')} project by <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">upgrading to the Pro plan for little more than 1 Starbucks a month.</a></p> The Pro plan offers many perks, including the <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">Premium Streaming</a>:</p>
+          <p>${this.$t("Support the {brandName} project by",{brandName:this.$t('brand_name')})} <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">${this.$t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$t("The Pro plan offers many perks, including the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">${this.$t("Premium Streaming")}</a>:</p>
           <ul>
-            <li>Smooth 25 FPS.</li>
-            <li>Unlimited streaming with no cooldowns.</li>
+            <li>${this.$t("Smooth 25 FPS.")}</li>
+            <li>${this.$t("Unlimited streaming with no cooldowns.")}</li>
           </ul>
 
         `,
@@ -424,10 +424,10 @@ export default {
       this.$swal.Prompt.fire({
         title: this.$t('Video frames dropped'),
         html: `
-          <p>The video frames are getting dropped because there is most likely a bandwidth bottleneck along the route they travel from your Raspberry Pi to your computer. The bottleneck can be anywhere, but in most cases, <Text bold>it is either your computer's internet connection, or your Raspberry Pi's</Text>.</p>
-          <p>Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.</p>
-          <p>If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as <b>low latency (ping)</b>.</p>
-          <p>Check out <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy/">the step-by-step trouble-shooting guide.</a></p>
+          <p>${this.$t("The video frames are getting dropped because there is most likely a bandwidth bottleneck along the route they travel from your Raspberry Pi to your computer. The bottleneck can be anywhere, but in most cases,")} <Text bold>${this.$t("it is either your computer's internet connection, or your Raspberry Pi's")}</Text>.</p>
+          <p>${this.$t("Make sure your computer is connected to the same network as your Pi. If you still see this warning, you need to trouble-shoot your computer's Wi-Fi connection, probably by moving closer to the Wi-Fi router.")}</p>
+          <p>${this.$t("If the webcam stream is smooth when your computer is on the same Wi-Fi network as your Pi, the bottleneck is likely with the upload speed of your internet connection. You need to run a speed test to make sure you have high-enough upload speed, as well as")} <b>${this.$t("low latency (ping)")}</b>.</p>
+          <p>${this.$t("Check out")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy/">${this.$t("the step-by-step trouble-shooting guide.")}</a></p>
         `,
         showCloseButton: true,
       })
@@ -439,17 +439,17 @@ export default {
       this.$swal.Prompt.fire({
         title: this.$t('Webcam stream buffering'),
         html: `
-          <p>When you see the messaging about webcam stream is "buffering" occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:</p>
-          <p class="lead">1. A constricted video stream on <strong>your Raspberry Pi. The most common reasons are:</p>
+          <p>${this.$t("When you see the messaging about webcam stream is 'buffering' occasionally, you can just reload the page. If this message repeatedly appears, it may indicate one of the problems:")}</p>
+          <p class="lead">${this.$t("1. A constricted video stream on your Raspberry Pi. The most common reasons are:")}</p>
           <ul>
-            <li>Camera resolution is set too high.</li>
-            <li>Camera framerate is set too high.</li>
-            <li>The upload speed of your Raspberry Pi is too low.</li>
+            <li>${this.$t("Camera resolution is set too high.")}</li>
+            <li>${this.$t("Camera framerate is set too high.")}</li>
+            <li>${this.$t("The upload speed of your Raspberry Pi is too low.")}</li>
           </ul>
-          <p class="lead">2. The internet connection of your computer or phone is not fast enough.</p>
-          <p class="lead">3. Your webcam is not properly connected to your Raspberry Pi.</p>
+          <p class="lead">${this.$t("2. The internet connection of your computer or phone is not fast enough.")}</p>
+          <p class="lead">${this.$t("3. Your webcam is not properly connected to your Raspberry Pi.")}</p>
           <br>
-          <p>Check <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy">this step-by-step troubleshooting guide</a>.</p>
+          <p>${this.$t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-feed-is-laggy">${this.$t("this step-by-step troubleshooting guide")}</a>.</p>
         `,
         showCloseButton: true,
       })

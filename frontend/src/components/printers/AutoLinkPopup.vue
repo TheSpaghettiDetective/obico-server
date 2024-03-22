@@ -81,7 +81,7 @@ export default {
         this.cancel()
         this.$swal.Prompt.fire({
           icon: 'error',
-          title: 'Oops!',
+          title: this.$t('Oops!'),
           html: `<p>${this.$t("Handshake failed because the pop-up was blcoked.")}</p><p>${this.$t("Please unblock the pop-up in your browser and try it again.")}</p>`,
           confirmButtonText: this.$t('Okay!'),
           showCancelButton: true,

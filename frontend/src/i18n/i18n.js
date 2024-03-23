@@ -46,7 +46,7 @@ i18n
   .init({
     resources,
     lng: `${currentLanguage}_${currentSyndicate}`,
-    fallbackLng: `${currentLanguage}_base`,
+    fallbackLng: [`en_${currentSyndicate}`, 'en_base'],
     interpolation: {
       escapeValue: false,
     },

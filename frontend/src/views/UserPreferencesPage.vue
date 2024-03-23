@@ -8,7 +8,7 @@
               <!-- Mobile (web / app) -->
               <div v-if="useMobileLayout" class="mobile-settings-wrapper full-on-mobile">
                 <div v-if="$route.path === '/user_preferences/'" class="mobile-settings-categories">
-                  <h2 v-show="!onlyNotifications()" class="categories-title section-title">
+                  <h2 v-show="!onlyNotifications" class="categories-title section-title">
                     {{$t("Account")}}
                   </h2>
                   <template v-for="(value, name) in sections">
@@ -30,7 +30,7 @@
                     </router-link>
                   </template>
 
-                  <a v-if="!onlyNotifications()" href="#" @click.prevent="logout">
+                  <a v-if="!onlyNotifications" href="#" @click.prevent="logout">
                     <span>
                       <i :class="['fas fa-sign-out-alt', 'mr-2']" style="font-size: 1.125rem"></i>
                       {{$t('Logout')}}
@@ -127,7 +127,7 @@
 import axios from 'axios'
 import urls from '@config/server-urls'
 import PageLayout from '@src/components/PageLayout.vue'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
+import { inMobileWebView } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
@@ -156,7 +156,6 @@ export default {
       sections,
       availableNotificationPlugins: null,
       configuredNotificationChannels: null,
-      onlyNotifications,
       user: null,
       saving: {},
       errorMessages: {},
@@ -204,6 +203,9 @@ export default {
         !inMobileWebView() ||
         new URLSearchParams(window.location.search).get('themeable') === 'true'
       )
+    },
+    onlyNotifications() {
+      return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
     },
   },
 

@@ -1,6 +1,10 @@
 import routes from '@config/user-preferences/routes'
 import notificationPlugins from '@src/notifications/plugins'
-import { inMobileWebView, onlyNotifications } from '@src/lib/page-context'
+import { inMobileWebView } from '@src/lib/page-context'
+
+
+const onlyNotifications =
+  new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
 
 const defaultSections = {
   GeneralPreferences: {
@@ -8,7 +12,7 @@ const defaultSections = {
     faIcon: 'fas fa-cog',
     importComponent: () => import('@src/components/user-preferences/GeneralPreferences'),
     route: routes.GeneralPreferences,
-    isHidden: inMobileWebView() || onlyNotifications(),
+    isHidden: inMobileWebView() || onlyNotifications,
   },
   ThemePreferences: {
     title: 'Appearance',
@@ -18,21 +22,21 @@ const defaultSections = {
     isHidden:
       (inMobileWebView() &&
         !(new URLSearchParams(window.location.search).get('themeable') === 'true')) ||
-      onlyNotifications(),
+      onlyNotifications,
   },
   ProfilePreferences: {
     title: 'Profile',
     faIcon: 'fas fa-user-edit',
     importComponent: () => import('@src/components/user-preferences/ProfilePreferences'),
     route: routes.ProfilePreferences,
-    isHidden: onlyNotifications(),
+    isHidden: onlyNotifications,
   },
   AuthorizedApps: {
     title: 'Authorized Apps',
     faIcon: 'fas fa-check-circle',
     importComponent: () => import('@src/components/user-preferences/AuthorizedApps'),
     route: routes.AuthorizedApps,
-    isHidden: onlyNotifications(),
+    isHidden: onlyNotifications,
   },
 
   // Notifications

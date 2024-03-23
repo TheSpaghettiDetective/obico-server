@@ -21,7 +21,3 @@ export const syndicate = () => {
 export const language = () => {
   return JSON.parse(document.querySelector('#language-json').text)
 }
-
-export const onlyNotifications = () => {
-  return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
-}

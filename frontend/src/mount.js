@@ -38,9 +38,10 @@ import {
   faRulerVertical,
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
-import { syndicate } from '@src/lib/page-context'
+import { syndicate,language } from '@src/lib/page-context'
 
 Vue.prototype.$syndicate = syndicate().provider
+Vue.prototype.$language = language().provider
 
 export default (router, components) => {
   initTheme()

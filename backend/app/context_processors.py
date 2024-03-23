@@ -28,5 +28,15 @@ def additional_settings_export(request):
     # per-request syndicate overrides the global setting. This is so that Mintion users can use Obico cloud but see their own theme.
     syndicate_header = request.META.get('HTTP_X_OBICO_SYNDICATE', None)
     if syndicate_header:
-        settings_dict['syndicate'] = {"provider": syndicate_header}
+        settings_dict["syndicate"] = {"provider": syndicate_header,"brand_name": brand_name}
+
+    accept_language_header = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
+    languages = accept_language_header.split(",")
+    if languages:
+        brower_language = languages[0].split("-")[0]
+        settings_dict["language"] = {"provider": brower_language}
+
+    language_header = request.META.get("HTTP_X_OBICO_LANGUAGE", None)
+    if language_header:
+        settings_dict["language"] = {"provider": language_header}
     return settings_dict

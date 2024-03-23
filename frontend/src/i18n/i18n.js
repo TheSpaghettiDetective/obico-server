@@ -6,29 +6,20 @@ import yumiEn from './yumi/en.json';
 import yumiZh from './yumi/zh.json';
 import mintionEn from './mintion/en.json';
 import mintionZh from './mintion/zh.json';
-import { syndicate } from '@src/lib/page-context'
+import { syndicate ,language} from '@src/lib/page-context'
 
 
 const getCurrentSyndicate = () => {
   return syndicate().provider
 };
+const getCurrentLanguage = () => {
+  return language().provider
+};
 
-const getLocalizationlanguage = () => {
-  let language = 'en'
-  if(window){
-    let stragety = {
-      'en': 'en',
-      'zh-CN': 'zh',
-    };
-    const userLanguage = navigator.language || navigator.userLanguage ||'en';
-    language = stragety[userLanguage] || 'en'
-  }
-  return language
-
-}
 
 const currentSyndicate = getCurrentSyndicate();
-const language = getLocalizationlanguage()
+const currentLanguage = getCurrentLanguage()
+
 
 const resources = {
   'en_base': {
@@ -54,12 +45,12 @@ const resources = {
 i18n
   .init({
     resources,
-    lng: `${language}_${currentSyndicate}`,
-    fallbackLng: `${language}_base`,
+    lng: `${currentLanguage}_${currentSyndicate}`,
+    fallbackLng: `${currentLanguage}_base`,
     interpolation: {
       escapeValue: false,
     },
-    debug: true,
+    debug: false,
   });
 
 export default i18n;

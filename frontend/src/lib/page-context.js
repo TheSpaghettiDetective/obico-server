@@ -25,7 +25,3 @@ export const language = () => {
 export const onlyNotifications = () => {
   return new URLSearchParams(window.location.search).get('onlyNotifications') === 'true'
 }
-
-export const onlyName = () => {
-  return new URLSearchParams(window.location.search).get('onlyName') === 'true'
-}

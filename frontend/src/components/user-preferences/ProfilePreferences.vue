@@ -1,6 +1,6 @@
 <template>
   <section class="profile">
-    <h2 class="section-title">{{ onlyName() ? $t('Edit Name') : $t('Profile') }}</h2>
+    <h2 class="section-title">{{ onlyName ? $t('Edit Name') : $t('Profile') }}</h2>
     <div class="form-group row">
       <label for="id_first_name" class="col-md-2 col-sm-3 col-form-label">{{ $t("First Name") }}</label>
       <div class="col-md-10 col-sm-9">
@@ -29,14 +29,14 @@
         </saving-animation>
       </div>
     </div>
-    <div v-if="!onlyName()" class="row">
+    <div v-if="!onlyName" class="row">
       <label for="id_email" class="col-md-2 col-sm-3 col-form-label">{{ $t("Primary Email") }}</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
         {{ user.email }} ({{ user.is_primary_email_verified ? 'Verified' : 'Unverified' }})
         <div class="form-text"><a href="/accounts/email">{{ $t("Manage email addresses") }}</a></div>
       </div>
     </div>
-    <div v-if="!onlyName()" class="form-group row">
+    <div v-if="!onlyName" class="form-group row">
       <label class="col-md-2 col-sm-3 col-form-label">{{ $t("Password") }}</label>
       <div class="col-md-10 col-sm-9 col-form-label text-muted">
         <a href="/accounts/password/change">{{ $t("Change") }}</a>
@@ -47,13 +47,18 @@
 
 <script>
 import SavingAnimation from '@src/components/SavingAnimation.vue'
-import { onlyName } from '@src/lib/page-context'
 
 export default {
   name: 'ProfilePreferences',
 
   components: {
     SavingAnimation,
+  },
+
+  computed: {
+    onlyName() {
+      return new URLSearchParams(window.location.search).get('onlyName') === 'true'
+    },
   },
 
   props: {

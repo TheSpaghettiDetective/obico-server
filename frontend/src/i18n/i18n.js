@@ -50,7 +50,7 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-    debug: false,
+    debug: true,
   });
 
 export default i18n;

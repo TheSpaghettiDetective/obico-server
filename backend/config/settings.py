@@ -410,7 +410,7 @@ OCTOPRINT_TUNNEL_PORT_RANGE = range(
         int(os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE').split('-')[1].strip('"\'')),
     ) if os.environ.get('OCTOPRINT_TUNNEL_PORT_RANGE') else None
 
-# settings export
+# settings exported to django templates
 SETTINGS_EXPORT = [
     'VERSION',
     'TEMPLATE_LAYOUT',

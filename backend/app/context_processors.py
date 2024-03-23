@@ -22,13 +22,14 @@ def additional_settings_export(request):
     }
 
     syndicate = settings.SYNDICATE
-    brand_name = "Obico" if syndicate == "base" else syndicate.capitalize()
-    settings_dict["syndicate"] = {"provider": syndicate, "brand_name": brand_name}
 
     # per-request syndicate overrides the global setting. This is so that Mintion users can use Obico cloud but see their own theme.
     syndicate_header = request.META.get('HTTP_X_OBICO_SYNDICATE', None)
     if syndicate_header:
-        settings_dict["syndicate"] = {"provider": syndicate_header,"brand_name": brand_name}
+        syndicate = syndicate_header
+
+    brand_name = "Obico" if syndicate == "base" else syndicate.capitalize()
+    settings_dict["syndicate"] = {"provider": syndicate, "brand_name": brand_name}
 
     accept_language_header = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
     languages = accept_language_header.split(",")

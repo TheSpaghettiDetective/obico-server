@@ -36,8 +36,8 @@
                 "
               />
               <label class="custom-control-label" for="id_account_notification_by_email">
-                <i18next :translation="$t('Account events {domLink}')">
-                  <template #domLink>
+                <i18next :translation="$t('Account events {localizedDom}')">
+                  <template #localizedDom>
                     <span class="text-muted setting-description"><br />{{$t("Plan changed; AI Detection Hours running low; etc.")}}</span>
                   </template>
                 </i18next>
@@ -52,8 +52,8 @@
           <div class="mobile-setting-item-wrapper">
             <div class="setting-item-text">
               <label for="id_account_notification_by_email">
-                <i18next :translation="$t('Account events {domLink}')">
-                  <template #domLink>
+                <i18next :translation="$t('Account events {localizedDom}')">
+                  <template #localizedDom>
                     <span class="text-muted setting-description"><br />{{$t("Plan changed; AI Detection Hours running low; etc.")}}</span>
                   </template>
                 </i18next>

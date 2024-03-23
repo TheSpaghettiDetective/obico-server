@@ -14,12 +14,12 @@
         <p>{{ $t("Login to be notified by our Telegram bot.") }}</p>
         <div v-if="isInMobile" class="text-warning small">
           <p>
-            <i18next :translation="$t('Telegram in the mobile app is very finicky. Please open a browser, and log into {domLink} using the same credential to set up Telegram.')">
-              <template #domLink>
+            <i18next :translation="$t('Telegram in the mobile app is very finicky. Please open a browser, and log into {localizedDom} using the same credential to set up Telegram.')">
+              <template #localizedDom>
                 <a href="https://app.obico.io">{{$t("the {brandName} web app",{brandName:$t('brand_name')})}}</a>
               </template>
             </i18next>
-         
+
           </p>
           <p>{{ $t("Once set up, Telegram notification will work properly on your phone.") }}</p>
         </div>

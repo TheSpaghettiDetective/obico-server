@@ -115,12 +115,12 @@
                 <div class="col-12 setting-item">
                   <label class="toggle-label" :for="'watching_enabled-toggle-' + printer.id"
                     >
-                    <i18next :translation="$t('Enable AI failure detection {domLink}')">
-                      <template #domLink>
+                    <i18next :translation="$t('Enable AI failure detection {localizedDom}')">
+                      <template #localizedDom>
                         <div v-if="!watchForFailures" class="text-muted font-weight-light font-size-sm"> {{$t("AI failure detection is disabled. You are on your own")}}.</div>
                       </template>
                     </i18next>
-                    
+
                   </label>
                   <div class="custom-control custom-switch">
                     <input
@@ -142,8 +142,8 @@
               <div class="row justify-content-center px-3">
                 <div class="col-12 setting-item">
                   <label class="toggle-label" :for="'pause-toggle-' + printer.id">
-                    <i18next :translation="$t('Pause on detected failures {domLink}')">
-                      <template #domLink>
+                    <i18next :translation="$t('Pause on detected failures {localizedDom}')">
+                      <template #localizedDom>
                         <div v-if="!pauseOnFailure" class="text-muted font-weight-light font-size-sm"> {{$t("You will still be alerted via notifications")}}</div>
                       </template>
                     </i18next>

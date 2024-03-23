@@ -4,12 +4,12 @@
     <hr />
     <div v-if="!isProAccount">
       <h5 class="mb-5">
-        <i18next :translation="$t('Wait! You need to {domLink} to enable Printer feed.')">
-          <template #domLink>
+        <i18next :translation="$t('Wait! You need to {localizedDom} to enable Printer feed.')">
+          <template #localizedDom>
             <a href="/ent_pub/pricing/">{{$t("upgrade to the Pro plan")}}</a>
           </template>
         </i18next>
-       
+
       </h5>
       <p>{{ $t("Printer feed sharing is a Pro feature.") }}</p>
       <p>
@@ -17,7 +17,7 @@
           {{ $t('Running the {brandName} app incurs non-trivial amount of costs',{brandName:$t(brand_name)}) }}
           </a>.
           {{ $t('With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the {brandName} app smoothly.',{brandName:$t(brand_name)}) }}
-         
+
       </p>
       <p><a href="/ent_pub/pricing/">{{ $t("Check out Pro pricing >>>") }}</a></p>
     </div>
@@ -74,12 +74,12 @@
               {{$t("Click the clipboard icon above to copy the secure shareable link to your clipboard.")}}
             </div>
             <div class="my-1">
-              <i18next :translation="$t(`You can test the shareable link by right-clicking {domLink} and select 'Open Link in Incognito Window'.`)">
-                <template #domLink>
+              <i18next :translation="$t(`You can test the shareable link by right-clicking {localizedDom} and select 'Open Link in Incognito Window'.`)">
+                <template #localizedDom>
                   <a :href="sharedLink">{{$t("here")}}</a>
                 </template>
               </i18next>
-              
+
             </div>
             <br />
             <em class="text-muted">
@@ -88,7 +88,7 @@
                 <ul>
                   <li>
                     {{ $t('Send the secure link to anyone you want to share your printer feed with. They do NOT need the {brandName} account to see your printer feed.',{brandName:$t('brand_name')}) }}
-                    
+
                   </li>
                   <li>
                     {{$t("Anyone with this shareable link will be able to see your printer feed.")}}

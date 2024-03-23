@@ -13,8 +13,8 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        <i18next :translation="$t('If you have a Discord channel you wish to receive notifications on, you can {domLink} and enter it here.')">
-          <template #domLink>
+        <i18next :translation="$t('If you have a Discord channel you wish to receive notifications on, you can {localizedDom} and enter it here.')">
+          <template #localizedDom>
             <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"> {{$t("generate webhook url")}}</a>
           </template>
         </i18next>

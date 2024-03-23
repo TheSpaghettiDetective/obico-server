@@ -50,12 +50,12 @@
                 </ul>
               </div>
               <div>
-                <i18next :translation="$t('Learn more about {domLink}')">
-                  <template #domLink>
+                <i18next :translation="$t('Learn more about {localizedDom}')">
+                  <template #localizedDom>
                     <a href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/" target="_blank">{{$t("the differences between the Premium Streaming and the Basic Streaming")}} <i class="fas fa-external-link-alt"></i></a>
                   </template>
                 </i18next>
-             
+
               </div>
             </template>
 
@@ -219,7 +219,7 @@
               <ul>
                 <li>
                   {{ $t('Upload G-code files and start prints directly through {brandName} instead of OctoPrint/Klipper.',{brandName:$t('brand_name')}) }}
-                  
+
                 </li>
                 <li>
                   {{$t("Use a slicer that supports filament usage parameters, such as Cura, Prusa Slicer, SuperSlicer, IdeaMaker, or Simplify3D.")}}

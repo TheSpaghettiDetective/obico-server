@@ -22,22 +22,22 @@
             <b-row v-if="isEnt && trialDaysLeft > 0">
               <b-col>
                 <h3 v-if="trialDaysLeft >= 29" class="py-3">
-                  <i18next :translation="$t('Your 30-Day {domLink} Free Trial Has Started!')">
-                    <template #domLink>
+                  <i18next :translation="$t('Your 30-Day {localizedDom} Free Trial Has Started!')">
+                    <template #localizedDom>
                       <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">{{$t("Pro Plan")}}</a>
                     </template>
                   </i18next>
                 </h3>
                 <h3 v-else class="py-3">
-                  <i18next :translation="$t('{trialDaysLeft} Days Left on Your {domLink} Free Trial!')">
-                    <template #domLink>
+                  <i18next :translation="$t('{trialDaysLeft} Days Left on Your {localizedDom} Free Trial!')">
+                    <template #localizedDom>
                       <a class="link" target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/">{{$t("Pro Plan")}} </a>
                     </template>
                     <template #trialDaysLeft>
                       {{trialDaysLeft}}
                     </template>
                   </i18next>
-                
+
                 </h3>
                 <div class="pb-1">
                   <i class="feature-check fas fa-check-circle"></i
@@ -73,8 +73,8 @@
               </b-col>
             </b-row>
             <div class="footer-note small">
-              <i18next :translation="$t('Not ready to start yet? {domLink} to pause your free trial.')">
-                <template #domLink>
+              <i18next :translation="$t('Not ready to start yet? {localizedDom} to pause your free trial.')">
+                <template #localizedDom>
                   <a href="mailto:support@obico.io?subject=Please%20pause%20my%20free%20trial">{{$t("Email us")}}</a>
                 </template>
               </i18next>
@@ -97,13 +97,13 @@
               <div class="lead text-center mt-3 mb-5">{{ $t("Tunnel Access Authorization") }}</div>
               <h4 class="my-4">
                 <span class="font-weight-bold">{{appDisplayName}}</span>
-              
+
                 {{ $t('is requesting to access you {platformDisplayName} Tunnel.',{platformDisplayName}) }}
               </h4>
               <p class="text-muted">
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">{{platformDisplayName}} {{$t("Tunnel")}}</a>
-                <i18next :translation="$t('is a secure way provided by {domLink} to remotely access your {platformDisplayName}. With the {platformDisplayName} Tunnel, you can use {appDisplayName} to access your {platformDisplayName} from anywhere.')">
-                    <template #domLink>
+                <i18next :translation="$t('is a secure way provided by {localizedDom} to remotely access your {platformDisplayName}. With the {platformDisplayName} Tunnel, you can use {appDisplayName} to access your {platformDisplayName} from anywhere.')">
+                    <template #localizedDom>
                       <a href="https://www.obico.io/" target="_blank">{{$t('brand_name')}}</a>
                     </template>
                     <template #platformDisplayName>
@@ -117,9 +117,9 @@
 
               <b-alert v-if="!user.is_pro" variant="warning" dismissible class="my-3" show>
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> 
-                  <i18next :translation="$t('Tunnel usage of a free account is {domLink} to enjoy unlimited tunnel usage.')">
-                    <template #domLink>
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <i18next :translation="$t('Tunnel usage of a free account is {localizedDom} to enjoy unlimited tunnel usage.')">
+                    <template #localizedDom>
                       <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$t('brand_name')})}}</a>
                     </template>
                   </i18next>
@@ -133,20 +133,20 @@
                 show
               >
                 <div>
-                  <i class="fas fa-exclamation-triangle"></i> 
-                  <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {domLink} to continue enjoying unlimited tunnel usage.')">
-                    <template #domLink>
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {localizedDom} to continue enjoying unlimited tunnel usage.')">
+                    <template #localizedDom>
                       <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$t('brand_name')})}}</a>
                     </template>
                   </i18next>
-                 
+
                 </div>
               </b-alert>
 
               <div class="mt-5">
                 <p class="lead">
-                  <i18next :translation="$t('Tunnel access by {domLink} (make sure you trust it):')">
-                    <template #domLink>
+                  <i18next :translation="$t('Tunnel access by {localizedDom} (make sure you trust it):')">
+                    <template #localizedDom>
                       <span class="font-weight-bold">{{appDisplayName}}</span>
                     </template>
                   </i18next>
@@ -230,9 +230,9 @@
                 <li>{{ $t("10 hours/mo AI failure detection.") }}</li>
               </ul>
               <div>
-                🔥🔥🔥 
-                <i18next :translation="$t('Upgrade to {brandName} Pro Account ({domLink}) to get premium features:')">
-                    <template #domLink>
+                🔥🔥🔥
+                <i18next :translation="$t('Upgrade to {brandName} Pro Account ({localizedDom}) to get premium features:')">
+                    <template #localizedDom>
                       <a href="https://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("from $4/mo")}}</a>
                     </template>
                     <template #brandName>

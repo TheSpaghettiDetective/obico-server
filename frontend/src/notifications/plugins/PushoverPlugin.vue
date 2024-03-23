@@ -13,8 +13,8 @@
   >
     <template #header>
       <small class="form-text text-muted">
-        <i18next :translation="$t('If you have a Pushover account, you can {domLink} and enter it here.')">
-          <template #domLink>
+        <i18next :translation="$t('If you have a Pushover account, you can {localizedDom} and enter it here.')">
+          <template #localizedDom>
             <a href="https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it" target="_blank">{{$t("get your User Key")}}</a>
           </template>
         </i18next>

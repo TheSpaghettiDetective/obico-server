@@ -95,8 +95,8 @@
             <b-row>
               <div v-if="!isGradeA" class="info">
                 <p>
-                  <i18next :translation="$t(`Grade {domLink} usually means one of the following:`)">
-                    <template #domLink>
+                  <i18next :translation="$t(`Grade {localizedDom} usually means one of the following:`)">
+                    <template #localizedDom>
                       <span :class="gradeResult.gradeAccent">{{gradeResult.grade}}</span>
                     </template>
                   </i18next>
@@ -485,7 +485,7 @@ export default {
   display: flex
   justify-content: center
   height: 480px
-  margin-top: 1.25em 
+  margin-top: 1.25em
 .report-title
   padding-left: 15px
 

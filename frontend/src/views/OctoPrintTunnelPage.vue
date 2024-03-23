@@ -8,8 +8,8 @@
         @mouseleave="showDetails = false"
       >
         <div class="text-muted">
-          <i18next :translation="$t('Monthly data usage ({domLink})')">
-            <template #domLink>
+          <i18next :translation="$t('Monthly data usage ({localizedDom})')">
+            <template #localizedDom>
               <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users" target="_blank">{{$t("Resets in {daysUntilReset} days",{daysUntilReset})}}</a>
             </template>
           </i18next>

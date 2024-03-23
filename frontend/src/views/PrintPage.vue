@@ -182,8 +182,8 @@
                     {{ $t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:$t('brand_name')}) }}
                   </p>
                   <p>
-                    <i18next :translation="$t(`If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please {domLink}`)">
-                      <template #domLink>
+                    <i18next :translation="$t(`If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please {localizedDom}`)">
+                      <template #localizedDom>
                         <a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">{{$t("contact us")}}</a>
                       </template>
                     </i18next>
@@ -345,8 +345,8 @@
                       {{ $t("The {brandName} server is still processing the time-lapse;",{brandName:$t('brand_name')}) }}
                     </li>
                     <li class="text-secondary mt-3">
-                      <i18next :translation="$t(`Or, the print time was shorter than the threshold. You can change the threshold in {domLink}`)">
-                        <template #domLink>
+                      <i18next :translation="$t(`Or, the print time was shorter than the threshold. You can change the threshold in {localizedDom}`)">
+                        <template #localizedDom>
                           <a :href="`/printers/${print.printer.id}/`">{{$t("the printer settings")}}.</a>
                         </template>
                       </i18next>
@@ -779,7 +779,7 @@ export default {
   @media (max-width: 768px)
     padding: 0
   @media (max-width: 1198px) and (min-width: 991px)
-    margin-top: 1em  
+    margin-top: 1em
     padding: 0
     justify-content: center
 .heatmap-image-container
@@ -798,11 +798,11 @@ export default {
     margin-top: 0.5em
   @media (min-width: 1199px)
     width: 15em
-  
+
 .heatmap-image
   border: 1px solid #cac8c8
   height: 176px
-  
+
   @media (max-width: 576px)
     height: 330px
     width: 100%

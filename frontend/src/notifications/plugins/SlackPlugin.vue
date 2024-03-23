@@ -19,7 +19,7 @@
         <br />
         <p>
           {{ $t(" 1. Make sure {brandName} Messenger is added to the channels you want the notifications to be sent to.",{brandName:$t('brand_name')}) }}
-         
+
         </p>
         <img
           class="mw-100"
@@ -77,12 +77,12 @@
         <br /><br />
         <p>{{ $t("Q: How do I remove the {brandName} Slack App from the entire workspace?",{brandName:$t('brand_name')}) }}</p>
         <p>
-          <i18next :translation="$t('A: Please follow the instructions in {domLink}.')">
-            <template #domLink>
+          <i18next :translation="$t('A: Please follow the instructions in {localizedDom}.')">
+            <template #localizedDom>
               <a href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace">{{ $t("this Slack help doc") }}</a>
             </template>
           </i18next>
-   
+
         </p>
       </div>
     </template>

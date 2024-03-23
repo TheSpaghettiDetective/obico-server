@@ -116,8 +116,8 @@ cd moonraker-obico
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
                             <div class="text-warning">
-                              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {domLink}.`)">
-                                <template #domLink>
+                              <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
+                                <template #localizedDom>
                                   <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$t('brand_name')})}}</a>
                                 </template>
                               </i18next>
@@ -127,7 +127,7 @@ cd moonraker-obico
                               <li>
                                 {{ $t("Select") }}
                                 <em>"{{$t("OctoPrint settings menu → {brandName} for OctoPrint",{brandName:$t('brand_name')})}}"</em>.
-                               
+
                               </li>
                               <li>{{ $t("Select ") }}<em>{{ $t("'Troubleshooting → Re-run Wizard''") }}</em>.</li>
                             </ol>
@@ -200,8 +200,8 @@ cd moonraker-obico
                               />
                             </div>
                             <div class="mt-5 mb-3">
-                              <i18next :translation="$t(`Can't find the printer you want to link? Switch to {domLink} instead.`)">
-                                <template #domLink>
+                              <i18next :translation="$t(`Can't find the printer you want to link? Switch to {localizedDom} instead.`)">
+                                <template #localizedDom>
                                   <a class="link" @click="discoveryEnabled = false">{{$t("Manual Setup")}}</a>
                                 </template>
                               </i18next>
@@ -228,18 +228,18 @@ cd moonraker-obico
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8">
                               <ol>
-                                
+
                                 <li>
-                                  <i18next :translation="$t(`Wait for {domLink} wizard to popup.`)">
-                                    <template #domLink>
+                                  <i18next :translation="$t(`Wait for {localizedDom} wizard to popup.`)">
+                                    <template #localizedDom>
                                       <em>"{{$t("{brandName} for OctoPrint",{brandName:$t("brand_name")})}}"</em>
                                     </template>
                                   </i18next>
                                 </li>
                                 <li>{{ $t("Follow the instructions in the wizard.") }}</li>
                                 <li>
-                                  <i18next :translation="$t(`Select {domLink} when asked.`)">
-                                    <template #domLink>
+                                  <i18next :translation="$t(`Select {localizedDom} when asked.`)">
+                                    <template #localizedDom>
                                       <em>"{{$t("Web Setup")}}"</em>
                                     </template>
                                   </i18next>
@@ -280,8 +280,8 @@ cd moonraker-obico
                                 >{{ timeToExpire }}
                               </div>
                               <div class="lead">
-                                <i18next :translation="$t(`Enter the {domLink}`)">
-                                  <template #domLink>
+                                <i18next :translation="$t(`Enter the {localizedDom}`)">
+                                  <template #localizedDom>
                                     <strong>{{$t("6-digit verification code")}}</strong>
                                   </template>
                                 </i18next>
@@ -347,8 +347,8 @@ cd moonraker-obico
                   </form-wizard>
                   <div class="row">
                     <div class="helper col-sm-12">
-                      <i18next :translation="$t(`Need help? Check out the {domLink}`)">
-                        <template #domLink>
+                      <i18next :translation="$t(`Need help? Check out the {localizedDom}`)">
+                        <template #localizedDom>
                           <a target="_blank" :href="targetMoonraker? 'https://www.obico.io/docs/user-guides/klipper-setup/':'https://www.obico.io/docs/user-guides/octoprint-plugin-setup/'">{{$t("step-by-step set up guide")}}.</a>
                         </template>
                       </i18next>

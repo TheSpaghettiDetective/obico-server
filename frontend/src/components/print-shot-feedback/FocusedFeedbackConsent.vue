@@ -9,11 +9,11 @@
       <span class="feedback-estimate">{{ estimatedFeedbackTime }}</span>
     </p>
     <p class="font-weight-light">
-      <i18next :translation="$t('Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of the print. You will earn {domLink} after you finish this Focused Feedback. {domLink2}')">
-        <template #domLink>
+      <i18next :translation="$t('Help Obi get better at detecting failures by giving her in-depth feedback on the snapshots of the print. You will earn {localizedDom} after you finish this Focused Feedback. {localizedDom2}')">
+        <template #localizedDom>
           <strong class="text-light">{{$t("2 non-expirable AI Detection Hours")}}</strong>
         </template>
-        <template #domLink2>
+        <template #localizedDom2>
           <a target="_blank" href="https://www.obico.io/docs/user-guides/how-does-credits-work/">{{$t('Learn more')}}. <small><i class="fas fa-external-link-alt"></i></small ></a>
         </template>
       </i18next>
@@ -38,7 +38,7 @@
       />
       <label class="custom-control-label" style="font-size: 16px" for="consented-checkbox">
         {{ $t("I grant the {brandName} app team members the permission to review the time-lapse video of the print shown on this page.", { brandName: $t('brandName') }) }}
-        
+
         <a
           target="_blank"
           href="https://www.obico.io/docs/user-guides/how-does-credits-work#you-need-to-grant-permission-to-tsd-team-to-review-your-time-lapse"
@@ -96,7 +96,7 @@ export default {
     estimatedFeedbackTime() {
       const seconds = this.print.printshotfeedback_set.length * 12
       if (seconds < 60) {
-        return `${seconds} `+this.$t('seconds') 
+        return `${seconds} `+this.$t('seconds')
       } else {
         return moment.duration(seconds, 'seconds').humanize()
       }

@@ -215,12 +215,12 @@
                   class="text-warning"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
-                  <i18next :translation="$t(`Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to {domLink}`)">
-                    <template #domLink>
+                  <i18next :translation="$t(`Focused Feedback won't be available when time-lapse recording is turned off. You won't be able to {localizedDom}`)">
+                    <template #localizedDom>
                       <a href="https://www.obico.io/docs/user-guides/how-does-credits-work/">{{$t("help us get better while earning AI Detection Hours for yourself")}}</a>
                     </template>
                   </i18next>
-                
+
                 </p>
                 <div class="form-group mt-4">
                   <saving-animation
@@ -299,8 +299,8 @@
                   </a>
                   <div class="text-muted mt-1">
                     <small>
-                      <i18next :translation="$t(`If your printer is always showing as 'offline', and you have gone through {domLink}, you can try to re-link printer as the last resort.`)">
-                        <template #domLink>
+                      <i18next :translation="$t(`If your printer is always showing as 'offline', and you have gone through {localizedDom}, you can try to re-link printer as the last resort.`)">
+                        <template #localizedDom>
                           <a href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/">{{$t("all the trouble-shooting steps")}}</a>
                         </template>
                       </i18next>
@@ -313,8 +313,8 @@
                   </button>
                   <div class="text-muted mt-1">
                     <small>
-                      <i18next :translation="$t(`Archived printers are not counted toward your subscription plan. You won't see them in the app either. Go to {domLink} to find all archived printers and/or un-archive them.`)">
-                        <template #domLink>
+                      <i18next :translation="$t(`Archived printers are not counted toward your subscription plan. You won't see them in the app either. Go to {localizedDom} to find all archived printers and/or un-archive them.`)">
+                        <template #localizedDom>
                           <a href="/ent/printers/archived/">{{ $t("this page") }}</a>
                         </template>
                       </i18next>

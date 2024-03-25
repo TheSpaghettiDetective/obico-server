@@ -8,6 +8,8 @@ import mintionEn from './mintion/en.json';
 import mintionZh from './mintion/zh.json';
 import { syndicate ,language} from '@src/lib/page-context'
 
+import entBaseEn from './base/ent_en.json';
+import entBaseZh from './base/ent_zh.json';
 
 const getCurrentSyndicate = () => {
   return syndicate().provider
@@ -23,10 +25,12 @@ const currentLanguage = getCurrentLanguage()
 
 const resources = {
   'en_base': {
-    translation: baseEn,
+    ...baseEn,
+    ...entBaseEn
   },
   'zh_base': {
-    translation: baseZh,
+    ...baseZh,
+    ...entBaseZh
   },
   'en_yumi': {
     translation: yumiEn,

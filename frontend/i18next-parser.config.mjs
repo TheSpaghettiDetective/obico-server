@@ -35,11 +35,17 @@ export default {
     html: ['HTMLLexer'],
 
     mjs: ['JavascriptLexer'],
-    js: ['JavascriptLexer'], // if you're writing jsx inside .js files, change this to JsxLexer
+    js: [{
+      lexer: 'JavascriptLexer',
+      functions: ['$i18n.t',"i18n.t",'$t']
+    }], // if you're writing jsx inside .js files, change this to JsxLexer
     ts: ['JavascriptLexer'],
     jsx: ['JsxLexer'],
     tsx: ['JsxLexer'],
-    vue: ['VueLexer'],
+    vue: [{
+      lexer:'VueLexer',
+      functions: ['$i18n.t',"i18n.t",'$t']
+    }],
     default: ['JavascriptLexer'],
   },
 

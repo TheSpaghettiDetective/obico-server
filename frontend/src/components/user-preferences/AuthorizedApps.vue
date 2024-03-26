@@ -40,7 +40,7 @@ export default {
         this.authorizedApps = response.data
       })
       .catch((error) => {
-        this.errorDialog(error, this.$t('Failed to fetch authorized apps'))
+        this.errorDialog(error, `${this.$i18next.t('Failed to fetch authorized apps')}`)
       })
   },
 
@@ -52,7 +52,7 @@ export default {
           this.authorizedApps = this.authorizedApps.filter((app) => app.id !== id)
         })
         .catch((error) => {
-          this.errorDialog(error, this.$t('Failed to remove access'))
+          this.errorDialog(error, `${this.$i18next.t('Failed to remove access')}`)
         })
     },
   },

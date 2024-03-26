@@ -421,13 +421,13 @@ export default {
         {
           key: 'storage',
           icon: 'fas fa-server',
-          title: this.$t(`File storage`),
+          title: `${this.$i18next.t(`File storage`)}`,
           expandable: true,
         },
         {
           key: 'sorting',
           icon: 'fas fa-sort-amount-down',
-          title: this.$t(`Sort`),
+          title: `${this.$i18next.t(`Sort`)}`,
           expandable: true,
         },
       ]
@@ -436,7 +436,7 @@ export default {
         options.unshift({
           key: 'createFolder',
           icon: 'fas fa-folder-plus',
-          title: this.$t('Create folder'),
+          title: `${this.$i18next.t('Create folder')}`,
           callback: true,
         })
       }
@@ -508,8 +508,8 @@ export default {
     },
     printerBrowsabilityText(printer) {
       return this.isPrinterBrowsable(printer)
-        ? this.$t('Available to browse files')
-        : this.$t('Unable to browse files')
+        ? `${this.$i18next.t('Available to browse files')}`
+        : `${this.$i18next.t('Unable to browse files')}`
     },
     toggleSelectAll() {
       if (this.allSelected) {
@@ -535,11 +535,11 @@ export default {
       const selectedFolderIds = Array.from(this.selectedFolders)
       const selectedFileIds = Array.from(this.selectedFiles)
       this.$swal.Prompt.fire({
-        title: this.$t('Are you sure?'),
-        text: this.$t('Delete {name} item(s)? This action can not be undone.',{name:selectedFolderIds.length + selectedFileIds.length}),
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t('Delete {name} item(s)? This action can not be undone.',{name:selectedFolderIds.length + selectedFileIds.length})}`,
         showCancelButton: true,
-        confirmButtonText: this.$t('Yes'),
-        cancelButtonText: this.$t('No'),
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then(async (userAction) => {
         if (userAction.isConfirmed) {
           try {
@@ -548,7 +548,7 @@ export default {
             if (selectedFileIds.length)
               await axios.post(urls.gcodeFileBulkDelete(), { file_ids: selectedFileIds })
           } catch (err) {
-            this.errorDialog(err, this.$t('Failed to delete files and folders'))
+            this.errorDialog(err, `${this.$i18next.t('Failed to delete files and folders')}`)
           } finally {
             this.fetchFilesAndFolders(true)
           }
@@ -571,11 +571,11 @@ export default {
     switchToPrinterStorage(printer) {
       if (!this.isPrinterBrowsable(printer)) {
         this.$swal.Reject.fire({
-          title: this.$t(`{name} isn't available for browsing files for one of the following reasons:`,{name:printer.name}),
+          title: `${this.$i18next.t(`{name} isn't available for browsing files for one of the following reasons:`,{name:printer.name})}`,
           html: `<ul style="text-align: left">
-            <li>${this.$t('{name} is powered off or not connected to the Internet',{name:printer.agentDisplayName()})}</li>
-            <li>${this.$t('Printer is not connected to {name}',{name:printer.agentDisplayName()})}</li>
-            <li>${this.$t("{brandName} for {name} plugin is outdated (you need version {version} or later)",{brandName:this.$t('brand_name'),name:printer.agentDisplayName(),version:printer.browsabilityMinPluginVersion()})}</li>
+            <li>${this.$i18next.t('{name} is powered off or not connected to the Internet',{name:printer.agentDisplayName()})}</li>
+            <li>${this.$i18next.t('Printer is not connected to {name}',{name:printer.agentDisplayName()})}</li>
+            <li>${this.$i18next.t("{brandName} for {name} plugin is outdated (you need version {version} or later)",{brandName:this.$i18next.t('brand_name'),name:printer.agentDisplayName(),version:printer.browsabilityMinPluginVersion()})}</li>
           </ul>`,
         })
         return
@@ -667,8 +667,8 @@ export default {
       if (this.selectedPrinterId) {
         if (!this.printers.find((p) => p.id === this.selectedPrinterId)) {
           this.$swal.Reject.fire({
-            title: this.$t('Error'),
-            text: this.$t(`Printer not found or unavailable`),
+            title: `${this.$i18next.t('Error')}`,
+            text: `${this.$i18next.t(`Printer not found or unavailable`)}`,
           }).then(() => {
             if (this.isPopup && this.onClose) {
               this.onClose()
@@ -822,7 +822,7 @@ export default {
     },
     verifyItemRename(newName) {
       if (!this.activeItem.filename && this.folders.find((item) => item.name === newName)) {
-        return this.$t('Folder with this name already exists')
+        return `${this.$i18next.t('Folder with this name already exists')}`
       }
       return true
     },
@@ -888,7 +888,7 @@ export default {
     },
     verifyNewFolder(newFolderName) {
       if (this.folders.find((item) => item.name === newFolderName)) {
-        return this.$t('Folder with this name already exists')
+        return `${this.$i18next.t('Folder with this name already exists')}`
       }
       return true
     },

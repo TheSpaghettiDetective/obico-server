@@ -2,6 +2,7 @@
   <page-layout>
     <template #content>
       <b-container fluid="xl" :class="{ 'is-in-mobile': useMobileLayout }" class="flex-full-size">
+        <b-button @click="testJson">testJson</b-button>
         <b-row class="flex-full-size">
           <b-col class="flex-full-size">
             <div v-if="user" class="flex-full-size">
@@ -24,7 +25,7 @@
                           :class="[value.faIcon, 'mr-2']"
                           style="font-size: 1.125rem"
                         ></i>
-                        <span>{{ $t(value.title) }}</span>
+                        <span>{{ value.title }}</span>
                       </span>
                       <i class="fas fa-arrow-right"></i>
                     </router-link>
@@ -84,7 +85,7 @@
                   >
                     <template #title>
                       <i v-if="value.faIcon" :class="[value.faIcon, 'mr-2']"></i>
-                      {{ $t(value.title) }}
+                      {{ value.title }}
                     </template>
                     <component
                       :is="name"
@@ -131,7 +132,9 @@ import { inMobileWebView } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
-
+import enJson from "@src/i18n/base/en.json"
+import entEnJson from "@src/i18n/base/ent_en.json"
+import oldJson from "@src/i18n/test/old.json"
 export default {
   name: 'UserPreferencesPage',
 
@@ -224,16 +227,24 @@ export default {
   },
 
   methods: {
+    testJson(){
+      let newKeyArr = Object.keys({...enJson,...entEnJson});
+      let oldKeyArr = Object.keys(oldJson);
+      let noKeyArr = oldKeyArr.filter((oldKey) => {
+        return !newKeyArr.includes(oldKey);
+      });
+      console.log(noKeyArr);
+    },
     updateRoute(newTabIndex) {
       const section = Object.values(this.visibleSections)[newTabIndex]
       this.$router.replace({ path: section.route })
     },
     logout() {
       this.$swal.Confirm.fire({
-        title: this.$t('Confirmation'),
-        html: `<p class="text-center">${this.$t("You a going to logout from your account")}</p>`,
-        confirmButtonText: this.$t('Logout'),
-        cancelButtonText: this.$t('Cancel'),
+        title: `${this.$i18next.t('Confirmation')}`,
+        html: `<p class="text-center">${this.$i18next.t("You a going to logout from your account")}</p>`,
+        confirmButtonText: `${this.$i18next.t('Logout')}`,
+        cancelButtonText: `${this.$i18next.t('Cancel')}`,
       }).then((result) => {
         if (result.isConfirmed) {
           window.location.replace('/accounts/logout/')
@@ -318,7 +329,7 @@ export default {
             const key = getNotificationSettingKey(section, 'config')
             this.$set(this.errorMessages, key, errors)
           } else {
-            this.errorDialog(err, this.$t('Can not update your preferences'))
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
     },
@@ -376,7 +387,7 @@ export default {
               this.$set(this.errorMessages, key, errors)
             }
           } else {
-            this.errorDialog(err, this.$t('Can not update your preferences'))
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
     },
@@ -387,7 +398,7 @@ export default {
           this.$router.go()
         })
         .catch((err) => {
-          this.errorDialog(err, this.$t('Can not update your preferences'))
+          this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
         })
     },
     clearErrorMessages(propName) {
@@ -433,7 +444,7 @@ export default {
               }
             }
           } else {
-            this.errorDialog(err, this.$t('Can not update your preferences'))
+            this.errorDialog(err, `${this.$i18next.t('Can not update your preferences')}`)
           }
         })
         .then(() => {

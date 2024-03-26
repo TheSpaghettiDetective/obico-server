@@ -175,22 +175,22 @@ const SortingOptions = {
 const FilterLocalStoragePrefix = 'printsPageFiltering'
 const FilterOptions = {
   printStatus: {
-    title: i18n.t('Print Status'),
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'filter',
     values: [
-      { key: 'none', title: i18n.t('All') },
-      { key: 'finished', title: i18n.t('Finished') },
-      { key: 'cancelled', title: i18n.t('Cancelled') },
+      { key: 'none', title: `${i18n.t('All')}` },
+      { key: 'finished', title: `${i18n.t('Finished')}` },
+      { key: 'cancelled', title: `${i18n.t('Cancelled')}` },
     ],
     default: 'none',
   },
   feedbackNeeded: {
-    title: i18n.t('Feedback Needed'),
+    title: `${i18n.t('Feedback Needed')}`,
     queryParam: 'feedback_needed',
     values: [
-      { key: 'none', title: i18n.t('All') },
-      { key: 'need_alert_overwrite', title: i18n.t('Review Needed') },
-      { key: 'need_print_shot_feedback', title: i18n.t('Focused Feedback Needed') },
+      { key: 'none', title: `${i18n.t('All')}` },
+      { key: 'need_alert_overwrite', title: `${i18n.t('Review Needed')}` },
+      { key: 'need_print_shot_feedback', title: `${i18n.t('Focused Feedback Needed')}` },
     ],
     default: 'none',
   },
@@ -296,17 +296,17 @@ export default {
     onDeleteBtnClick() {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
-        title: this.$t('Are you sure?'),
-        text: this.$t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$t('brand_name')}),
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$i18next.t('brand_name')})}`,
         showCancelButton: true,
-        confirmButtonText: this.$t('Yes'),
-        cancelButtonText: this.$t('No'),
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.post(urls.printsBulkDelete(), { print_ids: selectedPrintIds }).then(() => {
             selectedPrintIds.forEach((printId) => this.onPrintDeleted(printId, false))
             this.$swal.Toast.fire({
-              title: this.$t(`{name} time-lapse(s) deleted!`,{name:selectedPrintIds.length}),
+              title: `${this.$i18next.t(`{name} time-lapse(s) deleted!`,{name:selectedPrintIds.length})}`,
             })
             this.selectedPrintIds = new Set()
           })
@@ -319,7 +319,7 @@ export default {
       this.$delete(this.prints, i)
       if (toast) {
         this.$swal.Toast.fire({
-          title: this.$t(`Time-lapse {name} deleted!`,{name:print.filename}),
+          title: `${this.$i18next.t(`Time-lapse {name} deleted!`,{name:print.filename})}`,
         })
       }
     },

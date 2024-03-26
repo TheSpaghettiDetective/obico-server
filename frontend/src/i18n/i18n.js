@@ -28,10 +28,7 @@ const resources = {
     ...baseEn,
     ...entBaseEn
   },
-  'zh_base': {
-    ...baseZh,
-    ...entBaseZh
-  },
+  'zh_base': baseZh,
   'en_yumi': {
     translation: yumiEn,
   },
@@ -49,8 +46,8 @@ const resources = {
 i18n
   .init({
     resources,
-    lng: `${currentLanguage}_${currentSyndicate}`,
-    fallbackLng: [`en_${currentSyndicate}`, 'en_base'],
+    lng: `zh_base`,
+    fallbackLng: `zh_base`,
     interpolation: {
       escapeValue: false,
     },

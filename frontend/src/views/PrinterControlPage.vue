@@ -430,10 +430,10 @@ export default {
     },
     onNotAFailureClicked(ev, resumePrint) {
       this.$swal.Confirm.fire({
-        title: this.$t('Noted!'),
-        html: `<p>${this.$t("Do you want to mute failure detection on for this print?")}</p><small>${this.$t("If you select 'Mute', failure detection will be turned off for this print, but will be automatically turned on for your next print.")}</small>`,
-        confirmButtonText: this.$t('Mute'),
-        cancelButtonText: this.$t('Cancel'),
+        title: `${this.$i18next.t('Noted!')}`,
+        html: `<p>${this.$i18next.t("Do you want to mute failure detection on for this print?")}</p><small>${this.$i18next.t("If you select 'Mute', failure detection will be turned off for this print, but will be automatically turned on for your next print.")}</small>`,
+        confirmButtonText: `${this.$i18next.t('Mute')}`,
+        cancelButtonText: `${this.$i18next.t('Cancel')}`,
       }).then((result) => {
         if (result.isConfirmed) {
           // Hack: So that 2 APIs are not called at the same time
@@ -462,7 +462,7 @@ export default {
             extraInfo: WIDGETS,
           },
           {
-            confirmButtonText: this.$t('Save'),
+            confirmButtonText: `${this.$i18next.t('Save')}`,
             showCancelButton: true,
             preConfirm: () => {
               return {

@@ -231,33 +231,33 @@ const DateParamFormat = 'YYYY-MM-DD'
 const FilterLocalStoragePrefix = 'statsFiltering'
 const FilterOptions = {
   timePeriod: {
-    title: i18n.t('Time Period'),
+    title: `${i18n.t('Time Period')}`,
     buildQueryParam: queryBuilder,
     values: [
-      { key: 'none', title: i18n.t('All') },
-      { key: 'this_week', title: i18n.t('This Week') },
-      { key: 'this_month', title: i18n.t('This Month') },
-      { key: 'this_year', title: i18n.t('This Year') },
-      { key: 'custom', title: i18n.t('Custom') },
+      { key: 'none', title: `${i18n.t('All') }`},
+      { key: 'this_week', title: `${i18n.t('This Week') }`},
+      { key: 'this_month', title: `${i18n.t('This Month') }`},
+      { key: 'this_year', title: `${i18n.t('This Year') }`},
+      { key: 'custom', title: `${i18n.t('Custom') }`},
     ],
     default: 'none',
   },
   printStatus: {
-    title: i18n.t('Print Status'),
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'filter',
     values: [
-      { key: 'none', title: i18n.t('All') },
-      { key: 'finished', title: i18n.t('Finished') },
-      { key: 'cancelled', title: i18n.t('Cancelled') },
+      { key: 'none', title: `${i18n.t('All') }`},
+      { key: 'finished', title: `${i18n.t('Finished') }`},
+      { key: 'cancelled', title: `${i18n.t('Cancelled') }`},
     ],
     default: 'none',
   },
   printers: {
-    title: i18n.t('Printers'),
+    title: `${i18n.t('Printers')}`,
     queryParam: 'filter_by_printer_ids',
     multiple: true,
     values: [
-      { key: 'none', title: i18n.t('All'), includesAll: true },
+      { key: 'none', title: `${i18n.t('All')}`, includesAll: true },
       // Other options are added on printers fetch
     ],
     default: 'none',
@@ -418,7 +418,7 @@ export default {
           this.$nextTick(this.drawCharts)
         })
         .catch((error) => {
-          this.errorDialog(error, this.$t('Failed to fetch statistics'))
+          this.errorDialog(error, `${this.$i18next.t('Failed to fetch statistics')}`)
         })
     },
     updateChartGrouping(grouping) {

@@ -86,8 +86,8 @@ export default {
       notificationSettings: [
         {
           id: 'notify_on_failure_alert',
-          title: this.$t('Failure alerts'),
-          description: this.$t('When possible failures are detected'),
+          title: `${this.$i18next.t('Failure alerts')}`,
+          description: `${this.$i18next.t('When possible failures are detected')}`,
         },
       ],
       configUpdateTimeout: null,
@@ -125,7 +125,7 @@ export default {
         this.$emit(
           'addErrorMessage',
           this.settingKey('config'),
-          this.$t("Oops, we don't send SMS to this country code")
+          `${this.$i18next.t("Oops, we don't send SMS to this country code")}`
         )
       } else {
         if (this.phoneNumber) {

@@ -129,13 +129,13 @@ export default {
         .catch((err) => {
           event.target.classList.remove('disabled')
           this.$swal.Reject.fire({
-            title: this.$t('Error'),
+            title: `${this.$i18next.t('Error')}`,
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
-              ${this.$t("Telegram test failed")}
+              ${this.$i18next.t("Telegram test failed")}
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: this.$t('Close'),
+            cancelButtonText: `${this.$i18next.t('Close')}`,
           })
         })
     },

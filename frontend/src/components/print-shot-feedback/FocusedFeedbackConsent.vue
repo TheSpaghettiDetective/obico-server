@@ -96,7 +96,7 @@ export default {
     estimatedFeedbackTime() {
       const seconds = this.print.printshotfeedback_set.length * 12
       if (seconds < 60) {
-        return `${seconds} `+this.$t('seconds')
+        return `${seconds} ${this.$i18next.t('seconds')}`
       } else {
         return moment.duration(seconds, 'seconds').humanize()
       }

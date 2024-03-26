@@ -107,20 +107,20 @@ export default {
             <svg class="menu-icon" style="height: 1.1em; width: 1em; margin-right: 0.75em;">
               <use href="#svg-tunnel" />
             </svg>
-            ${this.$t("OctoPrint/Klipper Secure Tunnel")}
+            ${this.$i18next.t("OctoPrint/Klipper Secure Tunnel")}
           </h4>
           <div class="p-1">
-            ${this.$t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$t('brand_name')})}
+            ${this.$i18next.t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$i18next.t('brand_name')})}
           </div>
           <div class="p-1">
             <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">
-            ${this.$t("Learn more about OctoPrint/Klipper tunnel's security and page load speed.")}
+            ${this.$i18next.t("Learn more about OctoPrint/Klipper tunnel's security and page load speed.")}
             <i class="fas fa-external-link-alt"></i>
           </a>
         </div>
         `,
           input: 'checkbox',
-          inputPlaceholder: this.$t("Don't show again"),
+          inputPlaceholder: `${this.$i18next.t("Don't show again")}`,
         },
         'octoprint-tunnel.warning'
       ).then((result) => {

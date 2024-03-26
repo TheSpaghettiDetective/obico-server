@@ -36,7 +36,7 @@ export default {
 
     mjs: ['JavascriptLexer'],
     js: [{
-      lexer: 'JavascriptLexer',
+      lexer: 'VueLexer',
       functions: ['$i18n.t',"i18n.t",'$t']
     }], // if you're writing jsx inside .js files, change this to JsxLexer
     ts: ['JavascriptLexer'],

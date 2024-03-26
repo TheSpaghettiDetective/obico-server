@@ -134,7 +134,6 @@ import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
 import enJson from "@src/i18n/base/en.json"
 import entEnJson from "@src/i18n/base/ent_en.json"
-import oldJson from "@src/i18n/test/old.json"
 export default {
   name: 'UserPreferencesPage',
 
@@ -229,11 +228,6 @@ export default {
   methods: {
     testJson(){
       let newKeyArr = Object.keys({...enJson,...entEnJson});
-      let oldKeyArr = Object.keys(oldJson);
-      let noKeyArr = oldKeyArr.filter((oldKey) => {
-        return !newKeyArr.includes(oldKey);
-      });
-      console.log(noKeyArr);
     },
     updateRoute(newTabIndex) {
       const section = Object.values(this.visibleSections)[newTabIndex]

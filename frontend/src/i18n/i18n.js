@@ -25,10 +25,17 @@ const currentLanguage = getCurrentLanguage()
 
 const resources = {
   'en_base': {
-    ...baseEn,
-    ...entBaseEn
+    translation: {
+      ...baseEn,
+      ...entBaseEn
+    }
   },
-  'zh_base': baseZh,
+  'zh_base': {
+    translation: {
+      ...baseZh,
+      ...entBaseZh
+    }
+  },
   'en_yumi': {
     translation: yumiEn,
   },
@@ -46,8 +53,8 @@ const resources = {
 i18n
   .init({
     resources,
-    lng: `zh_base`,
-    fallbackLng: `zh_base`,
+    lng: `${currentLanguage}_${currentSyndicate}`,
+    fallbackLng: [`en_${currentSyndicate}`, 'en_base'],
     interpolation: {
       escapeValue: false,
     },

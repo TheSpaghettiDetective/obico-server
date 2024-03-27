@@ -267,3 +267,9 @@ def health_check(request):
     User.objects.all()[:1]
     cache.printer_pic_get(0)
     return HttpResponse('Okay')
+
+# Service worker must be located at root to get the correct scope, therefor served as a web view
+def service_worker(request):
+    sw_path = f'{settings.BASE_DIR}/static_build/js/service-worker.js'
+    response = HttpResponse(open(sw_path).read(), content_type='application/javascript')
+    return response

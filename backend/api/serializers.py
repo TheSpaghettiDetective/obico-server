@@ -9,7 +9,7 @@ import phonenumbers
 import json
 
 from app.models import (
-    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
+    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode, OneTimePassword,
     SharedResource, OctoPrintTunnel, calc_normalized_p,
     NotificationSetting, PrinterEvent, GCodeFolder
 )
@@ -218,6 +218,11 @@ class OneTimeVerificationCodeSerializer(serializers.ModelSerializer):
         fields = ('id', 'printer', 'code', 'expired_at', 'verified_at',)
 
 
+class OneTimePasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OneTimePassword
+        fields = ('id', 'otp', 'auth_token', 'expired_at', 'verified_at',)
+
 class SharedResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SharedResource
@@ -321,3 +326,6 @@ class PublicPrinterSerializer(serializers.ModelSerializer):
 class VerifyCodeInputSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=64, required=True)
 
+
+class VerifyOTPInputSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=64, required=True)

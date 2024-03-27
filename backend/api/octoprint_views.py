@@ -23,6 +23,7 @@ import os
 import logging
 from ipware import get_client_ip
 from binascii import hexlify
+from random import random
 
 from .utils import report_validationerror
 from .printer_discovery import (
@@ -35,12 +36,12 @@ from lib import cache
 from lib.image import overlay_detections
 from lib.utils import ml_api_auth_headers
 from lib.utils import save_pic, get_rotated_pic_url
-from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile
+from app.models import Printer, PrinterPrediction, OneTimeVerificationCode, PrinterEvent, GCodeFile, OneTimePassword
 from notifications.handlers import handler
 from lib.prediction import update_prediction_with_detections, is_failing, VISUALIZATION_THRESH
 from lib.channels import send_status_to_web
 from config.celery import celery_app
-from .serializers import VerifyCodeInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer
+from .serializers import VerifyCodeInputSerializer,VerifyOTPInputSerializer, OneTimeVerificationCodeSerializer, GCodeFileSerializer, OneTimePasswordSerializer
 from PIL import Image, ImageFile, UnidentifiedImageError
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -310,6 +311,27 @@ class OneTimeVerificationCodeVerifyView(APIView):
         else:
             raise Http404("Requested resource does not exist")
 
+
+class OneTimePasswordView(APIView):
+    throttle_classes = [AnonRateThrottle]
+
+    def get(self, request, *args, **kwargs):
+        # TODO is kept for backward compatibility
+        return self.post(request, *args, **kwargs)
+
+    @report_validationerror
+    def post(self, request, *args, **kwargs):
+        auth_token = request.GET.get('auth_token')
+        otp = None
+        if auth_token :
+            otp = OneTimePassword.objects.filter(
+                auth_token=auth_token).first()
+
+        if not otp:
+            new_code = '%06d' % (int(random() * 1500450271) % 1000000)
+            otp = OneTimePassword.objects.create(otp = new_code, auth_token=hexlify(os.urandom(10)).decode())
+            
+        return Response(OneTimePasswordSerializer(otp, many=False).data)
 
 class PrinterEventView(CreateAPIView):
     authentication_classes = (PrinterAuthentication,)

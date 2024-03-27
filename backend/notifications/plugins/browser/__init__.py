@@ -37,24 +37,20 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
             },
         }
 
-    def i(self, s: str) -> str:
-        return f"<i>{s}</i>"
-
-    def b(self, s: str):
-        return f"<b>{s}</b>"
-
-    def u(self, s: str):
-        return f"<u>{s}</u>"
-
     def send_notification(
         self,
         config: Dict,
         title: str,
         message: str,
-        file_content: Optional[bytes] = None,
-        timeout: float = 5.0,
+        link: str,
+        tag: str,
+        image: str,
     ) -> None:
         vapid_subject = os.environ.get('VAPID_SUBJECT')
+        vapid_private_key = os.environ.get('VAPID_PRIVATE_KEY')
+        if not vapid_subject or not vapid_private_key or not config['subscriptions']:
+            LOGGER.warn("Missing configuration, won't send notifications to browser")
+            return
 
         for subscription in config['subscriptions']:
             try:
@@ -66,8 +62,11 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
                     data=json.dumps({
                         "title": title,
                         "message": message,
+                        "image": image,
+                        "url": link,
+                        "tag": tag,
                     }),
-                    vapid_private_key=os.environ.get('VAPID_PRIVATE_KEY'),
+                    vapid_private_key=vapid_private_key,
                     vapid_claims={
                         "sub": f'mailto:{vapid_subject}',
                     }
@@ -84,16 +83,46 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
                     )
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        LOGGER.warn("Not implemented yet")
+        link = site.build_full_url(f'/printers/{context.printer.id}/control')
+        title = self.get_failure_alert_title(context=context, link=link)
+        text = self.get_failure_alert_text(context=context, link=link)
+        if not title or not text:
+            return
+
+        self.send_notification(
+            access_token=access_token,
+            title=title,
+            body=text,
+            link=link,
+            tag=context.printer.name,
+            image=context.img_url,
+        )
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
-        LOGGER.warn("Not implemented yet")
+        title = self.get_printer_notification_title(context=context)
+        text = self.get_printer_notification_text(context=context)
+        if not text or not title:
+            return
+
+        link = site.build_full_url(f'/printers/{context.printer.id}/control')
+
+        self.send_notification(
+            access_token=access_token,
+            title=title,
+            body=text,
+            link=link,
+            tag=context.printer.name,
+            image=context.img_url,
+        )
 
     def send_test_message(self, context: TestMessageContext) -> None:
         self.send_notification(
             config=context.config,
             title='Test Notification',
             message='It works!',
+            image="http://localhost:3334/media/tsd-pics/snapshots/1/1711225060.616871_rotated.jpg?digest=YidtXHg5MEJceDA3XHgxMlx4ZTl2XHgwNFx4OWV7XHg5Y3JjXHg5NGczP1x4ODVceGJhXHhhMFx4MTBfXHgxZVx4YWRceGY2XHhjNlx4ZTZceGI3XHg5ZDdsXHIn",
+            link="http://localhost:3334/printers/1/control",
+            tag="printer1"
         )
 
 

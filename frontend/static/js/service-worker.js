@@ -3,16 +3,22 @@ self.addEventListener("push", (event) => {
     return;
   }
   let data = event.data.json();
-  const image = "https://www.obico.io/wwwimg/favicon.png";
+  const icon = "https://obico.io/img/favicon.png";
   const options = {
     body: data.message,
-    icon: image,
+    icon,
+    image: data.image,
+    tag: data.tag,
+    renotify: true,
+    requireInteraction: true,
+    data: {
+      url: data.url
+    }
   };
   self.registration.showNotification(data.title, options);
 });
 
-// TODO
-// self.addEventListener("notificationClick", (event) => {
-//   event.notification.close();
-//   event.waitUntil(self.clients.openWindow("https://app.obico.io"));
-// });
+self.addEventListener("notificationClick", (event) => {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(event.notification.data.url));
+});

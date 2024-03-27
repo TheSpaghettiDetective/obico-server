@@ -89,7 +89,6 @@ export default {
     denied: false,
     subscription: null,
     name: '',
-    configSubscriptions: []
   }),
 
   computed: {
@@ -107,6 +106,10 @@ export default {
 
     supported() {
       return !!window && "Notification" in window
+    },
+
+    configSubscriptions() {
+      return this.notificationChannel.channelInfo?.config.subscriptions ?? []
     }
   },
 
@@ -114,7 +117,6 @@ export default {
     if (Notification?.permission === "denied") {
       this.denied = true;
     }
-    this.configSubscriptions = this.notificationChannel.channelInfo?.config.subscriptions ?? []
     navigator.serviceWorker.getRegistration().then(registration => {
       registration.pushManager.getSubscription().then(subscription => this.subscription = subscription);
     });
@@ -136,8 +138,10 @@ export default {
             applicationServerKey: this.vapidPublicKey,
           });
         }
-        this.configSubscriptions.push({ ...this.subscription.toJSON(), name: this.name })
-        this.updateConfig()
+        this.updateConfig([
+          ...this.configSubscriptions, 
+          { ...this.subscription.toJSON(), name: this.name }
+        ])
       }
       else {
         this.denied = true
@@ -155,29 +159,28 @@ export default {
         })
         .then(async (confirmed) => {
           if (confirmed) {
-            this.configSubscriptions = this.configSubscriptions.filter(subscription => subscription.endpoint !== device.endpoint)
-            this.updateConfig()
+            this.updateConfig(this.configSubscriptions.filter(subscription => subscription.endpoint !== device.endpoint))
           }
         })
     },
 
-    updateConfig() {
+    updateConfig(subscriptions) {
       if (!this.notificationChannel.channelInfo) {
         this.$emit('createNotificationChannel', { 
           section: this.notificationChannel, 
           config: {
-            subscriptions: this.configSubscriptions
+            subscriptions
           }
         })
       }
-      else if (this.configSubscriptions.length === 0) {
+      else if (subscriptions.length === 0) {
         this.$emit('deleteNotificationChannel', this.notificationChannel)
       }
       else {
         this.$emit('updateNotificationChannel', {
           section: this.notificationChannel,
           propNames: ['config'],
-          propValues: [{ subscriptions: this.configSubscriptions }],
+          propValues: [{ subscriptions }],
         })
       }
     },

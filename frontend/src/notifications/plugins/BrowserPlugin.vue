@@ -43,7 +43,7 @@
                   {{ device.name }}
                 </div>
               </div>
-              <b-button class="mr-1" variant="warning" size="sm" @click="removeDevice(device)">
+              <b-button class="mr-1" variant="transparent" size="sm" @click="removeDevice(device)">
                 <i class="fas fa-trash-alt"></i>
               </b-button>
             </div>

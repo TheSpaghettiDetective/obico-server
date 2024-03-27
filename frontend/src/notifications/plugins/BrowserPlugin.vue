@@ -62,6 +62,7 @@
 import NotificationChannelTemplate from '@src/components/user-preferences/notifications/NotificationChannelTemplate.vue'
 import axios from 'axios'
 import urls from '@config/server-urls'
+import Bowser from 'bowser'
 
 export default {
   name: 'BrowserPlugin',
@@ -120,6 +121,10 @@ export default {
     navigator.serviceWorker.getRegistration().then(registration => {
       registration.pushManager.getSubscription().then(subscription => this.subscription = subscription);
     });
+    const {browser, os} = Bowser.parse(window.navigator.userAgent)
+    if (browser?.name && os?.name) {
+      this.name = `${browser.name} on ${os.name}`
+    }
   },
 
   methods: {

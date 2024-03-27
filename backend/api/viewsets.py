@@ -33,12 +33,12 @@ from django.db.models import Sum, Max, Count, fields, Case, Value, When
 from .utils import report_validationerror
 from .authentication import CsrfExemptSessionAuthentication
 from app.models import (
-    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode,
+    User, Print, Printer, GCodeFile, PrintShotFeedback, PrinterPrediction, MobileDevice, OneTimeVerificationCode, OneTimePassword,
     SharedResource, OctoPrintTunnel, calc_normalized_p, NotificationSetting, PrinterEvent, GCodeFolder)
 from .serializers import (
     UserSerializer, GCodeFileSerializer, GCodeFileDeSerializer, PrinterSerializer, PrintSerializer, MobileDeviceSerializer,
     PrintShotFeedbackSerializer, OneTimeVerificationCodeSerializer, SharedResourceSerializer, OctoPrintTunnelSerializer,
-    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer
+    NotificationSettingSerializer, PrinterEventSerializer, GCodeFolderDeSerializer, GCodeFolderSerializer, VerifyOTPInputSerializer
 )
 from lib.channels import send_status_to_web
 from lib import cache, gcode_metadata
@@ -705,9 +705,30 @@ class OneTimeVerificationCodeViewSet(mixins.ListModelMixin,
         return Response(self.serializer_class(code, many=False).data)
 
     def retrieve(self, request, *args, **kwargs):
+        otp_code = request.GET.get('otp')
+        otp = None
+
+        if otp_code :
+            otp = OneTimePassword.objects.filter(
+                otp=otp_code).first()
+        
         code = get_object_or_404(
             OneTimeVerificationCode.with_expired.select_related('printer').filter(user=request.user),
             pk=kwargs["pk"])
+        if otp and not code.printer:
+            printer = Printer.objects.create(
+                    name="My Awesome Cloud Printer",
+                    user=code.user,
+                    auth_token=otp.auth_token)
+            otp.expired_at = timezone.now()
+            otp.verified_at = timezone.now()
+            otp.save()
+            code.printer = printer
+            code.printer.save()
+            code.expired_at = timezone.now()
+            code.verified_at = timezone.now()
+            code.save()
+
         return Response(self.serializer_class(code, many=False).data)
 
 

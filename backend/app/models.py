@@ -24,7 +24,6 @@ from django.db.models import F, Q
 from django.db.models.constraints import UniqueConstraint
 
 
-
 from config.celery import celery_app
 from lib import cache, channels
 from lib.utils import dict_or_none, get_rotated_pic_url
@@ -977,3 +976,19 @@ class NotificationSetting(models.Model):
 
     class Meta:
         unique_together = ('user', 'name')
+
+class OneTimePasswordManager(models.Manager):
+    def get_queryset(self):
+        return super(OneTimePasswordManager, self).get_queryset().filter(expired_at__gte=timezone.now())
+
+class OneTimePassword(models.Model):
+    otp = models.CharField(max_length=256, null=False, blank=False, db_index=True)
+    auth_token = models.CharField(max_length=256, unique=True, null=False, blank=False)
+    expired_at = models.DateTimeField(null=False, blank=False, default=two_hours_later, db_index=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = OneTimePasswordManager()
+    with_expired = models.Manager()

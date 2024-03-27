@@ -243,7 +243,7 @@ export default {
             if (connectionOptions.ports.length < 1) {
               this.$swal.Toast.fire({
                 icon: 'error',
-                title: this.$t('Uh-Oh. No printer is found on the serial port.'),
+                title: `${this.$i18next.t('Uh-Oh. No printer is found on the serial port.')}`,
               })
             } else {
               this.$swal
@@ -304,7 +304,7 @@ export default {
     },
     onCancelClicked() {
       this.$swal.Confirm.fire({
-        text: this.$t('Once cancelled, the print can no longer be resumed.'),
+        text: `${this.$i18next.t('Once cancelled, the print can no longer be resumed.')}`,
       }).then((result) => {
         if (result.value) {
           this.$emit('sendPrinterAction', this.printer.id, CANCEL_PRINT)

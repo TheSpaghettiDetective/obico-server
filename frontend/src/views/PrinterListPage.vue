@@ -149,8 +149,8 @@ import i18n from '@src/i18n/i18n.js'
 const SortingLocalStoragePrefix = 'printersSorting'
 const SortingOptions = {
   options: [
-    { title: i18n.t('Name'), key: 'name' },
-    { title: i18n.t('Created at'), key: 'created_at' },
+    { title: `${i18n.t('Name')}`, key: 'name' },
+    { title: `${i18n.t('Created at')}`, key: 'created_at' },
   ],
   default: { sorting: 'created_at', direction: 'desc' },
 }
@@ -158,12 +158,12 @@ const SortingOptions = {
 const FilterLocalStoragePrefix = 'printersFiltering'
 const FilterOptions = {
   status: {
-    title: i18n.t('Print Status'),
+    title: `${i18n.t('Print Status')}`,
     queryParam: 'status',
     values: [
-      { key: 'none', title: i18n.t('All Printers') },
-      { key: 'online', title: i18n.t('Online Printers') },
-      { key: 'active', title: i18n.t('Active Printers') },
+      { key: 'none', title: `${i18n.t('All Printers')}` },
+      { key: 'online', title: `${i18n.t('Online Printers')}` },
+      { key: 'active', title: `${i18n.t('Active Printers')}` },
     ],
     default: 'none',
   },
@@ -215,13 +215,13 @@ export default {
         {
           key: 'sorting',
           icon: 'fas fa-sort-amount-down',
-          title: this.$t(`Sort`),
+          title: `${this.$i18next.t(`Sort`)}`,
           expandable: true,
         },
         {
           key: 'filtering',
           icon: 'fas fa-filter',
-          title: this.$t(`Filter`),
+          title: `${this.$i18next.t(`Filter`)}`,
           expandable: true,
         },
       ]
@@ -230,7 +230,7 @@ export default {
         options.unshift({
           key: 'dh',
           svgIcon: 'svg-hour-glass',
-          title: this.$t(`{name} AI Detection Hours`,{name:this.dhBadgeNum}),
+          title: `${this.$i18next.t(`{name} AI Detection Hours`,{name:this.dhBadgeNum})}`,
           href: '/user_preferences/dh/',
         })
       }
@@ -340,11 +340,11 @@ export default {
     },
     handleNeverShowAgain() {
       this.$swal.Prompt.fire({
-        title: this.$t('Are you sure?'),
-        html: `<p style="text-align: center">${this.$t("You can always view your archived printers in by navigating to the General tab within Preferences.")}</p>`,
+        title: `${this.$i18next.t('Are you sure?')}`,
+        html: `<p style="text-align: center">${this.$i18next.t("You can always view your archived printers in by navigating to the General tab within Preferences.")}</p>`,
         showCancelButton: true,
-        confirmButtonText: this.$t('Yes'),
-        cancelButtonText: this.$t('No'),
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           localStorage.setItem('shouldNeverShowArchived', JSON.stringify(true))

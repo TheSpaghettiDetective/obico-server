@@ -81,11 +81,11 @@ export default {
         this.cancel()
         this.$swal.Prompt.fire({
           icon: 'error',
-          title: this.$t('Oops!'),
-          html: `<p>${this.$t("Handshake failed because the pop-up was blcoked.")}</p><p>${this.$t("Please unblock the pop-up in your browser and try it again.")}</p>`,
-          confirmButtonText: this.$t('Okay!'),
+          title: `${this.$i18next.t('Oops!')}`,
+          html: `<p>${this.$i18next.t("Handshake failed because the pop-up was blcoked.")}</p><p>${this.$i18next.t("Please unblock the pop-up in your browser and try it again.")}</p>`,
+          confirmButtonText: `${this.$i18next.t('Okay!')}`,
           showCancelButton: true,
-          cancelButtonText: this.$t('Switch to Manual Setup'),
+          cancelButtonText: `${this.$i18next.t('Switch to Manual Setup')}`,
         }).then((result) => {
           if (result.isDismissed && result.dismiss === 'cancel') {
             this.switchToManualLinking()
@@ -101,15 +101,15 @@ export default {
           this.cancel()
           this.$swal.Prompt.fire({
             icon: 'error',
-            title: this.$t('Handshake failed!'),
-            html: `<p>${this.$t("Please make sure:")}</p>
+            title: `${this.$i18next.t('Handshake failed!')}`,
+            html: `<p>${this.$i18next.t("Please make sure:")}</p>
               <ul>
-                <li>${this.$t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port})}</li>
-                <li>${this.$t("The version of plugin is 1.8.0 or above.")}</li>
+                <li>${this.$i18next.t("The OctoPrint you want to link is at {host}:{port}, and it's connected to the same local network as your computer/phone.",{host:this.discoveredPrinter.host_or_ip,port:this.discoveredPrinter.port})}</li>
+                <li>${this.$i18next.t("The version of plugin is 1.8.0 or above.")}</li>
               </ul>`,
-            confirmButtonText: this.$t('Okay!'),
+            confirmButtonText: `${this.$i18next.t('Okay!')}`,
             showCancelButton: true,
-            cancelButtonText: this.$t('Switch to Manual Setup'),
+            cancelButtonText: `${this.$i18next.t('Switch to Manual Setup')}`,
           }).then((result) => {
             if (result.isDismissed && result.dismiss === 'cancel') {
               this.switchToManualLinking()

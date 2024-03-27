@@ -591,10 +591,10 @@ export default {
       const currentToolTemp = this.tools[this.activeTool].actual
       if (currentToolTemp < 179) {
         this.$swal.Confirm.fire({
-          title: this.$t('Unable to extrude / retract'),
-          html: `<p class="text-center">${this.$t("The hotend is below the minimum temperature")}</p>`,
-          confirmButtonText: this.$t('Heat to 180°C'),
-          cancelButtonText: this.$t('Cancel'),
+          title: `${this.$i18next.t('Unable to extrude / retract')}`,
+          html: `<p class="text-center">${this.$i18next.t("The hotend is below the minimum temperature")}</p>`,
+          confirmButtonText: `${this.$i18next.t('Heat to 180°C')}`,
+          cancelButtonText: `${this.$i18next.t('Cancel')}`,
         }).then((result) => {
           if (result.isConfirmed) {
             this.printerComm.passThruToPrinter(
@@ -709,7 +709,7 @@ export default {
           } else {
             this.$swal.Toast.fire({
               icon: 'success',
-              title: this.$t('Command successfully sent!'),
+              title: `${this.$i18next.t('Command successfully sent!')}`,
             })
           }
         }

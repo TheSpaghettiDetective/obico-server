@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "npx eslint --ext .js,vue src/ --fix",
+    "i18n:extract": "npx i18next-parser --config i18next-parser.config.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "d3": "^7.8.2",
     "filesize": "^3.6.1",
     "i18next": "^23.10.0",
+    "i18next-parser": "^8.13.0",
     "i18next-vue": "^1.1.0",
     "ifvisible": "^1.1.0",
     "jquery": "^3.5.1",

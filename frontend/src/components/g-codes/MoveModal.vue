@@ -235,7 +235,7 @@ export default {
             })
         }
       } catch (error) {
-        this.errorDialog(error, this.$t('Failed to move item(s)'))
+        this.errorDialog(error, `${this.$i18next.t('Failed to move item(s)')}`)
       }
 
       this.patchLoading = false

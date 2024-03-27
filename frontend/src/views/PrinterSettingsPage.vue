@@ -557,7 +557,7 @@ export default {
           this.printer = normalizedPrinter(response.data, this.printer)
         })
         .catch((error) => {
-          this.errorDialog(error, this.$t('Printer not found'))
+          this.errorDialog(error, `${this.$i18next.t('Printer not found')}`)
         })
     },
 
@@ -600,7 +600,7 @@ export default {
     errorAlert() {
       this.$swal.Toast.fire({
         icon: 'error',
-        html: `<div>${this.$t("Can not update printer settings.")}</div><div>${this.$t("Get help from")} <a href="https://obico.io/discord">${this.$t("the {brandName} general support forum",{brandName:this.$t('brand_name')})}</a> ${this.$t("or")} <a href="https://obico.io/discord">${this.$t("{brandName} for klipper support forum",{brandName:this.$t('brand_name')})}</a> ${this.$t("if this error persists.")}</div>`,
+        html: `<div>${this.$i18next.t("Can not update printer settings.")}</div><div>${this.$i18next.t("Get help from")} <a href="https://obico.io/discord">${this.$i18next.t("the {brandName} general support forum",{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t("{brandName} for klipper support forum",{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("if this error persists.")}</div>`,
       })
     },
 
@@ -635,11 +635,11 @@ export default {
 
     deletePrinter(printer) {
       this.$swal.Prompt.fire({
-        title: this.$t('Are you sure?'),
-        text: this.$t(`Delete {name} printer? This action can not be undone.`,{name:this.printer.name}),
+        title: `${this.$i18next.t('Are you sure?')}`,
+        text: `${this.$i18next.t(`Delete {name} printer? This action can not be undone.`,{name:this.printer.name})}`,
         showCancelButton: true,
-        confirmButtonText: this.$t('Yes'),
-        cancelButtonText: this.$t('No'),
+        confirmButtonText: `${this.$i18next.t('Yes')}`,
+        cancelButtonText: `${this.$i18next.t('No')}`,
       }).then((userAction) => {
         if (userAction.isConfirmed) {
           axios.delete(urls.printer(this.printerId) + '?with_archived=true').then(() => {
@@ -654,9 +654,9 @@ export default {
         if (userAction.isConfirmed) {
           axios.post(urls.printerAction(this.printerId, '/archive/')).then(() => {
             this.$swal.Prompt.fire({
-              title: this.$t('Printer archived'),
-              html: `<p>${this.$t("{name} is archived.",{name:this.printer.name})}</p><p>${this.$t("You can find it on")} <a href="/ent/printers/archived/">${this.$t("this page")}</a> ${this.$t("and un-archive it")}.</p>`,
-              confirmButtonText: this.$t('Go to the printer page'),
+              title: `${this.$i18next.t('Printer archived')}`,
+              html: `<p>${this.$i18next.t("{name} is archived.",{name:this.printer.name})}</p><p>${this.$i18next.t("You can find it on")} <a href="/ent/printers/archived/">${this.$i18next.t("this page")}</a> ${this.$i18next.t("and un-archive it")}.</p>`,
+              confirmButtonText: `${this.$i18next.t('Go to the printer page')}`,
             }).then(() => {
               window.location.href = '/printers/'
             })

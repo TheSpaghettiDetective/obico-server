@@ -39,8 +39,8 @@ import { getLocalPref, setLocalPref } from '@src/lib/pref'
 import i18n from '@src/i18n/i18n.js'
 
 const SortingDirections = [
-  { key: 'asc', title: i18n.t('Ascending') },
-  { key: 'desc', title: i18n.t('Descending') },
+  { key: 'asc', title: `${i18n.t('Ascending')}` },
+  { key: 'desc', title: `${i18n.t('Descending')}` },
 ]
 
 export default {

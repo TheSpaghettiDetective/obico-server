@@ -148,7 +148,7 @@ export default {
           `${this.itemType === 'file' ? 'filename' : 'name'}=${this.newNameWithExt}`
         )
       } catch (e) {
-        this.errorMessage = this.$t('Server error')
+        this.errorMessage = `${this.$i18next.t('Server error')}`
         console.log(e)
         return
       }

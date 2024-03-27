@@ -177,7 +177,7 @@ export default {
         result.unshift({
           name: 'total_prints',
           faIcon: 'fas fa-hashtag',
-          title: this.$t('Total prints'),
+          title: `${this.$i18next.t('Total prints')}`,
           value: `
             ${this.file.totalPrints || 0}
             (<span class="text-success">${this.file.successPrints || 0}</span> /
@@ -189,7 +189,7 @@ export default {
         result.unshift({
           name: 'created_at',
           faIcon: 'fas fa-calendar-alt',
-          title: this.$t('Uploaded'),
+          title: `${this.$i18next.t('Uploaded')}`,
           value: this.file.created_at.fromNow(),
         })
       }

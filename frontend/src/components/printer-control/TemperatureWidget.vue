@@ -143,7 +143,7 @@ export default {
             printer: this.printer,
           },
           {
-            title: this.$t('Temperature Presets'),
+            title: `${this.$i18next.t('Temperature Presets')}`,
             confirmButtonText: 'Apply',
             showCancelButton: true,
             preConfirm: () => {

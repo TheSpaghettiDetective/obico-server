@@ -84,7 +84,7 @@ export default {
     },
     async handleSubmit() {
       if (!this.dateFrom && !this.dateTo) {
-        this.errorMessage = this.$t('At least one date is needed')
+        this.errorMessage = `${this.$i18next.t('At least one date is needed')}`
         return
       }
 

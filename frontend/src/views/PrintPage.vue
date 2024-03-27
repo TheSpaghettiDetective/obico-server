@@ -447,10 +447,10 @@ export default {
             !this.print.g_code_file.deleted
     },
     PrevPrintButtonTitle() {
-      return this.sortingValue.direction.key === 'asc' ? this.$t('Older') : this.$t('Newer')
+      return this.sortingValue.direction.key === 'asc' ? `${this.$i18next.t('Older')}` : `${this.$i18next.t('Newer')}`
     },
     NextPrintButtonTitle() {
-      return this.sortingValue.direction.key === 'asc' ? this.$t('Newer') : this.$t('Older')
+      return this.sortingValue.direction.key === 'asc' ? `${this.$i18next.t('Newer')}` : `${this.$i18next.t('Older')}`
     },
     fileName() {
       return this.print.g_code_file === null ? this.print.filename : this.print.g_code_file.filename
@@ -569,7 +569,7 @@ export default {
             // Printer could be old and deleted from account (404 error)
             this.printer = null
             if (error?.response?.status !== 404) {
-              this.errorDialog(error, this.$t('Failed to fetch printer information'))
+              this.errorDialog(error, `${this.$i18next.t('Failed to fetch printer information')}`)
             }
           })
           .finally(() => {

@@ -30,10 +30,10 @@ export default {
     show() {
       this.isOpen = true
       this.$bvModal
-        .msgBoxConfirm(this.$t('Are you sure?'), {
+        .msgBoxConfirm(`${this.$i18next.t('Are you sure?')}`, {
           id: 'b-modal-confirm-delete',
           centered: true,
-          okTitle: this.$t('Delete'),
+          okTitle: `${this.$i18next.t('Delete')}`,
           okVariant: 'danger',
           size: 'sm',
           autoFocusButton: 'ok',
@@ -55,7 +55,7 @@ export default {
           this.$emit('deleted')
         })
         .catch((error) => {
-          this.errorDialog(error, this.$t('Failed to delete item'))
+          this.errorDialog(error, `${this.$i18next.t('Failed to delete item')}`)
         })
     },
   },

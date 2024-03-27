@@ -74,11 +74,11 @@ export default {
 
           if (credited_dhs > 0) {
             this.$swal.Prompt.fire({
-              title: this.$t('You are awesome!'),
-              html: `<p>${this.$t("The AI failure detection just got a little better because of your feedback!")}</p><p>${this.$t("You just earned 2 non-expirable AI Detection Hours - Yay!")}</p>`,
-              confirmButtonText: this.$t("I'm done!"),
+              title: `${this.$i18next.t('You are awesome!')}`,
+              html: `<p>${this.$i18next.t("The AI failure detection just got a little better because of your feedback!")}</p><p>${this.$i18next.t("You just earned 2 non-expirable AI Detection Hours - Yay!")}</p>`,
+              confirmButtonText: `${this.$i18next.t("I'm done!")}`,
               showCancelButton: true,
-              cancelButtonText: this.$t('Change feedback'),
+              cancelButtonText: `${this.$i18next.t('Change feedback')}`,
             }).then((result) => {
               if (result.isConfirmed) {
                 window.location.href = '/print_history/'

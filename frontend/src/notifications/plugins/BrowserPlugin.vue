@@ -86,7 +86,6 @@ export default {
   },
 
   data: () => ({
-    supported: false,
     denied: false,
     subscription: null,
     name: '',
@@ -104,15 +103,15 @@ export default {
 
     subscribed() {
       return this.configSubscriptions.some(s => s.endpoint === this.subscription?.endpoint)
-    }
+    },
 
+    supported() {
+      return !!window && "Notification" in window
+    }
   },
 
   mounted() {
-    if (!!window && "Notification" in window) {
-      this.supported = true;
-    }
-    else if (Notification?.permission === "denied") {
+    if (Notification?.permission === "denied") {
       this.denied = true;
     }
     this.configSubscriptions = this.notificationChannel.channelInfo?.config.subscriptions ?? []

@@ -51,7 +51,6 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
         config: Dict,
         title: str,
         message: str,
-        priority: Optional[BrowserPriority] = None,
         file_content: Optional[bytes] = None,
         timeout: float = 5.0,
     ) -> None:
@@ -85,10 +84,10 @@ class BrowserNotificationPlugin(BaseNotificationPlugin):
                     )
 
     def send_failure_alert(self, context: FailureAlertContext) -> None:
-        # TODO
+        LOGGER.warn("Not implemented yet")
 
     def send_printer_notification(self, context: PrinterNotificationContext) -> None:
-        # TODO
+        LOGGER.warn("Not implemented yet")
 
     def send_test_message(self, context: TestMessageContext) -> None:
         self.send_notification(

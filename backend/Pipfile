@@ -55,6 +55,7 @@ numpy = "1.26.0"
 django-debug-toolbar = "*"
 inotify-simple = "*"
 Twisted = {extras = ["tls", "http2"], version = "*" }
+pywebpush = "2.0.0"
 
 [dev-packages]
 

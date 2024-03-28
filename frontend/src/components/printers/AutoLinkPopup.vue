@@ -9,7 +9,7 @@
       <img class="pic-item" :src="require('@static/img/printer.png')" />
     </div>
     <div class="my-4">
-      <p>{{$t("The {brandName} app needs to make sure you have access to selected printer.",{brandName:$t('brand_name')})}}</p>
+      <p>{{$t("The {brandName} app needs to make sure you have access to selected printer.",{brandName:$syndicateText.brandName})}}</p>
       <p>
         {{$t("When you press 'Link Now' button below, a new browser window will pop up to finish a handshake with this printer.")}}
       </p>

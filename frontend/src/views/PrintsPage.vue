@@ -168,7 +168,7 @@ const PAGE_SIZE = 6
 
 const SortingLocalStoragePrefix = 'printsPageSorting'
 const SortingOptions = {
-  options: [{ title: i18n.t('Date'), key: 'date' }],
+  options: [{ title: `${i18n.t('Date')}`, key: 'date' }],
   default: { sorting: 'date', direction: 'desc' },
 }
 
@@ -297,7 +297,7 @@ export default {
       const selectedPrintIds = Array.from(this.selectedPrintIds)
       this.$swal.Prompt.fire({
         title: `${this.$i18next.t('Are you sure?')}`,
-        text: `${this.$i18next.t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$i18next.t('brand_name')})}`,
+        text: `${this.$i18next.t(`Delete {brandName} print(s)? This action can not be undone.`,{brandName:this.$syndicateText.brandName})}`,
         showCancelButton: true,
         confirmButtonText: `${this.$i18next.t('Yes')}`,
         cancelButtonText: `${this.$i18next.t('No')}`,

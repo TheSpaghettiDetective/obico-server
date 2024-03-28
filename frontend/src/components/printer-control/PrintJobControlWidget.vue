@@ -58,7 +58,7 @@
                 <svg class="logo-small custom-svg-icon">
                   <use href="#svg-logo-compact" />
                 </svg>
-                {{ $t('brand_name') }} {{$t("Files")}}
+                {{ $syndicateText.brandName }} {{$t("Files")}}
               </b-button>
               <b-button
                 v-if="printer.isAgentMoonraker()"
@@ -112,7 +112,7 @@
         <template v-else-if="printer.isOffline()">
           <i class="fas fa-exclamation-triangle big-icon warning"></i>
           <p>
-            {{$t("{brandName} for {name} is Offline.",{brandName:$t('brand_name'),name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
+            {{$t("{brandName} for {name} is Offline.",{brandName:$syndicateText.brandName,name:printer.isAgentMoonraker() ? 'Klipper' : 'OctoPrint'})}}
             <a
               target="_blank"
               href="https://www.obico.io/docs/user-guides/troubleshoot-server-connection-issues/"

@@ -5,7 +5,7 @@
         <b-row class="justify-content-center">
           <b-col lg="8" class="text-center">
             <h1 class="pb-2">{{ $t("Upload Time-lapse") }}</h1>
-            <p class="pb-2">{{ $t("Upload time-lapse videos to test {brandName}'s AI failure detection.",{brandName:$t('brand_name')}) }}</p>
+            <p class="pb-2">{{ $t("Upload time-lapse videos to test {brandName}'s AI failure detection.",{brandName:$syndicateText.brandName}) }}</p>
             <vue-dropzone
               id="dropzone"
               class="upload-box"
@@ -27,7 +27,7 @@
                 />
                 <div class="py-2 text-center">
                   <div class="py-2">
-                    {{ $t("The {brandName} Server is running failure detection on the time-lapse video(s) you uploaded.",{brandName:$t('brand_name')}) }}
+                    {{ $t("The {brandName} Server is running failure detection on the time-lapse video(s) you uploaded.",{brandName:$syndicateText.brandName}) }}
                   </div>
                   <div>{{ $t("We will send you email when it is done.") }}</div>
                   <a href="/prints/">{{ $t("Check status now >>>") }}</a>

@@ -188,12 +188,12 @@
                 <ul>
                   {{$t("Required versions:")}}
                   <li>{{ $t("OctoPrint 1.7.0 or higher") }}</li>
-                  <li>{{$t("The {brandName} plugin 1.8.11 or higher",{brandName: $t('brand_name') })}}</li>
+                  <li>{{$t("The {brandName} plugin 1.8.11 or higher",{brandName: $syndicateText.brandName })}}</li>
                 </ul>
               </i>
               <h3>{{ $t("Filament Runout Notifications") }}</h3>
               <p>
-                {{ $t('Host_action_commands must be enabled in your firmware to make it possible for your filament runout sensor to communicate with OctoPrint and the {brandName} app. If you enable action commands in your firmware, then the filament runout sensor can work properly and the {brandName} app can notify you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable to communicate with the printer to know that a filament runout was detected.',{brandName:$t('brand_name')}) }}
+                {{ $t('Host_action_commands must be enabled in your firmware to make it possible for your filament runout sensor to communicate with OctoPrint and the {brandName} app. If you enable action commands in your firmware, then the filament runout sensor can work properly and the {brandName} app can notify you when the filament runs out. Unfortunately, without host_action_commands enabled, OctoPrint is unable to communicate with the printer to know that a filament runout was detected.',{brandName:$syndicateText.brandName}) }}
               </p>
 
               <p>{{ $t("To enable support, you need to do the following:") }}</p>
@@ -213,12 +213,12 @@
             <template v-if="id === 'filament-used-may-be-incorrect'">
               <h3>{{ $t("Is filament usage inaccurate?") }}</h3>
               <p>
-                {{ $t('G-code files uploaded to your {brandName} account before upgrading to {brandName} for OctoPrint version 2.3.0 or {brandName} for Klipper version 1.2.0 do not include filament usage data.',{brandName:$t('brand_name')}) }}
+                {{ $t('G-code files uploaded to your {brandName} account before upgrading to {brandName} for OctoPrint version 2.3.0 or {brandName} for Klipper version 1.2.0 do not include filament usage data.',{brandName:$syndicateText.brandName}) }}
               </p>
               <p><strong>{{ $t("To ensure accurate filament usage and other statistics:") }}</strong></p>
               <ul>
                 <li>
-                  {{ $t('Upload G-code files and start prints directly through {brandName} instead of OctoPrint/Klipper.',{brandName:$t('brand_name')}) }}
+                  {{ $t('Upload G-code files and start prints directly through {brandName} instead of OctoPrint/Klipper.',{brandName:$syndicateText.brandName}) }}
 
                 </li>
                 <li>

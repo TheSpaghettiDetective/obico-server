@@ -70,7 +70,7 @@
                 :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
               ></i>
               <div class="text">
-                <div class="title">{{ $t('brand_name') }} {{$t("Cloud")}}</div>
+                <div class="title">{{ $syndicateText.brandName }} {{$t("Cloud")}}</div>
               </div>
             </div>
           </b-dropdown-item>
@@ -143,7 +143,7 @@
                     :style="{ visibility: isCloud ? 'visible' : 'hidden' }"
                   ></i>
                   <div class="text">
-                    <div class="title">{{ $t('brand_name') }} {{$t("Cloud")}}</div>
+                    <div class="title">{{ $syndicateText.brandName }} {{$t("Cloud")}}</div>
                   </div>
                 </div>
               </b-dropdown-item>
@@ -575,7 +575,7 @@ export default {
           html: `<ul style="text-align: left">
             <li>${this.$i18next.t('{name} is powered off or not connected to the Internet',{name:printer.agentDisplayName()})}</li>
             <li>${this.$i18next.t('Printer is not connected to {name}',{name:printer.agentDisplayName()})}</li>
-            <li>${this.$i18next.t("{brandName} for {name} plugin is outdated (you need version {version} or later)",{brandName:this.$i18next.t('brand_name'),name:printer.agentDisplayName(),version:printer.browsabilityMinPluginVersion()})}</li>
+            <li>${this.$i18next.t("{brandName} for {name} plugin is outdated (you need version {version} or later)",{brandName:this.$syndicateText.brandName,name:printer.agentDisplayName(),version:printer.browsabilityMinPluginVersion()})}</li>
           </ul>`,
         })
         return

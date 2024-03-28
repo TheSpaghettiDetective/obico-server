@@ -22,10 +22,10 @@
             <hr />
             <br /><br />
             <p class="text-center">
-              {{ $t('brand_name') }} {{$t("lets you monitor and control your printer from anywhere, on your phone.")}}
+              {{ $syndicateText.brandName }} {{$t("lets you monitor and control your printer from anywhere, on your phone.")}}
             </p>
             <a class="btn btn-block btn-primary" href="/accounts/signup/"
-              >{{ $t("Sign up for a free {brandName} account",{brandName:$t('brand_name')}) }}</a
+              >{{ $t("Sign up for a free {brandName} account",{brandName:$syndicateText.brandName}) }}</a
             >
           </div>
         </div>

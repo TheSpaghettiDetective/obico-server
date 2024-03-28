@@ -380,7 +380,7 @@ export default {
       this.$swal.Prompt.fire({
         title: `${this.$i18next.t('Time-lapse video deleted')}`,
         html: `
-          <p>${this.$i18next.t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:this.$i18next.t('brand_name')})}</p>
+          <p>${this.$i18next.t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:this.$syndicateText.brandName})}</p>
           <p>${this.$i18next.t("If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please ")}<a href="mailto:support@obico.io?subject=Please%20keep%20my%20timelapse%20videos">${this.$i18next.t("contact us")}</a>.</p>
           `,
         showCloseButton: true,

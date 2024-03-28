@@ -2,7 +2,6 @@
   <page-layout>
     <template #content>
       <b-container fluid="xl" :class="{ 'is-in-mobile': useMobileLayout }" class="flex-full-size">
-        <b-button @click="testJson">testJson</b-button>
         <b-row class="flex-full-size">
           <b-col class="flex-full-size">
             <div v-if="user" class="flex-full-size">
@@ -132,8 +131,7 @@ import { inMobileWebView } from '@src/lib/page-context'
 import sections from '@config/user-preferences/sections'
 import routes from '@config/user-preferences/routes'
 import { getNotificationSettingKey } from '@src/lib/utils'
-import enJson from "@src/i18n/base/en.json"
-import entEnJson from "@src/i18n/base/ent_en.json"
+
 export default {
   name: 'UserPreferencesPage',
 
@@ -226,9 +224,6 @@ export default {
   },
 
   methods: {
-    testJson(){
-      let newKeyArr = Object.keys({...enJson,...entEnJson});
-    },
     updateRoute(newTabIndex) {
       const section = Object.values(this.visibleSections)[newTabIndex]
       this.$router.replace({ path: section.route })

@@ -749,6 +749,7 @@ class PrinterDiscoveryViewSet(viewsets.ViewSet):
 
         client_ip, is_routable = get_client_ip(request)
 
+        LOGGER.info(f"App client_ip: {client_ip}")
         # must guard against possible None or blank value as client_ip
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")

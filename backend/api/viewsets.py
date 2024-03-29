@@ -45,7 +45,7 @@ from lib import cache, gcode_metadata
 from lib.view_helpers import get_printer_or_404
 from config.celery import celery_app
 from lib.file_storage import save_file_obj, delete_file
-from .printer_discovery import (
+from lib.printer_discovery import (
     push_message_for_device,
     get_active_devices_for_client_ip,
     DeviceMessage,

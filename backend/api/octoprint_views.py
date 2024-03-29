@@ -25,7 +25,7 @@ from ipware import get_client_ip
 from binascii import hexlify
 
 from .utils import report_validationerror
-from .printer_discovery import (
+from lib.printer_discovery import (
     DeviceInfo,
     pull_messages_for_device,
     update_presence_for_device)
@@ -262,6 +262,12 @@ class OctoPrinterDiscoveryView(APIView):
         # must guard against possible None or blank value as client_ip
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
+
+        if 'one_time_passcode' in request.data:
+            one_time_passcode = request.data.pop('one_time_passcode')
+
+        if not one_time_passcode or
+
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 

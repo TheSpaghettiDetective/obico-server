@@ -2,6 +2,8 @@ import dataclasses
 import json
 import time
 import re
+import random
+import string
 
 from rest_framework import serializers
 from typing import Optional, List
@@ -13,6 +15,8 @@ from lib.cache import (
     disco_pop_raw_device_messages,
     disco_update_raw_device_info,
     disco_get_active_raw_device_infos,
+    disco_existed_one_time_passcode,
+    disco_create_one_time_passcode,
 )
 
 # message to device will expire in ..
@@ -206,3 +210,13 @@ def update_presence_for_device(
         raw_deviceinfo=raw,
         cur_time=t,
         expiration_secs=expiration_secs)
+
+
+def disco_get_or_create_one_time_passcode(old_code: str, code_length=5) -> str:
+    if disco_existed_one_time_passcode(old_code):
+        return old_code
+    else:
+        letters_and_digits = string.ascii_letters + string.digits
+        new_code = ''.join(random.choice(letters_and_digits) for _ in range(code_length)).upper()
+        disco_create_one_time_passcode(new_code)
+        return new_code

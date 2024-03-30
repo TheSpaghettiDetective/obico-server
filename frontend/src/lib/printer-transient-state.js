@@ -81,7 +81,7 @@ export const showTimeoutError = (printer, localTransientState, newPrinterState) 
   Vue.swal
     .fire({
       icon: 'error',
-      title: i18n.t('Printer not responding'),
+      title: `${i18n.t('Printer not responding')}`,
       html: `${i18n.t("The printer doesn't seem to be responding. Is it powered on and connected to the Internet? Please")} <a href="mailto:support@obico.io">${i18n.t("report the problem to us")}</a> ${i18n.t("if this error repeats multiple times.")}`,
     })
     .then(() => {

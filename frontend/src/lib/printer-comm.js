@@ -165,7 +165,7 @@ export default function PrinterComm(printerId, wsUri, callbacks) {
             clearPrinterTransientState(self.printerId)
             Vue.swal.Toast.fire({
               icon: 'error',
-              title: i18n.t('Failed to contact printer. Is it powered on and connected to Internet?'),
+              title: `${i18n.t('Failed to contact printer. Is it powered on and connected to Internet?')}`,
             })
           }
         }, 10 * 1000)

@@ -19,8 +19,8 @@ export const confirmPrint = (gcode, printer) => {
         html: `<h5 style="text-align: center; line-height: 1.5;">${i18n.t("Print")} "${gcode.filename}" on <b>${printer.name}</b>?</h5>`,
         imageUrl: gcode.getBigThumbnailUrl && gcode.getBigThumbnailUrl(),
         showCancelButton: true,
-        confirmButtonText: i18n.t('Print')+'!',
-        cancelButtonText: i18n.t('Cancel'),
+        confirmButtonText: `${i18n.t('Print!')}`,
+        cancelButtonText: `${i18n.t('Cancel')}`,
         reverseButtons: true,
       })
       .then((result) => {

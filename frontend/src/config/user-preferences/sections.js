@@ -8,14 +8,14 @@ const onlyNotifications =
 
 const defaultSections = {
   GeneralPreferences: {
-    title: i18n.t('General'),
+    title: `${i18n.t('General')}`,
     faIcon: 'fas fa-cog',
     importComponent: () => import('@src/components/user-preferences/GeneralPreferences'),
     route: routes.GeneralPreferences,
     isHidden: inMobileWebView() || onlyNotifications,
   },
   ThemePreferences: {
-    title: i18n.t('Appearance'),
+    title: `${i18n.t('Appearance')}`,
     faIcon: 'fas fa-magic',
     importComponent: () => import('@src/components/user-preferences/ThemePreferences'),
     route: routes.ThemePreferences,
@@ -25,14 +25,14 @@ const defaultSections = {
       onlyNotifications,
   },
   ProfilePreferences: {
-    title: i18n.t('Profile'),
+    title: `${i18n.t('Profile')}`,
     faIcon: 'fas fa-user-edit',
     importComponent: () => import('@src/components/user-preferences/ProfilePreferences'),
     route: routes.ProfilePreferences,
     isHidden: onlyNotifications,
   },
   AuthorizedApps: {
-    title: i18n.t('Authorized Apps'),
+    title: `${i18n.t('Authorized Apps')}`,
     faIcon: 'fas fa-check-circle',
     importComponent: () => import('@src/components/user-preferences/AuthorizedApps'),
     route: routes.AuthorizedApps,
@@ -41,14 +41,14 @@ const defaultSections = {
 
   // Notifications
   GeneralNotifications: {
-    title: i18n.t('Notifications'),
+    title: `${i18n.t('Notifications')}`,
     faIcon: 'fas fa-bell',
     importComponent: () =>
       import('@src/components/user-preferences/notifications/GeneralNotifications'),
     route: routes.GeneralNotifications,
   },
   PushNotifications: {
-    title: i18n.t('Push Notification'),
+    title: `${i18n.t('Push Notification')}`,
     isSubcategory: true,
     isNotificationChannel: true,
     importComponent: () => ({}),

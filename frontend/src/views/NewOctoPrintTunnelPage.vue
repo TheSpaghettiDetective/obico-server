@@ -12,7 +12,7 @@
               </div>
             </b-row>
             <b-row>
-              <h1 class="mx-auto">{{$t("Welcome To")}} {{ $t('brand_name') }}</h1>
+              <h1 class="mx-auto">{{$t("Welcome To")}} {{ $syndicateText.brandName }}</h1>
             </b-row>
             <b-row>
               <b-col>
@@ -57,7 +57,7 @@
                   <i class="feature-check fas fa-check-circle"></i
                   ><span class="feature-text">{{ $t("G-Code Remote Upload and Printing") }}</span>
                 </div>
-                <div class="lead py-4">{{ $t("{platformDisplayName} has not been linked to your {brandName} account.",{platformDisplayName,brandName:$t('brand_name')}) }}</div>
+                <div class="lead py-4">{{ $t("{platformDisplayName} has not been linked to your {brandName} account.",{platformDisplayName,brandName:$syndicateText.brandName}) }}</div>
                 <div class="d-flex flex-column align-center justify-content-center">
                   <div>
                     <a :href="wizardUrl" class="btn btn-primary btn-block mx-auto btn-lg"
@@ -104,7 +104,7 @@
                 <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank">{{platformDisplayName}} {{$t("Tunnel")}}</a>
                 <i18next :translation="$t('is a secure way provided by {localizedDom} to remotely access your {platformDisplayName}. With the {platformDisplayName} Tunnel, you can use {appDisplayName} to access your {platformDisplayName} from anywhere.')">
                     <template #localizedDom>
-                      <a href="https://www.obico.io/" target="_blank">{{$t('brand_name')}}</a>
+                      <a href="https://www.obico.io/" target="_blank">{{$syndicateText.brandName}}</a>
                     </template>
                     <template #platformDisplayName>
                       {{platformDisplayName}}
@@ -120,7 +120,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('Tunnel usage of a free account is {localizedDom} to enjoy unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$t('brand_name')})}}</a>
+                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
                 </div>
@@ -136,7 +136,7 @@
                   <i class="fas fa-exclamation-triangle"></i>
                   <i18next :translation="$t('After the Free trial expires, tunnel data usage will be {localizedDom} to continue enjoying unlimited tunnel usage.')">
                     <template #localizedDom>
-                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$t('brand_name')})}}</a>
+                      <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#why-is-the-limit-on-free-account-only-100mb" target="_blank">{{$t("capped at 300MB per month")}}</a>. {{$t("You can")}} <a href="http://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("upgrade to the {brandName} app Pro plan for 1 Starbucks a month",{brandName:$syndicateText.brandName})}}</a>
                     </template>
                   </i18next>
 
@@ -188,7 +188,7 @@
               <p class="text-muted small mb-1">{{ $t("Security notes:") }}</p>
               <ul class="text-muted small pl-4">
                 <li>
-                  {{ $t("The app can only access the tunnel, not your {brandName} account info such as your email address.",{brandName:$t('brand_name')}) }}
+                  {{ $t("The app can only access the tunnel, not your {brandName} account info such as your email address.",{brandName:$syndicateText.brandName}) }}
                 </li>
                 <li>
                   {{ $t("The access remains valid until explicitly revoked. You can revoke the access by going to Preferences -> Authorized Apps.") }}
@@ -216,12 +216,12 @@
             <div class="my-4">
               <div class="mx-auto text-center">
                 <h4>{{ $t("Free {platformDisplayName} Tunnel",{platformDisplayName}) }}</h4>
-                <div class="lead">{{ $t("Powered by {brandName}",{brandName:$t('brand_name')}) }}</div>
+                <div class="lead">{{ $t("Powered by {brandName}",{brandName:$syndicateText.brandName}) }}</div>
               </div>
             </div>
             <div class="account-details">
               <p>
-                {{ $t("With the Free {platformDisplayName} Tunnel by {brandName}, you can now use {appDisplayName} to",{platformDisplayName,brandName:$t("brand_name"),appDisplayName}) }}
+                {{ $t("With the Free {platformDisplayName} Tunnel by {brandName}, you can now use {appDisplayName} to",{platformDisplayName,brandName:$syndicateText.brandName,appDisplayName}) }}
                   <a href="https://www.obico.io/docs/user-guides/octoprint-tunneling/" target="_blank"> {{$t("securely control and monitor your printer from anywhere")}}</a>
               </p>
               <ul class="text-muted">
@@ -236,7 +236,7 @@
                       <a href="https://app.obico.io/ent_pub/pricing/" target="_blank">{{$t("from $4/mo")}}</a>
                     </template>
                     <template #brandName>
-                      {{$t('brand_name')}}
+                      {{$syndicateText.brandName}}
                     </template>
                   </i18next>
               </div>

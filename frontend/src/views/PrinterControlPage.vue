@@ -107,7 +107,7 @@
               {{$t("Add Printer")}}
             </b-button>
             <div class="text-muted extra-actions-explanation">
-              <small>{{ $t("Link another printer to {brandName}.",{brandName:$t('brand_name')}) }}</small>
+              <small>{{ $t("Link another printer to {brandName}.",{brandName:$syndicateText.brandName}) }}</small>
             </div>
           </div>
         </div>

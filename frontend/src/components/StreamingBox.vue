@@ -382,12 +382,12 @@ export default {
       this.$swal.Prompt.fire({
         title: `${this.$i18next.t(`Upgrade for Better Streaming`)}`,
         html: `
-          <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$i18next.t('brand_name')})}</a>:</p>
+          <p>${this.$i18next.t("Because you are now on the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/upgrade-to-pro/?source=basic_streaming">${this.$i18next.t("{brandName} Cloud Free plan",{brandName:this.$syndicateText.brandName})}</a>:</p>
           <ul>
             <li>${this.$i18next.t("Streaming is limited to 5 FPS (frames per second).")}</li>
             <li>${this.$i18next.t("After 30 seconds of streaming there is a 30-second cooldown before you can resume streaming.")}</li>
           </ul>
-          <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$i18next.t('brand_name')})} <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">${this.$i18next.t("Premium Streaming")}</a>:</p>
+          <p>${this.$i18next.t("Support the {brandName} project by",{brandName:this.$syndicateText.brandName})} <a href="https://app.obico.io/ent_pub/pricing/?source=basic_streaming">${this.$i18next.t("upgrading to the Pro plan for little more than 1 Starbucks a month.")}</a></p> ${this.$i18next.t("The Pro plan offers many perks, including the")} <a target="_blank" href="https://www.obico.io/docs/user-guides/webcam-streaming-for-human-eyes/?source=basic_streaming">${this.$i18next.t("Premium Streaming")}</a>:</p>
           <ul>
             <li>${this.$i18next.t("Smooth 25 FPS.")}</li>
             <li>${this.$i18next.t("Unlimited streaming with no cooldowns.")}</li>

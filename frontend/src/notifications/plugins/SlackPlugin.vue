@@ -12,13 +12,13 @@
     <template #header>
       <div v-if="setupCompleted" class="mb-4">
         <p class="lead">
-          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{ $t('{brandName} Messenger has been successfully added to your workspace.',{brandName:$t('brand_name')}) }}
+          <i class="far fa-check-circle text-success"></i>&nbsp;&nbsp;{{ $t('{brandName} Messenger has been successfully added to your workspace.',{brandName:$syndicateText.brandName}) }}
         </p>
         <br />
         <h2>{{ $t("What's Next?") }}</h2>
         <br />
         <p>
-          {{ $t(" 1. Make sure {brandName} Messenger is added to the channels you want the notifications to be sent to.",{brandName:$t('brand_name')}) }}
+          {{ $t(" 1. Make sure {brandName} Messenger is added to the channels you want the notifications to be sent to.",{brandName:$syndicateText.brandName}) }}
 
         </p>
         <img
@@ -29,7 +29,7 @@
         <p>{{ $t("2. There is no 2. You are all set. It's this simple. :)") }}</p>
       </div>
       <div v-else>
-        <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace:',{brandName:$t('brand_name')}) }}</p>
+        <p class="lead">{{ $t('Click the button below to add the {brandName} Slack App into your workspace:',{brandName:$syndicateText.brandName}) }}</p>
         <a
           :href="`https://slack.com/oauth/v2/authorize?client_id=${slackClientId}&scope=channels:read,chat:write,groups:read&redirect_uri=${redirectUri}`"
         >
@@ -59,7 +59,7 @@
         <h2>{{ $t("Questions?") }}</h2>
         <br />
         <p>
-          {{ $t("Q: How do I remove the {brandName} Slack App from a slack channel so that it won't send notifications to that channel?",{brandName:$t('brand_name')}) }}
+          {{ $t("Q: How do I remove the {brandName} Slack App from a slack channel so that it won't send notifications to that channel?",{brandName:$syndicateText.brandName}) }}
         </p>
         <p>A:</p>
         <img
@@ -75,7 +75,7 @@
           :src="require('@static/img/notification-guides/slack/slack_setup4.png')"
         />
         <br /><br />
-        <p>{{ $t("Q: How do I remove the {brandName} Slack App from the entire workspace?",{brandName:$t('brand_name')}) }}</p>
+        <p>{{ $t("Q: How do I remove the {brandName} Slack App from the entire workspace?",{brandName:$syndicateText.brandName}) }}</p>
         <p>
           <i18next :translation="$t('A: Please follow the instructions in {localizedDom}.')">
             <template #localizedDom>

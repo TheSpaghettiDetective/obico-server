@@ -86,7 +86,7 @@
                       {{ title }}
                     </h3>
 
-                    <tab-content v-if="targetMoonraker" :title="`Install ${$t('brand_name')} for Klipper`">
+                    <tab-content v-if="targetMoonraker" :title="`Install ${$syndicateText.brandName} for Klipper`">
                       <div class="container">
                         <div class="row justify-content-center pb-3">
                           <div class="col-sm-12 col-lg-8">
@@ -118,7 +118,7 @@ cd moonraker-obico
                             <div class="text-warning">
                               <i18next :translation="$t(`Warning: Re-Linking OctoPrint should be your last resort to solve issues. Please make sure you have exhausted all options on {localizedDom}.`)">
                                 <template #localizedDom>
-                                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$t('brand_name')})}}</a>
+                                  <a href="https://www.obico.io/help/">{{$t("{brandName}'s help website",{brandName:$syndicateText.brandName})}}</a>
                                 </template>
                               </i18next>
                             </div>
@@ -126,7 +126,7 @@ cd moonraker-obico
                               <li>{{ $t("Open OctoPrint in another browser tab.") }}</li>
                               <li>
                                 {{ $t("Select") }}
-                                <em>"{{$t("OctoPrint settings menu → {brandName} for OctoPrint",{brandName:$t('brand_name')})}}"</em>.
+                                <em>"{{$t("OctoPrint settings menu → {brandName} for OctoPrint",{brandName:$syndicateText.brandName})}}"</em>.
 
                               </li>
                               <li>{{ $t("Select ") }}<em>{{ $t("Troubleshooting → Re-run Wizard") }}</em>.</li>
@@ -155,7 +155,7 @@ cd moonraker-obico
                                 {{ $t("Select") }}
                                 <em>"{{$t("OctoPrint settings menu → Plugin Manager → Get More...")}}"</em>.
                               </li>
-                              <li>{{ $t("Enter '{brandName}' to locate the plugin. Click",{brandName:$t('brand_name')}) }} <em>"{{$t("Install")}}"</em>.</li>
+                              <li>{{ $t("Enter '{brandName}' to locate the plugin. Click",{brandName:$syndicateText.brandName}) }} <em>"{{$t("Install")}}"</em>.</li>
                               <li>{{ $t("Restart OctoPrint when prompted.") }}</li>
                             </ol>
                           </div>
@@ -213,8 +213,8 @@ cd moonraker-obico
                                 <li>
                                   {{$t("The printer or SBC is connected to the same local network as your phone/computer.")}}
                                 </li>
-                                <li v-if="targetOctoPrint">{{ $t("{brandName} for OctoPrint is 1.8.0 or above.",{brandName:$t('brand_name')}) }}</li>
-                                <li v-else>{{ $t("{brandName} for Klipper is 1.5.0 or above.",{brandName:$t('brand_name')}) }}
+                                <li v-if="targetOctoPrint">{{ $t("{brandName} for OctoPrint is 1.8.0 or above.",{brandName:$syndicateText.brandName}) }}</li>
+                                <li v-else>{{ $t("{brandName} for Klipper is 1.5.0 or above.",{brandName:$syndicateText.brandName}) }}
                                   </li>
                               </ul>
                             </div>
@@ -232,7 +232,7 @@ cd moonraker-obico
                                 <li>
                                   <i18next :translation="$t(`Wait for {localizedDom} wizard to popup.`)">
                                     <template #localizedDom>
-                                      <em>"{{$t("{brandName} for OctoPrint",{brandName:$t("brand_name")})}}"</em>
+                                      <em>"{{$t("{brandName} for OctoPrint",{brandName:$syndicateText.brandName})}}"</em>
                                     </template>
                                   </i18next>
                                 </li>
@@ -681,7 +681,7 @@ export default {
       }, 5000)
     },
     showVerificationCodeHelpModal() {
-      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$i18next.t('brand_name')})}</p>
+      let html = `<p>${this.$i18next.t("The 6-digit code needs to be entered in the {brandName} plugin in OctoPrint. There are a few reasons why you can't find this page:",{brandName:this.$syndicateText.brandName})}</p>
         <p><ul>
         <li style="margin: 10px 0;">${this.$i18next.t("You don't have the plugin installed or you haven't restarted OctoPrint after installation. Click")} <a href="/printers/wizard/">here</a> ${this.$i18next.t("to walk through the process again.")}</li>
         <li style="margin: 10px 0;">${this.$i18next.t("The installed plugin is on a version earlier than 1.5.0. You need to upgrade the plugin to")} <b>1.5.0</b> ${this.$i18next.t("or later.")}</li>
@@ -689,7 +689,7 @@ export default {
         </ul></p>`
 
       if (!this.targetOctoPrint) {
-        html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the")} <em>${this.$i18next.t("{brandName} for OctoPrint",{brandName:this.$i18next.t('brand_name')})}</em> ${this.$i18next.t("installation script.")}</p>
+        html = `<p>${this.$i18next.t("The 6-digit code needs to be entered to the")} <em>${this.$i18next.t("{brandName} for OctoPrint",{brandName:this.$syndicateText.brandName})}</em> ${this.$i18next.t("installation script.")}</p>
         <p>${this.$i18next.t("Check")} <a target="_blank" href="https://www.obico.io/docs/user-guides/klipper-setup/"${this.$i18next.t("this set up guide")}</a> ${this.$i18next.t("for detailed instructions.")}</p>`
       }
 

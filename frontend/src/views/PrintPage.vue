@@ -179,7 +179,7 @@
                 <div v-if="print.video_archived_at" class="card-container">
                   <h2 class="title">{{ $t("Time-Lapse video deleted") }}</h2>
                   <p>
-                    {{ $t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:$t('brand_name')}) }}
+                    {{ $t("Time-lapse videos older than 6-months are deleted from the {brandName} app server as they are rarely needed and cost significant amount to store in the cloud.",{brandName:$syndicateText.brandName}) }}
                   </p>
                   <p>
                     <i18next :translation="$t(`If you are a Pro subscriber and you don't want your time-lapse videos to be deleted, please {localizedDom}`)">
@@ -342,7 +342,7 @@
                   <p class="text-secondary mt-3">{{ $t("Time-Lapse video unavailable because:") }}</p>
                   <ul>
                     <li class="text-secondary mt-3">
-                      {{ $t("The {brandName} server is still processing the time-lapse;",{brandName:$t('brand_name')}) }}
+                      {{ $t("The {brandName} server is still processing the time-lapse;",{brandName:$syndicateText.brandName}) }}
                     </li>
                     <li class="text-secondary mt-3">
                       <i18next :translation="$t(`Or, the print time was shorter than the threshold. You can change the threshold in {localizedDom}`)">

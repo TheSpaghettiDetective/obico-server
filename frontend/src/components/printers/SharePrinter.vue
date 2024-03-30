@@ -14,9 +14,9 @@
       <p>{{ $t("Printer feed sharing is a Pro feature.") }}</p>
       <p>
         <a  href="https://www.obico.io/docs/user-guides/upgrade-to-pro#why-cant-the-detective-just-work-for-free-people-love-free-you-know">
-          {{ $t('Running the {brandName} app incurs non-trivial amount of costs',{brandName:$t(brand_name)}) }}
+          {{ $t('Running the {brandName} app incurs non-trivial amount of costs',{brandName:$syndicateText.brandName}) }}
           </a>.
-          {{ $t('With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the {brandName} app smoothly.',{brandName:$t(brand_name)}) }}
+          {{ $t('With little more than 1 Starbucks per month, you can upgrade to a Pro account and help us run the {brandName} app smoothly.',{brandName:$syndicateText.brandName}) }}
 
       </p>
       <p><a href="/ent_pub/pricing/">{{ $t("Check out Pro pricing >>>") }}</a></p>
@@ -87,7 +87,7 @@
                 <div>{{ $t("Notes:") }}</div>
                 <ul>
                   <li>
-                    {{ $t('Send the secure link to anyone you want to share your printer feed with. They do NOT need the {brandName} account to see your printer feed.',{brandName:$t('brand_name')}) }}
+                    {{ $t('Send the secure link to anyone you want to share your printer feed with. They do NOT need the {brandName} account to see your printer feed.',{brandName:$syndicateText.brandName}) }}
 
                   </li>
                   <li>

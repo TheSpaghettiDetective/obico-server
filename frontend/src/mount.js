@@ -39,8 +39,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { syndicate,language } from '@src/lib/page-context'
+import { syndicateTextConstant } from '@src/config/syndicateText'
 
 Vue.prototype.$syndicate = syndicate().provider
+Vue.prototype.$syndicateText = syndicateTextConstant[syndicate().provider||'base'] || syndicateTextConstant.base
 Vue.prototype.$language = language().provider
 
 export default (router, components) => {
@@ -64,7 +66,7 @@ export default (router, components) => {
             title: `${this.$i18next.t('Error')}`,
             html: `<p style="line-height: 1.5; max-width: 400px; margin: 0 auto;">
               ${userMessage}.
-              ${this.$i18next.t("Get help from")} <a href="https://obico.io/discord-obico-klipper">${this.$i18next.t("the {brandName} for Klipper support forum",{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t('the {brandName} general support forum',{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("if this error persists.")}
+              ${this.$i18next.t("Get help from")} <a href="https://obico.io/discord-obico-klipper">${this.$i18next.t("the {brandName} for Klipper support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t('the {brandName} general support forum',{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("if this error persists.")}
             </p>`,
             showConfirmButton: false,
             showCancelButton: true,

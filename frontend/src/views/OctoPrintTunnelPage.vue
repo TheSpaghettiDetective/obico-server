@@ -110,7 +110,7 @@ export default {
             ${this.$i18next.t("OctoPrint/Klipper Secure Tunnel")}
           </h4>
           <div class="p-1">
-            ${this.$i18next.t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$i18next.t('brand_name')})}
+            ${this.$i18next.t("It may take long time for OctoPrint/Mainsail/Fluidd page to load as it is securely tunneled via the {brandName} app server.",{brandName:this.$syndicateText.brandName})}
           </div>
           <div class="p-1">
             <a target="_blank" href="https://www.obico.io/docs/user-guides/octoprint-tunneling/#is-octoprint-tunneling-free-to-all-users">

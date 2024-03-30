@@ -600,7 +600,7 @@ export default {
     errorAlert() {
       this.$swal.Toast.fire({
         icon: 'error',
-        html: `<div>${this.$i18next.t("Can not update printer settings.")}</div><div>${this.$i18next.t("Get help from")} <a href="https://obico.io/discord">${this.$i18next.t("the {brandName} general support forum",{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t("{brandName} for klipper support forum",{brandName:this.$i18next.t('brand_name')})}</a> ${this.$i18next.t("if this error persists.")}</div>`,
+        html: `<div>${this.$i18next.t("Can not update printer settings.")}</div><div>${this.$i18next.t("Get help from")} <a href="https://obico.io/discord">${this.$i18next.t("the {brandName} general support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("or")} <a href="https://obico.io/discord">${this.$i18next.t("{brandName} for klipper support forum",{brandName:this.$syndicateText.brandName})}</a> ${this.$i18next.t("if this error persists.")}</div>`,
       })
     },
 

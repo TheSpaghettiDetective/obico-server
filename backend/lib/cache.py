@@ -306,12 +306,12 @@ def disco_pop_raw_device_messages(
         return [raw_msg for (raw_msg, _) in conn.execute()[1]]
 
 
-def disco_existed_one_time_passcode(code):
-    return REDIS.exists(disco_one_time_passcode_key(code))
+def lookup_value_by_one_time_passcode(code):
+    return REDIS.get(disco_one_time_passcode_key(code))
 
 
-def disco_create_one_time_passcode(new_code, ttl=60*60*2):
-    REDIS.setex(disco_one_time_passcode_key(new_code), ttl, 1)
+def set_value_by_one_time_passcode(new_code, ttl, value):
+    REDIS.setex(disco_one_time_passcode_key(new_code), ttl, value)
 
 
 def pic_post_over_limit(printer_id, limit_per_minute):

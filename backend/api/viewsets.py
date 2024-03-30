@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from django.utils import timezone
+from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -50,6 +51,7 @@ from lib.printer_discovery import (
     get_active_devices_for_client_ip,
     DeviceMessage,
 )
+from lib.one_time_passcode import check_one_time_passcode
 from notifications.handlers import handler
 
 LOGGER = logging.getLogger(__file__)
@@ -740,8 +742,26 @@ class SharedResourceViewSet(mixins.ListModelMixin,
             .data)
 
 
+class OneTimePasscodeViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request):
+        verification_code = request.data.get('verification_code')
+        one_time_passcode = request.data.get('one_time_passcode')
+
+        verification_code_obj = get_object_or_404(OneTimeVerificationCode, user=request.user, code=verification_code, printer=None)
+
+        if not check_one_time_passcode(one_time_passcode, verification_code_obj.code):
+            return JsonResponse({'detail': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return JsonResponse({'detail': 'OK'}, status=status.HTTP_200_OK)
+
+
 class PrinterDiscoveryViewSet(viewsets.ViewSet):
-    authentication_classes = (CsrfExemptSessionAuthentication, OAuth2Authentication)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):

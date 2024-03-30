@@ -261,7 +261,7 @@ cd moonraker-obico
                         </div>
                       </tab-content>
                       <tab-content :title="$t('Enter Code')">
-                        <div class="container">
+                        <div v-if="useLegacyVerificationCode" class="container">
                           <div class="row justify-content-center pb-3">
                             <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
                               <input
@@ -313,6 +313,28 @@ cd moonraker-obico
                                   >{{ $t("Can't find the page to enter the 6-digit code?") }}</a
                                 >
                               </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div v-else class="container">
+                          <div class="row justify-content-center pb-3">
+                            <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                              <input
+                                type="text"
+                                class="form-control"
+                                aria-label="One time code"
+                                v-model="oneTimePasscode"
+                              />
+                            </div>
+                            <div v-if="oneTimePasscodeResult === 'failed'" class="text-danger" >
+                              {{$t("Invalid code. Is it expired?")}}
+                            </div>
+                          </div>
+                          <div class="row justify-content-center pb-3">
+                            <div class="col-sm-12 col-lg-8 d-flex flex-column align-items-center">
+                              <b-button class="link-btn" @click="oneTimePasscodeVerifyClicked">
+                                {{$t("Verify")}}
+                              </b-button>
                             </div>
                           </div>
                         </div>
@@ -434,6 +456,9 @@ export default {
           timeoutId: null,
         },
       },
+      oneTimePasscode: '',
+      oneTimePasscodeResult: null,
+      useLegacyVerificationCode: false, // To simplify the flow, this can only change from false -> true.
       discoveryEnabled: true, // To simplify the flow, this can only change from true -> false.
       discoveryCount: 0,
       discoveredPrinters: [],
@@ -495,6 +520,23 @@ export default {
     }
   },
   methods: {
+    oneTimePasscodeVerifyClicked() {
+      axios
+        .post(urls.oneTimePasscodes(), {
+          one_time_passcode: this.oneTimePasscode,
+          verification_code: this.verificationCode.code,
+        })
+        .then((resp) => {
+          if (resp.status === 200) {
+            this.oneTimePasscodeResult = 'passed'
+          } else {
+            this.oneTimePasscodeResult = 'failed'
+          }
+        })
+        .catch((error) => {
+          this.oneTimePasscodeResult = 'failed'
+        })
+    },
     setTargetPlatform(platfrom) {
       this.targetPlatform = platfrom
       this.$router.push(routes.printerWizardSetup + `?${window.location.search}`)

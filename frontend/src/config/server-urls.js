@@ -24,6 +24,8 @@ export default {
     '/api/v1/sharedresources/?' + map(entries(paramsObj), (entry) => entry.join('=')).join('&'),
   sharedResource: (resourceId) => `/api/v1/sharedresources/${resourceId}/`,
   printerDiscovery: () => '/api/v1/printer_discovery/',
+  oneTimePasscodes: () => '/api/v1/one_time_passcodes/',
+
   printerEvents: () => '/api/v1/printer_events/',
 
   // Notifications

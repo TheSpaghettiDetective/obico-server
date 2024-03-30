@@ -255,7 +255,8 @@ SITE_IS_PUBLIC = get_bool('SITE_IS_PUBLIC', False)
 
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '3600/hour',
+        'anon': '1800/hour',
+        'user': '1800/hour',
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

@@ -28,7 +28,8 @@ from .utils import report_validationerror
 from lib.printer_discovery import (
     DeviceInfo,
     pull_messages_for_device,
-    update_presence_for_device)
+    update_presence_for_device,)
+from lib.one_time_passcode import request_one_time_passcode
 from .authentication import PrinterAuthentication
 from lib.file_storage import save_file_obj
 from lib import cache
@@ -263,11 +264,11 @@ class OctoPrinterDiscoveryView(APIView):
         if not client_ip:
             raise ImproperlyConfigured("cannot determine client_ip")
 
-        if 'one_time_passcode' in request.data:
+        if 'one_time_passcode' in request.data: # For the agent that supports OTP
             one_time_passcode = request.data.pop('one_time_passcode')
-
-        if not one_time_passcode or
-
+            # When the user sends a one-time passcode, it is associated with the verification_code
+            (maybe_new_one_time_passcode, verification_code) = request_one_time_passcode(one_time_passcode)
+            return Response({'one_time_passcode': maybe_new_one_time_passcode, 'verification_code': verification_code})
 
         device_info: DeviceInfo = DeviceInfo.from_dict(request.data)
 
